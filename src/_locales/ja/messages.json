@@ -98,6 +98,12 @@
   "selectTheme": {
     "message": "テーマを選択"
   },
+  "sendTabToDevice": {
+    "message": "タブを端末に送る"
+  },
+  "sendToAllDevices": {
+    "message": "Send to all devices"
+  },
   "tab": {
     "message": "タブ"
   },
