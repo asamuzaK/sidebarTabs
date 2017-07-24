@@ -1,0 +1,122 @@
+{
+  "extensionDescription": {
+    "message": "サイドバーにタブをエミュレートし、タブを縦に並べて表示します。さらに、タブをグループ化して折り畳み・展開することが可能です。"
+  },
+  "extensionName": {
+    "message": "verticalGroupableSidebarTabs"
+  },
+  "extensionShortName": {
+    "message": "サイドバータブ"
+  },
+  "allTabs": {
+    "message": "すべてのタブ"
+  },
+  "allTabs_label": {
+    "message": "すべてのタブ"
+  },
+  "bookmarkAllTabs": {
+    "message": "すべてのタブをブックマーク"
+  },
+  "closeOtherTabs": {
+    "message": "他のタブをすべて閉じる"
+  },
+  "closeTab": {
+    "message": "タブを閉じる"
+  },
+  "closeTab_tooltip": {
+    "message": "タブを閉じます"
+  },
+  "closeTabsToTheEnd": {
+    "message": "下のタブをすべて閉じる"
+  },
+  "collapseTabs": {
+    "message": "グループのタブを折りたたむ"
+  },
+  "collapseTabs_tooltip": {
+    "message": "グループのタブを折りたたみます"
+  },
+  "connecting": {
+    "message": "接続中..."
+  },
+  "darkTheme": {
+    "message": "暗いテーマ"
+  },
+  "defaultTheme": {
+    "message": "デフォルトのテーマ"
+  },
+  "expandTabs": {
+    "message": "グループのタブを展開"
+  },
+  "expandTabs_tooltip": {
+    "message": "グループのタブを展開します"
+  },
+  "groupTabs": {
+    "message": "タブをグループ化"
+  },
+  "groupTabs_label": {
+    "message": "タブグループ"
+  },
+  "initSidebar": {
+    "message": "サイドバータブを初期化"
+  },
+  "lightTheme": {
+    "message": "明るいテーマ"
+  },
+  "moveToNewWindow": {
+    "message": "新しいウィンドウへ移動"
+  },
+  "muteAudio": {
+    "message": "タブをミュート"
+  },
+  "muteAudio_tooltip": {
+    "message": "タブをミュートします"
+  },
+  "newTabButton": {
+    "message": "新しいタブ"
+  },
+  "newTabButton_tooltip": {
+    "message": "新しいタブを開きます"
+  },
+  "openInNewNonE10sWindow": {
+    "message": "Open in new non-e10s window"
+  },
+  "pinTab": {
+    "message": "タブをピン留め"
+  },
+  "playTab": {
+    "message": "タブのメディアを再生"
+  },
+  "reloadAllTabs": {
+    "message": "すべてのタブを再読み込み"
+  },
+  "reloadGroupTabs": {
+    "message": "グループのタブを再読み込み"
+  },
+  "reloadTab": {
+    "message": "タブを再読み込み"
+  },
+  "selectTheme": {
+    "message": "テーマを選択"
+  },
+  "tab": {
+    "message": "タブ"
+  },
+  "tab_label": {
+    "message": "タブ"
+  },
+  "undoCloseTab": {
+    "message": "閉じたタブを元に戻す"
+  },
+  "ungroupTabs": {
+    "message": "タブグループを解除"
+  },
+  "unmuteAudio": {
+    "message": "タブのミュートを解除"
+  },
+  "unmuteAudio_tooltip": {
+    "message": "タブのミュートを解除します"
+  },
+  "unpinTab": {
+    "message": "タブのピン留めを外す"
+  }
+}

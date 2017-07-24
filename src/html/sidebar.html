@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title data-i18n="extensionShortName">Sidebar Tabs</title>
+    <link rel="stylesheet" href="../css/sidebar.css" />
+    <script src="../js/sidebar.js"></script>
+  </head>
+  <body id="sidebar-tabs" contextmenu="sidebar-contextmenu-container">
+    <!-- context menu -->
+    <menu id="sidebar-contextmenu-container" class="menu" type="context">
+      <menu id="sidebar-tabs-menu" class="menu" type="context"
+            label="Sidebar Tabs" data-i18n="extensionShortName">
+        <menu id="sidebar-tabs-menu-tab" class="menu" type="context"
+              label="Tab" data-i18n="tab">
+          <menuitem id="sidebar-tabs-menu-tab-reload" type="command"
+                    label="Reload Tab" data-i18n="reloadTab">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-audio" type="command"
+                    label="Mute Audio" data-i18n="muteAudio">
+          </menuitem>
+          <hr />
+          <menuitem id="sidebar-tabs-menu-tab-pin" type="command"
+                    label="Pin Tab" data-i18n="pinTab">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-new-win-move" type="command"
+                    label="Move to New Window" data-i18n="moveToNewWindow">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-new-win-non-e10s" type="command"
+                    label="Open in new non-e10s window"
+                    data-i18n="openInNewNonE10sWindow">
+          </menuitem>
+          <hr />
+          <menuitem id="sidebar-tabs-menu-tab-close-end" type="command"
+                    label="Close Tabs to the Bottom"
+                    data-i18n="closeTabsToTheEnd">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-close-other" type="command"
+                    label="Close Other Tabs" data-i18n="closeOtherTabs">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-close" type="command"
+                    label="Close Tab" data-i18n="closeTab">
+          </menuitem>
+        </menu>
+        <hr />
+        <menu id="sidebar-tabs-menu-tab-group" class="menu" type="context"
+              label="Tab Group" data-i18n="groupTabs_label">
+          <menuitem id="sidebar-tabs-menu-tab-group-reload" type="command"
+                    label="Reload Grouped Tabs" data-i18n="reloadGroupTabs">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-group-collapse" type="command"
+                    label="Collapse Grouped Tabs" data-i18n="collapseTabs">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-tab-group-ungroup" type="command"
+                    label="Ungroup Tabs" data-i18n="ungroupTabs">
+          </menuitem>
+        </menu>
+        <hr />
+        <menuitem id="sidebar-tabs-menu-tabs-reload-all" type="command"
+                  label="Reload All Tabs" data-i18n="reloadAllTabs">
+        </menuitem>
+        <menuitem id="sidebar-tabs-menu-tabs-bookmark-all" type="command"
+                  label="Bookmark All Tabs" data-i18n="bookmarkAllTabs">
+        </menuitem>
+        <menuitem id="sidebar-tabs-menu-tab-close-undo" type="command"
+                  label="Undo Close Tab" data-i18n="undoCloseTab">
+        </menuitem>
+        <hr />
+        <menu id="sidebar-tabs-menu-sidebar-theme-select" class="menu"
+              type="context" label="Select Theme" data-i18n="selectTheme">
+          <menuitem id="sidebar-tabs-menu-sidebar-theme-default"
+                    type="command" label="Default Theme"
+                    data-i18n="defaultTheme">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-sidebar-theme-light" type="command"
+                    label="Light Theme" data-i18n="lightTheme">
+          </menuitem>
+          <menuitem id="sidebar-tabs-menu-sidebar-theme-dark" type="command"
+                    label="Dark Theme" data-i18n="darkTheme">
+          </menuitem>
+        </menu>
+        <menuitem id="sidebar-tabs-menu-sidebar-init" type="command"
+                  label="Init Sidebar Tabs" data-i18n="initSidebar">
+        </menuitem>
+      </menu>
+    </menu>
+    <main>
+      <!-- tab container template -->
+      <template id="tab-container-template">
+        <section class="tab-container" data-tab-controls="">
+        </section>
+      </template>
+      <!-- tab template -->
+      <template id="tab-template">
+        <div class="tab" draggable="true" tabindex="0"
+             data-tab-id="" data-tab="">
+          <span class="tab-context" tabindex="0" title="">
+            <img class="tab-toggle-icon" src="../img/drop-arrow.svg"
+                 tabindex="-1" alt="" />
+          </span>
+          <span class="tab-content" title="">
+            <img class="tab-icon" src="" tabindex="-1" alt="" />
+            <span class="tab-title">
+            </span>
+          </span>
+          <span class="tab-audio" tabindex="0" title="">
+            <img class="tab-audio-icon" src="" tabindex="-1" alt="" />
+          </span>
+          <span class="tab-close" tabindex="0" title="">
+            <img class="tab-close-icon" src="../shared/close.svg"
+                 tabindex="-1" alt="" />
+          </span>
+          <span class="tab-pinned">
+            <img class="tab-pinned-icon" src="../shared/glyph-pin-pinned-12.svg"
+                 tabindex="-1" alt="" />
+          </span>
+        </div>
+      </template>
+
+      <!-- pinned tabs container -->
+      <section id="pinned" class="tab-container pinned">
+      </section>
+      <!-- new tab -->
+      <section id="newtab" class="tab-container newtab">
+        <div class="tab newtab" title="Open a new tab" tabindex="0"
+             data-i18n="newTabButton_title">
+          <span class="newtab">
+            <img class="newtab-icon" src="../img/newtab.svg" tabindex="-1"
+                 alt="New Tab" data-i18n="newTabButton" />
+          </span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

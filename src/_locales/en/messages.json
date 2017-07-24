@@ -1,0 +1,122 @@
+{
+  "extensionDescription": {
+    "message": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them."
+  },
+  "extensionName": {
+    "message": "verticalGroupableSidebarTabs"
+  },
+  "extensionShortName": {
+    "message": "Sidebar Tabs"
+  },
+  "allTabs": {
+    "message": "All Tabs"
+  },
+  "allTabs_label": {
+    "message": "All Tabs"
+  },
+  "bookmarkAllTabs": {
+    "message": "Bookmark All Tabs"
+  },
+  "closeOtherTabs": {
+    "message": "Close Other Tabs"
+  },
+  "closeTab": {
+    "message": "Close Tab"
+  },
+  "closeTab_tooltip": {
+    "message": "Close Tab"
+  },
+  "closeTabsToTheEnd": {
+    "message": "Close Tabs to the Bottom"
+  },
+  "collapseTabs": {
+    "message": "Collapse Grouped Tabs"
+  },
+  "collapseTabs_tooltip": {
+    "message": "Collapse Grouped Tabs"
+  },
+  "connecting": {
+    "message": "connecting..."
+  },
+  "darkTheme": {
+    "message": "Dark Theme"
+  },
+  "defaultTheme": {
+    "message": "Default Theme"
+  },
+  "expandTabs": {
+    "message": "Expand Group Tabs"
+  },
+  "expandTabs_tooltip": {
+    "message": "Expand Group Tabs"
+  },
+  "groupTabs": {
+    "message": "Group Tabs"
+  },
+  "groupTabs_label": {
+    "message": "Tab Group"
+  },
+  "initSidebar": {
+    "message": "Init Sidebar Tabs"
+  },
+  "lightTheme": {
+    "message": "Light Theme"
+  },
+  "moveToNewWindow": {
+    "message": "Move to New Window"
+  },
+  "muteAudio": {
+    "message": "Mute Audio"
+  },
+  "muteAudio_tooltip": {
+    "message": "Mute Audio"
+  },
+  "newTabButton": {
+    "message": "New Tab"
+  },
+  "newTabButton_tooltip": {
+    "message": "Open a new tab"
+  },
+  "openInNewNonE10sWindow": {
+    "message": "Open in new non-e10s window"
+  },
+  "pinTab": {
+    "message": "Pin Tab"
+  },
+  "playAudio": {
+    "message": "Play Audio"
+  },
+  "reloadAllTabs": {
+    "message": "Reload All Tabs"
+  },
+  "reloadGroupTabs": {
+    "message": "Reload Grouped Tabs"
+  },
+  "reloadTab": {
+    "message": "Reload Tab"
+  },
+  "selectTheme": {
+    "message": "Select Theme"
+  },
+  "tab": {
+    "message": "Tab"
+  },
+  "tab_label": {
+    "message": "Tab"
+  },
+  "undoCloseTab": {
+    "message": "Undo Close Tab"
+  },
+  "ungroupTabs": {
+    "message": "Ungroup Tabs"
+  },
+  "unmuteAudio": {
+    "message": "Unmute Audio"
+  },
+  "unmuteAudio_tooltip": {
+    "message": "Unmute Audio"
+  },
+  "unpinTab": {
+    "message": "Unpin Tab"
+  }
+}
