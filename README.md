@@ -1,6 +1,6 @@
 EN | [JA](./README.ja.md)
 
-# verticalGroupableSidebarTabs
+# sidebarTabs
 
 Web Extension for Firefox.
 Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them.
