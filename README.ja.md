@@ -1,6 +1,6 @@
 [EN](./README.md) | JA
 
-# verticalGroupableSidebarTabs
+# sidebarTabs
 
 Firefox用の拡張機能。
 サイドバーにタブをエミュレートし、タブを縦に並べて表示します。さらに、タブをグループ化して折りたたみ・展開することが可能です。
