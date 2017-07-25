@@ -14,15 +14,13 @@
   },
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
-  "optional_permissions": [
-    "bookmarks",
-    "cookies"
-  ],
   "permissions": [
     "<all_urls>",
     "activeTab",
+    "bookmarks",
     "contextMenus",
     "contextualIdentities",
+    "cookies",
     "management",
     "sessions",
     "storage",

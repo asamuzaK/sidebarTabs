@@ -306,6 +306,16 @@
   };
 
   /**
+   * bookmark tab
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - bookmarks.create()
+   */
+  const bookmarkTab = async (opt = {}) => {
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return bookmarks.create(opt);
+  };
+
+  /**
    * create new window
    * @param {Object} opt - options
    * @returns {AsyncFunction} - windows.create();
@@ -870,11 +880,17 @@
         func.push(initSidebar(true));
         break;
       case MENU_TABS_BOOKMARK_ALL: {
-        if (bookmarks) {
-          // FIXME: bookmarks
+        const items = document.querySelectorAll(
+          `${TAB_QUERY}:not(.${PINNED})`
+        );
+        if (items && items.length > 1) {
+          for (const item of items) {
+            const itemTab = item.dataset && item.dataset.tab &&
+                            JSON.parse(item.dataset.tab);
+            const {title, url} = itemTab;
+            func.push(bookmarkTab({title, url}));
+          }
         }
-        const msg = `Handler for ${id} not implemented yet.`;
-        func.push(logWarn(msg));
         break;
       }
       case MENU_TABS_RELOAD_ALL: {
@@ -1476,14 +1492,17 @@
         const {id, title} = item;
         const data = {};
         switch (itemKey) {
-          case TABS_BOOKMARK_ALL:
-            if (bookmarks) {
-              // FIXME: bookmarks
-              data.enabled = false;
+          case TABS_BOOKMARK_ALL: {
+            const items = document.querySelectorAll(
+              `${TAB_QUERY}:not(.${PINNED})`
+            );
+            if (items && items.length > 1) {
+                data.enabled = true;
             } else {
               data.enabled = false;
             }
             break;
+          }
           case TAB_CLOSE_UNDO: {
             const {lastClosedTab} = sidebar;
             if (lastClosedTab) {
@@ -1543,8 +1562,8 @@
      * } = tabsTab
      */
     const {
-      active, audible, favIconUrl, id, index, mutedInfo, pinned, status, title,
-      windowId,
+      active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo, pinned,
+      status, title, windowId,
     } = tabsTab;
     const {muted} = mutedInfo;
     const func = [];
@@ -1620,6 +1639,13 @@
           target = list[index].parentNode;
         } else {
           target = document.getElementById(NEW_TAB);
+        }
+        if (cookieStoreId) {
+          const ident = await contextualIdentities.get(cookieStoreId);
+          if (ident) {
+            const {color} = ident;
+            tab.style.borderColor = color;
+          }
         }
         await addDragEventListener(tab);
         container.appendChild(tab);
