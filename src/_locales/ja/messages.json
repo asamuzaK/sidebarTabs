@@ -77,9 +77,6 @@
   "newTabButton_tooltip": {
     "message": "新しいタブを開きます"
   },
-  "openInNewNonE10sWindow": {
-    "message": "Open in new non-e10s window"
-  },
   "pinTab": {
     "message": "タブをピン留め"
   },

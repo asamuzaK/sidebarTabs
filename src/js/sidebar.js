@@ -3,8 +3,8 @@
 {
   /* api */
   const {
-    bookmarks, contextualIdentities, cookies, i18n, management, sessions,
-    storage, tabs, windows,
+    bookmarks, contextualIdentities, i18n, management, sessions, storage, tabs,
+    windows,
   } = browser;
 
   /* constants */
@@ -44,7 +44,6 @@
   const MENU_TAB_GROUP_RELOAD = "sidebar-tabs-menu-tab-group-reload";
   const MENU_TAB_GROUP_UNGROUP = "sidebar-tabs-menu-tab-group-ungroup";
   const MENU_TAB_NEW_WIN_MOVE = "sidebar-tabs-menu-tab-new-win-move";
-  const MENU_TAB_NEW_WIN_NON_E10S = "sidebar-tabs-menu-tab-new-win-non-e10s";
   const MENU_TAB_PIN = "sidebar-tabs-menu-tab-pin";
   const MENU_TAB_RELOAD = "sidebar-tabs-menu-tab-reload";
   const MENU_TAB_TABS_CLOSE_END = "sidebar-tabs-menu-tab-close-end";
@@ -57,7 +56,6 @@
   const MOUSE_BUTTON_RIGHT = 2;
   const NEW_TAB = "newtab";
   const NEW_WIN_MOVE = "moveToNewWindow";
-  const NEW_WIN_NON_E10S = "openInNewNonE10sWindow";
   const PINNED = "pinned";
   const SIDEBAR_INIT = "initSidebar";
   const TAB = "tab";
@@ -233,7 +231,8 @@
    * @param {boolean} bool - bypass cache
    * @returns {void}
    */
-  const initSidebar = (bool = false) => {
+  const initSidebar = async (bool = false) => {
+    await storage.local.clear();
     window.location.reload(bool);
   };
 
@@ -866,8 +865,7 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const handleClickedContextMenu = async evt => {
-    const {target} = evt;
-    const {id} = target;
+    const {target: {id}} = evt;
     const tab = sidebar.context && sidebar.context.classList &&
                 sidebar.context.classList.contains(TAB) && sidebar.context;
     const tabId = tab && tab.dataset && tab.dataset.tabId &&
@@ -921,11 +919,10 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_COLLAPSE: {
+      case MENU_TAB_GROUP_COLLAPSE:
         tab && tab.parentNode.classList.contains(ATTR_TAB_GROUP) &&
           func.push(toggleTabCollapsed({target: tab}));
         break;
-      }
       case MENU_TAB_GROUP_RELOAD: {
         if (tab) {
           const {parentNode} = tab;
@@ -955,12 +952,6 @@
           type: "normal",
         }));
         break;
-      case MENU_TAB_NEW_WIN_NON_E10S: {
-        // FIXME:
-        const msg = `Handler for ${id} not implemented yet.`;
-        func.push(logWarn(msg));
-        break;
-      }
       case MENU_TAB_PIN: {
         if (tabsTab) {
           const {pinned} = tabsTab;
@@ -1070,14 +1061,6 @@
             [NEW_WIN_MOVE]: {
               id: MENU_TAB_NEW_WIN_MOVE,
               title: i18n.getMessage(NEW_WIN_MOVE),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
-              type: "normal",
-              enabled: false,
-              onclick: true,
-            },
-            [NEW_WIN_NON_E10S]: {
-              id: MENU_TAB_NEW_WIN_NON_E10S,
-              title: i18n.getMessage(NEW_WIN_NON_E10S),
               contexts: [ATTR_TAB, ATTR_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1321,8 +1304,8 @@
       const tab = await getSidebarTab(target);
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
-        TAB_RELOAD, AUDIO_MUTE, TAB_PIN, NEW_WIN_MOVE, NEW_WIN_NON_E10S,
-        TAB_CLOSE, TABS_CLOSE_END, TABS_CLOSE_OTHER,
+        TAB_RELOAD, AUDIO_MUTE, TAB_PIN, NEW_WIN_MOVE, TAB_CLOSE,
+        TABS_CLOSE_END, TABS_CLOSE_OTHER,
       ];
       const tabGroupMenu = menuItems.sidebarTabs.subItems[TAB_GROUP];
       const tabGroupKeys = [
@@ -1359,11 +1342,6 @@
               }
               break;
             }
-            case NEW_WIN_NON_E10S:
-              // FIXME: not implemented
-              data.enabled = false;
-              data.title = title;
-              break;
             case TABS_CLOSE_END: {
               if (tabsTab.pinned) {
                 data.enabled = false;
@@ -1497,7 +1475,7 @@
               `${TAB_QUERY}:not(.${PINNED})`
             );
             if (items && items.length > 1) {
-                data.enabled = true;
+              data.enabled = true;
             } else {
               data.enabled = false;
             }

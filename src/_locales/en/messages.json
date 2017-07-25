@@ -77,9 +77,6 @@
   "newTabButton_tooltip": {
     "message": "Open a new tab"
   },
-  "openInNewNonE10sWindow": {
-    "message": "Open in new non-e10s window"
-  },
   "pinTab": {
     "message": "Pin Tab"
   },
