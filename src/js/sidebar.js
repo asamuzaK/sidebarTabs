@@ -739,7 +739,6 @@
             nextElementSibling: dropParentNextElement,
           } = dropParent;
           const {parentNode: tabParent} = tab;
-          const index = getSidebarTabIndex(dropTarget);
           if (dropParentNextElement === tabParent && dropParentChild === 1 &&
               ctrlKey) {
             dropParent.appendChild(tab);
@@ -753,10 +752,13 @@
                 break;
               default:
             }
-          } else if (Number.isInteger(index)) {
+          } else {
+            const dropIndex = getSidebarTabIndex(dropTarget);
+            const tabIndex = getSidebarTabIndex(tab);
+            const index = tabIndex >= dropIndex && dropIndex + 1 || dropIndex;
             tab.dataset.group = !!ctrlKey;
             moveTab(id * 1, {
-              index: index + 1,
+              index,
               windowId: sidebar.windowId,
             });
           }
@@ -1749,7 +1751,7 @@
           target.parentNode.insertBefore(container, target);
         }
       } else {
-        const target = items[toIndex - 1];
+        const target = items[fromIndex >= toIndex && toIndex - 1 || toIndex];
         const {nextElementSibling, parentNode} = target;
         const unPinned =
           toIndex > fromIndex &&
@@ -1820,7 +1822,7 @@
     const items = await tabs.query({windowId: windows.WINDOW_ID_CURRENT});
     const func = [];
     for (const item of items) {
-      func.push(handleCreatedTab(item));
+      func.push(handleCreatedTab(item).then(restoreTabContainers));
     }
     return Promise.all(func);
   };

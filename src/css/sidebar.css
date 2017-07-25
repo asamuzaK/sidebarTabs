@@ -70,9 +70,6 @@ main {
   height: 100vh;
   overflow-y: auto;
 }
-[draggable] {
-  user-select: none;
-}
 
 /* tab-container */
 .tab-container {
@@ -99,6 +96,8 @@ main {
   height: var(--tab-height);
   transition: margin-top 0.1s, height 0.1s, border-top-width 0.1s,
               border-bottom-width 0.1s;
+  -moz-user-select: none;
+  user-select: none;
   z-index: 2;
 }
 .tab.active {
