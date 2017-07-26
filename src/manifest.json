@@ -9,8 +9,8 @@
   "description": "__MSG_extensionDescription__",
   "homepage_url": "https://github.com/asamuzaK/sidebarTabs",
   "icons": {
-    "32": "img/icon.svg#gray",
-    "64": "img/icon.svg"
+    "32": "icon.svg",
+    "64": "icon.svg"
   },
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
@@ -29,9 +29,9 @@
   "short_name": "__MSG_extensionShortName__",
   "sidebar_action": {
     "browser_style": false,
-    "default_icon": "img/icon.svg#gray",
+    "default_icon": "icon.svg",
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "0.1.0"
+  "version": "0.3.0"
 }
