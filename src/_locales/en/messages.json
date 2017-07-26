@@ -101,6 +101,9 @@
   "sendToAllDevices": {
     "message": "Send to all devices"
   },
+  "syncTab": {
+    "message": "Sync Tab"
+  },
   "tab": {
     "message": "Tab"
   },

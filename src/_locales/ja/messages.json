@@ -99,7 +99,10 @@
     "message": "タブを端末に送る"
   },
   "sendToAllDevices": {
-    "message": "Send to all devices"
+    "message": "すべての端末に送る"
+  },
+  "syncTab": {
+    "message": "タブを同期"
   },
   "tab": {
     "message": "タブ"

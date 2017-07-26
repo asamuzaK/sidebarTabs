@@ -46,6 +46,7 @@
   const MENU_TAB_NEW_WIN_MOVE = "sidebar-tabs-menu-tab-new-win-move";
   const MENU_TAB_PIN = "sidebar-tabs-menu-tab-pin";
   const MENU_TAB_RELOAD = "sidebar-tabs-menu-tab-reload";
+  const MENU_TAB_SYNC = "sidebar-tabs-menu-tab-sync";
   const MENU_TAB_TABS_CLOSE_END = "sidebar-tabs-menu-tab-close-end";
   const MENU_TAB_TABS_CLOSE_OTHER = "sidebar-tabs-menu-tab-close-other";
   const MENU_THEME_DARK = "sidebar-tabs-menu-sidebar-theme-dark";
@@ -73,6 +74,7 @@
   const TAB_PIN = "pinTab";
   const TAB_PIN_UNPIN = "unpinTab";
   const TAB_RELOAD = "reloadTab";
+  const TAB_SYNC = "syncTab";
   const THEME = "theme";
   const THEME_DARK = "darkTheme";
   const THEME_DARK_ID = "firefox-compact-dark@mozilla.org@personas.mozilla.org";
@@ -405,7 +407,10 @@
    * create new tab
    * @returns {AsyncFunction} - createTab()
    */
-  const createNewTab = async () => createTab({windowId: sidebar.windowId});
+  const createNewTab = async () => createTab({
+    active: true,
+    windowId: sidebar.windowId,
+  });
 
   /**
    * add new tab click listener
@@ -969,7 +974,336 @@
     return Promise.all(func);
   };
 
+  /* tabs event handlers */
+  /**
+   * handle activated tab
+   * @param {!Object} info - activated info
+   * @returns {void}
+   */
+  const handleActivatedTab = async info => {
+    const {tabId, windowId} = info;
+    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+      if (tab) {
+        const {
+          classList: newClass, parentNode: {classList: newParentClass},
+        } = tab;
+        const items = document.querySelectorAll(
+          `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
+        );
+        for (const item of items) {
+          const {
+            classList: oldClass, parentNode: {classList: oldParentClass},
+          } = item;
+          oldClass.remove(ACTIVE);
+          oldParentClass.remove(ACTIVE);
+        }
+        newParentClass.add(ACTIVE);
+        newClass.add(ACTIVE);
+      }
+    }
+  };
+
+  /**
+   * handle created tab
+   * @param {Object} tabsTab - tabs.Tab
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const handleCreatedTab = async tabsTab => {
+    const {
+      active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo, pinned,
+      status, title, windowId,
+    } = tabsTab;
+    const {muted} = mutedInfo;
+    const func = [];
+    if (windowId === sidebar.windowId && id !== tabs.TAB_ID_NONE) {
+      const tab = await getTemplate(CLASS_TAB_TMPL);
+      const tabItems = [
+        `.${TAB}`, `.${CLASS_TAB_CONTEXT}`, `.${CLASS_TAB_TOGGLE_ICON}`,
+        `.${CLASS_TAB_CONTENT}`, `.${CLASS_TAB_ICON}`, `.${CLASS_TAB_TITLE}`,
+        `.${CLASS_TAB_AUDIO}`, `.${CLASS_TAB_AUDIO_ICON}`,
+        `.${CLASS_TAB_CLOSE}`, `.${CLASS_TAB_CLOSE_ICON}`,
+      ];
+      const items = tab.querySelectorAll(tabItems.join(","));
+      const list = document.querySelectorAll(TAB_QUERY);
+      const listIdx = list[index];
+      const listIdxPrev = index > 0 && list[index - 1];
+      let container;
+      for (const item of items) {
+        const {classList} = item;
+        if (classList.contains(CLASS_TAB_CONTEXT)) {
+          item.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
+          func.push(addTabContextClickListener(item));
+        } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
+          item.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
+        } else if (classList.contains(CLASS_TAB_CONTENT)) {
+          item.title = title;
+        } else if (classList.contains(CLASS_TAB_ICON)) {
+          item.alt = title;
+          func.push(
+            setTabIcon(item, {status, title, favIconUrl}),
+            addTabIconErrorListener(item),
+          );
+        } else if (classList.contains(CLASS_TAB_TITLE)) {
+          item.textContent = title;
+        } else if (classList.contains(CLASS_TAB_AUDIO)) {
+          if (audible || muted) {
+            classList.add(AUDIBLE);
+          } else {
+            classList.remove(AUDIBLE);
+          }
+          func.push(
+            setTabAudio(item, {audible, muted}),
+            addTabAudioClickListener(item),
+          );
+        } else if (classList.contains(CLASS_TAB_AUDIO_ICON)) {
+          func.push(setTabAudioIcon(item, {audible, muted}));
+        } else if (classList.contains(CLASS_TAB_CLOSE)) {
+          item.title = i18n.getMessage(`${TAB_CLOSE}_tooltip`);
+          func.push(addTabCloseClickListener(item));
+        } else if (classList.contains(CLASS_TAB_CLOSE_ICON)) {
+          item.alt = i18n.getMessage(`${TAB_CLOSE}`);
+        }
+        func.push(addTabClickListener(item));
+      }
+      tab.dataset.tabId = id;
+      tab.dataset.tab = JSON.stringify(tabsTab);
+      if (cookieStoreId) {
+        const ident = await contextualIdentities.get(cookieStoreId);
+        if (ident) {
+          const {color} = ident;
+          tab.style.borderColor = color;
+        }
+      }
+      if (pinned) {
+        container = document.getElementById(PINNED);
+        tab.classList.add(PINNED);
+        tab.removeAttribute("draggable");
+        if (container.children[index]) {
+          container.insertBefore(tab, container.children[index]);
+        } else {
+          container.appendChild(tab);
+        }
+        container.childElementCount > 1 &&
+          container.classList.add(CLASS_TAB_GROUP);
+      } else if (list.length !== index && listIdx && listIdx.parentNode &&
+                 listIdx.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listIdxPrev && listIdxPrev.parentNode &&
+                 listIdxPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listIdx.parentNode === listIdxPrev.parentNode) {
+        container = listIdx.parentNode;
+        container.insertBefore(tab, listIdx);
+      } else {
+        let target;
+        if (list.length !== index && listIdx && listIdx.parentNode) {
+          target = listIdx.parentNode;
+        } else {
+          target = document.getElementById(NEW_TAB);
+        }
+        await addDragEventListener(tab);
+        container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+        container.appendChild(tab);
+        target.parentNode.insertBefore(container, target);
+      }
+    }
+    active && func.push(handleActivatedTab({tabId: id, windowId}));
+    return Promise.all(func);
+  };
+
+  /**
+   * handle attached tab
+   * @param {number} tabId - tab ID
+   * @param {Object} info - attached tab info
+   * @returns {?AsyncFunction} - tabs.Tab
+   */
+  const handleAttachedTab = async (tabId, info) => {
+    const {newPosition, newWindowId} = info;
+    let func;
+    if (newWindowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+      const tabsTab = await tabs.get(tabId);
+      if (tabsTab) {
+        tabsTab.index = newPosition;
+        func = handleCreatedTab(tabsTab);
+      }
+    }
+    return func || null;
+  };
+
+  /**
+   * handle updated tab
+   * Note: Occurs frequently, so it should not be async.
+   * @param {number} tabId - tab ID
+   * @param {Object} info - updated tab info
+   * @param {Object} tabsTab - tabs.Tab
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const handleUpdatedTab = (tabId, info, tabsTab) => {
+    const {windowId} = tabsTab;
+    const func = [];
+    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+      if (tab) {
+        const {favIconUrl, status, title} = tabsTab;
+        const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
+        const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
+        const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
+        tabContent && (tabContent.title = title);
+        tabTitle && (tabTitle.textContent = title);
+        // Note: Don't push to Promise array
+        tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
+        if (info.hasOwnProperty("audible") ||
+            info.hasOwnProperty("mutedInfo")) {
+          const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
+          const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
+          const {muted} = tabsTab.mutedInfo;
+          const {audible} = tabsTab;
+          const opt = {audible, muted};
+          if (tabAudio) {
+            if (audible || muted) {
+              tabAudio.classList.add(AUDIBLE);
+            } else {
+              tabAudio.classList.remove(audible);
+            }
+            func.push(setTabAudio(tabAudio, opt));
+          }
+          tabAudioIcon && func.push(setTabAudioIcon(tabAudioIcon, opt));
+        }
+        if (info.hasOwnProperty("pinned")) {
+          const pinnedContainer = document.getElementById(PINNED);
+          if (info.pinned) {
+            const container = pinnedContainer;
+            tab.classList.add(PINNED);
+            tab.removeAttribute("draggable");
+            container.appendChild(tab);
+            func.push(restoreTabContainers());
+          } else {
+            const {
+              nextElementSibling: pinnedNextElement,
+              parentNode: pinnedParentNode,
+            } = pinnedContainer;
+            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            tab.classList.remove(PINNED);
+            tab.setAttribute("draggable", "true");
+            func.push(addDragEventListener(tab));
+            container.appendChild(tab);
+            pinnedParentNode.insertBefore(container, pinnedNextElement);
+            func.push(restoreTabContainers());
+          }
+        }
+        tab.dataset.tab = JSON.stringify(tabsTab);
+      }
+    }
+    return Promise.all(func).catch(logError);
+  };
+
+  /**
+   * handle moved tab
+   * @param {!number} tabId - tab ID
+   * @param {!Object} info - moved info
+   * @returns {void}
+   */
+  const handleMovedTab = async (tabId, info) => {
+    const {fromIndex, toIndex, windowId} = info;
+    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+      const items = document.querySelectorAll(TAB_QUERY);
+      if (toIndex === 0) {
+        const tabsTab = await tabs.get(tabId);
+        const {pinned} = tabsTab;
+        if (pinned) {
+          const container = document.getElementById(PINNED);
+          const {firstElementChild} = container;
+          container.insertBefore(tab, firstElementChild);
+        } else {
+          const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+          const [target] = items;
+          container.appendChild(tab);
+          target.parentNode.insertBefore(container, target);
+        }
+      } else {
+        const target = items[fromIndex >= toIndex && toIndex - 1 || toIndex];
+        const {nextElementSibling, parentNode} = target;
+        const unPinned =
+          toIndex > fromIndex &&
+          items[fromIndex].parentNode.classList.contains(PINNED) &&
+          items[toIndex].parentNode.classList.contains(PINNED) &&
+          items[toIndex] === items[toIndex].parentNode.lastElementChild;
+        let {dataset: {group}} = tab;
+        group = group === "true" && true || false;
+        if (!group && parentNode.childElementCount === 1 || unPinned) {
+          const {
+            nextElementSibling: parentNextElementSibling,
+            parentNode: parentParentNode,
+          } = parentNode;
+          const frag = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+          if (frag) {
+            frag.appendChild(tab);
+            if (parentNextElementSibling) {
+              parentParentNode.insertBefore(frag, parentNextElementSibling);
+            } else {
+              const newtab = document.getElementById(NEW_TAB);
+              parentParentNode.insertBefore(frag, newtab);
+            }
+          }
+        } else if (nextElementSibling) {
+          parentNode.insertBefore(tab, nextElementSibling);
+        } else {
+          parentNode.appendChild(tab);
+        }
+      }
+      tab.dataset.group = null;
+    }
+  };
+
+  /**
+   * handle detached tab
+   * @param {number} tabId - tab ID
+   * @param {Object} info - detached tab info
+   * @returns {void}
+   */
+  const handleDetachedTab = async (tabId, info) => {
+    const {oldWindowId} = info;
+    if (oldWindowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+      tab && tab.parentNode.removeChild(tab);
+    }
+  };
+
+  /**
+   * handle removed tab
+   * @param {number} tabId - tab ID
+   * @param {Object} info - removed tab info
+   * @returns {void}
+   */
+  const handleRemovedTab = async (tabId, info) => {
+    const {isWindowClosing, windowId} = info;
+    if (windowId === sidebar.windowId && !isWindowClosing &&
+        tabId !== tabs.TAB_ID_NONE) {
+      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+      tab && tab.parentNode.removeChild(tab);
+    }
+  };
+
   /* context menus */
+  /**
+   * sync tab
+   * @param {number} tabId - tab ID
+   * @returns {?Function} - handleUpdatedTab()
+   */
+  const syncTab = async tabId => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}`);
+    }
+    let func;
+    const tabsTab = await tabs.get(tabId);
+    if (tabsTab) {
+      const {favIconUrl, status, title} = tabsTab;
+      const info = {favIconUrl, status, title};
+      func = handleUpdatedTab(tabId, info, tabsTab);
+    }
+    return func || null;
+  };
+
   /**
    * handle context menu click
    * @param {!Object} evt - event
@@ -992,23 +1326,19 @@
         const items = document.querySelectorAll(
           `${TAB_QUERY}:not(.${PINNED})`
         );
-        if (items && items.length > 1) {
-          for (const item of items) {
-            const itemTab = item.dataset && item.dataset.tab &&
-                            JSON.parse(item.dataset.tab);
-            const {title, url} = itemTab;
-            func.push(bookmarkTab({title, url}));
-          }
+        for (const item of items) {
+          const itemTab = item.dataset && item.dataset.tab &&
+                          JSON.parse(item.dataset.tab);
+          const {title, url} = itemTab;
+          func.push(bookmarkTab({title, url}));
         }
         break;
       }
       case MENU_TABS_RELOAD_ALL: {
         const items = document.querySelectorAll(TAB_QUERY);
-        if (items && items.length) {
-          for (const item of items) {
-            const itemId = item && item.dataset && item.dataset.tabId * 1;
-            Number.isInteger(itemId) && func.push(reloadTab(itemId));
-          }
+        for (const item of items) {
+          const itemId = item && item.dataset && item.dataset.tabId * 1;
+          Number.isInteger(itemId) && func.push(reloadTab(itemId));
         }
         break;
       }
@@ -1039,11 +1369,9 @@
           const {parentNode} = tab;
           if (parentNode.classList.contains(CLASS_TAB_GROUP)) {
             const items = parentNode.querySelectorAll(TAB_QUERY);
-            if (items && items.length) {
-              for (const item of items) {
-                const itemId = item && item.dataset && item.dataset.tabId * 1;
-                Number.isInteger(itemId) && func.push(reloadTab(itemId));
-              }
+            for (const item of items) {
+              const itemId = item && item.dataset && item.dataset.tabId * 1;
+              Number.isInteger(itemId) && func.push(reloadTab(itemId));
             }
           }
         }
@@ -1073,14 +1401,17 @@
       case MENU_TAB_RELOAD:
         Number.isInteger(tabId) && func.push(reloadTab(tabId));
         break;
+      case MENU_TAB_SYNC:
+        Number.isInteger(tabId) && func.push(syncTab(tabId));
+        break;
       case MENU_TAB_TABS_CLOSE_END: {
         if (Number.isInteger(tabId)) {
           const index = tabsTab && tabsTab.index && tabsTab.index * 1;
-          const items = document.querySelectorAll(
-            `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
-          );
           const arr = [];
-          if (items && items.length && Number.isInteger(index)) {
+          if (Number.isInteger(index)) {
+            const items = document.querySelectorAll(
+              `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
+            );
             for (const item of items) {
               const {dataset} = item;
               const itemId = dataset && dataset.tabId && dataset.tabId * 1;
@@ -1095,18 +1426,18 @@
         break;
       }
       case MENU_TAB_TABS_CLOSE_OTHER: {
-        const items = Number.isInteger(tabId) && document.querySelectorAll(
-          `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
-        );
-        const arr = [];
-        if (items && items.length) {
+        if (Number.isInteger(tabId)) {
+          const items = document.querySelectorAll(
+            `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
+          );
+          const arr = [];
           for (const item of items) {
             const {dataset} = item;
             const itemId = dataset && dataset.tabId && dataset.tabId * 1;
             Number.isInteger(itemId) && arr.push(itemId);
           }
+          arr.length && func.push(removeTab(arr));
         }
-        arr.length && func.push(removeTab(arr));
         break;
       }
       case MENU_THEME_DARK:
@@ -1146,6 +1477,14 @@
             [TAB_RELOAD]: {
               id: MENU_TAB_RELOAD,
               title: i18n.getMessage(TAB_RELOAD),
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
+            [TAB_SYNC]: {
+              id: MENU_TAB_SYNC,
+              title: i18n.getMessage(TAB_SYNC),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1415,7 +1754,7 @@
       const tab = await getSidebarTab(target);
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
-        TAB_RELOAD, AUDIO_MUTE, TAB_PIN, NEW_WIN_MOVE, TAB_CLOSE,
+        TAB_RELOAD, TAB_SYNC, AUDIO_MUTE, TAB_PIN, NEW_WIN_MOVE, TAB_CLOSE,
         TABS_CLOSE_END, TABS_CLOSE_OTHER,
       ];
       const tabGroupMenu = menuItems.sidebarTabs.subItems[TAB_GROUP];
@@ -1459,7 +1798,7 @@
               } else {
                 const index = getSidebarTabIndex(tab);
                 const obj = document.querySelectorAll(TAB_QUERY);
-                if (obj && obj.length - 1 > index) {
+                if (obj.length - 1 > index) {
                   data.enabled = true;
                 } else {
                   data.enabled = false;
@@ -1585,7 +1924,7 @@
             const items = document.querySelectorAll(
               `${TAB_QUERY}:not(.${PINNED})`
             );
-            if (items && items.length > 1) {
+            if (items.length > 1) {
               data.enabled = true;
             } else {
               data.enabled = false;
@@ -1609,312 +1948,6 @@
       }
     }
     return Promise.all(func);
-  };
-
-  /* tabs event handlers */
-  /**
-   * handle activated tab
-   * @param {!Object} info - activated info
-   * @returns {void}
-   */
-  const handleActivatedTab = async info => {
-    const {tabId, windowId} = info;
-    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
-      const newActiveTab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      const oldActiveTab = document.querySelector(`.${CLASS_TAB}.${ACTIVE}`);
-      if (newActiveTab && oldActiveTab && newActiveTab !== oldActiveTab) {
-        const {
-          classList: newClassList, parentNode: {classList: newParentClassList},
-        } = newActiveTab;
-        const {
-          classList: oldClassList, parentNode: {classList: oldParentClassList},
-        } = oldActiveTab;
-        oldClassList.remove(ACTIVE);
-        oldParentClassList.remove(ACTIVE);
-        newParentClassList.add(ACTIVE);
-        newClassList.add(ACTIVE);
-      }
-    }
-  };
-
-  /**
-   * handle created tab
-   * @param {Object} tabsTab - tabs.Tab
-   * @returns {Promise.<Array>} - results of each handler
-   */
-  const handleCreatedTab = async tabsTab => {
-    const {
-      active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo, pinned,
-      status, title, windowId,
-    } = tabsTab;
-    const {muted} = mutedInfo;
-    const func = [];
-    if (windowId === sidebar.windowId && id !== tabs.TAB_ID_NONE) {
-      const tab = await getTemplate(CLASS_TAB_TMPL);
-      const tabItems = [
-        `.${TAB}`, `.${CLASS_TAB_CONTEXT}`, `.${CLASS_TAB_TOGGLE_ICON}`,
-        `.${CLASS_TAB_CONTENT}`, `.${CLASS_TAB_ICON}`, `.${CLASS_TAB_TITLE}`,
-        `.${CLASS_TAB_AUDIO}`, `.${CLASS_TAB_AUDIO_ICON}`,
-        `.${CLASS_TAB_CLOSE}`, `.${CLASS_TAB_CLOSE_ICON}`,
-      ];
-      const items = tab.querySelectorAll(tabItems.join(","));
-      const list = document.querySelectorAll(TAB_QUERY);
-      const listIdx = list && list[index];
-      const listIdxPrev = list && index > 0 && list[index - 1];
-      let container;
-      for (const item of items) {
-        const {classList} = item;
-        if (classList.contains(CLASS_TAB_CONTEXT)) {
-          item.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-          func.push(addTabContextClickListener(item));
-        } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
-          item.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
-        } else if (classList.contains(CLASS_TAB_CONTENT)) {
-          item.title = title;
-        } else if (classList.contains(CLASS_TAB_ICON)) {
-          item.alt = title;
-          func.push(
-            setTabIcon(item, {status, title, favIconUrl}),
-            addTabIconErrorListener(item),
-          );
-        } else if (classList.contains(CLASS_TAB_TITLE)) {
-          item.textContent = title;
-        } else if (classList.contains(CLASS_TAB_AUDIO)) {
-          if (audible || muted) {
-            classList.add(AUDIBLE);
-          } else {
-            classList.remove(AUDIBLE);
-          }
-          func.push(
-            setTabAudio(item, {audible, muted}),
-            addTabAudioClickListener(item),
-          );
-        } else if (classList.contains(CLASS_TAB_AUDIO_ICON)) {
-          func.push(setTabAudioIcon(item, {audible, muted}));
-        } else if (classList.contains(CLASS_TAB_CLOSE)) {
-          item.title = i18n.getMessage(`${TAB_CLOSE}_tooltip`);
-          func.push(addTabCloseClickListener(item));
-        } else if (classList.contains(CLASS_TAB_CLOSE_ICON)) {
-          item.alt = i18n.getMessage(`${TAB_CLOSE}`);
-        }
-        func.push(addTabClickListener(item));
-      }
-      tab.dataset.tabId = id;
-      tab.dataset.tab = JSON.stringify(tabsTab);
-      active && tab.classList.add(ACTIVE);
-      if (cookieStoreId) {
-        const ident = await contextualIdentities.get(cookieStoreId);
-        if (ident) {
-          const {color} = ident;
-          tab.style.borderColor = color;
-        }
-      }
-      if (pinned) {
-        container = document.getElementById(PINNED);
-        tab.classList.add(PINNED);
-        tab.removeAttribute("draggable");
-        if (container.children[index]) {
-          container.insertBefore(tab, container.children[index]);
-        } else {
-          container.appendChild(tab);
-        }
-        container.childElementCount > 1 &&
-          container.classList.add(CLASS_TAB_GROUP);
-      } else if (list.length !== index && listIdx && listIdx.parentNode &&
-                 listIdx.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-                 listIdxPrev && listIdxPrev.parentNode &&
-                 listIdxPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-                 listIdx.parentNode === listIdxPrev.parentNode) {
-        container = listIdx.parentNode;
-        container.insertBefore(tab, listIdx);
-      } else {
-        let target;
-        if (list.length !== index && listIdx && listIdx.parentNode) {
-          target = listIdx.parentNode;
-        } else {
-          target = document.getElementById(NEW_TAB);
-        }
-        await addDragEventListener(tab);
-        container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        container.appendChild(tab);
-        target.parentNode.insertBefore(container, target);
-      }
-    }
-    return Promise.all(func);
-  };
-
-  /**
-   * handle attached tab
-   * @param {number} tabId - tab ID
-   * @param {Object} info - attached tab info
-   * @returns {?AsyncFunction} - tabs.Tab
-   */
-  const handleAttachedTab = async (tabId, info) => {
-    const {newPosition, newWindowId} = info;
-    let func;
-    if (newWindowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
-      const tabsTab = await tabs.get(tabId);
-      if (tabsTab) {
-        tabsTab.index = newPosition;
-        func = handleCreatedTab(tabsTab);
-      }
-    }
-    return func || null;
-  };
-
-  /**
-   * handle updated tab
-   * Note: Occurs frequently, so it should not be async.
-   * @param {number} tabId - tab ID
-   * @param {Object} info - updated tab info
-   * @param {Object} tabsTab - tabs.Tab
-   * @returns {Promise.<Array>} - results of each handler
-   */
-  const handleUpdatedTab = (tabId, info, tabsTab) => {
-    const {windowId} = tabsTab;
-    const func = [];
-    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
-      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      if (tab) {
-        const {favIconUrl, status, title} = tabsTab;
-        const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
-        const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
-        const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
-        tabContent && (tabContent.title = title);
-        tabTitle && (tabTitle.textContent = title);
-        // Note: Don't push to Promise array
-        tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
-        if (info.hasOwnProperty("audible") ||
-            info.hasOwnProperty("mutedInfo")) {
-          const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
-          const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
-          const {muted} = tabsTab.mutedInfo;
-          const {audible} = tabsTab;
-          const opt = {audible, muted};
-          if (tabAudio) {
-            if (audible || muted) {
-              tabAudio.classList.add(AUDIBLE);
-            } else {
-              tabAudio.classList.remove(audible);
-            }
-            func.push(setTabAudio(tabAudio, opt));
-          }
-          tabAudioIcon && func.push(setTabAudioIcon(tabAudioIcon, opt));
-        }
-        if (info.hasOwnProperty("pinned")) {
-          const pinnedContainer = document.getElementById(PINNED);
-          if (info.pinned) {
-            const container = pinnedContainer;
-            tab.classList.add(PINNED);
-            tab.removeAttribute("draggable");
-            container.appendChild(tab);
-            func.push(restoreTabContainers());
-          } else {
-            const {
-              nextElementSibling: pinnedNextElement,
-              parentNode: pinnedParentNode,
-            } = pinnedContainer;
-            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-            tab.classList.remove(PINNED);
-            tab.setAttribute("draggable", "true");
-            func.push(addDragEventListener(tab));
-            container.appendChild(tab);
-            pinnedParentNode.insertBefore(container, pinnedNextElement);
-            func.push(restoreTabContainers());
-          }
-        }
-        tab.dataset.tab = JSON.stringify(tabsTab);
-      }
-    }
-    return Promise.all(func).catch(logError);
-  };
-
-  /**
-   * handle moved tab
-   * @param {!number} tabId - tab ID
-   * @param {!Object} info - moved info
-   * @returns {void}
-   */
-  const handleMovedTab = async (tabId, info) => {
-    const {fromIndex, toIndex, windowId} = info;
-    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
-      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (toIndex === 0) {
-        const tabsTab = await tabs.get(tabId);
-        const {pinned} = tabsTab;
-        if (pinned) {
-          const container = document.getElementById(PINNED);
-          const {firstElementChild} = container;
-          container.insertBefore(tab, firstElementChild);
-        } else {
-          const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-          const [target] = items;
-          container.appendChild(tab);
-          target.parentNode.insertBefore(container, target);
-        }
-      } else {
-        const target = items[fromIndex >= toIndex && toIndex - 1 || toIndex];
-        const {nextElementSibling, parentNode} = target;
-        const unPinned =
-          toIndex > fromIndex &&
-          items[fromIndex].parentNode.classList.contains(PINNED) &&
-          items[toIndex].parentNode.classList.contains(PINNED) &&
-          items[toIndex] === items[toIndex].parentNode.lastElementChild;
-        let {dataset: {group}} = tab;
-        group = group === "true" && true || false;
-        if (!group && parentNode.childElementCount === 1 || unPinned) {
-          const {
-            nextElementSibling: parentNextElementSibling,
-            parentNode: parentParentNode,
-          } = parentNode;
-          const frag = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-          if (frag) {
-            frag.appendChild(tab);
-            if (parentNextElementSibling) {
-              parentParentNode.insertBefore(frag, parentNextElementSibling);
-            } else {
-              const newtab = document.getElementById(NEW_TAB);
-              parentParentNode.insertBefore(frag, newtab);
-            }
-          }
-        } else if (nextElementSibling) {
-          parentNode.insertBefore(tab, nextElementSibling);
-        } else {
-          parentNode.appendChild(tab);
-        }
-      }
-      tab.dataset.group = null;
-    }
-  };
-
-  /**
-   * handle detached tab
-   * @param {number} tabId - tab ID
-   * @param {Object} info - detached tab info
-   * @returns {void}
-   */
-  const handleDetachedTab = async (tabId, info) => {
-    const {oldWindowId} = info;
-    if (oldWindowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
-      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      tab && tab.parentNode.removeChild(tab);
-    }
-  };
-
-  /**
-   * handle removed tab
-   * @param {number} tabId - tab ID
-   * @param {Object} info - removed tab info
-   * @returns {void}
-   */
-  const handleRemovedTab = async (tabId, info) => {
-    const {isWindowClosing, windowId} = info;
-    if (windowId === sidebar.windowId && !isWindowClosing &&
-        tabId !== tabs.TAB_ID_NONE) {
-      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      tab && tab.parentNode.removeChild(tab);
-    }
   };
 
   /* listeners */
