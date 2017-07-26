@@ -605,20 +605,20 @@
    * @returns {void}
    */
   const setFavicon = async (elm, favIconUrl) => {
-    if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
-        isString(favIconUrl)) {
-      elm.src = await fetch(favIconUrl).then(res => {
-        let url;
-        if (res.ok) {
-          url = favIconUrl;
-        } else {
-          url = URL_DEFAULT_FAVICON;
-        }
-        return url;
-      }).catch(e => {
-        console.error(e);
-        return URL_DEFAULT_FAVICON;
-      });
+    if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
+      elm.src = URL_DEFAULT_FAVICON;
+      if (isString(favIconUrl)) {
+        const src = await fetch(favIconUrl).then(res => {
+          let url;
+          if (res.ok) {
+            url = favIconUrl;
+          } else {
+            url = URL_DEFAULT_FAVICON;
+          }
+          return url;
+        }).catch(() => URL_DEFAULT_FAVICON);
+        src && (elm.src = src);
+      }
     }
   };
 
