@@ -1764,6 +1764,7 @@
 
   /**
    * handle updated tab
+   * Note: Occurs frequently, so it should not be async.
    * @param {number} tabId - tab ID
    * @param {Object} info - updated tab info
    * @param {Object} tabsTab - tabs.Tab
@@ -1942,6 +1943,7 @@
     handleRemovedTab(tabId, info).then(restoreTabContainers)
       .then(getLastClosedTab).catch(logError)
   );
+  // Note: Occurs frequently, so handler should not be async.
   tabs.onUpdated.addListener(handleUpdatedTab);
 
   /* start up */
