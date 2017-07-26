@@ -579,12 +579,12 @@
   /**
    * tab icon fallback
    * @param {!Object} evt - event
-   * @returns {Function} - logError()
+   * @returns {boolean} - false
    */
   const tabIconFallback = evt => {
     const {target} = evt;
     target.hasOwnProperty("src") && (target.src = URL_DEFAULT_FAVICON);
-    return logError(evt);
+    return false;
   };
 
   /**
@@ -616,7 +616,17 @@
         }
       } else if (status === "complete") {
         if (favIconUrl) {
-          elm.src = favIconUrl;
+          elm.src = await fetch(favIconUrl).then(res => {
+            let url;
+            if (res.ok) {
+              url = favIconUrl;
+            } else {
+              url = URL_DEFAULT_FAVICON;
+            }
+            return url;
+          }).catch(e => {
+            return URL_DEFAULT_FAVICON;
+          });
         } else {
           elm.src = URL_DEFAULT_FAVICON;
         }
