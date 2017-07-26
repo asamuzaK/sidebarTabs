@@ -25,3 +25,7 @@ Firefox用の拡張機能。
   visibility: collapse !important;
 }
 ```
+
+## タブをグループ化する
+
+タブを「Ctrl + 左クリック」でドラッグして、グループ化したいタブの上にドロップします。

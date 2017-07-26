@@ -25,3 +25,7 @@ Create `chrome/` folder in your profile and save `userChrome.css`.
   visibility: collapse !important;
 }
 ```
+
+## Grouping tabs
+
+Drag the tab with "Ctrl + left click" and drop it on the tab you want to group.
