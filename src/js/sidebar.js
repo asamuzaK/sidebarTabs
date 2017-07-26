@@ -1926,7 +1926,6 @@
    * @returns {void}
    */
   const restoreTabGroup = async () => {
-    // FIXME:
     const {tab: storedTab} = await storage.local.get(TAB);
     if (storedTab) {
       const {tab, group: groups} = storedTab;
