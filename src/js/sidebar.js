@@ -1786,9 +1786,8 @@
           const {favIconUrl, status, title} = tabsTab;
           tabContent && (tabContent.title = title);
           tabTitle && (tabTitle.textContent = title);
-          tabIcon && func.push(setTabIcon(tabIcon, {
-            favIconUrl, status, title,
-          }));
+          // Note: Don't push to Promise array
+          tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
         }
         if (info.hasOwnProperty("audible") ||
             info.hasOwnProperty("mutedInfo")) {
