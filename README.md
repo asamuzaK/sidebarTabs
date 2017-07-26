@@ -8,6 +8,8 @@ Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and
 Note:
 Experimental. It is not suitable for general use.
 
+[Download](https://github.com/asamuzaK/sidebarTabs/tree/master/dist "sidebarTabs/dist at master · asamuzaK/sidebarTabs")
+
 ## about:config
 
 * set `svg.context-properties.content.enabled` to `true`.
@@ -16,7 +18,7 @@ Experimental. It is not suitable for general use.
 ## Hide default tab bar
 
 Create `chrome/` folder in your profile and save `userChrome.css`.
-```css:sample
+```
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 /* tabs toolbar */
 #TabsToolbar {

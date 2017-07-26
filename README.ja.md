@@ -8,6 +8,8 @@ Firefox用の拡張機能。
 注意：
 実験的な拡張機能です。一般の利用には適していません。
 
+[ダウンロード](https://github.com/asamuzaK/sidebarTabs/tree/master/dist "sidebarTabs/dist at master · asamuzaK/sidebarTabs")
+
 ## about:config
 
 * `svg.context-properties.content.enabled`を`true`にセットする必要があります。
@@ -16,7 +18,7 @@ Firefox用の拡張機能。
 ## デフォルトのタブバーを隠す
 
 プロファイルに`chrome/`フォルダを作成し、`userChrome.css`を保存します。
-```css:サンプル
+```
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 /* tabs toolbar */
 #TabsToolbar {
