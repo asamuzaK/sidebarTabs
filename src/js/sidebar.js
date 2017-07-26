@@ -1617,13 +1617,6 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const handleCreatedTab = async tabsTab => {
-    /*
-     * {
-     *   active, audible, autoDiscardable, cookieStoreId, discarded, favIconUrl,
-     *   highlighted, height, id, incognito, index, mutedInfo, openerTabId,
-     *   pinned, selected, sessionId, status, title, url, width, windowId
-     * } = tabsTab
-     */
     const {
       active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo, pinned,
       status, title, windowId,
@@ -1639,6 +1632,10 @@
         `.${CLASS_TAB_CLOSE}`, `.${CLASS_TAB_CLOSE_ICON}`,
       ];
       const items = tab.querySelectorAll(tabItems.join(","));
+      const list = document.querySelectorAll(TAB_QUERY);
+      const listIdx = list && list[index];
+      const listIdxPrev = list && index > 0 && list[index - 1];
+      let container;
       for (const item of items) {
         const {classList} = item;
         if (classList.contains(CLASS_TAB_CONTEXT)) {
@@ -1679,8 +1676,15 @@
       tab.dataset.tabId = id;
       tab.dataset.tab = JSON.stringify(tabsTab);
       active && tab.classList.add(ACTIVE);
+      if (cookieStoreId) {
+        const ident = await contextualIdentities.get(cookieStoreId);
+        if (ident) {
+          const {color} = ident;
+          tab.style.borderColor = color;
+        }
+      }
       if (pinned) {
-        const container = document.getElementById(PINNED);
+        container = document.getElementById(PINNED);
         tab.classList.add(PINNED);
         tab.removeAttribute("draggable");
         if (container.children[index]) {
@@ -1690,23 +1694,22 @@
         }
         container.childElementCount > 1 &&
           container.classList.add(CLASS_TAB_GROUP);
+      } else if (list.length !== index && listIdx && listIdx.parentNode &&
+                 listIdx.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listIdxPrev && listIdxPrev.parentNode &&
+                 listIdxPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listIdx.parentNode === listIdxPrev.parentNode) {
+        container = listIdx.parentNode;
+        container.insertBefore(tab, listIdx);
       } else {
-        const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        const list = document.querySelectorAll(TAB_QUERY);
         let target;
-        if (list.length !== index && list[index] && list[index].parentNode) {
-          target = list[index].parentNode;
+        if (list.length !== index && listIdx && listIdx.parentNode) {
+          target = listIdx.parentNode;
         } else {
           target = document.getElementById(NEW_TAB);
         }
-        if (cookieStoreId) {
-          const ident = await contextualIdentities.get(cookieStoreId);
-          if (ident) {
-            const {color} = ident;
-            tab.style.borderColor = color;
-          }
-        }
         await addDragEventListener(tab);
+        container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(tab);
         target.parentNode.insertBefore(container, target);
       }
