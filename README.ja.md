@@ -12,3 +12,14 @@ Firefox用の拡張機能。
 
 * `svg.context-properties.content.enabled`を`true`にセットする必要があります。
 * コンテナタブを有効化している場合は、`privacy.userContext.enabled`を`true`にセットしてください。
+
+## デフォルトのタブバーを隠す
+
+プロファイルに`chrome/`フォルダを作成し、`userChrome.css`を保存します。
+```css:サンプル
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+/* tabs toolbar */
+#TabsToolbar {
+  visibility: collapse !important;
+}
+```

@@ -12,3 +12,14 @@ Experimental. It is not suitable for general use.
 
 * set `svg.context-properties.content.enabled` to `true`.
 * If you have enabled Container Tab, set `privacy.userContext.enabled` to `true`.
+
+## Hide default tab bar
+
+Create `chrome/` folder in your profile and save `userChrome.css`.
+```css:sample
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+/* tabs toolbar */
+#TabsToolbar {
+  visibility: collapse !important;
+}
+```
