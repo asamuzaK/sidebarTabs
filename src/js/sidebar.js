@@ -9,27 +9,27 @@
 
   /* constants */
   const ACTIVE = "active";
-  const ATTR_MENU = "menu";
-  const ATTR_TAB = "tab";
-  const ATTR_TAB_AUDIO = "tab-audio";
-  const ATTR_TAB_AUDIO_ICON = "tab-audio-icon";
-  const ATTR_TAB_CLOSE = "tab-close";
-  const ATTR_TAB_CLOSE_ICON = "tab-close-icon";
-  const ATTR_TAB_COLLAPSED = "tab-collapsed";
-  const ATTR_TAB_CONTAINER = "tab-container";
-  const ATTR_TAB_CONTAINER_TMPL = "tab-container-template";
-  const ATTR_TAB_CONTENT = "tab-content";
-  const ATTR_TAB_CONTEXT = "tab-context";
-  const ATTR_TAB_GROUP = "tab-group";
-  const ATTR_TAB_ICON = "tab-icon";
-  const ATTR_TAB_TITLE = "tab-title";
-  const ATTR_TAB_TMPL = "tab-template";
-  const ATTR_TAB_TOGGLE_ICON = "tab-toggle-icon";
-  const ATTR_THEME_DARK = "dark-theme";
-  const ATTR_THEME_LIGHT = "light-theme";
   const AUDIBLE = "audible";
   const AUDIO_MUTE = "muteAudio";
   const AUDIO_MUTE_UNMUTE = "unmuteAudio";
+  const CLASS_MENU = "menu";
+  const CLASS_TAB = "tab";
+  const CLASS_TAB_AUDIO = "tab-audio";
+  const CLASS_TAB_AUDIO_ICON = "tab-audio-icon";
+  const CLASS_TAB_CLOSE = "tab-close";
+  const CLASS_TAB_CLOSE_ICON = "tab-close-icon";
+  const CLASS_TAB_COLLAPSED = "tab-collapsed";
+  const CLASS_TAB_CONTAINER = "tab-container";
+  const CLASS_TAB_CONTAINER_TMPL = "tab-container-template";
+  const CLASS_TAB_CONTENT = "tab-content";
+  const CLASS_TAB_CONTEXT = "tab-context";
+  const CLASS_TAB_GROUP = "tab-group";
+  const CLASS_TAB_ICON = "tab-icon";
+  const CLASS_TAB_TITLE = "tab-title";
+  const CLASS_TAB_TMPL = "tab-template";
+  const CLASS_TAB_TOGGLE_ICON = "tab-toggle-icon";
+  const CLASS_THEME_DARK = "dark-theme";
+  const CLASS_THEME_LIGHT = "light-theme";
   const CONNECTING = "connecting";
   const MENU = "sidebar-tabs-menu";
   const MENU_SIDEBAR_INIT = "sidebar-tabs-menu-sidebar-init";
@@ -88,7 +88,7 @@
   const URL_CONNECTING_SPINNER = "../img/spinner.svg#connecting";
   const URL_DEFAULT_FAVICON = "../shared/defaultFavicon.svg";
   const URL_LOADING_SPINNER = "../img/spinner.svg";
-  const TAB_QUERY = `.${ATTR_TAB}:not(.${ATTR_MENU}):not(.${NEW_TAB})`;
+  const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
 
   /**
    * log error
@@ -135,6 +135,22 @@
     return !!(items && items.length);
   };
 
+  /**
+   * compare url string
+   * @param {string} url1 - URL
+   * @param {string} url2 - URL
+   * @param {boolean} query - compare query string too or not
+   * @param {boolean} frag - compare fragment identifier string too or not
+   * @returns {boolean} - result
+   */
+  const isUrlEqual = (url1, url2, query = false, frag = false) => {
+    url1 = new URL(url1);
+    url2 = new URL(url2);
+    return url1.origin === url2.origin && url1.pathname === url2.pathname &&
+           (!query || url1.search === url2.search) &&
+           (!frag || url1.hash === url2.hash);
+  };
+
   /* sidebar */
   const sidebar = {
     incognito: false,
@@ -159,6 +175,19 @@
         sidebar.windowId = id;
       }
     }
+  };
+
+  /**
+   * store data
+   * @param {Object} data - data to store
+   * @returns {?AsyncFunction} - storage.local.set()
+   */
+  const storeData = async data => {
+    let func;
+    if (isObjectNotEmpty(data)) {
+      func = storage.local.set(data);
+    }
+    return func || null;
   };
 
   /**
@@ -207,21 +236,21 @@
     for (const item of theme) {
       switch (item) {
         case THEME_DARK:
-          classList.remove(ATTR_THEME_LIGHT);
-          classList.add(ATTR_THEME_DARK);
+          classList.remove(CLASS_THEME_LIGHT);
+          classList.add(CLASS_THEME_DARK);
           break;
         case THEME_DEFAULT:
-          classList.remove(ATTR_THEME_DARK);
-          classList.remove(ATTR_THEME_LIGHT);
+          classList.remove(CLASS_THEME_DARK);
+          classList.remove(CLASS_THEME_LIGHT);
           break;
         case THEME_LIGHT:
-          classList.remove(ATTR_THEME_DARK);
-          classList.add(ATTR_THEME_LIGHT);
+          classList.remove(CLASS_THEME_DARK);
+          classList.add(CLASS_THEME_LIGHT);
           break;
         default:
       }
     }
-    await storage.local.set({
+    await storeData({
       [THEME]: theme,
     });
   };
@@ -397,7 +426,7 @@
     let tab;
     while (node && node.parentNode && node.parentNode !== root) {
       const {classList, parentNode} = node;
-      if (classList.contains(ATTR_TAB_CONTAINER)) {
+      if (classList.contains(CLASS_TAB_CONTAINER)) {
         tab = node;
         break;
       }
@@ -493,6 +522,57 @@
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       elm.addEventListener("click", evt => activateTab(evt).catch(logError));
     }
+  };
+
+  /**
+   * create tab data
+   * @returns {Array} - tab data
+   */
+  const createTabData = async () => {
+    const items = document.querySelectorAll(TAB_QUERY);
+    const tab = [];
+    for (const item of items) {
+      const tabsTab = item.dataset && item.dataset.tab &&
+                        JSON.parse(item.dataset.tab);
+      const {url} = tabsTab;
+      tab.push(url);
+    }
+    return tab;
+  };
+
+  /**
+   * create tab group data
+   * @returns {Array} - tab group data
+   */
+  const createTabGroupData = async () => {
+    const items = document.querySelectorAll(
+      `.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}:not(.${PINNED})`
+    );
+    const group = [];
+    for (const item of items) {
+      const {children} = item;
+      const arr = [];
+      for (const child of children) {
+        const index = getSidebarTabIndex(child);
+        Number.isInteger(index) && arr.push(index);
+      }
+      arr.length && group.push(arr);
+    }
+    return group;
+  };
+
+  /**
+   * store tab data
+   * @returns {AsyncFunction} - storeData()
+   */
+  const storeTabData = async () => {
+    const tab = await createTabData() || [];
+    const group = await createTabGroupData() || [];
+    return storeData({
+      [TAB]: {
+        tab, group,
+      },
+    });
   };
 
   /* sidebar tab content */
@@ -660,10 +740,10 @@
       const {firstElementChild: tab} = container;
       const {firstElementChild: tabContext} = tab;
       const {firstElementChild: toggleIcon} = tabContext;
-      if (container.classList.contains(ATTR_TAB_GROUP) &&
+      if (container.classList.contains(CLASS_TAB_GROUP) &&
           tab && tab.style.display !== "none") {
-        container.classList.toggle(ATTR_TAB_COLLAPSED);
-        if (container.classList.contains(ATTR_TAB_COLLAPSED)) {
+        container.classList.toggle(CLASS_TAB_COLLAPSED);
+        if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
           tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
           toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
         } else {
@@ -693,13 +773,13 @@
    * @returns {void}
    */
   const ungroupTabs = async (node = {}) => {
-    const {id, children, classList, nodeType, parentNode} = node;
+    const {id, classList, nodeType, parentNode} = node;
     if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
-        classList.contains(ATTR_TAB_GROUP) &&
-        children instanceof HTMLCollection) {
-      for (const child of children) {
-        const container = getTemplate(ATTR_TAB_CONTAINER_TMPL);
-        container.appendChild(child);
+        classList.contains(CLASS_TAB_GROUP)) {
+      const items = node.querySelectorAll(TAB_QUERY);
+      for (const item of items) {
+        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+        container.appendChild(item);
         parentNode.insertBefore(container, node);
       }
     }
@@ -709,7 +789,7 @@
   /**
    * handle drop
    * @param {!Object} evt - event
-   * @returns {?AsyncFunction} - 
+   * @returns {?AsyncFunction} - storeTabData()
    */
   const handleDrop = evt => {
     const {dataTransfer, ctrlKey, target} = evt;
@@ -742,13 +822,13 @@
           if (dropParentNextElement === tabParent && dropParentChild === 1 &&
               ctrlKey) {
             dropParent.appendChild(tab);
-            dropParent.classList.add(ATTR_TAB_GROUP);
+            dropParent.classList.add(CLASS_TAB_GROUP);
             switch (tabParent.childElementCount) {
               case 0:
                 tabParent.parentNode.removeChild(tabParent);
                 break;
               case 1:
-                tabParent.classList.remove(ATTR_TAB_GROUP);
+                tabParent.classList.remove(CLASS_TAB_GROUP);
                 break;
               default:
             }
@@ -762,6 +842,7 @@
               windowId: sidebar.windowId,
             });
           }
+          func = storeTabData().catch(logError);
         }
       }
     }
@@ -841,8 +922,9 @@
    */
   const restoreTabContainers = async () => {
     const func = [];
-    const items =
-      document.querySelectorAll(`.${ATTR_TAB_CONTAINER}:not(#${NEW_TAB})`);
+    const items = document.querySelectorAll(
+      `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
+    );
     for (const item of items) {
       const {childElementCount, classList, id, parentNode} = item;
       switch (childElementCount) {
@@ -850,13 +932,14 @@
           id !== PINNED && parentNode.removeChild(item);
           break;
         case 1:
-          classList.remove(ATTR_TAB_GROUP);
+          classList.remove(CLASS_TAB_GROUP);
           break;
         default:
-          classList.add(ATTR_TAB_GROUP);
+          classList.add(CLASS_TAB_GROUP);
       }
       id !== PINNED && func.push(addDropEventListener(item));
     }
+    func.push(storeTabData());
     return Promise.all(func);
   };
 
@@ -922,13 +1005,13 @@
         break;
       }
       case MENU_TAB_GROUP_COLLAPSE:
-        tab && tab.parentNode.classList.contains(ATTR_TAB_GROUP) &&
+        tab && tab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
           func.push(toggleTabCollapsed({target: tab}));
         break;
       case MENU_TAB_GROUP_RELOAD: {
         if (tab) {
           const {parentNode} = tab;
-          if (parentNode.classList.contains(ATTR_TAB_GROUP)) {
+          if (parentNode.classList.contains(CLASS_TAB_GROUP)) {
             const items = parentNode.querySelectorAll(TAB_QUERY);
             if (items && items.length) {
               for (const item of items) {
@@ -943,7 +1026,7 @@
       case MENU_TAB_GROUP_UNGROUP: {
         if (tab && tabsTab) {
           const {parentNode} = tab;
-          !tabsTab.pinned && parentNode.classList.contains(ATTR_TAB_GROUP) &&
+          !tabsTab.pinned && parentNode.classList.contains(CLASS_TAB_GROUP) &&
             func.push(ungroupTabs(parentNode).then(restoreTabContainers));
         }
         break;
@@ -1030,14 +1113,14 @@
         [TAB]: {
           id: MENU_TAB,
           title: i18n.getMessage(`${TAB}_label`),
-          contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+          contexts: [CLASS_TAB, CLASS_TAB_GROUP],
           type: "normal",
           enabled: false,
           subItems: {
             [TAB_RELOAD]: {
               id: MENU_TAB_RELOAD,
               title: i18n.getMessage(TAB_RELOAD),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1045,7 +1128,7 @@
             [AUDIO_MUTE]: {
               id: MENU_TAB_AUDIO,
               title: i18n.getMessage(AUDIO_MUTE),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1054,7 +1137,7 @@
             [TAB_PIN]: {
               id: MENU_TAB_PIN,
               title: i18n.getMessage(TAB_PIN),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1063,7 +1146,7 @@
             [NEW_WIN_MOVE]: {
               id: MENU_TAB_NEW_WIN_MOVE,
               title: i18n.getMessage(NEW_WIN_MOVE),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1071,7 +1154,7 @@
             [TABS_CLOSE_END]: {
               id: MENU_TAB_TABS_CLOSE_END,
               title: i18n.getMessage(TABS_CLOSE_END),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1079,7 +1162,7 @@
             [TABS_CLOSE_OTHER]: {
               id: MENU_TAB_TABS_CLOSE_OTHER,
               title: i18n.getMessage(TABS_CLOSE_OTHER),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1087,7 +1170,7 @@
             [TAB_CLOSE]: {
               id: MENU_TAB_CLOSE,
               title: i18n.getMessage(TAB_CLOSE),
-              contexts: [ATTR_TAB, ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1098,14 +1181,14 @@
         [TAB_GROUP]: {
           id: MENU_TAB_GROUP,
           title: i18n.getMessage(`${TAB_GROUP}_label`),
-          contexts: [ATTR_TAB_GROUP],
+          contexts: [CLASS_TAB_GROUP],
           type: "normal",
           enabled: false,
           subItems: {
             [TAB_GROUP_RELOAD]: {
               id: MENU_TAB_GROUP_RELOAD,
               title: i18n.getMessage(TAB_GROUP_RELOAD),
-              contexts: [ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1113,7 +1196,7 @@
             [TAB_GROUP_COLLAPSE]: {
               id: MENU_TAB_GROUP_COLLAPSE,
               title: i18n.getMessage(TAB_GROUP_COLLAPSE),
-              contexts: [ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1122,7 +1205,7 @@
             [TAB_GROUP_UNGROUP]: {
               id: MENU_TAB_GROUP_UNGROUP,
               title: i18n.getMessage(TAB_GROUP_UNGROUP),
-              contexts: [ATTR_TAB_GROUP],
+              contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
@@ -1327,7 +1410,7 @@
             enabled: true,
             title: tabMenu.title,
           }),
-          toggleContextMenuClass(ATTR_TAB, true),
+          toggleContextMenuClass(CLASS_TAB, true),
         );
         for (const itemKey of tabKeys) {
           const item = tabMenu.subItems[itemKey];
@@ -1335,7 +1418,7 @@
           const data = {};
           switch (itemKey) {
             case AUDIO_MUTE: {
-              const obj = tab.querySelector(`.${ATTR_TAB_AUDIO_ICON}`);
+              const obj = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
               data.enabled = true;
               if (obj && obj.alt) {
                 data.title = obj.alt;
@@ -1389,13 +1472,13 @@
           }
           func.push(updateContextMenu(id, data));
         }
-        if (parentClass.contains(ATTR_TAB_GROUP)) {
+        if (parentClass.contains(CLASS_TAB_GROUP)) {
           func.push(
             updateContextMenu(tabGroupMenu.id, {
               enabled: true,
               title: tabGroupMenu.title,
             }),
-            toggleContextMenuClass(ATTR_TAB_GROUP, true),
+            toggleContextMenuClass(CLASS_TAB_GROUP, true),
           );
         } else {
           func.push(
@@ -1403,7 +1486,7 @@
               enabled: false,
               title: tabGroupMenu.title,
             }),
-            toggleContextMenuClass(ATTR_TAB_GROUP, false),
+            toggleContextMenuClass(CLASS_TAB_GROUP, false),
           );
         }
         for (const itemKey of tabGroupKeys) {
@@ -1412,8 +1495,8 @@
           const data = {};
           switch (itemKey) {
             case TAB_GROUP_COLLAPSE: {
-              const obj = tab.querySelector(`.${ATTR_TAB_TOGGLE_ICON}`);
-              if (parentClass.contains(ATTR_TAB_GROUP) && obj && obj.alt) {
+              const obj = tab.querySelector(`.${CLASS_TAB_TOGGLE_ICON}`);
+              if (parentClass.contains(CLASS_TAB_GROUP) && obj && obj.alt) {
                 data.enabled = true;
                 data.title = obj.alt;
               } else {
@@ -1423,7 +1506,7 @@
               break;
             }
             case TAB_GROUP_UNGROUP:
-              if (!tabsTab.pinned && parentClass.contains(ATTR_TAB_GROUP)) {
+              if (!tabsTab.pinned && parentClass.contains(CLASS_TAB_GROUP)) {
                 data.enabled = true;
               } else {
                 data.enabled = false;
@@ -1431,7 +1514,7 @@
               data.title = title;
               break;
             default:
-              if (parentClass.contains(ATTR_TAB_GROUP)) {
+              if (parentClass.contains(CLASS_TAB_GROUP)) {
                 data.enabled = true;
               } else {
                 data.enabled = false;
@@ -1447,8 +1530,8 @@
             enabled: false,
             title: tabMenu.title,
           }),
-          toggleContextMenuClass(ATTR_TAB, false),
-          toggleContextMenuClass(ATTR_TAB_GROUP, false),
+          toggleContextMenuClass(CLASS_TAB, false),
+          toggleContextMenuClass(CLASS_TAB_GROUP, false),
         );
         for (const itemKey of tabKeys) {
           const item = tabMenu.subItems[itemKey];
@@ -1512,7 +1595,7 @@
     const {tabId, windowId} = info;
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
       const newActiveTab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      const oldActiveTab = document.querySelector(`.${ATTR_TAB}.${ACTIVE}`);
+      const oldActiveTab = document.querySelector(`.${CLASS_TAB}.${ACTIVE}`);
       if (newActiveTab && oldActiveTab && newActiveTab !== oldActiveTab) {
         const {
           classList: newClassList, parentNode: {classList: newParentClassList},
@@ -1548,32 +1631,32 @@
     const {muted} = mutedInfo;
     const func = [];
     if (windowId === sidebar.windowId && id !== tabs.TAB_ID_NONE) {
-      const tab = await getTemplate(ATTR_TAB_TMPL);
+      const tab = await getTemplate(CLASS_TAB_TMPL);
       const tabItems = [
-        `.${TAB}`, `.${ATTR_TAB_CONTEXT}`, `.${ATTR_TAB_TOGGLE_ICON}`,
-        `.${ATTR_TAB_CONTENT}`, `.${ATTR_TAB_ICON}`, `.${ATTR_TAB_TITLE}`,
-        `.${ATTR_TAB_AUDIO}`, `.${ATTR_TAB_AUDIO_ICON}`,
-        `.${ATTR_TAB_CLOSE}`, `.${ATTR_TAB_CLOSE_ICON}`,
+        `.${TAB}`, `.${CLASS_TAB_CONTEXT}`, `.${CLASS_TAB_TOGGLE_ICON}`,
+        `.${CLASS_TAB_CONTENT}`, `.${CLASS_TAB_ICON}`, `.${CLASS_TAB_TITLE}`,
+        `.${CLASS_TAB_AUDIO}`, `.${CLASS_TAB_AUDIO_ICON}`,
+        `.${CLASS_TAB_CLOSE}`, `.${CLASS_TAB_CLOSE_ICON}`,
       ];
       const items = tab.querySelectorAll(tabItems.join(","));
       for (const item of items) {
         const {classList} = item;
-        if (classList.contains(ATTR_TAB_CONTEXT)) {
+        if (classList.contains(CLASS_TAB_CONTEXT)) {
           item.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
           func.push(addTabContextClickListener(item));
-        } else if (classList.contains(ATTR_TAB_TOGGLE_ICON)) {
+        } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
           item.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
-        } else if (classList.contains(ATTR_TAB_CONTENT)) {
+        } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
-        } else if (classList.contains(ATTR_TAB_ICON)) {
+        } else if (classList.contains(CLASS_TAB_ICON)) {
           item.alt = title;
           func.push(
             setTabIcon(item, {status, title, favIconUrl}),
             addTabIconErrorListener(item),
           );
-        } else if (classList.contains(ATTR_TAB_TITLE)) {
+        } else if (classList.contains(CLASS_TAB_TITLE)) {
           item.textContent = title;
-        } else if (classList.contains(ATTR_TAB_AUDIO)) {
+        } else if (classList.contains(CLASS_TAB_AUDIO)) {
           if (audible || muted) {
             classList.add(AUDIBLE);
           } else {
@@ -1583,12 +1666,12 @@
             setTabAudio(item, {audible, muted}),
             addTabAudioClickListener(item),
           );
-        } else if (classList.contains(ATTR_TAB_AUDIO_ICON)) {
+        } else if (classList.contains(CLASS_TAB_AUDIO_ICON)) {
           func.push(setTabAudioIcon(item, {audible, muted}));
-        } else if (classList.contains(ATTR_TAB_CLOSE)) {
+        } else if (classList.contains(CLASS_TAB_CLOSE)) {
           item.title = i18n.getMessage(`${TAB_CLOSE}_tooltip`);
           func.push(addTabCloseClickListener(item));
-        } else if (classList.contains(ATTR_TAB_CLOSE_ICON)) {
+        } else if (classList.contains(CLASS_TAB_CLOSE_ICON)) {
           item.alt = i18n.getMessage(`${TAB_CLOSE}`);
         }
         func.push(addTabClickListener(item));
@@ -1605,14 +1688,10 @@
         } else {
           container.appendChild(tab);
         }
-        if (container.childElementCount > 1) {
-          container.classList.add(ATTR_TAB_GROUP);
-          for (const child of container.children) {
-            child.classList.add(ATTR_TAB_GROUP);
-          }
-        }
+        container.childElementCount > 1 &&
+          container.classList.add(CLASS_TAB_GROUP);
       } else {
-        const container = await getTemplate(ATTR_TAB_CONTAINER_TMPL);
+        const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
         const list = document.querySelectorAll(TAB_QUERY);
         let target;
         if (list.length !== index && list[index] && list[index].parentNode) {
@@ -1671,9 +1750,9 @@
             info.hasOwnProperty("status") ||
             info.hasOwnProperty("title") ||
             info.hasOwnProperty("url")) {
-          const tabContent = tab.querySelector(`.${ATTR_TAB_CONTENT}`);
-          const tabIcon = tab.querySelector(`.${ATTR_TAB_ICON}`);
-          const tabTitle = tab.querySelector(`.${ATTR_TAB_TITLE}`);
+          const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
+          const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
+          const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
           const {favIconUrl, status, title} = tabsTab;
           tabContent && (tabContent.title = title);
           tabTitle && (tabTitle.textContent = title);
@@ -1683,8 +1762,8 @@
         }
         if (info.hasOwnProperty("audible") ||
             info.hasOwnProperty("mutedInfo")) {
-          const tabAudio = tab.querySelector(`.${ATTR_TAB_AUDIO}`);
-          const tabAudioIcon = tab.querySelector(`.${ATTR_TAB_AUDIO_ICON}`);
+          const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
+          const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
           const {muted} = tabsTab.mutedInfo;
           const {audible} = tabsTab;
           const opt = {audible, muted};
@@ -1711,7 +1790,7 @@
               nextElementSibling: pinnedNextElement,
               parentNode: pinnedParentNode,
             } = pinnedContainer;
-            const container = await getTemplate(ATTR_TAB_CONTAINER_TMPL);
+            const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
             tab.classList.remove(PINNED);
             tab.setAttribute("draggable", "true");
             func.push(addDragEventListener(tab));
@@ -1745,7 +1824,7 @@
           const {firstElementChild} = container;
           container.insertBefore(tab, firstElementChild);
         } else {
-          const container = await getTemplate(ATTR_TAB_CONTAINER_TMPL);
+          const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
           const [target] = items;
           container.appendChild(tab);
           target.parentNode.insertBefore(container, target);
@@ -1765,7 +1844,7 @@
             nextElementSibling: parentNextElementSibling,
             parentNode: parentParentNode,
           } = parentNode;
-          const frag = await getTemplate(ATTR_TAB_CONTAINER_TMPL);
+          const frag = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
           if (frag) {
             frag.appendChild(tab);
             if (parentNextElementSibling) {
@@ -1814,19 +1893,6 @@
     }
   };
 
-  /**
-   * emulate tabs to sidebar
-   * @returns {Promise.<Array>} - results of each handler
-   */
-  const emulateTabs = async () => {
-    const items = await tabs.query({windowId: windows.WINDOW_ID_CURRENT});
-    const func = [];
-    for (const item of items) {
-      func.push(handleCreatedTab(item).then(restoreTabContainers));
-    }
-    return Promise.all(func);
-  };
-
   /* listeners */
   tabs.onActivated.addListener(info =>
     handleActivatedTab(info).catch(logError)
@@ -1852,12 +1918,65 @@
   );
 
   /* start up */
+  /**
+   * set stored tab group data
+   * @returns {void}
+   */
+  const restoreTabGroup = async () => {
+    // FIXME:
+    const {tab: storedTab} = await storage.local.get(TAB);
+    if (storedTab) {
+      const {tab, group: groups} = storedTab;
+      const items = document.querySelectorAll(TAB_QUERY);
+      if (items.length === tab.length) {
+        const l = items.length;
+        let i = 0;
+        let bool;
+        while (i < l) {
+          const item = items[i];
+          const tabsTab = item.dataset && item.dataset.tab &&
+                            JSON.parse(item.dataset.tab);
+          const {url} = tabsTab;
+          bool = isUrlEqual(url, tab[i]);
+          if (!bool) {
+            break;
+          }
+          i++;
+        }
+        if (bool) {
+          for (const group of groups) {
+            const [target, ...indexes] = group;
+            const container = items[target].parentNode;
+            container.classList.add(CLASS_TAB_GROUP);
+            for (const index of indexes) {
+              container.appendChild(items[index]);
+            }
+          }
+        }
+      }
+    }
+  };
+
+  /**
+   * emulate tabs to sidebar
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const emulateTabs = async () => {
+    const items = await tabs.query({windowId: windows.WINDOW_ID_CURRENT});
+    const func = [];
+    for (const item of items) {
+      func.push(handleCreatedTab(item));
+    }
+    return Promise.all(func);
+  };
+
   document.addEventListener("DOMContentLoaded", () => Promise.all([
     addNewTabClickListener(),
     createContextMenu(),
     getTheme().then(setTheme),
     setSidebar(),
-  ]).then(emulateTabs).catch(logError));
+  ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
+    .catch(logError));
   window.addEventListener("keydown", evt => setContext(evt).catch(logError),
                           true);
   window.addEventListener("mousedown", evt => setContext(evt).catch(logError),
