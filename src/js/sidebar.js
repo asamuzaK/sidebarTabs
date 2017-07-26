@@ -1776,19 +1776,14 @@
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
-        if (info.hasOwnProperty("favIconUrl") ||
-            info.hasOwnProperty("status") ||
-            info.hasOwnProperty("title") ||
-            info.hasOwnProperty("url")) {
-          const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
-          const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
-          const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
-          const {favIconUrl, status, title} = tabsTab;
-          tabContent && (tabContent.title = title);
-          tabTitle && (tabTitle.textContent = title);
-          // Note: Don't push to Promise array
-          tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
-        }
+        const {favIconUrl, status, title} = tabsTab;
+        const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
+        const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
+        const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
+        tabContent && (tabContent.title = title);
+        tabTitle && (tabTitle.textContent = title);
+        // Note: Don't push to Promise array
+        tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
         if (info.hasOwnProperty("audible") ||
             info.hasOwnProperty("mutedInfo")) {
           const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
