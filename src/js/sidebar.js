@@ -611,18 +611,20 @@
    */
   const setFavicon = async (elm, favIconUrl) => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
-      elm.src = URL_DEFAULT_FAVICON;
       if (isString(favIconUrl)) {
         const src = await fetch(favIconUrl).then(res => {
+          const {ok, url: resUrl} = res;
           let url;
-          if (res.ok) {
-            url = favIconUrl;
+          if (ok) {
+            url = resUrl;
           } else {
             url = URL_DEFAULT_FAVICON;
           }
           return url;
         }).catch(() => URL_DEFAULT_FAVICON);
         src && (elm.src = src);
+      } else {
+        elm.src = URL_DEFAULT_FAVICON;
       }
     }
   };
