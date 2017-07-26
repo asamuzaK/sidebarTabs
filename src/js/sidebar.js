@@ -599,13 +599,38 @@
   };
 
   /**
-   * set tab icon
-   * @param {Object} elm - img element;
-   * @param {Object} info - tab info
+   * set favicon
+   * @param {Object} elm - img element
+   * @param {string} favIconUrl - favicon url
    * @returns {void}
    */
-  const setTabIcon = async (elm, info) => {
-    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  const setFavicon = async (elm, favIconUrl) => {
+    if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+        isString(favIconUrl)) {
+      elm.src = await fetch(favIconUrl).then(res => {
+        let url;
+        if (res.ok) {
+          url = favIconUrl;
+        } else {
+          url = URL_DEFAULT_FAVICON;
+        }
+        return url;
+      }).catch(e => {
+        console.error(e);
+        return URL_DEFAULT_FAVICON;
+      });
+    }
+  };
+
+  /**
+   * set tab icon
+   * @param {Object} elm - img element
+   * @param {Object} info - tab info
+   * @returns {?AsyncFunction} - setFavicon()
+   */
+  const setTabIcon = (elm, info) => {
+    let func;
+    if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       const {status, title, favIconUrl} = info;
       const connectText = i18n.getMessage(CONNECTING);
       if (status === "loading") {
@@ -616,17 +641,7 @@
         }
       } else if (status === "complete") {
         if (favIconUrl) {
-          elm.src = await fetch(favIconUrl).then(res => {
-            let url;
-            if (res.ok) {
-              url = favIconUrl;
-            } else {
-              url = URL_DEFAULT_FAVICON;
-            }
-            return url;
-          }).catch(e => {
-            return URL_DEFAULT_FAVICON;
-          });
+          func = setFavicon(elm, favIconUrl);
         } else {
           elm.src = URL_DEFAULT_FAVICON;
         }
@@ -634,6 +649,7 @@
         elm.src = URL_DEFAULT_FAVICON;
       }
     }
+    return func || null;
   };
 
   /* sidebar tab audio */
@@ -1753,7 +1769,7 @@
    * @param {Object} tabsTab - tabs.Tab
    * @returns {Promise.<Array>} - results of each handler
    */
-  const handleUpdatedTab = async (tabId, info, tabsTab) => {
+  const handleUpdatedTab = (tabId, info, tabsTab) => {
     const {windowId} = tabsTab;
     const func = [];
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
@@ -1803,7 +1819,7 @@
               nextElementSibling: pinnedNextElement,
               parentNode: pinnedParentNode,
             } = pinnedContainer;
-            const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
             tab.classList.remove(PINNED);
             tab.setAttribute("draggable", "true");
             func.push(addDragEventListener(tab));
@@ -1815,7 +1831,7 @@
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
-    return Promise.all(func);
+    return Promise.all(func).catch(logError);
   };
 
   /**
@@ -1926,9 +1942,7 @@
     handleRemovedTab(tabId, info).then(restoreTabContainers)
       .then(getLastClosedTab).catch(logError)
   );
-  tabs.onUpdated.addListener((tabId, info, tabsTab) =>
-    handleUpdatedTab(tabId, info, tabsTab).catch(logError)
-  );
+  tabs.onUpdated.addListener(handleUpdatedTab);
 
   /* start up */
   /**
