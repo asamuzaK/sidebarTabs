@@ -769,22 +769,19 @@
     const {target} = evt;
     const container = await getSidebarTabContainer(target);
     let func;
-    if (container) {
+    if (container.classList.contains(CLASS_TAB_GROUP)) {
       const {firstElementChild: tab} = container;
       const {firstElementChild: tabContext} = tab;
       const {firstElementChild: toggleIcon} = tabContext;
-      if (container.classList.contains(CLASS_TAB_GROUP) &&
-          tab && tab.style.display !== "none") {
-        container.classList.toggle(CLASS_TAB_COLLAPSED);
-        if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
-          tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
-          toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
-        } else {
-          tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-          toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
-        }
-        func = activateTab({target: tab});
+      container.classList.toggle(CLASS_TAB_COLLAPSED);
+      if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
+        tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
+        toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
+      } else {
+        tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
+        toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
       }
+      func = activateTab({target: tab});
     }
     return func || null;
   };
@@ -796,7 +793,9 @@
    */
   const addTabContextClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      elm.addEventListener("click", evt => toggleTabCollapsed(evt));
+      elm.addEventListener("click", evt =>
+        toggleTabCollapsed(evt).catch(logError)
+      );
     }
   };
 
@@ -987,9 +986,8 @@
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
-        const {
-          classList: newClass, parentNode: {classList: newParentClass},
-        } = tab;
+        const {classList: newClass, parentNode: newParent} = tab;
+        const {classList: newParentClass} = newParent;
         const items = document.querySelectorAll(
           `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
         );
