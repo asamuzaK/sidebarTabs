@@ -1190,6 +1190,7 @@
             func.push(restoreTabContainers());
           }
         }
+        info.hasOwnProperty("url") && func.push(storeTabData());
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
