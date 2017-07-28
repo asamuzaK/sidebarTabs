@@ -603,6 +603,14 @@
     }
   };
 
+  // TODO: should be external JSON file?
+  /* favicon fallbacks */
+  const favicon = {
+    "https://abs.twimg.com/favicons/favicon.ico": {
+      favicon: "../shared/Twitter_Logo_Blue.svg",
+    },
+  };
+
   /**
    * set favicon
    * @param {Object} elm - img element
@@ -617,6 +625,8 @@
           let url;
           if (ok) {
             url = resUrl;
+          } else if (favicon[resUrl]) {
+            url = favicon[resUrl].favicon;
           } else {
             url = URL_DEFAULT_FAVICON;
           }
