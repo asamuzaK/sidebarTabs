@@ -581,14 +581,6 @@
   };
 
   /* sidebar tab content */
-  // TODO: should be external JSON file?
-  /* favicon fallbacks */
-  const favicon = {
-    "https://abs.twimg.com/favicons/favicon.ico": {
-      favicon: "../shared/Twitter_Logo_Blue.svg",
-    },
-  };
-
   /**
    * tab icon fallback
    * @param {!Object} evt - event
@@ -596,14 +588,7 @@
    */
   const tabIconFallback = evt => {
     const {target} = evt;
-    if (target.hasOwnProperty("src")) {
-      const {src} = target;
-      if (favicon[src]) {
-        src = favicon[src].favicon;
-      } else {
-        src = URL_DEFAULT_FAVICON;
-      }
-    }
+    target.hasOwnProperty("src") && (target.src = URL_DEFAULT_FAVICON);
     return false;
   };
 
@@ -632,8 +617,6 @@
           let url;
           if (ok) {
             url = resUrl;
-          } else if (favicon[resUrl]) {
-            url = favicon[resUrl].favicon;
           } else {
             url = URL_DEFAULT_FAVICON;
           }
