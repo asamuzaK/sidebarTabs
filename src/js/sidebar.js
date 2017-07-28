@@ -568,16 +568,20 @@
 
   /**
    * store tab data
-   * @returns {AsyncFunction} - storeData()
+   * @returns {?AsyncFunction} - storeData()
    */
   const storeTabData = async () => {
-    const tab = await createTabData() || [];
-    const group = await createTabGroupData() || [];
-    return storeData({
-      [TAB]: {
-        tab, group,
-      },
-    });
+    let func;
+    if (!sidebar.incognito) {
+      const tab = await createTabData() || [];
+      const group = await createTabGroupData() || [];
+      func = storeData({
+        [TAB]: {
+          tab, group,
+        },
+      });
+    }
+    return func || null;
   };
 
   /* sidebar tab content */
@@ -2002,32 +2006,34 @@
    * @returns {void}
    */
   const restoreTabGroup = async () => {
-    const {tab: storedTab} = await storage.local.get(TAB);
-    if (storedTab) {
-      const {tab, group: groups} = storedTab;
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (items.length === tab.length) {
-        const l = items.length;
-        let i = 0;
-        let bool;
-        while (i < l) {
-          const item = items[i];
-          const tabsTab = item.dataset && item.dataset.tab &&
-                            JSON.parse(item.dataset.tab);
-          const {url} = tabsTab;
-          bool = isUrlEqual(url, tab[i]);
-          if (!bool) {
-            break;
+    if (!sidebar.incognito) {
+      const {tab: storedTab} = await storage.local.get(TAB);
+      if (storedTab) {
+        const {tab, group: groups} = storedTab;
+        const items = document.querySelectorAll(TAB_QUERY);
+        if (items.length === tab.length) {
+          const l = items.length;
+          let i = 0;
+          let bool;
+          while (i < l) {
+            const item = items[i];
+            const tabsTab = item.dataset && item.dataset.tab &&
+                              JSON.parse(item.dataset.tab);
+            const {url} = tabsTab;
+            bool = isUrlEqual(url, tab[i]);
+            if (!bool) {
+              break;
+            }
+            i++;
           }
-          i++;
-        }
-        if (bool) {
-          for (const group of groups) {
-            const [target, ...indexes] = group;
-            const container = items[target].parentNode;
-            container.classList.add(CLASS_TAB_GROUP);
-            for (const index of indexes) {
-              container.appendChild(items[index]);
+          if (bool) {
+            for (const group of groups) {
+              const [target, ...indexes] = group;
+              const container = items[target].parentNode;
+              container.classList.add(CLASS_TAB_GROUP);
+              for (const index of indexes) {
+                container.appendChild(items[index]);
+              }
             }
           }
         }
