@@ -581,6 +581,14 @@
   };
 
   /* sidebar tab content */
+  // TODO: should be external JSON file?
+  /* favicon fallbacks */
+  const favicon = {
+    "https://abs.twimg.com/favicons/favicon.ico": {
+      favicon: "../shared/Twitter_Logo_Blue.svg",
+    },
+  };
+
   /**
    * tab icon fallback
    * @param {!Object} evt - event
@@ -617,12 +625,26 @@
           let url;
           if (ok) {
             url = resUrl;
+          } else if (favicon[resUrl]) {
+            url = favicon[resUrl].favicon;
           } else {
             url = URL_DEFAULT_FAVICON;
           }
           return url;
-        }).catch(() => URL_DEFAULT_FAVICON);
-        src && (elm.src = src);
+        }).catch(() => {
+          let url;
+          if (favicon[favIconUrl]) {
+            url = favicon[favIconUrl].favicon;
+          } else {
+            url = URL_DEFAULT_FAVICON;
+          }
+          return url;
+        });
+        if (src) {
+          elm.src = src;
+        } else {
+          elm.src = URL_DEFAULT_FAVICON;
+        }
       } else {
         elm.src = URL_DEFAULT_FAVICON;
       }
