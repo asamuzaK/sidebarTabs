@@ -22,7 +22,7 @@ Create `chrome/` folder in your profile and save `userChrome.css`.
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 /* tabs toolbar */
 #TabsToolbar {
-  visibility: collapse !important;
+  visibility: collapse;
 }
 ```
 

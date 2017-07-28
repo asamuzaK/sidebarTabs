@@ -22,7 +22,7 @@ Firefox用の拡張機能。
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 /* tabs toolbar */
 #TabsToolbar {
-  visibility: collapse !important;
+  visibility: collapse;
 }
 ```
 
