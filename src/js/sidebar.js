@@ -93,23 +93,12 @@
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
 
   /**
-   * log error
+   * throw error
    * @param {!Object} e - Error
-   * @returns {boolean} - false
+   * @throws - Error
    */
-  const logError = e => {
-    console.error(e);
-    return false;
-  };
-
-  /**
-   * log warn
-   * @param {*} msg - message
-   * @returns {boolean} - false
-   */
-  const logWarn = msg => {
-    console.warn(msg);
-    return false;
+  const throwErr = e => {
+    throw e;
   };
 
   /**
@@ -141,8 +130,8 @@
    * compare url string
    * @param {string} url1 - URL
    * @param {string} url2 - URL
-   * @param {boolean} query - compare query string too or not
-   * @param {boolean} frag - compare fragment identifier string too or not
+   * @param {boolean} query - compare query string
+   * @param {boolean} frag - compare fragment identifier string
    * @returns {boolean} - result
    */
   const isUrlEqual = (url1, url2, query = false, frag = false) => {
@@ -418,7 +407,7 @@
    */
   const addNewTabClickListener = async () => {
     const newTab = document.getElementById(NEW_TAB);
-    newTab.addEventListener("click", evt => createNewTab(evt).catch(logError));
+    newTab.addEventListener("click", evt => createNewTab(evt).catch(throwErr));
   };
 
   /**
@@ -525,7 +514,7 @@
    */
   const addTabClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      elm.addEventListener("click", evt => activateTab(evt).catch(logError));
+      elm.addEventListener("click", evt => activateTab(evt).catch(throwErr));
     }
   };
 
@@ -713,7 +702,7 @@
    */
   const addTabAudioClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      elm.addEventListener("click", evt => toggleAudio(evt).catch(logError));
+      elm.addEventListener("click", evt => toggleAudio(evt).catch(throwErr));
     }
   };
 
@@ -781,7 +770,7 @@
    */
   const addTabCloseClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      elm.addEventListener("click", evt => closeTab(evt).catch(logError));
+      elm.addEventListener("click", evt => closeTab(evt).catch(throwErr));
     }
   };
 
@@ -820,7 +809,7 @@
   const addTabContextClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       elm.addEventListener("click", evt =>
-        toggleTabCollapsed(evt).catch(logError)
+        toggleTabCollapsed(evt).catch(throwErr)
       );
     }
   };
@@ -900,7 +889,7 @@
               windowId: sidebar.windowId,
             });
           }
-          func = storeTabData().catch(logError);
+          func = storeTabData().catch(throwErr);
         }
       }
     }
@@ -1220,7 +1209,7 @@
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
-    return Promise.all(func).catch(logError);
+    return Promise.all(func).catch(throwErr);
   };
 
   /**
@@ -1476,10 +1465,8 @@
       case MENU_THEME_LIGHT:
         func.push(setTheme([THEME_LIGHT]));
         break;
-      default: {
-        const msg = `No handler found for ${id}.`;
-        func.push(logWarn(msg));
-      }
+      default:
+        throw new Error(`No handler found for ${id}.`);
     }
     return Promise.all(func);
   };
@@ -1683,7 +1670,7 @@
   const addContextMenuClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       elm.addEventListener("click", evt =>
-        handleClickedContextMenu(evt).catch(logError)
+        handleClickedContextMenu(evt).catch(throwErr)
       );
     }
   };
@@ -1979,23 +1966,23 @@
 
   /* listeners */
   tabs.onActivated.addListener(info =>
-    handleActivatedTab(info).catch(logError)
+    handleActivatedTab(info).catch(throwErr)
   );
   tabs.onAttached.addListener((tabId, info) =>
-    handleAttachedTab(tabId, info).then(restoreTabContainers).catch(logError)
+    handleAttachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
   tabs.onCreated.addListener(tabsTab =>
-    handleCreatedTab(tabsTab).then(restoreTabContainers).catch(logError)
+    handleCreatedTab(tabsTab).then(restoreTabContainers).catch(throwErr)
   );
   tabs.onDetached.addListener((tabId, info) =>
-    handleDetachedTab(tabId, info).then(restoreTabContainers).catch(logError)
+    handleDetachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
   tabs.onMoved.addListener((tabId, info) =>
-    handleMovedTab(tabId, info).then(restoreTabContainers).catch(logError)
+    handleMovedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
   tabs.onRemoved.addListener((tabId, info) =>
     handleRemovedTab(tabId, info).then(restoreTabContainers)
-      .then(getLastClosedTab).catch(logError)
+      .then(getLastClosedTab).catch(throwErr)
   );
   // Note: Occurs frequently, so handler should not be async.
   tabs.onUpdated.addListener(handleUpdatedTab);
@@ -2060,9 +2047,9 @@
     getTheme().then(setTheme),
     setSidebar(),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-    .catch(logError));
-  window.addEventListener("keydown", evt => setContext(evt).catch(logError),
+    .catch(throwErr));
+  window.addEventListener("keydown", evt => setContext(evt).catch(throwErr),
                           true);
-  window.addEventListener("mousedown", evt => setContext(evt).catch(logError),
+  window.addEventListener("mousedown", evt => setContext(evt).catch(throwErr),
                           true);
 }
