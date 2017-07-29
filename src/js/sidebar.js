@@ -1106,6 +1106,7 @@
                  listIdxPrev && listIdxPrev.parentNode &&
                  listIdxPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                  listIdx.parentNode === listIdxPrev.parentNode) {
+        await addDragEventListener(tab);
         container = listIdx.parentNode;
         container.insertBefore(tab, listIdx);
       } else {
