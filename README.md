@@ -37,5 +37,5 @@ Drag the tab with "Ctrl + left click" and drop it on the tab you want to group.
   [Issue #3](https://github.com/asamuzaK/sidebarTabs/issues/3 "Spinner icon not replaced even after complete in twitter.com · Issue #3 · asamuzaK/sidebarTabs")
 * If you open a new tab from an ungrouped tab, a new tab will not be automatically grouped.
   It is waiting for implementation of the WebExtensions API.
-  [Issue #6](https://github.com/asamuzaK/sidebarTabs/issues/6 "Automatically group tabs · Issue #6 · asamuzaK/sidebarTabs")
   If you open a new tab from pre-grouped tabs, it will be grouped in the same group.
+  [Issue #6](https://github.com/asamuzaK/sidebarTabs/issues/6 "Automatically group tabs · Issue #6 · asamuzaK/sidebarTabs")
