@@ -792,11 +792,11 @@
       if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
         tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
         toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
+        func = activateTab({target: tab});
       } else {
         tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
         toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
       }
-      func = activateTab({target: tab});
     }
     return func || null;
   };
@@ -1109,6 +1109,8 @@
         await addDragEventListener(tab);
         container = listIdx.parentNode;
         container.insertBefore(tab, listIdx);
+        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabCollapsed({target: tab}));
       } else {
         let target;
         if (list.length !== index && listIdx && listIdx.parentNode) {
