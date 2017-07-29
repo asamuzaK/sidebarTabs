@@ -1,5 +1,15 @@
 <svg id="Logo_FIXED" data-name="Logo — FIXED" xmlns="http://www.w3.org/2000/svg"
- width="16" height="16" viewBox="0 0 400 400">
+     width="16" height="16" viewBox="0 0 400 400">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dcterms:format>image/svg+xml</dcterms:format>
+        <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dcterms:title>Twitter_Logo_Blue</dcterms:title>
+        <dcterms:source rdf:resource="https://brand.twitter.com/"/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
   <defs>
     <style>
       .cls-1 {
