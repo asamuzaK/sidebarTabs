@@ -29,3 +29,13 @@ Firefox用の拡張機能。
 ## タブをグループ化する
 
 タブを「Ctrl + 左クリック」でドラッグして、グループ化したいタブの上にドロップします。
+
+## 既知の問題
+
+* サイトの読み込みが終わってもずっとローディングアイコンのままになってしまう場合があります。
+  そのようなケースでは、コンテキストメニューを開いて「タブ」→「タブを同期」を選択してください。
+  [Issue #3](https://github.com/asamuzaK/sidebarTabs/issues/3 "Spinner icon not replaced even after complete in twitter.com · Issue #3 · asamuzaK/sidebarTabs")
+* グループ化されていないタブから新規タブを開いても、自動的にはグループ化されません。
+  これはWebExtensionsのAPIの実装待ちです。
+  なお、あらかじめグループ化されているタブから新規タブを開くと同じグループにまとめられます。
+  [Issue #6](https://github.com/asamuzaK/sidebarTabs/issues/6 "Automatically group tabs · Issue #6 · asamuzaK/sidebarTabs")
