@@ -1013,8 +1013,8 @@
             const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
             tabContent && (tabContent.title = title);
             tabTitle && (tabTitle.textContent = title);
-            // Note: Don't push to Promise array
-            tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
+            tabIcon &&
+              func.push(setTabIcon(tabIcon, {favIconUrl, status, title}));
             tab.dataset.tab = JSON.stringify(tabsTab);
             func.push(storeTabData());
           }
@@ -1090,9 +1090,10 @@
         } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
         } else if (classList.contains(CLASS_TAB_ICON)) {
-          // Note: Don't push to Promise array
-          setTabIcon(item, {status, title, favIconUrl});
-          func.push(addTabIconErrorListener(item));
+          func.push(
+            setTabIcon(item, {status, title, favIconUrl}),
+            addTabIconErrorListener(item),
+          );
         } else if (classList.contains(CLASS_TAB_TITLE)) {
           item.textContent = title;
         } else if (classList.contains(CLASS_TAB_AUDIO)) {
@@ -1189,7 +1190,7 @@
    * @param {Object} tabsTab - tabs.Tab
    * @returns {Promise.<Array>} - results of each handler
    */
-  const handleUpdatedTab = (tabId, info, tabsTab) => {
+  const handleUpdatedTab = async (tabId, info, tabsTab) => {
     const {windowId} = tabsTab;
     const func = [];
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
@@ -1201,8 +1202,7 @@
         const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
         tabContent && (tabContent.title = title);
         tabTitle && (tabTitle.textContent = title);
-        // Note: Don't push to Promise array
-        tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
+        tabIcon && func.push(setTabIcon(tabIcon, {favIconUrl, status, title}));
         if (info.hasOwnProperty("audible") ||
             info.hasOwnProperty("mutedInfo")) {
           const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
@@ -1233,7 +1233,7 @@
               nextElementSibling: pinnedNextElement,
               parentNode: pinnedParentNode,
             } = pinnedContainer;
-            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
             tab.classList.remove(PINNED);
             tab.setAttribute("draggable", "true");
             func.push(addDragEventListener(tab));
@@ -1248,7 +1248,7 @@
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
-    return Promise.all(func).catch(throwErr);
+    return Promise.all(func);
   };
 
   /**
@@ -1343,7 +1343,7 @@
   /**
    * sync tab
    * @param {number} tabId - tab ID
-   * @returns {?Function} - handleUpdatedTab()
+   * @returns {?AsyncFunction} - handleUpdatedTab()
    */
   const syncTab = async tabId => {
     if (!Number.isInteger(tabId)) {
@@ -2023,8 +2023,9 @@
     handleRemovedTab(tabId, info).then(restoreTabContainers)
       .then(getLastClosedTab).catch(throwErr)
   );
-  // Note: Occurs frequently, so handler should not be async.
-  tabs.onUpdated.addListener(handleUpdatedTab);
+  tabs.onUpdated.addListener((tabId, info, tabsTab) =>
+    handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
+  );
 
   /* start up */
   /**
