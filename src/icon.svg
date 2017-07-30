@@ -53,7 +53,7 @@
     <use href="#sidetab" fill="ButtonShadow"/>
   </g>
   <g id="color">
-    <use href="#sidetab" fill="#002147"/>
     <use href="#activetab" fill="#E66000"/>
+    <use href="#sidetab" fill="#002147"/>
   </g>
 </svg>
