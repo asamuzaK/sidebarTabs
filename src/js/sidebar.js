@@ -83,6 +83,7 @@
   const THEME_LIGHT_ID =
     "firefox-compact-light@mozilla.org@personas.mozilla.org";
   const THEME_SELECT = "selectTheme";
+  const TIME_3SEC = 3000;
   const TYPE_FROM = 8;
   const TYPE_TO = -1;
   const URL_AUDIO_MUTED = "../shared/tab-audio-muted.svg";
@@ -990,6 +991,41 @@
     return Promise.all(func);
   };
 
+  /**
+   * observe tab
+   * @param {number} tabId - tab ID
+   * @returns {Function} - setTimeout()
+   */
+  const observeTab = async tabId => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    }
+    return setTimeout(async () => {
+      const tabsTab = await tabs.get(tabId);
+      const func = [];
+      if (tabsTab) {
+        const {favIconUrl, status, title} = tabsTab;
+        if (status === "complete") {
+          const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+          if (tab) {
+            const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
+            const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
+            const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
+            tabContent && (tabContent.title = title);
+            tabTitle && (tabTitle.textContent = title);
+            // Note: Don't push to Promise array
+            tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
+            tab.dataset.tab = JSON.stringify(tabsTab);
+            func.push(storeTabData());
+          }
+        } else {
+          func.push(observeTab(tabId));
+        }
+      }
+      return Promise.all(func).catch(throwErr);
+    }, TIME_3SEC);
+  };
+
   /* tabs event handlers */
   /**
    * handle activated tab
@@ -1206,6 +1242,8 @@
             func.push(restoreTabContainers());
           }
         }
+        info.hasOwnProperty("status") && info.status === "loading" &&
+          func.push(observeTab(tabId));
         info.hasOwnProperty("url") && func.push(storeTabData());
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
