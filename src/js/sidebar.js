@@ -656,18 +656,21 @@
       const {status, title, favIconUrl} = info;
       const connectText = i18n.getMessage(CONNECTING);
       if (status === "loading") {
+        elm.alt = status;
         if (title === connectText) {
           elm.src = URL_CONNECTING_SPINNER;
         } else {
           elm.src = URL_LOADING_SPINNER;
         }
       } else if (status === "complete") {
+        elm.alt = "";
         if (favIconUrl) {
           func = setFavicon(elm, favIconUrl);
         } else {
           elm.src = URL_DEFAULT_FAVICON;
         }
       } else {
+        elm.alt = "";
         elm.src = URL_DEFAULT_FAVICON;
       }
     }
@@ -1054,7 +1057,6 @@
         } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
         } else if (classList.contains(CLASS_TAB_ICON)) {
-          item.alt = title;
           func.push(
             setTabIcon(item, {status, title, favIconUrl}),
             addTabIconErrorListener(item),
