@@ -1054,10 +1054,9 @@
         } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
         } else if (classList.contains(CLASS_TAB_ICON)) {
-          func.push(
-            setTabIcon(item, {status, title, favIconUrl}),
-            addTabIconErrorListener(item),
-          );
+          // Note: Don't push to Promise array
+          setTabIcon(item, {status, title, favIconUrl});
+          func.push(addTabIconErrorListener(item));
         } else if (classList.contains(CLASS_TAB_TITLE)) {
           item.textContent = title;
         } else if (classList.contains(CLASS_TAB_AUDIO)) {
