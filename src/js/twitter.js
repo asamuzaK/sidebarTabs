@@ -31,7 +31,6 @@
   };
 
   window.addEventListener("click", evt => {
-    console.log(evt.type);
     const {target} = evt;
     const {parentNode} = target;
     const reg = /js-n(?:av|ew-tweets-bar)/;
@@ -41,15 +40,13 @@
     return func || null;
   });
 
-  window.addEventListener("load", () => {
-    const func = [
-      sendMsg({
-        [TAB_OBSERVE]: true,
-      }),
-      setTimeout(() => sendMsg({
-        [TAB_OBSERVE]: true,
-      }).catch(throwErr), TIME_3SEC)
-    ];
-    return Promise.all(func).catch(throwErr);
-  });
+  window.addEventListener("load", () => Promise.all([
+    sendMsg({
+      [TAB_OBSERVE]: true,
+    }),
+    // Note: twitter.com self reloads after loading completes
+    setTimeout(() => sendMsg({
+      [TAB_OBSERVE]: true,
+    }).catch(throwErr), TIME_3SEC),
+  ]).catch(throwErr));
 }
