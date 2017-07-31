@@ -17,9 +17,14 @@
    */
   const sendObserveTabMsg = evt => {
     const {target} = evt;
-    target.classList.contains("js-new-tweets-bar") && runtime.sendMessage({
-      [TAB_OBSERVE]: true,
-    });
+    const {parentNode} = target;
+    const reg = /js-n(?:av|ew-tweets-bar)/;
+    if (reg.test(target.className) ||
+        parentNode && reg.test(parentNode.className)) {
+      runtime.sendMessage({
+        [TAB_OBSERVE]: true,
+      });
+    }
   };
 
   window.addEventListener("click", sendObserveTabMsg);

@@ -1001,13 +1001,12 @@
     if (!Number.isInteger(tabId)) {
       throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
-    return setTimeout(async () => {
-      const tabsTab = await tabs.get(tabId);
+    return setTimeout(tabs.get(tabId).then(tabsTab => {
       const func = [];
       if (tabsTab) {
-        const {favIconUrl, status, title} = tabsTab;
+        const {favIconUrl, status, title, id} = tabsTab;
         if (status === "complete") {
-          const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+          const tab = document.querySelector(`[data-tab-id="${id}"]`);
           if (tab) {
             const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
             const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
@@ -1020,11 +1019,11 @@
             func.push(storeTabData());
           }
         } else {
-          func.push(observeTab(tabId));
+          func.push(observeTab(id));
         }
       }
-      return Promise.all(func).catch(throwErr);
-    }, TIME_3SEC);
+      return Promise.all(func);
+    }).catch(throwErr), TIME_3SEC);
   };
 
   /* tabs event handlers */
