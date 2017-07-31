@@ -1026,15 +1026,16 @@
   /**
    * handle activated tab
    * @param {!Object} info - activated info
-   * @returns {void}
+   * @returns {?AsyncFunction} - toggleTabCollapsed()
    */
   const handleActivatedTab = async info => {
     const {tabId, windowId} = info;
+    let func;
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
         const {classList: newClass, parentNode: newParent} = tab;
-        const {classList: newParentClass} = newParent;
+        const {classList: newParentClass, firstElementChild} = newParent;
         const items = document.querySelectorAll(
           `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
         );
@@ -1047,8 +1048,13 @@
         }
         newParentClass.add(ACTIVE);
         newClass.add(ACTIVE);
+        if (newParentClass.contains(CLASS_TAB_COLLAPSED) &&
+            firstElementChild !== tab) {
+          func = toggleTabCollapsed({target: tab});
+        }
       }
     }
+    return func || null;
   };
 
   /**
