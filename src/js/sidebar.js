@@ -2009,6 +2009,7 @@
    * handle runtime message
    * @param {Object} msg - message
    * @param {Object} sender - sender
+   * @returns {Promise.<Array>} - results of each handler
    */
   const handleMsg = async (msg, sender) => {
     const items = Object.keys(msg);
