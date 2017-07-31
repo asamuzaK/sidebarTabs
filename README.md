@@ -8,7 +8,7 @@ Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and
 Note:
 Experimental. It is not suitable for general use.
 
-[Download](https://github.com/asamuzaK/sidebarTabs/tree/master/dist "sidebarTabs/dist at master · asamuzaK/sidebarTabs")
+[Download](https://github.com/asamuzaK/sidebarTabs/tree/master/dest "sidebarTabs/dest at master · asamuzaK/sidebarTabs")
 
 ## about:config
 
