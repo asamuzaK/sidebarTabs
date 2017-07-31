@@ -5,12 +5,21 @@
       "strict_min_version": "55.0a1"
     }
   },
+  "content_scripts": [
+    {
+      "all_frames": false,
+      "js": [
+        "js/twitter.js"
+      ],
+      "matches": ["https://twitter.com/*"],
+      "run_at": "document_start"
+    }
+  ],
   "default_locale": "en",
   "description": "__MSG_extensionDescription__",
   "homepage_url": "https://github.com/asamuzaK/sidebarTabs",
   "icons": {
-    "32": "icon.svg",
-    "64": "icon.svg"
+    "32": "icon.svg"
   },
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
@@ -33,5 +42,5 @@
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "0.4.19"
+  "version": "0.4.23"
 }

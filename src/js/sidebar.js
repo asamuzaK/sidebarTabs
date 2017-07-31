@@ -3,8 +3,8 @@
 {
   /* api */
   const {
-    bookmarks, contextualIdentities, i18n, management, sessions, storage, tabs,
-    windows,
+    bookmarks, contextualIdentities, i18n, management, runtime, sessions,
+    storage, tabs, windows,
   } = browser;
 
   /* constants */
@@ -71,6 +71,7 @@
   const TAB_GROUP_EXPAND = "expandTabs";
   const TAB_GROUP_RELOAD = "reloadGroupTabs";
   const TAB_GROUP_UNGROUP = "ungroupTabs";
+  const TAB_OBSERVE = "observeTab";
   const TAB_PIN = "pinTab";
   const TAB_PIN_UNPIN = "unpinTab";
   const TAB_RELOAD = "reloadTab";
@@ -2003,7 +2004,36 @@
     return Promise.all(func);
   };
 
+  /* runtime */
+  /**
+   * handle runtime message
+   * @param {Object} msg - message
+   * @param {Object} sender - sender
+   */
+  const handleMsg = async (msg, sender) => {
+    const items = Object.keys(msg);
+    const func = [];
+    for (const item of items) {
+      const obj = msg[item];
+      switch (item) {
+        case TAB_OBSERVE: {
+          if (obj) {
+            const {tab} = sender;
+            const {id} = tab;
+            Number.isInteger(id) && func.push(observeTab(id));
+          }
+          break;
+        }
+        default:
+      }
+    }
+    return Promise.all(func);
+  };
+
   /* listeners */
+  runtime.onMessage.addListener((msg, sender) => {
+    handleMsg(msg, sender).catch(throwErr);
+  });
   tabs.onActivated.addListener(info =>
     handleActivatedTab(info).catch(throwErr)
   );
