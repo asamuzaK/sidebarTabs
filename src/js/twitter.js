@@ -34,9 +34,13 @@
     const {target} = evt;
     const {parentNode} = target;
     const reg = /js-n(?:av|ew-tweets-bar)/;
-    const func = (reg.test(target) || reg.test(parentNode)) && sendMsg({
-      [TAB_OBSERVE]: true,
-    }).catch(throwErr);
+    let func;
+    if (reg.test(target.className) ||
+        parentNode && reg.test(parentNode.className)) {
+      func = sendMsg({
+        [TAB_OBSERVE]: true,
+      }).catch(throwErr);
+    }
     return func || null;
   });
 
