@@ -12,26 +12,23 @@ Experimental. It is not suitable for general use.
 
 ## about:config
 
+Experimental features are used, so you need to activate the following settings.
+
 * set `svg.context-properties.content.enabled` to `true`.
 * If you have enabled Container Tab, set `privacy.userContext.enabled` to `true`.
 
-## Hide default tab bar
+## Tab group
 
-Create `chrome/` folder in your profile and save `userChrome.css`.
-```
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
-/* tabs toolbar */
-#TabsToolbar {
-  visibility: collapse;
-}
-```
-
-## Grouping tabs
-
-Drag the tab with "Ctrl + left click" and drop it on the tab you want to group.
+* Drag the tab with "Ctrl + left click" and drop it on the tab you want to group.
+* Tab groups are color-coded for each group.
+* Collapse / expand tab groups can be done by clicking on the colored part, or from the context menu.
+* The new tab opened from the tab in the tab group will be displayed as the tab of that group.
+* To cancel the grouping of tabs, you can do it from the context menu.
+* Tab groups will not be saved during private browsing.
 
 ## Known Issues
 
+* The context menu item of the original tab "Send tab to device" is not implemented because there is no API for that in WebExtensions.
 * A loading icon sometime remains even if the site loading ends.
   In that case, open the context menu and select "Tab" -> "Sync Tab".
   [Issue #3](https://github.com/asamuzaK/sidebarTabs/issues/3 "Spinner icon not replaced even after complete in twitter.com · Issue #3 · asamuzaK/sidebarTabs")
