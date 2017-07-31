@@ -830,6 +830,28 @@
     }
   };
 
+  /**
+   * expand activated collapsed tab
+   * @returns {?AsyncFunction} - toggleTabCollapsed()
+   */
+  const expandActivatedCollapsedTab = async () => {
+    const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
+    let func;
+    if (tab) {
+      const {parentNode} = tab;
+      const {lastClosedTab} = sidebar;
+      if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
+          parentNode.lastElementChild === tab && lastClosedTab) {
+        const tabsTab = tab.dataset && tab.dataset.tab &&
+                          JSON.parse(tab.dataset.tab);
+        if (tabsTab.index === lastClosedTab.index - 1) {
+          func = toggleTabCollapsed({target: tab});
+        }
+      }
+    }
+    return func || null;
+  };
+
   /* DnD */
   /**
    * handle drop
@@ -1035,7 +1057,7 @@
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
         const {classList: newClass, parentNode: newParent} = tab;
-        const {classList: newParentClass, firstElementChild} = newParent;
+        const {classList: newParentClass} = newParent;
         const items = document.querySelectorAll(
           `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
         );
@@ -1048,10 +1070,6 @@
         }
         newParentClass.add(ACTIVE);
         newClass.add(ACTIVE);
-        if (newParentClass.contains(CLASS_TAB_COLLAPSED) &&
-            firstElementChild !== tab) {
-          func = toggleTabCollapsed({target: tab});
-        }
       }
     }
     return func || null;
@@ -2053,7 +2071,7 @@
   );
   tabs.onRemoved.addListener((tabId, info) =>
     handleRemovedTab(tabId, info).then(restoreTabContainers)
-      .then(getLastClosedTab).catch(throwErr)
+      .then(getLastClosedTab).then(expandActivatedCollapsedTab).catch(throwErr)
   );
   tabs.onUpdated.addListener((tabId, info, tabsTab) =>
     handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
