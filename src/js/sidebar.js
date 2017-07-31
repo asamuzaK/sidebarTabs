@@ -663,12 +663,8 @@
         } else {
           elm.src = URL_LOADING_SPINNER;
         }
-      } else if (status === "complete") {
-        if (favIconUrl) {
-          func = setFavicon(elm, favIconUrl);
-        } else {
-          elm.src = URL_DEFAULT_FAVICON;
-        }
+      } else if (favIconUrl) {
+        func = setFavicon(elm, favIconUrl).catch(throwErr);
       } else {
         elm.src = URL_DEFAULT_FAVICON;
       }
@@ -1013,8 +1009,8 @@
             const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
             tabContent && (tabContent.title = title);
             tabTitle && (tabTitle.textContent = title);
-            tabIcon &&
-              func.push(setTabIcon(tabIcon, {favIconUrl, status, title}));
+            // Note: Don't push to Promise
+            tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
             tab.dataset.tab = JSON.stringify(tabsTab);
             func.push(storeTabData());
           }
@@ -1090,10 +1086,9 @@
         } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
         } else if (classList.contains(CLASS_TAB_ICON)) {
-          func.push(
-            setTabIcon(item, {status, title, favIconUrl}),
-            addTabIconErrorListener(item),
-          );
+          // Note: Don't push to Promise
+          setTabIcon(item, {status, title, favIconUrl});
+          func.push(addTabIconErrorListener(item));
         } else if (classList.contains(CLASS_TAB_TITLE)) {
           item.textContent = title;
         } else if (classList.contains(CLASS_TAB_AUDIO)) {
@@ -1202,7 +1197,8 @@
         const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
         tabContent && (tabContent.title = title);
         tabTitle && (tabTitle.textContent = title);
-        tabIcon && func.push(setTabIcon(tabIcon, {favIconUrl, status, title}));
+        // Note: Don't push to Promise
+        tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
         if (info.hasOwnProperty("audible") ||
             info.hasOwnProperty("mutedInfo")) {
           const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
