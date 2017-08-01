@@ -16,14 +16,14 @@
   --pinned-tab-glow: radial-gradient(22px at center calc(100% - 2px),
                                      rgba(76,158,217,0.9) 13%,
                                      rgba(0,0,0,0.4) 16%, transparent 70%);
-  --tab-group-1: #C9C;
-  --tab-group-2: #663;
-  --tab-group-3: #69C;
-  --tab-group-4: #366;
-  --tab-group-5: #C96;
-  --tab-group-6: #966;
-  --tab-group-7: #696;
-  --tab-group-8: #669;
+  --tab-group-1: #366;
+  --tab-group-2: #C96;
+  --tab-group-3: #669;
+  --tab-group-4: #696;
+  --tab-group-5: #966;
+  --tab-group-6: #69C;
+  --tab-group-7: #663;
+  --tab-group-8: #C9C;
   --tab-height: 36px;
   --icon-size: 16px;
   --icon-size-small: 12px;
