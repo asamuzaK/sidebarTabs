@@ -8,8 +8,9 @@
   const {runtime} = browser;
 
   /* constant */
+  const CLASS_NEW_TWEETS = "js-new-tweets-bar";
+  const GLOBAL_NAV_QUERY = ".js-nav.js-tooltip.js-dynamic-tooltip";
   const TAB_OBSERVE = "observeTab";
-  const TIME_3SEC = 3000;
 
   /**
    * throw error
@@ -30,27 +31,73 @@
     return func || null;
   };
 
-  window.addEventListener("click", evt => {
-    const {target} = evt;
-    const {parentNode} = target;
-    const reg = /js-n(?:av|ew-tweets-bar)/;
+  /**
+   * create observe message
+   * @param {!Object} evt - Event
+   * @returns {Object} - message
+   */
+  const createObserveMsg = async evt => {
+    const {type} = evt;
+    const msg = {
+      [TAB_OBSERVE]: type,
+    };
+    return msg || null;
+  };
+
+  /**
+   * add listeners to global navigation
+   * @returns {void}
+   */
+  const globalNavAddListener = async () => {
+    const items = document.querySelectorAll(GLOBAL_NAV_QUERY);
+    for (const item of items) {
+      item.addEventListener("keydown", evt => {
+        const {code} = evt;
+        let func;
+        if (code === "Enter") {
+          func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
+        }
+        return func || null;
+      });
+      item.addEventListener("mousedown", evt => {
+        const {button} = evt;
+        let func;
+        if (button === 0) {
+          func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
+        }
+        return func || null;
+      });
+    }
+  };
+
+  window.addEventListener("keydown", evt => {
+    const {code, target} = evt;
     let func;
-    if (reg.test(target.className) ||
-        parentNode && reg.test(parentNode.className)) {
-      func = sendMsg({
-        [TAB_OBSERVE]: true,
-      }).catch(throwErr);
+    if (code === "Enter") {
+      const {parentNode} = target;
+      if (target.classList.contains(CLASS_NEW_TWEETS) ||
+          parentNode && parentNode.classList.contains(CLASS_NEW_TWEETS)) {
+        func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
+      }
     }
     return func || null;
   });
 
-  window.addEventListener("load", () => Promise.all([
-    sendMsg({
-      [TAB_OBSERVE]: true,
-    }),
-    // Note: twitter.com self reloads after loading completes
-    setTimeout(() => sendMsg({
-      [TAB_OBSERVE]: true,
-    }).catch(throwErr), TIME_3SEC),
+  window.addEventListener("mousedown", evt => {
+    const {button, target} = evt;
+    let func;
+    if (button === 0) {
+      const {parentNode} = target;
+      if (target.classList.contains(CLASS_NEW_TWEETS) ||
+          parentNode && parentNode.classList.contains(CLASS_NEW_TWEETS)) {
+        func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
+      }
+    }
+    return func || null;
+  });
+
+  window.addEventListener("load", evt => Promise.all([
+    globalNavAddListener(),
+    createObserveMsg(evt).then(sendMsg),
   ]).catch(throwErr));
 }

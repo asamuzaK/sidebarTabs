@@ -129,6 +129,26 @@
   };
 
   /**
+   * sleep
+   * @param {number} msec - milisec
+   * @param {boolean} doReject - reject instead of resolve
+   * @returns {?AsyncFunction} - resolve / reject
+   */
+  const sleep = (msec = 0, doReject = false) => {
+    let func;
+    if (Number.isInteger(msec) && msec >= 0) {
+      func = new Promise((resolve, reject) => {
+        if (doReject) {
+          setTimeout(reject, msec);
+        } else {
+          setTimeout(resolve, msec);
+        }
+      });
+    }
+    return func || null;
+  };
+
+  /**
    * compare url string
    * @param {string} url1 - URL
    * @param {string} url2 - URL
@@ -576,13 +596,11 @@
   };
 
   /* sidebar tab content */
-  // TODO: should be external JSON file?
   /* favicon fallbacks */
-  const favicon = {
-    "https://abs.twimg.com/favicons/favicon.ico": {
-      favicon: "../shared/Twitter_Logo_Blue.svg",
-    },
-  };
+  const favicon = new Map();
+
+  favicon.set("https://abs.twimg.com/favicons/favicon.ico",
+              "../shared/Twitter_Logo_Blue.svg");
 
   /**
    * tab icon fallback
@@ -615,30 +633,19 @@
   const setFavicon = async (elm, favIconUrl) => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       if (isString(favIconUrl)) {
-        const src = await fetch(favIconUrl).then(res => {
-          const {ok, url: resUrl} = res;
-          let url;
-          if (ok) {
-            url = resUrl;
-          } else if (favicon[resUrl]) {
-            url = favicon[resUrl].favicon;
+        const {protocol} = new URL(favIconUrl);
+        if (/(?:app|f(?:tp|ile)|https?):/.test(protocol)) {
+          const src = await fetch(favIconUrl).then(res => {
+            const {ok, url} = res;
+            return ok && url || null;
+          }).catch(() => favicon.get(favIconUrl));
+          if (src) {
+            elm.src = src;
           } else {
-            url = URL_DEFAULT_FAVICON;
+            elm.src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
           }
-          return url;
-        }).catch(() => {
-          let url;
-          if (favicon[favIconUrl]) {
-            url = favicon[favIconUrl].favicon;
-          } else {
-            url = URL_DEFAULT_FAVICON;
-          }
-          return url;
-        });
-        if (src) {
-          elm.src = src;
         } else {
-          elm.src = URL_DEFAULT_FAVICON;
+          elm.src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
         }
       } else {
         elm.src = URL_DEFAULT_FAVICON;
@@ -652,7 +659,7 @@
    * @param {Object} info - tab info
    * @returns {?AsyncFunction} - setFavicon()
    */
-  const setTabIcon = (elm, info) => {
+  const setTabIcon = async (elm, info) => {
     let func;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       const {status, title, favIconUrl} = info;
@@ -664,12 +671,31 @@
           elm.src = URL_LOADING_SPINNER;
         }
       } else if (favIconUrl) {
-        func = setFavicon(elm, favIconUrl).catch(throwErr);
+        func = setFavicon(elm, favIconUrl);
       } else {
         elm.src = URL_DEFAULT_FAVICON;
       }
     }
     return func || null;
+  };
+
+  /**
+   * set tab content
+   * @param {Object} tab - tab element
+   * @param {Object} tabsTab - tabs.Tab
+   * @returns {void}
+   */
+  const setTabContent = async (tab, tabsTab) => {
+    if (tab && tab.nodeType === Node.ELEMENT_NODE && tabsTab) {
+      const {favIconUrl, status, title} = tabsTab;
+      const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
+      const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
+      const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
+      tabContent && (tabContent.title = title);
+      tabTitle && (tabTitle.textContent = title);
+      tabIcon && await setTabIcon(tabIcon, {favIconUrl, status, title});
+      tab.dataset.tab = JSON.stringify(tabsTab);
+    }
   };
 
   /* sidebar tab audio */
@@ -1013,35 +1039,26 @@
   /**
    * observe tab
    * @param {number} tabId - tab ID
-   * @returns {Function} - setTimeout()
+   * @returns {Promise.<Array>} - results of each handler
    */
   const observeTab = async tabId => {
     if (!Number.isInteger(tabId)) {
       throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
-    return setTimeout(tabs.get(tabId).then(tabsTab => {
-      const func = [];
-      if (tabsTab) {
-        const {favIconUrl, status, title, id} = tabsTab;
-        if (status === "complete") {
-          const tab = document.querySelector(`[data-tab-id="${id}"]`);
-          if (tab) {
-            const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
-            const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
-            const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
-            tabContent && (tabContent.title = title);
-            tabTitle && (tabTitle.textContent = title);
-            // Note: Don't push to Promise
-            tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
-            tab.dataset.tab = JSON.stringify(tabsTab);
-            func.push(storeTabData());
-          }
-        } else {
-          func.push(observeTab(id));
-        }
+    await sleep(TIME_3SEC);
+    const tabsTab = await tabs.get(tabId);
+    const func = [];
+    if (tabsTab) {
+      const {status, id} = tabsTab;
+      if (status === "complete") {
+        await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
+                            tabsTab);
+        func.push(storeTabData());
+      } else {
+        func.push(observeTab(id));
       }
-      return Promise.all(func);
-    }).catch(throwErr), TIME_3SEC);
+    }
+    return Promise.all(func);
   };
 
   /* tabs event handlers */
@@ -1110,9 +1127,10 @@
         } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
         } else if (classList.contains(CLASS_TAB_ICON)) {
-          // Note: Don't push to Promise
-          setTabIcon(item, {status, title, favIconUrl});
-          func.push(addTabIconErrorListener(item));
+          func.push(
+            setTabIcon(item, {status, title, favIconUrl}),
+            addTabIconErrorListener(item),
+          );
         } else if (classList.contains(CLASS_TAB_TITLE)) {
           item.textContent = title;
         } else if (classList.contains(CLASS_TAB_AUDIO)) {
@@ -1215,14 +1233,7 @@
     if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
-        const {favIconUrl, status, title} = tabsTab;
-        const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
-        const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
-        const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
-        tabContent && (tabContent.title = title);
-        tabTitle && (tabTitle.textContent = title);
-        // Note: Don't push to Promise
-        tabIcon && setTabIcon(tabIcon, {favIconUrl, status, title});
+        await setTabContent(tab, tabsTab);
         if (info.hasOwnProperty("audible") ||
             info.hasOwnProperty("mutedInfo")) {
           const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
@@ -1262,8 +1273,7 @@
             func.push(restoreTabContainers());
           }
         }
-        info.hasOwnProperty("status") && info.status === "loading" &&
-          func.push(observeTab(tabId));
+        info.hasOwnProperty("status") && func.push(observeTab(tabId));
         info.hasOwnProperty("url") && func.push(storeTabData());
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
