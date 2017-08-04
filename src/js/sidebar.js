@@ -212,7 +212,7 @@
     let theme = [];
     if (Array.isArray(storedTheme) && storedTheme.length) {
       theme = storedTheme;
-    } else if (management) {
+    } else {
       const items = await management.getAll().then(arr => arr.filter(info =>
         info.type && info.type === "theme" && info.enabled && info
       ));
