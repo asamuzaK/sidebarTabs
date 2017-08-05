@@ -17,6 +17,9 @@
   "bookmarkAllTabs": {
     "message": "すべてのタブをブックマーク"
   },
+  "closeGroupTabs": {
+    "message": "グループのタブをすべて閉じる"
+  },
   "closeOtherTabs": {
     "message": "他のタブをすべて閉じる"
   },

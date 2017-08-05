@@ -40,6 +40,7 @@
   const MENU_TAB_CLOSE = "sidebar-tabs-menu-tab-close";
   const MENU_TAB_CLOSE_UNDO = "sidebar-tabs-menu-tab-close-undo";
   const MENU_TAB_GROUP = "sidebar-tabs-menu-tab-group";
+  const MENU_TAB_GROUP_CLOSE = "sidebar-tabs-menu-tab-group-close";
   const MENU_TAB_GROUP_COLLAPSE = "sidebar-tabs-menu-tab-group-collapse";
   const MENU_TAB_GROUP_RELOAD = "sidebar-tabs-menu-tab-group-reload";
   const MENU_TAB_GROUP_UNGROUP = "sidebar-tabs-menu-tab-group-ungroup";
@@ -67,6 +68,7 @@
   const TAB_CLOSE = "closeTab";
   const TAB_CLOSE_UNDO = "undoCloseTab";
   const TAB_GROUP = "groupTabs";
+  const TAB_GROUP_CLOSE = "closeGroupTabs";
   const TAB_GROUP_COLLAPSE = "collapseTabs";
   const TAB_GROUP_EXPAND = "expandTabs";
   const TAB_GROUP_RELOAD = "reloadGroupTabs";
@@ -878,6 +880,28 @@
     return func || null;
   };
 
+  /**
+   * close grouped tabs
+   * @param {Object} node - tab group container
+   * @returns {?AsyncFunction} - removeTab()
+   */
+  const closeGroupTabs = async node => {
+    const {id, classList, nodeType} = node;
+    let func;
+    if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
+        classList.contains(CLASS_TAB_GROUP)) {
+      const items = node.querySelectorAll(TAB_QUERY);
+      const arr = [];
+      for (const item of items) {
+        const {dataset} = item;
+        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        Number.isInteger(tabId) && arr.push(tabId);
+      }
+      func = arr.length && removeTab(arr);
+    }
+    return func || null;
+  };
+
   /* DnD */
   /**
    * handle drop
@@ -1445,6 +1469,14 @@
         }
         break;
       }
+      case MENU_TAB_GROUP_CLOSE: {
+        if (tab && tabsTab) {
+          const {parentNode} = tab;
+          !tabsTab.pinned && parentNode.classList.contains(CLASS_TAB_GROUP) &&
+            func.push(closeGroupTabs(parentNode).then(restoreTabContainers));
+        }
+        break;
+      }
       case MENU_TAB_GROUP_COLLAPSE:
         tab && tab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
           func.push(toggleTabCollapsed({target: tab}));
@@ -1658,6 +1690,14 @@
               enabled: false,
               onclick: true,
             },
+            [TAB_GROUP_CLOSE]: {
+              id: MENU_TAB_GROUP_CLOSE,
+              title: i18n.getMessage(TAB_GROUP_CLOSE),
+              contexts: [CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
           },
         },
         /* all tabs */
@@ -1845,6 +1885,7 @@
         TAB_GROUP_RELOAD,
         TAB_GROUP_COLLAPSE,
         TAB_GROUP_UNGROUP,
+        TAB_GROUP_CLOSE,
       ];
       const allTabsKeys = [TABS_BOOKMARK_ALL, TAB_CLOSE_UNDO];
       if (tab) {
@@ -1942,6 +1983,15 @@
           const {id, title} = item;
           const data = {};
           switch (itemKey) {
+            case TAB_GROUP_CLOSE:
+            case TAB_GROUP_UNGROUP:
+              if (!tabsTab.pinned && parentClass.contains(CLASS_TAB_GROUP)) {
+                data.enabled = true;
+              } else {
+                data.enabled = false;
+              }
+              data.title = title;
+              break;
             case TAB_GROUP_COLLAPSE: {
               const obj = tab.querySelector(`.${CLASS_TAB_TOGGLE_ICON}`);
               if (parentClass.contains(CLASS_TAB_GROUP) && obj && obj.alt) {
@@ -1953,14 +2003,6 @@
               }
               break;
             }
-            case TAB_GROUP_UNGROUP:
-              if (!tabsTab.pinned && parentClass.contains(CLASS_TAB_GROUP)) {
-                data.enabled = true;
-              } else {
-                data.enabled = false;
-              }
-              data.title = title;
-              break;
             default:
               if (parentClass.contains(CLASS_TAB_GROUP)) {
                 data.enabled = true;
