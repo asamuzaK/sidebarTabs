@@ -373,11 +373,11 @@
    * @returns {Object} - tabs.Tab
    */
   const getLastClosedTab = async () => {
-    const session = await sessions.getRecentlyClosed();
+    const items = await sessions.getRecentlyClosed();
     let tab;
-    if (Array.isArray(session) && session.length) {
+    if (Array.isArray(items) && items.length) {
       const {windowId} = sidebar;
-      for (const item of session) {
+      for (const item of items) {
         const {tab: itemTab} = item;
         if (itemTab) {
           const {windowId: itemWindowId} = itemTab;
@@ -2110,10 +2110,12 @@
     handleActivatedTab(info).catch(throwErr)
   );
   tabs.onAttached.addListener((tabId, info) =>
-    handleAttachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
+    handleAttachedTab(tabId, info).then(restoreTabContainers)
+      .then(getLastClosedTab).catch(throwErr)
   );
   tabs.onCreated.addListener(tabsTab =>
-    handleCreatedTab(tabsTab).then(restoreTabContainers).catch(throwErr)
+    handleCreatedTab(tabsTab).then(restoreTabContainers).then(getLastClosedTab)
+      .catch(throwErr)
   );
   tabs.onDetached.addListener((tabId, info) =>
     handleDetachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
@@ -2189,7 +2191,7 @@
     getTheme().then(setTheme),
     setSidebar(),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-    .catch(throwErr));
+    .then(getLastClosedTab).catch(throwErr));
   window.addEventListener("keydown", evt => setContext(evt).catch(throwErr),
                           true);
   window.addEventListener("mousedown", evt => setContext(evt).catch(throwErr),
