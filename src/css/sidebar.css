@@ -42,15 +42,16 @@
                                      rgba(76,158,217,0.9) 13%, transparent 16%);
 }
 .dark-theme {
-  --background-color: #272B35;
-  --background-active-color: #393F4C;/*#5675B9;*/
-  --background-hover-color: #07090A;
+  --background-color: hsl(240, 5%, 5%);
+  --background-active-color: hsl(240, 1%, 20%);
+  --background-hover-color: hsla(240, 9%, 98%, .1);
+  --background-selection-color: #5675B9;
   --border-color: #666;
   --border-secondary-color: #999;
   --border-active-color: #CCC;
-  --foreground-color: #F5F7FA;
+  --foreground-color: rgb(249, 249, 250);
   --foreground-active-color: #F5F7FA;
-  --foreground-hightlight-color: #F5F7FA;
+  --foreground-selection-color: #FFF;
   --foreground-invert-color: #18191A;
 }
 body {
