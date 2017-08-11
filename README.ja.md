@@ -30,6 +30,7 @@ Firefox用の拡張機能。
 ## 既知の問題
 
 * 本来のタブのコンテキストメニューにある「タブを端末に送る」の項目は、WebExtensionsにAPIがないため実装していません。
+  [Issue #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "Add \"Send tab to device\" functionalty · Issue #7 · asamuzaK/sidebarTabs")
 * グループ化されていないタブから新規タブを開いても、自動的にはグループ化されません。
   これはWebExtensionsのAPIの実装待ちです。
   なお、あらかじめグループ化されているタブから新規タブを開くと同じグループにまとめられます。
