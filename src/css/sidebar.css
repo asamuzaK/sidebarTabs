@@ -2,20 +2,18 @@
 /* sidebar.css */
 :root {
   --background-color: hsl(235,33%,19%);
-  --background-active-color: #E3E4E6;
-  --background-hover-color: #D7D8DA;
+  --background-active-color: #F5F6F7;
+  --background-hover-color: hsla(0,0%,100%,.2);
   --background-selection-color: #5675B9;
   --border-color: #666;
-  --border-secondary-color: #999;
   --border-active-color: #CCC;
+  --border-secondary-color: #999;
   --foreground-color: hsl(240,9%,98%);
   --foreground-active-color: #000;
+  --foreground-hover-color: hsl(240,9%,98%);
   --foreground-highlight-color: HighLight;
   --foreground-invert-color: hsl(240,9%,98%);
   --foreground-selection-color: #F5F7FA;
-  --pinned-tab-glow: radial-gradient(22px at center calc(100% - 2px),
-                                     rgba(76,158,217,0.9) 13%,
-                                     rgba(0,0,0,0.4) 16%, transparent 70%);
   --tab-group-1: #366;
   --tab-group-2: #C96;
   --tab-group-3: #669;
@@ -31,15 +29,15 @@
 }
 .light-theme {
   --background-color: #E3E4E6;
-  --background-active-color: #D7D8DA;
-  --background-hover-color: #F5F6F7;
+  --background-active-color: #F5F6F7;
+  --background-hover-color: #D7D8DA;
   --background-selection-color: #4C9ED9;
   --border-color: #CCC;
-  --border-secondary-color: #666;
   --border-active-color: #999;
+  --border-secondary-color: #666;
   --foreground-color: #18191A;
-  --pinned-tab-glow: radial-gradient(22px at center calc(100% - 2px),
-                                     rgba(76,158,217,0.9) 13%, transparent 16%);
+  --foreground-active-color: #000;
+  --foreground-hover-color: #18191A;
 }
 .dark-theme {
   --background-color: hsl(240, 5%, 5%);
@@ -47,10 +45,11 @@
   --background-hover-color: hsla(240, 9%, 98%, .1);
   --background-selection-color: #5675B9;
   --border-color: #666;
-  --border-secondary-color: #999;
   --border-active-color: #CCC;
+  --border-secondary-color: #999;
   --foreground-color: rgb(249, 249, 250);
   --foreground-active-color: #F5F7FA;
+  --foreground-hover-color: #F5F7FA;
   --foreground-selection-color: #FFF;
   --foreground-invert-color: #18191A;
 }
@@ -121,8 +120,8 @@ main {
 .tab:focus {
   border: 1px solid var(--border-active-color);
   background: var(--background-hover-color);
-  color: var(--foreground-active-color);
-  fill: var(--foreground-active-color);
+  color: var(--foreground-hover-color);
+  fill: var(--foreground-hover-color);
   stroke: var(--foreground-highlight-color);
   z-index: 5;
 }
@@ -143,18 +142,17 @@ main {
   fill: var(--foreground-color);
   stroke: none;
 }
-.tab.newtab:focus,
-.tab.newtab:hover {
+.tab.newtab:hover,
+.tab.newtab:focus {
   border-color: var(--border-active-color);
-  fill: var(--foreground-active-color);
-  stroke: none;
+  fill: var(--background-hover-color);
+  stroke: var(--foreground-hover-color);
   z-index: 7;
 }
-.dark-theme .tab.newtab:focus,
-.dark-theme .tab.newtab:hover {
-  border-top-color: var(--border-hover-color);
-  fill: var(--background-hover-color);
-  stroke: var(--foreground-active-color);
+.light-theme .tab.newtab:hover,
+.light-theme .tab.newtab:focus {
+  fill: var(--foreground-hover-color);
+  stroke: none;
 }
 .tab.newtab > .newtab {
   display: flex;
@@ -240,9 +238,15 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   stroke: var(--foreground-selection-color);
 }
 .tab:hover > .tab-close,
-.tab:focus > .tab-close,
+.tab:focus > .tab-close {
+  stroke: var(--foreground-hover-color);
+}
 .tab.active > .tab-close {
   stroke: var(--foreground-active-color);
+}
+.tab.active:hover > .tab-close,
+.tab.active:focus > .tab-close {
+  stroke: var(--foreground-hover-color);
 }
 .tab-close:hover,
 .tab-close:focus {
