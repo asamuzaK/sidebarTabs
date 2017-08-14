@@ -867,14 +867,9 @@
     let func;
     if (tab) {
       const {parentNode} = tab;
-      const {lastClosedTab} = sidebar;
       if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
-          parentNode.lastElementChild === tab && lastClosedTab) {
-        const tabsTab = tab.dataset && tab.dataset.tab &&
-                          JSON.parse(tab.dataset.tab);
-        if (tabsTab.index === lastClosedTab.index - 1) {
-          func = toggleTabCollapsed({target: tab});
-        }
+          parentNode.lastElementChild === tab) {
+        func = toggleTabCollapsed({target: tab});
       }
     }
     return func || null;
@@ -1089,7 +1084,7 @@
   /**
    * handle activated tab
    * @param {!Object} info - activated info
-   * @returns {?AsyncFunction} - toggleTabCollapsed()
+   * @returns {?AsyncFunction} - expandActivatedCollapsedTab()
    */
   const handleActivatedTab = async info => {
     const {tabId, windowId} = info;
@@ -1098,7 +1093,9 @@
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
         const {classList: newClass, parentNode: newParent} = tab;
-        const {classList: newParentClass} = newParent;
+        const {
+          classList: newParentClass, lastElementChild: newParentLastChild,
+        } = newParent;
         const items = document.querySelectorAll(
           `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
         );
@@ -1111,6 +1108,10 @@
         }
         newParentClass.add(ACTIVE);
         newClass.add(ACTIVE);
+        if (newParentClass.contains(CLASS_TAB_COLLAPSED) &&
+            newParentLastChild === tab) {
+          func = expandActivatedCollapsedTab();
+        }
       }
     }
     return func || null;
