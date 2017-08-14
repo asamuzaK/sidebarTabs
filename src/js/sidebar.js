@@ -859,7 +859,7 @@
   };
 
   /**
-   * expand activated collapsed tab
+   * expand activated collapsed tab when other tab got removed / detatched
    * @returns {?AsyncFunction} - toggleTabCollapsed()
    */
   const expandActivatedCollapsedTab = async () => {
@@ -2110,7 +2110,8 @@
       .catch(throwErr)
   );
   tabs.onDetached.addListener((tabId, info) =>
-    handleDetachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
+    handleDetachedTab(tabId, info).then(restoreTabContainers)
+      .then(expandActivatedCollapsedTab).catch(throwErr)
   );
   tabs.onMoved.addListener((tabId, info) =>
     handleMovedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
