@@ -909,7 +909,7 @@
    * @returns {?AsyncFunction} - storeTabData()
    */
   const handleDrop = evt => {
-    const {dataTransfer, ctrlKey, target} = evt;
+    const {dataTransfer, shiftKey, target} = evt;
     const id = dataTransfer.getData(MIME_TYPE);
     let func;
     if (isString(id)) {
@@ -937,7 +937,7 @@
           } = dropParent;
           const {parentNode: tabParent} = tab;
           if (dropParentNextElement === tabParent && dropParentChild === 1 &&
-              ctrlKey) {
+              shiftKey) {
             dropParent.appendChild(tab);
             dropParent.classList.add(CLASS_TAB_GROUP);
             switch (tabParent.childElementCount) {
@@ -953,7 +953,7 @@
             const dropIndex = getSidebarTabIndex(dropTarget);
             const tabIndex = getSidebarTabIndex(tab);
             const index = tabIndex >= dropIndex && dropIndex + 1 || dropIndex;
-            tab.dataset.group = !!ctrlKey;
+            tab.dataset.group = !!shiftKey;
             moveTab(id * 1, {
               index,
               windowId: sidebar.windowId,
