@@ -868,7 +868,7 @@
     if (tab) {
       const {parentNode} = tab;
       if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
-          parentNode.lastElementChild === tab) {
+          parentNode.firstElementChild !== tab) {
         func = toggleTabCollapsed({target: tab});
       }
     }
@@ -1094,7 +1094,7 @@
       if (tab) {
         const {classList: newClass, parentNode: newParent} = tab;
         const {
-          classList: newParentClass, lastElementChild: newParentLastChild,
+          classList: newParentClass, firstElementChild: newParentFirstChild,
         } = newParent;
         const items = document.querySelectorAll(
           `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
@@ -1109,7 +1109,7 @@
         newParentClass.add(ACTIVE);
         newClass.add(ACTIVE);
         if (newParentClass.contains(CLASS_TAB_COLLAPSED) &&
-            newParentLastChild === tab) {
+            newParentFirstChild !== tab) {
           func = expandActivatedCollapsedTab();
         }
       }
@@ -2111,8 +2111,7 @@
     handleActivatedTab(info).catch(throwErr)
   );
   tabs.onAttached.addListener((tabId, info) =>
-    handleAttachedTab(tabId, info).then(restoreTabContainers)
-      .then(getLastClosedTab).catch(throwErr)
+    handleAttachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
   tabs.onCreated.addListener(tabsTab =>
     handleCreatedTab(tabsTab).then(restoreTabContainers).then(getLastClosedTab)
@@ -2126,7 +2125,7 @@
   );
   tabs.onRemoved.addListener((tabId, info) =>
     handleRemovedTab(tabId, info).then(restoreTabContainers)
-      .then(getLastClosedTab).then(expandActivatedCollapsedTab).catch(throwErr)
+      .then(getLastClosedTab).catch(throwErr)
   );
   tabs.onUpdated.addListener((tabId, info, tabsTab) =>
     handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
