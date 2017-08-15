@@ -352,5 +352,5 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   margin: 0;
   width: var(--icon-size-x-small);
   height: var(--icon-size-x-small);
-  transition: transform 0.1s linear;
+  transition: transform 0.1s;
 }
