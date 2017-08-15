@@ -1,6 +1,7 @@
 @charset "UTF-8";
 /* sidebar.css */
 :root {
+  font: menu;
   --background-color: hsl(235,33%,19%);
   --background-active-color: #F5F6F7;
   --background-hover-color: hsla(0,0%,100%,.2);
@@ -22,10 +23,11 @@
   --tab-group-6: #69C;
   --tab-group-7: #663;
   --tab-group-8: #C9C;
-  --tab-height: 32px;
-  --icon-size: 16px;
-  --icon-size-small: 12px;
-  --icon-size-x-small: 8px;
+  --scale-size: calc(1rem / 3);
+  --tab-height: calc(var(--scale-size) * 8);
+  --icon-size: calc(var(--scale-size) * 4);
+  --icon-size-small: calc(var(--scale-size) * 3);
+  --icon-size-x-small: calc(var(--scale-size) * 2);
 }
 .light-theme {
   --background-color: #E3E4E6;
@@ -61,7 +63,6 @@ body {
   color: var(--foreground-color);
   fill: var(--foreground-color);
   stroke: var(--foreground-highlight-color);
-  font: menu;
 }
 main {
   position: fixed;
@@ -170,7 +171,7 @@ main {
   height: 100%;
 }
 .tab-icon {
-  margin: 4px;
+  margin: var(--scale-size);
   width: var(--icon-size);
   height: var(--icon-size);
   stroke: var(--foreground-color);
@@ -199,7 +200,7 @@ body:not(.dark-theme) .tab.active .tab-icon {
   justify-content: space-around;
   flex: 0 0 var(--icon-size-small);
   margin: 0;
-  padding: 2px;
+  padding: calc(var(--scale-size) / 2);
   height: var(--icon-size-small);
 }
 .tab-audio-icon {
@@ -210,8 +211,8 @@ body:not(.dark-theme) .tab.active .tab-icon {
 body:not(.dark-theme) .tab:hover .tab-audio,
 body:not(.dark-theme) .tab:focus .tab-audio,
 body:not(.dark-theme) .tab.active .tab-audio {
-  padding: 0;
   flex: 0 0 var(--icon-size);
+  padding: 0;
   height: var(--icon-size);
 }
 .light-theme .tab-audio-icon,
@@ -227,10 +228,10 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 calc(var(--icon-small-size) + 8px);
-  margin: 4px;
+  flex: 0 0 calc(var(--icon-small-size) + var(--scale-size) * 2);
+  margin: var(--scale-size);
   border-radius: 50%;
-  height: calc(var(--icon-small-size) + 8px);
+  height: calc(var(--icon-small-size) + var(--scale-size) * 2);
   fill: none;
   stroke: var(--foreground-color);
 }
@@ -258,7 +259,7 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   background-color: var(--border-active-color);
 }
 .tab-close-icon {
-  margin: 4px;
+  margin: var(--scale-size);
   width: var(--icon-size-x-small);
   height: var(--icon-size-x-small);
 }
@@ -280,8 +281,8 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 calc(var(--icon-size) + 4px);
-  height: calc(var(--icon-size) + 4px);
+  flex: 0 0 calc(var(--icon-size) + var(--scale-size));
+  height: calc(var(--icon-size) + var(--scale-size));
   fill: var(--foreground-color);
   stroke: none;
 }
@@ -292,7 +293,7 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
 }
 .tab-pinned-icon {
   flex: 0 0 var(--icon-x-small-size);
-  margin: 6px;
+  margin: calc(var(--scale-size) * 1.5);
 }
 
 /* tab group */
