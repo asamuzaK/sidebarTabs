@@ -42,6 +42,7 @@
   const MENU_TAB_GROUP = "sidebar-tabs-menu-tab-group";
   const MENU_TAB_GROUP_CLOSE = "sidebar-tabs-menu-tab-group-close";
   const MENU_TAB_GROUP_COLLAPSE = "sidebar-tabs-menu-tab-group-collapse";
+  const MENU_TAB_GROUP_DETACH = "sidebar-tabs-menu-tab-group-detach";
   const MENU_TAB_GROUP_RELOAD = "sidebar-tabs-menu-tab-group-reload";
   const MENU_TAB_GROUP_UNGROUP = "sidebar-tabs-menu-tab-group-ungroup";
   const MENU_TAB_NEW_WIN_MOVE = "sidebar-tabs-menu-tab-new-win-move";
@@ -70,6 +71,7 @@
   const TAB_GROUP = "groupTabs";
   const TAB_GROUP_CLOSE = "closeGroupTabs";
   const TAB_GROUP_COLLAPSE = "collapseTabs";
+  const TAB_GROUP_DETACH = "detachTabFromGroup";
   const TAB_GROUP_EXPAND = "expandTabs";
   const TAB_GROUP_RELOAD = "reloadGroupTabs";
   const TAB_GROUP_UNGROUP = "ungroupTabs";
@@ -441,16 +443,16 @@
    */
   const getSidebarTabContainer = node => {
     const root = document.documentElement;
-    let tab;
+    let container;
     while (node && node.parentNode && node.parentNode !== root) {
       const {classList, parentNode} = node;
       if (classList.contains(CLASS_TAB_CONTAINER)) {
-        tab = node;
+        container = node;
         break;
       }
       node = parentNode;
     }
-    return tab || null;
+    return container || null;
   };
 
   /**
@@ -876,6 +878,48 @@
   };
 
   /**
+   * detach tab from tab group
+   * @param {Object} elm - element
+   * @returns {?AsyncFunction} - moveTab()
+   */
+  const detachTabFromGroup = async elm => {
+    let func;
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const {parentNode} = elm;
+      if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
+          !parentNode.classList.contains(PINNED)) {
+        const {lastElementChild, nextElementSibling} = parentNode;
+        const items = document.querySelectorAll(TAB_QUERY);
+        const tabId = elm.dataset && elm.dataset.tabId && elm.dataset.tabId * 1;
+        const opt = {
+          windowId: sidebar.windowId,
+        };
+        if (elm === lastElementChild) {
+          const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+          container.appendChild(elm);
+          parentNode.parentNode.insertBefore(container, nextElementSibling);
+        } else {
+          const {firstElementChild: target} = nextElementSibling;
+          if (target.classList.contains(NEW_TAB)) {
+            opt.index = items.length - 1;
+          } else {
+            const tabsTab = target.dataset && target.dataset.tab &&
+                              JSON.parse(target.dataset.tab);
+            const {index} = tabsTab;
+            if (Number.isInteger(index)) {
+              opt.index = index - 1;
+            } else {
+              opt.index = items.length - 1;
+            }
+          }
+          func = moveTab(tabId, opt);
+        }
+      }
+    }
+    return func || null;
+  };
+
+  /**
    * close grouped tabs
    * @param {Object} node - tab group container
    * @returns {?AsyncFunction} - removeTab()
@@ -915,12 +959,9 @@
         let dropTarget;
         while (node && node.parentNode && node.parentNode !== root) {
           const {dataset} = node;
-          if (dataset) {
-            const {tabId} = dataset;
-            if (tabId) {
-              dropTarget = node;
-              break;
-            }
+          if (dataset && dataset.tabId) {
+            dropTarget = node;
+            break;
           }
           node = node.parentNode;
         }
@@ -1323,34 +1364,48 @@
           target.parentNode.insertBefore(container, target);
         }
       } else {
-        const target = items[fromIndex >= toIndex && toIndex - 1 || toIndex];
-        const {nextElementSibling, parentNode} = target;
+        const tabLastIndex = items.length - 1;
+        const index = toIndex === tabLastIndex || fromIndex >= toIndex ?
+          toIndex :
+          toIndex + 1;
+        const target = items[index];
+        const {parentNode} = target;
         const unPinned =
           toIndex > fromIndex &&
           items[fromIndex].parentNode.classList.contains(PINNED) &&
           items[toIndex].parentNode.classList.contains(PINNED) &&
           items[toIndex] === items[toIndex].parentNode.lastElementChild;
+        const detached =
+          toIndex > fromIndex &&
+          items[fromIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
+          items[toIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
+          items[toIndex] === items[toIndex].parentNode.lastElementChild;
         let {dataset: {group}} = tab;
         group = group === "true" && true || false;
-        if (!group && parentNode.childElementCount === 1 || unPinned) {
-          const {
-            nextElementSibling: parentNextElementSibling,
-            parentNode: parentParentNode,
-          } = parentNode;
+        if (!group && parentNode.childElementCount === 1 || unPinned ||
+            detached) {
+          const {parentNode: parentParentNode} = parentNode;
           const frag = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
           if (frag) {
             frag.appendChild(tab);
-            if (parentNextElementSibling) {
-              parentParentNode.insertBefore(frag, parentNextElementSibling);
-            } else {
+            if (toIndex === tabLastIndex) {
               const newtab = document.getElementById(NEW_TAB);
               parentParentNode.insertBefore(frag, newtab);
+            } else {
+              parentParentNode.insertBefore(frag, parentNode);
             }
           }
-        } else if (nextElementSibling) {
-          parentNode.insertBefore(tab, nextElementSibling);
         } else {
-          parentNode.appendChild(tab);
+          const groupIndex = toIndex === tabLastIndex || fromIndex < toIndex ?
+            toIndex :
+            toIndex - 1;
+          const groupTarget = items[groupIndex];
+          const {parentNode: groupParent, nextElementSibling} = groupTarget;
+          if (toIndex === tabLastIndex) {
+            groupParent.appendChild(tab);
+          } else {
+            groupParent.insertBefore(tab, nextElementSibling);
+          }
         }
       }
       tab.dataset.group = null;
@@ -1414,23 +1469,21 @@
   const handleClickedContextMenu = async evt => {
     const {target: {id}} = evt;
     const tab = sidebar.context && sidebar.context.classList &&
-                sidebar.context.classList.contains(TAB) && sidebar.context;
+                  sidebar.context.classList.contains(TAB) && sidebar.context;
     const tabId = tab && tab.dataset && tab.dataset.tabId &&
-                  tab.dataset.tabId * 1;
+                    tab.dataset.tabId * 1;
     const tabsTab = tab && tab.dataset && tab.dataset.tab &&
-                    JSON.parse(tab.dataset.tab);
+                      JSON.parse(tab.dataset.tab);
     const func = [];
     switch (id) {
       case MENU_SIDEBAR_INIT:
         func.push(initSidebar(true));
         break;
       case MENU_TABS_BOOKMARK_ALL: {
-        const items = document.querySelectorAll(
-          `${TAB_QUERY}:not(.${PINNED})`
-        );
+        const items = document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
         for (const item of items) {
           const itemTab = item.dataset && item.dataset.tab &&
-                          JSON.parse(item.dataset.tab);
+                            JSON.parse(item.dataset.tab);
           const {title, url} = itemTab;
           func.push(bookmarkTab({title, url}));
         }
@@ -1473,6 +1526,11 @@
       case MENU_TAB_GROUP_COLLAPSE:
         tab && tab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
           func.push(toggleTabCollapsed({target: tab}));
+        break;
+      case MENU_TAB_GROUP_DETACH:
+        tab && tab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+        !tab.parentNode.classList.contains(PINNED) &&
+          func.push(detachTabFromGroup(tab).then(restoreTabContainers));
         break;
       case MENU_TAB_GROUP_RELOAD: {
         if (tab) {
@@ -1675,17 +1733,25 @@
               onclick: true,
               toggleTitle: i18n.getMessage(TAB_GROUP_EXPAND),
             },
-            [TAB_GROUP_UNGROUP]: {
-              id: MENU_TAB_GROUP_UNGROUP,
-              title: i18n.getMessage(TAB_GROUP_UNGROUP),
+            [TAB_GROUP_CLOSE]: {
+              id: MENU_TAB_GROUP_CLOSE,
+              title: i18n.getMessage(TAB_GROUP_CLOSE),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
             },
-            [TAB_GROUP_CLOSE]: {
-              id: MENU_TAB_GROUP_CLOSE,
-              title: i18n.getMessage(TAB_GROUP_CLOSE),
+            [TAB_GROUP_DETACH]: {
+              id: MENU_TAB_GROUP_DETACH,
+              title: i18n.getMessage(TAB_GROUP_DETACH),
+              contexts: [CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
+            [TAB_GROUP_UNGROUP]: {
+              id: MENU_TAB_GROUP_UNGROUP,
+              title: i18n.getMessage(TAB_GROUP_UNGROUP),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1877,8 +1943,9 @@
       const tabGroupKeys = [
         TAB_GROUP_RELOAD,
         TAB_GROUP_COLLAPSE,
-        TAB_GROUP_UNGROUP,
         TAB_GROUP_CLOSE,
+        TAB_GROUP_DETACH,
+        TAB_GROUP_UNGROUP,
       ];
       const allTabsKeys = [TABS_BOOKMARK_ALL, TAB_CLOSE_UNDO];
       if (tab) {
@@ -1977,6 +2044,7 @@
           const data = {};
           switch (itemKey) {
             case TAB_GROUP_CLOSE:
+            case TAB_GROUP_DETACH:
             case TAB_GROUP_UNGROUP:
               if (!tabsTab.pinned && parentClass.contains(CLASS_TAB_GROUP)) {
                 data.enabled = true;

@@ -47,6 +47,9 @@
   "defaultTheme": {
     "message": "Default Theme"
   },
+  "detachTabFromGroup": {
+    "message": "Detach Tab From Group"
+  },
   "expandTabs": {
     "message": "Expand Group Tabs"
   },

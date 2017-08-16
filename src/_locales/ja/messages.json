@@ -47,6 +47,9 @@
   "defaultTheme": {
     "message": "デフォルトのテーマ"
   },
+  "detachTabFromGroup": {
+    "message": "タブをグループから切り離す"
+  },
   "expandTabs": {
     "message": "グループのタブを展開"
   },
