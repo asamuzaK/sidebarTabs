@@ -136,24 +136,15 @@ main {
 }
 .tab.newtab {
   border-color: transparent;
-  fill: var(--background-color);
-  stroke: var(--foreground-color);
-}
-.light-theme .tab.newtab {
   fill: var(--foreground-color);
   stroke: none;
 }
 .tab.newtab:hover,
 .tab.newtab:focus {
   border-color: var(--border-active-color);
-  fill: var(--background-hover-color);
-  stroke: var(--foreground-hover-color);
-  z-index: 7;
-}
-.light-theme .tab.newtab:hover,
-.light-theme .tab.newtab:focus {
   fill: var(--foreground-hover-color);
   stroke: none;
+  z-index: 7;
 }
 .tab.newtab > .newtab {
   display: flex;

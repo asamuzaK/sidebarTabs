@@ -17,7 +17,7 @@
     <rect x="7" y="3" width="2" height="12" rx="0.25" ry="0.25"/>
     <rect x="2" y="8" width="12" height="2" rx="0.25" ry="0.25"/>
   </g>
-  <g fill="context-fill">
+  <g fill="context-fill" fill-opacity="0.6">
     <rect x="7" y="3" width="2" height="12"/>
     <rect x="2" y="8" width="12" height="2"/>
   </g>
