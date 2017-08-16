@@ -19,7 +19,7 @@ Experimental features are used, so you need to activate the following settings.
 
 ## Tab group
 
-* Drag the tab with "Ctrl + left click" and drop it on the tab you want to group.
+* Drag the tab with "Shift + left click" and drop it on the tab you want to group.
 * Tab groups are color-coded for each group.
 * Collapse / expand tab groups can be done by clicking on the colored part, or from the context menu.
 * The new tab opened from the tab in the tab group will be displayed as the tab of that group.
