@@ -33,6 +33,7 @@
   const CLASS_THEME_DARK = "dark-theme";
   const CLASS_THEME_LIGHT = "light-theme";
   const CONNECTING = "connecting";
+  const COOKIE_STORE_DEFAULT = "firefox-default";
   const MENU = "sidebar-tabs-menu";
   const MENU_SIDEBAR_INIT = "sidebar-tabs-menu-sidebar-init";
   const MENU_TAB = "sidebar-tabs-menu-tab";
@@ -1215,9 +1216,7 @@
       }
       tab.dataset.tabId = id;
       tab.dataset.tab = JSON.stringify(tabsTab);
-      // FIXME:
-      /*
-      if (cookieStoreId) {
+      if (cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
         const ident = await contextualIdentities.get(cookieStoreId);
         if (ident) {
           const {color} = ident;
@@ -1226,7 +1225,6 @@
           }
         }
       }
-      */
       if (pinned) {
         container = document.getElementById(PINNED);
         tab.classList.add(PINNED);
