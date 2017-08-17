@@ -2,18 +2,18 @@
 /* sidebar.css */
 :root {
   font: menu;
-  --background-color: hsl(235,33%,19%);
+  --background-color: hsl(235, 33%, 19%);
   --background-active-color: #F5F6F7;
-  --background-hover-color: hsla(0,0%,100%,.2);
+  --background-hover-color: hsla(0, 0%, 100%, .2);
   --background-selection-color: #5675B9;
   --border-color: #666;
   --border-active-color: #CCC;
   --border-secondary-color: #999;
-  --foreground-color: hsl(240,9%,98%);
+  --foreground-color: hsl(240, 9%, 98%);
   --foreground-active-color: #000;
-  --foreground-hover-color: hsl(240,9%,98%);
+  --foreground-hover-color: hsl(240, 9%, 98%);
   --foreground-highlight-color: HighLight;
-  --foreground-invert-color: hsl(240,9%,98%);
+  --foreground-invert-color: hsl(240, 9%, 98%);
   --foreground-selection-color: #F5F7FA;
   --tab-group-1: #366;
   --tab-group-2: #C96;
@@ -26,8 +26,8 @@
   --scale-size: calc(1rem / 3);
   --tab-height: calc(var(--scale-size) * 8);
   --icon-size: calc(var(--scale-size) * 4);
-  --icon-size-small: calc(var(--scale-size) * 3);
-  --icon-size-x-small: calc(var(--scale-size) * 2);
+  --icon-small-size: calc(var(--scale-size) * 3);
+  --icon-x-small-size: calc(var(--scale-size) * 2);
 }
 .light-theme {
   --background-color: #E3E4E6;
@@ -189,14 +189,14 @@ body:not(.dark-theme) .tab.active .tab-icon {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 var(--icon-size-small);
+  flex: 0 0 var(--icon-small-size);
   margin: 0;
   padding: calc(var(--scale-size) / 2);
-  height: var(--icon-size-small);
+  height: var(--icon-small-size);
 }
 .tab-audio-icon {
-  width: var(--icon-size-small);
-  height: var(--icon-size-small);
+  width: var(--icon-small-size);
+  height: var(--icon-small-size);
 }
 .light-theme .tab-audio,
 body:not(.dark-theme) .tab:hover .tab-audio,
@@ -288,7 +288,7 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   fill: var(--foreground-hover-color);
 }
 .tab-pinned-icon {
-  flex: 0 0 var(--icon-size-small);
+  flex: 0 0 var(--icon-small-size);
   margin: calc(var(--scale-size) * 1.5);
 }
 
@@ -307,7 +307,7 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 var(--icon-size-small);
+  flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
 }
 .tab-group:nth-child(8n + 1) > .tab > .tab-context {
@@ -346,7 +346,7 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
 }
 .tab-group > .tab > .tab-context > .tab-toggle-icon {
   margin: 0;
-  width: var(--icon-size-x-small);
-  height: var(--icon-size-x-small);
+  width: var(--icon-x-small-size);
+  height: var(--icon-x-small-size);
   transition: transform 0.1s;
 }

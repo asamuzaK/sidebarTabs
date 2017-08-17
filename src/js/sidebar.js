@@ -1,4 +1,6 @@
-/* sidebar.js */
+/**
+ * sidebar.js
+ */
 "use strict";
 {
   /* api */
