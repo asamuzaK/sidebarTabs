@@ -1364,8 +1364,8 @@
           target.parentNode.insertBefore(container, target);
         }
       } else {
-        const tabLastIndex = items.length - 1;
-        const index = toIndex === tabLastIndex || fromIndex >= toIndex ?
+        const lastTabIndex = items.length - 1;
+        const index = toIndex === lastTabIndex || fromIndex >= toIndex ?
           toIndex :
           toIndex + 1;
         const target = items[index];
@@ -1388,7 +1388,7 @@
           const frag = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
           if (frag) {
             frag.appendChild(tab);
-            if (toIndex === tabLastIndex) {
+            if (toIndex === lastTabIndex) {
               const newtab = document.getElementById(NEW_TAB);
               parentParentNode.insertBefore(frag, newtab);
             } else {
@@ -1396,12 +1396,12 @@
             }
           }
         } else {
-          const groupIndex = toIndex === tabLastIndex || fromIndex < toIndex ?
+          const groupIndex = toIndex === lastTabIndex || fromIndex < toIndex ?
             toIndex :
             toIndex - 1;
           const groupTarget = items[groupIndex];
           const {parentNode: groupParent, nextElementSibling} = groupTarget;
-          if (toIndex === tabLastIndex) {
+          if (toIndex === lastTabIndex) {
             groupParent.appendChild(tab);
           } else {
             groupParent.insertBefore(tab, nextElementSibling);
