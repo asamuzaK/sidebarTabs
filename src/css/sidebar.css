@@ -58,7 +58,7 @@
 body {
   margin: 0;
   padding: 0;
-  -moz-context-properties: fill, stroke;
+  -moz-context-properties: fill, fill-opacity, stroke;
   background: var(--background-color);
   color: var(--foreground-color);
   fill: var(--foreground-color);
@@ -219,40 +219,40 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 calc(var(--icon-small-size) + var(--scale-size) * 2);
-  margin: var(--scale-size);
-  border-radius: 50%;
-  height: calc(var(--icon-small-size) + var(--scale-size) * 2);
-  fill: none;
-  stroke: var(--foreground-color);
-}
-.tab.highlighted > .tab-close {
-  stroke: var(--foreground-selection-color);
-}
-.tab:hover > .tab-close,
-.tab:focus > .tab-close {
-  stroke: var(--foreground-hover-color);
+  flex: 0 0 var(--icon-size);
+  border-radius: calc(var(--scale-size) / 2);
+  height: var(--icon-size);
+  fill: var(--foreground-color);
+  fill-opacity: 0;
+  stroke: none;
 }
 .tab.active > .tab-close {
-  stroke: var(--foreground-active-color);
+  fill: var(--foreground-active-color);
 }
+.tab:hover > .tab-close,
+.tab:focus > .tab-close,
 .tab.active:hover > .tab-close,
 .tab.active:focus > .tab-close {
-  stroke: var(--foreground-hover-color);
+  fill: var(--foreground-hover-color);
 }
 .tab-close:hover,
 .tab-close:focus {
-  background-color: var(--border-secondary-color);
-  stroke: var(--foreground-invert-color);
+  fill-opacity: 0.2;
 }
-.light-theme .tab > .tab-close:hover,
-.light-theme .tab > .tab-close:focus {
-  background-color: var(--border-active-color);
+.tab-close:active {
+  fill-opacity: 0.4;
+}
+.light-theme .tab-close:hover,
+.tab-close:focus {
+  fill-opacity: 0.1;
+}
+.light-theme .tab-close:active {
+  fill-opacity: 0.2;
 }
 .tab-close-icon {
   margin: var(--scale-size);
-  width: var(--icon-size-x-small);
-  height: var(--icon-size-x-small);
+  width: var(--icon-size);
+  height: var(--icon-size);
 }
 
 /* pinned tab */
@@ -275,15 +275,20 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
   flex: 0 0 calc(var(--icon-size) + var(--scale-size));
   height: calc(var(--icon-size) + var(--scale-size));
   fill: var(--foreground-color);
+  fill-opacity: 0.5;
   stroke: none;
 }
-.tab-container.pinned > .tab:hover > .tab-pinned,
-.tab-container.pinned > .tab:focus > .tab-pinned,
 .tab-container.pinned > .tab.active > .tab-pinned {
   fill: var(--foreground-active-color);
 }
+.tab-container.pinned > .tab:hover > .tab-pinned,
+.tab-container.pinned > .tab:focus > .tab-pinned,
+.tab-container.pinned > .tab.active:hover > .tab-pinned,
+.tab-container.pinned > .tab.active:focus > .tab-pinned {
+  fill: var(--foreground-hover-color);
+}
 .tab-pinned-icon {
-  flex: 0 0 var(--icon-x-small-size);
+  flex: 0 0 var(--icon-size-small);
   margin: calc(var(--scale-size) * 1.5);
 }
 
