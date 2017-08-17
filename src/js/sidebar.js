@@ -1215,13 +1215,18 @@
       }
       tab.dataset.tabId = id;
       tab.dataset.tab = JSON.stringify(tabsTab);
+      // FIXME:
+      /*
       if (cookieStoreId) {
         const ident = await contextualIdentities.get(cookieStoreId);
         if (ident) {
           const {color} = ident;
-          tab.style.borderColor = color;
+          if (color) {
+            tab.style.borderColor = color;
+          }
         }
       }
+      */
       if (pinned) {
         container = document.getElementById(PINNED);
         tab.classList.add(PINNED);
