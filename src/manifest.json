@@ -2,7 +2,7 @@
   "applications": {
     "gecko": {
       "id": "sidebarTabs@asamuzak.jp",
-      "strict_min_version": "55.0a1"
+      "strict_min_version": "57.0a1"
     }
   },
   "content_scripts": [
@@ -43,5 +43,5 @@
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "0.10.2"
+  "version": "0.11.0"
 }
