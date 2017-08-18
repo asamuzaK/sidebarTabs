@@ -1160,8 +1160,8 @@
    */
   const handleCreatedTab = async tabsTab => {
     const {
-      active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo, pinned,
-      status, title, windowId,
+      active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo,
+      openerTabId, pinned, status, title, windowId,
     } = tabsTab;
     const {muted} = mutedInfo;
     const func = [];
@@ -1177,6 +1177,8 @@
       const list = document.querySelectorAll(TAB_QUERY);
       const listIdx = list[index];
       const listIdxPrev = index > 0 && list[index - 1];
+      const opener = Number.isInteger(openerTabId) &&
+        document.querySelector(`[data-tab-id="${openerTabId}"]`);
       let container;
       for (const item of items) {
         const {classList} = item;
@@ -1236,6 +1238,12 @@
         }
         container.childElementCount > 1 &&
           container.classList.add(CLASS_TAB_GROUP);
+      } else if (opener) {
+        await addDragEventListener(tab);
+        container = opener.parentNode;
+        container.insertBefore(tab, opener.nextElementSibling);
+        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabCollapsed({target: tab}));
       } else if (list.length !== index && listIdx && listIdx.parentNode &&
                  listIdx.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                  listIdxPrev && listIdxPrev.parentNode &&
