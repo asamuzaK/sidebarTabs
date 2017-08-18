@@ -1238,7 +1238,7 @@
         }
         container.childElementCount > 1 &&
           container.classList.add(CLASS_TAB_GROUP);
-      } else if (opener) {
+      } else if (opener && !opener.classList.contains(PINNED)) {
         await addDragEventListener(tab);
         container = opener.parentNode;
         container.insertBefore(tab, opener.nextElementSibling);
