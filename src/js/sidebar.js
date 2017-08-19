@@ -1175,11 +1175,9 @@
       ];
       const items = tab.querySelectorAll(tabItems.join(","));
       const list = document.querySelectorAll(TAB_QUERY);
-      const listIdx = list[index];
-      const listIdxPrev = index > 0 && list[index - 1];
-      const opener = Number.isInteger(openerTabId) &&
-        document.querySelector(`[data-tab-id="${openerTabId}"]`);
-      let container;
+      const listedTab = list[index];
+      const listedTabPrev = index > 0 && list[index - 1];
+      let container, openerTab, openerTabsTab;
       for (const item of items) {
         const {classList} = item;
         if (classList.contains(CLASS_TAB_CONTEXT)) {
@@ -1227,6 +1225,12 @@
           }
         }
       }
+      if (Number.isInteger(openerTabId)) {
+        openerTab = document.querySelector(`[data-tab-id="${openerTabId}"]`);
+        if (openerTab && openerTab.dataset && openerTab.dataset.tab) {
+          openerTabsTab = JSON.parse(openerTab.dataset.tab);
+        }
+      }
       if (pinned) {
         container = document.getElementById(PINNED);
         tab.classList.add(PINNED);
@@ -1238,26 +1242,27 @@
         }
         container.childElementCount > 1 &&
           container.classList.add(CLASS_TAB_GROUP);
-      } else if (opener && !opener.classList.contains(PINNED)) {
+      } else if (openerTab && !openerTab.classList.contains(PINNED) &&
+                 openerTabsTab && openerTabsTab.index === index - 1) {
         await addDragEventListener(tab);
-        container = opener.parentNode;
-        container.insertBefore(tab, opener.nextElementSibling);
+        container = openerTab.parentNode;
+        container.insertBefore(tab, openerTab.nextElementSibling);
         container.classList.contains(CLASS_TAB_COLLAPSED) &&
           func.push(toggleTabCollapsed({target: tab}));
-      } else if (list.length !== index && listIdx && listIdx.parentNode &&
-                 listIdx.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-                 listIdxPrev && listIdxPrev.parentNode &&
-                 listIdxPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-                 listIdx.parentNode === listIdxPrev.parentNode) {
+      } else if (list.length !== index && listedTab && listedTab.parentNode &&
+                 listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listedTabPrev && listedTabPrev.parentNode &&
+                 listedTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listedTab.parentNode === listedTabPrev.parentNode) {
         await addDragEventListener(tab);
-        container = listIdx.parentNode;
-        container.insertBefore(tab, listIdx);
+        container = listedTab.parentNode;
+        container.insertBefore(tab, listedTab);
         container.classList.contains(CLASS_TAB_COLLAPSED) &&
           func.push(toggleTabCollapsed({target: tab}));
       } else {
         let target;
-        if (list.length !== index && listIdx && listIdx.parentNode) {
-          target = listIdx.parentNode;
+        if (list.length !== index && listedTab && listedTab.parentNode) {
+          target = listedTab.parentNode;
         } else {
           target = document.getElementById(NEW_TAB);
         }
