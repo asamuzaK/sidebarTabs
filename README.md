@@ -3,7 +3,9 @@ EN | [JA](./README.ja.md)
 # sidebarTabs
 
 Web extension for Firefox.
-Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them.
+Emulate tabs in sidebar and...
+* display tabs vertically.
+* group tabs and collapse / expand them.
 
 Note:
 Experimental. It is not suitable for general use.
@@ -30,7 +32,3 @@ Experimental features are used, so you need to activate the following settings.
 
 * The context menu item of the original tab "Send tab to device" is not implemented because there is no API for that in WebExtensions.
   [Issue #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "Add \"Send tab to device\" functionalty · Issue #7 · asamuzaK/sidebarTabs")
-* If you open a new tab from an ungrouped tab, a new tab will not be automatically grouped.
-  It is waiting for implementation of the WebExtensions API.
-  If you open a new tab from pre-grouped tabs, it will be grouped in the same group.
-  [Issue #6](https://github.com/asamuzaK/sidebarTabs/issues/6 "Automatically group tabs · Issue #6 · asamuzaK/sidebarTabs")
