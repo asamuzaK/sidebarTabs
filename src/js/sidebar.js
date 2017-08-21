@@ -1954,8 +1954,14 @@
       const tab = await getSidebarTab(target);
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
-        TAB_RELOAD, TAB_SYNC, AUDIO_MUTE, TAB_PIN, NEW_WIN_MOVE, TAB_CLOSE,
-        TABS_CLOSE_END, TABS_CLOSE_OTHER,
+        TAB_RELOAD,
+        TAB_SYNC,
+        AUDIO_MUTE,
+        TAB_PIN,
+        NEW_WIN_MOVE,
+        TAB_CLOSE,
+        TABS_CLOSE_END,
+        TABS_CLOSE_OTHER,
       ];
       const tabGroupMenu = menuItems.sidebarTabs.subItems[TAB_GROUP];
       const tabGroupKeys = [
@@ -1965,7 +1971,10 @@
         TAB_GROUP_DETACH,
         TAB_GROUP_UNGROUP,
       ];
-      const allTabsKeys = [TABS_BOOKMARK_ALL, TAB_CLOSE_UNDO];
+      const allTabsKeys = [
+        TABS_BOOKMARK_ALL,
+        TAB_CLOSE_UNDO,
+      ];
       if (tab) {
         const {parentNode} = tab;
         const {classList: parentClass} = parentNode;
