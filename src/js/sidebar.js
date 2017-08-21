@@ -330,6 +330,7 @@
     return windows.getCurrent(opt);
   };
 
+  /* management */
   /**
    * get enabled theme
    * @returns {Array} - array of management.ExtensionInfo
@@ -339,6 +340,20 @@
       info.type && info.type === "theme" && info.enabled && info
     ));
     return theme;
+  };
+
+  /* storage */
+  /**
+   * store data
+   * @param {Object} data - data to store
+   * @returns {?AsyncFunction} - storage.local.set()
+   */
+  const storeData = async data => {
+    let func;
+    if (isObjectNotEmpty(data)) {
+      func = storage.local.set(data);
+    }
+    return func || null;
   };
 
   /* sidebar */
@@ -365,19 +380,6 @@
         sidebar.windowId = id;
       }
     }
-  };
-
-  /**
-   * store data
-   * @param {Object} data - data to store
-   * @returns {?AsyncFunction} - storage.local.set()
-   */
-  const storeData = async data => {
-    let func;
-    if (isObjectNotEmpty(data)) {
-      func = storage.local.set(data);
-    }
-    return func || null;
   };
 
   /**
