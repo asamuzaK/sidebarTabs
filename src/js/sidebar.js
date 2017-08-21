@@ -10,6 +10,8 @@
   } = browser;
 
   /* constants */
+  const {TAB_ID_NONE} = tabs;
+  const {WINDOW_ID_CURRENT} = windows;
   const ACTIVE = "active";
   const AUDIBLE = "audible";
   const AUDIO_MUTE = "muteAudio";
@@ -171,6 +173,174 @@
            (!frag || url1.hash === url2.hash);
   };
 
+  /* webext utils */
+  /* tabs */
+  /**
+   * create tab
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - tabs.create()
+   */
+  const createTab = async (opt = {}) => {
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return tabs.create(opt);
+  };
+
+  /**
+   * update tab
+   * @param {number} tabId - tab ID
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - tabs.update()
+   */
+  const updateTab = async (tabId, opt = {}) => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    }
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return tabs.update(tabId, opt);
+  };
+
+  /**
+   * get tab
+   * @param {number} tabId - tab ID
+   * @returns {AsyncFunction} - tabs.get()
+   */
+  const getTab = async tabId => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    }
+    return tabs.get(tabId);
+  };
+
+  /**
+   * query tab
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} tabs.query();
+   */
+  const queryTab = async (opt = {}) => {
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return tabs.query(opt);
+  };
+
+  /**
+   * move tab
+   * @param {number} tabId - tab ID
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - tabs.move();
+   */
+  const moveTab = async (tabId, opt = {}) => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    }
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return tabs.move(tabId, opt);
+  };
+
+  /**
+   * reload tab
+   * @param {number} tabId - tab ID
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - tabs.reload()
+   */
+  const reloadTab = async (tabId, opt = {}) => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    }
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return tabs.reload(tabId, opt);
+  };
+
+  /**
+   * remove tab
+   * @param {number|Array} arg - tab ID or array of tab ID
+   * @returns {AsyncFunction} - tabs.remove()
+   */
+  const removeTab = async arg => {
+    if (Number.isInteger(arg)) {
+      arg = [arg];
+    }
+    if (!Array.isArray(arg)) {
+      throw new TypeError(`Expected Array but got ${getType(arg)}.`);
+    }
+    return tabs.remove(arg);
+  };
+
+  /**
+   * bookmark tab
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - bookmarks.create()
+   */
+  const bookmarkTab = async (opt = {}) => {
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return bookmarks.create(opt);
+  };
+
+  /**
+   * get recently closed tab
+   * @param {number} windowId - window ID
+   * @returns {Object} - tabs.Tab
+   */
+  const getRecentlyClosedTab = async windowId => {
+    const items = await sessions.getRecentlyClosed();
+    let tab;
+    if (Array.isArray(items) && items.length) {
+      for (const item of items) {
+        const {tab: itemTab} = item;
+        if (itemTab) {
+          const {windowId: itemWindowId} = itemTab;
+          if (itemWindowId === windowId) {
+            tab = itemTab;
+            break;
+          }
+        }
+      }
+    }
+    return tab || null;
+  };
+
+  /**
+   * restore closed tab
+   * @param {string} sessionId - session ID
+   * @returns {AsyncFunction} - sessions.restore()
+   */
+  const restoreClosedTab = async sessionId => {
+    if (!isString(sessionId)) {
+      throw new TypeError(`Expected String but got ${getType(sessionId)}.`);
+    }
+    return sessions.restore(sessionId);
+  };
+
+  /* windows */
+  /**
+   * create new window
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - windows.create();
+   */
+  const createNewWindow = async (opt = {}) => {
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return windows.create(opt);
+  };
+
+  /**
+   * get current window
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - windows.getCurrent()
+   */
+  const getCurrentWindow = async (opt = {}) => {
+    opt = isObjectNotEmpty(opt) && opt || null;
+    return windows.getCurrent(opt);
+  };
+
+  /**
+   * get enabled theme
+   * @returns {Array} - array of management.ExtensionInfo
+   */
+  const getEnabledTheme = async () => {
+    const theme = await management.getAll().then(arr => arr.filter(info =>
+      info.type && info.type === "theme" && info.enabled && info
+    ));
+    return theme;
+  };
+
   /* sidebar */
   const sidebar = {
     incognito: false,
@@ -184,7 +354,7 @@
    * @returns {void}
    */
   const setSidebar = async () => {
-    const win = await windows.getCurrent({
+    const win = await getCurrentWindow({
       populate: true,
       windowTypes: ["normal"],
     });
@@ -220,9 +390,7 @@
     if (Array.isArray(storedTheme) && storedTheme.length) {
       theme = storedTheme;
     } else {
-      const items = await management.getAll().then(arr => arr.filter(info =>
-        info.type && info.type === "theme" && info.enabled && info
-      ));
+      const items = await getEnabledTheme();
       if (Array.isArray(items) && items.length) {
         for (const item of items) {
           const {id} = item;
@@ -285,128 +453,17 @@
     window.location.reload(bool);
   };
 
-  /* handle real tabs */
-  /**
-   * create tab
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - tabs.create()
-   */
-  const createTab = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.create(opt);
-  };
-
-  /**
-   * update tab
-   * @param {number} tabId - tab ID
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - tabs.update()
-   */
-  const updateTab = async (tabId, opt = {}) => {
-    if (!Number.isInteger(tabId)) {
-      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-    }
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.update(tabId, opt);
-  };
-
-  /**
-   * move tab
-   * @param {number} tabId - tab ID
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - tabs.move();
-   */
-  const moveTab = async (tabId, opt = {}) => {
-    if (!Number.isInteger(tabId)) {
-      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-    }
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.move(tabId, opt);
-  };
-
-  /**
-   * reload tab
-   * @param {number} tabId - tab ID
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - tabs.reload()
-   */
-  const reloadTab = async (tabId, opt = {}) => {
-    if (!Number.isInteger(tabId)) {
-      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-    }
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.reload(tabId, opt);
-  };
-
-  /**
-   * remove tab
-   * @param {number|Array} arg - tab ID or array of tab ID
-   * @returns {AsyncFunction} - tabs.remove()
-   */
-  const removeTab = async arg => {
-    if (Number.isInteger(arg)) {
-      arg = [arg];
-    }
-    if (!Array.isArray(arg)) {
-      throw new TypeError(`Expected Array but got ${getType(arg)}.`);
-    }
-    return tabs.remove(arg);
-  };
-
-  /**
-   * bookmark tab
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - bookmarks.create()
-   */
-  const bookmarkTab = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return bookmarks.create(opt);
-  };
-
-  /**
-   * create new window
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - windows.create();
-   */
-  const createNewWindow = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return windows.create(opt);
-  };
-
   /**
    * get last closed tab
    * @returns {Object} - tabs.Tab
    */
   const getLastClosedTab = async () => {
-    const items = await sessions.getRecentlyClosed();
-    let tab;
-    if (Array.isArray(items) && items.length) {
-      const {windowId} = sidebar;
-      for (const item of items) {
-        const {tab: itemTab} = item;
-        if (itemTab) {
-          const {windowId: itemWindowId} = itemTab;
-          if (itemWindowId === windowId) {
-            tab = itemTab;
-            sidebar.lastClosedTab = tab;
-            break;
-          }
-        }
-      }
+    const {windowId} = sidebar;
+    const tab = await getRecentlyClosedTab(windowId);
+    if (tab) {
+      sidebar.lastClosedTab = tab;
     }
     return tab || null;
-  };
-
-  /**
-   * restore tab
-   * @param {string} sessionId - session ID
-   * @returns {AsyncFunction} - sessions.restore()
-   */
-  const restoreClosedTab = async sessionId => {
-    if (!isString(sessionId)) {
-      throw new TypeError(`Expected String but got ${getType(sessionId)}.`);
-    }
-    return sessions.restore(sessionId);
   };
 
   /* sidebar tabs */
@@ -523,7 +580,7 @@
   /**
    * activate tab
    * @param {!Object} evt - event
-   * @returns {?AsyncFunction} - tabs.update()
+   * @returns {?AsyncFunction} - updateTab()
    */
   const activateTab = async evt => {
     const {target} = evt;
@@ -709,7 +766,7 @@
   /**
    * toggle audio state
    * @param {!Object} evt - event
-   * @returns {?AsyncFunction} - tabs.update()
+   * @returns {?AsyncFunction} - updateTab()
    */
   const toggleAudio = async evt => {
     const {target} = evt;
@@ -1109,7 +1166,7 @@
       throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
     await sleep(TIME_3SEC);
-    const tabsTab = await tabs.get(tabId);
+    const tabsTab = await getTab(tabId);
     const func = [];
     if (tabsTab) {
       const {status, id} = tabsTab;
@@ -1132,7 +1189,7 @@
    */
   const handleActivatedTab = async info => {
     const {tabId, windowId} = info;
-    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+    if (windowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
         const {classList: newClass, parentNode: newParent} = tab;
@@ -1165,7 +1222,7 @@
     } = tabsTab;
     const {muted} = mutedInfo;
     const func = [];
-    if (windowId === sidebar.windowId && id !== tabs.TAB_ID_NONE) {
+    if (windowId === sidebar.windowId && id !== TAB_ID_NONE) {
       const tab = await getTemplate(CLASS_TAB_TMPL);
       const tabItems = [
         `.${TAB}`, `.${CLASS_TAB_CONTEXT}`, `.${CLASS_TAB_TOGGLE_ICON}`,
@@ -1285,8 +1342,8 @@
   const handleAttachedTab = async (tabId, info) => {
     const {newPosition, newWindowId} = info;
     let func;
-    if (newWindowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
-      const tabsTab = await tabs.get(tabId);
+    if (newWindowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
+      const tabsTab = await getTab(tabId);
       if (tabsTab) {
         tabsTab.index = newPosition;
         func = handleCreatedTab(tabsTab);
@@ -1306,7 +1363,7 @@
   const handleUpdatedTab = async (tabId, info, tabsTab) => {
     const {windowId} = tabsTab;
     const func = [];
-    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+    if (windowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
         await setTabContent(tab, tabsTab);
@@ -1365,11 +1422,11 @@
    */
   const handleMovedTab = async (tabId, info) => {
     const {fromIndex, toIndex, windowId} = info;
-    if (windowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+    if (windowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       const items = document.querySelectorAll(TAB_QUERY);
       if (toIndex === 0) {
-        const tabsTab = await tabs.get(tabId);
+        const tabsTab = await getTab(tabId);
         const {pinned} = tabsTab;
         if (pinned) {
           const container = document.getElementById(PINNED);
@@ -1438,7 +1495,7 @@
    */
   const handleDetachedTab = async (tabId, info) => {
     const {oldWindowId} = info;
-    if (oldWindowId === sidebar.windowId && tabId !== tabs.TAB_ID_NONE) {
+    if (oldWindowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       tab && tab.parentNode.removeChild(tab);
     }
@@ -1453,7 +1510,7 @@
   const handleRemovedTab = async (tabId, info) => {
     const {isWindowClosing, windowId} = info;
     if (windowId === sidebar.windowId && !isWindowClosing &&
-        tabId !== tabs.TAB_ID_NONE) {
+        tabId !== TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       tab && tab.parentNode.removeChild(tab);
     }
@@ -1470,7 +1527,7 @@
       throw new TypeError(`Expected Number but got ${getType(tabId)}`);
     }
     let func;
-    const tabsTab = await tabs.get(tabId);
+    const tabsTab = await getTab(tabId);
     if (tabsTab) {
       const {favIconUrl, status, title} = tabsTab;
       const info = {favIconUrl, status, title};
@@ -2265,7 +2322,7 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const emulateTabs = async () => {
-    const items = await tabs.query({windowId: windows.WINDOW_ID_CURRENT});
+    const items = await queryTab({windowId: WINDOW_ID_CURRENT});
     const func = [];
     for (const item of items) {
       func.push(handleCreatedTab(item));
@@ -2280,8 +2337,10 @@
     setSidebar(),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
     .then(getLastClosedTab).catch(throwErr));
+
   window.addEventListener("keydown", evt => setContext(evt).catch(throwErr),
                           true);
+
   window.addEventListener("mousedown", evt => setContext(evt).catch(throwErr),
                           true);
 }
