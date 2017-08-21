@@ -2251,27 +2251,34 @@
   runtime.onMessage.addListener((msg, sender) => {
     handleMsg(msg, sender).catch(throwErr);
   });
+
   tabs.onActivated.addListener(info =>
     handleActivatedTab(info).catch(throwErr)
   );
+
   tabs.onAttached.addListener((tabId, info) =>
     handleAttachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
+
   tabs.onCreated.addListener(tabsTab =>
     handleCreatedTab(tabsTab).then(restoreTabContainers).then(getLastClosedTab)
       .catch(throwErr)
   );
+
   tabs.onDetached.addListener((tabId, info) =>
     handleDetachedTab(tabId, info).then(restoreTabContainers)
       .then(expandActivatedCollapsedTab).catch(throwErr)
   );
+
   tabs.onMoved.addListener((tabId, info) =>
     handleMovedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
+
   tabs.onRemoved.addListener((tabId, info) =>
     handleRemovedTab(tabId, info).then(restoreTabContainers)
       .then(getLastClosedTab).then(expandActivatedCollapsedTab).catch(throwErr)
   );
+
   tabs.onUpdated.addListener((tabId, info, tabsTab) =>
     handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
   );
