@@ -180,10 +180,8 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} - tabs.create()
    */
-  const createTab = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.create(opt);
-  };
+  const createTab = async opt =>
+    tabs.create(isObjectNotEmpty(opt) && opt || null);
 
   /**
    * update tab
@@ -191,12 +189,11 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} - tabs.update()
    */
-  const updateTab = async (tabId, opt = {}) => {
+  const updateTab = async (tabId, opt) => {
     if (!Number.isInteger(tabId)) {
       throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.update(tabId, opt);
+    return tabs.update(tabId, isObjectNotEmpty(opt) && opt || null);
   };
 
   /**
@@ -216,10 +213,8 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} tabs.query();
    */
-  const queryTab = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.query(opt);
-  };
+  const queryTab = async opt =>
+    tabs.query(isObjectNotEmpty(opt) && opt || null);
 
   /**
    * move tab
@@ -227,12 +222,11 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} - tabs.move();
    */
-  const moveTab = async (tabId, opt = {}) => {
+  const moveTab = async (tabId, opt) => {
     if (!Number.isInteger(tabId)) {
       throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.move(tabId, opt);
+    return tabs.move(tabId, isObjectNotEmpty(opt) && opt || null);
   };
 
   /**
@@ -241,12 +235,11 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} - tabs.reload()
    */
-  const reloadTab = async (tabId, opt = {}) => {
+  const reloadTab = async (tabId, opt) => {
     if (!Number.isInteger(tabId)) {
       throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return tabs.reload(tabId, opt);
+    return tabs.reload(tabId, isObjectNotEmpty(opt) && opt || null);
   };
 
   /**
@@ -269,10 +262,8 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} - bookmarks.create()
    */
-  const bookmarkTab = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return bookmarks.create(opt);
-  };
+  const bookmarkTab = async opt =>
+    bookmarks.create(isObjectNotEmpty(opt) && opt || null);
 
   /**
    * get recently closed tab
@@ -315,20 +306,16 @@
    * @param {Object} opt - options
    * @returns {AsyncFunction} - windows.create();
    */
-  const createNewWindow = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return windows.create(opt);
-  };
+  const createNewWindow = async opt =>
+    windows.create(isObjectNotEmpty(opt) && opt || null);
 
   /**
    * get current window
    * @param {Object} opt - options
    * @returns {AsyncFunction} - windows.getCurrent()
    */
-  const getCurrentWindow = async (opt = {}) => {
-    opt = isObjectNotEmpty(opt) && opt || null;
-    return windows.getCurrent(opt);
-  };
+  const getCurrentWindow = async opt =>
+    windows.getCurrent(isObjectNotEmpty(opt) && opt || null);
 
   /* management */
   /**
