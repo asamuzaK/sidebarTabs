@@ -442,19 +442,6 @@
     window.location.reload(bool);
   };
 
-  /**
-   * get last closed tab
-   * @returns {Object} - tabs.Tab
-   */
-  const getLastClosedTab = async () => {
-    const {windowId} = sidebar;
-    const tab = await getRecentlyClosedTab(windowId);
-    if (tab) {
-      sidebar.lastClosedTab = tab;
-    }
-    return tab || null;
-  };
-
   /* sidebar tabs */
   /**
    * get template
@@ -564,6 +551,19 @@
     return Number.isInteger(index) ?
       index :
       null;
+  };
+
+  /**
+   * get last closed tab
+   * @returns {Object} - tabs.Tab
+   */
+  const getLastClosedTab = async () => {
+    const {windowId} = sidebar;
+    const tab = await getRecentlyClosedTab(windowId);
+    if (tab) {
+      sidebar.lastClosedTab = tab;
+    }
+    return tab || null;
   };
 
   /**
@@ -751,6 +751,31 @@
     }
   };
 
+  /**
+   * observe tab
+   * @param {number} tabId - tab ID
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const observeTab = async tabId => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    }
+    await sleep(TIME_3SEC);
+    const tabsTab = await getTab(tabId);
+    const func = [];
+    if (tabsTab) {
+      const {status, id} = tabsTab;
+      if (status === "complete") {
+        await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
+                            tabsTab);
+        func.push(storeTabData());
+      } else {
+        func.push(observeTab(id));
+      }
+    }
+    return Promise.all(func);
+  };
+
   /* sidebar tab audio */
   /**
    * toggle audio state
@@ -892,24 +917,6 @@
   };
 
   /**
-   * ungroup tabs
-   * @param {Object} node - tab group container
-   * @returns {void}
-   */
-  const ungroupTabs = async (node = {}) => {
-    const {id, classList, nodeType, parentNode} = node;
-    if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
-        classList.contains(CLASS_TAB_GROUP)) {
-      const items = node.querySelectorAll(TAB_QUERY);
-      for (const item of items) {
-        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        container.appendChild(item);
-        parentNode.insertBefore(container, node);
-      }
-    }
-  };
-
-  /**
    * expand activated collapsed tab when other tab got removed / detatched
    * @returns {?AsyncFunction} - toggleTabCollapsed()
    */
@@ -922,6 +929,28 @@
           parentNode.lastElementChild === tab) {
         func = toggleTabCollapsed({target: tab});
       }
+    }
+    return func || null;
+  };
+
+  /**
+   * close grouped tabs
+   * @param {Object} node - tab group container
+   * @returns {?AsyncFunction} - removeTab()
+   */
+  const closeGroupTabs = async node => {
+    const {id, classList, nodeType} = node;
+    let func;
+    if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
+        classList.contains(CLASS_TAB_GROUP)) {
+      const items = node.querySelectorAll(TAB_QUERY);
+      const arr = [];
+      for (const item of items) {
+        const {dataset} = item;
+        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        Number.isInteger(tabId) && arr.push(tabId);
+      }
+      func = arr.length && removeTab(arr);
     }
     return func || null;
   };
@@ -969,25 +998,21 @@
   };
 
   /**
-   * close grouped tabs
+   * ungroup tabs
    * @param {Object} node - tab group container
-   * @returns {?AsyncFunction} - removeTab()
+   * @returns {void}
    */
-  const closeGroupTabs = async node => {
-    const {id, classList, nodeType} = node;
-    let func;
+  const ungroupTabs = async (node = {}) => {
+    const {id, classList, nodeType, parentNode} = node;
     if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
         classList.contains(CLASS_TAB_GROUP)) {
       const items = node.querySelectorAll(TAB_QUERY);
-      const arr = [];
       for (const item of items) {
-        const {dataset} = item;
-        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
-        Number.isInteger(tabId) && arr.push(tabId);
+        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+        container.appendChild(item);
+        parentNode.insertBefore(container, node);
       }
-      func = arr.length && removeTab(arr);
     }
-    return func || null;
   };
 
   /* DnD */
@@ -1142,31 +1167,6 @@
       id !== PINNED && func.push(addDropEventListener(item));
     }
     func.push(storeTabData());
-    return Promise.all(func);
-  };
-
-  /**
-   * observe tab
-   * @param {number} tabId - tab ID
-   * @returns {Promise.<Array>} - results of each handler
-   */
-  const observeTab = async tabId => {
-    if (!Number.isInteger(tabId)) {
-      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-    }
-    await sleep(TIME_3SEC);
-    const tabsTab = await getTab(tabId);
-    const func = [];
-    if (tabsTab) {
-      const {status, id} = tabsTab;
-      if (status === "complete") {
-        await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
-                            tabsTab);
-        func.push(storeTabData());
-      } else {
-        func.push(observeTab(id));
-      }
-    }
     return Promise.all(func);
   };
 
