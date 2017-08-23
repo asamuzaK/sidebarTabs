@@ -101,6 +101,7 @@
   const URL_AUDIO_MUTED = "../shared/tab-audio-muted.svg";
   const URL_AUDIO_PLAYING = "../shared/tab-audio-playing.svg";
   const URL_CONNECTING_SPINNER = "../img/spinner.svg#connecting";
+  const URL_CSS = "../css/sidebar.css";
   const URL_DEFAULT_FAVICON = "../shared/defaultFavicon.svg";
   const URL_LOADING_SPINNER = "../img/spinner.svg";
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
@@ -2373,10 +2374,26 @@
     return Promise.all(func);
   };
 
+  /**
+   * apply CSS
+   * @returns {void}
+   */
+  const applyCss = async () => {
+    const head = document.querySelector("head");
+    const link = document.createElement("link");
+    const items = document.querySelectorAll("section[hidden]");
+    link.rel = "stylesheet";
+    link.href = URL_CSS;
+    head.appendChild(link);
+    for (const item of items) {
+      item.removeAttribute("hidden");
+    }
+  };
+
   document.addEventListener("DOMContentLoaded", () => Promise.all([
     addNewTabClickListener(),
     createContextMenu(),
-    getTheme().then(setTheme),
+    getTheme().then(setTheme).then(applyCss),
     setSidebar(),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
     .then(getLastClosedTab).catch(throwErr));

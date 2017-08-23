@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <title data-i18n="extensionShortName">Sidebar Tabs</title>
-    <link rel="stylesheet" href="../css/sidebar.css" />
     <script src="../js/sidebar.js"></script>
   </head>
   <body id="sidebar-tabs" contextmenu="sidebar-contextmenu-container">
@@ -130,10 +129,10 @@
       </template>
 
       <!-- pinned tabs container -->
-      <section id="pinned" class="tab-container pinned">
+      <section id="pinned" class="tab-container pinned" hidden>
       </section>
       <!-- new tab -->
-      <section id="newtab" class="tab-container newtab">
+      <section id="newtab" class="tab-container newtab" hidden>
         <div class="tab newtab" title="Open a new tab" tabindex="0"
              data-i18n="newTabButton_title">
           <span class="newtab">
