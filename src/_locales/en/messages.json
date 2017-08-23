@@ -50,6 +50,9 @@
   "detachTabFromGroup": {
     "message": "Detach Tab From Group"
   },
+  "dupeTab": {
+    "message": "Duplicate Tab"
+  },
   "expandTabs": {
     "message": "Expand Group Tabs"
   },

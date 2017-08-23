@@ -50,6 +50,9 @@
   "detachTabFromGroup": {
     "message": "タブをグループから切り離す"
   },
+  "dupeTab": {
+    "message": "タブを複製"
+  },
   "expandTabs": {
     "message": "グループのタブを展開"
   },

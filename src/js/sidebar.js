@@ -44,6 +44,7 @@
   const MENU_TAB_AUDIO = "sidebar-tabs-menu-tab-audio";
   const MENU_TAB_CLOSE = "sidebar-tabs-menu-tab-close";
   const MENU_TAB_CLOSE_UNDO = "sidebar-tabs-menu-tab-close-undo";
+  const MENU_TAB_DUPE = "sidebar-tabs-menu-tab-dupe";
   const MENU_TAB_GROUP = "sidebar-tabs-menu-tab-group";
   const MENU_TAB_GROUP_CLOSE = "sidebar-tabs-menu-tab-group-close";
   const MENU_TAB_GROUP_COLLAPSE = "sidebar-tabs-menu-tab-group-collapse";
@@ -73,6 +74,7 @@
   const TABS_RELOAD_ALL = "reloadAllTabs";
   const TAB_CLOSE = "closeTab";
   const TAB_CLOSE_UNDO = "undoCloseTab";
+  const TAB_DUPE = "dupeTab";
   const TAB_GROUP = "groupTabs";
   const TAB_GROUP_CLOSE = "closeGroupTabs";
   const TAB_GROUP_COLLAPSE = "collapseTabs";
@@ -1526,6 +1528,31 @@
   };
 
   /**
+   * duplicate tab
+   * @param {number} tabId - tab ID
+   * @returns {?AsyncFunction} - createTab()
+   */
+  const dupeTab = async tabId => {
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Number but got ${getType(tabId)}`);
+    }
+    let func;
+    const tabsTab = await getTab(tabId);
+    if (tabsTab) {
+      const {index, url} = tabsTab;
+      const {windowId} = sidebar;
+      const opt = {
+        active: true,
+        index: index + 1,
+        openerTabId: tabId,
+        url, windowId,
+      };
+      func = createTab(opt);
+    }
+    return func || null;
+  };
+
+  /**
    * handle context menu click
    * @param {!Object} evt - event
    * @returns {Promise.<Array>} - results of each handler
@@ -1579,6 +1606,9 @@
         }
         break;
       }
+      case MENU_TAB_DUPE:
+        Number.isInteger(tabId) && func.push(dupeTab(tabId));
+        break;
       case MENU_TAB_GROUP_CLOSE: {
         if (tab && tabsTab) {
           const {parentNode} = tab;
@@ -1712,14 +1742,6 @@
               enabled: false,
               onclick: true,
             },
-            [TAB_SYNC]: {
-              id: MENU_TAB_SYNC,
-              title: i18n.getMessage(TAB_SYNC),
-              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
-              type: "normal",
-              enabled: false,
-              onclick: true,
-            },
             [AUDIO_MUTE]: {
               id: MENU_TAB_AUDIO,
               title: i18n.getMessage(AUDIO_MUTE),
@@ -1741,6 +1763,22 @@
             [NEW_WIN_MOVE]: {
               id: MENU_TAB_NEW_WIN_MOVE,
               title: i18n.getMessage(NEW_WIN_MOVE),
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
+            [TAB_SYNC]: {
+              id: MENU_TAB_SYNC,
+              title: i18n.getMessage(TAB_SYNC),
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
+            [TAB_DUPE]: {
+              id: MENU_TAB_DUPE,
+              title: i18n.getMessage(TAB_DUPE),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -2001,10 +2039,11 @@
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
         TAB_RELOAD,
-        TAB_SYNC,
         AUDIO_MUTE,
         TAB_PIN,
         NEW_WIN_MOVE,
+        TAB_SYNC,
+        TAB_DUPE,
         TAB_CLOSE,
         TABS_CLOSE_END,
         TABS_CLOSE_OTHER,
@@ -2049,6 +2088,14 @@
               }
               break;
             }
+            case TAB_DUPE:
+              if (tabsTab.pinned) {
+                data.enabled = false;
+              } else {
+                data.enabled = true;
+              }
+              data.title = title;
+              break;
             case TABS_CLOSE_END: {
               if (tabsTab.pinned) {
                 data.enabled = false;
