@@ -34,7 +34,6 @@
   const CLASS_TAB_TOGGLE_ICON = "tab-toggle-icon";
   const CLASS_THEME_DARK = "dark-theme";
   const CLASS_THEME_LIGHT = "light-theme";
-  const CONNECTING = "connecting";
   const COOKIE_STORE_DEFAULT = "firefox-default";
   const MENU = "sidebar-tabs-menu";
   const MENU_SIDEBAR_INIT = "sidebar-tabs-menu-sidebar-init";
@@ -100,10 +99,9 @@
   const TYPE_TO = -1;
   const URL_AUDIO_MUTED = "../shared/tab-audio-muted.svg";
   const URL_AUDIO_PLAYING = "../shared/tab-audio-playing.svg";
-  const URL_CONNECTING_SPINNER = "../img/spinner.svg#connecting";
   const URL_CSS = "../css/sidebar.css";
   const URL_DEFAULT_FAVICON = "../shared/defaultFavicon.svg";
-  const URL_LOADING_SPINNER = "../img/spinner.svg";
+  const URL_LOADING_THROBBER = "../img/loading.svg";
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
 
   /**
@@ -718,14 +716,9 @@
   const setTabIcon = async (elm, info) => {
     let func;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
-      const {status, title, favIconUrl} = info;
-      const connectText = i18n.getMessage(CONNECTING);
+      const {status, favIconUrl} = info;
       if (status === "loading") {
-        if (title === connectText) {
-          elm.src = URL_CONNECTING_SPINNER;
-        } else {
-          elm.src = URL_LOADING_SPINNER;
-        }
+        elm.src = URL_LOADING_THROBBER;
       } else if (favIconUrl) {
         func = setFavicon(elm, favIconUrl);
       } else {
