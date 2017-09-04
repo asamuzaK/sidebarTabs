@@ -1754,6 +1754,14 @@
               onclick: true,
               toggleTitle: i18n.getMessage(TAB_PIN_UNPIN),
             },
+            [TAB_DUPE]: {
+              id: MENU_TAB_DUPE,
+              title: i18n.getMessage(TAB_DUPE),
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
             [NEW_WIN_MOVE]: {
               id: MENU_TAB_NEW_WIN_MOVE,
               title: i18n.getMessage(NEW_WIN_MOVE),
@@ -1765,14 +1773,6 @@
             [TAB_SYNC]: {
               id: MENU_TAB_SYNC,
               title: i18n.getMessage(TAB_SYNC),
-              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
-              type: "normal",
-              enabled: false,
-              onclick: true,
-            },
-            [TAB_DUPE]: {
-              id: MENU_TAB_DUPE,
-              title: i18n.getMessage(TAB_DUPE),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
