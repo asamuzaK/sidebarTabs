@@ -30,5 +30,7 @@ Experimental features are used, so you need to activate the following settings.
 
 ## Known Issues
 
+* The context menu is a temporary implementation because WebExtensions does not have a context menu API for the sidebar.
+  [Issue #8](https://github.com/asamuzaK/sidebarTabs/issues/8 "Replace context menu (&lt;menu&gt;, &lt;menuitem&gt;) to something else · Issue #8 · asamuzaK/sidebarTabs")
 * The context menu item of the original tab "Send tab to device" is not implemented because there is no API for that in WebExtensions.
   [Issue #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "Add \"Send tab to device\" functionalty · Issue #7 · asamuzaK/sidebarTabs")

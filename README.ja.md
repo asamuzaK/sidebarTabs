@@ -30,5 +30,7 @@ Firefox用の拡張機能。
 
 ## 既知の問題
 
+* コンテキストメニューは、WebExtensionsにサイドバー用のコンテキストメニューAPIがないため、一時的な実装となっています。
+  [Issue #8](https://github.com/asamuzaK/sidebarTabs/issues/8 "Replace context menu (&lt;menu&gt;, &lt;menuitem&gt;) to something else · Issue #8 · asamuzaK/sidebarTabs")
 * 本来のタブのコンテキストメニューにある「タブを端末に送る」の項目は、WebExtensionsにAPIがないため実装していません。
   [Issue #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "Add \"Send tab to device\" functionalty · Issue #7 · asamuzaK/sidebarTabs")
