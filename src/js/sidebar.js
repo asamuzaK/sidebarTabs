@@ -688,7 +688,7 @@
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       if (isString(favIconUrl)) {
         const {protocol} = new URL(favIconUrl);
-        if (/(?:app|f(?:tp|ile)|https?):/.test(protocol)) {
+        if (/(?:f(?:tp|ile)|https?):/.test(protocol)) {
           const src = await fetch(favIconUrl).then(res => {
             const {ok, url} = res;
             return ok && url || null;
