@@ -35,8 +35,14 @@
     <path d="M 23,48 H 47 V 59 H 23 Z"/>
   </symbol>
   <g id="context">
-    <use href="#sidetab" fill="context-fill #4C4C4C"
-         fill-opacity="context-fill-opacity 1"/>
+    <use href="#sidetab" fill="context-fill"
+         fill-opacity="context-fill-opacity"/>
+  </g>
+  <g id="photon_gray_90">
+    <use href="#sidetab" fill="#0C0C0D"/>
+  </g>
+  <g id="photon_gray_10">
+    <use href="#sidetab" fill="#F9F9FA"/>
   </g>
   <g id="black">
     <use href="#sidetab" fill="#000"/>
