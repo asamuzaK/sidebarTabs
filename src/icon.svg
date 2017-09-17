@@ -35,8 +35,8 @@
     <path d="M 23,48 H 47 V 59 H 23 Z"/>
   </symbol>
   <g id="context">
-    <use href="#sidetab" fill="context-fill"
-         fill-opacity="context-fill-opacity"/>
+    <use href="#sidetab" fill="context-fill #4C4C4C"
+         fill-opacity="context-fill-opacity 1"/>
   </g>
   <g id="black">
     <use href="#sidetab" fill="#000"/>
