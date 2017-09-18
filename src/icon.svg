@@ -39,10 +39,10 @@
          fill-opacity="context-fill-opacity"/>
   </g>
   <g id="photon_gray_90">
-    <use href="#sidetab" fill="#0C0C0D"/>
+    <use href="#sidetab" fill="#0C0C0D" fill-opacity="0.8"/>
   </g>
   <g id="photon_gray_10">
-    <use href="#sidetab" fill="#F9F9FA"/>
+    <use href="#sidetab" fill="#F9F9FA" fill-opacity="0.8"/>
   </g>
   <g id="black">
     <use href="#sidetab" fill="#000"/>
