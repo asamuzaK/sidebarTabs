@@ -44,20 +44,8 @@
   <g id="photon_gray_10">
     <use href="#sidetab" fill="#F9F9FA" fill-opacity="0.8"/>
   </g>
-  <g id="black">
-    <use href="#sidetab" fill="#000"/>
-  </g>
-  <g id="neutral">
-    <use href="#sidetab" fill="#808080"/>
-  </g>
-  <g id="gray">
-    <use href="#sidetab" fill="#4C4C4C"/>
-  </g>
-  <g id="white">
-    <use href="#sidetab" fill="#FFF"/>
-  </g>
   <g id="off">
-    <use href="#sidetab" fill="ButtonShadow"/>
+    <use href="#sidetab" fill="context-fill" fill-opacity="0.25"/>
   </g>
   <g id="color">
     <use href="#activetab" fill="#E66000"/>
