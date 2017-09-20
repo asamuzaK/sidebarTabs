@@ -655,6 +655,8 @@
 
   favicon.set("https://abs.twimg.com/favicons/favicon.ico",
               "../shared/Twitter_Logo_Blue.svg");
+  favicon.set("https://abs.twimg.com/icons/apple-touch-icon-192x192.png",
+              "../shared/Twitter_Logo_Blue.svg");
 
   /**
    * tab icon fallback
