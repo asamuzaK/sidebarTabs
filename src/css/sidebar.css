@@ -165,13 +165,11 @@ main {
   margin: var(--scale-size);
   width: var(--icon-size);
   height: var(--icon-size);
-  stroke: var(--foreground-color);
-}
-.light-theme .tab-icon,
-body:not(.dark-theme) .tab:hover .tab-icon,
-body:not(.dark-theme) .tab:focus .tab-icon,
-body:not(.dark-theme) .tab.active .tab-icon {
+  fill: var(--foreground-color);
   stroke: var(--foreground-highlight-color);
+}
+.tab.active .tab-icon {
+  fill: var(--foreground-active-color);
 }
 .tab-title {
   display: block;

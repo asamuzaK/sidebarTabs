@@ -35,7 +35,7 @@
       circle {
         transform-origin: 50% 50%;
         animation: throbber 1.05s ease infinite;
-        fill: context-stroke;
+        fill: context-fill;
       }
     </style>
   </defs>

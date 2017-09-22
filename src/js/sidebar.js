@@ -718,13 +718,25 @@
   const setTabIcon = async (elm, info) => {
     let func;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
-      const {status, favIconUrl} = info;
+      const {favIconUrl, status, title, url} = info;
+      const {fill, stroke} = window.getComputedStyle(elm.parentNode);
       if (status === "loading") {
+        const re = new RegExp(`^(?:f(?:ile|tp)|https?)://(?:www\\.)?${title}$`);
+        if (elm.dataset.connecting && !re.test(url)) {
+          elm.style.fill = stroke;
+          elm.dataset.connecting = "";
+        } else if (re.test(url)) {
+          elm.dataset.connecting = url;
+        }
         elm.src = URL_LOADING_THROBBER;
-      } else if (favIconUrl) {
-        func = setFavicon(elm, favIconUrl);
       } else {
-        elm.src = URL_DEFAULT_FAVICON;
+        elm.dataset.connecting = "";
+        elm.style.fill = fill;
+        if (favIconUrl) {
+          func = setFavicon(elm, favIconUrl);
+        } else {
+          elm.src = URL_DEFAULT_FAVICON;
+        }
       }
     }
     return func || null;
@@ -738,13 +750,13 @@
    */
   const setTabContent = async (tab, tabsTab) => {
     if (tab && tab.nodeType === Node.ELEMENT_NODE && tabsTab) {
-      const {favIconUrl, status, title} = tabsTab;
+      const {favIconUrl, status, title, url} = tabsTab;
       const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
       const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
       const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
       tabContent && (tabContent.title = title);
       tabTitle && (tabTitle.textContent = title);
-      tabIcon && await setTabIcon(tabIcon, {favIconUrl, status, title});
+      tabIcon && await setTabIcon(tabIcon, {favIconUrl, status, title, url});
       tab.dataset.tab = JSON.stringify(tabsTab);
     }
   };
@@ -1205,7 +1217,7 @@
   const handleCreatedTab = async tabsTab => {
     const {
       active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo,
-      openerTabId, pinned, status, title, windowId,
+      openerTabId, pinned, status, title, url, windowId,
     } = tabsTab;
     const {muted} = mutedInfo;
     const func = [];
@@ -1233,7 +1245,7 @@
           item.title = title;
         } else if (classList.contains(CLASS_TAB_ICON)) {
           func.push(
-            setTabIcon(item, {status, title, favIconUrl}),
+            setTabIcon(item, {favIconUrl, status, title, url}),
             addTabIconErrorListener(item),
           );
         } else if (classList.contains(CLASS_TAB_TITLE)) {
