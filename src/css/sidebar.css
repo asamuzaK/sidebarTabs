@@ -2,19 +2,19 @@
 /* sidebar.css */
 :root {
   font: menu;
-  --background-color: hsl(235, 33%, 19%);
-  --background-active-color: #F5F6F7;
-  --background-hover-color: hsla(0, 0%, 100%, .2);
-  --background-selection-color: #5675B9;
+  --background-color: #202340;
+  --background-active-color: #F9F9FA;
+  --background-selection-color: #0A84FF;
   --border-color: #666;
   --border-active-color: #CCC;
   --border-secondary-color: #999;
-  --foreground-color: hsl(240, 9%, 98%);
-  --foreground-active-color: #000;
-  --foreground-hover-color: hsl(240, 9%, 98%);
-  --foreground-highlight-color: HighLight;
-  --foreground-invert-color: hsl(240, 9%, 98%);
-  --foreground-selection-color: #F5F7FA;
+  --foreground-color: #FFF;
+  --foreground-secondary-color: #F9F9FA;
+  --foreground-active-color: #0C0C0D;
+  --foreground-active-secondary-color: #737373;
+  --foreground-hover-color: #FFF;
+  --foreground-highlight-color: #0A84FF;
+  --foreground-selection-color: #FFF;
   --tab-group-1: #366;
   --tab-group-2: #C96;
   --tab-group-3: #669;
@@ -30,30 +30,33 @@
   --icon-x-small-size: calc(var(--scale-size) * 2);
 }
 .light-theme {
-  --background-color: #E3E4E6;
-  --background-active-color: #F5F6F7;
-  --background-hover-color: #D7D8DA;
-  --background-selection-color: #4C9ED9;
+  --background-color: #EDEDF0;
+  --background-active-color: #F9F9FA;
+  --background-hover-color: #D7D7DB;
+  --background-selection-color: #0A84FF;
   --border-color: #CCC;
   --border-active-color: #999;
   --border-secondary-color: #666;
-  --foreground-color: #18191A;
-  --foreground-active-color: #000;
-  --foreground-hover-color: #18191A;
+  --foreground-color: #0C0C0D;
+  --foreground-secondary-color: #737373;
+  --foreground-active-color: #0C0C0D;
+  --foreground-active-secondary-color: #737373;
+  --foreground-hover-color: #0C0C0D;
 }
 .dark-theme {
-  --background-color: hsl(240, 5%, 5%);
-  --background-active-color: hsl(240, 1%, 20%);
-  --background-hover-color: hsla(240, 9%, 98%, .1);
-  --background-selection-color: #5675B9;
+  --background-color: #0C0C0D;
+  --background-active-color: #38383D;
+  --background-hover-color: #2A2A2E;
+  --background-selection-color: #0A84FF;
   --border-color: #666;
   --border-active-color: #CCC;
   --border-secondary-color: #999;
-  --foreground-color: rgb(249, 249, 250);
-  --foreground-active-color: #F5F7FA;
-  --foreground-hover-color: #F5F7FA;
+  --foreground-color: #FFF;
+  --foreground-secondary-color: #F9F9FA;
+  --foreground-active-color: #FFF;
+  --foreground-active-secondary-color: #F9F9FA;
+  --foreground-hover-color: #FFF;
   --foreground-selection-color: #FFF;
-  --foreground-invert-color: #18191A;
 }
 body {
   margin: 0;
@@ -165,11 +168,11 @@ main {
   margin: var(--scale-size);
   width: var(--icon-size);
   height: var(--icon-size);
-  fill: var(--foreground-color);
+  fill: var(--foreground-secondary-color);
   stroke: var(--foreground-highlight-color);
 }
 .tab.active .tab-icon {
-  fill: var(--foreground-active-color);
+  fill: var(--foreground-active-secondary-color);
 }
 .tab-title {
   display: block;
