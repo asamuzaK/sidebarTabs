@@ -4,6 +4,7 @@
   font: menu;
   --background-color: #202340;
   --background-active-color: #F9F9FA;
+  --background-hover-color: #363959;
   --background-selection-color: #0A84FF;
   --border-color: #666;
   --border-active-color: #CCC;
@@ -169,6 +170,7 @@ main {
   width: var(--icon-size);
   height: var(--icon-size);
   fill: var(--foreground-secondary-color);
+  fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
 .tab.active .tab-icon {
@@ -338,6 +340,7 @@ body:not(.dark-theme) .tab.active .tab-audio-icon {
 .tab-group.pinned > .tab > .tab-context {
   background-color: var(--background-selection-color);
   fill: var(--foreground-selection-color);
+  opacity: 0.8;
 }
 .tab-group.tab-collapsed > .tab > .tab-context > .tab-toggle-icon {
   transform: rotate(-90deg);
