@@ -139,6 +139,16 @@
   };
 
   /**
+   * escape matching char
+   * @param {string} str - argument
+   * @param {RegExp} re - RegExp
+   * @returns {?string} - string
+   */
+  const escapeChar = (str, re) =>
+    isString(str) && re && re.global &&
+    str.replace(re, (m, c) => `\\${c}`) || null;
+
+  /**
    * sleep
    * @param {number} msec - milisec
    * @param {boolean} doReject - reject instead of resolve
@@ -721,11 +731,13 @@
       const {favIconUrl, status, title, url} = info;
       const {fill, stroke} = window.getComputedStyle(elm.parentNode);
       if (status === "loading") {
-        const re = new RegExp(`^(?:f(?:ile|tp)|https?)://(?:www\\.)?${title}$`);
-        if (elm.dataset.connecting && !re.test(url)) {
+        const str = escapeChar(title, /([/.?-])/g);
+        const reg = new RegExp(`^(?:f(?:ile|tp)|https?)://(?:www\\.)?${str}$`);
+        const isUrl = reg.test(url);
+        if (elm.dataset.connecting && !isUrl) {
           elm.style.fill = stroke;
           elm.dataset.connecting = "";
-        } else if (re.test(url)) {
+        } else if (isUrl) {
           elm.dataset.connecting = url;
         }
         elm.src = URL_LOADING_THROBBER;
