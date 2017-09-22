@@ -691,50 +691,50 @@
   };
 
   /**
-   * set favicon
+   * get favicon
    * @param {Object} elm - img element
    * @param {string} favIconUrl - favicon url
-   * @returns {void}
+   * @returns {string} - favicon url
    */
-  const setFavicon = async (elm, favIconUrl) => {
+  const getFavicon = async (elm, favIconUrl) => {
+    let src;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       if (isString(favIconUrl)) {
         const {protocol} = new URL(favIconUrl);
         if (/(?:f(?:tp|ile)|https?):/.test(protocol)) {
-          const src = await fetch(favIconUrl).then(res => {
+          src = await fetch(favIconUrl).then(res => {
             const {ok, url} = res;
             return ok && url || null;
           }).catch(() => favicon.get(favIconUrl));
-          if (src) {
-            elm.src = src;
-          } else {
-            elm.src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
+          if (!src) {
+            src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
           }
         } else {
-          elm.src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
+          src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
         }
       } else {
-        elm.src = URL_DEFAULT_FAVICON;
+        src = URL_DEFAULT_FAVICON;
       }
     }
+    return src || URL_DEFAULT_FAVICON;
   };
 
   /**
    * set tab icon
    * @param {Object} elm - img element
    * @param {Object} info - tab info
-   * @returns {?AsyncFunction} - setFavicon()
+   * @returns {void}
    */
   const setTabIcon = async (elm, info) => {
     let func;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       const {favIconUrl, status, title, url} = info;
-      const {fill, stroke} = window.getComputedStyle(elm.parentNode);
       if (status === "loading") {
         const str = escapeChar(title, /([/.?-])/g);
         const reg = new RegExp(`^(?:f(?:ile|tp)|https?)://(?:www\\.)?${str}$`);
         const isUrl = reg.test(url);
         if (elm.dataset.connecting && !isUrl) {
+          const {stroke} = window.getComputedStyle(elm);
           elm.style.fill = stroke;
           elm.dataset.connecting = "";
         } else if (isUrl) {
@@ -743,15 +743,14 @@
         elm.src = URL_LOADING_THROBBER;
       } else {
         elm.dataset.connecting = "";
-        elm.style.fill = fill;
         if (favIconUrl) {
-          func = setFavicon(elm, favIconUrl);
+          elm.src = await getFavicon(elm, favIconUrl);
         } else {
           elm.src = URL_DEFAULT_FAVICON;
         }
+        elm.style.fill = null;
       }
     }
-    return func || null;
   };
 
   /**
