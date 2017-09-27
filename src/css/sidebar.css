@@ -196,6 +196,24 @@ main {
   margin: 0;
   padding: calc(var(--scale-size) / 2);
   height: var(--icon-small-size);
+  fill: var(--foreground-secondary-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.light-theme .tab-audio.audible {
+  fill: var(--foreground-color);
+}
+.tab.active .tab-audio.audible {
+  fill: var(--foreground-active-color);
+}
+.dark-theme .tab.active .tab-audio.audible {
+  fill: var(--foreground-active-secodary-color);
+}
+.tab.active:hover .tab-audio.audible {
+  fill: var(--foreground-secondary-color);
+}
+.light-theme .tab.active:hover .tab-audio.audible {
+  fill: var(--foreground-color);
 }
 .tab-audio-icon {
   width: var(--icon-small-size);
