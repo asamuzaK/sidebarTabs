@@ -201,21 +201,6 @@ main {
   width: var(--icon-small-size);
   height: var(--icon-small-size);
 }
-.light-theme .tab-audio,
-body:not(.dark-theme) .tab:hover .tab-audio,
-body:not(.dark-theme) .tab:focus .tab-audio,
-body:not(.dark-theme) .tab.active .tab-audio {
-  flex: 0 0 var(--icon-size);
-  padding: 0;
-  height: var(--icon-size);
-}
-.light-theme .tab-audio-icon,
-body:not(.dark-theme) .tab:hover .tab-audio-icon,
-body:not(.dark-theme) .tab:focus .tab-audio-icon,
-body:not(.dark-theme) .tab.active .tab-audio-icon {
-  width: var(--icon-size);
-  height: var(--icon-size);
-}
 
 /* close button */
 .tab-close {

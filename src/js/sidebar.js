@@ -98,7 +98,7 @@
   const TYPE_FROM = 8;
   const TYPE_TO = -1;
   const URL_AUDIO_MUTED = "../img/audio-muted.svg";
-  const URL_AUDIO_PLAYING = "../img/audio-playing.svg";
+  const URL_AUDIO_PLAYING = "../img/audio-play.svg";
   const URL_CSS = "../css/sidebar.css";
   const URL_DEFAULT_FAVICON = "../img/default-favicon.svg";
   const URL_LOADING_THROBBER = "../img/loading.svg";
