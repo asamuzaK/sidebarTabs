@@ -13,6 +13,6 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <path fill="context-fill"
+  <path fill="context-fill" fill-opacity="context-fill-opacity"
         d="M14 7H9V2a1 1 0 0 0-2 0v5H2a1 1 0 1 0 0 2h5v5a1 1 0 0 0 2 0V9h5a1 1 0 0 0 0-2z"/>
 </svg>

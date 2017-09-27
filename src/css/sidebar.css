@@ -62,7 +62,7 @@
 body {
   margin: 0;
   padding: 0;
-  -moz-context-properties: fill, fill-opacity, stroke;
+  -moz-context-properties: fill, fill-opacity, stroke, stroke-opacity;
   background: var(--background-color);
   color: var(--foreground-color);
   fill: var(--foreground-color);
@@ -140,14 +140,17 @@ main {
 }
 .tab.newtab {
   border-color: transparent;
-  fill: var(--foreground-color);
+  fill: var(--foreground-secondary-color);
+  fill-opacity: 0.6;
   stroke: none;
+}
+.light-theme .tab.newtab {
+  fill: var(--foreground-color);
+  fill-opacity: 0.7;
 }
 .tab.newtab:hover,
 .tab.newtab:focus {
   border-color: var(--border-active-color);
-  fill: var(--foreground-hover-color);
-  stroke: none;
   z-index: 7;
 }
 .tab.newtab > .newtab {
@@ -228,9 +231,14 @@ main {
   flex: 0 0 var(--icon-size);
   border-radius: calc(var(--scale-size) / 2);
   height: var(--icon-size);
+  fill: var(--foreground-secondary-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-secondary-color);
+  stroke-opacity: 0;
+}
+.light-theme .tab-close {
   fill: var(--foreground-color);
-  fill-opacity: 0;
-  stroke: none;
+  stroke: var(--foreground-color);
 }
 .tab.active > .tab-close {
   fill: var(--foreground-active-color);
@@ -239,21 +247,21 @@ main {
 .tab:focus > .tab-close,
 .tab.active:hover > .tab-close,
 .tab.active:focus > .tab-close {
-  fill: var(--foreground-hover-color);
+  fill: var(--foreground-secondary-color);
+}
+.light-theme .tab:hover > .tab-close,
+.light-theme .tab:focus > .tab-close,
+.light-theme .tab.active:hover > .tab-close,
+.light-theme .tab.active:focus > .tab-close {
+  fill: var(--foreground-color);
 }
 .tab-close:hover,
 .tab-close:focus {
-  fill-opacity: 0.2;
-}
-.tab-close:active {
-  fill-opacity: 0.4;
+  stroke-opacity: 0.2;
 }
 .light-theme .tab-close:hover,
-.tab-close:focus {
-  fill-opacity: 0.1;
-}
-.light-theme .tab-close:active {
-  fill-opacity: 0.2;
+.light-theme .tab-close:focus {
+  stroke-opacity: 0.1;
 }
 .tab-close-icon {
   margin: var(--scale-size);
