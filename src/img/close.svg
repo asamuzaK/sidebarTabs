@@ -8,10 +8,13 @@
       <cc:Work rdf:about="">
         <dcterms:format>image/svg+xml</dcterms:format>
         <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-        <dcterms:title>Drop Arrow Icon</dcterms:title>
+        <dcterms:title>Close Icon</dcterms:title>
+        <dcterms:license rdf:resource="https://www.mozilla.org/en-US/MPL/2.0/"/>
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <polygon points="0,4 16,4 8,12" fill="context-fill"
-           style="transform:rotate(0deg); transform-origin: 50% 50%"/>
+  <path fill="context-fill" fill-opacity="context-fill-opacity"
+        d="M0 0h16v16H0z"/>
+  <path fill="context-fill"
+        d="M9.061 8l3.47-3.47a.75.75 0 0 0-1.061-1.06L8 6.939 4.53 3.47a.75.75 0 1 0-1.06 1.06L6.939 8 3.47 11.47a.75.75 0 1 0 1.06 1.06L8 9.061l3.47 3.47a.75.75 0 0 0 1.06-1.061z"/>
 </svg>

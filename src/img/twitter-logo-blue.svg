@@ -9,7 +9,7 @@
       <cc:Work rdf:about="">
         <dcterms:format>image/svg+xml</dcterms:format>
         <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-        <dcterms:title>Twitter_Logo_Blue</dcterms:title>
+        <dcterms:title>Twitter Logo Blue</dcterms:title>
         <dcterms:source rdf:resource="https://brand.twitter.com/"/>
       </cc:Work>
     </rdf:RDF>

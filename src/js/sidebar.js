@@ -97,10 +97,10 @@
   const TIME_3SEC = 3000;
   const TYPE_FROM = 8;
   const TYPE_TO = -1;
-  const URL_AUDIO_MUTED = "../shared/tab-audio-muted.svg";
-  const URL_AUDIO_PLAYING = "../shared/tab-audio-playing.svg";
+  const URL_AUDIO_MUTED = "../img/audio-muted.svg";
+  const URL_AUDIO_PLAYING = "../img/audio-playing.svg";
   const URL_CSS = "../css/sidebar.css";
-  const URL_DEFAULT_FAVICON = "../shared/defaultFavicon.svg";
+  const URL_DEFAULT_FAVICON = "../img/default-favicon.svg";
   const URL_LOADING_THROBBER = "../img/loading.svg";
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
 
@@ -664,9 +664,9 @@
   const favicon = new Map();
 
   favicon.set("https://abs.twimg.com/favicons/favicon.ico",
-              "../shared/Twitter_Logo_Blue.svg");
+              "../img/twitter-logo-blue.svg");
   favicon.set("https://abs.twimg.com/icons/apple-touch-icon-192x192.png",
-              "../shared/Twitter_Logo_Blue.svg");
+              "../img/twitter-logo-blue.svg");
 
   /**
    * tab icon fallback
