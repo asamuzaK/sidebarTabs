@@ -5,7 +5,7 @@
   --background-color: #202340;
   --background-active-color: #F9F9FA;
   --background-hover-color: #363959;
-  --background-hover-shadow: #505373;
+  --background-hover-shadow: rgba(249, 249, 250, 0.2);
   --background-selection-color: #0A84FF;
   --border-color: #666;
   --border-active-color: #CCC;
@@ -50,7 +50,6 @@
   --background-color: #0C0C0D;
   --background-active-color: #38383D;
   --background-hover-color: #2A2A2E;
-  --background-hover-shadow: #4A4A4F;
   --background-selection-color: #0A84FF;
   --border-color: #666;
   --border-active-color: #CCC;
