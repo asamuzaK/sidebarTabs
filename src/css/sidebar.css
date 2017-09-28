@@ -215,6 +215,7 @@ main {
   fill: var(--foreground-secondary-color);
 }
 .light-theme .tab-audio.audible,
+.light-theme .tab.active .tab-audio.audible,
 .light-theme .tab.active:hover .tab-audio.audible {
   fill: var(--foreground-color);
 }
@@ -246,6 +247,7 @@ main {
   fill: var(--foreground-secondary-color);
 }
 .light-theme .tab-close,
+.light-theme .tab.active > .tab-close,
 .light-theme .tab:hover > .tab-close,
 .light-theme .tab:focus > .tab-close,
 .light-theme .tab.active:hover > .tab-close,
