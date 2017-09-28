@@ -205,9 +205,6 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.light-theme .tab-audio.audible {
-  fill: var(--foreground-color);
-}
 .tab.active .tab-audio.audible {
   fill: var(--foreground-active-color);
 }
@@ -217,6 +214,7 @@ main {
 .tab.active:hover .tab-audio.audible {
   fill: var(--foreground-secondary-color);
 }
+.light-theme .tab-audio.audible,
 .light-theme .tab.active:hover .tab-audio.audible {
   fill: var(--foreground-color);
 }
@@ -238,9 +236,6 @@ main {
   fill: var(--foreground-secondary-color);
   fill-opacity: 0.8;
 }
-.light-theme .tab-close {
-  fill: var(--foreground-color);
-}
 .tab.active > .tab-close {
   fill: var(--foreground-active-color);
 }
@@ -250,6 +245,7 @@ main {
 .tab.active:focus > .tab-close {
   fill: var(--foreground-secondary-color);
 }
+.light-theme .tab-close,
 .light-theme .tab:hover > .tab-close,
 .light-theme .tab:focus > .tab-close,
 .light-theme .tab.active:hover > .tab-close,
