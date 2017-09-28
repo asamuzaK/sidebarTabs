@@ -280,8 +280,10 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 calc(var(--icon-size) + var(--scale-size));
-  height: calc(var(--icon-size) + var(--scale-size));
+  flex: 0 0 var(--icon-size);
+  margin: var(--scale-size);
+  padding: calc(var(--scale-size) / 3);
+  height: var(--icon-size);
   fill: var(--foreground-color);
   fill-opacity: 0.5;
   stroke: none;
@@ -297,7 +299,6 @@ main {
 }
 .tab-pinned-icon {
   flex: 0 0 var(--icon-small-size);
-  margin: calc(var(--scale-size) * 1.5);
 }
 
 /* tab group */
