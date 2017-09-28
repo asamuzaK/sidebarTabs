@@ -288,6 +288,9 @@ main {
   fill-opacity: 0.5;
   stroke: none;
 }
+.light-theme .tab-container.pinned .tab-pinned {
+  fill-opacity: 0.6;
+}
 .tab-container.pinned > .tab.active > .tab-pinned {
   fill: var(--foreground-active-color);
 }
