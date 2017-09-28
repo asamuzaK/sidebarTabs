@@ -5,6 +5,7 @@
   --background-color: #202340;
   --background-active-color: #F9F9FA;
   --background-hover-color: #363959;
+  --background-hover-shadow: rgba(12, 12, 13, 0.1);
   --background-selection-color: #0A84FF;
   --border-color: #666;
   --border-active-color: #CCC;
@@ -229,16 +230,15 @@ main {
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-size);
+  margin: var(--scale-size);
   border-radius: calc(var(--scale-size) / 2);
+  padding: calc(var(--scale-size) / 3);
   height: var(--icon-size);
   fill: var(--foreground-secondary-color);
   fill-opacity: 0.8;
-  stroke: var(--foreground-secondary-color);
-  stroke-opacity: 0;
 }
 .light-theme .tab-close {
   fill: var(--foreground-color);
-  stroke: var(--foreground-color);
 }
 .tab.active > .tab-close {
   fill: var(--foreground-active-color);
@@ -257,14 +257,9 @@ main {
 }
 .tab-close:hover,
 .tab-close:focus {
-  stroke-opacity: 0.2;
-}
-.light-theme .tab-close:hover,
-.light-theme .tab-close:focus {
-  stroke-opacity: 0.1;
+  background-color: var(--background-hover-shadow);
 }
 .tab-close-icon {
-  margin: var(--scale-size);
   width: var(--icon-size);
   height: var(--icon-size);
 }
