@@ -29,7 +29,7 @@
           transform: translateX(0) scale(1.6, 0.9);
         }
         100% {
-          transform: translateX(-6px);
+          transform: translateX(-6px) scale(1, 1);
         }
       }
       circle {
