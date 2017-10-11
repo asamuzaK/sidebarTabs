@@ -321,6 +321,7 @@ main {
   justify-content: space-around;
   flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
+  fill: var(--foreground-selection-color);
 }
 .tab-group:nth-child(8n + 1) > .tab > .tab-context {
   background-color: var(--tab-group-1);
@@ -348,8 +349,6 @@ main {
 }
 .tab-group.pinned > .tab > .tab-context {
   background-color: var(--background-selection-color);
-  fill: var(--foreground-selection-color);
-  opacity: 0.8;
 }
 .tab-group.tab-collapsed > .tab > .tab-context > .tab-toggle-icon {
   transform: rotate(-90deg);
