@@ -1853,14 +1853,6 @@
               onclick: true,
               toggleTitle: i18n.getMessage(TAB_GROUP_EXPAND),
             },
-            [TAB_GROUP_CLOSE]: {
-              id: MENU_TAB_GROUP_CLOSE,
-              title: i18n.getMessage(TAB_GROUP_CLOSE),
-              contexts: [CLASS_TAB_GROUP],
-              type: "normal",
-              enabled: false,
-              onclick: true,
-            },
             [TAB_GROUP_DETACH]: {
               id: MENU_TAB_GROUP_DETACH,
               title: i18n.getMessage(TAB_GROUP_DETACH),
@@ -1872,6 +1864,14 @@
             [TAB_GROUP_UNGROUP]: {
               id: MENU_TAB_GROUP_UNGROUP,
               title: i18n.getMessage(TAB_GROUP_UNGROUP),
+              contexts: [CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
+            [TAB_GROUP_CLOSE]: {
+              id: MENU_TAB_GROUP_CLOSE,
+              title: i18n.getMessage(TAB_GROUP_CLOSE),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
