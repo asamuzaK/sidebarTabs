@@ -129,6 +129,15 @@
   const isString = o => typeof o === "string" || o instanceof String;
 
   /**
+   * stringify positive integer
+   * @param {number} i - integer
+   * @param {boolean} [zero] - treat 0 as a positive integer
+   * @returns {?string} - stringified integer
+   */
+  const stringifyPositiveInt = (i, zero = false) =>
+    Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
+
+  /**
    * is object, and not an empty object
    * @param {*} o - object to check;
    * @returns {boolean} - result
@@ -166,22 +175,6 @@
       });
     }
     return func || null;
-  };
-
-  /**
-   * compare url string
-   * @param {string} url1 - URL
-   * @param {string} url2 - URL
-   * @param {boolean} query - compare query string
-   * @param {boolean} frag - compare fragment identifier string
-   * @returns {boolean} - result
-   */
-  const isUrlEqual = (url1, url2, query = false, frag = false) => {
-    url1 = new URL(url1);
-    url2 = new URL(url2);
-    return url1.origin === url2.origin && url1.pathname === url2.pathname &&
-           (!query || url1.search === url2.search) &&
-           (!frag || url1.hash === url2.hash);
   };
 
   /* webext utils */
@@ -268,14 +261,7 @@
     return tabs.remove(arg);
   };
 
-  /**
-   * bookmark tab
-   * @param {Object} opt - options
-   * @returns {AsyncFunction} - bookmarks.create()
-   */
-  const bookmarkTab = async opt =>
-    bookmarks.create(isObjectNotEmpty(opt) && opt || null);
-
+  /* sessions */
   /**
    * get recently closed tab
    * @param {number} windowId - window ID
@@ -311,6 +297,54 @@
     return sessions.restore(sessionId);
   };
 
+  /**
+   * get tab sessions
+   * @param {string} key - key
+   * @returns {Promise.<Array>} - session value list
+   */
+  const getTabSessions = async key => {
+    const func = [];
+    if (isString(key)) {
+      const items = document.querySelectorAll(TAB_QUERY);
+      if (items && items.length) {
+        for (const item of items) {
+          const tabsTab = item.dataset && item.dataset.tab &&
+                            JSON.parse(item.dataset.tab);
+          const {id} = tabsTab;
+          func.push(sessions.getTabValue(id, key));
+        }
+      }
+    }
+    return Promise.all(func);
+  };
+
+  /**
+   * set tab sessions
+   * @param {string} key - key
+   * @returns {void}
+   */
+  const setTabSessions = async key => {
+    if (isString(key)) {
+      const items = document.querySelectorAll(
+        `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
+      );
+      const l = items.length;
+      let i = 0;
+      while (i < l) {
+        const item = items[i];
+        const index = stringifyPositiveInt(i, true);
+        const childTabs = item.querySelectorAll(TAB_QUERY);
+        for (const tab of childTabs) {
+          const tabsTab = tab.dataset && tab.dataset.tab &&
+                            JSON.parse(tab.dataset.tab);
+          const {id} = tabsTab;
+          sessions.setTabValue(id, key, index);
+        }
+        i++;
+      }
+    }
+  };
+
   /* windows */
   /**
    * create new window
@@ -339,6 +373,15 @@
     ));
     return theme;
   };
+
+  /* bookmarks */
+  /**
+   * bookmark tab
+   * @param {Object} opt - options
+   * @returns {AsyncFunction} - bookmarks.create()
+   */
+  const bookmarkTab = async opt =>
+    bookmarks.create(isObjectNotEmpty(opt) && opt || null);
 
   /* storage */
   /**
@@ -604,61 +647,6 @@
     }
   };
 
-  /**
-   * create tab data
-   * @returns {Array} - tab data
-   */
-  const createTabData = async () => {
-    const items = document.querySelectorAll(TAB_QUERY);
-    const tab = [];
-    for (const item of items) {
-      const tabsTab = item.dataset && item.dataset.tab &&
-                        JSON.parse(item.dataset.tab);
-      const {url} = tabsTab;
-      tab.push(url);
-    }
-    return tab;
-  };
-
-  /**
-   * create tab group data
-   * @returns {Array} - tab group data
-   */
-  const createTabGroupData = async () => {
-    const items = document.querySelectorAll(
-      `.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}:not(.${PINNED})`
-    );
-    const group = [];
-    for (const item of items) {
-      const {children} = item;
-      const arr = [];
-      for (const child of children) {
-        const index = getSidebarTabIndex(child);
-        Number.isInteger(index) && arr.push(index);
-      }
-      arr.length && group.push(arr);
-    }
-    return group;
-  };
-
-  /**
-   * store tab data
-   * @returns {?AsyncFunction} - storeData()
-   */
-  const storeTabData = async () => {
-    let func;
-    if (!sidebar.incognito) {
-      const tab = await createTabData() || [];
-      const group = await createTabGroupData() || [];
-      func = storeData({
-        [TAB]: {
-          tab, group,
-        },
-      });
-    }
-    return func || null;
-  };
-
   /* sidebar tab content */
   /* favicon fallbacks */
   const favicon = new Map();
@@ -726,7 +714,6 @@
    * @returns {void}
    */
   const setTabIcon = async (elm, info) => {
-    let func;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       const {favIconUrl, status, title, url} = info;
       if (status === "loading") {
@@ -789,7 +776,7 @@
       if (status === "complete") {
         await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
                             tabsTab);
-        func.push(storeTabData());
+        func.push(setTabSessions("container"));
       } else {
         func.push(observeTab(id));
       }
@@ -1040,7 +1027,7 @@
   /**
    * handle drop
    * @param {!Object} evt - event
-   * @returns {?AsyncFunction} - storeTabData()
+   * @returns {?AsyncFunction} - setTabSessions()
    */
   const handleDrop = evt => {
     const {dataTransfer, shiftKey, target} = evt;
@@ -1090,7 +1077,7 @@
               windowId: sidebar.windowId,
             });
           }
-          func = storeTabData().catch(throwErr);
+          func = setTabSessions("container").catch(throwErr);
         }
       }
     }
@@ -1187,7 +1174,7 @@
       }
       id !== PINNED && func.push(addDropEventListener(item));
     }
-    func.push(storeTabData());
+    func.push(setTabSessions("container"));
     return Promise.all(func);
   };
 
@@ -1416,7 +1403,7 @@
           }
         }
         info.hasOwnProperty("status") && func.push(observeTab(tabId));
-        info.hasOwnProperty("url") && func.push(storeTabData());
+        info.hasOwnProperty("url") && func.push(setTabSessions("container"));
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
@@ -2339,39 +2326,31 @@
 
   /* start up */
   /**
-   * set stored tab group data
+   * restore tab group
    * @returns {void}
    */
   const restoreTabGroup = async () => {
     if (!sidebar.incognito) {
-      const {tab: storedTab} = await storage.local.get(TAB);
-      if (storedTab) {
-        const {tab, group: groups} = storedTab;
-        const items = document.querySelectorAll(TAB_QUERY);
-        if (items.length === tab.length) {
-          const l = items.length;
-          let i = 0;
-          let bool;
-          while (i < l) {
-            const item = items[i];
-            const tabsTab = item.dataset && item.dataset.tab &&
-                              JSON.parse(item.dataset.tab);
-            const {url} = tabsTab;
-            bool = isUrlEqual(url, tab[i]);
-            if (!bool) {
-              break;
-            }
-            i++;
+      const items = document.querySelectorAll(TAB_QUERY);
+      if (items && items.length) {
+        const containers = document.querySelectorAll(
+          `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
+        );
+        const indexes = await getTabSessions("container");
+        const l = items.length;
+        let i = 0;
+        while (i < l) {
+          const item = items[i];
+          const index = Number(indexes[i]);
+          if (Number.isInteger(index)) {
+            containers[index].appendChild(item);
           }
-          if (bool) {
-            for (const group of groups) {
-              const [target, ...indexes] = group;
-              const container = items[target].parentNode;
-              container.classList.add(CLASS_TAB_GROUP);
-              for (const index of indexes) {
-                container.appendChild(items[index]);
-              }
-            }
+          i++;
+        }
+        for (const container of containers) {
+          const {childElementCount} = container;
+          if (childElementCount > 1) {
+            container.classList.add(CLASS_TAB_GROUP);
           }
         }
       }
