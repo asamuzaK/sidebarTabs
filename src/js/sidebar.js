@@ -129,15 +129,6 @@
   const isString = o => typeof o === "string" || o instanceof String;
 
   /**
-   * stringify positive integer
-   * @param {number} i - integer
-   * @param {boolean} [zero] - treat 0 as a positive integer
-   * @returns {?string} - stringified integer
-   */
-  const stringifyPositiveInt = (i, zero = false) =>
-    Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
-
-  /**
    * is object, and not an empty object
    * @param {*} o - object to check;
    * @returns {boolean} - result
@@ -295,54 +286,6 @@
       throw new TypeError(`Expected String but got ${getType(sessionId)}.`);
     }
     return sessions.restore(sessionId);
-  };
-
-  /**
-   * get tab sessions
-   * @param {string} key - key
-   * @returns {Promise.<Array>} - session value list
-   */
-  const getTabSessions = async key => {
-    const func = [];
-    if (isString(key)) {
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (items && items.length) {
-        for (const item of items) {
-          const tabsTab = item.dataset && item.dataset.tab &&
-                            JSON.parse(item.dataset.tab);
-          const {id} = tabsTab;
-          func.push(sessions.getTabValue(id, key));
-        }
-      }
-    }
-    return Promise.all(func);
-  };
-
-  /**
-   * set tab sessions
-   * @param {string} key - key
-   * @returns {void}
-   */
-  const setTabSessions = async key => {
-    if (isString(key)) {
-      const items = document.querySelectorAll(
-        `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
-      );
-      const l = items.length;
-      let i = 0;
-      while (i < l) {
-        const item = items[i];
-        const index = stringifyPositiveInt(i, true);
-        const childTabs = item.querySelectorAll(TAB_QUERY);
-        for (const tab of childTabs) {
-          const tabsTab = tab.dataset && tab.dataset.tab &&
-                            JSON.parse(tab.dataset.tab);
-          const {id} = tabsTab;
-          sessions.setTabValue(id, key, index);
-        }
-        i++;
-      }
-    }
   };
 
   /* windows */
@@ -647,6 +590,66 @@
     }
   };
 
+  /**
+   * get tab list from sessions
+   * @param {string} key - key
+   * @returns {Object} - tab list
+   */
+  const getSessionsTabList = async key => {
+    const win = await getCurrentWindow({
+      populate: true,
+      windowTypes: ["normal"],
+    });
+    let tabList;
+    if (win && isString(key)) {
+      const {id: windowId} = win;
+      tabList = await sessions.getWindowValue(windowId, key);
+      if (tabList) {
+        tabList = JSON.parse(tabList);
+      }
+    }
+    return tabList || null;
+  };
+
+  /**
+   * set tab list to sessions
+   * @param {string} key - key
+   * @returns {void}
+   */
+  const setSessionsTabList = async key => {
+    const win = await getCurrentWindow({
+      populate: true,
+      windowTypes: ["normal"],
+    });
+    if (win && isString(key)) {
+      const {id: windowId} = win;
+      const items = document.querySelectorAll(
+        `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
+      );
+      const tabLength = document.querySelectorAll(TAB_QUERY).length;
+      if (tabLength) {
+        const tabList = {};
+        const l = items.length;
+        let i = 0;
+        while (i < l) {
+          const item = items[i];
+          const childTabs = item.querySelectorAll(TAB_QUERY);
+          for (const tab of childTabs) {
+            const tabsTab = tab.dataset && tab.dataset.tab &&
+                              JSON.parse(tab.dataset.tab);
+            const {id: tabId, index: tabIndex} = tabsTab;
+            tabList[tabIndex] = {
+              tabId,
+              containerIndex: i,
+            };
+          }
+          i++;
+        }
+        await sessions.setWindowValue(windowId, key, JSON.stringify(tabList));
+      }
+    }
+  };
+
   /* sidebar tab content */
   /* favicon fallbacks */
   const favicon = new Map();
@@ -776,7 +779,7 @@
       if (status === "complete") {
         await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
                             tabsTab);
-        func.push(setTabSessions("container"));
+        func.push(setSessionsTabList("tabList"));
       } else {
         func.push(observeTab(id));
       }
@@ -1027,7 +1030,7 @@
   /**
    * handle drop
    * @param {!Object} evt - event
-   * @returns {?AsyncFunction} - setTabSessions()
+   * @returns {?AsyncFunction} - setSessionsTabList()
    */
   const handleDrop = evt => {
     const {dataTransfer, shiftKey, target} = evt;
@@ -1077,7 +1080,7 @@
               windowId: sidebar.windowId,
             });
           }
-          func = setTabSessions("container").catch(throwErr);
+          func = setSessionsTabList("tabList").catch(throwErr);
         }
       }
     }
@@ -1174,7 +1177,7 @@
       }
       id !== PINNED && func.push(addDropEventListener(item));
     }
-    func.push(setTabSessions("container"));
+    func.push(setSessionsTabList("tabList"));
     return Promise.all(func);
   };
 
@@ -1403,7 +1406,7 @@
           }
         }
         info.hasOwnProperty("status") && func.push(observeTab(tabId));
-        info.hasOwnProperty("url") && func.push(setTabSessions("container"));
+        info.hasOwnProperty("url") && func.push(setSessionsTabList("tabList"));
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
@@ -2331,27 +2334,23 @@
    */
   const restoreTabGroup = async () => {
     if (!sidebar.incognito) {
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (items && items.length) {
+      const tabList = await getSessionsTabList("tabList");
+      if (tabList) {
         const containers = document.querySelectorAll(
           `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
         );
-        const indexes = await getTabSessions("container");
+        const items = document.querySelectorAll(TAB_QUERY);
         const l = items.length;
         let i = 0;
         while (i < l) {
           const item = items[i];
-          const index = Number(indexes[i]);
-          if (Number.isInteger(index)) {
-            containers[index].appendChild(item);
+          const tabData = tabList[i];
+          if (item && tabData) {
+            const {tabId, containerIndex} = tabData;
+            const itemId = item && item.dataset && item.dataset.tabId * 1;
+            itemId === tabId && containers[containerIndex].appendChild(item);
           }
           i++;
-        }
-        for (const container of containers) {
-          const {childElementCount} = container;
-          if (childElementCount > 1) {
-            container.classList.add(CLASS_TAB_GROUP);
-          }
         }
       }
     }
