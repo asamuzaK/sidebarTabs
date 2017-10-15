@@ -635,13 +635,15 @@
           const item = items[i];
           const childTabs = item.querySelectorAll(TAB_QUERY);
           for (const tab of childTabs) {
-            const tabsTab = tab.dataset && tab.dataset.tab &&
-                              JSON.parse(tab.dataset.tab);
-            const {id: tabId, index: tabIndex} = tabsTab;
-            tabList[tabIndex] = {
-              tabId,
-              containerIndex: i,
-            };
+            const tabId = tab.dataset && tab.dataset.tabId &&
+              tab.dataset.tabId * 1;
+            const tabIndex = getSidebarTabIndex(tab);
+            if (Number.isInteger(tabId) && Number.isInteger(tabIndex)) {
+              tabList[tabIndex] = {
+                tabId,
+                containerIndex: i,
+              };
+            }
           }
           i++;
         }
