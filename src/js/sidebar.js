@@ -635,14 +635,16 @@
           const item = items[i];
           const childTabs = item.querySelectorAll(TAB_QUERY);
           for (const tab of childTabs) {
-            const tabId = tab.dataset && tab.dataset.tabId &&
-              tab.dataset.tabId * 1;
-            const tabIndex = getSidebarTabIndex(tab);
-            if (Number.isInteger(tabId) && Number.isInteger(tabIndex)) {
-              tabList[tabIndex] = {
-                tabId,
-                containerIndex: i,
-              };
+            const tabsTab = tab.dataset && tab.dataset.tab;
+            if (tabsTab) {
+              const {url} = JSON.parse(tabsTab);
+              const tabIndex = getSidebarTabIndex(tab);
+              if (Number.isInteger(tabIndex)) {
+                tabList[tabIndex] = {
+                  url,
+                  containerIndex: i,
+                };
+              }
             }
           }
           i++;
@@ -1408,7 +1410,6 @@
           }
         }
         info.hasOwnProperty("status") && func.push(observeTab(tabId));
-        info.hasOwnProperty("url") && func.push(setSessionsTabList("tabList"));
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
@@ -2337,21 +2338,19 @@
   const restoreTabGroup = async () => {
     if (!sidebar.incognito) {
       const tabList = await getSessionsTabList("tabList");
-      if (tabList) {
+      const items = document.querySelectorAll(TAB_QUERY);
+      const l = items.length;
+      // FIXME: add condition for user's start up, like homepage, about:blank
+      if (tabList && items && Object.keys(tabList).length === l) {
         const containers = document.querySelectorAll(
           `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
         );
-        const items = document.querySelectorAll(TAB_QUERY);
-        const l = items.length;
         let i = 0;
         while (i < l) {
           const item = items[i];
-          const tabData = tabList[i];
-          if (item && tabData) {
-            const {tabId, containerIndex} = tabData;
-            const itemId = item && item.dataset && item.dataset.tabId * 1;
-            itemId === tabId && containers[containerIndex].appendChild(item);
-          }
+          const {containerIndex} = tabList[i];
+          item && Number.isInteger(containerIndex) &&
+            containers[containerIndex].appendChild(item);
           i++;
         }
       }
