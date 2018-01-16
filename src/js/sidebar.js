@@ -1410,6 +1410,8 @@
           }
         }
         info.hasOwnProperty("status") && func.push(observeTab(tabId));
+        info.hasOwnProperty("discarded") &&
+          func.push(setSessionsTabList("tabList"));
         tab.dataset.tab = JSON.stringify(tabsTab);
       }
     }
