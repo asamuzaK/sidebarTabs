@@ -5,6 +5,14 @@
       "strict_min_version": "57.0a1"
     }
   },
+  "background": {
+    "page": "html/background.html"
+  },
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": "icon.svg#context",
+    "default_title": "__MSG_extensionName__"
+  },
   "content_scripts": [
     {
       "all_frames": false,
