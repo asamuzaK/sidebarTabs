@@ -3,7 +3,7 @@
     "message": "サイドバーにタブをエミュレートし、タブを縦に並べて表示します。さらに、タブをグループ化して折りたたみ・展開することが可能です。"
   },
   "extensionName": {
-    "message": "verticalGroupableSidebarTabs"
+    "message": "サイドバー・タブ"
   },
   "extensionShortName": {
     "message": "タブ"

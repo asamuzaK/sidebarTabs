@@ -3,7 +3,7 @@
     "message": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them."
   },
   "extensionName": {
-    "message": "verticalGroupableSidebarTabs"
+    "message": "Sidebar Tabs"
   },
   "extensionShortName": {
     "message": "Tabs"
