@@ -181,6 +181,9 @@ main {
 .tab.active .tab-icon {
   fill: var(--foreground-active-secondary-color);
 }
+.tab.active:hover .tab-icon {
+  fill: var(--foreground-secondary-color);
+}
 .tab-title {
   display: block;
   flex: 1 1 auto;
