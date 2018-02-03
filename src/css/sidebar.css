@@ -175,7 +175,7 @@ main {
   width: var(--icon-size);
   height: var(--icon-size);
   fill: var(--foreground-secondary-color);
-  fill-opacity: 0.8;
+  fill-opacity: 1.0;
   stroke: var(--foreground-highlight-color);
 }
 .tab.active .tab-icon {
