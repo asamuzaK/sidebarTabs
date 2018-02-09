@@ -110,6 +110,9 @@
   "sendToAllDevices": {
     "message": "すべての端末に送る"
   },
+  "sidebarTabsOptions": {
+    "message": "サイドバー・タブ 設定"
+  },
   "syncTab": {
     "message": "タブを同期"
   },

@@ -110,6 +110,9 @@
   "sendToAllDevices": {
     "message": "Send to all devices"
   },
+  "sidebarTabsOptions": {
+    "message": "Sidebar Tabs Options"
+  },
   "syncTab": {
     "message": "Sync Tab"
   },

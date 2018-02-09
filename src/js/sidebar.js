@@ -37,6 +37,7 @@
   const COOKIE_STORE_DEFAULT = "firefox-default";
   const MENU = "sidebar-tabs-menu";
   const MENU_SIDEBAR_INIT = "sidebar-tabs-menu-sidebar-init";
+  const MENU_SIDEBAR_OPT = "sidebar-tabs-menu-sidebar-tabs-options";
   const MENU_TAB = "sidebar-tabs-menu-tab";
   const MENU_TABS_BOOKMARK_ALL = "sidebar-tabs-menu-tabs-bookmark-all";
   const MENU_TABS_RELOAD_ALL = "sidebar-tabs-menu-tabs-reload-all";
@@ -66,6 +67,7 @@
   const NEW_WIN_MOVE = "moveToNewWindow";
   const PINNED = "pinned";
   const SIDEBAR_INIT = "initSidebar";
+  const SIDEBAR_OPT = "sidebarTabsOptions";
   const TAB = "tab";
   const TABS_BOOKMARK_ALL = "bookmarkAllTabs";
   const TABS_CLOSE_END = "closeTabsToTheEnd";
@@ -1899,47 +1901,56 @@
           enabled: false,
           onclick: true,
         },
-        /* sidebar */
-        [THEME_SELECT]: {
-          id: MENU_THEME_SELECT,
-          title: i18n.getMessage(THEME_SELECT),
+        /* sidebar tabs options*/
+        [SIDEBAR_OPT]: {
+          id: MENU_SIDEBAR_OPT,
+          title: i18n.getMessage(SIDEBAR_OPT),
           contexts: ["page"],
           type: "normal",
           enabled: true,
           subItems: {
-            [THEME_DEFAULT]: {
-              id: MENU_THEME_DEFAULT,
-              title: i18n.getMessage(THEME_DEFAULT),
+            [THEME_SELECT]: {
+              id: MENU_THEME_SELECT,
+              title: i18n.getMessage(THEME_SELECT),
               contexts: ["page"],
               type: "normal",
               enabled: true,
-              onclick: true,
+              subItems: {
+                [THEME_DEFAULT]: {
+                  id: MENU_THEME_DEFAULT,
+                  title: i18n.getMessage(THEME_DEFAULT),
+                  contexts: ["page"],
+                  type: "normal",
+                  enabled: true,
+                  onclick: true,
+                },
+                [THEME_LIGHT]: {
+                  id: MENU_THEME_LIGHT,
+                  title: i18n.getMessage(THEME_LIGHT),
+                  contexts: ["page"],
+                  type: "normal",
+                  enabled: true,
+                  onclick: true,
+                },
+                [THEME_DARK]: {
+                  id: MENU_THEME_DARK,
+                  title: i18n.getMessage(THEME_DARK),
+                  contexts: ["page"],
+                  type: "normal",
+                  enabled: true,
+                  onclick: true,
+                },
+              },
             },
-            [THEME_LIGHT]: {
-              id: MENU_THEME_LIGHT,
-              title: i18n.getMessage(THEME_LIGHT),
-              contexts: ["page"],
-              type: "normal",
-              enabled: true,
-              onclick: true,
-            },
-            [THEME_DARK]: {
-              id: MENU_THEME_DARK,
-              title: i18n.getMessage(THEME_DARK),
+            [SIDEBAR_INIT]: {
+              id: MENU_SIDEBAR_INIT,
+              title: i18n.getMessage(SIDEBAR_INIT),
               contexts: ["page"],
               type: "normal",
               enabled: true,
               onclick: true,
             },
           },
-        },
-        [SIDEBAR_INIT]: {
-          id: MENU_SIDEBAR_INIT,
-          title: i18n.getMessage(SIDEBAR_INIT),
-          contexts: ["page"],
-          type: "normal",
-          enabled: true,
-          onclick: true,
         },
       },
     },
