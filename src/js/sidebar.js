@@ -2010,7 +2010,9 @@
       const elm = document.getElementById(id);
       if (elm) {
         const {enabled, title} = data;
-        title && (elm.label = title);
+        if (title) {
+          elm.label = title;
+        }
         if (elm.localName === "menuitem") {
           elm.disabled = !enabled && true || false;
         }
