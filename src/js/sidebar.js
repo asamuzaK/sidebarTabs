@@ -16,7 +16,9 @@
   const AUDIBLE = "audible";
   const AUDIO_MUTE = "muteAudio";
   const AUDIO_MUTE_UNMUTE = "unmuteAudio";
-  const CLASS_MENU = "menu";
+  const CLASS_MENU = "context-menu";
+  const CLASS_MENU_DISABLED = "disabled";
+  const CLASS_MENU_LABEL = "menu-item-label";
   const CLASS_TAB = "tab";
   const CLASS_TAB_AUDIO = "tab-audio";
   const CLASS_TAB_AUDIO_ICON = "tab-audio-icon";
@@ -477,9 +479,8 @@
    * @returns {Object} - sidebar tab container
    */
   const getSidebarTabContainer = node => {
-    const root = document.documentElement;
     let container;
-    while (node && node.parentNode && node.parentNode !== root) {
+    while (node && node.parentNode) {
       const {classList, parentNode} = node;
       if (classList.contains(CLASS_TAB_CONTAINER)) {
         container = node;
@@ -496,9 +497,8 @@
    * @returns {Object} - sidebar tab
    */
   const getSidebarTab = node => {
-    const root = document.documentElement;
     let tab;
-    while (node && node.parentNode && node.parentNode !== root) {
+    while (node && node.parentNode) {
       const {dataset, parentNode} = node;
       if (dataset.tabId) {
         tab = node;
@@ -515,9 +515,8 @@
    * @returns {?number} - tab ID
    */
   const getSidebarTabId = node => {
-    const root = document.documentElement;
     let tabId;
-    while (node && node.parentNode && node.parentNode !== root) {
+    while (node && node.parentNode) {
       const {dataset, parentNode} = node;
       if (dataset.tabId) {
         tabId = dataset.tabId * 1;
@@ -1059,20 +1058,26 @@
         if (dropTarget && dropTarget !== tab) {
           const {parentNode: dropParent} = dropTarget;
           const {
-            childElementCount: dropParentChild,
+            childElementCount: dropParentChildCount,
+            classList: dropParentClassList,
             nextElementSibling: dropParentNextElement,
           } = dropParent;
-          const {parentNode: tabParent} = tab;
-          if (dropParentNextElement === tabParent && dropParentChild === 1 &&
-              shiftKey) {
+          const {dataset: tabDataset, parentNode: tabParent} = tab;
+          const {
+            childElementCount: tabParentChildCount,
+            classList: tabParentClassList,
+            parentNode: tabParentParent,
+          } = tabParent;
+          if (dropParentNextElement === tabParent &&
+              dropParentChildCount === 1 && shiftKey) {
             dropParent.appendChild(tab);
-            dropParent.classList.add(CLASS_TAB_GROUP);
-            switch (tabParent.childElementCount) {
+            dropParentClassList.add(CLASS_TAB_GROUP);
+            switch (tabParentChildCount) {
               case 0:
-                tabParent.parentNode.removeChild(tabParent);
+                tabParentParent.removeChild(tabParent);
                 break;
               case 1:
-                tabParent.classList.remove(CLASS_TAB_GROUP);
+                tabParentClassList.remove(CLASS_TAB_GROUP);
                 break;
               default:
             }
@@ -1080,7 +1085,7 @@
             const dropIndex = getSidebarTabIndex(dropTarget);
             const tabIndex = getSidebarTabIndex(tab);
             const index = tabIndex >= dropIndex && dropIndex + 1 || dropIndex;
-            tab.dataset.group = !!shiftKey;
+            tabDataset.group = !!shiftKey;
             moveTab(id * 1, {
               index,
               windowId: sidebar.windowId,
@@ -1573,7 +1578,10 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const handleClickedContextMenu = async evt => {
-    const {target: {id}} = evt;
+    const {target} = evt;
+    const {id: targetId, parentNode: targetParent} = target;
+    const {id: parentId} = targetParent;
+    const id = targetId || parentId;
     const tab = sidebar.context && sidebar.context.classList &&
                   sidebar.context.classList.contains(TAB) && sidebar.context;
     const tabId = tab && tab.dataset && tab.dataset.tabId &&
@@ -1610,9 +1618,12 @@
         }
         break;
       }
-      case MENU_TAB_CLOSE:
-        Number.isInteger(tabId) && func.push(removeTab(tabId));
+      case MENU_TAB_CLOSE: {
+        if (Number.isInteger(tabId)) {
+          func.push(removeTab(tabId));
+        }
         break;
+      }
       case MENU_TAB_CLOSE_UNDO: {
         const {lastClosedTab} = sidebar;
         if (lastClosedTab) {
@@ -1621,31 +1632,49 @@
         }
         break;
       }
-      case MENU_TAB_DUPE:
-        Number.isInteger(tabId) && func.push(dupeTab(tabId));
-        break;
-      case MENU_TAB_GROUP_CLOSE: {
-        if (tab && tabsTab) {
-          const {parentNode} = tab;
-          !tabsTab.pinned && parentNode.classList.contains(CLASS_TAB_GROUP) &&
-            func.push(closeGroupTabs(parentNode).then(restoreTabContainers));
+      case MENU_TAB_DUPE: {
+        if (Number.isInteger(tabId)) {
+          func.push(dupeTab(tabId));
         }
         break;
       }
-      case MENU_TAB_GROUP_COLLAPSE:
-        tab && tab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-          func.push(toggleTabCollapsed({target: tab}));
+      case MENU_TAB_GROUP_CLOSE: {
+        if (tab && tabsTab && !tabsTab.pinned) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            func.push(closeGroupTabs(tabParent).then(restoreTabContainers));
+          }
+        }
         break;
-      case MENU_TAB_GROUP_DETACH:
-        tab && tab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-        !tab.parentNode.classList.contains(PINNED) &&
-          func.push(detachTabFromGroup(tab).then(restoreTabContainers));
+      }
+      case MENU_TAB_GROUP_COLLAPSE: {
+        if (tab) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            func.push(toggleTabCollapsed({target: tab}));
+          }
+        }
         break;
+      }
+      case MENU_TAB_GROUP_DETACH: {
+        if (tab) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP) &&
+              !tabParentClassList.contains(PINNED)) {
+            func.push(detachTabFromGroup(tab).then(restoreTabContainers));
+          }
+        }
+        break;
+      }
       case MENU_TAB_GROUP_RELOAD: {
         if (tab) {
-          const {parentNode} = tab;
-          if (parentNode.classList.contains(CLASS_TAB_GROUP)) {
-            const items = parentNode.querySelectorAll(TAB_QUERY);
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            const items = tabParent.querySelectorAll(TAB_QUERY);
             for (const item of items) {
               const itemId = item && item.dataset && item.dataset.tabId * 1;
               Number.isInteger(itemId) && func.push(reloadTab(itemId));
@@ -1655,19 +1684,24 @@
         break;
       }
       case MENU_TAB_GROUP_UNGROUP: {
-        if (tab && tabsTab) {
-          const {parentNode} = tab;
-          !tabsTab.pinned && parentNode.classList.contains(CLASS_TAB_GROUP) &&
-            func.push(ungroupTabs(parentNode).then(restoreTabContainers));
+        if (tab && tabsTab && !tabsTab.pinned) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            func.push(ungroupTabs(tabParent).then(restoreTabContainers));
+          }
         }
         break;
       }
-      case MENU_TAB_NEW_WIN_MOVE:
-        Number.isInteger(tabId) && func.push(createNewWindow({
-          tabId,
-          type: "normal",
-        }));
+      case MENU_TAB_NEW_WIN_MOVE: {
+        if (Number.isInteger(tabId)) {
+          func.push(createNewWindow({
+            tabId,
+            type: "normal",
+          }));
+        }
         break;
+      }
       case MENU_TAB_PIN: {
         if (tabsTab) {
           const {pinned} = tabsTab;
@@ -1675,12 +1709,18 @@
         }
         break;
       }
-      case MENU_TAB_RELOAD:
-        Number.isInteger(tabId) && func.push(reloadTab(tabId));
+      case MENU_TAB_RELOAD: {
+        if (Number.isInteger(tabId)) {
+          func.push(reloadTab(tabId));
+        }
         break;
-      case MENU_TAB_SYNC:
-        Number.isInteger(tabId) && func.push(syncTab(tabId));
+      }
+      case MENU_TAB_SYNC: {
+        if (Number.isInteger(tabId)) {
+          func.push(syncTab(tabId));
+        }
         break;
+      }
       case MENU_TAB_TABS_CLOSE_END: {
         if (Number.isInteger(tabId)) {
           const index = tabsTab && tabsTab.index && tabsTab.index * 1;
@@ -1981,11 +2021,17 @@
     if (isString(id) && type === "normal") {
       const elm = document.getElementById(id);
       if (elm) {
-        elm.label = title;
-        if (elm.localName === "menuitem") {
-          elm.disabled = !enabled && true || false;
-          onclick && func.push(addContextMenuClickListener(elm));
+        const {classList} = elm;
+        const label = elm.querySelector(`.${CLASS_MENU_LABEL}`);
+        if (label) {
+          label.textContent = title;
         }
+        if (enabled) {
+          classList.remove(CLASS_MENU_DISABLED);
+        } else {
+          classList.add(CLASS_MENU_DISABLED);
+        }
+        onclick && func.push(addContextMenuClickListener(elm));
       }
     }
     return Promise.all(func);
@@ -2021,11 +2067,17 @@
       const elm = document.getElementById(id);
       if (elm) {
         const {enabled, title} = data;
+        const {classList} = elm;
         if (title) {
-          elm.label = title;
+          const label = elm.querySelector(`.${CLASS_MENU_LABEL}`);
+          if (label) {
+            label.textContent = title;
+          }
         }
-        if (elm.localName === "menuitem") {
-          elm.disabled = !enabled && true || false;
+        if (enabled) {
+          classList.remove(CLASS_MENU_DISABLED);
+        } else {
+          classList.add(CLASS_MENU_DISABLED);
         }
       }
     }

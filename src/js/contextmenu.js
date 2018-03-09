@@ -1,0 +1,548 @@
+/**
+ * contextmenu.js
+ */
+"use strict";
+{
+  /* constants */
+  const CLASS_DISABLED = "disabled";
+  const CLASS_MENU = "context-menu";
+  const CLASS_MENU_SEP = "menu-separator";
+  const CLASS_SUBMENU_CONTAINER = "submenu-container";
+  const CLASS_SHOW = "show";
+  const CLASS_VISIBLE = "visible";
+  const MENU = "sidebar-tabs-menu";
+  const MENU_CONTAINER = "sidebar-tabs-header";
+  const MOUSE_BUTTON_RIGHT = 2;
+
+  /**
+   * is string
+   * @param {*} o - object to check
+   * @returns {boolean} - result
+   */
+  const isString = o => typeof o === "string" || o instanceof String;
+
+  /**
+   * dispatch click event
+   * @param {Object} elm - Element
+   * @returns {void}
+   */
+  const dispatchClickEvt = elm => {
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const opt = {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      };
+      const evt = new MouseEvent("click", opt);
+      elm.dispatchEvent(evt);
+    }
+  };
+
+  /**
+   * dispatch keyboard event
+   * @param {Object} elm - Element
+   * @param {string} type - event type
+   * @param {Object} keyCombo - key combo
+   * @returns {void}
+   */
+  const dispatchKeyboardEvt = (elm, type, keyCombo = {}) => {
+    if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+        isString(type) && /^key(?:down|press|up)$/.test(type)) {
+      const {altKey, ctrlKey, key, shiftKey, metaKey} = keyCombo;
+      if (isString(key)) {
+        const opt = {
+          key,
+          altKey: !!altKey,
+          ctrlKey: !!ctrlKey,
+          shiftKey: !!shiftKey,
+          metaKey: !!metaKey,
+          bubbles: false,
+          cancelable: false,
+        };
+        const evt = new KeyboardEvent(type, opt);
+        elm.dispatchEvent(evt);
+      }
+    }
+  };
+
+  /**
+   * given element is context menu item
+   * @param {Object} elm - element
+   * @returns {boolean} - result
+   */
+  const isContextMenuItem = elm => {
+    let bool = false, node = elm;
+    while (node && node.parentNode) {
+      const {classList} = node;
+      bool = classList.contains(CLASS_MENU);
+      if (bool) {
+        break;
+      }
+      node = node.parentNode;
+    }
+    return bool;
+  };
+
+  /**
+   * remove style
+   * @param {Object} elm - element
+   * @returns {void}
+   */
+  const removeStyle = elm => {
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const {classList, style} = elm;
+      classList.contains(CLASS_SHOW) && classList.remove(CLASS_SHOW);
+      classList.contains(CLASS_VISIBLE) && classList.remove(CLASS_VISIBLE);
+      style.top && (style.top = null);
+      style.right && (style.right = null);
+      style.bottom && (style.bottom = null);
+      style.left && (style.left = null);
+    }
+  };
+
+  /**
+   * hide sub menus
+   * @param {!Object} evt - Event
+   * @returns {void}
+   */
+  const hideSubMenus = evt => {
+    const {target} = evt;
+    const {id: targetId, parentNode: {childNodes}} = target;
+    if (targetId === MENU) {
+      const subMenus = target.querySelectorAll(`.${CLASS_MENU}`);
+      for (const elm of subMenus) {
+        removeStyle(elm);
+      }
+    } else {
+      const arr = [];
+      for (const child of childNodes) {
+        if (child.nodeType === Node.ELEMENT_NODE && child !== target) {
+          const {classList: childClassList} = child;
+          if (childClassList.contains(CLASS_SUBMENU_CONTAINER)) {
+            arr.push(child);
+          }
+        }
+      }
+      if (arr.length) {
+        arr.forEach(elm => {
+          const subMenus = elm.querySelectorAll(`.${CLASS_MENU}`);
+          for (const item of subMenus) {
+            removeStyle(item);
+          }
+        });
+      }
+    }
+  };
+
+  /**
+   * show sub menu
+   * @param {!Object} evt - Event
+   * @returns {Object} - sub menu element
+   */
+  const showSubMenu = evt => {
+    const {target} = evt;
+    const {childNodes} = target;
+    let elm;
+    for (const item of childNodes) {
+      if (item.nodeType === Node.ELEMENT_NODE &&
+          item.classList.contains(CLASS_MENU)) {
+        elm = item;
+        break;
+      }
+    }
+    if (elm) {
+      const {classList: elmClassList, style: elmStyle} = elm;
+      elmClassList.contains(CLASS_MENU) && elmClassList.add(CLASS_SHOW);
+      if (elmClassList.contains(CLASS_SHOW)) {
+        const {innerHeight, innerWidth} = window;
+        const {
+          bottom: targetBottom, left: targetLeft, height: targetHeight,
+          right: targetRight, top: targetTop, width: targetWidth,
+        } = target.getBoundingClientRect();
+        const {
+          height: elmHeight, width: elmWidth,
+        } = elm.getBoundingClientRect();
+        const rem =
+          window.getComputedStyle(document.documentElement).fontSize
+            .replace("px", "") * 1;
+        const offsetTop =
+          window.getComputedStyle(elm).marginTop.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderTopWidth.replace("px", "") * 1;
+        const offsetRight =
+          window.getComputedStyle(elm).marginRight.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderRightWidth.replace("px", "") * 1;
+        const offsetBottom =
+          window.getComputedStyle(elm).marginBottom.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderBottomWidth.replace("px", "") * 1;
+        const offsetLeft =
+          window.getComputedStyle(elm).marginLeft.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderLeftWidth.replace("px", "") * 1;
+        const offsetWidth = offsetLeft + offsetRight;
+        const offsetHeight = offsetTop + offsetBottom;
+        if (innerWidth > targetRight + elmWidth + offsetWidth) {
+          // show right
+          elmStyle.left = `${targetWidth - offsetRight}px`;
+          if (innerHeight > targetTop + elmHeight + offsetHeight) {
+            // show downwards
+            elmStyle.top = `-${offsetTop}px`;
+          } else {
+            // show upwards
+            elmStyle.top = `${targetHeight - elmHeight}px`;
+          }
+        } else if (targetLeft > elmWidth + offsetWidth) {
+          // show left
+          elmStyle.left = `-${elmWidth}px`;
+          if (innerHeight > targetTop + elmHeight + offsetHeight) {
+            // show downwards
+            elmStyle.top = `-${offsetTop}px`;
+          } else {
+            // show upwards
+            elmStyle.top = `${targetHeight - elmHeight}px`;
+          }
+        } else if (innerWidth - targetRight > targetLeft) {
+          if (elmWidth + offsetWidth > innerWidth - targetRight - rem) {
+            // fit right edge of the page
+            elmStyle.left = `${innerWidth - targetRight - offsetRight}px`;
+          } else {
+            // offset right
+            elmStyle.left = `${targetRight - rem - offsetLeft}px`;
+          }
+          if (innerHeight > targetBottom + elmHeight + offsetBottom) {
+            // offset below
+            elmStyle.top = `${targetHeight - offsetBottom}px`;
+          } else {
+            // offset above
+            elmStyle.top = `-${elmHeight}px`;
+          }
+        } else {
+          if (elmWidth + offsetWidth > targetLeft + rem) {
+            // fit left edge
+            elmStyle.left = `${offsetLeft - targetLeft}px`;
+          } else {
+            // offset left
+            elmStyle.left = `${rem + offsetRight - elmWidth}px`;
+          }
+          if (innerHeight > targetBottom + elmHeight + offsetBottom) {
+            // offset below
+            elmStyle.top = `${targetHeight - offsetBottom}px`;
+          } else {
+            // offset above
+            elmStyle.top = `-${elmHeight}px`;
+          }
+        }
+        elmClassList.add(CLASS_VISIBLE);
+      }
+    }
+    return elm || null;
+  };
+
+  /**
+   * hide context menu
+   * @returns {Object} - context menu element
+   */
+  const hideContextMenu = () => {
+    const elm = document.getElementById(MENU);
+    const container = document.getElementById(MENU_CONTAINER);
+    if (elm) {
+      const subMenus = elm.querySelectorAll(`.${CLASS_MENU}`);
+      for (const item of subMenus) {
+        removeStyle(item);
+      }
+      removeStyle(elm);
+    }
+    container && container.classList.remove(CLASS_SHOW);
+    return elm || null;
+  };
+
+  /**
+   * focus menu item
+   * @param {!Object} evt - Event
+   * @returns {Object} - menu item element
+   */
+  const focusMenuItem = evt => {
+    const {target} = evt;
+    if (target) {
+      target.focus();
+    }
+    return target || null;
+  };
+
+  /**
+   * get target menu item downward
+   * @param {!Object} elm - element node
+   * @returns {Object} - menu item element
+   */
+  const getTargetMenuItemDownward = elm => {
+    let targetElm;
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const {nextElementSibling, parentNode} = elm;
+      let node = nextElementSibling;
+      while (node &&
+             (node.nextElementSibling ||
+              node === parentNode.lastElementChild)) {
+        if (node.classList.contains(CLASS_MENU_SEP) ||
+          node.classList.contains(CLASS_DISABLED)) {
+          if (node.nextElementSibling) {
+            node = node.nextElementSibling;
+          } else if (node === parentNode.lastElementChild) {
+            node = parentNode.firstElementChild;
+          } else {
+            break;
+          }
+        } else {
+          targetElm = node;
+          break;
+        }
+      }
+    }
+    return targetElm || null;
+  };
+
+  /**
+   * get target menu item upward
+   * @param {!Object} elm - element node
+   * @returns {Object} - menu item element
+   */
+  const getTargetMenuItemUpward = elm => {
+    let targetElm;
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const {parentNode, previousElementSibling} = elm;
+      let node = previousElementSibling;
+      while (node &&
+             (node.previousElementSibling ||
+              node === parentNode.firstElementChild)) {
+        if (node.classList.contains(CLASS_MENU_SEP) ||
+          node.classList.contains(CLASS_DISABLED)) {
+          if (node.previousElementSibling) {
+            node = node.previousElementSibling;
+          } else if (node === parentNode.firstElementChild) {
+            node = parentNode.lastElementChild;
+          } else {
+            break;
+          }
+        } else {
+          targetElm = node;
+          break;
+        }
+      }
+    }
+    return targetElm || null;
+  };
+
+  /**
+   * select menu item with arrow key
+   * @param {string} key - arrow key
+   * @returns {Object} - menu item element
+   */
+  const selectMenuItemWithArrowKey = key => {
+    const elm = document.activeElement;
+    const {
+      childNodes, classList, firstElementChild, nextElementSibling, parentNode,
+      previousElementSibling,
+    } = elm;
+    const {
+      firstElementChild: parentFirstElementChild,
+      lastElementChild: parentLastElementChild,
+    } = parentNode;
+    let targetElm;
+    switch (key) {
+      case "ArrowDown": {
+        if (classList.contains(CLASS_MENU)) {
+          if (firstElementChild.classList.contains(CLASS_MENU_SEP) ||
+              firstElementChild.classList.contains(CLASS_DISABLED)) {
+            targetElm = getTargetMenuItemDownward(firstElementChild);
+          } else {
+            targetElm = firstElementChild;
+          }
+        } else if (elm === parentLastElementChild) {
+          if (parentFirstElementChild.classList.contains(CLASS_MENU_SEP) ||
+              parentFirstElementChild.classList.contains(CLASS_DISABLED)) {
+            targetElm = getTargetMenuItemDownward(parentFirstElementChild);
+          } else {
+            targetElm = parentFirstElementChild;
+          }
+        } else if (nextElementSibling) {
+          targetElm = getTargetMenuItemDownward(elm);
+        }
+        break;
+      }
+      case "ArrowLeft": {
+        if (parentNode.classList.contains(CLASS_MENU) &&
+            parentNode.parentNode.classList.contains(CLASS_SUBMENU_CONTAINER)) {
+          targetElm = parentNode.parentNode;
+        }
+        break;
+      }
+      case "ArrowRight": {
+        if (classList.contains(CLASS_SUBMENU_CONTAINER)) {
+          let subMenu;
+          for (const node of childNodes) {
+            if (node.nodeType === Node.ELEMENT_NODE &&
+                node.classList.contains(CLASS_MENU)) {
+              subMenu = node;
+              break;
+            }
+          }
+          if (subMenu) {
+            if (subMenu.firstElementChild.classList.contains(CLASS_MENU_SEP) ||
+                subMenu.firstElementChild.classList.contains(CLASS_DISABLED)) {
+              targetElm = getTargetMenuItemDownward(subMenu.firstElementChild);
+            } else {
+              targetElm = subMenu.firstElementChild;
+            }
+          }
+        }
+        break;
+      }
+      case "ArrowUp": {
+        if (elm === parentFirstElementChild) {
+          if (parentLastElementChild.classList.contains(CLASS_MENU_SEP) ||
+              parentLastElementChild.classList.contains(CLASS_DISABLED)) {
+            targetElm = getTargetMenuItemUpward(parentLastElementChild);
+          } else {
+            targetElm = parentLastElementChild;
+          }
+        } else if (previousElementSibling) {
+          targetElm = getTargetMenuItemUpward(elm);
+        }
+        break;
+      }
+      default:
+    }
+    if (targetElm) {
+      focusMenuItem({target: targetElm});
+    }
+    return targetElm || null;
+  };
+
+  /**
+   * handle click
+   * @param {!Object} evt - Event
+   * @returns {?Function} - handler function
+   */
+  const handleClick = evt => {
+    const {target} = evt;
+    const elm = document.getElementById(MENU);
+    const isEnter = isContextMenuItem(target);
+    let func;
+    if (elm && isEnter) {
+      dispatchKeyboardEvt(target, "keydown", {key: "Escape"});
+    }
+    return func || null;
+  };
+
+  /**
+   * show context menu
+   * @param {!Object} evt - Event
+   * @returns {Object} - context menu element
+   */
+  const showContextMenu = evt => {
+    const elm = document.getElementById(MENU);
+    const container = document.getElementById(MENU_CONTAINER);
+    if (elm && container) {
+      const {classList: elmClassList, style: elmStyle} = elm;
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+      container.classList.add(CLASS_SHOW);
+      hideSubMenus({target: elm});
+      elmClassList.contains(CLASS_MENU) && elmClassList.add(CLASS_SHOW);
+      if (elmClassList.contains(CLASS_SHOW)) {
+        const {clientX, clientY} = evt;
+        const {innerHeight, innerWidth} = window;
+        const {
+          height: elmHeight, width: elmWidth,
+        } = elm.getBoundingClientRect();
+        const offsetTop =
+          window.getComputedStyle(elm).marginTop.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderTopWidth.replace("px", "") * 1;
+        const offsetRight =
+          window.getComputedStyle(elm).marginRight.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderRightWidth.replace("px", "") * 1;
+        const offsetBottom =
+          window.getComputedStyle(elm).marginBottom.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderBottomWidth.replace("px", "") * 1;
+        const offsetLeft =
+          window.getComputedStyle(elm).marginLeft.replace("px", "") * 1 +
+          window.getComputedStyle(elm).borderLeftWidth.replace("px", "") * 1;
+        const offsetWidth = offsetLeft + offsetRight;
+        const offsetHeight = offsetTop + offsetBottom;
+        const menuItems = elm.querySelectorAll(`li:not(.${CLASS_MENU_SEP})`);
+        if (innerWidth > clientX + elmWidth + offsetWidth) {
+          // show right
+          elmStyle.left = `${clientX}px`;
+        } else if (clientX > elmWidth + offsetWidth) {
+          // show left
+          elmStyle.left = `${clientX - elmWidth}px`;
+        } else {
+          // show left edge
+          elmStyle.left = `${offsetLeft}px`;
+        }
+        if (innerHeight > clientY + elmHeight + offsetHeight) {
+          // show downwards
+          elmStyle.top = `${clientY}px`;
+        } else {
+          // show upwards
+          elmStyle.top = `${clientY - elmHeight}px`;
+        }
+        for (const item of menuItems) {
+          const {classList: itemClassList} = item;
+          item.addEventListener("pointerenter", focusMenuItem);
+          item.addEventListener("focus", hideSubMenus);
+          if (itemClassList.contains(CLASS_SUBMENU_CONTAINER)) {
+            item.addEventListener("focus", showSubMenu);
+          }
+        }
+        elm.addEventListener("pointerleave", hideSubMenus);
+        elm.addEventListener("click", handleClick);
+        elm.classList.add(CLASS_VISIBLE);
+        elm.focus();
+      }
+    }
+    return elm || null;
+  };
+
+  /**
+   * handle key down
+   * @param {!Object} evt - Event
+   * @returns {?Function} - handler function
+   */
+  const handleKeyDown = evt => {
+    const {key, shiftKey, target} = evt;
+    let func;
+    if (key === "ContextMenu" || shiftKey && key === "F10") {
+      const container = document.getElementById(MENU_CONTAINER);
+      container&& container.classList.add(CLASS_SHOW);
+    } else if (key === "Escape") {
+      func = hideContextMenu();
+    } else if (key === "Enter") {
+      dispatchClickEvt(target);
+    } else if (/^Arrow/.test(key)) {
+      func = selectMenuItemWithArrowKey(key);
+    }
+    return func || null;
+  };
+
+  /**
+   * handle pointer down
+   * @param {!Object} evt - Event
+   * @returns {?Function} - handler function
+   */
+  const handlePointerDown = evt => {
+    const {button, target} = evt;
+    let func;
+    if (button === MOUSE_BUTTON_RIGHT) {
+      const container = document.getElementById(MENU_CONTAINER);
+      container && container.classList.add(CLASS_SHOW);
+    } else {
+      const isEsc = !isContextMenuItem(target);
+      if (isEsc) {
+        func = hideContextMenu();
+      }
+    }
+    return func || null;
+  };
+
+  window.addEventListener("keydown", handleKeyDown, true);
+  window.addEventListener("pointerdown", handlePointerDown, true);
+  window.addEventListener("contextmenu", showContextMenu);
+}

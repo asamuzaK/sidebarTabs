@@ -1,0 +1,88 @@
+@charset "UTF-8";
+/* contextmenu.css */
+.context-menu-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 100;
+}
+.context-menu-container.show {
+  display: block;
+}
+.context-menu {
+  display: none;
+  position: absolute;
+  margin: 2px;
+  border: 1px solid ActiveBorder;
+  padding: 0.1rem;
+  flex: 0 0 auto;
+  max-width: calc(100vw - 1rem);
+  line-height: 1.6;
+  height: -moz-max-content !important;
+  max-height: calc(100vh - 1rem);
+  background: Menu;
+  color: MenuText;
+  cursor: default;
+  font: menu;
+  visibility: hidden;
+  list-style: none;
+  box-shadow: 3px 3px 2px -2px rgba(128, 128, 128, 0.7);
+  z-index: 1000;
+}
+.context-menu:hover,
+.context-menu:focus {
+  outline: none;
+}
+.context-menu.show {
+  display: block;
+}
+.context-menu.visible {
+  visibility: visible;
+}
+.context-menu li {
+  display: flex;
+  position: relative;
+  margin: 0;
+  border: 0;
+  padding: 0 0.3rem;
+  background: Menu;
+  color: MenuText;
+  white-space: nowrap;
+}
+.context-menu li.menu-separator {
+  border-top: 1px solid ButtonShadow;
+  padding: 0;
+}
+.context-menu li:hover,
+.context-menu li:focus {
+  background: Highlight;
+  color: HighlightText;
+  outline: none;
+}
+.context-menu li.disabled,
+.context-menu li.disabled:focus {
+  pointer-events: none;
+  color: GrayText;
+}
+.context-menu li.submenu-container::after {
+  margin-left: 1rem;
+  margin-right: 0.3rem;
+  content: "\203A";
+  text-align: right;
+}
+.context-menu li .menu-item-label {
+  display: block;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
