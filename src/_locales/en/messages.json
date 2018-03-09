@@ -1,4 +1,7 @@
 {
+  "lang": {
+    "message": "en"
+  },
   "extensionDescription": {
     "message": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them."
   },
@@ -83,7 +86,10 @@
   "newTabButton": {
     "message": "New Tab"
   },
-  "newTabButton_tooltip": {
+  "newTabButton_alt": {
+    "message": "New Tab"
+  },
+  "newTabButton_title": {
     "message": "Open a new tab"
   },
   "pinTab": {

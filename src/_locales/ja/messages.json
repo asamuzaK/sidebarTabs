@@ -1,4 +1,7 @@
 {
+  "lang": {
+    "message": "ja"
+  },
   "extensionDescription": {
     "message": "サイドバーにタブをエミュレートし、タブを縦に並べて表示します。さらに、タブをグループ化して折りたたみ・展開することが可能です。"
   },
@@ -83,7 +86,10 @@
   "newTabButton": {
     "message": "新しいタブ"
   },
-  "newTabButton_tooltip": {
+  "newTabButton_alt": {
+    "message": "新しいタブ"
+  },
+  "newTabButton_title": {
     "message": "新しいタブを開きます"
   },
   "pinTab": {

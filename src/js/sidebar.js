@@ -37,6 +37,8 @@
   const CLASS_THEME_DARK = "dark-theme";
   const CLASS_THEME_LIGHT = "light-theme";
   const COOKIE_STORE_DEFAULT = "firefox-default";
+  const DATA_ATTR_I18N = "data-i18n";
+  const LANG = "lang";
   const MENU = "sidebar-tabs-menu";
   const MENU_SIDEBAR_INIT = "sidebar-tabs-menu-sidebar-init";
   const MENU_SIDEBAR_OPT = "sidebar-tabs-menu-sidebar-tabs-options";
@@ -2453,11 +2455,58 @@
     }
   };
 
+  /**
+   * localize attribute value
+   * @param {Object} elm - element
+   * @returns {void}
+   */
+  const localizeAttr = async elm => {
+    if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.hasAttributes()) {
+      const attrs = {
+        alt: "alt",
+        ariaLabel: "aria-label",
+        href: "href",
+        placeholder: "placeholder",
+        title: "title",
+      };
+      const dataAttr = elm.getAttribute(DATA_ATTR_I18N);
+      const items = Object.entries(attrs);
+      for (const item of items) {
+        const [key, value] = item;
+        elm.hasAttribute(value) &&
+          elm.setAttribute(value, i18n.getMessage(`${dataAttr}_${key}`));
+      }
+    }
+  };
+
+  /**
+   * localize html
+   * @returns {void}
+   */
+  const localizeHtml = async () => {
+    const lang = i18n.getMessage(LANG);
+    if (lang) {
+      document.documentElement.setAttribute("lang", lang);
+      const nodes = document.querySelectorAll(`[${DATA_ATTR_I18N}]`);
+      if (nodes instanceof NodeList) {
+        for (const node of nodes) {
+          const data = i18n.getMessage(node.getAttribute(DATA_ATTR_I18N));
+          if (data && node.localName !== "img" &&
+              !node.classList.contains(NEW_TAB)) {
+            node.textContent = data;
+          }
+          node.hasAttributes() && localizeAttr(node);
+        }
+      }
+    }
+  };
+
   document.addEventListener("DOMContentLoaded", () => Promise.all([
     addNewTabClickListener(),
     createContextMenu(),
     getTheme().then(setTheme).then(applyCss),
     setSidebar(),
+    localizeHtml(),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
     .then(getLastClosedTab).catch(throwErr));
 
