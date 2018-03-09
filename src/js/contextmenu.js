@@ -368,23 +368,25 @@
           bottom: offsetBottom, height: offsetHeight, left: offsetLeft,
           right: offsetRight, top: offsetTop, width: offsetWidth,
         } = getOffsets(elm);
+        const elmMarginBoxWidth = elmWidth + offsetWidth;
+        const elmMarginBoxHeight = elmHeight + offsetHeight;
         const rem =
           window.getComputedStyle(document.documentElement).fontSize
             .replace("px", "") * 1;
-        if (innerWidth > targetRight + elmWidth + offsetWidth) {
+        if (innerWidth > targetRight + elmMarginBoxWidth) {
           // show right
           elmStyle.left = `${targetWidth - offsetRight}px`;
-          if (innerHeight > targetTop + elmHeight + offsetHeight) {
+          if (innerHeight > targetTop + elmMarginBoxHeight) {
             // show downward
             elmStyle.top = `-${offsetTop}px`;
           } else {
             // show upward
             elmStyle.top = `${targetHeight - elmHeight}px`;
           }
-        } else if (targetLeft > elmWidth + offsetWidth) {
+        } else if (targetLeft > elmMarginBoxWidth) {
           // show left
           elmStyle.left = `-${elmWidth}px`;
-          if (innerHeight > targetTop + elmHeight + offsetHeight) {
+          if (innerHeight > targetTop + elmMarginBoxHeight) {
             // show downward
             elmStyle.top = `-${offsetTop}px`;
           } else {
@@ -392,9 +394,10 @@
             elmStyle.top = `${targetHeight - elmHeight}px`;
           }
         } else if (innerWidth - targetRight > targetLeft) {
-          if (elmWidth + offsetWidth > innerWidth - targetRight - rem) {
+          if (elmMarginBoxWidth > innerWidth - targetRight - rem) {
             // fit right edge of the page
-            elmStyle.left = `${innerWidth - targetRight - offsetRight}px`;
+            elmStyle.left =
+              `${innerWidth - targetRight + targetWidth - elmMarginBoxWidth}px`;
           } else {
             // offset right
             elmStyle.left = `${targetRight - rem - offsetLeft}px`;
@@ -407,7 +410,7 @@
             elmStyle.top = `-${elmHeight}px`;
           }
         } else {
-          if (elmWidth + offsetWidth > targetLeft + rem) {
+          if (elmMarginBoxWidth > targetLeft + rem) {
             // fit left edge of the page
             elmStyle.left = `${offsetLeft - targetLeft}px`;
           } else {
