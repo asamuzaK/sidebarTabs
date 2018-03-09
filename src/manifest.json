@@ -50,5 +50,5 @@
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "0.21.0"
+  "version": "0.22.0"
 }
