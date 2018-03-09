@@ -511,7 +511,7 @@
     let func;
     if (key === "ContextMenu" || shiftKey && key === "F10") {
       const container = document.getElementById(MENU_CONTAINER);
-      container&& container.classList.add(CLASS_SHOW);
+      container && container.classList.add(CLASS_SHOW);
     } else if (key === "Escape") {
       func = hideContextMenu();
     } else if (key === "Enter") {
