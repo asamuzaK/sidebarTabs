@@ -85,7 +85,7 @@
   /**
    * get offsets
    * @param {Object} elm - Element
-   * @retuns {Object} - offsets
+   * @returns {Object} - offsets
    */
   const getOffsets = elm => {
     const offset = {
@@ -505,8 +505,7 @@
           height: elmHeight, width: elmWidth,
         } = elm.getBoundingClientRect();
         const {
-          bottom: offsetBottom, height: offsetHeight, left: offsetLeft,
-          right: offsetRight, top: offsetTop, width: offsetWidth,
+          height: offsetHeight, left: offsetLeft, width: offsetWidth,
         } = getOffsets(elm);
         const menuItems = elm.querySelectorAll(`li:not(.${CLASS_MENU_SEP})`);
         if (innerWidth > clientX + elmWidth + offsetWidth) {
