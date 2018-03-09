@@ -510,18 +510,20 @@
         const {
           height: offsetHeight, left: offsetLeft, width: offsetWidth,
         } = getOffsets(elm);
+        const elmMarginBoxWidth = elmWidth + offsetWidth;
+        const elmMarginBoxHeight = elmHeight + offsetHeight;
         const menuItems = elm.querySelectorAll(`li:not(.${CLASS_MENU_SEP})`);
-        if (innerWidth > clientX + elmWidth + offsetWidth) {
+        if (innerWidth > clientX + elmMarginBoxWidth) {
           // show right
           elmStyle.left = `${clientX}px`;
-        } else if (clientX > elmWidth + offsetWidth) {
+        } else if (clientX > elmMarginBoxWidth) {
           // show left
           elmStyle.left = `${clientX - elmWidth}px`;
         } else {
           // show left edge of the page
           elmStyle.left = `${offsetLeft}px`;
         }
-        if (innerHeight > clientY + elmHeight + offsetHeight) {
+        if (innerHeight > clientY + elmMarginBoxHeight) {
           // show downward
           elmStyle.top = `${clientY}px`;
         } else {
