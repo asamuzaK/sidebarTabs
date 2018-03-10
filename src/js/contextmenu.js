@@ -155,11 +155,33 @@
   };
 
   /**
-   * get target menu item downward
-   * @param {!Object} elm - element node
+   * get target menu item
+   * @param {Object} elm - element node
    * @returns {Object} - menu item element
    */
-  const getTargetMenuItemDownward = elm => {
+  const getTargetMenuItem = elm => {
+    let targetElm;
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      let node = elm;
+      while (node && node.parentNode) {
+        const {parentNode} = node;
+        const {classList: parentClassList} = parentNode;
+        if (parentClassList.contains(CLASS_MENU)) {
+          targetElm = node;
+          break;
+        }
+        node = node.parentNode;
+      }
+    }
+    return targetElm || null;
+  };
+
+  /**
+   * get next target menu item
+   * @param {Object} elm - element node
+   * @returns {Object} - menu item element
+   */
+  const getNextTargetMenuItem = elm => {
     let targetElm;
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       const {nextElementSibling, parentNode} = elm;
@@ -186,11 +208,11 @@
   };
 
   /**
-   * get target menu item upward
+   * get previous target menu item
    * @param {!Object} elm - element node
    * @returns {Object} - menu item element
    */
-  const getTargetMenuItemUpward = elm => {
+  const getPreviousTargetMenuItem = elm => {
     let targetElm;
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       const {parentNode, previousElementSibling} = elm;
@@ -237,19 +259,19 @@
         if (classList.contains(CLASS_MENU)) {
           if (firstElementChild.classList.contains(CLASS_MENU_SEP) ||
               firstElementChild.classList.contains(CLASS_DISABLED)) {
-            targetElm = getTargetMenuItemDownward(firstElementChild);
+            targetElm = getNextTargetMenuItem(firstElementChild);
           } else {
             targetElm = firstElementChild;
           }
         } else if (elm === parentLastElementChild) {
           if (parentFirstElementChild.classList.contains(CLASS_MENU_SEP) ||
               parentFirstElementChild.classList.contains(CLASS_DISABLED)) {
-            targetElm = getTargetMenuItemDownward(parentFirstElementChild);
+            targetElm = getNextTargetMenuItem(parentFirstElementChild);
           } else {
             targetElm = parentFirstElementChild;
           }
         } else if (nextElementSibling) {
-          targetElm = getTargetMenuItemDownward(elm);
+          targetElm = getNextTargetMenuItem(elm);
         }
         break;
       }
@@ -273,7 +295,7 @@
           if (subMenu) {
             if (subMenu.firstElementChild.classList.contains(CLASS_MENU_SEP) ||
                 subMenu.firstElementChild.classList.contains(CLASS_DISABLED)) {
-              targetElm = getTargetMenuItemDownward(subMenu.firstElementChild);
+              targetElm = getNextTargetMenuItem(subMenu.firstElementChild);
             } else {
               targetElm = subMenu.firstElementChild;
             }
@@ -285,12 +307,12 @@
         if (elm === parentFirstElementChild) {
           if (parentLastElementChild.classList.contains(CLASS_MENU_SEP) ||
               parentLastElementChild.classList.contains(CLASS_DISABLED)) {
-            targetElm = getTargetMenuItemUpward(parentLastElementChild);
+            targetElm = getPreviousTargetMenuItem(parentLastElementChild);
           } else {
             targetElm = parentLastElementChild;
           }
         } else if (previousElementSibling) {
-          targetElm = getTargetMenuItemUpward(elm);
+          targetElm = getPreviousTargetMenuItem(elm);
         }
         break;
       }
@@ -479,9 +501,10 @@
    */
   const handleClick = evt => {
     const {target} = evt;
-    const isEnter = isContextMenuItem(target);
+    const targetMenuItem = getTargetMenuItem(target);
     let func;
-    if (isEnter) {
+    if (targetMenuItem &&
+        !targetMenuItem.classList.contains(CLASS_SUBMENU_CONTAINER)) {
       func = dispatchKeyboardEvt(target, "keydown", {key: "Escape"});
     }
     return func || null;
