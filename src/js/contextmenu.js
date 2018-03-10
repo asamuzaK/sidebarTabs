@@ -122,11 +122,11 @@
   };
 
   /**
-   * focus menu item
+   * focus element
    * @param {!Object} evt - Event
-   * @returns {Object} - menu item element
+   * @returns {Object} - element
    */
-  const focusMenuItem = evt => {
+  const focusElm = evt => {
     const {target} = evt;
     if (target) {
       target.focus();
@@ -319,7 +319,7 @@
       default:
     }
     if (targetElm) {
-      focusMenuItem({target: targetElm});
+      targetElm.focus();
     }
     return targetElm || null;
   };
@@ -555,7 +555,7 @@
         }
         for (const item of menuItems) {
           const {classList: itemClassList} = item;
-          item.addEventListener("pointerenter", focusMenuItem);
+          item.addEventListener("pointerenter", focusElm);
           item.addEventListener("focus", hideSubMenus);
           if (itemClassList.contains(CLASS_SUBMENU_CONTAINER)) {
             item.addEventListener("focus", showSubMenu);
