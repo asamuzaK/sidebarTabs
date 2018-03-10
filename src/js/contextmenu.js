@@ -370,9 +370,9 @@
         } = getOffsets(elm);
         const elmMarginBoxWidth = elmWidth + offsetWidth;
         const elmMarginBoxHeight = elmHeight + offsetHeight;
-        const rem =
+        const lapWidth =
           window.getComputedStyle(document.documentElement).fontSize
-            .replace("px", "") * 1;
+            .replace("px", "") * 2;
         if (innerWidth > targetRight + elmMarginBoxWidth) {
           // show right
           elmStyle.left = `${targetWidth - offsetRight}px`;
@@ -394,13 +394,13 @@
             elmStyle.top = `${targetHeight - elmHeight}px`;
           }
         } else if (innerWidth - targetRight > targetLeft) {
-          if (elmMarginBoxWidth > innerWidth - targetRight - rem) {
+          if (elmMarginBoxWidth > innerWidth - targetRight + lapWidth) {
             // fit right edge of the page
             elmStyle.left =
               `${innerWidth - targetRight + targetWidth - elmMarginBoxWidth}px`;
           } else {
             // offset right
-            elmStyle.left = `${targetRight - rem - offsetLeft}px`;
+            elmStyle.left = `${targetRight - lapWidth - offsetLeft}px`;
           }
           if (innerHeight > targetBottom + elmHeight + offsetBottom) {
             // offset below
@@ -410,12 +410,12 @@
             elmStyle.top = `-${elmHeight}px`;
           }
         } else {
-          if (elmMarginBoxWidth > targetLeft + rem) {
+          if (elmMarginBoxWidth > targetLeft + lapWidth) {
             // fit left edge of the page
             elmStyle.left = `${offsetLeft - targetLeft}px`;
           } else {
             // offset left
-            elmStyle.left = `${rem + offsetRight - elmWidth}px`;
+            elmStyle.left = `${lapWidth + offsetRight - elmWidth}px`;
           }
           if (innerHeight > targetBottom + elmHeight + offsetBottom) {
             // offset below
