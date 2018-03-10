@@ -58,7 +58,7 @@
   white-space: nowrap;
 }
 .context-menu li.menu-separator {
-  border-top: 1px solid ButtonShadow;
+  border-top: 1px solid ActiveBorder;
   padding: 0;
 }
 .context-menu li:hover,
