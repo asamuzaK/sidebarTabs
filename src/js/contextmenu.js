@@ -580,12 +580,24 @@
     let func;
     if (key === "ContextMenu" || shiftKey && key === "F10") {
       func = showContextMenuContainer();
-    } else if (key === "Escape") {
-      func = hideContextMenu();
-    } else if (key === "Enter") {
-      func = dispatchClickEvt(target);
-    } else if (/^Arrow/.test(key)) {
-      func = selectMenuItemWithArrowKey(key);
+    } else {
+      switch (key) {
+        case "ArrowDown":
+        case "ArrowLeft":
+        case "ArrowRight":
+        case "ArrowUp":
+          func = selectMenuItemWithArrowKey(key);
+          break;
+        case "Enter":
+        case "Spacebar":
+        case " ":
+          func = dispatchClickEvt(target);
+          break;
+        case "Escape":
+          func = hideContextMenu();
+          break;
+        default:
+      }
     }
     return func || null;
   };
