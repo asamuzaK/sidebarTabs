@@ -7,10 +7,9 @@ Firefox用の拡張機能。
 * タブを縦に並べて表示します。
 * タブをグループ化して、折りたたみ・展開することが可能です。
 
-注意：
-実験的な拡張機能です。一般の利用にはまだ適していません。
+## ダウンロード
 
-[ダウンロード](https://github.com/asamuzaK/sidebarTabs/tree/master/dest "sidebarTabs/dest at master · asamuzaK/sidebarTabs")
+* [サイドバー・タブ – Firefox 向けアドオン](https://addons.mozilla.org/ja/firefox/addon/sidebartabs/ "サイドバー・タブ – Firefox 向けアドオン")
 
 ## about:config
 

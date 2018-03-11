@@ -7,10 +7,9 @@ Emulate tabs in sidebar and...
 * display tabs vertically.
 * group tabs and collapse / expand them.
 
-Note:
-Experimental. It is not suitable for general use.
+## Download
 
-[Download](https://github.com/asamuzaK/sidebarTabs/tree/master/dest "sidebarTabs/dest at master · asamuzaK/sidebarTabs")
+* [Sidebar Tabs – Add-ons for Firefox](https://addons.mozilla.org/en-US/firefox/addon/sidebartabs/ "Sidebar Tabs – Add-ons for Firefox")
 
 ## about:config
 
