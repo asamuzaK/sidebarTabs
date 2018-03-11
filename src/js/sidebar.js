@@ -993,6 +993,7 @@
         if (elm === lastElementChild) {
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
           container.appendChild(elm);
+          container.removeAttribute("hidden");
           parentNode.parentNode.insertBefore(container, nextElementSibling);
         } else {
           const {firstElementChild: target} = nextElementSibling;
@@ -1028,6 +1029,7 @@
       for (const item of items) {
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(item);
+        container.removeAttribute("hidden");
         parentNode.insertBefore(container, node);
       }
     }
@@ -1339,6 +1341,7 @@
         await addDragEventListener(tab);
         container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(tab);
+        container.removeAttribute("hidden");
         target.parentNode.insertBefore(container, target);
       }
     }
@@ -1414,6 +1417,7 @@
             tab.setAttribute("draggable", "true");
             func.push(addDragEventListener(tab));
             container.appendChild(tab);
+            container.removeAttribute("hidden");
             pinnedParentNode.insertBefore(container, pinnedNextElement);
             func.push(restoreTabContainers());
           }
@@ -1449,6 +1453,7 @@
           const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
           const [target] = items;
           container.appendChild(tab);
+          container.removeAttribute("hidden");
           target.parentNode.insertBefore(container, target);
         }
       } else {
@@ -1473,14 +1478,15 @@
         if (!group && parentNode.childElementCount === 1 || unPinned ||
             detached) {
           const {parentNode: parentParentNode} = parentNode;
-          const frag = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-          if (frag) {
-            frag.appendChild(tab);
+          const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+          if (container) {
+            container.appendChild(tab);
+            container.removeAttribute("hidden");
             if (toIndex === lastTabIndex) {
               const newtab = document.getElementById(NEW_TAB);
-              parentParentNode.insertBefore(frag, newtab);
+              parentParentNode.insertBefore(container, newtab);
             } else {
-              parentParentNode.insertBefore(frag, parentNode);
+              parentParentNode.insertBefore(container, parentNode);
             }
           }
         } else {
@@ -2446,7 +2452,7 @@
   const applyCss = async () => {
     const head = document.querySelector("head");
     const link = document.createElement("link");
-    const items = document.querySelectorAll("section[hidden]");
+    const items = document.querySelectorAll("section[hidden], menu[hidden]");
     link.rel = "stylesheet";
     link.href = URL_CSS;
     head.appendChild(link);
