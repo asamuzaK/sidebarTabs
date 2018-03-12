@@ -48,10 +48,10 @@
   const dispatchKeyboardEvt = (elm, type, keyCombo = {}) => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE &&
         isString(type) && /^key(?:down|press|up)$/.test(type)) {
-      const {altKey, ctrlKey, key, shiftKey, metaKey} = keyCombo;
+      const {altKey, code, ctrlKey, key, shiftKey, metaKey} = keyCombo;
       if (isString(key)) {
         const opt = {
-          key,
+          code, key,
           altKey: !!altKey,
           ctrlKey: !!ctrlKey,
           shiftKey: !!shiftKey,
@@ -506,7 +506,10 @@
     let func;
     if (targetMenuItem &&
         !targetMenuItem.classList.contains(CLASS_SUBMENU_CONTAINER)) {
-      func = dispatchKeyboardEvt(target, "keydown", {key: "Escape"});
+      func = dispatchKeyboardEvt(target, "keydown", {
+        code: "Escape",
+        key: "Escape",
+      });
     }
     return func || null;
   };
