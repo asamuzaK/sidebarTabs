@@ -317,10 +317,10 @@
    * @returns {Array} - array of management.ExtensionInfo
    */
   const getEnabledTheme = async () => {
-    const theme = await management.getAll().then(arr => arr.filter(info =>
+    const themes = await management.getAll().then(arr => arr.filter(info =>
       info.type && info.type === "theme" && info.enabled && info
     ));
-    return theme;
+    return themes;
   };
 
   /* bookmarks */
@@ -378,9 +378,9 @@
    */
   const getTheme = async () => {
     const {theme: storedTheme} = await storage.local.get(THEME);
-    let theme = [];
+    let themes = [];
     if (Array.isArray(storedTheme) && storedTheme.length) {
-      theme = storedTheme;
+      themes = storedTheme;
     } else {
       const items = await getEnabledTheme();
       if (Array.isArray(items) && items.length) {
@@ -388,32 +388,32 @@
           const {id} = item;
           switch (id) {
             case THEME_DARK_ID:
-              theme.push(THEME_DARK);
+              themes.push(THEME_DARK);
               break;
             case THEME_LIGHT_ID:
-              theme.push(THEME_LIGHT);
+              themes.push(THEME_LIGHT);
               break;
             default:
           }
         }
       }
-      !theme.length && theme.push(THEME_DEFAULT);
+      !themes.length && themes.push(THEME_DEFAULT);
     }
-    return theme;
+    return themes;
   };
 
   /**
    * set theme
-   * @param {Array} theme - array of theme
+   * @param {Array} themes - array of theme
    * @returns {void}
    */
-  const setTheme = async theme => {
-    if (!Array.isArray(theme)) {
-      throw new TypeError(`Expected Array but got ${getType(theme)}.`);
+  const setTheme = async themes => {
+    if (!Array.isArray(themes)) {
+      throw new TypeError(`Expected Array but got ${getType(themes)}.`);
     }
     const elm = document.querySelector("body");
     const {classList} = elm;
-    for (const item of theme) {
+    for (const item of themes) {
       switch (item) {
         case THEME_DARK:
           classList.remove(CLASS_THEME_LIGHT);
@@ -431,7 +431,7 @@
       }
     }
     await storeData({
-      [THEME]: theme,
+      [THEME]: themes,
     });
   };
 
