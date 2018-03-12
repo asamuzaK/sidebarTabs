@@ -89,34 +89,35 @@
    */
   const getOffsets = elm => {
     const offset = {
-      bottom: 0,
-      height: 0,
-      left: 0,
-      right: 0,
-      top: 0,
-      width: 0,
+      offsetBottom: 0,
+      offsetHeight: 0,
+      offsetLeft: 0,
+      offsetRight: 0,
+      offsetTop: 0,
+      offsetWidth: 0,
     };
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      const top =
-        window.getComputedStyle(elm).marginTop.replace("px", "") * 1 +
-        window.getComputedStyle(elm).borderTopWidth.replace("px", "") * 1;
-      const right =
-        window.getComputedStyle(elm).marginRight.replace("px", "") * 1 +
-        window.getComputedStyle(elm).borderRightWidth.replace("px", "") * 1;
-      const bottom =
-        window.getComputedStyle(elm).marginBottom.replace("px", "") * 1 +
-        window.getComputedStyle(elm).borderBottomWidth.replace("px", "") * 1;
-      const left =
-        window.getComputedStyle(elm).marginLeft.replace("px", "") * 1 +
-        window.getComputedStyle(elm).borderLeftWidth.replace("px", "") * 1;
-      const width = left + right;
-      const height = top + bottom;
-      offset.top = top;
-      offset.right = right;
-      offset.bottom = bottom;
-      offset.left = left;
-      offset.width = width;
-      offset.height = height;
+      const {
+        borderLeftWidth: borderLeft, borderBottomWidth: borderBottom,
+        borderRightWidth: borderRight, borderTopWidth: borderTop,
+        marginLeft, marginBottom, marginRight, marginTop,
+      } = window.getComputedStyle(elm);
+      const offsetTop =
+        marginTop.replace("px", "") * 1 + borderTop.replace("px", "") * 1;
+      const offsetRight =
+        marginRight.replace("px", "") * 1 + borderRight.replace("px", "") * 1;
+      const offsetBottom =
+        marginBottom.replace("px", "") * 1 + borderBottom.replace("px", "") * 1;
+      const offsetLeft =
+        marginLeft.replace("px", "") * 1 + borderLeft.replace("px", "") * 1;
+      const offsetWidth = offsetLeft + offsetRight;
+      const offsetHeight = offsetTop + offsetBottom;
+      offset.offsetBottom = offsetBottom;
+      offset.offsetHeight = offsetHeight;
+      offset.offsetLeft = offsetLeft;
+      offset.offsetRight = offsetRight;
+      offset.offsetTop = offsetTop;
+      offset.offsetWidth = offsetWidth;
     }
     return offset;
   };
@@ -387,8 +388,8 @@
           height: elmHeight, width: elmWidth,
         } = elm.getBoundingClientRect();
         const {
-          bottom: offsetBottom, height: offsetHeight, left: offsetLeft,
-          right: offsetRight, top: offsetTop, width: offsetWidth,
+          offsetBottom, offsetHeight, offsetLeft, offsetRight, offsetTop,
+          offsetWidth,
         } = getOffsets(elm);
         const elmMarginBoxWidth = elmWidth + offsetWidth;
         const elmMarginBoxHeight = elmHeight + offsetHeight;
