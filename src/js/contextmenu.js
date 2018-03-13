@@ -42,22 +42,24 @@
    * dispatch keyboard event
    * @param {Object} elm - element
    * @param {string} type - event type
-   * @param {Object} keyCombo - key combo
+   * @param {Object} keyOpt - key options
    * @returns {void}
    */
-  const dispatchKeyboardEvt = (elm, type, keyCombo = {}) => {
+  const dispatchKeyboardEvt = (elm, type, keyOpt = {}) => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-        isString(type) && /^key(?:down|press|up)$/.test(type)) {
-      const {altKey, code, ctrlKey, key, shiftKey, metaKey} = keyCombo;
-      if (isString(key)) {
+        isString(type) && /^key(?:down|press|up)$/.test(type) &&
+        Object.keys(keyOpt)) {
+      const {altKey, code, ctrlKey, key, shiftKey, metaKey} = keyOpt;
+      if (isString(key) && isString(code)) {
         const opt = {
           code, key,
           altKey: !!altKey,
           ctrlKey: !!ctrlKey,
-          shiftKey: !!shiftKey,
+          locale: "",
+          location: 0,
           metaKey: !!metaKey,
-          bubbles: false,
-          cancelable: false,
+          repeat: false,
+          shiftKey: !!shiftKey,
         };
         const evt = new KeyboardEvent(type, opt);
         elm.dispatchEvent(evt);
