@@ -25,9 +25,9 @@
   border: 1px solid ActiveBorder;
   padding: 0.1rem;
   flex: 0 0 auto;
-  max-width: calc(100vw - 1rem);
+  max-width: calc(100vw - 2rem);
   height: -moz-max-content !important;
-  max-height: calc(100vh - 1rem);
+  max-height: calc(100vh - 2rem);
   background: Menu;
   color: MenuText;
   cursor: default;
