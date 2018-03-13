@@ -9,7 +9,7 @@ Emulate tabs in sidebar and...
 
 ## Download
 
-* [Sidebar Tabs – Add-ons for Firefox](https://addons.mozilla.org/en-US/firefox/addon/sidebartabs/ "Sidebar Tabs – Add-ons for Firefox")
+* [Sidebar Tabs – Add-ons for Firefox](https://addons.mozilla.org/firefox/addon/sidebartabs/ "Sidebar Tabs – Add-ons for Firefox")
 
 ## about:config
 
