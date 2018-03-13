@@ -536,9 +536,7 @@
         const {
           height: elmHeight, width: elmWidth,
         } = elm.getBoundingClientRect();
-        const {
-          height: offsetHeight, left: offsetLeft, width: offsetWidth,
-        } = getOffsets(elm);
+        const {offsetHeight, offsetLeft, offsetWidth} = getOffsets(elm);
         const elmMarginBoxWidth = elmWidth + offsetWidth;
         const elmMarginBoxHeight = elmHeight + offsetHeight;
         const menuItems = elm.querySelectorAll(`li:not(.${CLASS_MENU_SEP})`);
