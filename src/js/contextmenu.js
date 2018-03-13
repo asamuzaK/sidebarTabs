@@ -23,7 +23,7 @@
 
   /**
    * dispatch click event
-   * @param {Object} elm - Element
+   * @param {Object} elm - element
    * @returns {void}
    */
   const dispatchClickEvt = elm => {
@@ -40,7 +40,7 @@
 
   /**
    * dispatch keyboard event
-   * @param {Object} elm - Element
+   * @param {Object} elm - element
    * @param {string} type - event type
    * @param {Object} keyCombo - key combo
    * @returns {void}
@@ -84,7 +84,7 @@
 
   /**
    * get offsets
-   * @param {Object} elm - Element
+   * @param {Object} elm - element
    * @returns {Object} - offsets
    */
   const getOffsets = elm => {
@@ -137,7 +137,7 @@
 
   /**
    * given element is a context menu item
-   * @param {Object} elm - Element
+   * @param {Object} elm - element
    * @returns {boolean} - result
    */
   const isContextMenuItem = elm => {
@@ -157,7 +157,7 @@
 
   /**
    * get target menu item
-   * @param {Object} elm - element node
+   * @param {Object} elm - element
    * @returns {Object} - menu item element
    */
   const getTargetMenuItem = elm => {
@@ -179,7 +179,7 @@
 
   /**
    * get next target menu item
-   * @param {Object} elm - element node
+   * @param {Object} elm - element
    * @returns {Object} - menu item element
    */
   const getNextTargetMenuItem = elm => {
@@ -210,7 +210,7 @@
 
   /**
    * get previous target menu item
-   * @param {!Object} elm - element node
+   * @param {!Object} elm - element
    * @returns {Object} - menu item element
    */
   const getPreviousTargetMenuItem = elm => {
