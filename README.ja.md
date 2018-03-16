@@ -9,7 +9,7 @@ Firefox用の拡張機能。
 
 ## ダウンロード
 
-* [サイドバー・タブ – Firefox 向けアドオン](https://addons.mozilla.org/firefox/addon/sidebartabs/ "サイドバー・タブ – Firefox 向けアドオン")
+* [サイドバータブ – Firefox 向けアドオン](https://addons.mozilla.org/firefox/addon/sidebartabs/ "サイドバータブ – Firefox 向けアドオン")
 
 ## about:config
 
