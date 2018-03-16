@@ -29,6 +29,30 @@
       }
     }
   },
+  "bookmarkGroupTabs": {
+    "message": "グループのタブをブックマーク"
+  },
+  "bookmarkGroupTabs_label": {
+    "message": "グループのタブをブックマーク $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(B)"
+      }
+    }
+  },
+  "bookmarkTab": {
+    "message": "タブをブックマーク"
+  },
+  "bookmarkTab_label": {
+    "message": "タブをブックマーク $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(B)"
+      }
+    }
+  },
   "closeGroupTabs": {
     "message": "グループのタブをすべて閉じる"
   },

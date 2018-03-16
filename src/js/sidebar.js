@@ -46,10 +46,12 @@
   const MENU_TABS_BOOKMARK_ALL = "sidebar-tabs-menu-tabs-bookmark-all";
   const MENU_TABS_RELOAD_ALL = "sidebar-tabs-menu-tabs-reload-all";
   const MENU_TAB_AUDIO = "sidebar-tabs-menu-tab-audio";
+  const MENU_TAB_BOOKMARK = "sidebar-tabs-menu-tab-bookmark";
   const MENU_TAB_CLOSE = "sidebar-tabs-menu-tab-close";
   const MENU_TAB_CLOSE_UNDO = "sidebar-tabs-menu-tab-close-undo";
   const MENU_TAB_DUPE = "sidebar-tabs-menu-tab-dupe";
   const MENU_TAB_GROUP = "sidebar-tabs-menu-tab-group";
+  const MENU_TAB_GROUP_BOOKMARK = "sidebar-tabs-menu-tab-group-bookmark";
   const MENU_TAB_GROUP_CLOSE = "sidebar-tabs-menu-tab-group-close";
   const MENU_TAB_GROUP_COLLAPSE = "sidebar-tabs-menu-tab-group-collapse";
   const MENU_TAB_GROUP_DETACH = "sidebar-tabs-menu-tab-group-detach";
@@ -77,10 +79,12 @@
   const TABS_CLOSE_END = "closeTabsToTheEnd";
   const TABS_CLOSE_OTHER = "closeOtherTabs";
   const TABS_RELOAD_ALL = "reloadAllTabs";
+  const TAB_BOOKMARK = "bookmarkTab";
   const TAB_CLOSE = "closeTab";
   const TAB_CLOSE_UNDO = "undoCloseTab";
   const TAB_DUPE = "dupeTab";
   const TAB_GROUP = "groupTabs";
+  const TAB_GROUP_BOOKMARK = "bookmarkGroupTabs";
   const TAB_GROUP_CLOSE = "closeGroupTabs";
   const TAB_GROUP_COLLAPSE = "collapseTabs";
   const TAB_GROUP_DETACH = "detachTabFromGroup";
@@ -1626,6 +1630,13 @@
         }
         break;
       }
+      case MENU_TAB_BOOKMARK: {
+        if (tabsTab && !tabsTab.pinned) {
+          const {title, url} = tabsTab;
+          func.push(bookmarkTab({title, url}));
+        }
+        break;
+      }
       case MENU_TAB_CLOSE: {
         if (Number.isInteger(tabId)) {
           func.push(removeTab(tabId));
@@ -1643,6 +1654,23 @@
       case MENU_TAB_DUPE: {
         if (Number.isInteger(tabId)) {
           func.push(dupeTab(tabId));
+        }
+        break;
+      }
+      case MENU_TAB_GROUP_BOOKMARK: {
+        if (tab && tabsTab && !tabsTab.pinned) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            const items =
+              tabParent.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
+            for (const item of items) {
+              const itemTab = item.dataset && item.dataset.tab &&
+                                JSON.parse(item.dataset.tab);
+              const {title, url} = itemTab;
+              func.push(bookmarkTab({title, url}));
+            }
+          }
         }
         break;
       }
@@ -1831,17 +1859,25 @@
               enabled: false,
               onclick: true,
             },
-            [NEW_WIN_MOVE]: {
-              id: MENU_TAB_NEW_WIN_MOVE,
-              title: i18n.getMessage(`${NEW_WIN_MOVE}_label`, "(W)"),
+            [TAB_SYNC]: {
+              id: MENU_TAB_SYNC,
+              title: i18n.getMessage(`${TAB_SYNC}_label`, "(S)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
             },
-            [TAB_SYNC]: {
-              id: MENU_TAB_SYNC,
-              title: i18n.getMessage(`${TAB_SYNC}_label`, "(S)"),
+            [TAB_BOOKMARK]: {
+              id: MENU_TAB_BOOKMARK,
+              title: i18n.getMessage(`${TAB_BOOKMARK}_label`, "(D)"),
+              contexts: [CLASS_TAB, CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
+            },
+            [NEW_WIN_MOVE]: {
+              id: MENU_TAB_NEW_WIN_MOVE,
+              title: i18n.getMessage(`${NEW_WIN_MOVE}_label`, "(W)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1897,6 +1933,14 @@
               enabled: false,
               onclick: true,
               toggleTitle: i18n.getMessage(`${TAB_GROUP_EXPAND}_label`, "(E)"),
+            },
+            [TAB_GROUP_BOOKMARK]: {
+              id: MENU_TAB_GROUP_BOOKMARK,
+              title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_label`, "(D)"),
+              contexts: [CLASS_TAB_GROUP],
+              type: "normal",
+              enabled: false,
+              onclick: true,
             },
             [TAB_GROUP_DETACH]: {
               id: MENU_TAB_GROUP_DETACH,
@@ -2124,22 +2168,24 @@
       const tab = await getSidebarTab(target);
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
-        TAB_RELOAD,
         AUDIO_MUTE,
-        TAB_PIN,
         NEW_WIN_MOVE,
-        TAB_SYNC,
-        TAB_DUPE,
-        TAB_CLOSE,
         TABS_CLOSE_END,
         TABS_CLOSE_OTHER,
+        TAB_BOOKMARK,
+        TAB_CLOSE,
+        TAB_DUPE,
+        TAB_PIN,
+        TAB_RELOAD,
+        TAB_SYNC,
       ];
       const tabGroupMenu = menuItems.sidebarTabs.subItems[TAB_GROUP];
       const tabGroupKeys = [
-        TAB_GROUP_RELOAD,
-        TAB_GROUP_COLLAPSE,
+        TAB_GROUP_BOOKMARK,
         TAB_GROUP_CLOSE,
+        TAB_GROUP_COLLAPSE,
         TAB_GROUP_DETACH,
+        TAB_GROUP_RELOAD,
         TAB_GROUP_UNGROUP,
       ];
       const allTabsKeys = [
@@ -2249,6 +2295,7 @@
           const {id, title} = item;
           const data = {};
           switch (itemKey) {
+            case TAB_GROUP_BOOKMARK:
             case TAB_GROUP_CLOSE:
             case TAB_GROUP_DETACH:
             case TAB_GROUP_UNGROUP:
