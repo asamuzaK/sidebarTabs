@@ -196,8 +196,7 @@
       } = elm;
       let node = nextElementSibling;
       while (node &&
-             (node.nextElementSibling ||
-              node === parentLastChild)) {
+             (node.nextElementSibling || node === parentLastChild)) {
         const {classList, nextElementSibling: nodeNextSibling} = node;
         if (classList.contains(CLASS_MENU_SEP) ||
             classList.contains(CLASS_DISABLED)) {
