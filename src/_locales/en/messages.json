@@ -29,6 +29,30 @@
       }
     }
   },
+  "bookmarkGroupTabs": {
+    "message": "Bookmark Group Tabs"
+  },
+  "bookmarkGroupTabs_label": {
+    "message": "Bookmark Group Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(B)"
+      }
+    }
+  },
+  "bookmarkTab": {
+    "message": "Bookmark Tab"
+  },
+  "bookmarkTab_label": {
+    "message": "Bookmark Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(B)"
+      }
+    }
+  },
   "closeGroupTabs": {
     "message": "Close Grouped Tabs"
   },
