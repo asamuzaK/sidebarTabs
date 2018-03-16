@@ -180,24 +180,31 @@
   };
 
   /**
-   * get next target menu item
+   * get target menu item from next sibling
    * @param {Object} elm - element
    * @returns {Object} - menu item element
    */
-  const getNextTargetMenuItem = elm => {
+  const getNextSiblingMenuItem = elm => {
     let targetElm;
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      const {nextElementSibling, parentNode} = elm;
+      const {
+        nextElementSibling,
+        parentNode: {
+          firstElementChild: parentFirstChild,
+          lastElementChild: parentLastChild,
+        },
+      } = elm;
       let node = nextElementSibling;
       while (node &&
              (node.nextElementSibling ||
-              node === parentNode.lastElementChild)) {
-        if (node.classList.contains(CLASS_MENU_SEP) ||
-          node.classList.contains(CLASS_DISABLED)) {
-          if (node.nextElementSibling) {
-            node = node.nextElementSibling;
-          } else if (node === parentNode.lastElementChild) {
-            node = parentNode.firstElementChild;
+              node === parentLastChild)) {
+        const {classList, nextElementSibling: nodeNextSibling} = node;
+        if (classList.contains(CLASS_MENU_SEP) ||
+            classList.contains(CLASS_DISABLED)) {
+          if (nodeNextSibling) {
+            node = nodeNextSibling;
+          } else if (node === parentLastChild) {
+            node = parentFirstChild;
           } else {
             break;
           }
@@ -211,24 +218,30 @@
   };
 
   /**
-   * get previous target menu item
+   * get target menu item from previous sibling
    * @param {!Object} elm - element
    * @returns {Object} - menu item element
    */
-  const getPreviousTargetMenuItem = elm => {
+  const getPreviousSiblingMenuItem = elm => {
     let targetElm;
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      const {parentNode, previousElementSibling} = elm;
+      const {
+        parentNode: {
+          firstElementChild: parentFirstChild,
+          lastElementChild: parentLastChild,
+        },
+        previousElementSibling,
+      } = elm;
       let node = previousElementSibling;
       while (node &&
-             (node.previousElementSibling ||
-              node === parentNode.firstElementChild)) {
-        if (node.classList.contains(CLASS_MENU_SEP) ||
-          node.classList.contains(CLASS_DISABLED)) {
-          if (node.previousElementSibling) {
-            node = node.previousElementSibling;
-          } else if (node === parentNode.firstElementChild) {
-            node = parentNode.lastElementChild;
+             (node.previousElementSibling || node === parentFirstChild)) {
+        const {classList, previousElementSibling: nodePreviousSibling} = node;
+        if (classList.contains(CLASS_MENU_SEP) ||
+            classList.contains(CLASS_DISABLED)) {
+          if (nodePreviousSibling) {
+            node = nodePreviousSibling;
+          } else if (node === parentFirstChild) {
+            node = parentLastChild;
           } else {
             break;
           }
@@ -253,8 +266,8 @@
       previousElementSibling,
     } = elm;
     const {
-      firstElementChild: parentFirstElementChild,
-      lastElementChild: parentLastElementChild,
+      firstElementChild: parentFirstChild,
+      lastElementChild: parentLastChild,
     } = parentNode;
     let targetElm;
     switch (key) {
@@ -262,19 +275,19 @@
         if (classList.contains(CLASS_MENU)) {
           if (firstElementChild.classList.contains(CLASS_MENU_SEP) ||
               firstElementChild.classList.contains(CLASS_DISABLED)) {
-            targetElm = getNextTargetMenuItem(firstElementChild);
+            targetElm = getNextSiblingMenuItem(firstElementChild);
           } else {
             targetElm = firstElementChild;
           }
-        } else if (elm === parentLastElementChild) {
-          if (parentFirstElementChild.classList.contains(CLASS_MENU_SEP) ||
-              parentFirstElementChild.classList.contains(CLASS_DISABLED)) {
-            targetElm = getNextTargetMenuItem(parentFirstElementChild);
+        } else if (elm === parentLastChild) {
+          if (parentFirstChild.classList.contains(CLASS_MENU_SEP) ||
+              parentFirstChild.classList.contains(CLASS_DISABLED)) {
+            targetElm = getNextSiblingMenuItem(parentFirstChild);
           } else {
-            targetElm = parentFirstElementChild;
+            targetElm = parentFirstChild;
           }
         } else if (nextElementSibling) {
-          targetElm = getNextTargetMenuItem(elm);
+          targetElm = getNextSiblingMenuItem(elm);
         }
         break;
       }
@@ -298,7 +311,7 @@
           if (subMenu) {
             if (subMenu.firstElementChild.classList.contains(CLASS_MENU_SEP) ||
                 subMenu.firstElementChild.classList.contains(CLASS_DISABLED)) {
-              targetElm = getNextTargetMenuItem(subMenu.firstElementChild);
+              targetElm = getNextSiblingMenuItem(subMenu.firstElementChild);
             } else {
               targetElm = subMenu.firstElementChild;
             }
@@ -307,19 +320,95 @@
         break;
       }
       case "ArrowUp": {
-        if (elm === parentFirstElementChild) {
-          if (parentLastElementChild.classList.contains(CLASS_MENU_SEP) ||
-              parentLastElementChild.classList.contains(CLASS_DISABLED)) {
-            targetElm = getPreviousTargetMenuItem(parentLastElementChild);
+        if (elm === parentFirstChild) {
+          if (parentLastChild.classList.contains(CLASS_MENU_SEP) ||
+              parentLastChild.classList.contains(CLASS_DISABLED)) {
+            targetElm = getPreviousSiblingMenuItem(parentLastChild);
           } else {
-            targetElm = parentLastElementChild;
+            targetElm = parentLastChild;
           }
         } else if (previousElementSibling) {
-          targetElm = getPreviousTargetMenuItem(elm);
+          targetElm = getPreviousSiblingMenuItem(elm);
         }
         break;
       }
       default:
+    }
+    if (targetElm) {
+      targetElm.focus();
+    }
+    return targetElm || null;
+  };
+
+  /**
+   * get target menu item from access key
+   * @param {Object} elm - element
+   * @param {string} key - access key
+   * @returns {Object} - menu item element
+   */
+  const getAccessKeyMenuItem = (elm, key) => {
+    let targetElm;
+    if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+        isString(key) && key.length) {
+      const {
+        nextElementSibling,
+        parentNode: {
+          firstElementChild: parentFirstChild,
+          lastElementChild: parentLastChild,
+        },
+      } = elm;
+      let node = nextElementSibling || parentFirstChild;
+      while (node &&
+             (node.nextElementSibling || node === parentLastChild)) {
+        const {accessKey, nextElementSibling: nodeNextSibling} = node;
+        if (accessKey && accessKey.length &&
+            accessKey.toLowerCase() === key.toLowerCase()) {
+          targetElm = node;
+          break;
+        } else if (nodeNextSibling) {
+          node = nodeNextSibling;
+        } else if (node === parentLastChild) {
+          node = parentFirstChild;
+        } else if (node === elm) {
+          break;
+        }
+      }
+    }
+    return targetElm || null;
+  };
+
+  /**
+   * select menu item with access key
+   * @param {string} key - access key
+   * @returns {Object} - menu item element
+   */
+  const selectMenuItemWithAccessKey = key => {
+    const menuElm = document.getElementById(MENU);
+    let targetElm;
+    if (menuElm && menuElm.classList.contains(CLASS_SHOW) &&
+        isString(key) && key.length) {
+      const elm = document.activeElement;
+      const {childNodes, classList} = elm;
+      if (classList.contains(CLASS_MENU)) {
+        for (const child of childNodes) {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            const {accessKey: childAccessKey} = child;
+            if (isString(childAccessKey) && childAccessKey.length &&
+                childAccessKey.toLowerCase() === key.toLowerCase()) {
+              targetElm = child;
+              break;
+            }
+          }
+        }
+      } else if (classList.contains(CLASS_SUBMENU_CONTAINER)) {
+        const subMenu = elm.querySelector(`.${CLASS_MENU}`);
+        if (subMenu) {
+          subMenu.focus();
+          targetElm = selectMenuItemWithAccessKey(key);
+        }
+      } else {
+        targetElm = getAccessKeyMenuItem(elm, key);
+      }
     }
     if (targetElm) {
       targetElm.focus();
@@ -600,7 +689,9 @@
         case "Escape":
           func = hideContextMenu();
           break;
-        default:
+        default: {
+          func = selectMenuItemWithAccessKey(key);
+        }
       }
     }
     return func || null;

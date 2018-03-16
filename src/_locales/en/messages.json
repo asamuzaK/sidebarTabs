@@ -20,23 +20,77 @@
   "bookmarkAllTabs": {
     "message": "Bookmark All Tabs"
   },
+  "bookmarkAllTabs_label": {
+    "message": "Bookmark All Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(B)"
+      }
+    }
+  },
   "closeGroupTabs": {
     "message": "Close Grouped Tabs"
+  },
+  "closeGroupTabs_label": {
+    "message": "Close Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(C)"
+      }
+    }
   },
   "closeOtherTabs": {
     "message": "Close Other Tabs"
   },
+  "closeOtherTabs_label": {
+    "message": "Close Other Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(O)"
+      }
+    }
+  },
   "closeTab": {
     "message": "Close Tab"
+  },
+  "closeTab_label": {
+    "message": "Close Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(C)"
+      }
+    }
   },
   "closeTab_tooltip": {
     "message": "Close Tab"
   },
   "closeTabsToTheEnd": {
-    "message": "Close Tabs to the Bottom"
+    "message": "Close Tabs to the End"
+  },
+  "closeTabsToTheEnd_label": {
+    "message": "Close Tabs to the End $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(E)"
+      }
+    }
   },
   "collapseTabs": {
     "message": "Collapse Grouped Tabs"
+  },
+  "collapseTabs_label": {
+    "message": "Collapse Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(E)"
+      }
+    }
   },
   "collapseTabs_tooltip": {
     "message": "Collapse Grouped Tabs"
@@ -47,17 +101,62 @@
   "darkTheme": {
     "message": "Dark Theme"
   },
+  "darkTheme_label": {
+    "message": "Dark Theme $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
   "defaultTheme": {
     "message": "Default Theme"
+  },
+  "defaultTheme_label": {
+    "message": "Default Theme $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(T)"
+      }
+    }
   },
   "detachTabFromGroup": {
     "message": "Detach Tab From Group"
   },
+  "detachTabFromGroup_label": {
+    "message": "Detach Tab From Group $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
   "dupeTab": {
     "message": "Duplicate Tab"
   },
+  "dupeTab_label": {
+    "message": "Duplicate Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
   "expandTabs": {
     "message": "Expand Group Tabs"
+  },
+  "expandTabs_label": {
+    "message": "Expand Group Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(E)"
+      }
+    }
   },
   "expandTabs_tooltip": {
     "message": "Expand Group Tabs"
@@ -66,19 +165,61 @@
     "message": "Group Tabs"
   },
   "groupTabs_label": {
-    "message": "Tab Group"
+    "message": "Tab Group $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
+      }
+    }
   },
   "initSidebar": {
     "message": "Init Sidebar Tabs"
   },
+  "initSidebar_label": {
+    "message": "Init Sidebar Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(I)"
+      }
+    }
+  },
   "lightTheme": {
     "message": "Light Theme"
+  },
+  "lightTheme_label": {
+    "message": "Light Theme $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(L)"
+      }
+    }
   },
   "moveToNewWindow": {
     "message": "Move to New Window"
   },
+  "moveToNewWindow_label": {
+    "message": "Move to New Window $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(W)"
+      }
+    }
+  },
   "muteAudio": {
     "message": "Mute Audio"
+  },
+  "muteAudio_label": {
+    "message": "Mute Audio $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(M)"
+      }
+    }
   },
   "muteAudio_tooltip": {
     "message": "Mute Audio"
@@ -95,52 +236,184 @@
   "pinTab": {
     "message": "Pin Tab"
   },
+  "pinTab_label": {
+    "message": "Pin Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(P)"
+      }
+    }
+  },
   "playAudio": {
     "message": "Play Audio"
+  },
+  "playAudio_label": {
+    "message": "Play Audio $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(M)"
+      }
+    }
   },
   "reloadAllTabs": {
     "message": "Reload All Tabs"
   },
+  "reloadAllTabs_label": {
+    "message": "Reload All Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(R)"
+      }
+    }
+  },
   "reloadGroupTabs": {
     "message": "Reload Grouped Tabs"
+  },
+  "reloadGroupTabs_label": {
+    "message": "Reload Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(R)"
+      }
+    }
   },
   "reloadTab": {
     "message": "Reload Tab"
   },
+  "reloadTab_label": {
+    "message": "Reload Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(R)"
+      }
+    }
+  },
   "selectTheme": {
     "message": "Select Theme"
+  },
+  "selectTheme_label": {
+    "message": "Select Theme $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
   },
   "sendTabToDevice": {
     "message": "Send tab to device"
   },
+  "sendTabToDevice_label": {
+    "message": "Send tab to device $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
+  },
   "sendToAllDevices": {
     "message": "Send to all devices"
+  },
+  "sendToAllDevices_label": {
+    "message": "Send to all devices $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(A)"
+      }
+    }
   },
   "sidebarTabsOptions": {
     "message": "Sidebar Tabs Options"
   },
+  "sidebarTabsOptions_label": {
+    "message": "Sidebar Tabs Options $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(O)"
+      }
+    }
+  },
   "syncTab": {
     "message": "Sync Tab"
+  },
+  "syncTab_label": {
+    "message": "Sync Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
   },
   "tab": {
     "message": "Tab"
   },
   "tab_label": {
-    "message": "Tab"
+    "message": "Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(T)"
+      }
+    }
   },
   "undoCloseTab": {
     "message": "Undo Close Tab"
   },
+  "undoCloseTab_label": {
+    "message": "Undo Close Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(U)"
+      }
+    }
+  },
   "ungroupTabs": {
     "message": "Ungroup Tabs"
   },
+  "ungroupTabs_label": {
+    "message": "Ungroup Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(U)"
+      }
+    }
+  },
   "unmuteAudio": {
     "message": "Unmute Audio"
+  },
+  "unmuteAudio_label": {
+    "message": "Unmute Audio $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(M)"
+      }
+    }
   },
   "unmuteAudio_tooltip": {
     "message": "Unmute Audio"
   },
   "unpinTab": {
     "message": "Unpin Tab"
+  },
+  "unpinTab_label": {
+    "message": "Unpin Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(P)"
+      }
+    }
   }
 }
