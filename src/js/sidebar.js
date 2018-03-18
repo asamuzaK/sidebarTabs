@@ -2292,7 +2292,7 @@
         }
         for (const itemKey of tabGroupKeys) {
           const item = tabGroupMenu.subItems[itemKey];
-          const {id, title} = item;
+          const {id, title, toggleTitle} = item;
           const data = {};
           switch (itemKey) {
             case TAB_GROUP_BOOKMARK:
@@ -2307,13 +2307,15 @@
               data.title = title;
               break;
             case TAB_GROUP_COLLAPSE: {
-              const obj = tab.querySelector(`.${CLASS_TAB_TOGGLE_ICON}`);
-              if (parentClass.contains(CLASS_TAB_GROUP) && obj && obj.alt) {
+              if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
                 data.enabled = true;
-                data.title = obj.alt;
+                if (parentClass.contains(CLASS_TAB_COLLAPSED)) {
+                  data.title = toggleTitle;
+                } else {
+                  data.title = title;
+                }
               } else {
                 data.enabled = false;
-                data.title = title;
               }
               break;
             }
