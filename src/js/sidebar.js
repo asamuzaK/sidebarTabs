@@ -110,9 +110,7 @@
   const URL_AUDIO_MUTED = "../img/audio-muted.svg";
   const URL_AUDIO_PLAYING = "../img/audio-play.svg";
   const URL_CSS = "../css/sidebar.css";
-  const URL_FAVICON_ADDONS = "../img/addons-favicon.svg";
   const URL_FAVICON_DEFAULT = "../img/default-favicon.svg";
-  const URL_FAVICON_OPTIONS = "../img/options-favicon.svg";
   const URL_LOADING_THROBBER = "../img/loading.svg";
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
 
@@ -671,6 +669,10 @@
               "../img/twitter-logo-blue.svg");
   favicon.set("https://abs.twimg.com/icons/apple-touch-icon-192x192.png",
               "../img/twitter-logo-blue.svg");
+  favicon.set("chrome://browser/skin/settings.svg",
+              "../img/options-favicon.svg");
+  favicon.set("chrome://mozapps/skin/extensions/extensionGeneric-16.svg",
+              "../img/addons-favicon.svg");
 
   /**
    * tab icon fallback
@@ -706,22 +708,13 @@
     let src;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       if (isString(favIconUrl)) {
-        const {pathname, protocol} = new URL(favIconUrl);
+        const {protocol} = new URL(favIconUrl);
         if (/(?:f(?:tp|ile)|https?):/.test(protocol)) {
           src = await fetch(favIconUrl).then(res => {
             const {ok, url} = res;
             return ok && url || null;
           }).catch(() => favicon.get(favIconUrl));
           if (!src) {
-            src = favicon.get(favIconUrl) || URL_FAVICON_DEFAULT;
-          }
-        } else if (/chrome:/.test(protocol)) {
-          if (isString(pathname) && pathname.endsWith("settings.svg")) {
-            src = URL_FAVICON_OPTIONS;
-          } else if (isString(pathname) &&
-                     pathname.endsWith("extensionGeneric-16.svg")) {
-            src = URL_FAVICON_ADDONS;
-          } else {
             src = favicon.get(favIconUrl) || URL_FAVICON_DEFAULT;
           }
         } else {
