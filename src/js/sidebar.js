@@ -779,9 +779,15 @@
       const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
       const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
       const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
-      tabContent && (tabContent.title = title);
-      tabTitle && (tabTitle.textContent = title);
-      tabIcon && await setTabIcon(tabIcon, {favIconUrl, status, title, url});
+      if (tabContent) {
+        tabContent.title = title;
+      }
+      if (tabTitle) {
+        tabTitle.textContent = title;
+      }
+      if (tabIcon) {
+        await setTabIcon(tabIcon, {favIconUrl, status, title, url});
+      }
       tab.dataset.tab = JSON.stringify(tabsTab);
     }
   };
