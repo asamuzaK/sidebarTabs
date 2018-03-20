@@ -110,7 +110,9 @@
   const URL_AUDIO_MUTED = "../img/audio-muted.svg";
   const URL_AUDIO_PLAYING = "../img/audio-play.svg";
   const URL_CSS = "../css/sidebar.css";
-  const URL_DEFAULT_FAVICON = "../img/default-favicon.svg";
+  const URL_FAVICON_ADDONS = "../img/addons-favicon.svg";
+  const URL_FAVICON_DEFAULT = "../img/default-favicon.svg";
+  const URL_FAVICON_OPTIONS = "../img/options-favicon.svg";
   const URL_LOADING_THROBBER = "../img/loading.svg";
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
 
@@ -677,7 +679,9 @@
    */
   const tabIconFallback = evt => {
     const {target} = evt;
-    target.hasOwnProperty("src") && (target.src = URL_DEFAULT_FAVICON);
+    if (target.hasOwnProperty("src")) {
+      target.src = URL_FAVICON_DEFAULT;
+    }
     return false;
   };
 
@@ -702,23 +706,32 @@
     let src;
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
       if (isString(favIconUrl)) {
-        const {protocol} = new URL(favIconUrl);
+        const {pathname, protocol} = new URL(favIconUrl);
         if (/(?:f(?:tp|ile)|https?):/.test(protocol)) {
           src = await fetch(favIconUrl).then(res => {
             const {ok, url} = res;
             return ok && url || null;
           }).catch(() => favicon.get(favIconUrl));
           if (!src) {
-            src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
+            src = favicon.get(favIconUrl) || URL_FAVICON_DEFAULT;
+          }
+        } else if (/chrome:/.test(protocol)) {
+          if (isString(pathname) && pathname.endsWith("settings.svg")) {
+            src = URL_FAVICON_OPTIONS;
+          } else if (isString(pathname) &&
+                     pathname.endsWith("extensionGeneric-16.svg")) {
+            src = URL_FAVICON_ADDONS;
+          } else {
+            src = favicon.get(favIconUrl) || URL_FAVICON_DEFAULT;
           }
         } else {
-          src = favicon.get(favIconUrl) || URL_DEFAULT_FAVICON;
+          src = favicon.get(favIconUrl) || URL_FAVICON_DEFAULT;
         }
       } else {
-        src = URL_DEFAULT_FAVICON;
+        src = URL_FAVICON_DEFAULT;
       }
     }
-    return src || URL_DEFAULT_FAVICON;
+    return src || URL_FAVICON_DEFAULT;
   };
 
   /**
@@ -747,7 +760,7 @@
         if (favIconUrl) {
           elm.src = await getFavicon(elm, favIconUrl);
         } else {
-          elm.src = URL_DEFAULT_FAVICON;
+          elm.src = URL_FAVICON_DEFAULT;
         }
         elm.style.fill = null;
       }
