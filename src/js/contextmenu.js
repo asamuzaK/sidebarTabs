@@ -672,7 +672,7 @@
     let func;
     if (key === "ContextMenu" || shiftKey && key === "F10") {
       func = showContextMenuContainer();
-    } else {
+    } else if (isContextMenuItem(target)) {
       switch (key) {
         case "ArrowDown":
         case "ArrowLeft":
@@ -688,9 +688,8 @@
         case "Escape":
           func = hideContextMenu();
           break;
-        default: {
+        default:
           func = selectMenuItemWithAccessKey(key);
-        }
       }
     }
     return func || null;
