@@ -174,15 +174,16 @@ main {
   margin: var(--scale-size);
   width: var(--icon-size);
   height: var(--icon-size);
-  fill: var(--foreground-secondary-color);
+  fill: var(--foreground-color);
   fill-opacity: 1.0;
   stroke: var(--foreground-highlight-color);
 }
 .tab.active .tab-icon {
-  fill: var(--foreground-active-secondary-color);
+  fill: var(--foreground-active-color);
 }
+.tab.active:focus .tab-icon,
 .tab.active:hover .tab-icon {
-  fill: var(--foreground-secondary-color);
+  fill: var(--foreground-color);
 }
 .tab-title {
   display: block;
