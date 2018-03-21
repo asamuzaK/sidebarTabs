@@ -951,7 +951,7 @@
   };
 
   /**
-   * expand activated collapsed tab when other tab got removed / detatched
+   * expand activated collapsed tab
    * @returns {?AsyncFunction} - toggleTabCollapsed()
    */
   const expandActivatedCollapsedTab = async () => {
@@ -960,7 +960,7 @@
     if (tab) {
       const {parentNode} = tab;
       if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
-          parentNode.lastElementChild === tab) {
+          parentNode.firstElementChild !== tab) {
         func = toggleTabCollapsed({target: tab});
       }
     }
@@ -2436,7 +2436,7 @@
   });
 
   tabs.onActivated.addListener(info =>
-    handleActivatedTab(info).catch(throwErr)
+    handleActivatedTab(info).then(expandActivatedCollapsedTab).catch(throwErr)
   );
 
   tabs.onAttached.addListener((tabId, info) =>
