@@ -22,23 +22,6 @@
   const isString = o => typeof o === "string" || o instanceof String;
 
   /**
-   * dispatch click event
-   * @param {Object} elm - element
-   * @returns {void}
-   */
-  const dispatchClickEvt = elm => {
-    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      const opt = {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-      };
-      const evt = new MouseEvent("click", opt);
-      elm.dispatchEvent(evt);
-    }
-  };
-
-  /**
    * dispatch keyboard event
    * @param {Object} elm - element
    * @param {string} type - event type
@@ -343,9 +326,10 @@
    * get target menu item from access key
    * @param {Object} elm - element
    * @param {string} key - access key
+   * @param {boolean} sensitive - case sensitive
    * @returns {Object} - menu item element
    */
-  const getAccessKeyMenuItem = (elm, key) => {
+  const getAccessKeyMenuItem = (elm, key, sensitive = false) => {
     let targetElm;
     if (elm && elm.nodeType === Node.ELEMENT_NODE &&
         isString(key) && key.length) {
@@ -360,8 +344,9 @@
       while (node &&
              (node.nextElementSibling || node === parentLastChild)) {
         const {accessKey, nextElementSibling: nodeNextSibling} = node;
-        if (accessKey && accessKey.length &&
-            accessKey.toLowerCase() === key.toLowerCase()) {
+        if (isString(accessKey) && accessKey.length &&
+            (sensitive && accessKey === key ||
+             !sensitive && accessKey.toLowerCase() === key.toLowerCase())) {
           targetElm = node;
           break;
         } else if (nodeNextSibling) {
@@ -377,11 +362,37 @@
   };
 
   /**
+   * has same accesskey
+   * @param {Object} nodes - node list
+   * @param {string} key - access key
+   * @param {boolean} sensitive - case sensitive
+   * @returns {boolean} - result
+   */
+  const hasSameAccessKey = (nodes, key, sensitive = false) => {
+    const arr = [];
+    if ((nodes instanceof NodeList || nodes instanceof HTMLCollection) &&
+        isString(key) && key.length) {
+      for (const node of nodes) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const {accessKey} = node;
+          if (isString(accessKey) && accessKey.length &&
+              (sensitive && accessKey === key ||
+               !sensitive && accessKey.toLowerCase() === key.toLowerCase())) {
+            arr.push(node);
+          }
+        }
+      }
+    }
+    return arr.length !== 1;
+  };
+
+  /**
    * select menu item with access key
    * @param {string} key - access key
+   * @param {boolean} sensitive - case sensitive
    * @returns {Object} - menu item element
    */
-  const selectMenuItemWithAccessKey = key => {
+  const selectMenuItemWithAccessKey = (key, sensitive = false) => {
     const menuElm = document.getElementById(MENU);
     let targetElm;
     if (menuElm && menuElm.classList.contains(CLASS_SHOW) &&
@@ -391,9 +402,10 @@
       if (classList.contains(CLASS_MENU)) {
         for (const child of childNodes) {
           if (child.nodeType === Node.ELEMENT_NODE) {
-            const {accessKey: childAccessKey} = child;
-            if (isString(childAccessKey) && childAccessKey.length &&
-                childAccessKey.toLowerCase() === key.toLowerCase()) {
+            const {accessKey} = child;
+            if (isString(accessKey) && accessKey.length &&
+                (sensitive && accessKey === key ||
+                 !sensitive && accessKey.toLowerCase() === key.toLowerCase())) {
               targetElm = child;
               break;
             }
@@ -406,11 +418,16 @@
           targetElm = selectMenuItemWithAccessKey(key);
         }
       } else {
-        targetElm = getAccessKeyMenuItem(elm, key);
+        targetElm = getAccessKeyMenuItem(elm, key, sensitive);
       }
     }
     if (targetElm) {
+      const {parentNode: targetParent} = targetElm;
+      const {childNodes: targetParentChildNodes} = targetParent;
       targetElm.focus();
+      if (!hasSameAccessKey(targetParentChildNodes, key)) {
+        targetElm.click();
+      }
     }
     return targetElm || null;
   };
@@ -683,7 +700,7 @@
         case "Enter":
         case "Spacebar":
         case " ":
-          func = dispatchClickEvt(target);
+          func = target.click();
           break;
         case "Escape":
           func = hideContextMenu();
