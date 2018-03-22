@@ -36,6 +36,7 @@
         transform-origin: 50% 50%;
         animation: throbber 1.05s ease infinite;
         fill: context-fill;
+        fill-opacity: 0.8;
       }
     </style>
   </defs>
