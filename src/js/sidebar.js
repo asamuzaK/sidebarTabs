@@ -2225,9 +2225,9 @@
           const data = {};
           switch (itemKey) {
             case AUDIO_MUTE: {
+              const {mutedInfo: {muted}} = tabsTab;
               data.enabled = true;
-              console.log(tabsTab);
-              if (tabsTab.mutedInfo.muted) {
+              if (muted) {
                 data.title = toggleTitle;
               } else {
                 data.title = title;
