@@ -1832,14 +1832,14 @@
         /* tab */
         [TAB]: {
           id: MENU_TAB,
-          title: i18n.getMessage(`${TAB}_label`, "(T)"),
+          title: i18n.getMessage(`${TAB}_title`, "(T)"),
           contexts: [CLASS_TAB, CLASS_TAB_GROUP],
           type: "normal",
           enabled: false,
           subItems: {
             [TAB_RELOAD]: {
               id: MENU_TAB_RELOAD,
-              title: i18n.getMessage(`${TAB_RELOAD}_label`, "(R)"),
+              title: i18n.getMessage(`${TAB_RELOAD}_title`, "(R)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1847,25 +1847,25 @@
             },
             [AUDIO_MUTE]: {
               id: MENU_TAB_AUDIO,
-              title: i18n.getMessage(`${AUDIO_MUTE}_label`, "(M)"),
+              title: i18n.getMessage(`${AUDIO_MUTE}_title`, "(M)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
-              toggleTitle: i18n.getMessage(`${AUDIO_MUTE_UNMUTE}_label`, "(M)"),
+              toggleTitle: i18n.getMessage(`${AUDIO_MUTE_UNMUTE}_title`, "(M)"),
             },
             [TAB_PIN]: {
               id: MENU_TAB_PIN,
-              title: i18n.getMessage(`${TAB_PIN}_label`, "(P)"),
+              title: i18n.getMessage(`${TAB_PIN}_title`, "(P)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
-              toggleTitle: i18n.getMessage(`${TAB_PIN_UNPIN}_label`, "(P)"),
+              toggleTitle: i18n.getMessage(`${TAB_PIN_UNPIN}_title`, "(P)"),
             },
             [TAB_DUPE]: {
               id: MENU_TAB_DUPE,
-              title: i18n.getMessage(`${TAB_DUPE}_label`, "(D)"),
+              title: i18n.getMessage(`${TAB_DUPE}_title`, "(D)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1873,7 +1873,7 @@
             },
             [TAB_SYNC]: {
               id: MENU_TAB_SYNC,
-              title: i18n.getMessage(`${TAB_SYNC}_label`, "(S)"),
+              title: i18n.getMessage(`${TAB_SYNC}_title`, "(S)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1881,7 +1881,7 @@
             },
             [TAB_BOOKMARK]: {
               id: MENU_TAB_BOOKMARK,
-              title: i18n.getMessage(`${TAB_BOOKMARK}_label`, "(D)"),
+              title: i18n.getMessage(`${TAB_BOOKMARK}_title`, "(D)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1889,7 +1889,7 @@
             },
             [NEW_WIN_MOVE]: {
               id: MENU_TAB_NEW_WIN_MOVE,
-              title: i18n.getMessage(`${NEW_WIN_MOVE}_label`, "(W)"),
+              title: i18n.getMessage(`${NEW_WIN_MOVE}_title`, "(W)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1897,7 +1897,7 @@
             },
             [TABS_CLOSE_END]: {
               id: MENU_TAB_TABS_CLOSE_END,
-              title: i18n.getMessage(`${TABS_CLOSE_END}_label`, "(E)"),
+              title: i18n.getMessage(`${TABS_CLOSE_END}_title`, "(E)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1905,7 +1905,7 @@
             },
             [TABS_CLOSE_OTHER]: {
               id: MENU_TAB_TABS_CLOSE_OTHER,
-              title: i18n.getMessage(`${TABS_CLOSE_OTHER}_label`, "(O)"),
+              title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(O)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1913,7 +1913,7 @@
             },
             [TAB_CLOSE]: {
               id: MENU_TAB_CLOSE,
-              title: i18n.getMessage(`${TAB_CLOSE}_label`, "(C)"),
+              title: i18n.getMessage(`${TAB_CLOSE}_title`, "(C)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1924,14 +1924,14 @@
         /* tab group */
         [TAB_GROUP]: {
           id: MENU_TAB_GROUP,
-          title: i18n.getMessage(`${TAB_GROUP}_label`, "(G)"),
+          title: i18n.getMessage(`${TAB_GROUP}_title`, "(G)"),
           contexts: [CLASS_TAB_GROUP],
           type: "normal",
           enabled: false,
           subItems: {
             [TAB_GROUP_RELOAD]: {
               id: MENU_TAB_GROUP_RELOAD,
-              title: i18n.getMessage(`${TAB_GROUP_RELOAD}_label`, "(R)"),
+              title: i18n.getMessage(`${TAB_GROUP_RELOAD}_title`, "(R)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1939,16 +1939,16 @@
             },
             [TAB_GROUP_COLLAPSE]: {
               id: MENU_TAB_GROUP_COLLAPSE,
-              title: i18n.getMessage(`${TAB_GROUP_COLLAPSE}_label`, "(E)"),
+              title: i18n.getMessage(`${TAB_GROUP_COLLAPSE}_title`, "(E)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
-              toggleTitle: i18n.getMessage(`${TAB_GROUP_EXPAND}_label`, "(E)"),
+              toggleTitle: i18n.getMessage(`${TAB_GROUP_EXPAND}_title`, "(E)"),
             },
             [TAB_GROUP_BOOKMARK]: {
               id: MENU_TAB_GROUP_BOOKMARK,
-              title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_label`, "(D)"),
+              title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_title`, "(D)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1956,7 +1956,7 @@
             },
             [TAB_GROUP_DETACH]: {
               id: MENU_TAB_GROUP_DETACH,
-              title: i18n.getMessage(`${TAB_GROUP_DETACH}_label`, "(D)"),
+              title: i18n.getMessage(`${TAB_GROUP_DETACH}_title`, "(D)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1964,7 +1964,7 @@
             },
             [TAB_GROUP_UNGROUP]: {
               id: MENU_TAB_GROUP_UNGROUP,
-              title: i18n.getMessage(`${TAB_GROUP_UNGROUP}_label`, "(U)"),
+              title: i18n.getMessage(`${TAB_GROUP_UNGROUP}_title`, "(U)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1972,7 +1972,7 @@
             },
             [TAB_GROUP_CLOSE]: {
               id: MENU_TAB_GROUP_CLOSE,
-              title: i18n.getMessage(`${TAB_GROUP_CLOSE}_label`, "(C)"),
+              title: i18n.getMessage(`${TAB_GROUP_CLOSE}_title`, "(C)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1983,7 +1983,7 @@
         /* all tabs */
         [TABS_RELOAD_ALL]: {
           id: MENU_TABS_RELOAD_ALL,
-          title: i18n.getMessage(`${TABS_RELOAD_ALL}_label`, "(R)"),
+          title: i18n.getMessage(`${TABS_RELOAD_ALL}_title`, "(R)"),
           contexts: ["page"],
           type: "normal",
           enabled: true,
@@ -1991,7 +1991,7 @@
         },
         [TABS_BOOKMARK_ALL]: {
           id: MENU_TABS_BOOKMARK_ALL,
-          title: i18n.getMessage(`${TABS_BOOKMARK_ALL}_label`, "(B)"),
+          title: i18n.getMessage(`${TABS_BOOKMARK_ALL}_title`, "(B)"),
           contexts: ["page"],
           type: "normal",
           enabled: false,
@@ -1999,7 +1999,7 @@
         },
         [TAB_CLOSE_UNDO]: {
           id: MENU_TAB_CLOSE_UNDO,
-          title: i18n.getMessage(`${TAB_CLOSE_UNDO}_label`, "(U)"),
+          title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, "(U)"),
           contexts: ["page"],
           type: "normal",
           enabled: false,
@@ -2008,21 +2008,21 @@
         /* sidebar tabs options*/
         [SIDEBAR_OPT]: {
           id: MENU_SIDEBAR_OPT,
-          title: i18n.getMessage(`${SIDEBAR_OPT}_label`, "(O)"),
+          title: i18n.getMessage(`${SIDEBAR_OPT}_title`, "(O)"),
           contexts: ["page"],
           type: "normal",
           enabled: true,
           subItems: {
             [THEME_SELECT]: {
               id: MENU_THEME_SELECT,
-              title: i18n.getMessage(`${THEME_SELECT}_label`, "(S)"),
+              title: i18n.getMessage(`${THEME_SELECT}_title`, "(S)"),
               contexts: ["page"],
               type: "normal",
               enabled: true,
               subItems: {
                 [THEME_DEFAULT]: {
                   id: MENU_THEME_DEFAULT,
-                  title: i18n.getMessage(`${THEME_DEFAULT}_label`, "(T)"),
+                  title: i18n.getMessage(`${THEME_DEFAULT}_title`, "(T)"),
                   contexts: ["page"],
                   type: "normal",
                   enabled: true,
@@ -2030,7 +2030,7 @@
                 },
                 [THEME_LIGHT]: {
                   id: MENU_THEME_LIGHT,
-                  title: i18n.getMessage(`${THEME_LIGHT}_label`, "L"),
+                  title: i18n.getMessage(`${THEME_LIGHT}_title`, "L"),
                   contexts: ["page"],
                   type: "normal",
                   enabled: true,
@@ -2038,7 +2038,7 @@
                 },
                 [THEME_DARK]: {
                   id: MENU_THEME_DARK,
-                  title: i18n.getMessage(`${THEME_DARK}_label`, "(D)"),
+                  title: i18n.getMessage(`${THEME_DARK}_title`, "(D)"),
                   contexts: ["page"],
                   type: "normal",
                   enabled: true,
@@ -2048,7 +2048,7 @@
             },
             [SIDEBAR_INIT]: {
               id: MENU_SIDEBAR_INIT,
-              title: i18n.getMessage(`${SIDEBAR_INIT}_label`, "(I)"),
+              title: i18n.getMessage(`${SIDEBAR_INIT}_title`, "(I)"),
               contexts: ["page"],
               type: "normal",
               enabled: true,
@@ -2089,6 +2089,7 @@
         const label = elm.querySelector(`.${CLASS_MENU_LABEL}`);
         if (label) {
           label.textContent = title;
+          label.title = title;
         }
         if (enabled) {
           classList.remove(CLASS_MENU_DISABLED);
@@ -2136,6 +2137,7 @@
           const label = elm.querySelector(`.${CLASS_MENU_LABEL}`);
           if (label) {
             label.textContent = title;
+            label.title = title;
           }
         }
         if (enabled) {
@@ -2223,10 +2225,10 @@
           const data = {};
           switch (itemKey) {
             case AUDIO_MUTE: {
-              const obj = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
               data.enabled = true;
-              if (obj && obj.alt) {
-                data.title = obj.alt;
+              console.log(tabsTab);
+              if (tabsTab.mutedInfo.muted) {
+                data.title = toggleTitle;
               } else {
                 data.title = title;
               }
@@ -2525,9 +2527,10 @@
   /**
    * localize attribute value
    * @param {Object} elm - element
+   * @param {string} placeholders - placeholders for localization
    * @returns {void}
    */
-  const localizeAttr = async elm => {
+  const localizeAttr = async (elm, placeholders) => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.hasAttributes()) {
       const attrs = {
         alt: "alt",
@@ -2540,8 +2543,16 @@
       const items = Object.entries(attrs);
       for (const item of items) {
         const [key, value] = item;
-        elm.hasAttribute(value) &&
-          elm.setAttribute(value, i18n.getMessage(`${dataAttr}_${key}`));
+        if (elm.hasAttribute(value)) {
+          if (isString(placeholders) && placeholders.length) {
+            elm.setAttribute(
+              value,
+              i18n.getMessage(`${dataAttr}_${key}`, placeholders)
+            );
+          } else {
+            elm.setAttribute(value, i18n.getMessage(`${dataAttr}_${key}`));
+          }
+        }
       }
     }
   };
@@ -2561,13 +2572,13 @@
           const {accessKey} = parentNode;
           const attr = node.getAttribute(DATA_ATTR_I18N);
           const data = accessKey &&
-                       i18n.getMessage(`${attr}_label`, `(${accessKey})`) ||
+                       i18n.getMessage(`${attr}_title`, `(${accessKey})`) ||
                        i18n.getMessage(attr);
           if (data && localName !== "img" &&
               !classList.contains(NEW_TAB)) {
             node.textContent = data;
           }
-          node.hasAttributes() && localizeAttr(node);
+          node.hasAttributes() && localizeAttr(node, `(${accessKey})`);
         }
       }
     }

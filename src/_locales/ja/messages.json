@@ -14,13 +14,13 @@
   "allTabs": {
     "message": "すべてのタブ"
   },
-  "allTabs_label": {
+  "allTabs_title": {
     "message": "すべてのタブ"
   },
   "bookmarkAllTabs": {
     "message": "すべてのタブをブックマーク"
   },
-  "bookmarkAllTabs_label": {
+  "bookmarkAllTabs_title": {
     "message": "すべてのタブをブックマーク $KEY$",
     "placeholders": {
       "key" : {
@@ -32,7 +32,7 @@
   "bookmarkGroupTabs": {
     "message": "グループのタブをブックマーク"
   },
-  "bookmarkGroupTabs_label": {
+  "bookmarkGroupTabs_title": {
     "message": "グループのタブをブックマーク $KEY$",
     "placeholders": {
       "key" : {
@@ -44,7 +44,7 @@
   "bookmarkTab": {
     "message": "タブをブックマーク"
   },
-  "bookmarkTab_label": {
+  "bookmarkTab_title": {
     "message": "タブをブックマーク $KEY$",
     "placeholders": {
       "key" : {
@@ -56,7 +56,7 @@
   "closeGroupTabs": {
     "message": "グループのタブをすべて閉じる"
   },
-  "closeGroupTabs_label": {
+  "closeGroupTabs_title": {
     "message": "グループのタブをすべて閉じる $KEY$",
     "placeholders": {
       "key" : {
@@ -68,7 +68,7 @@
   "closeOtherTabs": {
     "message": "他のタブをすべて閉じる"
   },
-  "closeOtherTabs_label": {
+  "closeOtherTabs_title": {
     "message": "他のタブをすべて閉じる $KEY$",
     "placeholders": {
       "key" : {
@@ -80,7 +80,7 @@
   "closeTab": {
     "message": "タブを閉じる"
   },
-  "closeTab_label": {
+  "closeTab_title": {
     "message": "タブを閉じる $KEY$",
     "placeholders": {
       "key" : {
@@ -95,7 +95,7 @@
   "closeTabsToTheEnd": {
     "message": "下のタブをすべて閉じる"
   },
-  "closeTabsToTheEnd_label": {
+  "closeTabsToTheEnd_title": {
     "message": "下のタブをすべて閉じる $KEY$",
     "placeholders": {
       "key" : {
@@ -107,7 +107,7 @@
   "collapseTabs": {
     "message": "グループのタブを折りたたむ"
   },
-  "collapseTabs_label": {
+  "collapseTabs_title": {
     "message": "グループのタブを折りたたむ $KEY$",
     "placeholders": {
       "key" : {
@@ -125,7 +125,7 @@
   "darkTheme": {
     "message": "暗いテーマ"
   },
-  "darkTheme_label": {
+  "darkTheme_title": {
     "message": "暗いテーマ $KEY$",
     "placeholders": {
       "key" : {
@@ -137,7 +137,7 @@
   "defaultTheme": {
     "message": "デフォルトのテーマ"
   },
-  "defaultTheme_label": {
+  "defaultTheme_title": {
     "message": "デフォルトのテーマ $KEY$",
     "placeholders": {
       "key" : {
@@ -149,7 +149,7 @@
   "detachTabFromGroup": {
     "message": "タブをグループから切り離す"
   },
-  "detachTabFromGroup_label": {
+  "detachTabFromGroup_title": {
     "message": "タブをグループから切り離す $KEY$",
     "placeholders": {
       "key" : {
@@ -161,7 +161,7 @@
   "dupeTab": {
     "message": "タブを複製"
   },
-  "dupeTab_label": {
+  "dupeTab_title": {
     "message": "タブを複製 $KEY$",
     "placeholders": {
       "key" : {
@@ -173,7 +173,7 @@
   "expandTabs": {
     "message": "グループのタブを展開"
   },
-  "expandTabs_label": {
+  "expandTabs_title": {
     "message": "グループのタブを展開 $KEY$",
     "placeholders": {
       "key" : {
@@ -188,7 +188,7 @@
   "groupTabs": {
     "message": "タブをグループ化"
   },
-  "groupTabs_label": {
+  "groupTabs_title": {
     "message": "タブグループ $KEY$",
     "placeholders": {
       "key" : {
@@ -200,7 +200,7 @@
   "initSidebar": {
     "message": "サイドバータブを初期化"
   },
-  "initSidebar_label": {
+  "initSidebar_title": {
     "message": "サイドバータブを初期化 $KEY$",
     "placeholders": {
       "key" : {
@@ -212,7 +212,7 @@
   "lightTheme": {
     "message": "明るいテーマ"
   },
-  "lightTheme_label": {
+  "lightTheme_title": {
     "message": "明るいテーマ $KEY$",
     "placeholders": {
       "key" : {
@@ -224,7 +224,7 @@
   "moveToNewWindow": {
     "message": "新しいウィンドウへ移動"
   },
-  "moveToNewWindow_label": {
+  "moveToNewWindow_title": {
     "message": "新しいウィンドウへ移動 $KEY$",
     "placeholders": {
       "key" : {
@@ -236,7 +236,7 @@
   "muteAudio": {
     "message": "タブをミュート"
   },
-  "muteAudio_label": {
+  "muteAudio_title": {
     "message": "タブをミュート $KEY$",
     "placeholders": {
       "key" : {
@@ -260,7 +260,7 @@
   "pinTab": {
     "message": "タブをピン留め"
   },
-  "pinTab_label": {
+  "pinTab_title": {
     "message": "タブをピン留め $KEY$",
     "placeholders": {
       "key" : {
@@ -272,7 +272,7 @@
   "playTab": {
     "message": "タブのメディアを再生"
   },
-  "playTab_label": {
+  "playTab_title": {
     "message": "タブのメディアを再生 $KEY$",
     "placeholders": {
       "key" : {
@@ -284,7 +284,7 @@
   "reloadAllTabs": {
     "message": "すべてのタブを再読み込み"
   },
-  "reloadAllTabs_label": {
+  "reloadAllTabs_title": {
     "message": "すべてのタブを再読み込み $KEY$",
     "placeholders": {
       "key" : {
@@ -296,7 +296,7 @@
   "reloadGroupTabs": {
     "message": "グループのタブを再読み込み"
   },
-  "reloadGroupTabs_label": {
+  "reloadGroupTabs_title": {
     "message": "グループのタブを再読み込み $KEY$",
     "placeholders": {
       "key" : {
@@ -308,7 +308,7 @@
   "reloadTab": {
     "message": "タブを再読み込み"
   },
-  "reloadTab_label": {
+  "reloadTab_title": {
     "message": "タブを再読み込み $KEY$",
     "placeholders": {
       "key" : {
@@ -320,7 +320,7 @@
   "selectTheme": {
     "message": "テーマを選択"
   },
-  "selectTheme_label": {
+  "selectTheme_title": {
     "message": "テーマを選択 $KEY$",
     "placeholders": {
       "key" : {
@@ -332,7 +332,7 @@
   "sendTabToDevice": {
     "message": "タブを端末に送る"
   },
-  "sendTabToDevice_label": {
+  "sendTabToDevice_title": {
     "message": "タブを端末に送る $KEY$",
     "placeholders": {
       "key" : {
@@ -344,7 +344,7 @@
   "sendToAllDevices": {
     "message": "すべての端末に送る"
   },
-  "sendToAllDevices_label": {
+  "sendToAllDevices_title": {
     "message": "すべての端末に送る $KEY$",
     "placeholders": {
       "key" : {
@@ -356,7 +356,7 @@
   "sidebarTabsOptions": {
     "message": "サイドバー・タブ 設定"
   },
-  "sidebarTabsOptions_label": {
+  "sidebarTabsOptions_title": {
     "message": "サイドバー・タブ 設定 $KEY$",
     "placeholders": {
       "key" : {
@@ -368,7 +368,7 @@
   "syncTab": {
     "message": "タブを同期"
   },
-  "syncTab_label": {
+  "syncTab_title": {
     "message": "タブを同期 $KEY$",
     "placeholders": {
       "key" : {
@@ -380,7 +380,7 @@
   "tab": {
     "message": "タブ"
   },
-  "tab_label": {
+  "tab_title": {
     "message": "タブ $KEY$",
     "placeholders": {
       "key" : {
@@ -392,7 +392,7 @@
   "undoCloseTab": {
     "message": "閉じたタブを元に戻す"
   },
-  "undoCloseTab_label": {
+  "undoCloseTab_title": {
     "message": "閉じたタブを元に戻す $KEY$",
     "placeholders": {
       "key" : {
@@ -404,7 +404,7 @@
   "ungroupTabs": {
     "message": "タブグループを解除"
   },
-  "ungroupTabs_label": {
+  "ungroupTabs_title": {
     "message": "タブグループを解除 $KEY$",
     "placeholders": {
       "key" : {
@@ -416,7 +416,7 @@
   "unmuteAudio": {
     "message": "タブのミュートを解除"
   },
-  "unmuteAudio_label": {
+  "unmuteAudio_title": {
     "message": "タブのミュートを解除 $KEY$",
     "placeholders": {
       "key" : {
@@ -431,7 +431,7 @@
   "unpinTab": {
     "message": "タブのピン留めを外す"
   },
-  "unpinTab_label": {
+  "unpinTab_title": {
     "message": "タブのピン留めを外す $KEY$",
     "placeholders": {
       "key" : {

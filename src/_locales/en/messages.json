@@ -14,13 +14,13 @@
   "allTabs": {
     "message": "All Tabs"
   },
-  "allTabs_label": {
+  "allTabs_title": {
     "message": "All Tabs"
   },
   "bookmarkAllTabs": {
     "message": "Bookmark All Tabs"
   },
-  "bookmarkAllTabs_label": {
+  "bookmarkAllTabs_title": {
     "message": "Bookmark All Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -32,7 +32,7 @@
   "bookmarkGroupTabs": {
     "message": "Bookmark Group Tabs"
   },
-  "bookmarkGroupTabs_label": {
+  "bookmarkGroupTabs_title": {
     "message": "Bookmark Group Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -44,7 +44,7 @@
   "bookmarkTab": {
     "message": "Bookmark Tab"
   },
-  "bookmarkTab_label": {
+  "bookmarkTab_title": {
     "message": "Bookmark Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -56,7 +56,7 @@
   "closeGroupTabs": {
     "message": "Close Grouped Tabs"
   },
-  "closeGroupTabs_label": {
+  "closeGroupTabs_title": {
     "message": "Close Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -68,7 +68,7 @@
   "closeOtherTabs": {
     "message": "Close Other Tabs"
   },
-  "closeOtherTabs_label": {
+  "closeOtherTabs_title": {
     "message": "Close Other Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -80,7 +80,7 @@
   "closeTab": {
     "message": "Close Tab"
   },
-  "closeTab_label": {
+  "closeTab_title": {
     "message": "Close Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -95,7 +95,7 @@
   "closeTabsToTheEnd": {
     "message": "Close Tabs to the End"
   },
-  "closeTabsToTheEnd_label": {
+  "closeTabsToTheEnd_title": {
     "message": "Close Tabs to the End $KEY$",
     "placeholders": {
       "key" : {
@@ -107,7 +107,7 @@
   "collapseTabs": {
     "message": "Collapse Grouped Tabs"
   },
-  "collapseTabs_label": {
+  "collapseTabs_title": {
     "message": "Collapse Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -125,7 +125,7 @@
   "darkTheme": {
     "message": "Dark Theme"
   },
-  "darkTheme_label": {
+  "darkTheme_title": {
     "message": "Dark Theme $KEY$",
     "placeholders": {
       "key" : {
@@ -137,7 +137,7 @@
   "defaultTheme": {
     "message": "Default Theme"
   },
-  "defaultTheme_label": {
+  "defaultTheme_title": {
     "message": "Default Theme $KEY$",
     "placeholders": {
       "key" : {
@@ -149,7 +149,7 @@
   "detachTabFromGroup": {
     "message": "Detach Tab From Group"
   },
-  "detachTabFromGroup_label": {
+  "detachTabFromGroup_title": {
     "message": "Detach Tab From Group $KEY$",
     "placeholders": {
       "key" : {
@@ -161,7 +161,7 @@
   "dupeTab": {
     "message": "Duplicate Tab"
   },
-  "dupeTab_label": {
+  "dupeTab_title": {
     "message": "Duplicate Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -173,7 +173,7 @@
   "expandTabs": {
     "message": "Expand Group Tabs"
   },
-  "expandTabs_label": {
+  "expandTabs_title": {
     "message": "Expand Group Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -188,7 +188,7 @@
   "groupTabs": {
     "message": "Group Tabs"
   },
-  "groupTabs_label": {
+  "groupTabs_title": {
     "message": "Tab Group $KEY$",
     "placeholders": {
       "key" : {
@@ -200,7 +200,7 @@
   "initSidebar": {
     "message": "Init Sidebar Tabs"
   },
-  "initSidebar_label": {
+  "initSidebar_title": {
     "message": "Init Sidebar Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -212,7 +212,7 @@
   "lightTheme": {
     "message": "Light Theme"
   },
-  "lightTheme_label": {
+  "lightTheme_title": {
     "message": "Light Theme $KEY$",
     "placeholders": {
       "key" : {
@@ -224,7 +224,7 @@
   "moveToNewWindow": {
     "message": "Move to New Window"
   },
-  "moveToNewWindow_label": {
+  "moveToNewWindow_title": {
     "message": "Move to New Window $KEY$",
     "placeholders": {
       "key" : {
@@ -236,7 +236,7 @@
   "muteAudio": {
     "message": "Mute Audio"
   },
-  "muteAudio_label": {
+  "muteAudio_title": {
     "message": "Mute Audio $KEY$",
     "placeholders": {
       "key" : {
@@ -260,7 +260,7 @@
   "pinTab": {
     "message": "Pin Tab"
   },
-  "pinTab_label": {
+  "pinTab_title": {
     "message": "Pin Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -272,7 +272,7 @@
   "playAudio": {
     "message": "Play Audio"
   },
-  "playAudio_label": {
+  "playAudio_title": {
     "message": "Play Audio $KEY$",
     "placeholders": {
       "key" : {
@@ -284,7 +284,7 @@
   "reloadAllTabs": {
     "message": "Reload All Tabs"
   },
-  "reloadAllTabs_label": {
+  "reloadAllTabs_title": {
     "message": "Reload All Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -296,7 +296,7 @@
   "reloadGroupTabs": {
     "message": "Reload Grouped Tabs"
   },
-  "reloadGroupTabs_label": {
+  "reloadGroupTabs_title": {
     "message": "Reload Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -308,7 +308,7 @@
   "reloadTab": {
     "message": "Reload Tab"
   },
-  "reloadTab_label": {
+  "reloadTab_title": {
     "message": "Reload Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -320,7 +320,7 @@
   "selectTheme": {
     "message": "Select Theme"
   },
-  "selectTheme_label": {
+  "selectTheme_title": {
     "message": "Select Theme $KEY$",
     "placeholders": {
       "key" : {
@@ -332,7 +332,7 @@
   "sendTabToDevice": {
     "message": "Send tab to device"
   },
-  "sendTabToDevice_label": {
+  "sendTabToDevice_title": {
     "message": "Send tab to device $KEY$",
     "placeholders": {
       "key" : {
@@ -344,7 +344,7 @@
   "sendToAllDevices": {
     "message": "Send to all devices"
   },
-  "sendToAllDevices_label": {
+  "sendToAllDevices_title": {
     "message": "Send to all devices $KEY$",
     "placeholders": {
       "key" : {
@@ -356,7 +356,7 @@
   "sidebarTabsOptions": {
     "message": "Sidebar Tabs Options"
   },
-  "sidebarTabsOptions_label": {
+  "sidebarTabsOptions_title": {
     "message": "Sidebar Tabs Options $KEY$",
     "placeholders": {
       "key" : {
@@ -368,7 +368,7 @@
   "syncTab": {
     "message": "Sync Tab"
   },
-  "syncTab_label": {
+  "syncTab_title": {
     "message": "Sync Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -380,7 +380,7 @@
   "tab": {
     "message": "Tab"
   },
-  "tab_label": {
+  "tab_title": {
     "message": "Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -392,7 +392,7 @@
   "undoCloseTab": {
     "message": "Undo Close Tab"
   },
-  "undoCloseTab_label": {
+  "undoCloseTab_title": {
     "message": "Undo Close Tab $KEY$",
     "placeholders": {
       "key" : {
@@ -404,7 +404,7 @@
   "ungroupTabs": {
     "message": "Ungroup Tabs"
   },
-  "ungroupTabs_label": {
+  "ungroupTabs_title": {
     "message": "Ungroup Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -416,7 +416,7 @@
   "unmuteAudio": {
     "message": "Unmute Audio"
   },
-  "unmuteAudio_label": {
+  "unmuteAudio_title": {
     "message": "Unmute Audio $KEY$",
     "placeholders": {
       "key" : {
@@ -431,7 +431,7 @@
   "unpinTab": {
     "message": "Unpin Tab"
   },
-  "unpinTab_label": {
+  "unpinTab_title": {
     "message": "Unpin Tab $KEY$",
     "placeholders": {
       "key" : {
