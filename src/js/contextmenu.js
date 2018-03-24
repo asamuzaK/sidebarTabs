@@ -340,21 +340,25 @@
           lastElementChild: parentLastChild,
         },
       } = elm;
-      let node = nextElementSibling || parentFirstChild;
-      while (node &&
-             (node.nextElementSibling || node === parentLastChild)) {
+      let node;
+      if (nextElementSibling) {
+        node = nextElementSibling;
+      } else if (elm === parentLastChild) {
+        node = parentFirstChild;
+      }
+      while (node && (node.nextElementSibling || node === parentLastChild)) {
         const {accessKey, nextElementSibling: nodeNextSibling} = node;
         if (isString(accessKey) && accessKey.length &&
             (sensitive && accessKey === key ||
              !sensitive && accessKey.toLowerCase() === key.toLowerCase())) {
           targetElm = node;
           break;
+        } else if (node === elm) {
+          break;
         } else if (nodeNextSibling) {
           node = nodeNextSibling;
         } else if (node === parentLastChild) {
           node = parentFirstChild;
-        } else if (node === elm) {
-          break;
         }
       }
     }
@@ -412,10 +416,22 @@
           }
         }
       } else if (classList.contains(CLASS_SUBMENU_CONTAINER)) {
-        const subMenu = elm.querySelector(`.${CLASS_MENU}`);
+        let subMenu;
+        for (const child of childNodes) {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            const {classList: childClassList} = child;
+            if (childClassList.contains(CLASS_MENU)) {
+              subMenu = child;
+              break;
+            }
+          }
+        }
         if (subMenu) {
           subMenu.focus();
-          targetElm = selectMenuItemWithAccessKey(key);
+          targetElm = selectMenuItemWithAccessKey(key, sensitive);
+          if (!targetElm) {
+            elm.focus();
+          }
         }
       } else {
         targetElm = getAccessKeyMenuItem(elm, key, sensitive);
