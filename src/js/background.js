@@ -58,14 +58,15 @@
     port.onDisconnect.addListener(() =>
       setSidebarIsOpenState().catch(throwErr)
     );
-    await setSidebarIsOpenState();
   };
 
   browserAction.onClicked.addListener(() =>
     toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
   );
 
-  runtime.onConnect.addListener(port => handlePort(port).catch(throwErr));
+  runtime.onConnect.addListener(port =>
+    handlePort(port).then(setSidebarIsOpenState).catch(throwErr)
+  );
 
   document.addEventListener("DOMContentLoaded", () =>
     setSidebarIsOpenState().catch(throwErr)
