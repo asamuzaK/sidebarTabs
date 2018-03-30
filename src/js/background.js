@@ -43,9 +43,7 @@
    */
   const setSidebarIsOpenState = async () => {
     const {windowId} = sidebar;
-    const isOpen = await sidebarAction.isOpen({
-      windowId,
-    });
+    const isOpen = await sidebarAction.isOpen({windowId});
     sidebar.isOpen = !!isOpen;
   };
 
@@ -75,6 +73,7 @@
     );
   };
 
+  /* listeners */
   browserAction.onClicked.addListener(() =>
     toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
   );
