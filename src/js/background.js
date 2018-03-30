@@ -52,4 +52,8 @@
   browserAction.onClicked.addListener(() =>
     toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
   );
+
+  document.addEventListener("DOMContentLoaded", () =>
+    setSidebarIsOpenState().catch(throwErr)
+  );
 }
