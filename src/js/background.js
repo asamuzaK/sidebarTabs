@@ -40,7 +40,6 @@
     } else {
       func.push(sidebarAction.open());
     }
-    func.push(toggleSidebarState());
-    return Promise.all(func).catch(throwErr);
+    return Promise.all(func).then(toggleSidebarState).catch(throwErr);
   });
 }
