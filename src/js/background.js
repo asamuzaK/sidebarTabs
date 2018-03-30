@@ -53,7 +53,7 @@
    * toggle sidebar
    * @returns {AsyncFunction} - sidebarAction.close() / sidebarAction.open()
    */
-  const toggleSidebar = () => {
+  const toggleSidebar = async () => {
     const {isOpen} = sidebar;
     let func;
     if (isOpen) {
