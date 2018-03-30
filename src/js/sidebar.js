@@ -73,7 +73,9 @@
   const NEW_WIN_MOVE = "moveToNewWindow";
   const PINNED = "pinned";
   const SIDEBAR_INIT = "initSidebar";
+  const SIDEBAR_LOADED = "sidebarLoaded";
   const SIDEBAR_OPT = "sidebarTabsOptions";
+  const SIDEBAR_UNLOADED = "sidebarUnloaded";
   const TAB = "tab";
   const TABS_BOOKMARK_ALL = "bookmarkAllTabs";
   const TABS_CLOSE_END = "closeTabsToTheEnd";
@@ -2598,4 +2600,17 @@
 
   window.addEventListener("mousedown", evt => setContext(evt).catch(throwErr),
                           true);
+
+  window.addEventListener("load", () => runtime.sendMessage({
+      [SIDEBAR_LOADED]: true,
+  }));
+
+  // FIXME:
+  /*
+  window.addEventListener("pagehide", async evt => {
+    await runtime.sendMessage({
+      [SIDEBAR_UNLOADED]: true,
+    });
+  });
+  */
 }
