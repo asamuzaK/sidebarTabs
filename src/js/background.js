@@ -7,7 +7,7 @@
   const {browserAction, sidebarAction, runtime, windows} = browser;
 
   /* constants */
-  const {WINDOW_ID_CURRENT} = windows;
+  const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
 
   /**
    * throw error
@@ -20,7 +20,21 @@
 
   /* sidebar */
   const sidebar = {
+    windowId: WINDOW_ID_CURRENT,
     isOpen: false,
+  };
+
+  /**
+   * set sidebar window ID
+   * @param {number} windowId - window ID
+   * @returns {void}
+   */
+  const setSidebarWindowId = async windowId => {
+    if (Number.isInteger(windowId) && windowId !== WINDOW_ID_NONE) {
+      sidebar.windowId = windowId;
+    } else {
+      sidebar.windowId = WINDOW_ID_CURRENT;
+    }
   };
 
   /**
@@ -28,8 +42,9 @@
    * @returns {void}
    */
   const setSidebarIsOpenState = async () => {
+    const {windowId} = sidebar;
     const isOpen = await sidebarAction.isOpen({
-      windowId: WINDOW_ID_CURRENT,
+      windowId,
     });
     sidebar.isOpen = !!isOpen;
   };
@@ -66,6 +81,10 @@
 
   runtime.onConnect.addListener(port =>
     handlePort(port).then(setSidebarIsOpenState).catch(throwErr)
+  );
+
+  windows.onFocusChanged.addListener(windowId =>
+    setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr)
   );
 
   document.addEventListener("DOMContentLoaded", () =>
