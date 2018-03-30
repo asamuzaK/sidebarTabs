@@ -10,7 +10,7 @@
   },
   "browser_action": {
     "browser_style": true,
-    "default_icon": "icon.svg#context",
+    "default_icon": "img/icon.svg#context",
     "default_title": "__MSG_extensionName__"
   },
   "content_scripts": [
@@ -27,8 +27,8 @@
   "description": "__MSG_extensionDescription__",
   "homepage_url": "https://github.com/asamuzaK/sidebarTabs",
   "icons": {
-    "32": "icon.svg#context",
-    "64": "icon.svg"
+    "32": "img/icon.svg#context",
+    "64": "img/icon.svg"
   },
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
@@ -46,7 +46,7 @@
   "short_name": "__MSG_extensionShortName__",
   "sidebar_action": {
     "browser_style": false,
-    "default_icon": "icon.svg#context",
+    "default_icon": "img/icon.svg#context",
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
