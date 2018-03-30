@@ -5,6 +5,8 @@
 {
   /* api */
   const {browserAction, sidebarAction, windows} = browser;
+
+  /* constants */
   const {WINDOW_ID_CURRENT} = windows;
 
   /**
@@ -22,24 +24,32 @@
   };
 
   /**
-   * toggle sidebar state
+   * set sidebar isOpen state
    * @returns {void}
    */
-  const toggleSidebarState = async () => {
+  const setSidebarIsOpenState = async () => {
     const isOpen = await sidebarAction.isOpen({
       windowId: WINDOW_ID_CURRENT,
     });
     sidebar.isOpen = !!isOpen;
   };
 
-  browserAction.onClicked.addListener(() => {
+  /**
+   * toggle sidebar
+   * @returns {AsyncFunction} - sidebarAction.close() / sidebarAction.open()
+   */
+  const toggleSidebar = () => {
     const {isOpen} = sidebar;
-    const func = [];
+    let func;
     if (isOpen) {
-      func.push(sidebarAction.close());
+      func = sidebarAction.close();
     } else {
-      func.push(sidebarAction.open());
+      func = sidebarAction.open();
     }
-    return Promise.all(func).then(toggleSidebarState).catch(throwErr);
-  });
+    return func;
+  };
+
+  browserAction.onClicked.addListener(() =>
+    toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
+  );
 }
