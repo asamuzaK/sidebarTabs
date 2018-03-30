@@ -8,8 +8,6 @@
 
   /* constants */
   const {WINDOW_ID_CURRENT} = windows;
-  const SIDEBAR_LOADED = "sidebarLoaded";
-  const SIDEBAR_UNLOADED = "sidebarUnloaded";
 
   /**
    * throw error
@@ -52,36 +50,22 @@
   };
 
   /**
-   * handle message
-   * @param {*} msg - message
-   * @returns {Promise.<Array>} - results of each handler
+   * handle connected port
+   * @param {Object} port - runtime.Port
+   * @returns {void}
    */
-  const handleMsg = async msg => {
-    const func = [];
-    const items = msg && Object.keys(msg);
-    if (items && items.length) {
-      for (const item of items) {
-        const obj = msg[item];
-        switch (item) {
-          case SIDEBAR_LOADED:
-          // FIXME:
-          //case SIDEBAR_UNLOADED:
-            if (obj) {
-              func.push(setSidebarIsOpenState());
-            }
-            break;
-          default:
-        }
-      }
-    }
-    return Promise.all(func);
+  const handlePort = async port => {
+    port.onDisconnect.addListener(() =>
+      setSidebarIsOpenState().catch(throwErr)
+    );
+    await setSidebarIsOpenState();
   };
 
   browserAction.onClicked.addListener(() =>
     toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
   );
 
-  runtime.onMessage.addListener(msg => handleMsg(msg).catch(throwErr));
+  runtime.onConnect.addListener(port => handlePort(port).catch(throwErr));
 
   document.addEventListener("DOMContentLoaded", () =>
     setSidebarIsOpenState().catch(throwErr)
