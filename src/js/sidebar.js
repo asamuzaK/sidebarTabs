@@ -2510,8 +2510,10 @@
         let i = 0;
         while (i < l) {
           const item = items[i];
-          const {containerIndex} = tabList[i];
-          item && Number.isInteger(containerIndex) &&
+          const {containerIndex, url: tabListUrl} = tabList[i];
+          const {dataset: {tab: itemTab}} = item;
+          const {url: itemUrl} = JSON.parse(itemTab);
+          item && Number.isInteger(containerIndex) && itemUrl === tabListUrl &&
             containers[containerIndex].appendChild(item);
           i++;
         }
