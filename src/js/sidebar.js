@@ -356,7 +356,6 @@
     windowId: null,
     context: null,
     lastClosedTab: null,
-    port: runtime.connect({name: TAB}),
   };
 
   /**
@@ -2408,6 +2407,28 @@
 
   /* runtime */
   /**
+   * make a connection
+   * @param {string} [extId] - extension ID
+   * @param {Object} [info] - info
+   * @returns {AsyncFunction} - runtime.connect()
+   */
+  const makeConnection = async (extId, info) => {
+    let func;
+    if (isString(extId)) {
+      if (isObjectNotEmpty(info)) {
+        func = runtime.connect(extId, info);
+      } else {
+        func = runtime.connect(extId);
+      }
+    } else if (isObjectNotEmpty(extId)) {
+      func = runtime.connect(extId);
+    } else {
+      func = runtime.connect();
+    }
+    return func;
+  };
+
+  /**
    * handle runtime message
    * @param {Object} msg - message
    * @param {Object} sender - sender
@@ -2591,6 +2612,7 @@
     getTheme().then(setTheme).then(applyCss),
     setSidebar(),
     localizeHtml(),
+    makeConnection({name: TAB}),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
     .then(getLastClosedTab).catch(throwErr));
 
