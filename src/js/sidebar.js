@@ -2502,7 +2502,7 @@
       const tabList = await getSessionsTabList("tabList");
       const items = document.querySelectorAll(TAB_QUERY);
       const l = items.length;
-      // FIXME: add condition for user's start up, like homepage, about:blank
+      // FIXME: add condition according to user's start up. #19
       if (tabList && items && Object.keys(tabList).length === l) {
         const containers = document.querySelectorAll(
           `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
