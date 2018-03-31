@@ -2422,6 +2422,8 @@
       }
     } else if (isObjectNotEmpty(extId)) {
       func = runtime.connect(extId);
+    } else if (!extId && isObjectNotEmpty(info)) {
+      func = runtime.connect(info);
     } else {
       func = runtime.connect();
     }
