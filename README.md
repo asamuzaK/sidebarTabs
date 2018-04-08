@@ -1,5 +1,8 @@
 EN | [JA](./README.ja.md)
 
+[![Build Status](https://travis-ci.org/asamuzaK/sidebarTabs.svg?branch=master)](https://travis-ci.org/asamuzaK/sidebarTabs)
+[![devDependency Status](https://david-dm.org/asamuzaK/sidebarTabs/dev-status.svg)](https://david-dm.org/asamuzaK/sidebarTabs?type=dev)
+
 # sidebarTabs
 
 Web extension for Firefox.

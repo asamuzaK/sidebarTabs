@@ -1,5 +1,8 @@
 [EN](./README.md) | JA
 
+[![Build Status](https://travis-ci.org/asamuzaK/sidebarTabs.svg?branch=master)](https://travis-ci.org/asamuzaK/sidebarTabs)
+[![devDependency Status](https://david-dm.org/asamuzaK/sidebarTabs/dev-status.svg)](https://david-dm.org/asamuzaK/sidebarTabs?type=dev)
+
 # sidebarTabs
 
 Firefox用の拡張機能。
