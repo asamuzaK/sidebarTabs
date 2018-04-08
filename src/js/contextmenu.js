@@ -13,6 +13,7 @@
   const MENU = "sidebar-tabs-menu";
   const MENU_CONTAINER = "sidebar-tabs-header";
   const MOUSE_BUTTON_RIGHT = 2;
+  const SCALE = 2;
 
   /**
    * is string
@@ -518,7 +519,7 @@
         const elmMarginBoxHeight = elmHeight + offsetHeight;
         const lapWidth =
           window.getComputedStyle(document.documentElement).fontSize
-            .replace("px", "") * 2;
+            .replace("px", "") * SCALE;
         if (innerWidth > targetRight + elmMarginBoxWidth) {
           // show right
           elmStyle.left = `${targetWidth - offsetRight}px`;
