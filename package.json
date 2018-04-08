@@ -1,0 +1,24 @@
+{
+  "name": "sidebartabs",
+  "description": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them.",
+  "author": "asamuzaK",
+  "homepage": "https://github.com/asamuzaK/sidebarTabs",
+  "bugs": {
+    "url": "https://github.com/asamuzaK/sidebarTabs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asamuzaK/sidebarTabs.git"
+  },
+  "license": "MPL-2.0",
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  },
+  "version": "0.26.0"
+}
