@@ -1,6 +1,6 @@
 {
   "name": "sidebartabs",
-  "description": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them.",
+  "description": "Emulate tabs in sidebar.",
   "author": "asamuzaK",
   "homepage": "https://github.com/asamuzaK/sidebarTabs",
   "bugs": {
