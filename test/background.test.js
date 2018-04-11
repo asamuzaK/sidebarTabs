@@ -1,7 +1,8 @@
 "use strict";
 {
   /* api */
-  const {afterEach, beforeEach, describe, it} = require("mocha");
+  const {JSDOM} = require("jsdom");
+  const {after, before, describe, it} = require("mocha");
   const {assert} = require("chai");
   const browser = require("sinon-chrome");
   const rewire = require("rewire");
@@ -9,17 +10,19 @@
   describe("background", () => {
     let bg;
 
-    beforeEach(() => {
+    before(() => {
+      const {window} = new JSDOM();
+      const {document} = window;
       global.browser = browser;
-      global.document = {
-        addEventListener: () => undefined,
-      };
+      global.window = window;
+      global.document = document;
       bg = rewire("../src/js/background");
     });
 
-    afterEach(() => {
+    after(() => {
       browser.flush();
       delete global.browser;
+      delete global.window;
       delete global.document;
       bg = null;
     });

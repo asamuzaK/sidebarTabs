@@ -2,9 +2,9 @@
 "use strict";
 {
   /* api */
+  const {JSDOM} = require("jsdom");
   const {after, before, describe, it} = require("mocha");
   const {assert} = require("chai");
-  const {JSDOM} = require("jsdom");
   const browser = require("sinon-chrome");
   const rewire = require("rewire");
   const sinon = require("sinon");
