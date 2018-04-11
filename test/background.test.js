@@ -9,7 +9,7 @@
   const rewire = require("rewire");
 
   describe("background", () => {
-    let bg;
+    let bgJs;
 
     before(() => {
       const {window} = new JSDOM();
@@ -17,7 +17,7 @@
       global.browser = browser;
       global.window = window;
       global.document = document;
-      bg = rewire("../src/js/background");
+      bgJs = rewire("../src/js/background");
     });
 
     after(() => {
@@ -25,12 +25,12 @@
       delete global.browser;
       delete global.window;
       delete global.document;
-      bg = null;
+      bgJs = null;
     });
 
     describe("throwErr", () => {
       it("should throw", () => {
-        const throwErr = bg.__get__("throwErr");
+        const throwErr = bgJs.__get__("throwErr");
         const e = new Error("error test");
         assert.throws(() => throwErr(e), "error test");
       });
@@ -38,41 +38,41 @@
 
     describe("setSidebarWindowId", () => {
       it("should set current window ID", async () => {
-        const setSidebarWindowId = bg.__get__("setSidebarWindowId");
-        const WINDOW_ID_CURRENT = bg.__get__("WINDOW_ID_CURRENT");
-        const setSidebar = bg.__set__("sidebar", {
+        const WINDOW_ID_CURRENT = bgJs.__get__("WINDOW_ID_CURRENT");
+        const func = bgJs.__get__("setSidebarWindowId");
+        const setSidebar = bgJs.__set__("sidebar", {
           windowId: Math.abs(WINDOW_ID_CURRENT) + 1,
         });
-        await setSidebarWindowId();
-        const {windowId} = bg.__get__("sidebar");
+        await func();
+        const {windowId} = bgJs.__get__("sidebar");
         assert.isNumber(windowId);
         assert.strictEqual(windowId, WINDOW_ID_CURRENT);
         setSidebar();
       });
 
       it("should set current window ID", async () => {
-        const setSidebarWindowId = bg.__get__("setSidebarWindowId");
-        const WINDOW_ID_CURRENT = bg.__get__("WINDOW_ID_CURRENT");
-        const WINDOW_ID_NONE = bg.__get__("WINDOW_ID_NONE");
-        const setSidebar = bg.__set__("sidebar", {
+        const WINDOW_ID_CURRENT = bgJs.__get__("WINDOW_ID_CURRENT");
+        const WINDOW_ID_NONE = bgJs.__get__("WINDOW_ID_NONE");
+        const func = bgJs.__get__("setSidebarWindowId");
+        const setSidebar = bgJs.__set__("sidebar", {
           windowId: Math.abs(WINDOW_ID_CURRENT) + 1,
         });
-        await setSidebarWindowId(WINDOW_ID_NONE);
-        const {windowId} = bg.__get__("sidebar");
+        await func(WINDOW_ID_NONE);
+        const {windowId} = bgJs.__get__("sidebar");
         assert.isNumber(windowId);
         assert.strictEqual(windowId, WINDOW_ID_CURRENT);
         setSidebar();
       });
 
       it("should set given window ID", async () => {
-        const setSidebarWindowId = bg.__get__("setSidebarWindowId");
-        const WINDOW_ID_CURRENT = bg.__get__("WINDOW_ID_CURRENT");
-        const setSidebar = bg.__set__("sidebar", {
+        const WINDOW_ID_CURRENT = bgJs.__get__("WINDOW_ID_CURRENT");
+        const func = bgJs.__get__("setSidebarWindowId");
+        const setSidebar = bgJs.__set__("sidebar", {
           windowId: WINDOW_ID_CURRENT,
         });
         const id = Math.abs(WINDOW_ID_CURRENT) + 1;
-        await setSidebarWindowId(id);
-        const {windowId} = bg.__get__("sidebar");
+        await func(id);
+        const {windowId} = bgJs.__get__("sidebar");
         assert.isNumber(windowId);
         assert.strictEqual(windowId, id);
         setSidebar();
@@ -81,49 +81,49 @@
 
     describe("setSidebarIsOpenState", () => {
       it("should set false", async () => {
-        const setSidebarIsOpenState = bg.__get__("setSidebarIsOpenState");
-        const WINDOW_ID_CURRENT = bg.__get__("WINDOW_ID_CURRENT");
+        const WINDOW_ID_CURRENT = bgJs.__get__("WINDOW_ID_CURRENT");
+        const func = bgJs.__get__("setSidebarIsOpenState");
         const id = WINDOW_ID_CURRENT;
-        const sidebarAction = bg.__set__("sidebarAction", {
+        const sidebarAction = bgJs.__set__("sidebarAction", {
           isOpen: async opt => {
             const {windowId} = opt;
             return windowId === id;
           },
         });
-        const setSidebar = bg.__set__("sidebar", {
+        const setSidebar = bgJs.__set__("sidebar", {
           windowId: Math.abs(WINDOW_ID_CURRENT) + 1,
           isOpen: true,
         });
-        await setSidebarIsOpenState();
-        const {isOpen} = bg.__get__("sidebar");
+        await func();
+        const {isOpen} = bgJs.__get__("sidebar");
         assert.isFalse(isOpen);
         sidebarAction();
         setSidebar();
       });
 
       it("should set false", async () => {
-        const setSidebarIsOpenState = bg.__get__("setSidebarIsOpenState");
-        const WINDOW_ID_CURRENT = bg.__get__("WINDOW_ID_CURRENT");
+        const WINDOW_ID_CURRENT = bgJs.__get__("WINDOW_ID_CURRENT");
+        const func = bgJs.__get__("setSidebarIsOpenState");
         const id = Math.abs(WINDOW_ID_CURRENT) + 1;
-        const sidebarAction = bg.__set__("sidebarAction", {
+        const sidebarAction = bgJs.__set__("sidebarAction", {
           isOpen: async () => false,
         });
-        const setSidebar = bg.__set__("sidebar", {
+        const setSidebar = bgJs.__set__("sidebar", {
           windowId: id,
           isOpen: true,
         });
-        await setSidebarIsOpenState();
-        const {isOpen} = bg.__get__("sidebar");
+        await func();
+        const {isOpen} = bgJs.__get__("sidebar");
         assert.isFalse(isOpen);
         sidebarAction();
         setSidebar();
       });
 
       it("should set true", async () => {
-        const setSidebarIsOpenState = bg.__get__("setSidebarIsOpenState");
-        const WINDOW_ID_CURRENT = bg.__get__("WINDOW_ID_CURRENT");
+        const WINDOW_ID_CURRENT = bgJs.__get__("WINDOW_ID_CURRENT");
+        const func = bgJs.__get__("setSidebarIsOpenState");
         const id = Math.abs(WINDOW_ID_CURRENT) + 1;
-        const sidebarAction = bg.__set__("sidebarAction", {
+        const sidebarAction = bgJs.__set__("sidebarAction", {
           isOpen: async opt => {
             const {windowId} = opt;
             let res;
@@ -133,12 +133,12 @@
             return res || false;
           },
         });
-        const setSidebar = bg.__set__("sidebar", {
+        const setSidebar = bgJs.__set__("sidebar", {
           windowId: id,
           isOpen: false,
         });
-        await setSidebarIsOpenState();
-        const {isOpen} = bg.__get__("sidebar");
+        await func();
+        const {isOpen} = bgJs.__get__("sidebar");
         assert.isTrue(isOpen);
         sidebarAction();
         setSidebar();
@@ -147,30 +147,30 @@
 
     describe("toggleSidebar", () => {
       it("should close sidebar", async () => {
-        const toggleSidebar = bg.__get__("toggleSidebar");
-        const sidebarAction = bg.__set__("sidebarAction", {
+        const func = bgJs.__get__("toggleSidebar");
+        const sidebarAction = bgJs.__set__("sidebarAction", {
           open: async () => 1,
           close: async () => 0,
         });
-        const setSidebar = bg.__set__("sidebar", {
+        const setSidebar = bgJs.__set__("sidebar", {
           isOpen: true,
         });
-        const res = await toggleSidebar();
+        const res = await func();
         assert.strictEqual(res, 0);
         sidebarAction();
         setSidebar();
       });
 
       it("should open sidebar", async () => {
-        const toggleSidebar = bg.__get__("toggleSidebar");
-        const sidebarAction = bg.__set__("sidebarAction", {
+        const func = bgJs.__get__("toggleSidebar");
+        const sidebarAction = bgJs.__set__("sidebarAction", {
           open: async () => 1,
           close: async () => 0,
         });
-        const setSidebar = bg.__set__("sidebar", {
+        const setSidebar = bgJs.__set__("sidebar", {
           isOpen: false,
         });
-        const res = await toggleSidebar();
+        const res = await func();
         assert.strictEqual(res, 1);
         sidebarAction();
         setSidebar();
@@ -179,7 +179,7 @@
 
     describe("handlePort", () => {
       it("should add listener", async () => {
-        const handlePort = bg.__get__("handlePort");
+        const func = bgJs.__get__("handlePort");
         class Port {
           constructor() {
             this._callback;
@@ -194,8 +194,9 @@
           }
         }
         const port = new Port();
-        const callback = bg.__set__("setSidebarIsOpenState", async () => true);
-        await handlePort(port);
+        const callback = bgJs.__set__("setSidebarIsOpenState",
+                                      async () => true);
+        await func(port);
         const res = await port.disconnect();
         assert.isTrue(res);
         callback();
@@ -204,11 +205,11 @@
 
     describe("handleBrowserActionOnClicked", () => {
       it("should return function", async () => {
-        const func = bg.__get__("handleBrowserActionOnClicked");
-        const toggleSidebar = bg.__set__("toggleSidebar",
-                                         async () => true);
-        const setSidebarState = bg.__set__("setSidebarIsOpenState",
+        const func = bgJs.__get__("handleBrowserActionOnClicked");
+        const toggleSidebar = bgJs.__set__("toggleSidebar",
                                            async () => true);
+        const setSidebarState = bgJs.__set__("setSidebarIsOpenState",
+                                             async () => true);
         const res = await func();
         assert.isTrue(res);
         toggleSidebar();
@@ -218,10 +219,10 @@
 
     describe("handleConnectedPort", () => {
       it("should return function", async () => {
-        const func = bg.__get__("handleConnectedPort");
-        const handlePort = bg.__set__("handlePort", async () => true);
-        const setSidebarState = bg.__set__("setSidebarIsOpenState",
-                                           async () => true);
+        const func = bgJs.__get__("handleConnectedPort");
+        const handlePort = bgJs.__set__("handlePort", async () => true);
+        const setSidebarState = bgJs.__set__("setSidebarIsOpenState",
+                                             async () => true);
         const res = await func();
         assert.isTrue(res);
         handlePort();
@@ -231,11 +232,11 @@
 
     describe("handleWindowOnFocusChanged", () => {
       it("should return function", async () => {
-        const func = bg.__get__("handleWindowOnFocusChanged");
-        const setSidebarWindowId = bg.__set__("setSidebarWindowId",
-                                              async () => true);
-        const setSidebarState = bg.__set__("setSidebarIsOpenState",
-                                           async () => true);
+        const func = bgJs.__get__("handleWindowOnFocusChanged");
+        const setSidebarWindowId = bgJs.__set__("setSidebarWindowId",
+                                                async () => true);
+        const setSidebarState = bgJs.__set__("setSidebarIsOpenState",
+                                             async () => true);
         const res = await func();
         assert.isTrue(res);
         setSidebarWindowId();
@@ -245,9 +246,9 @@
 
     describe("handleOnStartup", () => {
       it("should return function", async () => {
-        const func = bg.__get__("handleOnStartup");
-        const setSidebarState = bg.__set__("setSidebarIsOpenState",
-                                           async () => true);
+        const func = bgJs.__get__("handleOnStartup");
+        const setSidebarState = bgJs.__set__("setSidebarIsOpenState",
+                                             async () => true);
         const res = await func();
         assert.isTrue(res);
         setSidebarState();
