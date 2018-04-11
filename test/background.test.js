@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 "use strict";
 {
   /* api */
