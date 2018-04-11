@@ -73,20 +73,39 @@
     );
   };
 
+  /**
+   * handle browser action clicked
+   * @returns {AsyncFunction} - handler
+   */
+  const handleBrowserActionOnClicked = () =>
+    toggleSidebar().then(setSidebarIsOpenState).catch(throwErr);
+
+  /**
+   * handle connected port
+   * @param {Object} port - runtime.Port
+   * @returns {AsyncFunction} - handler
+   */
+  const handleConnectedPort = port =>
+    handlePort(port).then(setSidebarIsOpenState).catch(throwErr);
+
+  /**
+   * handle window on focus changed
+   * @param {number} windowId - window ID
+   * @returns {AsyncFunction} - handler
+   */
+  const handleWindowOnFocusChanged = windowId =>
+    setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr);
+
+  /**
+   * handle on startup
+   * @returns {AsyncFunction} - handler
+   */
+  const handleOnStartup = () => setSidebarIsOpenState().catch(throwErr);
+
   /* listeners */
-  browserAction.onClicked.addListener(() =>
-    toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
-  );
+  browserAction.onClicked.addListener(handleBrowserActionOnClicked);
+  runtime.onConnect.addListener(handleConnectedPort);
+  windows.onFocusChanged.addListener(handleWindowOnFocusChanged);
 
-  runtime.onConnect.addListener(port =>
-    handlePort(port).then(setSidebarIsOpenState).catch(throwErr)
-  );
-
-  windows.onFocusChanged.addListener(windowId =>
-    setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr)
-  );
-
-  document.addEventListener("DOMContentLoaded", () =>
-    setSidebarIsOpenState().catch(throwErr)
-  );
+  document.addEventListener("DOMContentLoaded", handleOnStartup);
 }
