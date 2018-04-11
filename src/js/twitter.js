@@ -33,15 +33,36 @@
 
   /**
    * create observe message
-   * @param {!Object} evt - Event
+   * @param {Object} evt - Event
    * @returns {Object} - message
    */
-  const createObserveMsg = async evt => {
+  const createObserveMsg = async (evt = {}) => {
     const {type} = evt;
-    const msg = {
-      [TAB_OBSERVE]: type,
-    };
+    let msg;
+    if (type) {
+      msg = {
+        [TAB_OBSERVE]: type,
+      };
+    }
     return msg || null;
+  };
+
+  /**
+   * handle key down / mouse down
+   * @param {!Object} evt - event
+   * @returns {?AsyncFunction} - handler
+   */
+  const handleKeydownMousedown = evt => {
+    const {button, code, target} = evt;
+    let func;
+    if (button === 0 || code === "Enter") {
+      const {parentNode} = target;
+      if (target.classList.contains(CLASS_NEW_TWEETS) ||
+          parentNode && parentNode.classList.contains(CLASS_NEW_TWEETS)) {
+        func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
+      }
+    }
+    return func || null;
   };
 
   /**
@@ -51,51 +72,13 @@
   const globalNavAddListener = async () => {
     const items = document.querySelectorAll(GLOBAL_NAV_QUERY);
     for (const item of items) {
-      item.addEventListener("keydown", evt => {
-        const {code} = evt;
-        let func;
-        if (code === "Enter") {
-          func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
-        }
-        return func || null;
-      });
-      item.addEventListener("mousedown", evt => {
-        const {button} = evt;
-        let func;
-        if (button === 0) {
-          func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
-        }
-        return func || null;
-      });
+      item.addEventListener("keydown", handleKeydownMousedown);
+      item.addEventListener("mousedown", handleKeydownMousedown);
     }
   };
 
-  window.addEventListener("keydown", evt => {
-    const {code, target} = evt;
-    let func;
-    if (code === "Enter") {
-      const {parentNode} = target;
-      if (target.classList.contains(CLASS_NEW_TWEETS) ||
-          parentNode && parentNode.classList.contains(CLASS_NEW_TWEETS)) {
-        func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
-      }
-    }
-    return func || null;
-  });
-
-  window.addEventListener("mousedown", evt => {
-    const {button, target} = evt;
-    let func;
-    if (button === 0) {
-      const {parentNode} = target;
-      if (target.classList.contains(CLASS_NEW_TWEETS) ||
-          parentNode && parentNode.classList.contains(CLASS_NEW_TWEETS)) {
-        func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
-      }
-    }
-    return func || null;
-  });
-
+  window.addEventListener("keydown", handleKeydownMousedown);
+  window.addEventListener("mousedown", handleKeydownMousedown);
   window.addEventListener("load", evt => Promise.all([
     globalNavAddListener(),
     createObserveMsg(evt).then(sendMsg),
