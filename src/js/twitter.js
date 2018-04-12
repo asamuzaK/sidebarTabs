@@ -48,11 +48,11 @@
   };
 
   /**
-   * handle key down / mouse down
+   * handle event
    * @param {!Object} evt - event
    * @returns {?AsyncFunction} - handler
    */
-  const handleKeydownMousedown = evt => {
+  const handleEvt = evt => {
     const {button, code, target} = evt;
     let func;
     if (button === 0 || code === "Enter") {
@@ -72,13 +72,13 @@
   const globalNavAddListener = async () => {
     const items = document.querySelectorAll(GLOBAL_NAV_QUERY);
     for (const item of items) {
-      item.addEventListener("keydown", handleKeydownMousedown);
-      item.addEventListener("mousedown", handleKeydownMousedown);
+      item.addEventListener("keydown", handleEvt);
+      item.addEventListener("mousedown", handleEvt);
     }
   };
 
-  window.addEventListener("keydown", handleKeydownMousedown);
-  window.addEventListener("mousedown", handleKeydownMousedown);
+  window.addEventListener("keydown", handleEvt);
+  window.addEventListener("mousedown", handleEvt);
   window.addEventListener("load", evt => Promise.all([
     globalNavAddListener(),
     createObserveMsg(evt).then(sendMsg),

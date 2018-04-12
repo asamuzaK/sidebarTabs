@@ -112,20 +112,20 @@
       });
     });
 
-    describe("handleKeydownMousedown", () => {
+    describe("handleEvt", () => {
       it("should throw if no argument given", () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         assert.throws(() => func());
       });
 
       it("should get null if code does not match", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const res = await func({code: "foo"});
         assert.isNull(res);
       });
 
       it("should get null if class does not match", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const parentElm = document.createElement("div");
         const elm = document.createElement("p");
         parentElm.appendChild(elm);
@@ -137,7 +137,7 @@
       });
 
       it("should get function", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const createObserveMsg = twJs.__set__("createObserveMsg",
                                               async () => true);
         const sendMsg = twJs.__set__("sendMsg", async () => true);
@@ -155,7 +155,7 @@
       });
 
       it("should get function", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const createObserveMsg = twJs.__set__("createObserveMsg",
                                               async () => true);
         const sendMsg = twJs.__set__("sendMsg", async () => true);
@@ -173,7 +173,7 @@
       });
 
       it("should get null if button does not match", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const res = await func({
           button: 1,
         });
@@ -181,7 +181,7 @@
       });
 
       it("should get null if class does not match", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const parentElm = document.createElement("div");
         const elm = document.createElement("p");
         parentElm.appendChild(elm);
@@ -193,7 +193,7 @@
       });
 
       it("should get function", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const createObserveMsg = twJs.__set__("createObserveMsg",
                                               async () => true);
         const sendMsg = twJs.__set__("sendMsg", async () => true);
@@ -211,7 +211,7 @@
       });
 
       it("should get function", async () => {
-        const func = twJs.__get__("handleKeydownMousedown");
+        const func = twJs.__get__("handleEvt");
         const createObserveMsg = twJs.__set__("createObserveMsg",
                                               async () => true);
         const sendMsg = twJs.__set__("sendMsg", async () => true);

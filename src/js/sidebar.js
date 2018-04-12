@@ -2609,6 +2609,15 @@
     }
   };
 
+  /**
+   * handle event
+   * @param {!Object} evt - event
+   * @returns {AsyncFunction} - handler
+   */
+  const handleEvt = evt => setContext(evt).catch(throwErr);
+
+  window.addEventListener("keydown", handleEvt, true);
+  window.addEventListener("mousedown", handleEvt, true);
   document.addEventListener("DOMContentLoaded", () => Promise.all([
     addNewTabClickListener(),
     createContextMenu(),
@@ -2618,10 +2627,4 @@
     makeConnection({name: TAB}),
   ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
     .then(getLastClosedTab).catch(throwErr));
-
-  window.addEventListener("keydown", evt => setContext(evt).catch(throwErr),
-                          true);
-
-  window.addEventListener("mousedown", evt => setContext(evt).catch(throwErr),
-                          true);
 }
