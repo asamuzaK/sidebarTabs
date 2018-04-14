@@ -629,34 +629,36 @@
       windowTypes: ["normal"],
     });
     if (win && isString(key)) {
-      const {id: windowId} = win;
-      const items = document.querySelectorAll(
-        `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
-      );
-      const tabLength = document.querySelectorAll(TAB_QUERY).length;
-      if (tabLength) {
-        const tabList = {};
-        const l = items.length;
-        let i = 0;
-        while (i < l) {
-          const item = items[i];
-          const childTabs = item.querySelectorAll(TAB_QUERY);
-          for (const tab of childTabs) {
-            const tabsTab = tab.dataset && tab.dataset.tab;
-            if (tabsTab) {
-              const {url} = JSON.parse(tabsTab);
-              const tabIndex = getSidebarTabIndex(tab);
-              if (Number.isInteger(tabIndex)) {
-                tabList[tabIndex] = {
-                  url,
-                  containerIndex: i,
-                };
+      const {id: windowId, incognito} = win;
+      if (!incognito) {
+        const items = document.querySelectorAll(
+          `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
+        );
+        const tabLength = document.querySelectorAll(TAB_QUERY).length;
+        if (tabLength) {
+          const tabList = {};
+          const l = items.length;
+          let i = 0;
+          while (i < l) {
+            const item = items[i];
+            const childTabs = item.querySelectorAll(TAB_QUERY);
+            for (const tab of childTabs) {
+              const tabsTab = tab.dataset && tab.dataset.tab;
+              if (tabsTab) {
+                const {url} = JSON.parse(tabsTab);
+                const tabIndex = getSidebarTabIndex(tab);
+                if (Number.isInteger(tabIndex)) {
+                  tabList[tabIndex] = {
+                    url,
+                    containerIndex: i,
+                  };
+                }
               }
             }
+            i++;
           }
-          i++;
+          await sessions.setWindowValue(windowId, key, JSON.stringify(tabList));
         }
-        await sessions.setWindowValue(windowId, key, JSON.stringify(tabList));
       }
     }
   };
