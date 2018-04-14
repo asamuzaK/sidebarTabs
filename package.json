@@ -17,7 +17,7 @@
   "scripts": {
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
-    "lint:eslint": "eslint .",
+    "lint:eslint": "eslint ."
   },
   "devDependencies": {
     "addons-linter": "^0.41.0",
