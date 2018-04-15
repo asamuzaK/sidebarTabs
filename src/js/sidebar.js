@@ -630,12 +630,12 @@
     });
     if (win && isString(key)) {
       const {id: windowId, incognito} = win;
-      const items = document.querySelectorAll(
-        `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
-      );
       const tabLength = document.querySelectorAll(TAB_QUERY).length;
       if (!incognito && tabLength) {
         const tabList = {};
+        const items = document.querySelectorAll(
+          `.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`
+        );
         const l = items.length;
         let i = 0;
         while (i < l) {
