@@ -96,16 +96,11 @@
   const handleWindowOnFocusChanged = windowId =>
     setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr);
 
-  /**
-   * handle on startup
-   * @returns {AsyncFunction} - handler
-   */
-  const handleOnStartup = () => setSidebarIsOpenState().catch(throwErr);
-
   /* listeners */
   browserAction.onClicked.addListener(handleBrowserActionOnClicked);
   runtime.onConnect.addListener(handleConnectedPort);
   windows.onFocusChanged.addListener(handleWindowOnFocusChanged);
 
-  document.addEventListener("DOMContentLoaded", handleOnStartup);
+  /* startup */
+  setSidebarIsOpenState().catch(throwErr);
 }
