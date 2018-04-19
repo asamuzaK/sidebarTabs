@@ -109,7 +109,6 @@
   const TYPE_TO = -1;
   const URL_AUDIO_MUTED = "../img/audio-muted.svg";
   const URL_AUDIO_PLAYING = "../img/audio-play.svg";
-  const URL_CSS = "../css/sidebar.css";
   const URL_FAVICON_DEFAULT = "../img/default-favicon.svg";
   const URL_LOADING_THROBBER = "../img/loading.svg";
   const TAB_QUERY = `.${CLASS_TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
@@ -2538,12 +2537,7 @@
    * @returns {void}
    */
   const applyCss = async () => {
-    const head = document.querySelector("head");
-    const link = document.createElement("link");
     const items = document.querySelectorAll("section[hidden], menu[hidden]");
-    link.rel = "stylesheet";
-    link.href = URL_CSS;
-    head.appendChild(link);
     for (const item of items) {
       item.removeAttribute("hidden");
     }
@@ -2618,13 +2612,14 @@
 
   window.addEventListener("keydown", handleEvt, true);
   window.addEventListener("mousedown", handleEvt, true);
-  document.addEventListener("DOMContentLoaded", () => Promise.all([
+
+  /* startup */
+  getTheme().then(setTheme).then(applyCss).then(() => Promise.all([
     addNewTabClickListener(),
     createContextMenu(),
-    getTheme().then(setTheme).then(applyCss),
     setSidebar(),
     localizeHtml(),
     makeConnection({name: TAB}),
-  ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-    .then(getLastClosedTab).catch(throwErr));
+  ])).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
+    .then(getLastClosedTab).catch(throwErr);
 }
