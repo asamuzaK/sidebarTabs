@@ -193,8 +193,7 @@ main {
   text-overflow: clip;
   mask-image: linear-gradient(to left, transparent, black 2em);
 }
-.tab-title[dir=rtl] {
-  direction: rtl;
+.tab-title:dir(rtl) {
   mask-image: linear-gradient(to right, transparent, black 2em);
 }
 
