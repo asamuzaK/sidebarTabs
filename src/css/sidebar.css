@@ -191,7 +191,11 @@ main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
-  mask-image: linear-gradient(to left, rgba(0,0,0,0) 0, rgba(0,0,0,1) 2em);
+  mask-image: linear-gradient(to left, transparent, black 2em);
+}
+.tab-title[dir=rtl] {
+  direction: rtl;
+  mask-image: linear-gradient(to right, transparent, black 2em);
 }
 
 /* audio */
