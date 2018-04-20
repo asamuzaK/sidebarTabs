@@ -1880,7 +1880,7 @@
             },
             [TAB_BOOKMARK]: {
               id: MENU_TAB_BOOKMARK,
-              title: i18n.getMessage(`${TAB_BOOKMARK}_title`, "(D)"),
+              title: i18n.getMessage(`${TAB_BOOKMARK}_title`, "(B)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -1947,7 +1947,7 @@
             },
             [TAB_GROUP_BOOKMARK]: {
               id: MENU_TAB_GROUP_BOOKMARK,
-              title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_title`, "(D)"),
+              title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_title`, "(B)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
