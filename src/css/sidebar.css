@@ -115,20 +115,20 @@ main {
   stroke: var(--foreground-highlight-color);
   z-index: 3;
 }
-.tab.highlighted {
-  border: 1px solid var(--border-active-color);
-  background: var(--background-selection-color);
-  color: var(--foreground-selection-color);
-  fill: var(--foreground-selection-color);
-  stroke: var(--foreground-selection-color);
-  z-index: 4;
-}
 .tab:hover,
 .tab:focus {
   border: 1px solid var(--border-active-color);
   background: var(--background-hover-color);
   color: var(--foreground-hover-color);
   fill: var(--foreground-hover-color);
+  stroke: var(--foreground-highlight-color);
+  z-index: 4;
+}
+.tab.highlighted {
+  border: 1px solid var(--border-active-color);
+  background: var(--background-selection-color);
+  color: var(--foreground-selection-color);
+  fill: var(--foreground-selection-color);
   stroke: var(--foreground-highlight-color);
   z-index: 5;
 }
@@ -248,6 +248,9 @@ main {
 .tab.active > .tab-close {
   fill: var(--foreground-active-color);
 }
+.tab.highlighted > .tab-close {
+  fill: var(--foreground-selection-color);
+}
 .tab:hover > .tab-close,
 .tab:focus > .tab-close,
 .tab.active:hover > .tab-close,
@@ -261,6 +264,13 @@ main {
 .light-theme .tab.active:hover > .tab-close,
 .light-theme .tab.active:focus > .tab-close {
   fill: var(--foreground-color);
+}
+.light-theme .tab.active.highlighted > .tab-close,
+.light-theme .tab.highlighted:hover > .tab-close,
+.light-theme .tab.highlighted:focus > .tab-close,
+.light-theme .tab.active.highlighted:hover > .tab-close,
+.light-theme .tab.active.highlighted:focus > .tab-close {
+  fill: var(--foreground-selection-color);
 }
 .tab-close:hover,
 .tab-close:focus {

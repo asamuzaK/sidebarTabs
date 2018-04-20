@@ -30,6 +30,7 @@
   const CLASS_TAB_CONTENT = "tab-content";
   const CLASS_TAB_CONTEXT = "tab-context";
   const CLASS_TAB_GROUP = "tab-group";
+  const CLASS_TAB_HIGHLIGHT = "highlighted";
   const CLASS_TAB_ICON = "tab-icon";
   const CLASS_TAB_TITLE = "tab-title";
   const CLASS_TAB_TMPL = "tab-template";
@@ -571,16 +572,45 @@
 
   /**
    * activate tab
-   * @param {!Object} evt - event
+   * @param {Object} elm - element
    * @returns {?AsyncFunction} - updateTab()
    */
-  const activateTab = async evt => {
-    const {target} = evt;
-    const tabId = await getSidebarTabId(target);
+  const activateTab = async elm => {
+    const tabId = await getSidebarTabId(elm);
     let func;
     if (Number.isInteger(tabId)) {
       const active = true;
       func = updateTab(tabId, {active});
+    }
+    return func || null;
+  };
+
+  /**
+   * toggle tab hightlight
+   * @param {Object} elm - element
+   * @returns {Object} - tab element
+   */
+  const toggleTabHighlight = async elm => {
+    const tab = await getSidebarTab(elm);
+    if (tab) {
+      const {classList} = tab;
+      classList.toggle(CLASS_TAB_HIGHLIGHT);
+    }
+    return tab || null;
+  };
+
+  /**
+   * handle clicked tab
+   * @param {!Object} evt - event
+   * @returns {AsyncFunction} - handler
+   */
+  const handleClickedTab = async evt => {
+    const {ctrlKey, target} = evt;
+    let func;
+    if (ctrlKey) {
+      func = toggleTabHighlight(target).catch(throwErr);
+    } else {
+      func = activateTab(target).catch(throwErr);
     }
     return func || null;
   };
@@ -592,7 +622,7 @@
    */
   const addTabClickListener = async elm => {
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      elm.addEventListener("click", evt => activateTab(evt).catch(throwErr));
+      elm.addEventListener("click", handleClickedTab);
     }
   };
 
@@ -927,7 +957,7 @@
       if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
         tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
         toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
-        func = activateTab({target: tab});
+        func = activateTab(tab);
       } else {
         tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
         toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
@@ -1274,6 +1304,7 @@
           item.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
         } else if (classList.contains(CLASS_TAB_CONTENT)) {
           item.title = title;
+          func.push(addTabClickListener(item));
         } else if (classList.contains(CLASS_TAB_ICON)) {
           func.push(
             setTabIcon(item, {favIconUrl, status, title, url}),
@@ -1299,7 +1330,6 @@
         } else if (classList.contains(CLASS_TAB_CLOSE_ICON)) {
           item.alt = i18n.getMessage(`${TAB_CLOSE}`);
         }
-        func.push(addTabClickListener(item));
       }
       tab.dataset.tabId = id;
       tab.dataset.tab = JSON.stringify(tabsTab);
