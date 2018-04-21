@@ -185,6 +185,18 @@
   "expandTabs_tooltip": {
     "message": "グループのタブを展開します"
   },
+  "groupSelectedTabs": {
+    "message": "選択したタブをグループ化"
+  },
+  "groupSelectedTabs_title": {
+    "message": "選択したタブをグループ化 $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
+      }
+    }
+  },
   "groupTabs": {
     "message": "タブをグループ化"
   },
