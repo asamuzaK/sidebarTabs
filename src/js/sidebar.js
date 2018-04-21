@@ -1121,7 +1121,6 @@
           if (tab && dropTarget !== tab) {
             const {parentNode: dropParent} = dropTarget;
             const {
-              childElementCount: dropParentChildCount,
               classList: dropParentClassList,
               nextElementSibling: dropParentNextElement,
             } = dropParent;
