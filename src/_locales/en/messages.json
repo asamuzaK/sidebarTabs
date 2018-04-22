@@ -185,6 +185,18 @@
   "expandTabs_tooltip": {
     "message": "Expand Group Tabs"
   },
+  "groupSelectedTabs": {
+    "message": "Group Selected Tabs"
+  },
+  "groupSelectedTabs_title": {
+    "message": "Group Selected Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
+      }
+    }
+  },
   "groupTabs": {
     "message": "Group Tabs"
   },
