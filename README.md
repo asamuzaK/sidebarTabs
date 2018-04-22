@@ -26,13 +26,10 @@ Experimental features are used, so you need to activate the following settings.
 * Select tabs by "Ctrl + left click" on each tab.
 * Drag one of the selected tabs with "Shift + left click" and drop it on the tab you want to group.
 * You can also group tabs by selecting "Tab Group" from the context menu and selecting "Group Selected Tabs". In this case, a new group will be created at the end of the tabs.
-
 * Tab groups are color-coded for each group.
 * Collapse / expand tab groups can be done by clicking on the colored part, or from the context menu.
 * The new tab opened from the tab in the tab group will be displayed as the tab of that group.
-
 * To cancel the grouping of tabs, you can do it from the context menu.
-
 * Tab groups will not be saved during private browsing.
 
 ## Known Issues
