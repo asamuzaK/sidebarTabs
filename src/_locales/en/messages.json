@@ -104,11 +104,11 @@
       }
     }
   },
-  "collapseTabs": {
-    "message": "Collapse Grouped Tabs"
+  "collapseTabGroup": {
+    "message": "Collapse Tab Group"
   },
-  "collapseTabs_title": {
-    "message": "Collapse Grouped Tabs $KEY$",
+  "collapseTabGroup_title": {
+    "message": "Collapse Tab Group $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -116,7 +116,7 @@
       }
     }
   },
-  "collapseTabs_tooltip": {
+  "collapseTabGroup_tooltip": {
     "message": "Collapse Grouped Tabs"
   },
   "connecting": {
@@ -170,11 +170,23 @@
       }
     }
   },
-  "expandTabs": {
-    "message": "Expand Group Tabs"
+  "dupeTabGroup": {
+    "message": "Duplicate Grouped Tabs"
   },
-  "expandTabs_title": {
-    "message": "Expand Group Tabs $KEY$",
+  "dupeTab_title": {
+    "message": "Duplicate Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
+  "expandTabGroup": {
+    "message": "Expand Tab Group"
+  },
+  "expandTabGroup_title": {
+    "message": "Expand Tab Group $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -183,7 +195,7 @@
     }
   },
   "expandTabs_tooltip": {
-    "message": "Expand Group Tabs"
+    "message": "Expand Grouped Tabs"
   },
   "groupSelectedTabs": {
     "message": "Group Selected Tabs"
@@ -262,6 +274,18 @@
   },
   "pinTab_title": {
     "message": "Pin Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(P)"
+      }
+    }
+  },
+  "pinTabGroup": {
+    "message": "Pin Grouped Tabs"
+  },
+  "pinTabGroup_title": {
+    "message": "Pin Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -370,6 +394,18 @@
   },
   "syncTab_title": {
     "message": "Sync Tab $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
+  },
+  "syncTabGroup": {
+    "message": "Sync Grouped Tabs"
+  },
+  "syncTabGroup_title": {
+    "message": "Sync Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",

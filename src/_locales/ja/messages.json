@@ -104,11 +104,11 @@
       }
     }
   },
-  "collapseTabs": {
-    "message": "グループのタブを折りたたむ"
+  "collapseTabGroup": {
+    "message": "タブグループを折りたたむ"
   },
-  "collapseTabs_title": {
-    "message": "グループのタブを折りたたむ $KEY$",
+  "collapseTabGroup_title": {
+    "message": "タブグループを折りたたむ $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -116,7 +116,7 @@
       }
     }
   },
-  "collapseTabs_tooltip": {
+  "collapseTabGroup_tooltip": {
     "message": "グループのタブを折りたたみます"
   },
   "connecting": {
@@ -170,11 +170,23 @@
       }
     }
   },
-  "expandTabs": {
-    "message": "グループのタブを展開"
+  "dupeTabGroup": {
+    "message": "グループのタブを複製"
   },
-  "expandTabs_title": {
-    "message": "グループのタブを展開 $KEY$",
+  "dupeTabGroup_title": {
+    "message": "グループのタブを複製 $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
+  "expandTabGroup": {
+    "message": "タブグループを展開"
+  },
+  "expandTabGroup_title": {
+    "message": "タブグループを展開 $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -262,6 +274,18 @@
   },
   "pinTab_title": {
     "message": "タブをピン留め $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(P)"
+      }
+    }
+  },
+  "pinTabGroup": {
+    "message": "グループのタブをピン留め"
+  },
+  "pinTabGroup_title": {
+    "message": "グループのタブをピン留め $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -370,6 +394,18 @@
   },
   "syncTab_title": {
     "message": "タブを同期 $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
+  },
+  "syncTabGroup": {
+    "message": "グループのタブを同期"
+  },
+  "syncTabGroup_title": {
+    "message": "グループのタブを同期 $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
