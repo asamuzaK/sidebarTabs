@@ -29,10 +29,10 @@
       }
     }
   },
-  "bookmarkGroupTabs": {
+  "bookmarkTabGroup": {
     "message": "Bookmark Group Tabs"
   },
-  "bookmarkGroupTabs_title": {
+  "bookmarkTabGroup_title": {
     "message": "Bookmark Group Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -53,10 +53,10 @@
       }
     }
   },
-  "closeGroupTabs": {
+  "closeTabGroup": {
     "message": "Close Grouped Tabs"
   },
-  "closeGroupTabs_title": {
+  "closeTabGroup_title": {
     "message": "Close Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -197,18 +197,6 @@
       }
     }
   },
-  "groupTabs": {
-    "message": "Group Tabs"
-  },
-  "groupTabs_title": {
-    "message": "Tab Group $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(G)"
-      }
-    }
-  },
   "initSidebar": {
     "message": "Init Sidebar Tabs"
   },
@@ -305,10 +293,10 @@
       }
     }
   },
-  "reloadGroupTabs": {
+  "reloadTabGroup": {
     "message": "Reload Grouped Tabs"
   },
-  "reloadGroupTabs_title": {
+  "reloadTabGroup_title": {
     "message": "Reload Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -398,6 +386,18 @@
       "key" : {
         "content" : "$1",
         "example" : "(T)"
+      }
+    }
+  },
+  "tabGroup": {
+    "message": "Tab Group"
+  },
+  "tabGroup_title": {
+    "message": "Tab Group $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
       }
     }
   },

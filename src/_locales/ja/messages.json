@@ -29,10 +29,10 @@
       }
     }
   },
-  "bookmarkGroupTabs": {
+  "bookmarkTabGroup": {
     "message": "グループのタブをブックマーク"
   },
-  "bookmarkGroupTabs_title": {
+  "bookmarkTabGroup_title": {
     "message": "グループのタブをブックマーク $KEY$",
     "placeholders": {
       "key" : {
@@ -53,10 +53,10 @@
       }
     }
   },
-  "closeGroupTabs": {
+  "closeTabGroup": {
     "message": "グループのタブをすべて閉じる"
   },
-  "closeGroupTabs_title": {
+  "closeTabGroup_title": {
     "message": "グループのタブをすべて閉じる $KEY$",
     "placeholders": {
       "key" : {
@@ -197,18 +197,6 @@
       }
     }
   },
-  "groupTabs": {
-    "message": "タブをグループ化"
-  },
-  "groupTabs_title": {
-    "message": "タブグループ $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(G)"
-      }
-    }
-  },
   "initSidebar": {
     "message": "サイドバータブを初期化"
   },
@@ -305,10 +293,10 @@
       }
     }
   },
-  "reloadGroupTabs": {
+  "reloadTabGroup": {
     "message": "グループのタブを再読み込み"
   },
-  "reloadGroupTabs_title": {
+  "reloadTabGroup_title": {
     "message": "グループのタブを再読み込み $KEY$",
     "placeholders": {
       "key" : {
@@ -398,6 +386,18 @@
       "key" : {
         "content" : "$1",
         "example" : "(T)"
+      }
+    }
+  },
+  "tabGroup": {
+    "message": "タブグループ"
+  },
+  "tabGroup_title": {
+    "message": "タブグループ $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
       }
     }
   },
