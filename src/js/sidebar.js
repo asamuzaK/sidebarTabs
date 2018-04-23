@@ -85,14 +85,14 @@
   const TAB_CLOSE = "closeTab";
   const TAB_CLOSE_UNDO = "undoCloseTab";
   const TAB_DUPE = "dupeTab";
-  const TAB_GROUP = "groupTabs";
-  const TAB_GROUP_BOOKMARK = "bookmarkGroupTabs";
-  const TAB_GROUP_CLOSE = "closeGroupTabs";
+  const TAB_GROUP = "tabGroup";
+  const TAB_GROUP_BOOKMARK = "bookmarkTabGroup";
+  const TAB_GROUP_CLOSE = "closeTabGroup";
   const TAB_GROUP_COLLAPSE = "collapseTabs";
   const TAB_GROUP_DETACH = "detachTabFromGroup";
   const TAB_GROUP_EXPAND = "expandTabs";
   const TAB_GROUP_SELECTED = "groupSelectedTabs";
-  const TAB_GROUP_RELOAD = "reloadGroupTabs";
+  const TAB_GROUP_RELOAD = "reloadTabGroup";
   const TAB_GROUP_UNGROUP = "ungroupTabs";
   const TAB_LIST = "tabList";
   const TAB_OBSERVE = "observeTab";
@@ -1065,11 +1065,11 @@
   };
 
   /**
-   * close grouped tabs
+   * close tab group
    * @param {Object} node - tab group container
    * @returns {?AsyncFunction} - removeTab()
    */
-  const closeGroupTabs = async node => {
+  const closeTabGroup = async node => {
     const {id, classList, nodeType} = node;
     let func;
     if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
@@ -1849,7 +1849,7 @@
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-            func.push(closeGroupTabs(tabParent).then(restoreTabContainers));
+            func.push(closeTabGroup(tabParent).then(restoreTabContainers));
           }
         }
         break;
