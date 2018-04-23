@@ -173,7 +173,7 @@
   "dupeTabGroup": {
     "message": "Duplicate Grouped Tabs"
   },
-  "dupeTab_title": {
+  "dupeTabGroup_title": {
     "message": "Duplicate Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
