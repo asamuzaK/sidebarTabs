@@ -1861,6 +1861,7 @@
     return dupedTabIdArr;
   };
 
+  // FIXME: buggy sometimes?
   /**
    * duplicate tab group
    * @param {Object} container - tab container
