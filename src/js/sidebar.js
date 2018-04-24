@@ -273,6 +273,23 @@
   };
 
   /**
+   * reload tab group
+   * @param {Object} container - tab container
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const reloadTabGroup = async container => {
+    const func = [];
+    if (container && container.nodeType === Node.ELEMENT_NODE) {
+      const items = container.querySelectorAll(TAB_QUERY);
+      for (const item of items) {
+        const itemId = item && item.dataset && item.dataset.tabId * 1;
+        Number.isInteger(itemId) && func.push(reloadTab(itemId));
+      }
+    }
+    return Promise.all(func);
+  };
+
+  /**
    * remove tab
    * @param {number|Array} arg - tab ID or array of tab ID
    * @returns {AsyncFunction} - tabs.remove()
@@ -1776,6 +1793,23 @@
   };
 
   /**
+   * sync tab group
+   * @param {Object} container - tab container
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const syncTabGroup = async container => {
+    const func = [];
+    if (container && container.nodeType === Node.ELEMENT_NODE) {
+      const items = container.querySelectorAll(TAB_QUERY);
+      for (const item of items) {
+        const itemId = item && item.dataset && item.dataset.tabId * 1;
+        Number.isInteger(itemId) && func.push(syncTab(itemId));
+      }
+    }
+    return Promise.all(func);
+  };
+
+  /**
    * duplicate tab
    * @param {number} tabId - tab ID
    * @returns {?AsyncFunction} - createTab()
@@ -2013,11 +2047,7 @@
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-            const items = tabParent.querySelectorAll(TAB_QUERY);
-            for (const item of items) {
-              const itemId = item && item.dataset && item.dataset.tabId * 1;
-              Number.isInteger(itemId) && func.push(reloadTab(itemId));
-            }
+            func.push(reloadTabGroup(tabParent));
           }
         }
         break;
@@ -2025,6 +2055,16 @@
       case MENU_TAB_GROUP_SELECTED:
         func.push(groupSelectedTabs());
         break;
+      case MENU_TAB_GROUP_SYNC: {
+        if (tab) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            func.push(syncTabGroup(tabParent));
+          }
+        }
+        break;
+      }
       case MENU_TAB_GROUP_UNGROUP: {
         if (tab && tabsTab && !tabsTab.pinned) {
           const {parentNode: tabParent} = tab;
@@ -2528,6 +2568,7 @@
         TAB_GROUP_DUPE,
         TAB_GROUP_RELOAD,
         TAB_GROUP_SELECTED,
+        TAB_GROUP_SYNC,
         TAB_GROUP_UNGROUP,
       ];
       const allTabsKeys = [
