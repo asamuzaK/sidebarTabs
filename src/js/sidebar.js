@@ -1936,6 +1936,33 @@
   };
 
   /**
+   * pin tab group
+   * @param {Object} container - tab container
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const pinTabGroup = async container => {
+    const func = [];
+    if (container && container.nodeType === Node.ELEMENT_NODE) {
+      const {classList} = container;
+      if (classList.contains(CLASS_TAB_GROUP)) {
+        const items = container.querySelectorAll(TAB_QUERY);
+        if (items && items.length) {
+          for (const item of items) {
+            const tabId = item.dataset && item.dataset.tabId * 1;
+            const tabsTab =
+              item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
+            if (Number.isInteger(tabId) && tabsTab) {
+              const {pinned} = tabsTab;
+              func.push(updateTab(tabId, {pinned: !pinned}));
+            }
+          }
+        }
+      }
+    }
+    return Promise.all(func);
+  };
+
+  /**
    * handle context menu click
    * @param {!Object} evt - event
    * @returns {Promise.<Array>} - results of each handler
@@ -1976,21 +2003,19 @@
         }
         break;
       }
-      case MENU_TAB_CLOSE: {
+      case MENU_TAB_CLOSE:
         if (Number.isInteger(tabId)) {
           func.push(removeTab(tabId));
         }
         break;
-      }
       case MENU_TAB_CLOSE_UNDO:
         func.push(undoCloseTab());
         break;
-      case MENU_TAB_DUPE: {
+      case MENU_TAB_DUPE:
         if (Number.isInteger(tabId)) {
           func.push(dupeTab(tabId));
         }
         break;
-      }
       case MENU_TAB_GROUP_BOOKMARK: {
         if (tab && tabsTab && !tabsTab.pinned) {
           const {parentNode: tabParent} = tab;
@@ -2042,6 +2067,16 @@
         }
         break;
       }
+      case MENU_TAB_GROUP_PIN: {
+        if (tab) {
+          const {parentNode: tabParent} = tab;
+          const {classList: tabParentClassList} = tabParent;
+          if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
+            func.push(pinTabGroup(tabParent));
+          }
+        }
+        break;
+      }
       case MENU_TAB_GROUP_RELOAD: {
         if (tab) {
           const {parentNode: tabParent} = tab;
@@ -2075,7 +2110,7 @@
         }
         break;
       }
-      case MENU_TAB_NEW_WIN_MOVE: {
+      case MENU_TAB_NEW_WIN_MOVE:
         if (Number.isInteger(tabId)) {
           func.push(createNewWindow({
             tabId,
@@ -2083,7 +2118,6 @@
           }));
         }
         break;
-      }
       case MENU_TAB_PIN: {
         if (tabsTab) {
           const {pinned} = tabsTab;
@@ -2091,18 +2125,16 @@
         }
         break;
       }
-      case MENU_TAB_RELOAD: {
+      case MENU_TAB_RELOAD:
         if (Number.isInteger(tabId)) {
           func.push(reloadTab(tabId));
         }
         break;
-      }
-      case MENU_TAB_SYNC: {
+      case MENU_TAB_SYNC:
         if (Number.isInteger(tabId)) {
           func.push(syncTab(tabId));
         }
         break;
-      }
       case MENU_TAB_TABS_CLOSE_END: {
         if (Number.isInteger(tabId)) {
           const index = tabsTab && tabsTab.index && tabsTab.index * 1;
@@ -2566,6 +2598,7 @@
         TAB_GROUP_COLLAPSE,
         TAB_GROUP_DETACH,
         TAB_GROUP_DUPE,
+        TAB_GROUP_PIN,
         TAB_GROUP_RELOAD,
         TAB_GROUP_SELECTED,
         TAB_GROUP_SYNC,
@@ -2683,6 +2716,7 @@
             case TAB_GROUP_CLOSE:
             case TAB_GROUP_DETACH:
             case TAB_GROUP_DUPE:
+            case TAB_GROUP_PIN:
             case TAB_GROUP_UNGROUP:
               if (!tabsTab.pinned && parentClass.contains(CLASS_TAB_GROUP)) {
                 data.enabled = true;
