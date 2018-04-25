@@ -29,10 +29,10 @@
       }
     }
   },
-  "bookmarkGroupTabs": {
+  "bookmarkTabGroup": {
     "message": "Bookmark Group Tabs"
   },
-  "bookmarkGroupTabs_title": {
+  "bookmarkTabGroup_title": {
     "message": "Bookmark Group Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -53,10 +53,10 @@
       }
     }
   },
-  "closeGroupTabs": {
+  "closeTabGroup": {
     "message": "Close Grouped Tabs"
   },
-  "closeGroupTabs_title": {
+  "closeTabGroup_title": {
     "message": "Close Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -104,11 +104,11 @@
       }
     }
   },
-  "collapseTabs": {
-    "message": "Collapse Grouped Tabs"
+  "collapseTabGroup": {
+    "message": "Collapse Tab Group"
   },
-  "collapseTabs_title": {
-    "message": "Collapse Grouped Tabs $KEY$",
+  "collapseTabGroup_title": {
+    "message": "Collapse Tab Group $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -116,7 +116,7 @@
       }
     }
   },
-  "collapseTabs_tooltip": {
+  "collapseTabGroup_tooltip": {
     "message": "Collapse Grouped Tabs"
   },
   "connecting": {
@@ -170,11 +170,23 @@
       }
     }
   },
-  "expandTabs": {
-    "message": "Expand Group Tabs"
+  "dupeTabGroup": {
+    "message": "Duplicate Grouped Tabs"
   },
-  "expandTabs_title": {
-    "message": "Expand Group Tabs $KEY$",
+  "dupeTabGroup_title": {
+    "message": "Duplicate Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
+  "expandTabGroup": {
+    "message": "Expand Tab Group"
+  },
+  "expandTabGroup_title": {
+    "message": "Expand Tab Group $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -183,25 +195,13 @@
     }
   },
   "expandTabs_tooltip": {
-    "message": "Expand Group Tabs"
+    "message": "Expand Grouped Tabs"
   },
   "groupSelectedTabs": {
     "message": "Group Selected Tabs"
   },
   "groupSelectedTabs_title": {
     "message": "Group Selected Tabs $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(G)"
-      }
-    }
-  },
-  "groupTabs": {
-    "message": "Group Tabs"
-  },
-  "groupTabs_title": {
-    "message": "Tab Group $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -233,11 +233,11 @@
       }
     }
   },
-  "moveToNewWindow": {
-    "message": "Move to New Window"
+  "moveTabToNewWindow": {
+    "message": "Move Tab to New Window"
   },
-  "moveToNewWindow_title": {
-    "message": "Move to New Window $KEY$",
+  "moveTabToNewWindow_title": {
+    "message": "Move Tab to New Window $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -281,6 +281,18 @@
       }
     }
   },
+  "pinTabGroup": {
+    "message": "Pin Grouped Tabs"
+  },
+  "pinTabGroup_title": {
+    "message": "Pin Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(P)"
+      }
+    }
+  },
   "playAudio": {
     "message": "Play Audio"
   },
@@ -305,10 +317,10 @@
       }
     }
   },
-  "reloadGroupTabs": {
+  "reloadTabGroup": {
     "message": "Reload Grouped Tabs"
   },
-  "reloadGroupTabs_title": {
+  "reloadTabGroup_title": {
     "message": "Reload Grouped Tabs $KEY$",
     "placeholders": {
       "key" : {
@@ -389,6 +401,18 @@
       }
     }
   },
+  "syncTabGroup": {
+    "message": "Sync Grouped Tabs"
+  },
+  "syncTabGroup_title": {
+    "message": "Sync Grouped Tabs $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
+  },
   "tab": {
     "message": "Tab"
   },
@@ -398,6 +422,18 @@
       "key" : {
         "content" : "$1",
         "example" : "(T)"
+      }
+    }
+  },
+  "tabGroup": {
+    "message": "Tab Group"
+  },
+  "tabGroup_title": {
+    "message": "Tab Group $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
       }
     }
   },

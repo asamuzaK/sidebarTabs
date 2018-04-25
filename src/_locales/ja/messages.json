@@ -29,10 +29,10 @@
       }
     }
   },
-  "bookmarkGroupTabs": {
+  "bookmarkTabGroup": {
     "message": "グループのタブをブックマーク"
   },
-  "bookmarkGroupTabs_title": {
+  "bookmarkTabGroup_title": {
     "message": "グループのタブをブックマーク $KEY$",
     "placeholders": {
       "key" : {
@@ -53,10 +53,10 @@
       }
     }
   },
-  "closeGroupTabs": {
+  "closeTabGroup": {
     "message": "グループのタブをすべて閉じる"
   },
-  "closeGroupTabs_title": {
+  "closeTabGroup_title": {
     "message": "グループのタブをすべて閉じる $KEY$",
     "placeholders": {
       "key" : {
@@ -104,11 +104,11 @@
       }
     }
   },
-  "collapseTabs": {
-    "message": "グループのタブを折りたたむ"
+  "collapseTabGroup": {
+    "message": "タブグループを折りたたむ"
   },
-  "collapseTabs_title": {
-    "message": "グループのタブを折りたたむ $KEY$",
+  "collapseTabGroup_title": {
+    "message": "タブグループを折りたたむ $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -116,7 +116,7 @@
       }
     }
   },
-  "collapseTabs_tooltip": {
+  "collapseTabGroup_tooltip": {
     "message": "グループのタブを折りたたみます"
   },
   "connecting": {
@@ -170,11 +170,23 @@
       }
     }
   },
-  "expandTabs": {
-    "message": "グループのタブを展開"
+  "dupeTabGroup": {
+    "message": "グループのタブを複製"
   },
-  "expandTabs_title": {
-    "message": "グループのタブを展開 $KEY$",
+  "dupeTabGroup_title": {
+    "message": "グループのタブを複製 $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(D)"
+      }
+    }
+  },
+  "expandTabGroup": {
+    "message": "タブグループを展開"
+  },
+  "expandTabGroup_title": {
+    "message": "タブグループを展開 $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -190,18 +202,6 @@
   },
   "groupSelectedTabs_title": {
     "message": "選択したタブをグループ化 $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(G)"
-      }
-    }
-  },
-  "groupTabs": {
-    "message": "タブをグループ化"
-  },
-  "groupTabs_title": {
-    "message": "タブグループ $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -233,11 +233,11 @@
       }
     }
   },
-  "moveToNewWindow": {
-    "message": "新しいウィンドウへ移動"
+  "moveTabToNewWindow": {
+    "message": "タブを新しいウィンドウへ移動"
   },
-  "moveToNewWindow_title": {
-    "message": "新しいウィンドウへ移動 $KEY$",
+  "moveTabToNewWindow_title": {
+    "message": "タブを新しいウィンドウへ移動 $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -281,6 +281,18 @@
       }
     }
   },
+  "pinTabGroup": {
+    "message": "グループのタブをピン留め"
+  },
+  "pinTabGroup_title": {
+    "message": "グループのタブをピン留め $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(P)"
+      }
+    }
+  },
   "playTab": {
     "message": "タブのメディアを再生"
   },
@@ -305,10 +317,10 @@
       }
     }
   },
-  "reloadGroupTabs": {
+  "reloadTabGroup": {
     "message": "グループのタブを再読み込み"
   },
-  "reloadGroupTabs_title": {
+  "reloadTabGroup_title": {
     "message": "グループのタブを再読み込み $KEY$",
     "placeholders": {
       "key" : {
@@ -389,6 +401,18 @@
       }
     }
   },
+  "syncTabGroup": {
+    "message": "グループのタブを同期"
+  },
+  "syncTabGroup_title": {
+    "message": "グループのタブを同期 $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(S)"
+      }
+    }
+  },
   "tab": {
     "message": "タブ"
   },
@@ -398,6 +422,18 @@
       "key" : {
         "content" : "$1",
         "example" : "(T)"
+      }
+    }
+  },
+  "tabGroup": {
+    "message": "タブグループ"
+  },
+  "tabGroup_title": {
+    "message": "タブグループ $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(G)"
       }
     }
   },
