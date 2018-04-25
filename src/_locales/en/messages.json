@@ -233,11 +233,23 @@
       }
     }
   },
-  "moveToNewWindow": {
-    "message": "Move to New Window"
+  "moveTabToNewWindow": {
+    "message": "Move Tab to New Window"
   },
-  "moveToNewWindow_title": {
-    "message": "Move to New Window $KEY$",
+  "moveTabToNewWindow_title": {
+    "message": "Move Tab to New Window $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(W)"
+      }
+    }
+  },
+  "moveTabGroupToNewWindow": {
+    "message": "Move Grouped Tabs to New Window"
+  },
+  "moveTabGroupToNewWindow_title": {
+    "message": "Move Grouped Tabs to New Window $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",

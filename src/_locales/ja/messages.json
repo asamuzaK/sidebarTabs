@@ -233,11 +233,23 @@
       }
     }
   },
-  "moveToNewWindow": {
-    "message": "新しいウィンドウへ移動"
+  "moveTabToNewWindow": {
+    "message": "タブを新しいウィンドウへ移動"
   },
-  "moveToNewWindow_title": {
-    "message": "新しいウィンドウへ移動 $KEY$",
+  "moveTabToNewWindow_title": {
+    "message": "タブを新しいウィンドウへ移動 $KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(W)"
+      }
+    }
+  },
+  "moveTabGroupToNewWindow": {
+    "message": "グループのタブを新しいウィンドウへ移動"
+  },
+  "moveTabGroupToNewWindow_title": {
+    "message": "グループのタブを新しいウィンドウへ移動 $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
