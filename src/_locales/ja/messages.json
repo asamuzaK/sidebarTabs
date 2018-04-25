@@ -245,18 +245,6 @@
       }
     }
   },
-  "moveTabGroupToNewWindow": {
-    "message": "グループのタブを新しいウィンドウへ移動"
-  },
-  "moveTabGroupToNewWindow_title": {
-    "message": "グループのタブを新しいウィンドウへ移動 $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(W)"
-      }
-    }
-  },
   "muteAudio": {
     "message": "タブをミュート"
   },

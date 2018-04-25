@@ -62,7 +62,7 @@
   const MENU_TAB_GROUP_SELECTED = "sidebar-tabs-menu-tab-group-selected";
   const MENU_TAB_GROUP_SYNC = "sidebar-tabs-menu-tab-group-sync";
   const MENU_TAB_GROUP_UNGROUP = "sidebar-tabs-menu-tab-group-ungroup";
-  const MENU_TAB_NEW_WIN_MOVE = "sidebar-tabs-menu-tab-new-win-move";
+  const MENU_TAB_MOVE_WIN_NEW = "sidebar-tabs-menu-tab-new-win-move";
   const MENU_TAB_PIN = "sidebar-tabs-menu-tab-pin";
   const MENU_TAB_RELOAD = "sidebar-tabs-menu-tab-reload";
   const MENU_TAB_SYNC = "sidebar-tabs-menu-tab-sync";
@@ -75,7 +75,6 @@
   const MIME_TYPE = "text/plain";
   const MOUSE_BUTTON_RIGHT = 2;
   const NEW_TAB = "newtab";
-  const NEW_WIN_MOVE = "moveToNewWindow";
   const PINNED = "pinned";
   const SIDEBAR_INIT = "initSidebar";
   const SIDEBAR_OPT = "sidebarTabsOptions";
@@ -102,6 +101,7 @@
   const TAB_GROUP_UNGROUP = "ungroupTabs";
   const TAB_LIST = "tabList";
   const TAB_OBSERVE = "observeTab";
+  const TAB_MOVE_WIN_NEW = "moveTabToNewWindow";
   const TAB_PIN = "pinTab";
   const TAB_PIN_UNPIN = "unpinTab";
   const TAB_RELOAD = "reloadTab";
@@ -2110,7 +2110,7 @@
         }
         break;
       }
-      case MENU_TAB_NEW_WIN_MOVE:
+      case MENU_TAB_MOVE_WIN_NEW:
         if (Number.isInteger(tabId)) {
           func.push(createNewWindow({
             tabId,
@@ -2253,9 +2253,9 @@
               enabled: false,
               onclick: true,
             },
-            [NEW_WIN_MOVE]: {
-              id: MENU_TAB_NEW_WIN_MOVE,
-              title: i18n.getMessage(`${NEW_WIN_MOVE}_title`, "(W)"),
+            [TAB_MOVE_WIN_NEW]: {
+              id: MENU_TAB_MOVE_WIN_NEW,
+              title: i18n.getMessage(`${TAB_MOVE_WIN_NEW}_title`, "(N)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
@@ -2581,12 +2581,12 @@
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
         AUDIO_MUTE,
-        NEW_WIN_MOVE,
         TABS_CLOSE_END,
         TABS_CLOSE_OTHER,
         TAB_BOOKMARK,
         TAB_CLOSE,
         TAB_DUPE,
+        TAB_MOVE_WIN_NEW,
         TAB_PIN,
         TAB_RELOAD,
         TAB_SYNC,

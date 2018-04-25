@@ -245,18 +245,6 @@
       }
     }
   },
-  "moveTabGroupToNewWindow": {
-    "message": "Move Grouped Tabs to New Window"
-  },
-  "moveTabGroupToNewWindow_title": {
-    "message": "Move Grouped Tabs to New Window $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(W)"
-      }
-    }
-  },
   "muteAudio": {
     "message": "Mute Audio"
   },
