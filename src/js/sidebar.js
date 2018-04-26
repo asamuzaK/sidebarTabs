@@ -1182,10 +1182,10 @@
    */
   const restoreTabContainer = container => {
     if (container && container.nodeType === Node.ELEMENT_NODE) {
-      const {childElementCount, classList, id, parentNode} = container;
+      const {childElementCount, classList, parentNode} = container;
       switch (childElementCount) {
         case 0:
-          id !== PINNED && parentNode.removeChild(container);
+          parentNode.removeChild(container);
           break;
         case 1:
           classList.remove(CLASS_TAB_GROUP);
@@ -1441,10 +1441,20 @@
     const items =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
     for (const item of items) {
-      const {id} = item;
-      func.push(restoreTabContainer(item));
+      const {childElementCount, classList, id, parentNode} = item;
+      switch (childElementCount) {
+        case 0:
+          id !== PINNED && parentNode.removeChild(item);
+          break;
+        case 1:
+          classList.remove(CLASS_TAB_GROUP);
+          break;
+        default:
+          classList.add(CLASS_TAB_GROUP);
+      }
       id !== PINNED && func.push(addDropEventListener(item));
     }
+    func.push(setSessionsTabList());
     return Promise.all(func);
   };
 
@@ -1658,7 +1668,7 @@
             tab.classList.add(PINNED);
             tab.removeAttribute("draggable");
             container.appendChild(tab);
-            func.push(restoreTabContainers().then(setSessionsTabList));
+            func.push(restoreTabContainers());
           } else {
             const {
               nextElementSibling: pinnedNextElement,
@@ -1671,7 +1681,7 @@
             container.appendChild(tab);
             container.removeAttribute("hidden");
             pinnedParentNode.insertBefore(container, pinnedNextElement);
-            func.push(restoreTabContainers().then(setSessionsTabList));
+            func.push(restoreTabContainers());
           }
         }
         info.hasOwnProperty("status") && func.push(observeTab(tabId));
@@ -2044,10 +2054,7 @@
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-            func.push(
-              closeTabGroup(tabParent).then(restoreTabContainers)
-                .then(setSessionsTabList)
-            );
+            func.push(closeTabGroup(tabParent).then(restoreTabContainers));
           }
         }
         break;
@@ -2068,10 +2075,7 @@
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP) &&
               !tabParentClassList.contains(PINNED)) {
-            func.push(
-              detachTabFromGroup(tab).then(restoreTabContainers)
-                .then(setSessionsTabList)
-            );
+            func.push(detachTabFromGroup(tab).then(restoreTabContainers));
           }
         }
         break;
@@ -2124,10 +2128,7 @@
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-            func.push(
-              ungroupTabs(tabParent).then(restoreTabContainers)
-                .then(setSessionsTabList)
-            );
+            func.push(ungroupTabs(tabParent).then(restoreTabContainers));
           }
         }
         break;
@@ -2901,30 +2902,26 @@
   );
 
   tabs.onAttached.addListener((tabId, info) =>
-    handleAttachedTab(tabId, info).then(restoreTabContainers)
-      .then(setSessionsTabList).catch(throwErr)
+    handleAttachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
 
   tabs.onCreated.addListener(tabsTab =>
-    handleCreatedTab(tabsTab).then(restoreTabContainers)
-      .then(setSessionsTabList).then(getLastClosedTab).catch(throwErr)
+    handleCreatedTab(tabsTab).then(restoreTabContainers).then(getLastClosedTab)
+      .catch(throwErr)
   );
 
   tabs.onDetached.addListener((tabId, info) =>
     handleDetachedTab(tabId, info).then(restoreTabContainers)
-      .then(setSessionsTabList).then(expandActivatedCollapsedTab)
-      .catch(throwErr)
+      .then(expandActivatedCollapsedTab).catch(throwErr)
   );
 
   tabs.onMoved.addListener((tabId, info) =>
-    handleMovedTab(tabId, info).then(restoreTabContainers)
-      .then(setSessionsTabList).catch(throwErr)
+    handleMovedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
   );
 
   tabs.onRemoved.addListener((tabId, info) =>
     handleRemovedTab(tabId, info).then(restoreTabContainers)
-      .then(setSessionsTabList).then(getLastClosedTab)
-      .then(expandActivatedCollapsedTab).catch(throwErr)
+      .then(getLastClosedTab).then(expandActivatedCollapsedTab).catch(throwErr)
   );
 
   tabs.onUpdated.addListener((tabId, info, tabsTab) =>
@@ -3060,5 +3057,5 @@
     localizeHtml(),
     makeConnection({name: TAB}),
   ])).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-    .then(setSessionsTabList).then(getLastClosedTab).catch(throwErr);
+    .then(getLastClosedTab).catch(throwErr);
 }
