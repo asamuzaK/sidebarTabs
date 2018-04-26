@@ -1176,32 +1176,68 @@
   };
 
   /**
+   * restore sidebar tab container
+   * @param {Object} container - tab container
+   * @returns {void}
+   */
+  const restoreTabContainer = container => {
+    if (container && container.nodeType === Node.ELEMENT_NODE) {
+      const {childElementCount, classList, parentNode} = container;
+      switch (childElementCount) {
+        case 0:
+          parentNode.removeChild(container);
+          break;
+        case 1:
+          classList.remove(CLASS_TAB_GROUP);
+          break;
+        default:
+      }
+    }
+  };
+
+  /**
    * group selected tabs
-   * @returns {Promise.<Array>} - results of each handler
+   * @returns {?AsyncFunction} - moveTab()
    */
   const groupSelectedTabs = async () => {
     const items =
       document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
-    const arr = [];
-    let firstTabId, func;
-    for (const item of items) {
-      const {dataset: itemDataset} = item;
-      const {tabId: itemTabId} = itemDataset;
-      if (Number.isInteger(firstTabId)) {
-        itemDataset.group = true;
-        arr.push(itemTabId * 1);
-      } else {
-        firstTabId = itemTabId * 1;
+    const tab = items && items[0];
+    let func;
+    if (tab) {
+      let tabsTab = await detachTabFromGroup(tab);
+      if (!tabsTab) {
+        tabsTab = tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
       }
-    }
-    if (Number.isInteger(firstTabId) && arr.length) {
-      const {windowId} = sidebar;
-      const opt = {
-        windowId,
-        index: -1,
-      };
-      await moveTab(firstTabId, opt);
-      func = moveTab(arr, opt);
+      const {index: tabIndex} = tabsTab;
+      const {parentNode: tabParent} = tab;
+      const {nextElementSibling: tabParentNextSibling} = tabParent;
+      const arr = [];
+      for (const item of items) {
+        if (item !== tab) {
+          const {dataset: itemDataset, parentNode: itemParent} = item;
+          const itemTabId = itemDataset && itemDataset.tabId &&
+                              itemDataset.tabId * 1;
+          if (Number.isInteger(itemTabId)) {
+            if (itemParent === tabParentNextSibling) {
+              tabParent.appendChild(item);
+              tabParent.classList.add(CLASS_TAB_GROUP);
+              restoreTabContainer(itemParent);
+            } else {
+              itemDataset.group = true;
+              arr.push(itemTabId);
+            }
+          }
+        }
+      }
+      if (arr.length) {
+        const {windowId} = sidebar;
+        const opt = {
+          windowId,
+          index: tabIndex + 1,
+        };
+        func = moveTab(arr, opt);
+      }
     }
     return func || null;
   };
@@ -1250,23 +1286,10 @@
               nextElementSibling: dropParentNextElement,
             } = dropParent;
             const {dataset: tabDataset, parentNode: tabParent} = tab;
-            const {
-              childElementCount: tabParentChildCount,
-              classList: tabParentClassList,
-              parentNode: tabParentParent,
-            } = tabParent;
             if (dropParentNextElement === tabParent && group) {
               dropParent.appendChild(tab);
               dropParentClassList.add(CLASS_TAB_GROUP);
-              switch (tabParentChildCount) {
-                case 0:
-                  tabParentParent.removeChild(tabParent);
-                  break;
-                case 1:
-                  tabParentClassList.remove(CLASS_TAB_GROUP);
-                  break;
-                default:
-              }
+              restoreTabContainer(tabParent);
             } else {
               const tabIndex = getSidebarTabIndex(tab);
               if (tabIndex < dropIndex) {
