@@ -187,6 +187,14 @@
     return func || null;
   };
 
+  /* sidebar */
+  const sidebar = {
+    incognito: false,
+    windowId: null,
+    context: null,
+    lastClosedTab: null,
+  };
+
   /* webext utils */
   /* tabs */
   /**
@@ -243,6 +251,32 @@
       );
     }
     return tabs.move(tabId, isObjectNotEmpty(opt) && opt || null);
+  };
+
+  /**
+   * move tabs in order
+   * @param {number} tabId - tab ID
+   * @param {Array} arr - array of tab IDs
+   * @param {number} indexShift - index shift
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const moveTabsInOrder = async (tabId, arr, indexShift) => {
+    const [id] = arr;
+    let func;
+    if (Number.isInteger(id) && indexShift) {
+      const tabsTab = await getTab(tabId);
+      if (tabsTab) {
+        const {windowId} = sidebar;
+        const {index} = tabsTab;
+        await moveTab(id, {index, windowId});
+        indexShift--;
+        arr = arr.length === 1 && [] || arr.slice(1);
+        if (indexShift) {
+          func = moveTabsInOrder(tabId, arr, indexShift);
+        }
+      }
+    }
+    return func || arr;
   };
 
   /**
@@ -429,14 +463,6 @@
       func = storage.local.set(data);
     }
     return func || null;
-  };
-
-  /* sidebar */
-  const sidebar = {
-    incognito: false,
-    windowId: null,
-    context: null,
-    lastClosedTab: null,
   };
 
   /**
@@ -696,22 +722,6 @@
       }
     }
     return tab || null;
-  };
-
-  /**
-   * remove highlight class from tabs
-   * @returns {Promise.<Array>} - results of each handler
-   */
-  const removeHighlightClassFromTabs = async () => {
-    const func = [];
-    const highlightedTabs =
-      document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
-    if (highlightedTabs && highlightedTabs.length) {
-      for (const tab of highlightedTabs) {
-        func.push(toggleTabSelected(tab));
-      }
-    }
-    return Promise.all(func);
   };
 
   /**
@@ -1144,11 +1154,7 @@
       if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
           !parentNode.classList.contains(PINNED)) {
         const {lastElementChild, nextElementSibling} = parentNode;
-        const items = document.querySelectorAll(TAB_QUERY);
         const tabId = elm.dataset && elm.dataset.tabId && elm.dataset.tabId * 1;
-        const opt = {
-          windowId: sidebar.windowId,
-        };
         if (elm === lastElementChild) {
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
           container.appendChild(elm);
@@ -1156,19 +1162,21 @@
           parentNode.parentNode.insertBefore(container, nextElementSibling);
         } else {
           const {firstElementChild: target} = nextElementSibling;
+          const {windowId} = sidebar;
+          let index;
           if (target.classList.contains(NEW_TAB)) {
-            opt.index = items.length - 1;
+            index = -1;
           } else {
             const tabsTab = target.dataset && target.dataset.tab &&
                               JSON.parse(target.dataset.tab);
-            const {index} = tabsTab;
-            if (Number.isInteger(index)) {
-              opt.index = index - 1;
+            const {index: tabIndex} = tabsTab;
+            if (Number.isInteger(tabIndex)) {
+              index = tabIndex - 1;
             } else {
-              opt.index = items.length - 1;
+              index = -1;
             }
           }
-          func = moveTab(tabId, opt);
+          func = moveTab(tabId, {windowId, index});
         }
       }
     }
@@ -1206,37 +1214,52 @@
     let func;
     if (tab) {
       let tabsTab = await detachTabFromGroup(tab);
-      if (!tabsTab) {
+      if (Array.isArray(tabsTab)) {
+        [tabsTab] = tabsTab;
+      } else if (!tabsTab) {
         tabsTab = tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
       }
-      const {index: tabIndex} = tabsTab;
+      const {id: tabId, index: tabIndex} = tabsTab;
       const {parentNode: tabParent} = tab;
-      const {nextElementSibling: tabParentNextSibling} = tabParent;
-      const arr = [];
+      let arr = [], indexShift = 0;
       for (const item of items) {
         if (item !== tab) {
           const {dataset: itemDataset, parentNode: itemParent} = item;
+          const {
+            previousElementSibling: itemParentPreviousSibling,
+          } = itemParent;
           const itemTabId = itemDataset && itemDataset.tabId &&
                               itemDataset.tabId * 1;
           if (Number.isInteger(itemTabId)) {
-            if (itemParent === tabParentNextSibling) {
+            if (itemParentPreviousSibling === tabParent) {
               tabParent.appendChild(item);
               tabParent.classList.add(CLASS_TAB_GROUP);
               restoreTabContainer(itemParent);
             } else {
+              const itemIndex = getSidebarTabIndex(item);
+              if (itemIndex < tabIndex) {
+                indexShift++;
+              }
               itemDataset.group = true;
               arr.push(itemTabId);
             }
           }
         }
       }
-      if (arr.length) {
+      if (Number.isInteger(tabIndex) && arr.length) {
         const {windowId} = sidebar;
-        const opt = {
-          windowId,
-          index: tabIndex + 1,
-        };
-        func = moveTab(arr, opt);
+        let index;
+        if (indexShift) {
+          arr = await moveTabsInOrder(tabId, arr, indexShift);
+          if (Array.isArray(arr) && arr.length) {
+            index = tabIndex + indexShift;
+          }
+        } else {
+          index = tabIndex + 1;
+        }
+        if (Number.isInteger(index)) {
+          func = moveTab(arr, {index, windowId});
+        }
       }
     }
     return func || null;
@@ -1261,32 +1284,47 @@
     }
   };
 
+  /**
+   * remove highlight class from tabs
+   * @returns {Object} - NodeList
+   */
+  const removeHighlightClassFromTabs = async () => {
+    const items =
+      document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+    if (items && items.length) {
+      for (const item of items) {
+        item.classList.remove(CLASS_TAB_HIGHLIGHT);
+      }
+    }
+    return items || null;
+  };
+
   /* DnD */
   /**
    * extract drag and drop tabs
    * @param {Object} dropTarget - dropped element
    * @param {Array} items - array of dragged elements
-   * @param {boolean} group - group tabs
+   * @param {Object} opt - key options
    * @returns {Promise.<Array>} - results of each handler
    */
-  const extractDroppedTabs = async (dropTarget, items, group) => {
+  const extractDroppedTabs = async (dropTarget, items, opt = {}) => {
     const func = [];
     if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
         Array.isArray(items)) {
       const dropIndex = getSidebarTabIndex(dropTarget);
       if (Number.isInteger(dropIndex)) {
-        const arr = [];
-        let indexShift = 0;
+        const {dataset: dropDataset, parentNode: dropParent} = dropTarget;
+        const {classList: dropParentClassList} = dropParent;
+        const {ctrlKey, shiftKey} = opt;
+        let arr = [], indexShift = 0;
         for (const id of items) {
           const tab = document.querySelector(`[data-tab-id="${id}"]`);
           if (tab && dropTarget !== tab) {
-            const {parentNode: dropParent} = dropTarget;
-            const {
-              classList: dropParentClassList,
-              nextElementSibling: dropParentNextElement,
-            } = dropParent;
             const {dataset: tabDataset, parentNode: tabParent} = tab;
-            if (dropParentNextElement === tabParent && group) {
+            const {
+              previousElementSibling: tabParentPreviousSibling,
+            } = tabParent;
+            if (tabParentPreviousSibling === dropParent && shiftKey) {
               dropParent.appendChild(tab);
               dropParentClassList.add(CLASS_TAB_GROUP);
               restoreTabContainer(tabParent);
@@ -1295,23 +1333,48 @@
               if (tabIndex < dropIndex) {
                 indexShift++;
               }
-              tabDataset.group = !!group;
+              tabDataset.group = !!shiftKey;
               arr.push(id * 1);
             }
           }
         }
         if (arr.length) {
-          const {windowId} = sidebar;
-          const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+          const lastTabIndex =
+            document.querySelectorAll(TAB_QUERY).length - 1;
           let index;
           if (dropIndex === lastTabIndex) {
             index = -1;
+          } else if (arr.length > 1 && indexShift) {
+            const dropTargetId =
+              dropDataset && dropDataset.tabId && dropDataset.tabId * 1;
+            arr = await moveTabsInOrder(dropTargetId, arr, indexShift);
+            if (Array.isArray(arr) && arr.length) {
+              const dropTargetTabsTab = await getTab(dropTargetId);
+              if (dropTargetTabsTab) {
+                index = dropTargetTabsTab.index + indexShift;
+              }
+            }
           } else {
             index = dropIndex + 1 - indexShift;
           }
-          func.push(moveTab(arr, {
-            index, windowId,
-          }));
+          if (Number.isInteger(index)) {
+            const {windowId} = sidebar;
+            if (ctrlKey &&
+                (!dropParentClassList.contains(CLASS_TAB_GROUP) ||
+                 dropTarget === dropParent.lastElementChild)) {
+              func.push(moveTab(arr, {
+                index, windowId,
+              }).then(groupSelectedTabs));
+            } else {
+              func.push(moveTab(arr, {
+                index, windowId,
+              }));
+            }
+          } else if (ctrlKey &&
+                     (!dropParentClassList.contains(CLASS_TAB_GROUP) ||
+                      dropTarget === dropParent.lastElementChild)) {
+            func.push(groupSelectedTabs());
+          }
         }
       }
     }
@@ -1324,7 +1387,7 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const handleDrop = evt => {
-    const {dataTransfer, shiftKey, target} = evt;
+    const {ctrlKey, dataTransfer, shiftKey, target} = evt;
     const data = dataTransfer.getData(MIME_TYPE);
     const items = data && data.split(",");
     const func = [];
@@ -1339,7 +1402,7 @@
     }
     if (dropTarget && Array.isArray(items)) {
       func.push(
-        extractDroppedTabs(dropTarget, items, shiftKey)
+        extractDroppedTabs(dropTarget, items, {ctrlKey, shiftKey})
           .then(removeHighlightClassFromTabs).then(setSessionsTabList)
       );
     }
@@ -1394,22 +1457,30 @@
    * @returns {void}
    */
   const handleDragStart = evt => {
-    const {target} = evt;
+    const {ctrlKey, target} = evt;
     const {classList, dataset} = target;
+    const container = getSidebarTabContainer(target);
+    let items;
     if (classList.contains(CLASS_TAB_HIGHLIGHT)) {
-      const items =
+      items =
         document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
-      if (items && items.length) {
-        const arr = [];
-        for (const tab of items) {
-          const {dataset: tabDataset} = tab;
-          const {tabId} = tabDataset;
-          arr.push(tabId);
-        }
-        if (arr.length) {
-          evt.dataTransfer.effectAllowed = "move";
-          evt.dataTransfer.setData(MIME_TYPE, arr.join(","));
-        }
+    } else if (ctrlKey &&
+               container && container.classList.contains(CLASS_TAB_GROUP)) {
+      items = container.querySelectorAll(TAB_QUERY);
+      for (const item of items) {
+        item.classList.add(CLASS_TAB_HIGHLIGHT);
+      }
+    }
+    if (items && items.length) {
+      const arr = [];
+      for (const tab of items) {
+        const {dataset: tabDataset} = tab;
+        const {tabId} = tabDataset;
+        arr.push(tabId);
+      }
+      if (arr.length) {
+        evt.dataTransfer.effectAllowed = "move";
+        evt.dataTransfer.setData(MIME_TYPE, arr.join(","));
       }
     } else {
       const {tabId} = dataset;
@@ -1454,7 +1525,6 @@
       }
       id !== PINNED && func.push(addDropEventListener(item));
     }
-    func.push(setSessionsTabList());
     return Promise.all(func);
   };
 
@@ -1577,10 +1647,14 @@
         container.childElementCount > 1 &&
           container.classList.add(CLASS_TAB_GROUP);
       } else if (openerTab && !openerTab.classList.contains(PINNED) &&
-                 openerTabsTab && openerTabsTab.index === index - 1) {
+                 openerTabsTab) {
         await addDragEventListener(tab);
         container = openerTab.parentNode;
-        container.insertBefore(tab, openerTab.nextElementSibling);
+        if (openerTabsTab.index === index - 1) {
+          container.insertBefore(tab, openerTab.nextElementSibling);
+        } else {
+          container.appendChild(tab);
+        }
         container.classList.contains(CLASS_TAB_COLLAPSED) &&
           func.push(toggleTabGroupCollapsedState({target: tab}));
       } else if (list.length !== index && listedTab && listedTab.parentNode &&
@@ -1668,7 +1742,7 @@
             tab.classList.add(PINNED);
             tab.removeAttribute("draggable");
             container.appendChild(tab);
-            func.push(restoreTabContainers());
+            func.push(restoreTabContainers().then(setSessionsTabList));
           } else {
             const {
               nextElementSibling: pinnedNextElement,
@@ -1681,7 +1755,7 @@
             container.appendChild(tab);
             container.removeAttribute("hidden");
             pinnedParentNode.insertBefore(container, pinnedNextElement);
-            func.push(restoreTabContainers());
+            func.push(restoreTabContainers().then(setSessionsTabList));
           }
         }
         info.hasOwnProperty("status") && func.push(observeTab(tabId));
@@ -2054,7 +2128,10 @@
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-            func.push(closeTabGroup(tabParent).then(restoreTabContainers));
+            func.push(
+              closeTabGroup(tabParent).then(restoreTabContainers)
+                .then(setSessionsTabList)
+            );
           }
         }
         break;
@@ -2075,7 +2152,10 @@
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP) &&
               !tabParentClassList.contains(PINNED)) {
-            func.push(detachTabFromGroup(tab).then(restoreTabContainers));
+            func.push(
+              detachTabFromGroup(tab).then(restoreTabContainers)
+                .then(setSessionsTabList)
+            );
           }
         }
         break;
@@ -2128,7 +2208,10 @@
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
           if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-            func.push(ungroupTabs(tabParent).then(restoreTabContainers));
+            func.push(
+              ungroupTabs(tabParent).then(restoreTabContainers)
+                .then(setSessionsTabList)
+            );
           }
         }
         break;
@@ -2902,26 +2985,30 @@
   );
 
   tabs.onAttached.addListener((tabId, info) =>
-    handleAttachedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
+    handleAttachedTab(tabId, info).then(restoreTabContainers)
+      .then(setSessionsTabList).catch(throwErr)
   );
 
   tabs.onCreated.addListener(tabsTab =>
-    handleCreatedTab(tabsTab).then(restoreTabContainers).then(getLastClosedTab)
-      .catch(throwErr)
+    handleCreatedTab(tabsTab).then(restoreTabContainers)
+      .then(setSessionsTabList).then(getLastClosedTab).catch(throwErr)
   );
 
   tabs.onDetached.addListener((tabId, info) =>
     handleDetachedTab(tabId, info).then(restoreTabContainers)
-      .then(expandActivatedCollapsedTab).catch(throwErr)
+      .then(setSessionsTabList).then(expandActivatedCollapsedTab)
+      .catch(throwErr)
   );
 
   tabs.onMoved.addListener((tabId, info) =>
-    handleMovedTab(tabId, info).then(restoreTabContainers).catch(throwErr)
+    handleMovedTab(tabId, info).then(restoreTabContainers)
+      .then(setSessionsTabList).catch(throwErr)
   );
 
   tabs.onRemoved.addListener((tabId, info) =>
     handleRemovedTab(tabId, info).then(restoreTabContainers)
-      .then(getLastClosedTab).then(expandActivatedCollapsedTab).catch(throwErr)
+      .then(setSessionsTabList).then(getLastClosedTab)
+      .then(expandActivatedCollapsedTab).catch(throwErr)
   );
 
   tabs.onUpdated.addListener((tabId, info, tabsTab) =>
@@ -3057,5 +3144,5 @@
     localizeHtml(),
     makeConnection({name: TAB}),
   ])).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-    .then(getLastClosedTab).catch(throwErr);
+    .then(setSessionsTabList).then(getLastClosedTab).catch(throwErr);
 }
