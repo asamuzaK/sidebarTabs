@@ -187,6 +187,14 @@
     return func || null;
   };
 
+  /* sidebar */
+  const sidebar = {
+    incognito: false,
+    windowId: null,
+    context: null,
+    lastClosedTab: null,
+  };
+
   /* webext utils */
   /* tabs */
   /**
@@ -243,6 +251,32 @@
       );
     }
     return tabs.move(tabId, isObjectNotEmpty(opt) && opt || null);
+  };
+
+  /**
+   * move tabs in order
+   * @param {number} tabId - tab ID
+   * @param {Array} arr - array of tab IDs
+   * @param {number} indexShift - index shift
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const moveTabsInOrder = async (tabId, arr, indexShift) => {
+    const [id] = arr;
+    let func;
+    if (Number.isInteger(id) && indexShift) {
+      const tabsTab = await getTab(tabId);
+      if (tabsTab) {
+        const {windowId} = sidebar;
+        const {index} = tabsTab;
+        await moveTab(id, {index, windowId});
+        indexShift--;
+        arr = arr.length === 1 && [] || arr.slice(1);
+        if (indexShift) {
+          func = moveTabsInOrder(tabId, arr, indexShift);
+        }
+      }
+    }
+    return func || arr;
   };
 
   /**
@@ -429,14 +463,6 @@
       func = storage.local.set(data);
     }
     return func || null;
-  };
-
-  /* sidebar */
-  const sidebar = {
-    incognito: false,
-    windowId: null,
-    context: null,
-    lastClosedTab: null,
   };
 
   /**
@@ -1188,12 +1214,14 @@
     let func;
     if (tab) {
       let tabsTab = await detachTabFromGroup(tab);
-      if (!tabsTab) {
+      if (Array.isArray(tabsTab)) {
+        [tabsTab] = tabsTab;
+      } else if (!tabsTab) {
         tabsTab = tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
       }
-      const {index: tabIndex} = tabsTab;
+      const {id: tabId, index: tabIndex} = tabsTab;
       const {parentNode: tabParent} = tab;
-      const arr = [];
+      let arr = [], indexShift = 0;
       for (const item of items) {
         if (item !== tab) {
           const {dataset: itemDataset, parentNode: itemParent} = item;
@@ -1208,6 +1236,10 @@
               tabParent.classList.add(CLASS_TAB_GROUP);
               restoreTabContainer(itemParent);
             } else {
+              const itemIndex = getSidebarTabIndex(item);
+              if (itemIndex < tabIndex) {
+                indexShift++;
+              }
               itemDataset.group = true;
               arr.push(itemTabId);
             }
@@ -1216,11 +1248,18 @@
       }
       if (Number.isInteger(tabIndex) && arr.length) {
         const {windowId} = sidebar;
-        const opt = {
-          windowId,
-          index: tabIndex + 1,
-        };
-        func = moveTab(arr, opt);
+        let index;
+        if (indexShift) {
+          arr = await moveTabsInOrder(tabId, arr, indexShift);
+          if (Array.isArray(arr) && arr.length) {
+            index = tabIndex + indexShift;
+          }
+        } else {
+          index = tabIndex + 1;
+        }
+        if (Number.isInteger(index)) {
+          func = moveTab(arr, {index, windowId});
+        }
       }
     }
     return func || null;
@@ -1258,32 +1297,6 @@
       }
     }
     return items || null;
-  };
-
-  /**
-   * move tabs in order
-   * @param {number} tabId - tab ID
-   * @param {Array} arr - array of tab IDs
-   * @param {number} indexShift - index shift
-   * @returns {Promise.<Array>} - results of each handler
-   */
-  const moveTabsInOrder = async (tabId, arr, indexShift) => {
-    const [id] = arr;
-    let func;
-    if (Number.isInteger(id) && indexShift) {
-      const tabsTab = await getTab(tabId);
-      if (tabsTab) {
-        const {windowId} = sidebar;
-        const {index} = tabsTab;
-        await moveTab(id, {index, windowId});
-        indexShift--;
-        arr = arr.length === 1 && [] || arr.slice(1);
-        if (indexShift) {
-          func = moveTabsInOrder(tabId, arr, indexShift);
-        }
-      }
-    }
-    return func || arr;
   };
 
   /* DnD */
