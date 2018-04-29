@@ -552,6 +552,8 @@
    * @returns {void}
    */
   const initSidebar = async (bool = false) => {
+    const {windowId} = sidebar;
+    await sessions.setWindowValue(windowId, TAB_LIST, null);
     await storage.local.clear();
     window.location.reload(bool);
   };
