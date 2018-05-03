@@ -727,6 +727,21 @@
   };
 
   /**
+   * remove highlight class from tabs
+   * @returns {Object} - NodeList
+   */
+  const removeHighlightClassFromTabs = async () => {
+    const items =
+      document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+    if (items && items.length) {
+      for (const item of items) {
+        item.classList.remove(CLASS_TAB_HIGHLIGHT);
+      }
+    }
+    return items || null;
+  };
+
+  /**
    * handle clicked tab
    * @param {!Object} evt - event
    * @returns {Promise.<Array>} - results of each handler
@@ -737,7 +752,10 @@
     if (ctrlKey) {
       func.push(toggleTabSelected(target));
     } else {
-      func.push(activateTab(target));
+      func.push(
+        activateTab(target),
+        removeHighlightClassFromTabs(),
+      );
     }
     return Promise.all(func).catch(throwErr);
   };
@@ -1284,21 +1302,6 @@
         parentNode.insertBefore(container, node);
       }
     }
-  };
-
-  /**
-   * remove highlight class from tabs
-   * @returns {Object} - NodeList
-   */
-  const removeHighlightClassFromTabs = async () => {
-    const items =
-      document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
-    if (items && items.length) {
-      for (const item of items) {
-        item.classList.remove(CLASS_TAB_HIGHLIGHT);
-      }
-    }
-    return items || null;
   };
 
   /* DnD */
