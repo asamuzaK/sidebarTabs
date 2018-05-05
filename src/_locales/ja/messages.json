@@ -194,7 +194,7 @@
       }
     }
   },
-  "expandTabs_tooltip": {
+  "expandTabGroup_tooltip": {
     "message": "グループのタブを展開します"
   },
   "groupSelectedTabs": {

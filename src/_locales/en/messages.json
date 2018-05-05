@@ -194,7 +194,7 @@
       }
     }
   },
-  "expandTabs_tooltip": {
+  "expandTabGroup_tooltip": {
     "message": "Expand Grouped Tabs"
   },
   "groupSelectedTabs": {
