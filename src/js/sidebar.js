@@ -653,7 +653,7 @@
       const items = document.querySelectorAll(TAB_QUERY);
       const l = items.length;
       let i = 0;
-      while (i < l && !index) {
+      while (i < l && !Number.isInteger(index)) {
         if (items[i] === tab) {
           index = i;
           break;
@@ -1257,7 +1257,7 @@
               restoreTabContainer(itemParent);
             } else {
               const itemIndex = getSidebarTabIndex(item);
-              if (itemIndex < tabIndex) {
+              if (Number.isInteger(itemIndex) && itemIndex < tabIndex) {
                 indexShift++;
               }
               itemDataset.group = true;
@@ -1335,7 +1335,7 @@
               restoreTabContainer(tabParent);
             } else {
               const tabIndex = getSidebarTabIndex(tab);
-              if (tabIndex < dropIndex) {
+              if (Number.isInteger(tabIndex) && tabIndex < dropIndex) {
                 indexShift++;
               }
               tabDataset.group = !!shiftKey;
@@ -2761,7 +2761,7 @@
               } else {
                 const index = getSidebarTabIndex(tab);
                 const obj = document.querySelectorAll(TAB_QUERY);
-                if (obj.length - 1 > index) {
+                if (Number.isInteger(index) && obj.length - 1 > index) {
                   data.enabled = true;
                 } else {
                   data.enabled = false;
