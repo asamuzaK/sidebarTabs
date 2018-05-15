@@ -472,7 +472,6 @@
   const setSidebar = async () => {
     const win = await getCurrentWindow({
       populate: true,
-      windowTypes: ["normal"],
     });
     if (win) {
       const {focused, id, incognito} = win;
@@ -779,7 +778,6 @@
   const getSessionsTabList = async key => {
     const win = await getCurrentWindow({
       populate: true,
-      windowTypes: ["normal"],
     });
     let tabList;
     if (win && isString(key)) {
@@ -799,7 +797,6 @@
   const setSessionsTabList = async () => {
     const win = await getCurrentWindow({
       populate: true,
-      windowTypes: ["normal"],
     });
     if (win) {
       const {id: windowId, incognito} = win;
