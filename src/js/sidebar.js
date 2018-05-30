@@ -839,6 +839,8 @@
               "../img/twitter-logo-blue.svg");
   favicon.set("https://abs.twimg.com/icons/apple-touch-icon-192x192.png",
               "../img/twitter-logo-blue.svg");
+  favicon.set("chrome://browser/skin/customize.svg",
+              "../img/customize-favicon.svg");
   favicon.set("chrome://browser/skin/settings.svg",
               "../img/options-favicon.svg");
   favicon.set("chrome://mozapps/skin/extensions/extensionGeneric-16.svg",
