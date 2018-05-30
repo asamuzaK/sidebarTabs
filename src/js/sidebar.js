@@ -746,9 +746,11 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const handleClickedTab = async evt => {
-    const {ctrlKey, target} = evt;
+    const {ctrlKey, metaKey, target} = evt;
+    const {os} = await runtime.getPlatformInfo();
+    const isMac = os === "mac";
     const func = [];
-    if (ctrlKey) {
+    if (isMac && metaKey || !isMac && ctrlKey) {
       func.push(toggleTabSelected(target));
     } else {
       func.push(
