@@ -880,7 +880,13 @@
       if (isString(favIconUrl)) {
         const {protocol} = new URL(favIconUrl);
         if (/(?:f(?:tp|ile)|https?):/.test(protocol)) {
-          src = await fetch(favIconUrl).then(res => {
+          const opt = {
+            cache: "force-cache",
+            credentials: "include",
+            method: "GET",
+            mode: "cors",
+          };
+          src = await fetch(favIconUrl, opt).then(res => {
             const {ok, url} = res;
             return ok && url || null;
           }).catch(() => favicon.get(favIconUrl));
