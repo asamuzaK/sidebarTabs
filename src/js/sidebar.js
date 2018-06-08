@@ -475,7 +475,7 @@
         } = await storage.local.get(TAB_GROUP_NEW_TAB_AT_END);
         if (tabGroupPutNewTabAtTheEnd) {
           const {checked} = tabGroupPutNewTabAtTheEnd;
-          sidebar.tabGroupPutNewTabAtTheEnd = checked;
+          sidebar.tabGroupPutNewTabAtTheEnd = !!checked;
         }
         sidebar.incognito = incognito;
         sidebar.windowId = id;
