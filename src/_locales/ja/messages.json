@@ -5,6 +5,9 @@
   "extensionDescription": {
     "message": "サイドバーにタブをエミュレートし、タブを縦に並べて表示します。さらに、タブをグループ化して折りたたみ・展開することが可能です。"
   },
+  "extensionLocale": {
+    "message": "ja"
+  },
   "extensionName": {
     "message": "サイドバータブ"
   },
@@ -268,6 +271,42 @@
   },
   "newTabButton_title": {
     "message": "新しいタブを開きます"
+  },
+    "optionsInit": {
+    "message": "初期化"
+  },
+  "optionsInitSidebar": {
+    "message": "サイドバータブを初期化"
+  },
+  "optionsInitSidebarDetail": {
+    "message": "サイドバータブを初期化します。すべての設定データが削除されます。"
+  },
+  "optionsTabGroup": {
+    "message": "タブグループ"
+  },
+  "optionsTabGroupPutNewTabAtTheEnd": {
+    "message": "グループ内で新たに開いたタブは常にグループの末尾に置く"
+  },
+  "optionsTabGroupPutNewTabAtTheEndDetail": {
+    "message": "タブグループ内のタブから新しいタブを開くときは、新しいタブを、常にタブグループの末尾に開きます。"
+  },
+  "optionsTheme": {
+    "message": "サイドバーテーマ"
+  },
+  "optionsThemeDarkLabel": {
+    "message": "暗いテーマ"
+  },
+  "optionsThemeDefaultLabel": {
+    "message": "デフォルトのテーマ"
+  },
+  "optionsThemeDetail": {
+    "message": "テーマを選択してください。"
+  },
+  "optionsThemeLightLabel": {
+    "message": "明るいテーマ"
+  },
+  "optionsTitle": {
+    "message": "サイドバータブ - 設定"
   },
   "pinTab": {
     "message": "タブをピン留め"

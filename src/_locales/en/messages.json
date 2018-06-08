@@ -5,6 +5,9 @@
   "extensionDescription": {
     "message": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them."
   },
+  "extensionLocale": {
+    "message": "en"
+  },
   "extensionName": {
     "message": "Sidebar Tabs"
   },
@@ -268,6 +271,42 @@
   },
   "newTabButton_title": {
     "message": "Open a new tab"
+  },
+  "optionsInit": {
+    "message": "init"
+  },
+  "optionsInitSidebar": {
+    "message": "Init Sidebar Tabs"
+  },
+  "optionsInitSidebarDetail": {
+    "message": "Initialize Sidebar Tabs. All configuration data will be removed."
+  },
+  "optionsTabGroup": {
+    "message": "Tab Group"
+  },
+  "optionsTabGroupPutNewTabAtTheEnd": {
+    "message": "Always put the newly opened tab at the end of the group"
+  },
+  "optionsTabGroupPutNewTabAtTheEndDetail": {
+    "message": "When opening a new tab from a grouped tab, open that tab at the end of the tab group, not below the opener tab."
+  },
+  "optionsTheme": {
+    "message": "Sidebar Theme"
+  },
+  "optionsThemeDarkLabel": {
+    "message": "Dark Theme"
+  },
+  "optionsThemeDefaultLabel": {
+    "message": "Default Theme"
+  },
+  "optionsThemeDetail": {
+    "message": "Choose theme."
+  },
+  "optionsThemeLightLabel": {
+    "message": "Light Theme"
+  },
+  "optionsTitle": {
+    "message": "Sidebar Tabs - Options"
   },
   "pinTab": {
     "message": "Pin Tab"
