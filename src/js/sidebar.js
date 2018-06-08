@@ -39,10 +39,9 @@
   const CLASS_THEME_LIGHT = "light-theme";
   const COOKIE_STORE_DEFAULT = "firefox-default";
   const DATA_ATTR_I18N = "data-i18n";
+  const EXT_INIT = "initExtension";
   const LANG = "lang";
   const MENU = "sidebar-tabs-menu";
-  const MENU_SIDEBAR_INIT = "sidebar-tabs-menu-sidebar-init";
-  const MENU_SIDEBAR_OPT = "sidebar-tabs-menu-sidebar-tabs-options";
   const MENU_TAB = "sidebar-tabs-menu-tab";
   const MENU_TABS_BOOKMARK_ALL = "sidebar-tabs-menu-tabs-bookmark-all";
   const MENU_TABS_RELOAD_ALL = "sidebar-tabs-menu-tabs-reload-all";
@@ -68,16 +67,10 @@
   const MENU_TAB_SYNC = "sidebar-tabs-menu-tab-sync";
   const MENU_TAB_TABS_CLOSE_END = "sidebar-tabs-menu-tab-close-end";
   const MENU_TAB_TABS_CLOSE_OTHER = "sidebar-tabs-menu-tab-close-other";
-  const MENU_THEME_DARK = "sidebar-tabs-menu-sidebar-theme-dark";
-  const MENU_THEME_DEFAULT = "sidebar-tabs-menu-sidebar-theme-default";
-  const MENU_THEME_LIGHT = "sidebar-tabs-menu-sidebar-theme-light";
-  const MENU_THEME_SELECT = "sidebar-tabs-menu-sidebar-theme-select";
   const MIME_TYPE = "text/plain";
   const MOUSE_BUTTON_RIGHT = 2;
   const NEW_TAB = "newtab";
   const PINNED = "pinned";
-  const SIDEBAR_INIT = "initSidebar";
-  const SIDEBAR_OPT = "sidebarTabsOptions";
   const TAB = "tab";
   const TABS_BOOKMARK_ALL = "bookmarkAllTabs";
   const TABS_CLOSE_END = "closeTabsToTheEnd";
@@ -94,6 +87,7 @@
   const TAB_GROUP_DETACH = "detachTabFromGroup";
   const TAB_GROUP_DUPE = "dupeTabGroup";
   const TAB_GROUP_EXPAND = "expandTabGroup";
+  const TAB_GROUP_NEW_TAB_AT_END = "tabGroupPutNewTabAtTheEnd";
   const TAB_GROUP_PIN = "pinTabGroup";
   const TAB_GROUP_SELECTED = "groupSelectedTabs";
   const TAB_GROUP_SYNC = "syncTabGroup";
@@ -113,7 +107,6 @@
   const THEME_LIGHT = "lightTheme";
   const THEME_LIGHT_ID =
     "firefox-compact-light@mozilla.org@personas.mozilla.org";
-  const THEME_SELECT = "selectTheme";
   const TIME_3SEC = 3000;
   const TYPE_FROM = 8;
   const TYPE_TO = -1;
@@ -193,6 +186,7 @@
     windowId: null,
     context: null,
     lastClosedTab: null,
+    tabGroupPutNewTabAtTheEnd: false,
   };
 
   /* webext utils */
@@ -476,6 +470,13 @@
     if (win) {
       const {focused, id, incognito} = win;
       if (focused) {
+        const {
+          tabGroupPutNewTabAtTheEnd,
+        } = await storage.local.get(TAB_GROUP_NEW_TAB_AT_END);
+        if (tabGroupPutNewTabAtTheEnd) {
+          const {checked} = tabGroupPutNewTabAtTheEnd;
+          sidebar.tabGroupPutNewTabAtTheEnd = checked;
+        }
         sidebar.incognito = incognito;
         sidebar.windowId = id;
       }
@@ -2089,9 +2090,6 @@
                       JSON.parse(tab.dataset.tab);
     const func = [];
     switch (id) {
-      case MENU_SIDEBAR_INIT:
-        func.push(initSidebar(true));
-        break;
       case MENU_TABS_BOOKMARK_ALL:
         func.push(bookmarkAllTabs());
         break;
@@ -2289,15 +2287,6 @@
         }
         break;
       }
-      case MENU_THEME_DARK:
-        func.push(setTheme([THEME_DARK]));
-        break;
-      case MENU_THEME_DEFAULT:
-        func.push(setTheme([THEME_DEFAULT]));
-        break;
-      case MENU_THEME_LIGHT:
-        func.push(setTheme([THEME_LIGHT]));
-        break;
       default:
         throw new Error(`No handler found for ${id}.`);
     }
@@ -2520,57 +2509,6 @@
           type: "normal",
           enabled: false,
           onclick: true,
-        },
-        /* sidebar tabs options*/
-        [SIDEBAR_OPT]: {
-          id: MENU_SIDEBAR_OPT,
-          title: i18n.getMessage(`${SIDEBAR_OPT}_title`, "(O)"),
-          contexts: ["page"],
-          type: "normal",
-          enabled: true,
-          subItems: {
-            [THEME_SELECT]: {
-              id: MENU_THEME_SELECT,
-              title: i18n.getMessage(`${THEME_SELECT}_title`, "(S)"),
-              contexts: ["page"],
-              type: "normal",
-              enabled: true,
-              subItems: {
-                [THEME_DEFAULT]: {
-                  id: MENU_THEME_DEFAULT,
-                  title: i18n.getMessage(`${THEME_DEFAULT}_title`, "(T)"),
-                  contexts: ["page"],
-                  type: "normal",
-                  enabled: true,
-                  onclick: true,
-                },
-                [THEME_LIGHT]: {
-                  id: MENU_THEME_LIGHT,
-                  title: i18n.getMessage(`${THEME_LIGHT}_title`, "L"),
-                  contexts: ["page"],
-                  type: "normal",
-                  enabled: true,
-                  onclick: true,
-                },
-                [THEME_DARK]: {
-                  id: MENU_THEME_DARK,
-                  title: i18n.getMessage(`${THEME_DARK}_title`, "(D)"),
-                  contexts: ["page"],
-                  type: "normal",
-                  enabled: true,
-                  onclick: true,
-                },
-              },
-            },
-            [SIDEBAR_INIT]: {
-              id: MENU_SIDEBAR_INIT,
-              title: i18n.getMessage(`${SIDEBAR_INIT}_title`, "(I)"),
-              contexts: ["page"],
-              type: "normal",
-              enabled: true,
-              onclick: true,
-            },
-          },
         },
       },
     },
@@ -2973,6 +2911,12 @@
     for (const item of items) {
       const obj = msg[item];
       switch (item) {
+        case EXT_INIT: {
+          if (obj) {
+            func.push(initSidebar(obj));
+          }
+          break;
+        }
         case TAB_OBSERVE: {
           if (obj) {
             const {tab} = sender;
@@ -2987,7 +2931,53 @@
     return Promise.all(func);
   };
 
+  /**
+   * set variable
+   * @param {string} item - item
+   * @param {Object} obj - value object
+   * @param {boolean} changed - changed
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const setVar = async (item, obj, changed = false) => {
+    const func = [];
+    if (item && obj) {
+      const {checked} = obj;
+      switch (item) {
+        case TAB_GROUP_NEW_TAB_AT_END:
+          sidebar[item] = !!checked;
+          break;
+        case THEME_DARK:
+        case THEME_DEFAULT:
+        case THEME_LIGHT:
+          changed && checked && func.push(setTheme([item]));
+          break;
+        default:
+      }
+    }
+    return Promise.all(func);
+  };
+
+  /**
+   * set variables
+   * @param {Object} data - data
+   * @returns {Promise.<Array>} - results of each handler
+   */
+  const setVars = async (data = {}) => {
+    const func = [];
+    const items = Object.entries(data);
+    if (items.length) {
+      for (const item of items) {
+        const [key, value] = item;
+        const {newValue} = value;
+        func.push(setVar(key, newValue || value, !!newValue));
+      }
+    }
+    return Promise.all(func);
+  };
+
   /* listeners */
+  storage.onChanged.addListener(data => setVars(data).catch(throwErr));
+
   runtime.onMessage.addListener((msg, sender) => {
     handleMsg(msg, sender).catch(throwErr);
   });

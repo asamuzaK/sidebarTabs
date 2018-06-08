@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title data-i18n="optionsTitle">Sidebar Tabs - Options</title>
+    <link rel="stylesheet" href="../css/options.css" />
+    <script src="../js/options.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1 data-i18n="optionsTitle">Sidebar Tabs - Options</h1>
+    </header>
+    <main>
+      <form id="optionsForm">
+        <fieldset>
+          <legend data-i18n="optionsTheme">
+            Sidebar Theme
+          </legend>
+          <div>
+            <p aria-details="themeDetail">
+              <input type="radio" id="defaultTheme" name="themeRadio"
+                     value="default-theme" />
+              <label for="themeDefault" data-i18n="optionsThemeDefaultLabel">
+                Default Theme
+              </label>
+              <input type="radio" id="lightTheme" name="themeRadio"
+                     value="light-theme" />
+              <label for="themeLight" data-i18n="optionsThemeLightLabel">
+                Light Theme
+              </label>
+              <input type="radio" id="darkTheme" name="themeRadio"
+                     value="dark-theme" />
+              <label for="themeDark" data-i18n="optionsThemeDarkLabel">
+                Dark Theme
+              </label>
+            </p>
+            <details id="themeDetail">
+              <div>
+                <p data-i18n="optionsThemeDetail">
+                  Choose theme.
+                </p>
+              </div>
+            </details>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="optionsTabGroup">
+            Tab Group
+          </legend>
+          <div>
+            <p>
+              <span>
+                <input type="checkbox" id="tabGroupPutNewTabAtTheEnd" />
+                <label for="tabGroupPutNewTabAtTheEnd" class="checkboxLabel"
+                       data-i18n="optionsTabGroupPutNewTabAtTheEnd"
+                       aria-details="tabGroupPutNewTabAtTheEndDetail">
+                  Always put the newly opened tab at the end of the group
+                </label>
+              </span>
+            </p>
+            <details id="tabGroupPutNewTabAtTheEndDetail">
+              <div>
+                <p data-i18n="optionsTabGroupPutNewTabAtTheEndDetail">
+                  When opening a new tab from a grouped tab, open that tab at the end of the tab group, not below the opener tab.
+                </p>
+              </div>
+            </details>
+          </div>
+        </fieldset>
+      </form>
+      <form id="extentionForm">
+        <fieldset>
+          <legend data-i18n="optionsInitSidebar">
+            Init Sidebar Tabs
+          </legend>
+          <div>
+            <p aria-details="initSidebarDetail">
+              <button id="initExtension" data-i18n="optionsInit">
+                Init
+              </button>
+            </p>
+            <details id="initSidebarDetail">
+              <div>
+                <p data-i18n="optionsInitSidebarDetail">
+                  Initialize Sidebar Tabs.
+                  All configuration data will be removed.
+                </p>
+              </div>
+            </details>
+          </div>
+        </fieldset>
+      </form>
+    </main>
+  </body>
+</html>
