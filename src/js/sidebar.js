@@ -1663,7 +1663,23 @@
                  openerTabsTab) {
         await addDragEventListener(tab);
         container = openerTab.parentNode;
-        if (openerTabsTab.index === index - 1) {
+        if (sidebar.tabGroupPutNewTabAtTheEnd) {
+          const {lastElementChild: lastChildTab} = container;
+          if (lastChildTab && lastChildTab.dataset &&
+              lastChildTab.dataset.tabId) {
+            const lastChildTabId = lastChildTab.dataset.tabId * 1;
+            const {index: lastChildTabIndex} = await getTab(lastChildTabId);
+            if (index < lastChildTabIndex) {
+              await moveTab(id, {
+                index: lastChildTabIndex,
+                windowId: sidebar.windowId,
+              });
+            }
+            container.appendChild(tab);
+          } else {
+            container.insertBefore(tab, openerTab.nextElementSibling);
+          }
+        } else if (openerTabsTab.index === index - 1) {
           container.insertBefore(tab, openerTab.nextElementSibling);
         } else {
           container.appendChild(tab);
@@ -1789,67 +1805,69 @@
     const {fromIndex, toIndex, windowId} = info;
     if (windowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (toIndex === 0) {
-        const tabsTab = await getTab(tabId);
-        const {pinned} = tabsTab;
-        if (pinned) {
-          const container = document.getElementById(PINNED);
-          const {firstElementChild} = container;
-          container.insertBefore(tab, firstElementChild);
-        } else {
-          const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-          const [target] = items;
-          container.appendChild(tab);
-          container.removeAttribute("hidden");
-          target.parentNode.insertBefore(container, target);
-        }
-      } else {
-        const lastTabIndex = items.length - 1;
-        const index = toIndex === lastTabIndex || fromIndex >= toIndex ?
-          toIndex :
-          toIndex + 1;
-        const target = items[index];
-        const {parentNode} = target;
-        const unPinned =
-          toIndex > fromIndex &&
-          items[fromIndex].parentNode.classList.contains(PINNED) &&
-          items[toIndex].parentNode.classList.contains(PINNED) &&
-          items[toIndex] === items[toIndex].parentNode.lastElementChild;
-        const detached =
-          toIndex > fromIndex &&
-          items[fromIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
-          items[toIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
-          items[toIndex] === items[toIndex].parentNode.lastElementChild;
-        const group = tab.dataset.group === "true";
-        if (!group && parentNode.childElementCount === 1 || unPinned ||
-            detached) {
-          const {parentNode: parentParentNode} = parentNode;
-          const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
-          if (container) {
+      if (tab) {
+        const items = document.querySelectorAll(TAB_QUERY);
+        if (toIndex === 0) {
+          const tabsTab = await getTab(tabId);
+          const {pinned} = tabsTab;
+          if (pinned) {
+            const container = document.getElementById(PINNED);
+            const {firstElementChild} = container;
+            container.insertBefore(tab, firstElementChild);
+          } else {
+            const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            const [target] = items;
             container.appendChild(tab);
             container.removeAttribute("hidden");
-            if (toIndex === lastTabIndex) {
-              const newtab = document.getElementById(NEW_TAB);
-              parentParentNode.insertBefore(container, newtab);
-            } else {
-              parentParentNode.insertBefore(container, parentNode);
-            }
+            target.parentNode.insertBefore(container, target);
           }
         } else {
-          const groupIndex = toIndex === lastTabIndex || fromIndex < toIndex ?
+          const lastTabIndex = items.length - 1;
+          const index = toIndex === lastTabIndex || fromIndex >= toIndex ?
             toIndex :
-            toIndex - 1;
-          const groupTarget = items[groupIndex];
-          const {parentNode: groupParent, nextElementSibling} = groupTarget;
-          if (toIndex === lastTabIndex) {
-            groupParent.appendChild(tab);
+            toIndex + 1;
+          const target = items[index];
+          const {parentNode} = target;
+          const unPinned =
+            toIndex > fromIndex &&
+            items[fromIndex].parentNode.classList.contains(PINNED) &&
+            items[toIndex].parentNode.classList.contains(PINNED) &&
+            items[toIndex] === items[toIndex].parentNode.lastElementChild;
+          const detached =
+            toIndex > fromIndex &&
+            items[fromIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
+            items[toIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
+            items[toIndex] === items[toIndex].parentNode.lastElementChild;
+          const group = tab.dataset.group === "true";
+          if (!group && parentNode.childElementCount === 1 || unPinned ||
+              detached) {
+            const {parentNode: parentParentNode} = parentNode;
+            const container = await getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            if (container) {
+              container.appendChild(tab);
+              container.removeAttribute("hidden");
+              if (toIndex === lastTabIndex) {
+                const newtab = document.getElementById(NEW_TAB);
+                parentParentNode.insertBefore(container, newtab);
+              } else {
+                parentParentNode.insertBefore(container, parentNode);
+              }
+            }
           } else {
-            groupParent.insertBefore(tab, nextElementSibling);
+            const groupIndex = toIndex === lastTabIndex || fromIndex < toIndex ?
+              toIndex :
+              toIndex - 1;
+            const groupTarget = items[groupIndex];
+            const {parentNode: groupParent, nextElementSibling} = groupTarget;
+            if (toIndex === lastTabIndex) {
+              groupParent.appendChild(tab);
+            } else {
+              groupParent.insertBefore(tab, nextElementSibling);
+            }
           }
         }
+        tab.dataset.group = null;
       }
-      tab.dataset.group = null;
     }
   };
 
