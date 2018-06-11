@@ -836,7 +836,7 @@
 
   /* sidebar tab content */
   /* favicon fallbacks */
-  const favicon = new WeakMap();
+  const favicon = new Map();
 
   favicon.set("https://abs.twimg.com/favicons/favicon.ico",
               "../img/twitter-logo-blue.svg");
