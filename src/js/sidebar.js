@@ -182,6 +182,7 @@
 
   /* sidebar */
   const sidebar = {
+    firstSelectedTab: null,
     incognito: false,
     windowId: null,
     context: null,
@@ -721,6 +722,11 @@
       const {classList} = tab;
       if (!classList.contains(PINNED)) {
         classList.toggle(CLASS_TAB_HIGHLIGHT);
+        if (sidebar.firstSelectedTab === tab) {
+          sidebar.firstSelectedTab = null;
+        } else if (!sidebar.firstSelectedTab) {
+          sidebar.firstSelectedTab = tab;
+        }
       }
     }
     return tab || null;
@@ -736,9 +742,63 @@
     if (items && items.length) {
       for (const item of items) {
         item.classList.remove(CLASS_TAB_HIGHLIGHT);
+        if (sidebar.firstSelectedTab === item) {
+          sidebar.firstSelectedTab = null;
+        }
       }
     }
     return items || null;
+  };
+
+  /**
+   * get tabs in range
+   * @param {Object} tabA - tab A
+   * @param {Object} tabB - tab B
+   * @returns {Array} - Array of tabs
+   */
+  const getTabsInRange = async (tabA, tabB) => {
+    const arr = [];
+    const tabAIndex = await getSidebarTabIndex(tabA);
+    const tabBIndex = await getSidebarTabIndex(tabB);
+    if (Number.isInteger(tabAIndex) && Number.isInteger(tabBIndex)) {
+      const items = document.querySelectorAll(TAB_QUERY);
+      let fromIndex, toIndex;
+      if (tabAIndex > tabBIndex) {
+        fromIndex = tabBIndex;
+        toIndex = tabAIndex;
+      } else {
+        fromIndex = tabAIndex;
+        toIndex = tabBIndex;
+      }
+      for (let i = fromIndex; i <= toIndex; i++) {
+        arr.push(items[i]);
+      }
+    }
+    return arr;
+  };
+
+  /**
+   * select tabs from range
+   * @param {Array} arr - array of tabs
+   * @returns {Promise.<Array>} - result of each handler
+   */
+  const selectTabsFromRange = async (arr = []) => {
+    const func = [];
+    if (Array.isArray(arr) && arr.length) {
+      const {firstSelectedTab} = sidebar;
+      const selectedTabs =
+        document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+      for (const item of selectedTabs) {
+        firstSelectedTab !== item && item.classList.remove(CLASS_TAB_HIGHLIGHT);
+      }
+      for (const item of arr) {
+        if (item && item.nodeType === Node.ELEMENT_NODE &&
+            firstSelectedTab !== item) {
+          func.push(toggleTabSelected(item));
+        }
+      }
+    }
+    return Promise.all(func);
   };
 
   /**
@@ -747,11 +807,21 @@
    * @returns {Promise.<Array>} - results of each handler
    */
   const handleClickedTab = async evt => {
-    const {ctrlKey, metaKey, target} = evt;
+    const {ctrlKey, metaKey, shiftKey, target} = evt;
     const {os} = await runtime.getPlatformInfo();
     const isMac = os === "mac";
     const func = [];
-    if (isMac && metaKey || !isMac && ctrlKey) {
+    if (shiftKey) {
+      const {firstSelectedTab} = sidebar;
+      if (firstSelectedTab) {
+        const tab = await getSidebarTab(target);
+        func.push(
+          getTabsInRange(tab, firstSelectedTab).then(selectTabsFromRange)
+        );
+      } else {
+        func.push(toggleTabSelected(target));
+      }
+    } else if (isMac && metaKey || !isMac && ctrlKey) {
       func.push(toggleTabSelected(target));
     } else {
       func.push(
