@@ -2184,13 +2184,6 @@
       case MENU_TABS_RELOAD_ALL:
         func.push(reloadAllTabs());
         break;
-      case MENU_TAB_MUTE: {
-        if (Number.isInteger(tabId) && tabsTab) {
-          const {mutedInfo: {muted}} = tabsTab;
-          func.push(updateTab(tabId, {muted: !muted}));
-        }
-        break;
-      }
       case MENU_TAB_BOOKMARK: {
         if (tabsTab && !tabsTab.pinned) {
           const {title, url} = tabsTab;
@@ -2322,6 +2315,13 @@
           }));
         }
         break;
+      case MENU_TAB_MUTE: {
+        if (Number.isInteger(tabId) && tabsTab) {
+          const {mutedInfo: {muted}} = tabsTab;
+          func.push(updateTab(tabId, {muted: !muted}));
+        }
+        break;
+      }
       case MENU_TAB_PIN: {
         if (tabsTab) {
           const {pinned} = tabsTab;
