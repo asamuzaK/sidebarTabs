@@ -14,8 +14,6 @@
   const {WINDOW_ID_CURRENT} = windows;
   const ACTIVE = "active";
   const AUDIBLE = "audible";
-  const AUDIO_MUTE = "muteAudio";
-  const AUDIO_MUTE_UNMUTE = "unmuteAudio";
   const CLASS_MENU = "context-menu";
   const CLASS_MENU_DISABLED = "disabled";
   const CLASS_MENU_LABEL = "menu-item-label";
@@ -45,7 +43,6 @@
   const MENU_TAB = "sidebar-tabs-menu-tab";
   const MENU_TABS_BOOKMARK_ALL = "sidebar-tabs-menu-tabs-bookmark-all";
   const MENU_TABS_RELOAD_ALL = "sidebar-tabs-menu-tabs-reload-all";
-  const MENU_TAB_AUDIO = "sidebar-tabs-menu-tab-audio";
   const MENU_TAB_BOOKMARK = "sidebar-tabs-menu-tab-bookmark";
   const MENU_TAB_CLOSE = "sidebar-tabs-menu-tab-close";
   const MENU_TAB_CLOSE_UNDO = "sidebar-tabs-menu-tab-close-undo";
@@ -62,6 +59,7 @@
   const MENU_TAB_GROUP_SYNC = "sidebar-tabs-menu-tab-group-sync";
   const MENU_TAB_GROUP_UNGROUP = "sidebar-tabs-menu-tab-group-ungroup";
   const MENU_TAB_MOVE_WIN_NEW = "sidebar-tabs-menu-tab-new-win-move";
+  const MENU_TAB_MUTE = "sidebar-tabs-menu-tab-mute";
   const MENU_TAB_PIN = "sidebar-tabs-menu-tab-pin";
   const MENU_TAB_RELOAD = "sidebar-tabs-menu-tab-reload";
   const MENU_TAB_SYNC = "sidebar-tabs-menu-tab-sync";
@@ -94,6 +92,8 @@
   const TAB_GROUP_RELOAD = "reloadTabGroup";
   const TAB_GROUP_UNGROUP = "ungroupTabs";
   const TAB_LIST = "tabList";
+  const TAB_MUTE = "muteAudio";
+  const TAB_MUTE_UNMUTE = "unmuteAudio";
   const TAB_OBSERVE = "observeTab";
   const TAB_MOVE_WIN_NEW = "moveTabToNewWindow";
   const TAB_PIN = "pinTab";
@@ -1103,9 +1103,9 @@
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       const {audible, muted} = info;
       if (muted) {
-        elm.title = i18n.getMessage(`${AUDIO_MUTE_UNMUTE}_tooltip`);
+        elm.title = i18n.getMessage(`${TAB_MUTE_UNMUTE}_tooltip`);
       } else if (audible) {
-        elm.title = i18n.getMessage(`${AUDIO_MUTE}_tooltip`);
+        elm.title = i18n.getMessage(`${TAB_MUTE}_tooltip`);
       } else {
         elm.title = "";
       }
@@ -1122,10 +1122,10 @@
     if (elm && elm.nodeType === Node.ELEMENT_NODE) {
       const {audible, muted} = info;
       if (muted) {
-        elm.alt = i18n.getMessage(`${AUDIO_MUTE_UNMUTE}`);
+        elm.alt = i18n.getMessage(`${TAB_MUTE_UNMUTE}`);
         elm.src = URL_AUDIO_MUTED;
       } else if (audible) {
-        elm.alt = i18n.getMessage(`${AUDIO_MUTE}`);
+        elm.alt = i18n.getMessage(`${TAB_MUTE}`);
         elm.src = URL_AUDIO_PLAYING;
       } else {
         elm.alt = "";
@@ -2184,7 +2184,7 @@
       case MENU_TABS_RELOAD_ALL:
         func.push(reloadAllTabs());
         break;
-      case MENU_TAB_AUDIO: {
+      case MENU_TAB_MUTE: {
         if (Number.isInteger(tabId) && tabsTab) {
           const {mutedInfo: {muted}} = tabsTab;
           func.push(updateTab(tabId, {muted: !muted}));
@@ -2406,14 +2406,14 @@
               enabled: false,
               onclick: true,
             },
-            [AUDIO_MUTE]: {
-              id: MENU_TAB_AUDIO,
-              title: i18n.getMessage(`${AUDIO_MUTE}_title`, "(M)"),
+            [TAB_MUTE]: {
+              id: MENU_TAB_MUTE,
+              title: i18n.getMessage(`${TAB_MUTE}_title`, "(M)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
               enabled: false,
               onclick: true,
-              toggleTitle: i18n.getMessage(`${AUDIO_MUTE_UNMUTE}_title`, "(M)"),
+              toggleTitle: i18n.getMessage(`${TAB_MUTE_UNMUTE}_title`, "(M)"),
             },
             [TAB_PIN]: {
               id: MENU_TAB_PIN,
@@ -2724,13 +2724,13 @@
       const tab = await getSidebarTab(target);
       const tabMenu = menuItems.sidebarTabs.subItems[TAB];
       const tabKeys = [
-        AUDIO_MUTE,
         TABS_CLOSE_END,
         TABS_CLOSE_OTHER,
         TAB_BOOKMARK,
         TAB_CLOSE,
         TAB_DUPE,
         TAB_MOVE_WIN_NEW,
+        TAB_MUTE,
         TAB_PIN,
         TAB_RELOAD,
         TAB_SYNC,
@@ -2770,16 +2770,6 @@
           const {id, title, toggleTitle} = item;
           const data = {};
           switch (itemKey) {
-            case AUDIO_MUTE: {
-              const {mutedInfo: {muted}} = tabsTab;
-              data.enabled = true;
-              if (muted) {
-                data.title = toggleTitle;
-              } else {
-                data.title = title;
-              }
-              break;
-            }
             case TAB_DUPE:
               if (tabsTab.pinned) {
                 data.enabled = false;
@@ -2817,6 +2807,16 @@
                 }
               }
               data.title = title;
+              break;
+            }
+            case TAB_MUTE: {
+              const {mutedInfo: {muted}} = tabsTab;
+              data.enabled = true;
+              if (muted) {
+                data.title = toggleTitle;
+              } else {
+                data.title = title;
+              }
               break;
             }
             case TAB_PIN:

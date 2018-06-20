@@ -248,11 +248,11 @@
       }
     }
   },
-  "muteAudio": {
-    "message": "Mute Audio"
+  "muteTab": {
+    "message": "Mute Tab"
   },
-  "muteAudio_title": {
-    "message": "Mute Audio $KEY$",
+  "muteTab_title": {
+    "message": "Mute Tab $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -260,8 +260,8 @@
       }
     }
   },
-  "muteAudio_tooltip": {
-    "message": "Mute Audio"
+  "muteTab_tooltip": {
+    "message": "Mute Tab"
   },
   "newTabButton": {
     "message": "New Tab"
@@ -500,11 +500,11 @@
       }
     }
   },
-  "unmuteAudio": {
-    "message": "Unmute Audio"
+  "unmuteTab": {
+    "message": "Unmute Tab"
   },
-  "unmuteAudio_title": {
-    "message": "Unmute Audio $KEY$",
+  "unmuteTab_title": {
+    "message": "Unmute Tab $KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -512,8 +512,8 @@
       }
     }
   },
-  "unmuteAudio_tooltip": {
-    "message": "Unmute Audio"
+  "unmuteTab_tooltip": {
+    "message": "Unmute Tab"
   },
   "unpinTab": {
     "message": "Unpin Tab"

@@ -248,10 +248,10 @@
       }
     }
   },
-  "muteAudio": {
+  "muteTab": {
     "message": "タブをミュート"
   },
-  "muteAudio_title": {
+  "muteTab_title": {
     "message": "タブをミュート $KEY$",
     "placeholders": {
       "key" : {
@@ -260,7 +260,7 @@
       }
     }
   },
-  "muteAudio_tooltip": {
+  "muteTab_tooltip": {
     "message": "タブをミュートします"
   },
   "newTabButton": {
@@ -500,10 +500,10 @@
       }
     }
   },
-  "unmuteAudio": {
+  "unmuteTab": {
     "message": "タブのミュートを解除"
   },
-  "unmuteAudio_title": {
+  "unmuteTab_title": {
     "message": "タブのミュートを解除 $KEY$",
     "placeholders": {
       "key" : {
@@ -512,7 +512,7 @@
       }
     }
   },
-  "unmuteAudio_tooltip": {
+  "unmuteTab_tooltip": {
     "message": "タブのミュートを解除します"
   },
   "unpinTab": {
