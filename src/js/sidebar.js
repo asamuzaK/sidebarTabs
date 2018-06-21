@@ -70,8 +70,8 @@
   const TAB_LIST = "tabList";
   const TAB_OBSERVE = "observeTab";
   const TAB_MOVE_WIN_NEW = "moveTabToNewWindow";
-  const TAB_MUTE = "muteAudio";
-  const TAB_MUTE_UNMUTE = "unmuteAudio";
+  const TAB_MUTE = "muteTab";
+  const TAB_MUTE_UNMUTE = "unmuteTab";
   const TAB_PIN = "pinTab";
   const TAB_PIN_UNPIN = "unpinTab";
   const TAB_RELOAD = "reloadTab";
