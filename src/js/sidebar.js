@@ -40,31 +40,7 @@
   const EXT_INIT = "initExtension";
   const LANG = "lang";
   const MENU = "sidebar-tabs-menu";
-  const MENU_TAB = "sidebar-tabs-menu-tab";
-  const MENU_TABS_BOOKMARK_ALL = "sidebar-tabs-menu-tabs-bookmark-all";
-  const MENU_TABS_RELOAD_ALL = "sidebar-tabs-menu-tabs-reload-all";
-  const MENU_TAB_BOOKMARK = "sidebar-tabs-menu-tab-bookmark";
-  const MENU_TAB_CLOSE = "sidebar-tabs-menu-tab-close";
-  const MENU_TAB_CLOSE_UNDO = "sidebar-tabs-menu-tab-close-undo";
-  const MENU_TAB_DUPE = "sidebar-tabs-menu-tab-dupe";
-  const MENU_TAB_GROUP = "sidebar-tabs-menu-tab-group";
-  const MENU_TAB_GROUP_BOOKMARK = "sidebar-tabs-menu-tab-group-bookmark";
-  const MENU_TAB_GROUP_CLOSE = "sidebar-tabs-menu-tab-group-close";
-  const MENU_TAB_GROUP_COLLAPSE = "sidebar-tabs-menu-tab-group-collapse";
-  const MENU_TAB_GROUP_DETACH = "sidebar-tabs-menu-tab-group-detach";
-  const MENU_TAB_GROUP_DUPE = "sidebar-tabs-menu-tab-group-dupe";
-  const MENU_TAB_GROUP_PIN = "sidebar-tabs-menu-tab-group-pin";
-  const MENU_TAB_GROUP_RELOAD = "sidebar-tabs-menu-tab-group-reload";
-  const MENU_TAB_GROUP_SELECTED = "sidebar-tabs-menu-tab-group-selected";
-  const MENU_TAB_GROUP_SYNC = "sidebar-tabs-menu-tab-group-sync";
-  const MENU_TAB_GROUP_UNGROUP = "sidebar-tabs-menu-tab-group-ungroup";
-  const MENU_TAB_MOVE_WIN_NEW = "sidebar-tabs-menu-tab-new-win-move";
-  const MENU_TAB_MUTE = "sidebar-tabs-menu-tab-mute";
-  const MENU_TAB_PIN = "sidebar-tabs-menu-tab-pin";
-  const MENU_TAB_RELOAD = "sidebar-tabs-menu-tab-reload";
-  const MENU_TAB_SYNC = "sidebar-tabs-menu-tab-sync";
-  const MENU_TAB_TABS_CLOSE_END = "sidebar-tabs-menu-tab-close-end";
-  const MENU_TAB_TABS_CLOSE_OTHER = "sidebar-tabs-menu-tab-close-other";
+  const MENU_TAB = "tabMenu";
   const MIME_TYPE = "text/plain";
   const MOUSE_BUTTON_RIGHT = 2;
   const NEW_TAB = "newtab";
@@ -92,10 +68,10 @@
   const TAB_GROUP_RELOAD = "reloadTabGroup";
   const TAB_GROUP_UNGROUP = "ungroupTabs";
   const TAB_LIST = "tabList";
-  const TAB_MUTE = "muteAudio";
-  const TAB_MUTE_UNMUTE = "unmuteAudio";
   const TAB_OBSERVE = "observeTab";
   const TAB_MOVE_WIN_NEW = "moveTabToNewWindow";
+  const TAB_MUTE = "muteAudio";
+  const TAB_MUTE_UNMUTE = "unmuteAudio";
   const TAB_PIN = "pinTab";
   const TAB_PIN_UNPIN = "unpinTab";
   const TAB_RELOAD = "reloadTab";
@@ -2178,33 +2154,33 @@
                       JSON.parse(tab.dataset.tab);
     const func = [];
     switch (id) {
-      case MENU_TABS_BOOKMARK_ALL:
+      case TABS_BOOKMARK_ALL:
         func.push(bookmarkAllTabs());
         break;
-      case MENU_TABS_RELOAD_ALL:
+      case TABS_RELOAD_ALL:
         func.push(reloadAllTabs());
         break;
-      case MENU_TAB_BOOKMARK: {
+      case TAB_BOOKMARK: {
         if (tabsTab && !tabsTab.pinned) {
           const {title, url} = tabsTab;
           func.push(bookmarkTab({title, url}));
         }
         break;
       }
-      case MENU_TAB_CLOSE:
+      case TAB_CLOSE:
         if (Number.isInteger(tabId)) {
           func.push(removeTab(tabId));
         }
         break;
-      case MENU_TAB_CLOSE_UNDO:
+      case TAB_CLOSE_UNDO:
         func.push(undoCloseTab());
         break;
-      case MENU_TAB_DUPE:
+      case TAB_DUPE:
         if (Number.isInteger(tabId)) {
           func.push(dupeTab(tabId));
         }
         break;
-      case MENU_TAB_GROUP_BOOKMARK: {
+      case TAB_GROUP_BOOKMARK: {
         if (tab && tabsTab && !tabsTab.pinned) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2214,7 +2190,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_CLOSE: {
+      case TAB_GROUP_CLOSE: {
         if (tab && tabsTab && !tabsTab.pinned) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2227,7 +2203,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_COLLAPSE: {
+      case TAB_GROUP_COLLAPSE: {
         if (tab) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2237,7 +2213,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_DETACH: {
+      case TAB_GROUP_DETACH: {
         if (tab) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2251,7 +2227,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_DUPE: {
+      case TAB_GROUP_DUPE: {
         if (tab && tabsTab && !tabsTab.pinned) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2261,7 +2237,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_PIN: {
+      case TAB_GROUP_PIN: {
         if (tab) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2271,7 +2247,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_RELOAD: {
+      case TAB_GROUP_RELOAD: {
         if (tab) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2281,10 +2257,10 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_SELECTED:
+      case TAB_GROUP_SELECTED:
         func.push(groupSelectedTabs());
         break;
-      case MENU_TAB_GROUP_SYNC: {
+      case TAB_GROUP_SYNC: {
         if (tab) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2294,7 +2270,7 @@
         }
         break;
       }
-      case MENU_TAB_GROUP_UNGROUP: {
+      case TAB_GROUP_UNGROUP: {
         if (tab && tabsTab && !tabsTab.pinned) {
           const {parentNode: tabParent} = tab;
           const {classList: tabParentClassList} = tabParent;
@@ -2307,7 +2283,7 @@
         }
         break;
       }
-      case MENU_TAB_MOVE_WIN_NEW:
+      case TAB_MOVE_WIN_NEW:
         if (Number.isInteger(tabId)) {
           func.push(createNewWindow({
             tabId,
@@ -2315,31 +2291,31 @@
           }));
         }
         break;
-      case MENU_TAB_MUTE: {
+      case TAB_MUTE: {
         if (Number.isInteger(tabId) && tabsTab) {
           const {mutedInfo: {muted}} = tabsTab;
           func.push(updateTab(tabId, {muted: !muted}));
         }
         break;
       }
-      case MENU_TAB_PIN: {
+      case TAB_PIN: {
         if (tabsTab) {
           const {pinned} = tabsTab;
           func.push(updateTab(tabId, {pinned: !pinned}));
         }
         break;
       }
-      case MENU_TAB_RELOAD:
+      case TAB_RELOAD:
         if (Number.isInteger(tabId)) {
           func.push(reloadTab(tabId));
         }
         break;
-      case MENU_TAB_SYNC:
+      case TAB_SYNC:
         if (Number.isInteger(tabId)) {
           func.push(syncTab(tabId));
         }
         break;
-      case MENU_TAB_TABS_CLOSE_END: {
+      case TABS_CLOSE_END: {
         if (Number.isInteger(tabId)) {
           const index = tabsTab && tabsTab.index && tabsTab.index * 1;
           const arr = [];
@@ -2360,7 +2336,7 @@
         }
         break;
       }
-      case MENU_TAB_TABS_CLOSE_OTHER: {
+      case TABS_CLOSE_OTHER: {
         if (Number.isInteger(tabId)) {
           const items = document.querySelectorAll(
             `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
@@ -2399,7 +2375,7 @@
           enabled: false,
           subItems: {
             [TAB_RELOAD]: {
-              id: MENU_TAB_RELOAD,
+              id: TAB_RELOAD,
               title: i18n.getMessage(`${TAB_RELOAD}_title`, "(R)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2407,7 +2383,7 @@
               onclick: true,
             },
             [TAB_MUTE]: {
-              id: MENU_TAB_MUTE,
+              id: TAB_MUTE,
               title: i18n.getMessage(`${TAB_MUTE}_title`, "(M)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2416,7 +2392,7 @@
               toggleTitle: i18n.getMessage(`${TAB_MUTE_UNMUTE}_title`, "(M)"),
             },
             [TAB_PIN]: {
-              id: MENU_TAB_PIN,
+              id: TAB_PIN,
               title: i18n.getMessage(`${TAB_PIN}_title`, "(P)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2425,7 +2401,7 @@
               toggleTitle: i18n.getMessage(`${TAB_PIN_UNPIN}_title`, "(P)"),
             },
             [TAB_DUPE]: {
-              id: MENU_TAB_DUPE,
+              id: TAB_DUPE,
               title: i18n.getMessage(`${TAB_DUPE}_title`, "(D)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2433,7 +2409,7 @@
               onclick: true,
             },
             [TAB_SYNC]: {
-              id: MENU_TAB_SYNC,
+              id: TAB_SYNC,
               title: i18n.getMessage(`${TAB_SYNC}_title`, "(S)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2441,7 +2417,7 @@
               onclick: true,
             },
             [TAB_BOOKMARK]: {
-              id: MENU_TAB_BOOKMARK,
+              id: TAB_BOOKMARK,
               title: i18n.getMessage(`${TAB_BOOKMARK}_title`, "(B)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2449,7 +2425,7 @@
               onclick: true,
             },
             [TAB_MOVE_WIN_NEW]: {
-              id: MENU_TAB_MOVE_WIN_NEW,
+              id: TAB_MOVE_WIN_NEW,
               title: i18n.getMessage(`${TAB_MOVE_WIN_NEW}_title`, "(N)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2457,7 +2433,7 @@
               onclick: true,
             },
             [TABS_CLOSE_END]: {
-              id: MENU_TAB_TABS_CLOSE_END,
+              id: TABS_CLOSE_END,
               title: i18n.getMessage(`${TABS_CLOSE_END}_title`, "(E)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2465,7 +2441,7 @@
               onclick: true,
             },
             [TABS_CLOSE_OTHER]: {
-              id: MENU_TAB_TABS_CLOSE_OTHER,
+              id: TABS_CLOSE_OTHER,
               title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(O)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2473,7 +2449,7 @@
               onclick: true,
             },
             [TAB_CLOSE]: {
-              id: MENU_TAB_CLOSE,
+              id: TAB_CLOSE,
               title: i18n.getMessage(`${TAB_CLOSE}_title`, "(C)"),
               contexts: [CLASS_TAB, CLASS_TAB_GROUP],
               type: "normal",
@@ -2484,14 +2460,14 @@
         },
         /* tab group */
         [TAB_GROUP]: {
-          id: MENU_TAB_GROUP,
+          id: TAB_GROUP,
           title: i18n.getMessage(`${TAB_GROUP}_title`, "(G)"),
           contexts: [CLASS_TAB_GROUP],
           type: "normal",
           enabled: false,
           subItems: {
             [TAB_GROUP_SELECTED]: {
-              id: MENU_TAB_GROUP_SELECTED,
+              id: TAB_GROUP_SELECTED,
               title: i18n.getMessage(`${TAB_GROUP_SELECTED}_title`, "(G)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2499,7 +2475,7 @@
               onclick: true,
             },
             [TAB_GROUP_COLLAPSE]: {
-              id: MENU_TAB_GROUP_COLLAPSE,
+              id: TAB_GROUP_COLLAPSE,
               title: i18n.getMessage(`${TAB_GROUP_COLLAPSE}_title`, "(E)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2508,7 +2484,7 @@
               toggleTitle: i18n.getMessage(`${TAB_GROUP_EXPAND}_title`, "(E)"),
             },
             [TAB_GROUP_RELOAD]: {
-              id: MENU_TAB_GROUP_RELOAD,
+              id: TAB_GROUP_RELOAD,
               title: i18n.getMessage(`${TAB_GROUP_RELOAD}_title`, "(R)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2516,7 +2492,7 @@
               onclick: true,
             },
             [TAB_GROUP_PIN]: {
-              id: MENU_TAB_GROUP_PIN,
+              id: TAB_GROUP_PIN,
               title: i18n.getMessage(`${TAB_GROUP_PIN}_title`, "(P)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2524,7 +2500,7 @@
               onclick: true,
             },
             [TAB_GROUP_DUPE]: {
-              id: MENU_TAB_GROUP_DUPE,
+              id: TAB_GROUP_DUPE,
               title: i18n.getMessage(`${TAB_GROUP_DUPE}_title`, "(D)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2532,7 +2508,7 @@
               onclick: true,
             },
             [TAB_GROUP_SYNC]: {
-              id: MENU_TAB_GROUP_SYNC,
+              id: TAB_GROUP_SYNC,
               title: i18n.getMessage(`${TAB_GROUP_SYNC}_title`, "(S)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2540,7 +2516,7 @@
               onclick: true,
             },
             [TAB_GROUP_BOOKMARK]: {
-              id: MENU_TAB_GROUP_BOOKMARK,
+              id: TAB_GROUP_BOOKMARK,
               title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_title`, "(B)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2548,7 +2524,7 @@
               onclick: true,
             },
             [TAB_GROUP_DETACH]: {
-              id: MENU_TAB_GROUP_DETACH,
+              id: TAB_GROUP_DETACH,
               title: i18n.getMessage(`${TAB_GROUP_DETACH}_title`, "(T)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2556,7 +2532,7 @@
               onclick: true,
             },
             [TAB_GROUP_UNGROUP]: {
-              id: MENU_TAB_GROUP_UNGROUP,
+              id: TAB_GROUP_UNGROUP,
               title: i18n.getMessage(`${TAB_GROUP_UNGROUP}_title`, "(U)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2564,7 +2540,7 @@
               onclick: true,
             },
             [TAB_GROUP_CLOSE]: {
-              id: MENU_TAB_GROUP_CLOSE,
+              id: TAB_GROUP_CLOSE,
               title: i18n.getMessage(`${TAB_GROUP_CLOSE}_title`, "(C)"),
               contexts: [CLASS_TAB_GROUP],
               type: "normal",
@@ -2575,7 +2551,7 @@
         },
         /* all tabs */
         [TABS_RELOAD_ALL]: {
-          id: MENU_TABS_RELOAD_ALL,
+          id: TABS_RELOAD_ALL,
           title: i18n.getMessage(`${TABS_RELOAD_ALL}_title`, "(R)"),
           contexts: ["page"],
           type: "normal",
@@ -2583,7 +2559,7 @@
           onclick: true,
         },
         [TABS_BOOKMARK_ALL]: {
-          id: MENU_TABS_BOOKMARK_ALL,
+          id: TABS_BOOKMARK_ALL,
           title: i18n.getMessage(`${TABS_BOOKMARK_ALL}_title`, "(B)"),
           contexts: ["page"],
           type: "normal",
@@ -2591,7 +2567,7 @@
           onclick: true,
         },
         [TAB_CLOSE_UNDO]: {
-          id: MENU_TAB_CLOSE_UNDO,
+          id: TAB_CLOSE_UNDO,
           title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, "(U)"),
           contexts: ["page"],
           type: "normal",

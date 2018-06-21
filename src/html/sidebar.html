@@ -12,71 +12,68 @@
     <header id="sidebar-tabs-header" class="context-menu-container">
       <!-- context menu -->
       <menu id="sidebar-tabs-menu" class="context-menu" tabindex="0" hidden>
-        <li id="sidebar-tabs-menu-tab" class="submenu-container"
-            tabindex="0" accesskey="T">
+        <li id="tabMenu" class="submenu-container" tabindex="0" accesskey="T">
           <span class="menu-item-label" title="Tab" data-i18n="tab">
             Tab
           </span>
           <ul class="context-menu" tabindex="0">
-            <li id="sidebar-tabs-menu-tab-reload" tabindex="0" accesskey="R">
+            <li id="reloadTab" tabindex="0" accesskey="R">
               <span class="menu-item-label" title="Reload Tab"
                     data-i18n="reloadTab">
                 Reload Tab
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-mute" tabindex="0" accesskey="M">
+            <li id="muteTab" tabindex="0" accesskey="M">
               <span class="menu-item-label" title="Mute Tab"
                     data-i18n="muteTab">
                 Mute Tab
               </span>
             </li>
             <li class="menu-separator"></li>
-            <li id="sidebar-tabs-menu-tab-pin" tabindex="0" accesskey="P">
+            <li id="pinTab" tabindex="0" accesskey="P">
               <span class="menu-item-label" title="Pin Tab"
                     data-i18n="pinTab">
                 Pin Tab
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-dupe" tabindex="0" accesskey="D">
+            <li id="dupeTab" tabindex="0" accesskey="D">
               <span class="menu-item-label" title="Duplicate Tab"
                     data-i18n="dupeTab">
                 Duplicate Tab
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-sync" tabindex="0" accesskey="S">
+            <li id="syncTab" tabindex="0" accesskey="S">
               <span class="menu-item-label" title="Sync Tab"
                     data-i18n="syncTab">
                 Sync Tab
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-bookmark" tabindex="0" accesskey="B">
+            <li id="bookmarkTab" tabindex="0" accesskey="B">
               <span class="menu-item-label" title="Bookmark Tab"
                     data-i18n="bookmarkTab">
                 Bookmark Tab
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-new-win-move"
-                tabindex="0" accesskey="N">
+            <li id="moveTabToNewWindow" tabindex="0" accesskey="N">
               <span class="menu-item-label" title="Move Tab to New Window"
                     data-i18n="moveTabToNewWindow">
                 Move Tab to New Window
               </span>
             </li>
             <li class="menu-separator"></li>
-            <li id="sidebar-tabs-menu-tab-close-end" tabindex="0" accesskey="E">
+            <li id="closeTabsToTheEnd" tabindex="0" accesskey="E">
               <span class="menu-item-label" title="Close Tabs to the End"
                     data-i18n="closeTabsToTheEnd">
                 Close Tabs to the End
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-close-other"
-                tabindex="0" accesskey="O">
+            <li id="closeOtherTabs" tabindex="0" accesskey="O">
               <span class="menu-item-label" title="Close Other Tabs"
                     data-i18n="closeOtherTabs">
                 Close Other Tabs
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-close" tabindex="0" accesskey="C">
+            <li id="closeTab" tabindex="0" accesskey="C">
               <span class="menu-item-label" title="Close Tab"
                     data-i18n="closeTab">
                 Close Tab
@@ -85,80 +82,70 @@
           </ul>
         </li>
         <li class="menu-separator"></li>
-        <li id="sidebar-tabs-menu-tab-group" class="submenu-container"
-            tabindex="0" accesskey="G">
+        <li id="tabGroup" class="submenu-container" tabindex="0" accesskey="G">
           <span class="menu-item-label" title="Tab Group"
                 data-i18n="tabGroup">
             Tab Group
           </span>
           <ul class="context-menu" tabindex="0">
-            <li id="sidebar-tabs-menu-tab-group-selected"
-                tabindex="0" accesskey="G">
+            <li id="groupSelectedTabs" tabindex="0" accesskey="G">
               <span class="menu-item-label" title="Group Selected Tabs"
                     data-i18n="groupSelectedTabs">
                 Group Selected Tabs
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-group-collapse"
-                tabindex="0" accesskey="E">
+            <li id="collapseTabGroup" tabindex="0" accesskey="E">
               <span class="menu-item-label" title="Collapse Grouped Tabs"
                     data-i18n="collapseTabGroup">
                 Collapse Tab Group
               </span>
             </li>
             <li class="menu-separator"></li>
-            <li id="sidebar-tabs-menu-tab-group-reload"
-                tabindex="0" accesskey="R">
+            <li id="reloadTabGroup" tabindex="0" accesskey="R">
               <span class="menu-item-label" title="Reload Grouped Tabs"
                     data-i18n="reloadTabGroup">
                 Reload Grouped Tabs
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-group-pin" tabindex="0" accesskey="P">
+            <li id="pinTabGroup" tabindex="0" accesskey="P">
               <span class="menu-item-label" title="Pin Grouped Tabs"
                     data-i18n="pinTabGroup">
                 Pin Grouped Tabs
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-group-dupe" tabindex="0"
-                accesskey="D">
+            <li id="dupeTabGroup" tabindex="0" accesskey="D">
               <span class="menu-item-label" title="Duplicate Grouped Tabs"
                     data-i18n="dupeTabGroup">
                 Duplicate Grouped Tabs
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-group-sync" tabindex="0"
-                accesskey="S">
+            <li id="syncTabGroup" tabindex="0" accesskey="S">
               <span class="menu-item-label" title="Sync Grouped Tabs"
                     data-i18n="syncTabGroup">
                 Sync Grouped Tabs
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-group-bookmark"
-                tabindex="0" accesskey="B">
+            <li id="bookmarkTabGroup" tabindex="0" accesskey="B">
               <span class="menu-item-label" title="Bookmark Grouped Tabs"
                     data-i18n="bookmarkTabGroup">
                 Bookmark Grouped Tabs
               </span>
             </li>
             <li class="menu-separator"></li>
-            <li id="sidebar-tabs-menu-tab-group-detach"
-                tabindex="0" accesskey="T">
+            <li id="detachTabFromGroup" tabindex="0" accesskey="T">
               <span class="menu-item-label" title="Detach Tab from Group"
                     data-i18n="detachTabFromGroup">
                 Detach Tab from Group
               </span>
             </li>
-            <li id="sidebar-tabs-menu-tab-group-ungroup"
-                tabindex="0" accesskey="U">
+            <li id="ungroupTabs" tabindex="0" accesskey="U">
               <span class="menu-item-label" title="Ungroup Tabs"
                     data-i18n="ungroupTabs">
                 Ungroup Tabs
               </span>
             </li>
             <li class="menu-separator"></li>
-            <li id="sidebar-tabs-menu-tab-group-close"
-                tabindex="0" accesskey="C">
+            <li id="closeTabGroup" tabindex="0" accesskey="C">
               <span class="menu-item-label" title="Close Grouped Tabs"
                     data-i18n="closeTabGroup">
                 Close Grouped Tabs
@@ -167,19 +154,19 @@
           </ul>
         </li>
         <li class="menu-separator"></li>
-        <li id="sidebar-tabs-menu-tabs-reload-all" tabindex="0" accesskey="R">
+        <li id="reloadAllTabs" tabindex="0" accesskey="R">
           <span class="menu-item-label" title="Reload All Tabs"
                 data-i18n="reloadAllTabs">
             Reload All Tabs
           </span>
         </li>
-        <li id="sidebar-tabs-menu-tabs-bookmark-all" tabindex="0" accesskey="B">
+        <li id="bookmarkAllTabs" tabindex="0" accesskey="B">
           <span class="menu-item-label" title="Bookmark All Tabs"
                 data-i18n="bookmarkAllTabs">
             Bookmark All Tabs
           </span>
         </li>
-        <li id="sidebar-tabs-menu-tab-close-undo" tabindex="0" accesskey="U">
+        <li id="undoCloseTab" tabindex="0" accesskey="U">
           <span class="menu-item-label" title="Undo Close Tab"
                 data-i18n="undoCloseTab">
             Undo Close Tab
