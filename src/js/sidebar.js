@@ -41,10 +41,12 @@
   const LANG = "lang";
   const MENU = "sidebar-tabs-menu";
   const MENU_TAB = "tabMenu";
-  const MIME_TYPE = "text/plain";
+  const MIME_PLAIN = "text/plain";
+  const MIME_URI = "text/uri-list";
   const MOUSE_BUTTON_RIGHT = 2;
   const NEW_TAB = "newtab";
   const PINNED = "pinned";
+  const SIDEBAR_MAIN = "sidebar-tabs-container";
   const TAB = "tab";
   const TABS_BOOKMARK_ALL = "bookmarkAllTabs";
   const TABS_CLOSE_END = "closeTabsToTheEnd";
@@ -1447,7 +1449,8 @@
    */
   const handleDrop = evt => {
     const {ctrlKey, dataTransfer, shiftKey, target} = evt;
-    const data = dataTransfer.getData(MIME_TYPE);
+    const url = dataTransfer.getData(MIME_URI);
+    const data = dataTransfer.getData(MIME_PLAIN);
     const items = data && data.split(",");
     const func = [];
     let dropTarget, node = target;
@@ -1459,7 +1462,22 @@
       }
       node = node.parentNode;
     }
-    if (dropTarget && Array.isArray(items)) {
+    if (url) {
+      const opt = {
+        url,
+        active: true,
+      };
+      if (dropTarget) {
+        const tabId = getSidebarTabId(dropTarget);
+        if (Number.isInteger(tabId)) {
+          func.push(updateTab(tabId, opt));
+        }
+      } else {
+        const {windowId} = sidebar;
+        opt.windowId = windowId;
+        func.push(createTab(opt));
+      }
+    } else if (dropTarget && Array.isArray(items)) {
       func.push(
         extractDroppedTabs(dropTarget, items, {ctrlKey, shiftKey})
           .then(removeHighlightClassFromTabs).then(setSessionsTabList)
@@ -1477,7 +1495,8 @@
    */
   const handleDragOver = evt => {
     const {dataTransfer: {types}} = evt;
-    if (Array.isArray(types) && types.includes(MIME_TYPE)) {
+    if (Array.isArray(types) && types.includes(MIME_PLAIN)) {
+      evt.stopPropagation();
       evt.preventDefault();
     }
   };
@@ -1491,8 +1510,10 @@
     const {target, dataTransfer} = evt;
     if (target.nodeType === Node.ELEMENT_NODE) {
       const {types} = dataTransfer;
-      if (Array.isArray(types) && types.includes(MIME_TYPE)) {
+      if (Array.isArray(types) && types.includes(MIME_PLAIN)) {
         dataTransfer.dropEffect = "move";
+        evt.stopPropagation();
+        evt.preventDefault();
       }
     }
   };
@@ -1539,13 +1560,13 @@
       }
       if (arr.length) {
         evt.dataTransfer.effectAllowed = "move";
-        evt.dataTransfer.setData(MIME_TYPE, arr.join(","));
+        evt.dataTransfer.setData(MIME_PLAIN, arr.join(","));
       }
     } else {
       const {tabId} = dataset;
       if (tabId) {
         evt.dataTransfer.effectAllowed = "move";
-        evt.dataTransfer.setData(MIME_TYPE, tabId);
+        evt.dataTransfer.setData(MIME_PLAIN, tabId);
       }
     }
   };
@@ -3204,6 +3225,7 @@
 
   /* startup */
   getTheme().then(setTheme).then(applyCss).then(() => Promise.all([
+    addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
     addNewTabClickListener(),
     createContextMenu(),
     setSidebar(),
