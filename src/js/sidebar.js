@@ -46,6 +46,7 @@
   const MOUSE_BUTTON_RIGHT = 2;
   const NEW_TAB = "newtab";
   const PINNED = "pinned";
+  const SIDEBAR_MAIN = "sidebar-tabs-container";
   const TAB = "tab";
   const TABS_BOOKMARK_ALL = "bookmarkAllTabs";
   const TABS_CLOSE_END = "closeTabsToTheEnd";
@@ -1495,6 +1496,7 @@
   const handleDragOver = evt => {
     const {dataTransfer: {types}} = evt;
     if (Array.isArray(types) && types.includes(MIME_PLAIN)) {
+      evt.stopPropagation();
       evt.preventDefault();
     }
   };
@@ -1510,6 +1512,8 @@
       const {types} = dataTransfer;
       if (Array.isArray(types) && types.includes(MIME_PLAIN)) {
         dataTransfer.dropEffect = "move";
+        evt.stopPropagation();
+        evt.preventDefault();
       }
     }
   };
@@ -3221,6 +3225,7 @@
 
   /* startup */
   getTheme().then(setTheme).then(applyCss).then(() => Promise.all([
+    addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
     addNewTabClickListener(),
     createContextMenu(),
     setSidebar(),
