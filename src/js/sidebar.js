@@ -38,7 +38,7 @@
   const COOKIE_STORE_DEFAULT = "firefox-default";
   const DATA_ATTR_I18N = "data-i18n";
   const EXT_INIT = "initExtension";
-  const LANG = "lang";
+  const LANG = "extensionLocale";
   const MENU = "sidebar-tabs-menu";
   const MENU_TAB = "tabMenu";
   const MIME_PLAIN = "text/plain";

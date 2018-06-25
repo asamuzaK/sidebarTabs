@@ -1,12 +1,9 @@
 {
-  "lang": {
+  "extensionLocale": {
     "message": "en"
   },
   "extensionDescription": {
     "message": "Emulate tabs in sidebar and display tabs vertically. Furthermore, group tabs and collapse / expand them."
-  },
-  "extensionLocale": {
-    "message": "en"
   },
   "extensionName": {
     "message": "Sidebar Tabs"
