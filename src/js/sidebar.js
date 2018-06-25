@@ -3111,19 +3111,23 @@
     if (!sidebar.incognito) {
       const tabList = await getSessionsTabList(TAB_LIST);
       const items = document.querySelectorAll(TAB_QUERY);
-      const l = items.length;
-      if (tabList && items && Object.keys(tabList).length === l) {
+      if (tabList && items) {
         const containers =
           document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+        const l = items.length;
         let i = 0;
         while (i < l) {
           const item = items[i];
           const {containerIndex, url: tabListUrl} = tabList[i];
           const {dataset: {tab: itemTab}} = item;
           const {url: itemUrl} = JSON.parse(itemTab);
-          item && Number.isInteger(containerIndex) && itemUrl === tabListUrl &&
+          if (item && Number.isInteger(containerIndex) &&
+              itemUrl === tabListUrl) {
             containers[containerIndex].appendChild(item);
-          i++;
+            i++;
+          } else {
+            break;
+          }
         }
       }
     }
