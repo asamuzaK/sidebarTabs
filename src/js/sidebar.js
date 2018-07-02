@@ -980,7 +980,12 @@
       } else {
         elm.dataset.connecting = "";
         if (favIconUrl) {
-          elm.src = await getFavicon(elm, favIconUrl);
+          const {protocol} = new URL(favIconUrl);
+          if (protocol === "data:") {
+            elm.src = favIconUrl;
+          } else {
+            elm.src = await getFavicon(elm, favIconUrl);
+          }
         } else {
           elm.src = URL_FAVICON_DEFAULT;
         }
