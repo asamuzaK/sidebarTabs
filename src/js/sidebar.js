@@ -698,13 +698,9 @@
     const tab = await getSidebarTab(elm);
     if (tab) {
       const {classList} = tab;
+      // TODO: remove if statement when multiple handler is implemented
       if (!classList.contains(PINNED)) {
         classList.toggle(CLASS_TAB_HIGHLIGHT);
-        if (sidebar.firstSelectedTab === tab) {
-          sidebar.firstSelectedTab = null;
-        } else if (!sidebar.firstSelectedTab) {
-          sidebar.firstSelectedTab = tab;
-        }
       }
     }
     return tab || null;
@@ -787,23 +783,29 @@
   const handleClickedTab = async evt => {
     const {ctrlKey, metaKey, shiftKey, target} = evt;
     const {os} = await runtime.getPlatformInfo();
+    const {firstSelectedTab} = sidebar;
     const isMac = os === "mac";
+    const tab = await getSidebarTab(target);
     const func = [];
     if (shiftKey) {
-      const {firstSelectedTab} = sidebar;
       if (firstSelectedTab) {
-        const tab = await getSidebarTab(target);
+        if (tab !== firstSelectedTab) {
+          firstSelectedTab.classList.add(CLASS_TAB_HIGHLIGHT);
+        }
         func.push(
           getTabsInRange(tab, firstSelectedTab).then(selectTabsFromRange)
         );
       } else {
-        func.push(toggleTabSelected(target));
+        func.push(toggleTabSelected(tab));
       }
     } else if (isMac && metaKey || !isMac && ctrlKey) {
-      func.push(toggleTabSelected(target));
+      if (firstSelectedTab && tab !== firstSelectedTab) {
+        firstSelectedTab.classList.add(CLASS_TAB_HIGHLIGHT);
+      }
+      func.push(toggleTabSelected(tab));
     } else {
       func.push(
-        activateTab(target),
+        activateTab(tab),
         removeHighlightClassFromTabs(),
       );
     }
@@ -1638,6 +1640,7 @@
         }
         newParentClass.add(ACTIVE);
         newClass.add(ACTIVE);
+        sidebar.firstSelectedTab = tab;
       }
     }
   };

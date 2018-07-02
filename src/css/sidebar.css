@@ -124,7 +124,8 @@ main {
   stroke: var(--foreground-highlight-color);
   z-index: 4;
 }
-.tab.highlighted {
+.tab.highlighted,
+.tab.active.highlighted {
   border: 1px solid var(--border-active-color);
   background: var(--background-selection-color);
   color: var(--foreground-selection-color);
