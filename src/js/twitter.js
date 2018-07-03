@@ -58,7 +58,8 @@
     if (button === 0 || code === "Enter") {
       const {parentNode} = target;
       if (target.classList.contains(CLASS_NEW_TWEETS) ||
-          parentNode && parentNode.classList.contains(CLASS_NEW_TWEETS)) {
+          parentNode && parentNode.classList &&
+          parentNode.classList.contains(CLASS_NEW_TWEETS)) {
         func = createObserveMsg(evt).then(sendMsg).catch(throwErr);
       }
     }
