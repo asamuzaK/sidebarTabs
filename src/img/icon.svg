@@ -31,18 +31,17 @@
   <symbol id="activetab">
     <path d="M 25,46 H 47 V 62 H 25 Z"/>
   </symbol>
-  <g id="context">
-    <use href="#sidetab" fill="context-fill"
-         fill-opacity="context-fill-opacity"/>
+  <g id="context" fill="context-fill" fill-opacity="context-fill-opacity">
+    <use href="#sidetab"/>
   </g>
-  <g id="photon_gray_90">
-    <use href="#sidetab" fill="#0C0C0D" fill-opacity="0.8"/>
+  <g id="current" fill="currentColor">
+    <use href="#sidetab"/>
   </g>
-  <g id="photon_gray_10">
-    <use href="#sidetab" fill="#F9F9FA" fill-opacity="0.8"/>
+  <g id="dark" fill="#0C0C0D" fill-opacity="0.8">
+    <use href="#sidetab"/>
   </g>
-  <g id="off">
-    <use href="#sidetab" fill="context-fill" fill-opacity="0.25"/>
+  <g id="light" fill="#F9F9FA" fill-opacity="0.8">
+    <use href="#sidetab"/>
   </g>
   <g id="color">
     <use href="#activetab" fill="#E66000"/>
