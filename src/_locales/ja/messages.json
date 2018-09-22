@@ -293,9 +293,6 @@
   "optionsThemeDarkLabel": {
     "message": "暗いテーマ"
   },
-  "optionsThemeDefaultLabel": {
-    "message": "デフォルトのテーマ"
-  },
   "optionsThemeDetail": {
     "message": "テーマを選択してください。"
   },

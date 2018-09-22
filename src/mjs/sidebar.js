@@ -2821,7 +2821,6 @@ tabs.onUpdated.addListener((tabId, info, tabsTab) =>
 const restoreTabGroup = async () => {
   if (!sidebar.incognito) {
     const tabList = await getSessionTabList(TAB_LIST);
-    console.log(tabList);
     const items = document.querySelectorAll(TAB_QUERY);
     if (tabList && items) {
       const containers =
