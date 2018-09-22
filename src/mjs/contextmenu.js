@@ -4,8 +4,19 @@
 
 import {dispatchKeyboardEvt, isString} from "./common.js";
 import {
-  CLASS_DISABLED, CLASS_MENU, MENU, MOUSE_BUTTON_RIGHT,
+  CLASS_MENU, CLASS_MENU_LABEL, CLASS_TAB_GROUP, DISABLED, MENU,
+  TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
+  TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
+  TAB_GROUP_DETACH, TAB_GROUP_DUPE,
+  TAB_GROUP_EXPAND, TAB_GROUP_PIN, TAB_GROUP_RELOAD, TAB_GROUP_SELECTED,
+  TAB_GROUP_SYNC, TAB_GROUP_UNGROUP,
+  TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN,
+  TAB_RELOAD, TAB_RELOAD_ALL, TAB_SYNC,
 } from "./constant.js";
+
+/* api */
+const {i18n} = browser;
 
 /* constants */
 const CLASS_MENU_SEP = "menu-separator";
@@ -13,14 +24,237 @@ const CLASS_SUBMENU_CONTAINER = "submenu-container";
 const CLASS_SHOW = "show";
 const CLASS_VISIBLE = "visible";
 const MENU_CONTAINER = "sidebar-tabs-header";
+const MENU_TAB = "tabMenu";
+const MOUSE_BUTTON_RIGHT = 2;
 const SCALE = 2;
+
+/* context menu items */
+export const menuItems = {
+  sidebarTabs: {
+    id: MENU,
+    title: i18n.getMessage("extensionShortName"),
+    contexts: ["page"],
+    type: "normal",
+    enabled: false,
+    subItems: {
+      /* tab */
+      [TAB]: {
+        id: MENU_TAB,
+        title: i18n.getMessage(`${TAB}_title`, "(T)"),
+        contexts: [TAB, CLASS_TAB_GROUP],
+        type: "normal",
+        enabled: false,
+        subItems: {
+          [TAB_RELOAD]: {
+            id: TAB_RELOAD,
+            title: i18n.getMessage(`${TAB_RELOAD}_title`, "(R)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_MUTE]: {
+            id: TAB_MUTE,
+            title: i18n.getMessage(`${TAB_MUTE}_title`, "(M)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+            toggleTitle: i18n.getMessage(`${TAB_MUTE_UNMUTE}_title`, "(M)"),
+          },
+          [TAB_PIN]: {
+            id: TAB_PIN,
+            title: i18n.getMessage(`${TAB_PIN}_title`, "(P)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+            toggleTitle: i18n.getMessage(`${TAB_PIN_UNPIN}_title`, "(P)"),
+          },
+          [TAB_DUPE]: {
+            id: TAB_DUPE,
+            title: i18n.getMessage(`${TAB_DUPE}_title`, "(D)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_SYNC]: {
+            id: TAB_SYNC,
+            title: i18n.getMessage(`${TAB_SYNC}_title`, "(S)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_BOOKMARK]: {
+            id: TAB_BOOKMARK,
+            title: i18n.getMessage(`${TAB_BOOKMARK}_title`, "(B)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_MOVE_WIN_NEW]: {
+            id: TAB_MOVE_WIN_NEW,
+            title: i18n.getMessage(`${TAB_MOVE_WIN_NEW}_title`, "(N)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_CLOSE_END]: {
+            id: TAB_CLOSE_END,
+            title: i18n.getMessage(`${TAB_CLOSE_END}_title`, "(E)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_CLOSE_OTHER]: {
+            id: TAB_CLOSE_OTHER,
+            title: i18n.getMessage(`${TAB_CLOSE_OTHER}_title`, "(O)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_CLOSE]: {
+            id: TAB_CLOSE,
+            title: i18n.getMessage(`${TAB_CLOSE}_title`, "(C)"),
+            contexts: [TAB, CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+        },
+      },
+      /* tab group */
+      [TAB_GROUP]: {
+        id: TAB_GROUP,
+        title: i18n.getMessage(`${TAB_GROUP}_title`, "(G)"),
+        contexts: [CLASS_TAB_GROUP],
+        type: "normal",
+        enabled: false,
+        subItems: {
+          [TAB_GROUP_SELECTED]: {
+            id: TAB_GROUP_SELECTED,
+            title: i18n.getMessage(`${TAB_GROUP_SELECTED}_title`, "(G)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_COLLAPSE]: {
+            id: TAB_GROUP_COLLAPSE,
+            title: i18n.getMessage(`${TAB_GROUP_COLLAPSE}_title`, "(E)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+            toggleTitle: i18n.getMessage(`${TAB_GROUP_EXPAND}_title`, "(E)"),
+          },
+          [TAB_GROUP_RELOAD]: {
+            id: TAB_GROUP_RELOAD,
+            title: i18n.getMessage(`${TAB_GROUP_RELOAD}_title`, "(R)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_PIN]: {
+            id: TAB_GROUP_PIN,
+            title: i18n.getMessage(`${TAB_GROUP_PIN}_title`, "(P)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_DUPE]: {
+            id: TAB_GROUP_DUPE,
+            title: i18n.getMessage(`${TAB_GROUP_DUPE}_title`, "(D)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_SYNC]: {
+            id: TAB_GROUP_SYNC,
+            title: i18n.getMessage(`${TAB_GROUP_SYNC}_title`, "(S)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_BOOKMARK]: {
+            id: TAB_GROUP_BOOKMARK,
+            title: i18n.getMessage(`${TAB_GROUP_BOOKMARK}_title`, "(B)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_DETACH]: {
+            id: TAB_GROUP_DETACH,
+            title: i18n.getMessage(`${TAB_GROUP_DETACH}_title`, "(T)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_UNGROUP]: {
+            id: TAB_GROUP_UNGROUP,
+            title: i18n.getMessage(`${TAB_GROUP_UNGROUP}_title`, "(U)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+          [TAB_GROUP_CLOSE]: {
+            id: TAB_GROUP_CLOSE,
+            title: i18n.getMessage(`${TAB_GROUP_CLOSE}_title`, "(C)"),
+            contexts: [CLASS_TAB_GROUP],
+            type: "normal",
+            enabled: false,
+            onclick: true,
+          },
+        },
+      },
+      /* all tabs */
+      [TAB_RELOAD_ALL]: {
+        id: TAB_RELOAD_ALL,
+        title: i18n.getMessage(`${TAB_RELOAD_ALL}_title`, "(R)"),
+        contexts: ["page"],
+        type: "normal",
+        enabled: true,
+        onclick: true,
+      },
+      [TAB_BOOKMARK_ALL]: {
+        id: TAB_BOOKMARK_ALL,
+        title: i18n.getMessage(`${TAB_BOOKMARK_ALL}_title`, "(B)"),
+        contexts: ["page"],
+        type: "normal",
+        enabled: false,
+        onclick: true,
+      },
+      [TAB_CLOSE_UNDO]: {
+        id: TAB_CLOSE_UNDO,
+        title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, "(U)"),
+        contexts: ["page"],
+        type: "normal",
+        enabled: false,
+        onclick: true,
+      },
+    },
+  },
+};
 
 /**
  * focus element
  * @param {!Object} evt - Event
  * @returns {Object} - element
  */
-const focusElement = evt => {
+export const focusElement = evt => {
   const {target} = evt;
   if (target) {
     target.focus();
@@ -33,7 +267,7 @@ const focusElement = evt => {
  * @param {Object} elm - element
  * @returns {void}
  */
-const removeStyle = elm => {
+export const removeStyle = elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const {classList, style} = elm;
     classList.contains(CLASS_SHOW) && classList.remove(CLASS_SHOW);
@@ -50,7 +284,7 @@ const removeStyle = elm => {
  * @param {Object} elm - element
  * @returns {Object} - offsets
  */
-const getOffsets = elm => {
+export const getOffsets = elm => {
   const offset = {
     offsetBottom: 0,
     offsetHeight: 0,
@@ -90,7 +324,7 @@ const getOffsets = elm => {
  * @param {Object} elm - element
  * @returns {boolean} - result
  */
-const isContextMenuItem = elm => {
+export const isContextMenuItem = elm => {
   let bool;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     let node = elm;
@@ -110,7 +344,7 @@ const isContextMenuItem = elm => {
  * @param {Object} elm - element
  * @returns {Object} - menu item element
  */
-const getTargetMenuItem = elm => {
+export const getTargetMenuItem = elm => {
   let targetElm;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     let node = elm;
@@ -132,7 +366,7 @@ const getTargetMenuItem = elm => {
  * @param {Object} elm - element
  * @returns {Object} - menu item element
  */
-const getNextSiblingMenuItem = elm => {
+export const getNextSiblingMenuItem = elm => {
   let targetElm;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const {
@@ -147,7 +381,7 @@ const getNextSiblingMenuItem = elm => {
            (node.nextElementSibling || node === parentLastChild)) {
       const {classList, nextElementSibling: nodeNextSibling} = node;
       if (classList.contains(CLASS_MENU_SEP) ||
-          classList.contains(CLASS_DISABLED)) {
+          classList.contains(DISABLED)) {
         if (nodeNextSibling) {
           node = nodeNextSibling;
         } else if (node === parentLastChild) {
@@ -169,7 +403,7 @@ const getNextSiblingMenuItem = elm => {
  * @param {!Object} elm - element
  * @returns {Object} - menu item element
  */
-const getPreviousSiblingMenuItem = elm => {
+export const getPreviousSiblingMenuItem = elm => {
   let targetElm;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const {
@@ -184,7 +418,7 @@ const getPreviousSiblingMenuItem = elm => {
            (node.previousElementSibling || node === parentFirstChild)) {
       const {classList, previousElementSibling: nodePreviousSibling} = node;
       if (classList.contains(CLASS_MENU_SEP) ||
-          classList.contains(CLASS_DISABLED)) {
+          classList.contains(DISABLED)) {
         if (nodePreviousSibling) {
           node = nodePreviousSibling;
         } else if (node === parentFirstChild) {
@@ -206,7 +440,7 @@ const getPreviousSiblingMenuItem = elm => {
  * @param {string} key - arrow key
  * @returns {Object} - menu item element
  */
-const selectMenuItemWithArrowKey = key => {
+export const selectMenuItemWithArrowKey = key => {
   const elm = document.activeElement;
   const {
     childNodes, classList, firstElementChild, nextElementSibling, parentNode,
@@ -221,14 +455,14 @@ const selectMenuItemWithArrowKey = key => {
     case "ArrowDown": {
       if (classList.contains(CLASS_MENU)) {
         if (firstElementChild.classList.contains(CLASS_MENU_SEP) ||
-            firstElementChild.classList.contains(CLASS_DISABLED)) {
+            firstElementChild.classList.contains(DISABLED)) {
           targetElm = getNextSiblingMenuItem(firstElementChild);
         } else {
           targetElm = firstElementChild;
         }
       } else if (elm === parentLastChild) {
         if (parentFirstChild.classList.contains(CLASS_MENU_SEP) ||
-            parentFirstChild.classList.contains(CLASS_DISABLED)) {
+            parentFirstChild.classList.contains(DISABLED)) {
           targetElm = getNextSiblingMenuItem(parentFirstChild);
         } else {
           targetElm = parentFirstChild;
@@ -257,7 +491,7 @@ const selectMenuItemWithArrowKey = key => {
         }
         if (subMenu) {
           if (subMenu.firstElementChild.classList.contains(CLASS_MENU_SEP) ||
-              subMenu.firstElementChild.classList.contains(CLASS_DISABLED)) {
+              subMenu.firstElementChild.classList.contains(DISABLED)) {
             targetElm = getNextSiblingMenuItem(subMenu.firstElementChild);
           } else {
             targetElm = subMenu.firstElementChild;
@@ -269,7 +503,7 @@ const selectMenuItemWithArrowKey = key => {
     case "ArrowUp": {
       if (elm === parentFirstChild) {
         if (parentLastChild.classList.contains(CLASS_MENU_SEP) ||
-            parentLastChild.classList.contains(CLASS_DISABLED)) {
+            parentLastChild.classList.contains(DISABLED)) {
           targetElm = getPreviousSiblingMenuItem(parentLastChild);
         } else {
           targetElm = parentLastChild;
@@ -294,7 +528,7 @@ const selectMenuItemWithArrowKey = key => {
  * @param {boolean} sensitive - case sensitive
  * @returns {Object} - menu item element
  */
-const getAccessKeyMenuItem = (elm, key, sensitive = false) => {
+export const getAccessKeyMenuItem = (elm, key, sensitive = false) => {
   let targetElm;
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       isString(key) && key.length) {
@@ -337,7 +571,7 @@ const getAccessKeyMenuItem = (elm, key, sensitive = false) => {
  * @param {boolean} sensitive - case sensitive
  * @returns {boolean} - result
  */
-const hasSameAccessKey = (nodes, key, sensitive = false) => {
+export const hasSameAccessKey = (nodes, key, sensitive = false) => {
   const arr = [];
   if ((nodes instanceof NodeList || nodes instanceof HTMLCollection) &&
       isString(key) && key.length) {
@@ -361,7 +595,7 @@ const hasSameAccessKey = (nodes, key, sensitive = false) => {
  * @param {boolean} sensitive - case sensitive
  * @returns {Object} - menu item element
  */
-const selectMenuItemWithAccessKey = (key, sensitive = false) => {
+export const selectMenuItemWithAccessKey = (key, sensitive = false) => {
   const menuElm = document.getElementById(MENU);
   let targetElm;
   if (menuElm && menuElm.classList.contains(CLASS_SHOW) &&
@@ -418,7 +652,7 @@ const selectMenuItemWithAccessKey = (key, sensitive = false) => {
  * @param {!Object} evt - Event
  * @returns {void}
  */
-const hideSubMenus = evt => {
+export const hideSubMenus = evt => {
   const {target} = evt;
   const {id: targetId, parentNode: {childNodes}} = target;
   if (targetId === MENU) {
@@ -452,7 +686,7 @@ const hideSubMenus = evt => {
  * @param {!Object} evt - Event
  * @returns {Object} - sub menu element
  */
-const showSubMenu = evt => {
+export const showSubMenu = evt => {
   const {target} = evt;
   const {childNodes} = target;
   let elm;
@@ -546,7 +780,7 @@ const showSubMenu = evt => {
  * hide context menu container
  * @returns {Object} - context menu container element
  */
-const hideContextMenuContainer = () => {
+export const hideContextMenuContainer = () => {
   const container = document.getElementById(MENU_CONTAINER);
   if (container) {
     container.classList.remove(CLASS_SHOW);
@@ -558,7 +792,7 @@ const hideContextMenuContainer = () => {
  * show context menu container
  * @returns {Object} - context menu container element
  */
-const showContextMenuContainer = () => {
+export const showContextMenuContainer = () => {
   const container = document.getElementById(MENU_CONTAINER);
   if (container) {
     container.classList.add(CLASS_SHOW);
@@ -570,7 +804,7 @@ const showContextMenuContainer = () => {
  * hide context menu
  * @returns {Object} - context menu element
  */
-const hideContextMenu = () => {
+export const hideContextMenu = () => {
   const elm = document.getElementById(MENU);
   if (elm) {
     const subMenus = elm.querySelectorAll(`.${CLASS_MENU}`);
@@ -588,7 +822,7 @@ const hideContextMenu = () => {
  * @param {!Object} evt - Event
  * @returns {?Function} - handler function
  */
-const handleClick = evt => {
+export const handleClick = evt => {
   const {target} = evt;
   const targetMenuItem = getTargetMenuItem(target);
   let func;
@@ -607,7 +841,7 @@ const handleClick = evt => {
  * @param {!Object} evt - Event
  * @returns {Object} - context menu element
  */
-const showContextMenu = evt => {
+export const showContextMenu = evt => {
   const elm = document.getElementById(MENU);
   const container = showContextMenuContainer();
   if (elm && container && container.classList.contains(CLASS_SHOW)) {
@@ -625,7 +859,7 @@ const showContextMenu = evt => {
       const {offsetHeight, offsetLeft, offsetWidth} = getOffsets(elm);
       const elmMarginBoxWidth = elmWidth + offsetWidth;
       const elmMarginBoxHeight = elmHeight + offsetHeight;
-      const menuItems = elm.querySelectorAll(`li:not(.${CLASS_MENU_SEP})`);
+      const items = elm.querySelectorAll(`li:not(.${CLASS_MENU_SEP})`);
       if (innerWidth > clientX + elmMarginBoxWidth) {
         // show right
         elmStyle.left = `${clientX}px`;
@@ -643,7 +877,7 @@ const showContextMenu = evt => {
         // show upward
         elmStyle.top = `${clientY - elmHeight}px`;
       }
-      for (const item of menuItems) {
+      for (const item of items) {
         const {classList: itemClassList} = item;
         item.addEventListener("pointerenter", focusElement);
         item.addEventListener("focus", hideSubMenus);
@@ -658,6 +892,54 @@ const showContextMenu = evt => {
     }
   }
   return elm || null;
+};
+
+/**
+ * update context menu
+ * @param {string} id - menu item ID
+ * @param {Object} data - update items data
+ * @returns {void}
+ */
+export const updateContextMenu = async (id, data = {}) => {
+  if (isString(id)) {
+    const elm = document.getElementById(id);
+    if (elm) {
+      const {enabled, title} = data;
+      const {classList} = elm;
+      if (title) {
+        const label = elm.querySelector(`.${CLASS_MENU_LABEL}`);
+        if (label) {
+          label.textContent = title;
+          label.title = title;
+        }
+      }
+      if (enabled) {
+        classList.remove(DISABLED);
+      } else {
+        classList.add(DISABLED);
+      }
+    }
+  }
+};
+
+/**
+ * toggle context menu class
+ * @param {string} name - class name
+ * @param {boolean} bool - add class
+ * @returns {void}
+ */
+export const toggleContextMenuClass = async (name, bool = false) => {
+  if (isString(name)) {
+    const elm = document.getElementById(MENU);
+    if (elm) {
+      const {classList} = elm;
+      if (bool) {
+        classList.add(name);
+      } else {
+        classList.remove(name);
+      }
+    }
+  }
 };
 
 /**
