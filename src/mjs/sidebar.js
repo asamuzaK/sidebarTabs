@@ -176,18 +176,16 @@ const setSidebar = async () => {
     populate: true,
   });
   if (win) {
-    const {focused, id, incognito} = win;
-    if (focused) {
-      const {
-        tabGroupPutNewTabAtTheEnd,
-      } = await getStorage(TAB_GROUP_NEW_TAB_AT_END);
-      if (tabGroupPutNewTabAtTheEnd) {
-        const {checked} = tabGroupPutNewTabAtTheEnd;
-        sidebar.tabGroupPutNewTabAtTheEnd = !!checked;
-      }
-      sidebar.incognito = incognito;
-      sidebar.windowId = id;
+    const {id, incognito} = win;
+    const {
+      tabGroupPutNewTabAtTheEnd,
+    } = await getStorage(TAB_GROUP_NEW_TAB_AT_END);
+    if (tabGroupPutNewTabAtTheEnd) {
+      const {checked} = tabGroupPutNewTabAtTheEnd;
+      sidebar.tabGroupPutNewTabAtTheEnd = !!checked;
     }
+    sidebar.incognito = incognito;
+    sidebar.windowId = id;
   }
 };
 
@@ -2769,51 +2767,6 @@ const setVars = async (data = {}) => {
   return Promise.all(func);
 };
 
-/* listeners */
-// sessions.onChanged.addListener(() => setSessionTabList().catch(throwErr));
-
-storage.onChanged.addListener(data => setVars(data).catch(throwErr));
-
-runtime.onMessage.addListener((msg, sender) => {
-  handleMsg(msg, sender).catch(throwErr);
-});
-
-tabs.onActivated.addListener(info =>
-  handleActivatedTab(info).then(expandActivatedCollapsedTab).catch(throwErr)
-);
-
-tabs.onAttached.addListener((tabId, info) =>
-  handleAttachedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).catch(throwErr)
-);
-
-tabs.onCreated.addListener(tabsTab =>
-  handleCreatedTab(tabsTab).then(restoreTabContainers)
-    .then(setSessionTabList).then(getLastClosedTab).catch(throwErr)
-);
-
-tabs.onDetached.addListener((tabId, info) =>
-  handleDetachedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).then(expandActivatedCollapsedTab)
-    .catch(throwErr)
-);
-
-tabs.onMoved.addListener((tabId, info) =>
-  handleMovedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).catch(throwErr)
-);
-
-tabs.onRemoved.addListener((tabId, info) =>
-  handleRemovedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).then(getLastClosedTab)
-    .then(expandActivatedCollapsedTab).catch(throwErr)
-);
-
-tabs.onUpdated.addListener((tabId, info, tabsTab) =>
-  handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
-);
-
-/* start up */
 /**
  * restore tab group
  * @returns {void}
@@ -2875,16 +2828,60 @@ const applyCss = async () => {
  */
 const handleEvt = evt => setContext(evt).catch(throwErr);
 
+/* listeners */
+storage.onChanged.addListener(data => setVars(data).catch(throwErr));
+
+runtime.onMessage.addListener((msg, sender) => {
+  handleMsg(msg, sender).catch(throwErr);
+});
+
+tabs.onActivated.addListener(info =>
+  handleActivatedTab(info).then(expandActivatedCollapsedTab).catch(throwErr)
+);
+
+tabs.onAttached.addListener((tabId, info) =>
+  handleAttachedTab(tabId, info).then(restoreTabContainers)
+    .then(setSessionTabList).catch(throwErr)
+);
+
+tabs.onCreated.addListener(tabsTab =>
+  handleCreatedTab(tabsTab).then(restoreTabContainers)
+    .then(setSessionTabList).then(getLastClosedTab).catch(throwErr)
+);
+
+tabs.onDetached.addListener((tabId, info) =>
+  handleDetachedTab(tabId, info).then(restoreTabContainers)
+    .then(setSessionTabList).then(expandActivatedCollapsedTab)
+    .catch(throwErr)
+);
+
+tabs.onMoved.addListener((tabId, info) =>
+  handleMovedTab(tabId, info).then(restoreTabContainers)
+    .then(setSessionTabList).catch(throwErr)
+);
+
+tabs.onRemoved.addListener((tabId, info) =>
+  handleRemovedTab(tabId, info).then(restoreTabContainers)
+    .then(setSessionTabList).then(getLastClosedTab)
+    .then(expandActivatedCollapsedTab).catch(throwErr)
+);
+
+tabs.onUpdated.addListener((tabId, info, tabsTab) =>
+  handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
+);
+
+/* start up */
+getTheme().then(setTheme).then(applyCss).then(() =>
+  Promise.all([
+    addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
+    addNewTabClickListener(),
+    createContextMenu(),
+    setSidebar(),
+    localizeHtml(),
+    makeConnection({name: TAB}),
+  ])
+).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
+  .then(setSessionTabList).then(getLastClosedTab).catch(throwErr);
+
 window.addEventListener("keydown", handleEvt, true);
 window.addEventListener("mousedown", handleEvt, true);
-
-/* startup */
-getTheme().then(setTheme).then(applyCss).then(() => Promise.all([
-  addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
-  addNewTabClickListener(),
-  createContextMenu(),
-  setSidebar(),
-  localizeHtml(),
-  makeConnection({name: TAB}),
-])).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-  .then(setSessionTabList).then(getLastClosedTab).catch(throwErr);
