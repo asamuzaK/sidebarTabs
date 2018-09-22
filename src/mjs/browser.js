@@ -248,7 +248,7 @@ export const getManifestIcons = () => {
  * get OS
  * @returns {string} - OS
  */
-export const getOS = async () => {
+export const getOs = async () => {
   const {os} = await runtime.getPlatformInfo();
   return os;
 };
