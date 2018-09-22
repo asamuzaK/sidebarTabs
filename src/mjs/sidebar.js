@@ -16,7 +16,7 @@ import {localizeHtml} from "./localize.js";
 import {
   CLASS_DISABLED, CLASS_MENU, COOKIE_STORE_DEFAULT, EXT_INIT,
   MENU, MIME_PLAIN, MIME_URI, MOUSE_BUTTON_RIGHT, NEW_TAB,
-  THEME_DARK, THEME_DARK_ID, THEME_DEFAULT, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
 
@@ -216,7 +216,7 @@ const getTheme = async () => {
         }
       }
     }
-    !themes.length && themes.push(THEME_DEFAULT);
+    !themes.length && themes.push(THEME_LIGHT);
   }
   return themes;
 };
@@ -238,15 +238,9 @@ const setTheme = async themes => {
         classList.remove(CLASS_THEME_LIGHT);
         classList.add(CLASS_THEME_DARK);
         break;
-      case THEME_DEFAULT:
-        classList.remove(CLASS_THEME_DARK);
-        classList.remove(CLASS_THEME_LIGHT);
-        break;
-      case THEME_LIGHT:
+      default:
         classList.remove(CLASS_THEME_DARK);
         classList.add(CLASS_THEME_LIGHT);
-        break;
-      default:
     }
   }
   await setStorage({
@@ -2748,7 +2742,6 @@ const setVar = async (item, obj, changed = false) => {
         sidebar[item] = !!checked;
         break;
       case THEME_DARK:
-      case THEME_DEFAULT:
       case THEME_LIGHT:
         changed && checked && func.push(setTheme([item]));
         break;

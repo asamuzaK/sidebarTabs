@@ -293,9 +293,6 @@
   "optionsThemeDarkLabel": {
     "message": "Dark Theme"
   },
-  "optionsThemeDefaultLabel": {
-    "message": "Default Theme"
-  },
   "optionsThemeDetail": {
     "message": "Choose theme."
   },
