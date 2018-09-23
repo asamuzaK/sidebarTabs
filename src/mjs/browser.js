@@ -544,6 +544,26 @@ export const getAllTabsInWindow = async windowId => {
 };
 
 /**
+ * get highlighted tab
+ * @param {number} windowId - window ID
+ * @returns {?Array} - array of tabs.Tab
+ */
+export const getHighlightedTab = async windowId => {
+  let arr;
+  if (tabs) {
+    if (!Number.isInteger(windowId)) {
+      windowId = windows.WINDOW_ID_CURRENT;
+    }
+    arr = await tabs.query({
+      windowId,
+      highlighted: true,
+      windowType: "normal",
+    });
+  }
+  return arr || null;
+};
+
+/**
  * get tab
  * @param {number} tabId - tab ID
  * @returns {Object} - tabs.Tab
@@ -560,55 +580,24 @@ export const getTab = async tabId => {
 };
 
 /**
- * is accesskey supported in context menu
- * @returns {boolean} - result
+ * highlight tab
+ * @param {number|Array} index - tab index
+ * @param {number} windowId - window ID
+ * @returns {Object} - windows.Window
  */
-export const isAccessKeySupported = async () => {
-  let bool;
-  if (IS_CHROMEEXT) {
-    bool = true;
-  } else if (IS_WEBEXT) {
-    const {version} = await runtime.getBrowserInfo();
-    const {major: majorVersion} = await parseVersion(version);
-    if (majorVersion >= WEBEXT_ACCKEY_MIN) {
-      bool = true;
-    }
+export const highlightTab = async (index, windowId) => {
+  if (!(Array.isArray(index) || Number.isInteger(index))) {
+    throw new TypeError(`Expected Number or Array but got ${getType(index)}.`);
   }
-  return !!bool;
-};
-
-/**
- * is tab
- * @param {*} tabId - tab ID
- * @returns {boolean} - result
- */
-export const isTab = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
   }
-  let tab;
-  if (tabs && tabId !== TAB_ID_NONE) {
-    tab = await tabs.get(tabId).catch(() => false);
-  }
-  return !!tab;
-};
-
-/**
- * is visible supported in context menu
- * @returns {boolean} - result
- */
-export const isVisibleInMenuSupported = async () => {
-  let bool;
-  if (IS_CHROMEEXT) {
-    bool = true;
-  } else if (IS_WEBEXT) {
-    const {version} = await runtime.getBrowserInfo();
-    const {major: majorVersion} = await parseVersion(version);
-    if (majorVersion >= WEBEXT_MENU_VISIBLE_MIN) {
-      bool = true;
-    }
-  }
-  return !!bool;
+  const opt = {
+    windowId,
+    tabs: index,
+  };
+  const win = await tabs.highlight(opt);
+  return win || null;
 };
 
 /**
@@ -716,6 +705,58 @@ export const updateTab = async (tabId, opt) => {
     tab = await tabs.update(tabId, isObjectNotEmpty(opt) && opt || null);
   }
   return tab || null;
+};
+
+/**
+ * is accesskey supported in context menu
+ * @returns {boolean} - result
+ */
+export const isAccessKeySupported = async () => {
+  let bool;
+  if (IS_CHROMEEXT) {
+    bool = true;
+  } else if (IS_WEBEXT) {
+    const {version} = await runtime.getBrowserInfo();
+    const {major: majorVersion} = await parseVersion(version);
+    if (majorVersion >= WEBEXT_ACCKEY_MIN) {
+      bool = true;
+    }
+  }
+  return !!bool;
+};
+
+/**
+ * is tab
+ * @param {*} tabId - tab ID
+ * @returns {boolean} - result
+ */
+export const isTab = async tabId => {
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+  }
+  let tab;
+  if (tabs && tabId !== TAB_ID_NONE) {
+    tab = await tabs.get(tabId).catch(() => false);
+  }
+  return !!tab;
+};
+
+/**
+ * is visible supported in context menu
+ * @returns {boolean} - result
+ */
+export const isVisibleInMenuSupported = async () => {
+  let bool;
+  if (IS_CHROMEEXT) {
+    bool = true;
+  } else if (IS_WEBEXT) {
+    const {version} = await runtime.getBrowserInfo();
+    const {major: majorVersion} = await parseVersion(version);
+    if (majorVersion >= WEBEXT_MENU_VISIBLE_MIN) {
+      bool = true;
+    }
+  }
+  return !!bool;
 };
 
 /* windows */
