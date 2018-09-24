@@ -1235,12 +1235,13 @@ const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
         }
       }
     } else {
-      // FIXME: dragged from other window
+      func.push(moveTab(tabIds, {
+        windowId,
+        index: dropIndex + 1,
+      }));
     }
   }
-  // FIXME: fix then().then()
-  return Promise.all(func).then(removeHighlightFromTabs)
-    .then(setSessionTabList);
+  return Promise.all(func);
 };
 
 /**
@@ -1285,7 +1286,10 @@ const handleDrop = evt => {
       // silent fail
     }
     if (isObjectNotEmpty(item)) {
-      func.push(extractDroppedTabs(dropTarget, item, {ctrlKey, shiftKey}));
+      func.push(
+        extractDroppedTabs(dropTarget, item, {ctrlKey, shiftKey})
+          .then(removeHighlightFromTabs).then(setSessionTabList)
+      );
     }
   }
   evt.stopPropagation();
@@ -1365,7 +1369,7 @@ const handleDragStart = evt => {
     for (const tab of items) {
       const {dataset: tabDataset} = tab;
       const {tabId} = tabDataset;
-      arr.push(tabId);
+      arr.push(tabId * 1);
     }
     if (arr.length) {
       data.tabIds = arr;
@@ -1375,7 +1379,7 @@ const handleDragStart = evt => {
   } else {
     const {tabId} = dataset;
     if (tabId) {
-      data.tabIds = [tabId];
+      data.tabIds = [tabId * 1];
       evt.dataTransfer.effectAllowed = "move";
       evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
     }
