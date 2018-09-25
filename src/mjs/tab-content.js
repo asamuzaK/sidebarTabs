@@ -13,7 +13,6 @@ import {
 /* api */
 const {i18n} = browser;
 
-/* sidebar tab content */
 /* favicon */
 const favicon = new Map();
 

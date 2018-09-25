@@ -962,8 +962,7 @@ const handleDragStart = evt => {
   };
   let items;
   if (classList.contains(CLASS_TAB_HIGHLIGHT)) {
-    items =
-      document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+    items = document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
   } else if (ctrlKey &&
              container && container.classList.contains(CLASS_TAB_GROUP)) {
     items = container.querySelectorAll(TAB_QUERY);
@@ -2158,46 +2157,37 @@ const handleMsg = async (msg, sender) => {
 
 /* listeners */
 storage.onChanged.addListener(data => setVars(data).catch(throwErr));
-
 runtime.onMessage.addListener((msg, sender) => {
   handleMsg(msg, sender).catch(throwErr);
 });
-
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab).catch(throwErr)
 );
-
 tabs.onAttached.addListener((tabId, info) =>
   handleAttachedTab(tabId, info).then(restoreTabContainers)
     .then(setSessionTabList).catch(throwErr)
 );
-
 tabs.onCreated.addListener(tabsTab =>
   handleCreatedTab(tabsTab).then(restoreTabContainers)
     .then(setSessionTabList).then(getLastClosedTab).catch(throwErr)
 );
-
 tabs.onDetached.addListener((tabId, info) =>
   handleDetachedTab(tabId, info).then(restoreTabContainers)
     .then(setSessionTabList).then(expandActivatedCollapsedTab)
     .catch(throwErr)
 );
-
 tabs.onHighlighted.addListener(info =>
   handleHighlightedTab(info).catch(throwErr)
 );
-
 tabs.onMoved.addListener((tabId, info) =>
   handleMovedTab(tabId, info).then(restoreTabContainers)
     .then(setSessionTabList).catch(throwErr)
 );
-
 tabs.onRemoved.addListener((tabId, info) =>
   handleRemovedTab(tabId, info).then(restoreTabContainers)
     .then(setSessionTabList).then(getLastClosedTab)
     .then(expandActivatedCollapsedTab).catch(throwErr)
 );
-
 tabs.onUpdated.addListener((tabId, info, tabsTab) =>
   handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
 );
@@ -2207,9 +2197,9 @@ setSidebarTheme().then(() => Promise.all([
   addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
   addNewTabClickListener(),
   createContextMenu(),
-  setSidebar(),
   localizeHtml(),
   makeConnection({name: TAB}),
+  setSidebar(),
 ])).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
   .then(restoreHighlightedTab).then(setSessionTabList).then(getLastClosedTab)
   .catch(throwErr);
