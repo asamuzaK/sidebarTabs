@@ -2,127 +2,206 @@
  * tab-util.js
  */
 
+import {isString} from "./common.js";
 import {
-  createBookmark, reloadTab, removeTab, updateTab,
+  getCurrentWindow, getSessionWindowValue, setSessionWindowValue,
 } from "./browser.js";
-import {CLASS_TAB_GROUP, PINNED, TAB_QUERY} from "./constant.js";
-
-/* constants */
+import {
+  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, NEW_TAB, TAB_LIST, TAB_QUERY,
+} from "./constant.js";
 
 /**
- * reload all tabs
- * @returns {Promise.<Array>} - results of each handler
+ * get template
+ * @param {string} id - template ID
+ * @returns {Object} - document fragment
  */
-export const reloadAllTabs = async () => {
-  const func = [];
-  const items = document.querySelectorAll(TAB_QUERY);
-  for (const item of items) {
-    const itemId = item && item.dataset && item.dataset.tabId * 1;
-    Number.isInteger(itemId) && func.push(reloadTab(itemId));
-  }
-  return Promise.all(func);
+export const getTemplate = id => {
+  const tmpl = document.getElementById(id);
+  const {content: {firstElementChild}} = tmpl;
+  return document.importNode(firstElementChild, true);
 };
 
 /**
- * reload tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
+ * get sidebar tab container from parent node
+ * @param {Object} node - node
+ * @returns {Object} - sidebar tab container
  */
-export const reloadTabGroup = async container => {
-  const func = [];
+export const getSidebarTabContainer = node => {
+  let container;
+  while (node && node.parentNode) {
+    const {classList, parentNode} = node;
+    if (classList.contains(CLASS_TAB_CONTAINER)) {
+      container = node;
+      break;
+    }
+    node = parentNode;
+  }
+  return container || null;
+};
+
+/**
+ * restore sidebar tab container
+ * @param {Object} container - tab container
+ * @returns {void}
+ */
+export const restoreTabContainer = container => {
   if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const items = container.querySelectorAll(TAB_QUERY);
-    for (const item of items) {
-      const itemId = item && item.dataset && item.dataset.tabId * 1;
-      Number.isInteger(itemId) && func.push(reloadTab(itemId));
+    const {childElementCount, classList, parentNode} = container;
+    switch (childElementCount) {
+      case 0:
+        parentNode.removeChild(container);
+        break;
+      case 1:
+        classList.remove(CLASS_TAB_GROUP);
+        break;
+      default:
     }
   }
-  return Promise.all(func);
 };
 
 /**
- * bookmark all tabs
- * @returns {Promise.<Array>} - results of each handler
+ * get sidebar tab from parent node
+ * @param {Object} node - node
+ * @returns {Object} - sidebar tab
  */
-export const bookmarkAllTabs = async () => {
-  const func = [];
-  const items = document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
-  for (const item of items) {
-    const itemTab = item.dataset && item.dataset.tab &&
-                      JSON.parse(item.dataset.tab);
-    const {title, url} = itemTab;
-    func.push(createBookmark({title, url}));
+export const getSidebarTab = node => {
+  let tab;
+  while (node && node.parentNode) {
+    const {dataset, parentNode} = node;
+    if (dataset.tabId) {
+      tab = node;
+      break;
+    }
+    node = parentNode;
   }
-  return Promise.all(func);
+  return tab || null;
 };
 
 /**
- * bookmark tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
+ * get sidebar tab ID
+ * @param {Object} node - node
+ * @returns {?number} - tab ID
  */
-export const bookmarkTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const {classList} = container;
-    if (classList.contains(CLASS_TAB_GROUP)) {
-      const items = container.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
-      for (const item of items) {
-        const itemTab = item.dataset && item.dataset.tab &&
-                          JSON.parse(item.dataset.tab);
-        const {title, url} = itemTab;
-        func.push(createBookmark({title, url}));
+export const getSidebarTabId = node => {
+  let tabId;
+  while (node && node.parentNode) {
+    const {dataset, parentNode} = node;
+    if (dataset.tabId) {
+      tabId = dataset.tabId * 1;
+      break;
+    }
+    node = parentNode;
+  }
+  return tabId || null;
+};
+
+/**
+ * get sidebar tab index
+ * @param {Object} tab - tab
+ * @returns {?number} - index
+ */
+export const getSidebarTabIndex = tab => {
+  let index;
+  if (tab && tab.nodeType === Node.ELEMENT_NODE) {
+    const items = document.querySelectorAll(TAB_QUERY);
+    const l = items.length;
+    let i = 0;
+    while (i < l && !Number.isInteger(index)) {
+      if (items[i] === tab) {
+        index = i;
+        break;
       }
+      i++;
     }
   }
-  return Promise.all(func);
+  return Number.isInteger(index) ?
+    index :
+    null;
 };
 
 /**
- * close tab group
- * @param {Object} node - tab group container
- * @returns {?AsyncFunction} - removeTab()
+ * get tabs in range
+ * @param {Object} tabA - tab A
+ * @param {Object} tabB - tab B
+ * @returns {Array} - Array of tabs
  */
-export const closeTabGroup = async node => {
-  const {id, classList, nodeType} = node;
-  let func;
-  if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
-      classList.contains(CLASS_TAB_GROUP)) {
-    const items = node.querySelectorAll(TAB_QUERY);
-    const arr = [];
-    for (const item of items) {
-      const {dataset} = item;
-      const tabId = dataset && dataset.tabId && dataset.tabId * 1;
-      Number.isInteger(tabId) && arr.push(tabId);
+export const getTabsInRange = async (tabA, tabB) => {
+  const tabAIndex = getSidebarTabIndex(tabA);
+  const tabBIndex = getSidebarTabIndex(tabB);
+  const arr = [];
+  if (Number.isInteger(tabAIndex) && Number.isInteger(tabBIndex)) {
+    const items = document.querySelectorAll(TAB_QUERY);
+    let fromIndex, toIndex;
+    if (tabAIndex > tabBIndex) {
+      fromIndex = tabBIndex;
+      toIndex = tabAIndex;
+    } else {
+      fromIndex = tabAIndex;
+      toIndex = tabBIndex;
     }
-    func = arr.length && removeTab(arr);
+    for (let i = fromIndex; i <= toIndex; i++) {
+      arr.push(items[i]);
+    }
   }
-  return func || null;
+  return arr;
 };
 
 /**
- * pin tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
+ * get tab list from sessions
+ * @param {string} key - key
+ * @returns {Object} - tab list
  */
-export const pinTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const {classList} = container;
-    if (classList.contains(CLASS_TAB_GROUP)) {
-      const items = container.querySelectorAll(TAB_QUERY);
-      if (items && items.length) {
-        for (const item of items) {
-          const tabId = item.dataset && item.dataset.tabId * 1;
-          const tabsTab =
-              item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
-          if (Number.isInteger(tabId) && tabsTab) {
-            const {pinned} = tabsTab;
-            func.push(updateTab(tabId, {pinned: !pinned}));
+export const getSessionTabList = async key => {
+  const win = await getCurrentWindow({
+    populate: true,
+  });
+  let tabList;
+  if (win && isString(key)) {
+    const {id: windowId} = win;
+    tabList = await getSessionWindowValue(key, windowId);
+    if (tabList) {
+      tabList = JSON.parse(tabList);
+    }
+  }
+  return tabList || null;
+};
+
+/**
+ * set tab list to sessions
+ * @returns {void}
+ */
+export const setSessionTabList = async () => {
+  const win = await getCurrentWindow({
+    populate: true,
+  });
+  if (win) {
+    const {id: windowId, incognito} = win;
+    const tabLength = document.querySelectorAll(TAB_QUERY).length;
+    if (!incognito && tabLength) {
+      const tabList = {};
+      const items =
+        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+      const l = items.length;
+      let i = 0;
+      while (i < l) {
+        const item = items[i];
+        const childTabs = item.querySelectorAll(TAB_QUERY);
+        for (const tab of childTabs) {
+          const tabsTab = tab.dataset && tab.dataset.tab;
+          if (tabsTab) {
+            const {url} = JSON.parse(tabsTab);
+            const tabIndex = getSidebarTabIndex(tab);
+            if (Number.isInteger(tabIndex)) {
+              tabList[tabIndex] = {
+                url,
+                containerIndex: i,
+              };
+            }
           }
         }
+        i++;
       }
+      await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
     }
   }
-  return Promise.all(func);
 };
