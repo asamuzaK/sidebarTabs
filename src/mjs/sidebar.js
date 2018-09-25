@@ -1024,7 +1024,9 @@ const restoreTabContainers = async () => {
       default:
         classList.add(CLASS_TAB_GROUP);
     }
+    func.push(addDropEventListener(item));
   }
+  return Promise.all(func);
 };
 
 /**
