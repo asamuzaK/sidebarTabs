@@ -1024,7 +1024,6 @@ const restoreTabContainers = async () => {
       default:
         classList.add(CLASS_TAB_GROUP);
     }
-    id !== PINNED && func.push(addDropEventListener(item));
   }
 };
 
@@ -2157,9 +2156,9 @@ const handleMsg = async (msg, sender) => {
 
 /* listeners */
 storage.onChanged.addListener(data => setVars(data).catch(throwErr));
-runtime.onMessage.addListener((msg, sender) => {
-  handleMsg(msg, sender).catch(throwErr);
-});
+runtime.onMessage.addListener((msg, sender) =>
+  handleMsg(msg, sender).catch(throwErr)
+);
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab).catch(throwErr)
 );
