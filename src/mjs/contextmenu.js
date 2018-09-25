@@ -376,11 +376,9 @@ export const getNextSiblingMenuItem = elm => {
       },
     } = elm;
     let node = nextElementSibling;
-    while (node &&
-           (node.nextElementSibling || node === parentLastChild)) {
+    while (node && (node.nextElementSibling || node === parentLastChild)) {
       const {classList, nextElementSibling: nodeNextSibling} = node;
-      if (classList.contains(CLASS_MENU_SEP) ||
-          classList.contains(DISABLED)) {
+      if (classList.contains(CLASS_MENU_SEP) || classList.contains(DISABLED)) {
         if (nodeNextSibling) {
           node = nodeNextSibling;
         } else if (node === parentLastChild) {
@@ -413,11 +411,9 @@ export const getPreviousSiblingMenuItem = elm => {
       previousElementSibling,
     } = elm;
     let node = previousElementSibling;
-    while (node &&
-           (node.previousElementSibling || node === parentFirstChild)) {
+    while (node && (node.previousElementSibling || node === parentFirstChild)) {
       const {classList, previousElementSibling: nodePreviousSibling} = node;
-      if (classList.contains(CLASS_MENU_SEP) ||
-          classList.contains(DISABLED)) {
+      if (classList.contains(CLASS_MENU_SEP) || classList.contains(DISABLED)) {
         if (nodePreviousSibling) {
           node = nodePreviousSibling;
         } else if (node === parentFirstChild) {

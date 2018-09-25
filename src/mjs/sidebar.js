@@ -1223,7 +1223,7 @@ const handleCreatedTab = async tabsTab => {
         container.appendChild(tab);
       }
       container.childElementCount > 1 &&
-          container.classList.add(CLASS_TAB_GROUP);
+        container.classList.add(CLASS_TAB_GROUP);
     } else if (openerTab && !openerTab.classList.contains(PINNED) &&
                openerTabsTab) {
       await addDragEventListener(tab);
@@ -1253,7 +1253,7 @@ const handleCreatedTab = async tabsTab => {
         container.appendChild(tab);
       }
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-          func.push(toggleTabGroupCollapsedState({target: tab}));
+        func.push(toggleTabGroupCollapsedState({target: tab}));
     } else if (list.length !== index && listedTab && listedTab.parentNode &&
                listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                listedTabPrev && listedTabPrev.parentNode &&
@@ -1263,7 +1263,7 @@ const handleCreatedTab = async tabsTab => {
       container = listedTab.parentNode;
       container.insertBefore(tab, listedTab);
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-          func.push(toggleTabGroupCollapsedState({target: tab}));
+        func.push(toggleTabGroupCollapsedState({target: tab}));
     } else {
       let target;
       if (list.length !== index && listedTab && listedTab.parentNode) {
