@@ -13,7 +13,7 @@ import {EXT_INIT} from "./constant.js";
  * @returns {void}
  */
 const sendMsg = async msg => {
-  msg && sendMessage(msg);
+  msg && sendMessage(null, msg);
 };
 
 /**
