@@ -1380,9 +1380,10 @@ const handleMovedTab = async (tabId, info) => {
         } else {
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
           const [target] = items;
+          const {parentNode} = target;
           container.appendChild(tab);
           container.removeAttribute("hidden");
-          target.parentNode.insertBefore(container, target);
+          parentNode.parentNode.insertBefore(container, parentNode);
         }
       } else {
         const lastTabIndex = items.length - 1;
