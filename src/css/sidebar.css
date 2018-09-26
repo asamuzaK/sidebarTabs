@@ -178,9 +178,9 @@ main {
 .tab.active:hover .tab-icon {
   fill: var(--foreground-color);
 }
-.tab.active.highlighted .tab-icon,
-.tab.active.highlighted:focus .tab-icon,
-.tab.active.highlighted:hover .tab-icon {
+.tab.highlighted .tab-icon,
+.tab.highlighted:focus .tab-icon,
+.tab.highlighted:hover .tab-icon {
   fill: var(--foreground-selection-color);
 }
 .tab-title {
