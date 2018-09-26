@@ -1402,7 +1402,7 @@ const handleMovedTab = async (tabId, info) => {
           items[toIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
           items[toIndex] === items[toIndex].parentNode.lastElementChild;
         const group = tab.dataset.group === "true";
-        if (!group && parentNode.childElementCount === 1 || unPinned ||
+        if (!group && target === parentNode.firstElementChild || unPinned ||
             detached) {
           const {parentNode: parentParentNode} = parentNode;
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
