@@ -2,7 +2,7 @@
  * contextmenu.js
  */
 
-import {dispatchKeyboardEvt, isString} from "./common.js";
+import {dispatchKeyboardEvt, focusElement, isString} from "./common.js";
 import {
   CLASS_MENU, CLASS_MENU_LABEL, CLASS_TAB_GROUP, DISABLED, MENU,
   TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
@@ -246,19 +246,6 @@ export const menuItems = {
       },
     },
   },
-};
-
-/**
- * focus element
- * @param {!Object} evt - Event
- * @returns {Object} - element
- */
-export const focusElement = evt => {
-  const {target} = evt;
-  if (target) {
-    target.focus();
-  }
-  return target || null;
 };
 
 /**

@@ -253,3 +253,16 @@ export const dispatchInputEvt = elm => {
     elm.dispatchEvent(evt);
   }
 };
+
+/**
+ * focus element
+ * @param {!Object} evt - Event
+ * @returns {Object} - element
+ */
+export const focusElement = evt => {
+  const {target} = evt;
+  if (target) {
+    target.focus();
+  }
+  return target || null;
+};

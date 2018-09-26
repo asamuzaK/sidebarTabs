@@ -1889,13 +1889,14 @@ const createContextMenu = async (menu = menuItems) => {
 };
 
 /**
- * handle context menu
+ * handle event
  * @param {!Object} evt - event
- * @returns {Promse.<Array>} - Promise chain
+ * @returns {Promse.<Array>} - results of each handler
  */
-const handleContextMenu = evt => {
+const handleEvt = async evt => {
   const {button, key, shiftKey, target} = evt;
   const func = [];
+  // context menu
   if (shiftKey && key === "F10" || key === "ContextMenu" ||
       button === MOUSE_BUTTON_RIGHT) {
     const tab = getSidebarTab(target);
@@ -1915,7 +1916,7 @@ const handleContextMenu = evt => {
       const {classList: tabClass, parentNode} = tab;
       const {classList: parentClass} = parentNode;
       const tabId = tab.dataset && tab.dataset.tabId;
-      const tabsTab = tab.dataset && JSON.parse(tab.dataset.tab);
+      const tabsTab = await getTab(tabId * 1);
       sidebar.context = tab;
       func.push(
         updateContextMenu(tabMenu.id, {
@@ -2118,11 +2119,12 @@ const handleContextMenu = evt => {
       func.push(updateContextMenu(id, data));
     }
   }
-  return Promise.all(func).catch(throwErr);
+  return Promise.all(func);
 };
 
-window.addEventListener("keydown", handleContextMenu, true);
-window.addEventListener("mousedown", handleContextMenu, true);
+window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
+window.addEventListener("mousedown",
+                        evt => handleEvt(evt).catch(throwErr), true);
 
 /* runtime message */
 /**
