@@ -8,11 +8,11 @@ import {throwErr} from "./common.js";
 const {browserAction, sidebarAction, runtime, windows} = browser;
 
 /* constants */
-const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
+const {WINDOW_ID_NONE} = windows;
 
 /* sidebar */
 const sidebar = {
-  windowId: WINDOW_ID_CURRENT,
+  windowId: windows.WINDOW_ID_CURRENT,
   isOpen: false,
 };
 
@@ -25,7 +25,7 @@ const setSidebarWindowId = async windowId => {
   if (Number.isInteger(windowId) && windowId !== WINDOW_ID_NONE) {
     sidebar.windowId = windowId;
   } else {
-    sidebar.windowId = WINDOW_ID_CURRENT;
+    sidebar.windowId = windows.WINDOW_ID_CURRENT;
   }
 };
 
@@ -65,33 +65,16 @@ const handlePort = async port => {
   );
 };
 
-/**
- * handle browser action clicked
- * @returns {AsyncFunction} - handler
- */
-const handleBrowserActionOnClicked = () =>
-  toggleSidebar().then(setSidebarIsOpenState).catch(throwErr);
-
-/**
- * handle connected port
- * @param {Object} port - runtime.Port
- * @returns {AsyncFunction} - handler
- */
-const handleConnectedPort = port =>
-  handlePort(port).then(setSidebarIsOpenState).catch(throwErr);
-
-/**
- * handle window on focus changed
- * @param {number} windowId - window ID
- * @returns {AsyncFunction} - handler
- */
-const handleWindowOnFocusChanged = windowId =>
-  setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr);
-
 /* listeners */
-browserAction.onClicked.addListener(handleBrowserActionOnClicked);
-runtime.onConnect.addListener(handleConnectedPort);
-windows.onFocusChanged.addListener(handleWindowOnFocusChanged);
+browserAction.onClicked.addListener(() =>
+  toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
+);
+runtime.onConnect.addListener(port =>
+  handlePort(port).then(setSidebarIsOpenState).catch(throwErr)
+);
+windows.onFocusChanged.addListener(windowId =>
+  setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr)
+);
 
 /* startup */
 setSidebarIsOpenState().catch(throwErr);
