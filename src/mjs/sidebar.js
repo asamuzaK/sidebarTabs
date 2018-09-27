@@ -176,7 +176,7 @@ const toggleTabGroupCollapsedState = async evt => {
 const addTabContextClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     elm.addEventListener("click", evt =>
-      toggleTabGroupCollapsedState(evt).catch(throwErr)
+      toggleTabGroupCollapsedState(evt).then(setSessionTabList).catch(throwErr)
     );
   }
 };
@@ -192,7 +192,8 @@ const expandActivatedCollapsedTab = async () => {
     const {parentNode} = tab;
     if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
         parentNode.firstElementChild !== tab) {
-      func = toggleTabGroupCollapsedState({target: tab});
+      func =
+        toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList);
     }
   }
   return func || null;
@@ -201,10 +202,10 @@ const expandActivatedCollapsedTab = async () => {
 /**
  * detach tab from tab group
  * @param {Object} elm - element
- * @returns {?AsyncFunction} - moveTab()
+ * @returns {?Array} - array of tabs.Tab
  */
 const detachTabFromGroup = async elm => {
-  let func;
+  let arr;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const {parentNode} = elm;
     if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
@@ -231,11 +232,11 @@ const detachTabFromGroup = async elm => {
             index = -1;
           }
         }
-        func = moveTab(tabId, {windowId, index});
+        arr = await moveTab([tabId], {windowId, index});
       }
     }
   }
-  return func || null;
+  return arr || null;
 };
 
 /**
@@ -243,12 +244,15 @@ const detachTabFromGroup = async elm => {
  * @returns {?AsyncFunction} - moveTab()
  */
 const groupSelectedTabs = async () => {
-  const items =
-    document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+  const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
   const tab = items && items[0];
   let func;
   if (tab) {
-    let [tabsTab] = await detachTabFromGroup(tab);
+    const tabsTabArr = await detachTabFromGroup(tab);
+    let tabsTab;
+    if (Array.isArray(tabsTabArr)) {
+      [tabsTab] = tabsTabArr;
+    }
     if (!tabsTab) {
       tabsTab = tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
     }
@@ -332,12 +336,17 @@ const restoreTabGroup = async () => {
       let i = 0;
       while (i < l) {
         const item = items[i];
-        const {containerIndex, url: tabListUrl} = tabList[i];
+        const {containerIndex, tabCollapsed, url: tabListUrl} = tabList[i];
         const {dataset: {tab: itemTab}} = item;
         const {url: itemUrl} = JSON.parse(itemTab);
         if (item && Number.isInteger(containerIndex) &&
             itemUrl === tabListUrl) {
           containers[containerIndex].appendChild(item);
+          if (tabCollapsed) {
+            containers[containerIndex].classList.add(CLASS_TAB_COLLAPSED);
+          } else {
+            containers[containerIndex].classList.remove(CLASS_TAB_COLLAPSED);
+          }
           i++;
         } else {
           break;
@@ -1243,7 +1252,9 @@ const handleCreatedTab = async tabsTab => {
         container.appendChild(tab);
       }
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState({target: tab}));
+        func.push(
+          toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList)
+        );
     } else if (list.length !== index && listedTab && listedTab.parentNode &&
                listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                listedTabPrev && listedTabPrev.parentNode &&
@@ -1253,7 +1264,9 @@ const handleCreatedTab = async tabsTab => {
       container = listedTab.parentNode;
       container.insertBefore(tab, listedTab);
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState({target: tab}));
+        func.push(
+          toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList)
+        );
     } else {
       let target;
       if (list.length !== index && listedTab && listedTab.parentNode) {
@@ -1538,15 +1551,14 @@ const syncTabGroup = async container => {
 
 /**
  * emulate tabs to sidebar
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {void}
  */
 const emulateTabs = async () => {
   const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  const func = [];
   for (const item of items) {
-    func.push(handleCreatedTab(item));
+    // eslint-disable-next-line no-await-in-loop
+    await handleCreatedTab(item);
   }
-  return Promise.all(func);
 };
 
 /* storage */
@@ -1698,7 +1710,9 @@ const handleClickedContextMenu = async evt => {
         const {parentNode: tabParent} = tab;
         const {classList: tabParentClassList} = tabParent;
         if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(toggleTabGroupCollapsedState({target: tab}));
+          func.push(
+            toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList)
+          );
         }
       }
       break;
@@ -1748,7 +1762,9 @@ const handleClickedContextMenu = async evt => {
       break;
     }
     case TAB_GROUP_SELECTED:
-      func.push(groupSelectedTabs());
+      func.push(
+        groupSelectedTabs().then(restoreTabContainers).then(setSessionTabList)
+      );
       break;
     case TAB_GROUP_SYNC: {
       if (tab) {

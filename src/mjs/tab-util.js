@@ -7,7 +7,8 @@ import {
   getCurrentWindow, getSessionWindowValue, setSessionWindowValue,
 } from "./browser.js";
 import {
-  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, NEW_TAB, TAB_LIST, TAB_QUERY,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
+  NEW_TAB, TAB_LIST, TAB_QUERY,
 } from "./constant.js";
 
 /**
@@ -186,6 +187,7 @@ export const setSessionTabList = async () => {
       while (i < l) {
         const item = items[i];
         const childTabs = item.querySelectorAll(TAB_QUERY);
+        const tabCollapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
         for (const tab of childTabs) {
           const tabsTab = tab.dataset && tab.dataset.tab;
           if (tabsTab) {
@@ -193,7 +195,7 @@ export const setSessionTabList = async () => {
             const tabIndex = getSidebarTabIndex(tab);
             if (Number.isInteger(tabIndex)) {
               tabList[tabIndex] = {
-                url,
+                tabCollapsed, url,
                 containerIndex: i,
               };
             }
