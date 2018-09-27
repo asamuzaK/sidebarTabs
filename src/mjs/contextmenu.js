@@ -20,12 +20,12 @@ const {i18n} = browser;
 /* constants */
 const CLASS_MENU_SEP = "menu-separator";
 const CLASS_SUBMENU_CONTAINER = "submenu-container";
-const CLASS_SHOW = "show";
-const CLASS_VISIBLE = "visible";
 const MENU_CONTAINER = "sidebar-tabs-header";
 const MENU_TAB = "tabMenu";
 const MOUSE_BUTTON_RIGHT = 2;
 const SCALE = 2;
+const SHOW = "show";
+const VISIBLE = "visible";
 
 /* context menu items */
 export const menuItems = {
@@ -256,8 +256,8 @@ export const menuItems = {
 export const removeStyle = elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const {classList, style} = elm;
-    classList.contains(CLASS_SHOW) && classList.remove(CLASS_SHOW);
-    classList.contains(CLASS_VISIBLE) && classList.remove(CLASS_VISIBLE);
+    classList.contains(SHOW) && classList.remove(SHOW);
+    classList.contains(VISIBLE) && classList.remove(VISIBLE);
     style.top && (style.top = null);
     style.right && (style.right = null);
     style.bottom && (style.bottom = null);
@@ -580,7 +580,7 @@ export const hasSameAccessKey = (nodes, key, sensitive = false) => {
 export const selectMenuItemWithAccessKey = (key, sensitive = false) => {
   const menuElm = document.getElementById(MENU);
   let targetElm;
-  if (menuElm && menuElm.classList.contains(CLASS_SHOW) &&
+  if (menuElm && menuElm.classList.contains(SHOW) &&
       isString(key) && key.length) {
     const elm = document.activeElement;
     const {childNodes, classList} = elm;
@@ -681,8 +681,8 @@ export const showSubMenu = evt => {
   }
   if (elm) {
     const {classList: elmClassList, style: elmStyle} = elm;
-    elmClassList.contains(CLASS_MENU) && elmClassList.add(CLASS_SHOW);
-    if (elmClassList.contains(CLASS_SHOW)) {
+    elmClassList.contains(CLASS_MENU) && elmClassList.add(SHOW);
+    if (elmClassList.contains(SHOW)) {
       const {innerHeight, innerWidth} = window;
       const {
         bottom: targetBottom, left: targetLeft, height: targetHeight,
@@ -752,7 +752,7 @@ export const showSubMenu = evt => {
           elmStyle.top = `-${elmHeight}px`;
         }
       }
-      elmClassList.add(CLASS_VISIBLE);
+      elmClassList.add(VISIBLE);
     }
   }
   return elm || null;
@@ -765,7 +765,7 @@ export const showSubMenu = evt => {
 export const hideContextMenuContainer = () => {
   const container = document.getElementById(MENU_CONTAINER);
   if (container) {
-    container.classList.remove(CLASS_SHOW);
+    container.classList.remove(SHOW);
   }
   return container || null;
 };
@@ -777,7 +777,7 @@ export const hideContextMenuContainer = () => {
 export const showContextMenuContainer = () => {
   const container = document.getElementById(MENU_CONTAINER);
   if (container) {
-    container.classList.add(CLASS_SHOW);
+    container.classList.add(SHOW);
   }
   return container || null;
 };
@@ -826,13 +826,13 @@ export const handleClick = evt => {
 export const showContextMenu = evt => {
   const elm = document.getElementById(MENU);
   const container = showContextMenuContainer();
-  if (elm && container && container.classList.contains(CLASS_SHOW)) {
+  if (elm && container && container.classList.contains(SHOW)) {
     const {classList: elmClassList, style: elmStyle} = elm;
     evt.stopImmediatePropagation();
     evt.preventDefault();
     hideSubMenus({target: elm});
-    elmClassList.contains(CLASS_MENU) && elmClassList.add(CLASS_SHOW);
-    if (elmClassList.contains(CLASS_SHOW)) {
+    elmClassList.contains(CLASS_MENU) && elmClassList.add(SHOW);
+    if (elmClassList.contains(SHOW)) {
       const {clientX, clientY} = evt;
       const {innerHeight, innerWidth} = window;
       const {
@@ -869,7 +869,7 @@ export const showContextMenu = evt => {
       }
       elm.addEventListener("pointerleave", hideSubMenus);
       elm.addEventListener("click", handleClick);
-      elm.classList.add(CLASS_VISIBLE);
+      elm.classList.add(VISIBLE);
       elm.focus();
     }
   }

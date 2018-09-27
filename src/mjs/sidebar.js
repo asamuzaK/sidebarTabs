@@ -6,9 +6,9 @@ import {
   getType, isObjectNotEmpty, isString, sleep, throwErr,
 } from "./common.js";
 import {
-  clearStorage, createBookmark, createNewWindow, createTab, getActiveTab,
-  getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab,
+  clearStorage, createBookmark, createNewWindow, createTab,
+  getActiveTab, getAllTabsInWindow, getContextualId, getCurrentWindow,
+  getHighlightedTab, getOs, getRecentlyClosedTab, getStorage, getTab,
   highlightTab, makeConnection, moveTab, moveTabsInOrder, reloadTab, removeTab,
   restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
@@ -27,16 +27,19 @@ import {
 import {setSidebarTheme, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
 import {
-  CLASS_MENU_LABEL, CLASS_TAB_CONTAINER, CLASS_TAB_CONTENT, CLASS_TAB_GROUP,
-  CLASS_TAB_ICON, CLASS_TAB_TITLE, COOKIE_STORE_DEFAULT,
-  DISABLED, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED,
-  TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
+  CLASS_MENU_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE,
+  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
+  CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL,
+  CLASS_TAB_TOGGLE_ICON,
+  COOKIE_STORE_DEFAULT, DISABLED, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB,
+  PINNED, TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
   TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
   TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_EXPAND, TAB_GROUP_NEW_TAB_AT_END,
   TAB_GROUP_PIN, TAB_GROUP_RELOAD, TAB_GROUP_SELECTED, TAB_GROUP_SYNC,
-  TAB_GROUP_UNGROUP, TAB_LIST,
-  TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_OBSERVE, TAB_PIN, TAB_QUERY,
+  TAB_GROUP_UNGROUP,
+  TAB_LIST, TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_OBSERVE, TAB_PIN, TAB_QUERY,
   TAB_RELOAD, TAB_RELOAD_ALL, TAB_SYNC, THEME_DARK, THEME_LIGHT,
 } from "./constant.js";
 
@@ -48,16 +51,7 @@ const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
 const ACTIVE = "active";
 const AUDIBLE = "audible";
-const CLASS_TAB_AUDIO = "tab-audio";
-const CLASS_TAB_AUDIO_ICON = "tab-audio-icon";
-const CLASS_TAB_CLOSE = "tab-close";
-const CLASS_TAB_CLOSE_ICON = "tab-close-icon";
-const CLASS_TAB_COLLAPSED = "tab-collapsed";
-const CLASS_TAB_CONTAINER_TMPL = "tab-container-template";
-const CLASS_TAB_CONTEXT = "tab-context";
-const CLASS_TAB_HIGHLIGHT = "highlighted";
-const CLASS_TAB_TMPL = "tab-template";
-const CLASS_TAB_TOGGLE_ICON = "tab-toggle-icon";
+const HIGHLIGHTED = "highlighted";
 const MOUSE_BUTTON_RIGHT = 2;
 const SIDEBAR_MAIN = "sidebar-tabs-container";
 const TIME_3SEC = 3000;
@@ -251,7 +245,7 @@ const detachTabFromGroup = async elm => {
  */
 const groupSelectedTabs = async () => {
   const items =
-    document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+    document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
   const tab = items && items[0];
   let func;
   if (tab) {
@@ -364,7 +358,7 @@ const restoreTabGroup = async () => {
  */
 const toggleHighlight = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.classList.toggle(CLASS_TAB_HIGHLIGHT);
+    elm.classList.toggle(HIGHLIGHTED);
   }
   return elm;
 };
@@ -376,7 +370,7 @@ const toggleHighlight = async elm => {
  */
 const addHighlight = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.classList.add(CLASS_TAB_HIGHLIGHT);
+    elm.classList.add(HIGHLIGHTED);
   }
   return elm;
 };
@@ -406,7 +400,7 @@ const addHighlightToTabs = async arr => {
  */
 const removeHighlight = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.classList.remove(CLASS_TAB_HIGHLIGHT);
+    elm.classList.remove(HIGHLIGHTED);
     if (sidebar.firstSelectedTab === elm) {
       sidebar.firstSelectedTab = null;
     }
@@ -455,7 +449,7 @@ const restoreHighlightedTab = async () => {
       const {id} = item;
       const tab = document.querySelector(`[data-tab-id="${id}"]`);
       if (tab) {
-        tab.classList.add(CLASS_TAB_HIGHLIGHT);
+        tab.classList.add(HIGHLIGHTED);
       }
     }
   }
@@ -961,13 +955,13 @@ const handleDragStart = evt => {
     windowId,
   };
   let items;
-  if (classList.contains(CLASS_TAB_HIGHLIGHT)) {
-    items = document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+  if (classList.contains(HIGHLIGHTED)) {
+    items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
   } else if (ctrlKey &&
              container && container.classList.contains(CLASS_TAB_GROUP)) {
     items = container.querySelectorAll(TAB_QUERY);
     for (const item of items) {
-      item.classList.add(CLASS_TAB_HIGHLIGHT);
+      item.classList.add(HIGHLIGHTED);
     }
   }
   if (items && items.length) {
@@ -1059,7 +1053,7 @@ const handleClickedTab = async evt => {
   } else if (isMac && metaKey || !isMac && ctrlKey) {
     if (Number.isInteger(firstTabIndex)) {
       const items =
-        document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+        document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
       const tabIndex = getSidebarTabIndex(tab);
       const index = [firstTabIndex];
       if (tab !== firstSelectedTab) {
@@ -1326,7 +1320,7 @@ const handleHighlightedTab = async info => {
   const func = [];
   if (Array.isArray(tabIds) && windowId === sidebar.windowId) {
     const items =
-      document.querySelectorAll(`${TAB_QUERY}.${CLASS_TAB_HIGHLIGHT}`);
+      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     if (tabIds.length > 1) {
       const highlightTabs = Array.from(tabIds);
       for (const item of items) {
@@ -1994,7 +1988,7 @@ const handleEvt = async evt => {
         func.push(updateContextMenu(id, data));
       }
       if (parentClass.contains(CLASS_TAB_GROUP) ||
-          tabClass.contains(CLASS_TAB_HIGHLIGHT)) {
+          tabClass.contains(HIGHLIGHTED)) {
         func.push(
           updateContextMenu(tabGroupMenu.id, {
             enabled: true,
@@ -2043,7 +2037,7 @@ const handleEvt = async evt => {
             break;
           }
           case TAB_GROUP_SELECTED: {
-            if (!tabsTab.pinned && tabClass.contains(CLASS_TAB_HIGHLIGHT)) {
+            if (!tabsTab.pinned && tabClass.contains(HIGHLIGHTED)) {
               data.enabled = true;
             } else {
               data.enabled = false;

@@ -5,13 +5,9 @@
 import {getType} from "./common.js";
 import {getEnabledTheme, getStorage, setStorage} from "./browser.js";
 import {
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  CLASS_THEME_DARK, CLASS_THEME_LIGHT, THEME, THEME_DARK, THEME_DARK_ID,
+  THEME_LIGHT, THEME_LIGHT_ID,
 } from "./constant.js";
-
-/* constants */
-const CLASS_THEME_DARK = "dark-theme";
-const CLASS_THEME_LIGHT = "light-theme";
-const THEME = "theme";
 
 /**
  * get theme
