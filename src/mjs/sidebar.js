@@ -223,8 +223,7 @@ const detachTabFromGroup = async elm => {
         if (target.classList.contains(NEW_TAB)) {
           index = -1;
         } else {
-          const tabsTab = target.dataset && target.dataset.tab &&
-                            JSON.parse(target.dataset.tab);
+          const tabsTab = await getTab(tabId);
           const {index: tabIndex} = tabsTab;
           if (Number.isInteger(tabIndex)) {
             index = tabIndex - 1;
@@ -249,10 +248,8 @@ const groupSelectedTabs = async () => {
   const tab = items && items[0];
   let func;
   if (tab) {
-    let tabsTab = await detachTabFromGroup(tab);
-    if (Array.isArray(tabsTab)) {
-      [tabsTab] = tabsTab;
-    } else if (!tabsTab) {
+    let [tabsTab] = await detachTabFromGroup(tab);
+    if (!tabsTab) {
       tabsTab = tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
     }
     const {id: tabId, index: tabIndex} = tabsTab;
@@ -710,7 +707,7 @@ const pinTabGroup = async container => {
         for (const item of items) {
           const tabId = item.dataset && item.dataset.tabId * 1;
           const tabsTab =
-              item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
+            item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
           if (Number.isInteger(tabId) && tabsTab) {
             const {pinned} = tabsTab;
             func.push(updateTab(tabId, {pinned: !pinned}));
@@ -1204,9 +1201,7 @@ const handleCreatedTab = async tabsTab => {
     }
     if (Number.isInteger(openerTabId)) {
       openerTab = document.querySelector(`[data-tab-id="${openerTabId}"]`);
-      if (openerTab && openerTab.dataset && openerTab.dataset.tab) {
-        openerTabsTab = JSON.parse(openerTab.dataset.tab);
-      }
+      openerTabsTab = await getTab(openerTabId);
     }
     if (pinned) {
       container = document.getElementById(PINNED);
@@ -1461,8 +1456,7 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
       if (info.hasOwnProperty("audible") || info.hasOwnProperty("mutedInfo")) {
         const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
         const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
-        const {muted} = tabsTab.mutedInfo;
-        const {audible} = tabsTab;
+        const {audible, mutedInfo: {muted}} = tabsTab;
         const opt = {audible, muted};
         if (tabAudio) {
           if (audible || muted) {
@@ -1614,8 +1608,7 @@ const handleClickedContextMenu = async evt => {
                 sidebar.context.classList.contains(TAB) && sidebar.context;
   const tabId = tab && tab.dataset && tab.dataset.tabId &&
                   tab.dataset.tabId * 1;
-  const tabsTab = tab && tab.dataset && tab.dataset.tab &&
-                    JSON.parse(tab.dataset.tab);
+  const tabsTab = await getTab(tabId);
   const func = [];
   switch (id) {
     case TAB_BOOKMARK: {
@@ -1909,8 +1902,8 @@ const handleEvt = async evt => {
     if (tab) {
       const {classList: tabClass, parentNode} = tab;
       const {classList: parentClass} = parentNode;
-      const tabId = tab.dataset && tab.dataset.tabId;
-      const tabsTab = await getTab(tabId * 1);
+      const tabId = tab.dataset && tab.dataset.tabId * 1;
+      const tabsTab = await getTab(tabId);
       sidebar.context = tab;
       func.push(
         updateContextMenu(tabMenu.id, {
@@ -1951,7 +1944,7 @@ const handleEvt = async evt => {
             if (tabsTab.pinned) {
               data.enabled = false;
             } else {
-              const obj = tabId && document.querySelectorAll(
+              const obj = Number.isInteger(tabId) && document.querySelectorAll(
                 `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
               );
               if (obj && obj.length) {
