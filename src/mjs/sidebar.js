@@ -332,22 +332,26 @@ const restoreTabGroup = async () => {
       const containers =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
       const l = items.length;
-      let i = 0;
+      let i = 0, j = 0;
       while (i < l) {
-        const item = items[i];
-        const {collapsed, containerIndex, url: tabListUrl} = tabList[i];
-        const {dataset: {tab: itemTab}} = item;
-        const {url: itemUrl} = JSON.parse(itemTab);
-        if (item && Number.isInteger(containerIndex) &&
-            itemUrl === tabListUrl) {
-          const container = containers[containerIndex];
-          container.appendChild(item);
-          if (collapsed) {
-            container.classList.add(CLASS_TAB_COLLAPSED);
+        const list = tabList[j];
+        if (list) {
+          const {collapsed, containerIndex, url} = list;
+          const {dataset: {tab: itemTab}} = items[i];
+          const {url: itemUrl} = JSON.parse(itemTab);
+          if (Number.isInteger(containerIndex) && itemUrl === url) {
+            const container = containers[containerIndex];
+            container.appendChild(item);
+            if (collapsed) {
+              container.classList.add(CLASS_TAB_COLLAPSED);
+            } else {
+              container.classList.remove(CLASS_TAB_COLLAPSED);
+            }
           } else {
-            container.classList.remove(CLASS_TAB_COLLAPSED);
+            j++;
           }
           i++;
+          j++;
         } else {
           break;
         }
@@ -2198,13 +2202,14 @@ tabs.onUpdated.addListener((tabId, info, tabsTab) =>
 );
 
 /* start up */
-setSidebarTheme().then(() => Promise.all([
+Promise.all([
   addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
   addNewTabClickListener(),
   createContextMenu(),
   localizeHtml(),
   makeConnection({name: TAB}),
   setSidebar(),
-])).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
+  setSidebarTheme(),
+]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
   .then(restoreHighlightedTab).then(setSessionTabList).then(getLastClosedTab)
   .catch(throwErr);
