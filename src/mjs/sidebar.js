@@ -264,8 +264,8 @@ const groupSelectedTabs = async () => {
         const {
           previousElementSibling: itemParentPreviousSibling,
         } = itemParent;
-        const itemTabId = itemDataset && itemDataset.tabId &&
-                            itemDataset.tabId * 1;
+        const itemTabId =
+          itemDataset && itemDataset.tabId && itemDataset.tabId * 1;
         if (Number.isInteger(itemTabId)) {
           if (itemParentPreviousSibling === tabParent) {
             tabParent.appendChild(item);
@@ -475,8 +475,8 @@ const bookmarkAllTabs = async () => {
   const func = [];
   const items = document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
   for (const item of items) {
-    const itemTab = item.dataset && item.dataset.tab &&
-                      JSON.parse(item.dataset.tab);
+    const itemTab =
+      item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
     const {title, url} = itemTab;
     func.push(createBookmark({title, url}));
   }
@@ -495,8 +495,8 @@ const bookmarkTabGroup = async container => {
     if (classList.contains(CLASS_TAB_GROUP)) {
       const items = container.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
       for (const item of items) {
-        const itemTab = item.dataset && item.dataset.tab &&
-                          JSON.parse(item.dataset.tab);
+        const itemTab =
+          item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
         const {title, url} = itemTab;
         func.push(createBookmark({title, url}));
       }
@@ -1617,13 +1617,20 @@ const handleClickedContextMenu = async evt => {
   const {target} = evt;
   const {id: targetId, parentNode: targetParent} = target;
   const {id: parentId} = targetParent;
+  const {context} = sidebar;
   const id = targetId || parentId;
-  const tab = sidebar.context && sidebar.context.classList &&
-                sidebar.context.classList.contains(TAB) && sidebar.context;
-  const tabId = tab && tab.dataset && tab.dataset.tabId &&
-                  tab.dataset.tabId * 1;
-  const tabsTab = await getTab(tabId);
+  const tab =
+    context && context.classList && context.classList.contains(TAB) && context;
+  const tabId =
+    tab && tab.dataset && tab.dataset.tabId && tab.dataset.tabId * 1;
   const func = [];
+  let tabsTab;
+  if (Number.isInteger(tabId)) {
+    tabsTab = await getTab(tabId);
+  } else {
+    tabsTab =
+      tab && tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
+  }
   switch (id) {
     case TAB_BOOKMARK: {
       if (tabsTab && !tabsTab.pinned) {
