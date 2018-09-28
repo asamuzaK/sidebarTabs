@@ -192,8 +192,7 @@ const expandActivatedCollapsedTab = async () => {
     const {parentNode} = tab;
     if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
         parentNode.firstElementChild !== tab) {
-      func =
-        toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList);
+      func = toggleTabGroupCollapsedState({target: tab});
     }
   }
   return func || null;
@@ -336,16 +335,17 @@ const restoreTabGroup = async () => {
       let i = 0;
       while (i < l) {
         const item = items[i];
-        const {containerIndex, tabCollapsed, url: tabListUrl} = tabList[i];
+        const {collapsed, containerIndex, url: tabListUrl} = tabList[i];
         const {dataset: {tab: itemTab}} = item;
         const {url: itemUrl} = JSON.parse(itemTab);
         if (item && Number.isInteger(containerIndex) &&
             itemUrl === tabListUrl) {
-          containers[containerIndex].appendChild(item);
-          if (tabCollapsed) {
-            containers[containerIndex].classList.add(CLASS_TAB_COLLAPSED);
+          const container = containers[containerIndex];
+          container.appendChild(item);
+          if (collapsed) {
+            container.classList.add(CLASS_TAB_COLLAPSED);
           } else {
-            containers[containerIndex].classList.remove(CLASS_TAB_COLLAPSED);
+            container.classList.remove(CLASS_TAB_COLLAPSED);
           }
           i++;
         } else {
@@ -1139,9 +1139,10 @@ const handleActivatedTab = async info => {
 /**
  * handle created tab
  * @param {Object} tabsTab - tabs.Tab
+ * @param {boolean} emulate - emulate tab
  * @returns {Promise.<Array>} - results of each handler
  */
-const handleCreatedTab = async tabsTab => {
+const handleCreatedTab = async (tabsTab, emulate = false) => {
   const {
     active, audible, cookieStoreId, favIconUrl, id, index, mutedInfo,
     openerTabId, pinned, status, title, url, windowId,
@@ -1208,7 +1209,7 @@ const handleCreatedTab = async tabsTab => {
         }
       }
     }
-    if (Number.isInteger(openerTabId)) {
+    if (Number.isInteger(openerTabId) && !emulate) {
       openerTab = document.querySelector(`[data-tab-id="${openerTabId}"]`);
       openerTabsTab = await getTab(openerTabId);
     }
@@ -1252,9 +1253,7 @@ const handleCreatedTab = async tabsTab => {
         container.appendChild(tab);
       }
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(
-          toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList)
-        );
+        func.push(toggleTabGroupCollapsedState({target: tab}));
     } else if (list.length !== index && listedTab && listedTab.parentNode &&
                listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                listedTabPrev && listedTabPrev.parentNode &&
@@ -1264,9 +1263,7 @@ const handleCreatedTab = async tabsTab => {
       container = listedTab.parentNode;
       container.insertBefore(tab, listedTab);
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(
-          toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList)
-        );
+        func.push(toggleTabGroupCollapsedState({target: tab}));
     } else {
       let target;
       if (list.length !== index && listedTab && listedTab.parentNode) {
@@ -1557,7 +1554,7 @@ const emulateTabs = async () => {
   const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
   for (const item of items) {
     // eslint-disable-next-line no-await-in-loop
-    await handleCreatedTab(item);
+    await handleCreatedTab(item, true);
   }
 };
 
@@ -2168,7 +2165,8 @@ runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
 );
 tabs.onActivated.addListener(info =>
-  handleActivatedTab(info).then(expandActivatedCollapsedTab).catch(throwErr)
+  handleActivatedTab(info).then(expandActivatedCollapsedTab)
+    .then(setSessionTabList).catch(throwErr)
 );
 tabs.onAttached.addListener((tabId, info) =>
   handleAttachedTab(tabId, info).then(restoreTabContainers)
@@ -2180,7 +2178,7 @@ tabs.onCreated.addListener(tabsTab =>
 );
 tabs.onDetached.addListener((tabId, info) =>
   handleDetachedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).then(expandActivatedCollapsedTab)
+    .then(expandActivatedCollapsedTab).then(setSessionTabList)
     .catch(throwErr)
 );
 tabs.onHighlighted.addListener(info =>
@@ -2192,8 +2190,8 @@ tabs.onMoved.addListener((tabId, info) =>
 );
 tabs.onRemoved.addListener((tabId, info) =>
   handleRemovedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).then(getLastClosedTab)
-    .then(expandActivatedCollapsedTab).catch(throwErr)
+    .then(expandActivatedCollapsedTab).then(setSessionTabList)
+    .then(getLastClosedTab).catch(throwErr)
 );
 tabs.onUpdated.addListener((tabId, info, tabsTab) =>
   handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)

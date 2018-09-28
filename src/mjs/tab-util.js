@@ -186,8 +186,8 @@ export const setSessionTabList = async () => {
       let i = 0;
       while (i < l) {
         const item = items[i];
+        const collapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
         const childTabs = item.querySelectorAll(TAB_QUERY);
-        const tabCollapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
         for (const tab of childTabs) {
           const tabsTab = tab.dataset && tab.dataset.tab;
           if (tabsTab) {
@@ -195,7 +195,7 @@ export const setSessionTabList = async () => {
             const tabIndex = getSidebarTabIndex(tab);
             if (Number.isInteger(tabIndex)) {
               tabList[tabIndex] = {
-                tabCollapsed, url,
+                collapsed, url,
                 containerIndex: i,
               };
             }
