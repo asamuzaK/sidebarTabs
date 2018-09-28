@@ -337,7 +337,8 @@ const restoreTabGroup = async () => {
         const list = tabList[j];
         if (list) {
           const {collapsed, containerIndex, url} = list;
-          const {dataset: {tab: itemTab}} = items[i];
+          const item = items[i];
+          const {dataset: {tab: itemTab}} = item;
           const {url: itemUrl} = JSON.parse(itemTab);
           if (Number.isInteger(containerIndex) && itemUrl === url) {
             const container = containers[containerIndex];
