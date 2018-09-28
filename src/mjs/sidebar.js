@@ -529,6 +529,19 @@ const closeTabGroup = async node => {
 };
 
 /**
+ * get last closed tab
+ * @returns {Object} - tabs.Tab
+ */
+const getLastClosedTab = async () => {
+  const {windowId} = sidebar;
+  const tab = await getRecentlyClosedTab(windowId);
+  if (tab) {
+    sidebar.lastClosedTab = tab;
+  }
+  return tab || null;
+};
+
+/**
  * undo close tab
  * @returns {?AsyncFunction} - restoreSession()
  */
@@ -542,19 +555,6 @@ const undoCloseTab = async () => {
     }
   }
   return func || null;
-};
-
-/**
- * get last closed tab
- * @returns {Object} - tabs.Tab
- */
-const getLastClosedTab = async () => {
-  const {windowId} = sidebar;
-  const tab = await getRecentlyClosedTab(windowId);
-  if (tab) {
-    sidebar.lastClosedTab = tab;
-  }
-  return tab || null;
 };
 
 /* dupe */
