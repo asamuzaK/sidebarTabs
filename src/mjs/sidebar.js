@@ -1633,7 +1633,7 @@ const handleClickedContextMenu = async evt => {
   }
   switch (id) {
     case TAB_BOOKMARK: {
-      if (tabsTab && !tabsTab.pinned) {
+      if (tabsTab) {
         const {title, url} = tabsTab;
         func.push(createBookmark({title, url}));
       }
@@ -1692,7 +1692,7 @@ const handleClickedContextMenu = async evt => {
       }
       break;
     case TAB_GROUP_BOOKMARK: {
-      if (tab && tabsTab && !tabsTab.pinned) {
+      if (tab && tabsTab) {
         const {parentNode: tabParent} = tab;
         const {classList: tabParentClassList} = tabParent;
         if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
@@ -2028,7 +2028,6 @@ const handleEvt = async evt => {
         const {id, title, toggleTitle} = item;
         const data = {};
         switch (itemKey) {
-          case TAB_GROUP_BOOKMARK:
           case TAB_GROUP_CLOSE:
           case TAB_GROUP_DETACH:
           case TAB_GROUP_DUPE:
