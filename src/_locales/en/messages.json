@@ -21,11 +21,11 @@
     "message": "Bookmark All Tabs"
   },
   "bookmarkAllTabs_title": {
-    "message": "Bookmark All Tabs $KEY$",
+    "message": "&Bookmark All Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(B)"
+        "example" : "(&B)"
       }
     }
   },
@@ -33,11 +33,11 @@
     "message": "Bookmark Group Tabs"
   },
   "bookmarkTabGroup_title": {
-    "message": "Bookmark Group Tabs $KEY$",
+    "message": "&Bookmark Group Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(B)"
+        "example" : "(&B)"
       }
     }
   },
@@ -45,11 +45,11 @@
     "message": "Bookmark Tab"
   },
   "bookmarkTab_title": {
-    "message": "Bookmark Tab $KEY$",
+    "message": "&Bookmark Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(B)"
+        "example" : "(&B)"
       }
     }
   },
@@ -57,11 +57,11 @@
     "message": "Close Grouped Tabs"
   },
   "closeTabGroup_title": {
-    "message": "Close Grouped Tabs $KEY$",
+    "message": "&Close Grouped Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(C)"
+        "example" : "(&C)"
       }
     }
   },
@@ -69,11 +69,11 @@
     "message": "Close Other Tabs"
   },
   "closeOtherTabs_title": {
-    "message": "Close Other Tabs $KEY$",
+    "message": "Close &Other Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(O)"
+        "example" : "(&O)"
       }
     }
   },
@@ -81,11 +81,11 @@
     "message": "Close Tab"
   },
   "closeTab_title": {
-    "message": "Close Tab $KEY$",
+    "message": "&Close Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(C)"
+        "example" : "(&C)"
       }
     }
   },
@@ -96,11 +96,11 @@
     "message": "Close Tabs to the End"
   },
   "closeTabsToTheEnd_title": {
-    "message": "Close Tabs to the End $KEY$",
+    "message": "Close Tabs to the &End",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(E)"
+        "example" : "(&E)"
       }
     }
   },
@@ -108,11 +108,11 @@
     "message": "Collapse Tab Group"
   },
   "collapseTabGroup_title": {
-    "message": "Collapse Tab Group $KEY$",
+    "message": "Collaps&e Tab Group",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(E)"
+        "example" : "(&E)"
       }
     }
   },
@@ -125,36 +125,15 @@
   "darkTheme": {
     "message": "Dark Theme"
   },
-  "darkTheme_title": {
-    "message": "Dark Theme $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(D)"
-      }
-    }
-  },
-  "defaultTheme": {
-    "message": "Default Theme"
-  },
-  "defaultTheme_title": {
-    "message": "Default Theme $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(T)"
-      }
-    }
-  },
   "detachTabFromGroup": {
     "message": "Detach Tab From Group"
   },
   "detachTabFromGroup_title": {
-    "message": "Detach Tab From Group $KEY$",
+    "message": "&Detach Tab From Group",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(D)"
+        "example" : "(&D)"
       }
     }
   },
@@ -162,11 +141,11 @@
     "message": "Duplicate Tab"
   },
   "dupeTab_title": {
-    "message": "Duplicate Tab $KEY$",
+    "message": "&Duplicate Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(D)"
+        "example" : "(&D)"
       }
     }
   },
@@ -174,11 +153,11 @@
     "message": "Duplicate Grouped Tabs"
   },
   "dupeTabGroup_title": {
-    "message": "Duplicate Grouped Tabs $KEY$",
+    "message": "&Duplicate Grouped Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(D)"
+        "example" : "(&D)"
       }
     }
   },
@@ -186,11 +165,11 @@
     "message": "Expand Tab Group"
   },
   "expandTabGroup_title": {
-    "message": "Expand Tab Group $KEY$",
+    "message": "&Expand Tab Group",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(E)"
+        "example" : "(&E)"
       }
     }
   },
@@ -201,47 +180,26 @@
     "message": "Group Selected Tabs"
   },
   "groupSelectedTabs_title": {
-    "message": "Group Selected Tabs $KEY$",
+    "message": "&Group Selected Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(G)"
-      }
-    }
-  },
-  "initSidebar": {
-    "message": "Init Sidebar Tabs"
-  },
-  "initSidebar_title": {
-    "message": "Init Sidebar Tabs $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(I)"
+        "example" : "(&G)"
       }
     }
   },
   "lightTheme": {
     "message": "Light Theme"
   },
-  "lightTheme_title": {
-    "message": "Light Theme $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(L)"
-      }
-    }
-  },
   "moveTabToNewWindow": {
     "message": "Move Tab to New Window"
   },
   "moveTabToNewWindow_title": {
-    "message": "Move Tab to New Window $KEY$",
+    "message": "Move Tab to New &Window",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(W)"
+        "example" : "(&W)"
       }
     }
   },
@@ -249,11 +207,11 @@
     "message": "Mute Tab"
   },
   "muteTab_title": {
-    "message": "Mute Tab $KEY$",
+    "message": "&Mute Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(M)"
+        "example" : "(&M)"
       }
     }
   },
@@ -306,11 +264,11 @@
     "message": "Pin Tab"
   },
   "pinTab_title": {
-    "message": "Pin Tab $KEY$",
+    "message": "&Pin Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   },
@@ -318,11 +276,11 @@
     "message": "Pin Grouped Tabs"
   },
   "pinTabGroup_title": {
-    "message": "Pin Grouped Tabs $KEY$",
+    "message": "&Pin Grouped Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   },
@@ -330,11 +288,11 @@
     "message": "Play Audio"
   },
   "playAudio_title": {
-    "message": "Play Audio $KEY$",
+    "message": "&Play Audio",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(M)"
+        "example" : "(&M)"
       }
     }
   },
@@ -342,11 +300,11 @@
     "message": "Reload All Tabs"
   },
   "reloadAllTabs_title": {
-    "message": "Reload All Tabs $KEY$",
+    "message": "Reload All Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(R)"
+        "example" : "(&R)"
       }
     }
   },
@@ -354,11 +312,11 @@
     "message": "Reload Grouped Tabs"
   },
   "reloadTabGroup_title": {
-    "message": "Reload Grouped Tabs $KEY$",
+    "message": "Reload Grouped Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(R)"
+        "example" : "(&R)"
       }
     }
   },
@@ -366,35 +324,26 @@
     "message": "Reload Tab"
   },
   "reloadTab_title": {
-    "message": "Reload Tab $KEY$",
+    "message": "Reload Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(R)"
+        "example" : "(&R)"
       }
     }
   },
   "selectTheme": {
     "message": "Select Theme"
   },
-  "selectTheme_title": {
-    "message": "Select Theme $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(S)"
-      }
-    }
-  },
   "sendTabToDevice": {
     "message": "Send tab to device"
   },
   "sendTabToDevice_title": {
-    "message": "Send tab to device $KEY$",
+    "message": "&Send tab to device",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&S)"
       }
     }
   },
@@ -402,23 +351,11 @@
     "message": "Send to all devices"
   },
   "sendToAllDevices_title": {
-    "message": "Send to all devices $KEY$",
+    "message": "Send to &all devices",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(A)"
-      }
-    }
-  },
-  "sidebarTabsOptions": {
-    "message": "Sidebar Tabs Options"
-  },
-  "sidebarTabsOptions_title": {
-    "message": "Sidebar Tabs Options $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(O)"
+        "example" : "(&A)"
       }
     }
   },
@@ -426,11 +363,11 @@
     "message": "Sync Tab"
   },
   "syncTab_title": {
-    "message": "Sync Tab $KEY$",
+    "message": "&Sync Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&S)"
       }
     }
   },
@@ -438,11 +375,11 @@
     "message": "Sync Grouped Tabs"
   },
   "syncTabGroup_title": {
-    "message": "Sync Grouped Tabs $KEY$",
+    "message": "&Sync Grouped Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&S)"
       }
     }
   },
@@ -450,11 +387,11 @@
     "message": "Tab"
   },
   "tab_title": {
-    "message": "Tab $KEY$",
+    "message": "&Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(T)"
+        "example" : "(&T)"
       }
     }
   },
@@ -462,11 +399,11 @@
     "message": "Tab Group"
   },
   "tabGroup_title": {
-    "message": "Tab Group $KEY$",
+    "message": "Tab &Group",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(G)"
+        "example" : "(&G)"
       }
     }
   },
@@ -474,11 +411,11 @@
     "message": "Undo Close Tab"
   },
   "undoCloseTab_title": {
-    "message": "Undo Close Tab $KEY$",
+    "message": "&Undo Close Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(U)"
+        "example" : "(&U)"
       }
     }
   },
@@ -486,11 +423,11 @@
     "message": "Ungroup Tabs"
   },
   "ungroupTabs_title": {
-    "message": "Ungroup Tabs $KEY$",
+    "message": "&Ungroup Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(U)"
+        "example" : "(&U)"
       }
     }
   },
@@ -498,11 +435,11 @@
     "message": "Unmute Tab"
   },
   "unmuteTab_title": {
-    "message": "Unmute Tab $KEY$",
+    "message": "Un&mute Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(M)"
+        "example" : "(&M)"
       }
     }
   },
@@ -513,11 +450,11 @@
     "message": "Unpin Tab"
   },
   "unpinTab_title": {
-    "message": "Unpin Tab $KEY$",
+    "message": "Un&pin Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   }

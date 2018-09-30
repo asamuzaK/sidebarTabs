@@ -22,17 +22,16 @@ import {
   setTabAudioIcon, setTabContent, setTabIcon, addTabIconErrorListener,
 } from "./tab-content.js";
 import {
-  menuItems, toggleContextMenuClass, updateContextMenu,
+  createContextMenu, menuItems, updateContextMenu,
 } from "./contextmenu.js";
 import {setSidebarTheme, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
 import {
-  CLASS_MENU_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE,
-  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL,
-  CLASS_TAB_TOGGLE_ICON,
-  COOKIE_STORE_DEFAULT, DISABLED, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB,
+  CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
+  CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
+  COOKIE_STORE_DEFAULT, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB,
   PINNED, TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
   TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
@@ -44,7 +43,7 @@ import {
 } from "./constant.js";
 
 /* api */
-const {i18n, runtime, storage, tabs, windows} = browser;
+const {i18n, menus, runtime, storage, tabs, windows} = browser;
 
 /* constants */
 const {TAB_ID_NONE} = tabs;
@@ -1609,16 +1608,13 @@ const setVars = async (data = {}) => {
 
 /* context menu */
 /**
- * handle context menu click
- * @param {!Object} evt - event
+ * handle clicked menu
+ * @param {!Object} info - clicked menu info
  * @returns {Promise.<Array>} - results of each handler
  */
-const handleClickedContextMenu = async evt => {
-  const {target} = evt;
-  const {id: targetId, parentNode: targetParent} = target;
-  const {id: parentId} = targetParent;
+const handleClickedMenu = async info => {
+  const {menuItemId} = info;
   const {context} = sidebar;
-  const id = targetId || parentId;
   const tab =
     context && context.classList && context.classList.contains(TAB) && context;
   const tabId =
@@ -1631,7 +1627,7 @@ const handleClickedContextMenu = async evt => {
     tabsTab =
       tab && tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
   }
-  switch (id) {
+  switch (menuItemId) {
     case TAB_BOOKMARK: {
       if (tabsTab) {
         const {title, url} = tabsTab;
@@ -1834,70 +1830,8 @@ const handleClickedContextMenu = async evt => {
       }
       break;
     default:
-      throw new Error(`No handler found for ${id}.`);
   }
   return Promise.all(func).then(removeHighlightFromTabs);
-};
-
-/**
- * add menuitem click listener
- * @param {Object} elm - element
- * @returns {void}
- */
-const addContextMenuClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.addEventListener("click", evt =>
-      handleClickedContextMenu(evt).catch(throwErr)
-    );
-  }
-};
-
-/**
- * create context menu item
- * @param {string} id - menu item ID
- * @param {Object} data - context data
- * @returns {Promise.<Array>} - results of each handler
- */
-const createMenuItem = async (id, data = {}) => {
-  const {enabled, onclick, title, type} = data;
-  const func = [];
-  if (isString(id) && type === "normal") {
-    const elm = document.getElementById(id);
-    if (elm) {
-      const {classList} = elm;
-      const label = elm.querySelector(`.${CLASS_MENU_LABEL}`);
-      if (label) {
-        label.textContent = title;
-        label.title = title;
-      }
-      if (enabled) {
-        classList.remove(DISABLED);
-      } else {
-        classList.add(DISABLED);
-      }
-      onclick && func.push(addContextMenuClickListener(elm));
-    }
-  }
-  return Promise.all(func);
-};
-
-/**
- * create context menu items
- * @param {Object} menu - menu
- * @returns {Promise.<Array>} - results of each handler
- */
-const createContextMenu = async (menu = menuItems) => {
-  const items = Object.keys(menu);
-  const func = [];
-  for (const item of items) {
-    const {enabled, id, onclick, subItems, title, type} = menu[item];
-    const itemData = {enabled, onclick, title, type};
-    func.push(createMenuItem(id, itemData));
-    if (subItems) {
-      func.push(createContextMenu(subItems));
-    }
-  }
-  return Promise.all(func);
 };
 
 /**
@@ -1912,12 +1846,12 @@ const handleEvt = async evt => {
   if (shiftKey && key === "F10" || key === "ContextMenu" ||
       button === MOUSE_BUTTON_RIGHT) {
     const tab = getSidebarTab(target);
-    const tabMenu = menuItems.sidebarTabs.subItems[TAB];
+    const tabMenu = menuItems[TAB];
     const tabKeys = [
       TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
       TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_SYNC,
     ];
-    const tabGroupMenu = menuItems.sidebarTabs.subItems[TAB_GROUP];
+    const tabGroupMenu = menuItems[TAB_GROUP];
     const tabGroupKeys = [
       TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
       TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_PIN, TAB_GROUP_RELOAD,
@@ -1935,7 +1869,6 @@ const handleEvt = async evt => {
           enabled: true,
           title: tabMenu.title,
         }),
-        toggleContextMenuClass(TAB, true),
       );
       for (const itemKey of tabKeys) {
         const item = tabMenu.subItems[itemKey];
@@ -2012,7 +1945,6 @@ const handleEvt = async evt => {
             enabled: true,
             title: tabGroupMenu.title,
           }),
-          toggleContextMenuClass(CLASS_TAB_GROUP, true),
         );
       } else {
         func.push(
@@ -2020,7 +1952,6 @@ const handleEvt = async evt => {
             enabled: false,
             title: tabGroupMenu.title,
           }),
-          toggleContextMenuClass(CLASS_TAB_GROUP, false),
         );
       }
       for (const itemKey of tabGroupKeys) {
@@ -2079,8 +2010,6 @@ const handleEvt = async evt => {
           enabled: false,
           title: tabMenu.title,
         }),
-        toggleContextMenuClass(TAB, false),
-        toggleContextMenuClass(CLASS_TAB_GROUP, false),
       );
       for (const itemKey of tabKeys) {
         const item = tabMenu.subItems[itemKey];
@@ -2100,7 +2029,7 @@ const handleEvt = async evt => {
       }
     }
     for (const itemKey of allTabsKeys) {
-      const item = menuItems.sidebarTabs.subItems[itemKey];
+      const item = menuItems[itemKey];
       const {id, title} = item;
       const data = {};
       switch (itemKey) {
@@ -2132,10 +2061,6 @@ const handleEvt = async evt => {
   }
   return Promise.all(func);
 };
-
-window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
-window.addEventListener("mousedown",
-                        evt => handleEvt(evt).catch(throwErr), true);
 
 /* runtime message */
 /**
@@ -2171,6 +2096,7 @@ const handleMsg = async (msg, sender) => {
 };
 
 /* listeners */
+menus.onClicked.addListener(info => handleClickedMenu(info).catch(throwErr));
 storage.onChanged.addListener(data => setVars(data).catch(throwErr));
 runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
@@ -2208,15 +2134,20 @@ tabs.onUpdated.addListener((tabId, info, tabsTab) =>
   handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
 );
 
+window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
+window.addEventListener("mousedown",
+                        evt => handleEvt(evt).catch(throwErr), true);
+
 /* start up */
 Promise.all([
   addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
   addNewTabClickListener(),
-  createContextMenu(),
   localizeHtml(),
   makeConnection({name: TAB}),
   setSidebar(),
   setSidebarTheme(),
-]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
-  .then(restoreHighlightedTab).then(setSessionTabList).then(getLastClosedTab)
-  .catch(throwErr);
+]).then(() => Promise.all([
+  emulateTabs().then(restoreTabGroup).then(restoreTabContainers)
+    .then(restoreHighlightedTab).then(setSessionTabList).then(getLastClosedTab),
+  createContextMenu(),
+])).catch(throwErr);
