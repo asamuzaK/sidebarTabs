@@ -2142,12 +2142,11 @@ window.addEventListener("mousedown",
 Promise.all([
   addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
   addNewTabClickListener(),
+  createContextMenu(),
   localizeHtml(),
   makeConnection({name: TAB}),
   setSidebar(),
   setSidebarTheme(),
-]).then(() => Promise.all([
-  emulateTabs().then(restoreTabGroup).then(restoreTabContainers)
-    .then(restoreHighlightedTab).then(setSessionTabList).then(getLastClosedTab),
-  createContextMenu(),
-])).catch(throwErr);
+]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)
+  .then(restoreHighlightedTab).then(setSessionTabList).then(getLastClosedTab)
+  .catch(throwErr);
