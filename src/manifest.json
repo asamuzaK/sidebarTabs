@@ -43,6 +43,8 @@
     "contextualIdentities",
     "cookies",
     "management",
+    "menus",
+    "menus.overrideContext",
     "sessions",
     "storage",
     "tabs"

@@ -2,8 +2,6 @@
  * constant.js
  */
 
-export const CLASS_MENU = "context-menu";
-export const CLASS_MENU_LABEL = "menu-item-label";
 export const CLASS_TAB_AUDIO = "tab-audio";
 export const CLASS_TAB_AUDIO_ICON = "tab-audio-icon";
 export const CLASS_TAB_CLOSE = "tab-close";
@@ -22,11 +20,9 @@ export const CLASS_THEME_DARK = "dark-theme";
 export const CLASS_THEME_LIGHT = "light-theme";
 export const COOKIE_STORE_DEFAULT = "firefox-default";
 export const DATA_I18N = "data-i18n";
-export const DISABLED = "disabled";
 export const EXT_INIT = "initExtension";
 export const EXT_LOCALE = "extensionLocale";
 export const EXT_NAME = "extensionName";
-export const MENU = "sidebar-tabs-menu";
 export const MIME_PLAIN = "text/plain";
 export const MIME_URI = "text/uri-list";
 export const NEW_TAB = "newtab";
@@ -59,9 +55,10 @@ export const TAB_MUTE_UNMUTE = "unmuteTab";
 export const TAB_OBSERVE = "observeTab";
 export const TAB_PIN = "pinTab";
 export const TAB_PIN_UNPIN = "unpinTab";
-export const TAB_QUERY = `.${TAB}:not(.${CLASS_MENU}):not(.${NEW_TAB})`;
+export const TAB_QUERY = `.${TAB}:not(.${NEW_TAB})`;
 export const TAB_RELOAD = "reloadTab";
 export const TAB_RELOAD_ALL = "reloadAllTabs";
+export const TAB_SELECT_ALL = "selectAllTabs";
 export const TAB_SYNC = "syncTab";
 export const THEME = "theme";
 export const THEME_DARK = "darkTheme";

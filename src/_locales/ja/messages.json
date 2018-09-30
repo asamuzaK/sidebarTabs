@@ -21,11 +21,11 @@
     "message": "すべてのタブをブックマーク"
   },
   "bookmarkAllTabs_title": {
-    "message": "すべてのタブをブックマーク $KEY$",
+    "message": "すべてのタブをブックマーク$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(B)"
+        "example" : "(&B)"
       }
     }
   },
@@ -33,11 +33,11 @@
     "message": "グループのタブをブックマーク"
   },
   "bookmarkTabGroup_title": {
-    "message": "グループのタブをブックマーク $KEY$",
+    "message": "グループのタブをブックマーク$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(B)"
+        "example" : "(&B)"
       }
     }
   },
@@ -45,11 +45,11 @@
     "message": "タブをブックマーク"
   },
   "bookmarkTab_title": {
-    "message": "タブをブックマーク $KEY$",
+    "message": "タブをブックマーク$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(B)"
+        "example" : "(&B)"
       }
     }
   },
@@ -57,11 +57,11 @@
     "message": "グループのタブをすべて閉じる"
   },
   "closeTabGroup_title": {
-    "message": "グループのタブをすべて閉じる $KEY$",
+    "message": "グループのタブをすべて閉じる$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(C)"
+        "example" : "(&C)"
       }
     }
   },
@@ -69,11 +69,11 @@
     "message": "他のタブをすべて閉じる"
   },
   "closeOtherTabs_title": {
-    "message": "他のタブをすべて閉じる $KEY$",
+    "message": "他のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(O)"
+        "example" : "(&O)"
       }
     }
   },
@@ -81,11 +81,11 @@
     "message": "タブを閉じる"
   },
   "closeTab_title": {
-    "message": "タブを閉じる $KEY$",
+    "message": "タブを閉じる$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(C)"
+        "example" : "(&C)"
       }
     }
   },
@@ -96,11 +96,11 @@
     "message": "下のタブをすべて閉じる"
   },
   "closeTabsToTheEnd_title": {
-    "message": "下のタブをすべて閉じる $KEY$",
+    "message": "下のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(E)"
+        "example" : "(&E)"
       }
     }
   },
@@ -108,11 +108,11 @@
     "message": "タブグループを折りたたむ"
   },
   "collapseTabGroup_title": {
-    "message": "タブグループを折りたたむ $KEY$",
+    "message": "タブグループを折りたたむ$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(E)"
+        "example" : "(&E)"
       }
     }
   },
@@ -125,36 +125,15 @@
   "darkTheme": {
     "message": "暗いテーマ"
   },
-  "darkTheme_title": {
-    "message": "暗いテーマ $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(D)"
-      }
-    }
-  },
-  "defaultTheme": {
-    "message": "デフォルトのテーマ"
-  },
-  "defaultTheme_title": {
-    "message": "デフォルトのテーマ $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(T)"
-      }
-    }
-  },
   "detachTabFromGroup": {
     "message": "タブをグループから切り離す"
   },
   "detachTabFromGroup_title": {
-    "message": "タブをグループから切り離す $KEY$",
+    "message": "タブをグループから切り離す$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(D)"
+        "example" : "(&D)"
       }
     }
   },
@@ -162,11 +141,11 @@
     "message": "タブを複製"
   },
   "dupeTab_title": {
-    "message": "タブを複製 $KEY$",
+    "message": "タブを複製$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(D)"
+        "example" : "(&D)"
       }
     }
   },
@@ -174,11 +153,11 @@
     "message": "グループのタブを複製"
   },
   "dupeTabGroup_title": {
-    "message": "グループのタブを複製 $KEY$",
+    "message": "グループのタブを複製$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(D)"
+        "example" : "(&D)"
       }
     }
   },
@@ -186,11 +165,11 @@
     "message": "タブグループを展開"
   },
   "expandTabGroup_title": {
-    "message": "タブグループを展開 $KEY$",
+    "message": "タブグループを展開$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(E)"
+        "example" : "(&E)"
       }
     }
   },
@@ -201,47 +180,26 @@
     "message": "選択したタブをグループ化"
   },
   "groupSelectedTabs_title": {
-    "message": "選択したタブをグループ化 $KEY$",
+    "message": "選択したタブをグループ化$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(G)"
-      }
-    }
-  },
-  "initSidebar": {
-    "message": "サイドバータブを初期化"
-  },
-  "initSidebar_title": {
-    "message": "サイドバータブを初期化 $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(I)"
+        "example" : "(&G)"
       }
     }
   },
   "lightTheme": {
     "message": "明るいテーマ"
   },
-  "lightTheme_title": {
-    "message": "明るいテーマ $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(L)"
-      }
-    }
-  },
   "moveTabToNewWindow": {
     "message": "タブを新しいウィンドウへ移動"
   },
   "moveTabToNewWindow_title": {
-    "message": "タブを新しいウィンドウへ移動 $KEY$",
+    "message": "タブを新しいウィンドウへ移動$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(W)"
+        "example" : "(&W)"
       }
     }
   },
@@ -249,11 +207,11 @@
     "message": "タブをミュート"
   },
   "muteTab_title": {
-    "message": "タブをミュート $KEY$",
+    "message": "タブをミュート$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(M)"
+        "example" : "(&M)"
       }
     }
   },
@@ -269,7 +227,7 @@
   "newTabButton_title": {
     "message": "新しいタブを開きます"
   },
-    "optionsInit": {
+  "optionsInit": {
     "message": "初期化"
   },
   "optionsInitSidebar": {
@@ -306,11 +264,11 @@
     "message": "タブをピン留め"
   },
   "pinTab_title": {
-    "message": "タブをピン留め $KEY$",
+    "message": "タブをピン留め$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   },
@@ -318,11 +276,11 @@
     "message": "グループのタブをピン留め"
   },
   "pinTabGroup_title": {
-    "message": "グループのタブをピン留め $KEY$",
+    "message": "グループのタブをピン留め$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   },
@@ -330,11 +288,11 @@
     "message": "タブのメディアを再生"
   },
   "playTab_title": {
-    "message": "タブのメディアを再生 $KEY$",
+    "message": "タブのメディアを再生$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   },
@@ -342,11 +300,11 @@
     "message": "すべてのタブを再読み込み"
   },
   "reloadAllTabs_title": {
-    "message": "すべてのタブを再読み込み $KEY$",
+    "message": "すべてのタブを再読み込み$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(R)"
+        "example" : "(&R)"
       }
     }
   },
@@ -354,11 +312,11 @@
     "message": "グループのタブを再読み込み"
   },
   "reloadTabGroup_title": {
-    "message": "グループのタブを再読み込み $KEY$",
+    "message": "グループのタブを再読み込み$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(R)"
+        "example" : "(&R)"
       }
     }
   },
@@ -366,23 +324,11 @@
     "message": "タブを再読み込み"
   },
   "reloadTab_title": {
-    "message": "タブを再読み込み $KEY$",
+    "message": "タブを再読み込み$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(R)"
-      }
-    }
-  },
-  "selectTheme": {
-    "message": "テーマを選択"
-  },
-  "selectTheme_title": {
-    "message": "テーマを選択 $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&R)"
       }
     }
   },
@@ -390,11 +336,11 @@
     "message": "タブを端末に送る"
   },
   "sendTabToDevice_title": {
-    "message": "タブを端末に送る $KEY$",
+    "message": "タブを端末に送る$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&S)"
       }
     }
   },
@@ -402,35 +348,26 @@
     "message": "すべての端末に送る"
   },
   "sendToAllDevices_title": {
-    "message": "すべての端末に送る $KEY$",
+    "message": "すべての端末に送る$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(A)"
+        "example" : "(&A)"
       }
     }
   },
   "sidebarTabsOptions": {
     "message": "サイドバー・タブ 設定"
   },
-  "sidebarTabsOptions_title": {
-    "message": "サイドバー・タブ 設定 $KEY$",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(O)"
-      }
-    }
-  },
   "syncTab": {
     "message": "タブを同期"
   },
   "syncTab_title": {
-    "message": "タブを同期 $KEY$",
+    "message": "タブを同期$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&S)"
       }
     }
   },
@@ -438,11 +375,11 @@
     "message": "グループのタブを同期"
   },
   "syncTabGroup_title": {
-    "message": "グループのタブを同期 $KEY$",
+    "message": "グループのタブを同期$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(S)"
+        "example" : "(&S)"
       }
     }
   },
@@ -450,11 +387,11 @@
     "message": "タブ"
   },
   "tab_title": {
-    "message": "タブ $KEY$",
+    "message": "タブ$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(T)"
+        "example" : "(&T)"
       }
     }
   },
@@ -462,11 +399,11 @@
     "message": "タブグループ"
   },
   "tabGroup_title": {
-    "message": "タブグループ $KEY$",
+    "message": "タブグループ$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(G)"
+        "example" : "(&G)"
       }
     }
   },
@@ -474,11 +411,11 @@
     "message": "閉じたタブを元に戻す"
   },
   "undoCloseTab_title": {
-    "message": "閉じたタブを元に戻す $KEY$",
+    "message": "閉じたタブを元に戻す$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(U)"
+        "example" : "(&U)"
       }
     }
   },
@@ -486,11 +423,11 @@
     "message": "タブグループを解除"
   },
   "ungroupTabs_title": {
-    "message": "タブグループを解除 $KEY$",
+    "message": "タブグループを解除$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(U)"
+        "example" : "(&U)"
       }
     }
   },
@@ -498,11 +435,11 @@
     "message": "タブのミュートを解除"
   },
   "unmuteTab_title": {
-    "message": "タブのミュートを解除 $KEY$",
+    "message": "タブのミュートを解除$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(M)"
+        "example" : "(&M)"
       }
     }
   },
@@ -513,11 +450,11 @@
     "message": "タブのピン留めを外す"
   },
   "unpinTab_title": {
-    "message": "タブのピン留めを外す $KEY$",
+    "message": "タブのピン留めを外す$KEY$",
     "placeholders": {
       "key" : {
         "content" : "$1",
-        "example" : "(P)"
+        "example" : "(&P)"
       }
     }
   }
