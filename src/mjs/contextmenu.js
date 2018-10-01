@@ -87,6 +87,7 @@ export const menuItems = {
         id: "sepTab-2",
         type: "separator",
       },
+      // FIXME: issue #7
       /*
       [TAB_SEND]: {
         id: TAB_SEND,
@@ -218,6 +219,7 @@ export const menuItems = {
     type: "separator",
   },
   /* selected tabs */
+  // FIXME: issue #33, #38
   /*
   [TAB_SELECTED]: {
   },
@@ -231,7 +233,7 @@ export const menuItems = {
     id: TAB_RELOAD_ALL,
     title: i18n.getMessage(`${TAB_RELOAD_ALL}_title`, "(&R)"),
     type: "normal",
-    enabled: true,
+    enabled: false,
   },
   [TAB_BOOKMARK_ALL]: {
     id: TAB_BOOKMARK_ALL,

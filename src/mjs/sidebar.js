@@ -2078,7 +2078,7 @@ const handleEvt = async evt => {
       switch (itemKey) {
         case TAB_BOOKMARK_ALL: {
           const items =
-            document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
+            document.querySelectorAll(`${TAB_QUERY}`);
           if (items.length > 1) {
             data.enabled = true;
           } else {

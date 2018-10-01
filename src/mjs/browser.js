@@ -640,7 +640,7 @@ export const moveTab = async (tabId, opt) => {
   return arr || null;
 };
 
-//FIXME: need to verify
+//TODO: need to verify
 /**
  * move tabs in order
  * @param {number} tabId - tab ID
