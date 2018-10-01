@@ -501,9 +501,9 @@ const highlightAllTabs = async () => {
       const itemIndex = getSidebarTabIndex(item);
       if (Number.isInteger(itemIndex)) {
         if (Number.isInteger(firstIndex)) {
-           if (itemIndex !== firstIndex) {
-             arr.push(itemIndex);
-           }
+          if (itemIndex !== firstIndex) {
+            arr.push(itemIndex);
+          }
         } else {
           arr.push(itemIndex);
         }
@@ -1945,7 +1945,8 @@ const handleEvt = async evt => {
       TAB_GROUP_SELECTED, TAB_GROUP_SYNC, TAB_GROUP_UNGROUP,
     ];
     const allTabsKeys = [
-      TAB_BOOKMARK_ALL, TAB_CLOSE_UNDO, TAB_RELOAD_ALL, TAB_SELECT_ALL,
+      TAB_BOOKMARK_ALL, TAB_RELOAD_ALL, TAB_SELECT_ALL,
+      TAB_CLOSE_UNDO,
     ];
     if (tab) {
       const {contextualIds} = sidebar;
