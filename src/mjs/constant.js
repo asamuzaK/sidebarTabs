@@ -58,6 +58,7 @@ export const TAB_PIN_UNPIN = "unpinTab";
 export const TAB_QUERY = `.${TAB}:not(.${NEW_TAB})`;
 export const TAB_RELOAD = "reloadTab";
 export const TAB_RELOAD_ALL = "reloadAllTabs";
+export const TAB_REOPEN_CONTAINER = "reopenTabInContainer";
 export const TAB_SELECT_ALL = "selectAllTabs";
 export const TAB_SYNC = "syncTab";
 export const THEME = "theme";

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:dcterms="http://purl.org/dc/terms/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     width="32" height="32" viewBox="0 0 32 32">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dcterms:format>image/svg+xml</dcterms:format>
+        <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dcterms:title>Pet Icon</dcterms:title>
+        <dcterms:license rdf:resource="https://www.mozilla.org/en-US/MPL/2.0/"/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <style>
+    g:not(#current):not(:target),
+    g:target ~ #current {
+      display: none;
+    }
+  </style>
+  <symbol id="outline">
+    <path d="M28.5,8.1c0-1.1-1-1.9-2.1-2.4V3.7c-0.2-0.2-0.3-0.3-0.6-0.3c-0.6,0-1.1,0.8-1.3,2.1c-0.2,0-0.3,0-0.5,0l0,0
+             c0-0.2,0-0.3-0.2-0.5c-0.3-1.1-0.8-1.9-1.3-2.6C22,2.6,21.7,3.2,21.7,4L22,6.3c-0.3,0.2-0.6,0.3-1,0.6l-3.5,3.7l0,0
+             c0,0-6.3-0.8-10.9,0.2c-0.6,0-1,0.2-1.1,0.3c-0.5,0.2-0.8,0.3-1.1,0.6c-1.1-0.8-2.2-2.1-3.2-4c0-0.3-0.5-0.5-0.8-0.5s-0.5,0.6-0.3,1   c0.8,2.1,2.1,3.5,3.4,4.5c-0.5,0.5-0.8,1-1,1.6c0,0-0.3,2.2-0.3,5.5l1.4,8c0,1,0.8,1.8,1.9,1.8c1,0,1.9-0.8,1.9-1.8V23l0.5-1.3h8.8   l0.8,1.3v4.7c0,1,0.8,1.8,1.9,1.8c1,0,1.6-0.6,1.8-1.4l0,0l1.9-9l0,0l2.1-6.4h3c3.4,0,3.7-2.9,3.7-2.9L28.5,8.1z"/>
+  </symbol>
+  <g id="blue" fill="#37adff">
+    <use href="#outline"/>
+  </g>
+  <g id="purple" fill="#af51f5">
+    <use href="#outline"/>
+  </g>
+  <g id="pink" fill="#ff4bda">
+    <use href="#outline"/>
+  </g>
+  <g id="red" fill="#ff613d">
+    <use href="#outline"/>
+  </g>
+  <g id="orange" fill="#ff9f00">
+    <use href="#outline"/>
+  </g>
+  <g id="yellow" fill="#ffcb00">
+    <use href="#outline"/>
+  </g>
+  <g id="green" fill="#51cd00">
+    <use href="#outline"/>
+  </g>
+  <g id="turquoise" fill="#00c79a">
+    <use href="#outline"/>
+  </g>
+  <g id="current" fill="currentColor">
+    <use href="#outline"/>
+  </g>
+</svg>
