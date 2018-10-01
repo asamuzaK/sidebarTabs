@@ -2,7 +2,8 @@
  * contextmenu.js
  */
 
-import {isString} from "./common.js";
+import {isString, throwErr} from "./common.js";
+import {getAllContextualIdentities} from "./browser.js";
 import {
   TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
   TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -10,11 +11,14 @@ import {
   TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_EXPAND, TAB_GROUP_PIN,
   TAB_GROUP_RELOAD, TAB_GROUP_SELECTED, TAB_GROUP_SYNC, TAB_GROUP_UNGROUP,
   TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN,
-  TAB_RELOAD, TAB_RELOAD_ALL, TAB_SYNC,
+  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SYNC,
 } from "./constant.js";
 
 /* api */
-const {i18n, menus} = browser;
+const {contextualIdentities, i18n, menus} = browser;
+
+/* constants */
+const ICON_SIZE_16 = "16";
 
 /* context menu items */
 export const menuItems = {
@@ -61,15 +65,12 @@ export const menuItems = {
         type: "normal",
         enabled: false,
       },
-      // TODO:
-      /*
       [TAB_REOPEN_CONTAINER]: {
         id: TAB_REOPEN_CONTAINER,
         title: i18n.getMessage(`${TAB_REOPEN_CONTAINER}_title`, "(&E)"),
         type: "normal",
         enabled: false,
       },
-      */
       [TAB_MOVE_WIN_NEW]: {
         id: TAB_MOVE_WIN_NEW,
         title: i18n.getMessage(`${TAB_MOVE_WIN_NEW}_title`, "(&N)"),
@@ -261,15 +262,41 @@ export const menuItems = {
 /**
  * create context menu item
  * @param {Object} data - context data
- * @returns {?AsyncFunction} - menus.create()
+ * @returns {?string|number} - menu item ID
  */
 export const createMenuItem = async (data = {}) => {
   const {enabled, id, parentId, title, type} = data;
-  let func;
+  let menuItemId;
   if (isString(id)) {
-    func = await menus.create({enabled, id, parentId, title, type});
+    menuItemId = await menus.create({enabled, id, parentId, title, type});
   }
-  return func || null;
+  return menuItemId || null;
+};
+
+/**
+ * create contextual identities menu
+* @returns {Promise.<array>} - results of each handler
+ */
+export const createContextualIdentitiesMenu = async () => {
+  const items = await getAllContextualIdentities();
+  const func = [];
+  if (items) {
+    for (const item of items) {
+      const {color, cookieStoreId, icon, name} = item;
+      const opt = {
+        enabled: true,
+        icons: {
+          [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
+        },
+        id: cookieStoreId,
+        parentId: TAB_REOPEN_CONTAINER,
+        title: name,
+        type: "normal",
+      };
+      func.push(createMenuItem(opt));
+    }
+  }
+  return Promise.all(func);
 };
 
 /**
@@ -285,7 +312,9 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
     const {enabled, id, subItems, title, type} = menu[item];
     const itemData = {enabled, id, parentId, title, type};
     func.push(createMenuItem(itemData));
-    if (subItems) {
+    if (id === TAB_REOPEN_CONTAINER) {
+      func.push(createContextualIdentitiesMenu());
+    } else if (subItems) {
       func.push(createContextMenu(subItems, id));
     }
   }
@@ -293,18 +322,55 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
 };
 
 /**
+ * update contextual identities menu
+ * @param {Object} info - contextual identities info
+ * @returns {void}
+ */
+export const updateContextualIdentitiesMenu = async info => {
+  const {color, cookieStoreId, icon, name} = info;
+  const opt = {
+    enabled: true,
+    icons: {
+      [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
+    },
+    parentId: TAB_REOPEN_CONTAINER,
+    title: name,
+    type: "normal",
+  };
+  await menus.update(cookieStoreId, opt);
+};
+
+/**
  * update context menu
  * @param {string} menuItemId - menu item ID
  * @param {Object} data - update items data
- * @returns {?AsyncFunction} - menus.update()
+ * @returns {void}
  */
 export const updateContextMenu = async (menuItemId, data = {}) => {
-  let func;
   if (isString(menuItemId)) {
     const {enabled, title} = data;
-    func = await menus.update(menuItemId, {enabled, title});
+    await menus.update(menuItemId, {enabled, title});
   }
-  return func || null;
 };
+
+/**
+ * remove contextual identities menu
+ * @param {Object} info - contextual identities info
+ * @returns {void}
+ */
+export const removeContextualIdentitiesMenu = async info => {
+  const {cookieStoreId} = info;
+  await menus.remove(cookieStoreId);
+};
+
+contextualIdentities.onCreated.addListener(info =>
+  createContextualIdentitiesMenu(info).catch(throwErr)
+);
+contextualIdentities.onRemoved.addListener(info =>
+  removeContextualIdentitiesMenu(info).catch(throwErr)
+);
+contextualIdentities.onUpdated.addListener(info =>
+  updateContextualIdentitiesMenu(info).catch(throwErr)
+);
 
 window.addEventListener("contextmenu", () => menus.overrideContext({}));

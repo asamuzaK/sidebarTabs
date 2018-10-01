@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:dcterms="http://purl.org/dc/terms/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     width="32" height="32" viewBox="0 0 32 32">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dcterms:format>image/svg+xml</dcterms:format>
+        <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dcterms:title>Circle Icon</dcterms:title>
+        <dcterms:license rdf:resource="https://www.mozilla.org/en-US/MPL/2.0/"/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <style>
+    g:not(#current):not(:target),
+    g:target ~ #current {
+      display: none;
+    }
+  </style>
+  <symbol id="outline">
+    <circle cx="16" cy="16" r="16"/>
+  </symbol>
+  <g id="blue" fill="#37adff">
+    <use href="#outline"/>
+  </g>
+  <g id="purple" fill="#af51f5">
+    <use href="#outline"/>
+  </g>
+  <g id="pink" fill="#ff4bda">
+    <use href="#outline"/>
+  </g>
+  <g id="red" fill="#ff613d">
+    <use href="#outline"/>
+  </g>
+  <g id="orange" fill="#ff9f00">
+    <use href="#outline"/>
+  </g>
+  <g id="yellow" fill="#ffcb00">
+    <use href="#outline"/>
+  </g>
+  <g id="green" fill="#51cd00">
+    <use href="#outline"/>
+  </g>
+  <g id="turquoise" fill="#00c79a">
+    <use href="#outline"/>
+  </g>
+  <g id="current" fill="currentColor">
+    <use href="#outline"/>
+  </g>
+</svg>

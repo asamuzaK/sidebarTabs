@@ -78,6 +78,22 @@ export const updateCommand = async (id, value = "") => {
 
 /* contextualIdentities */
 /**
+ * get all contextual identities
+ * @returns {?Array} - array of contextualIdentities.ContextualIdentity
+ */
+export const getAllContextualIdentities = async () => {
+  let arr;
+  if (contextualIdentities) {
+    try {
+      arr = await contextualIdentities.query({});
+    } catch (e) {
+      // silent fail;
+    }
+  }
+  return arr || null;
+};
+
+/**
  * get contextual identities
  * @param {string} cookieStoreId - cookie store ID
  * @returns {Object} - contextualIdentities.ContextualIdentity
@@ -88,7 +104,11 @@ export const getContextualId = async cookieStoreId => {
   }
   let id;
   if (contextualIdentities) {
-    id = await contextualIdentities.get(cookieStoreId);
+    try {
+      id = await contextualIdentities.get(cookieStoreId);
+    } catch (e) {
+      // silent fail;
+    }
   }
   return id || null;
 };

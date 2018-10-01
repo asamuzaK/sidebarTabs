@@ -7,10 +7,10 @@ import {
 } from "./common.js";
 import {
   clearStorage, createBookmark, createNewWindow, createTab,
-  getActiveTab, getAllTabsInWindow, getContextualId, getCurrentWindow,
-  getHighlightedTab, getOs, getRecentlyClosedTab, getStorage, getTab,
-  highlightTab, makeConnection, moveTab, moveTabsInOrder, reloadTab, removeTab,
-  restoreSession, setSessionWindowValue, updateTab,
+  getActiveTab, getAllContextualIdentities, getAllTabsInWindow, getContextualId,
+  getCurrentWindow, getHighlightedTab, getOs, getRecentlyClosedTab, getStorage,
+  getTab, highlightTab, makeConnection, moveTab, moveTabsInOrder, reloadTab,
+  removeTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
   getSessionTabList, getSidebarTab, getSidebarTabId, getSidebarTabIndex,
@@ -39,11 +39,14 @@ import {
   TAB_GROUP_PIN, TAB_GROUP_RELOAD, TAB_GROUP_SELECTED, TAB_GROUP_SYNC,
   TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_OBSERVE, TAB_PIN, TAB_QUERY,
-  TAB_RELOAD, TAB_RELOAD_ALL, TAB_SYNC, THEME_DARK, THEME_LIGHT,
+  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SYNC,
+  THEME_DARK, THEME_LIGHT,
 } from "./constant.js";
 
 /* api */
-const {i18n, menus, runtime, storage, tabs, windows} = browser;
+const {
+  contextualIdentities, i18n, menus, runtime, storage, tabs, windows,
+} = browser;
 
 /* constants */
 const {TAB_ID_NONE} = tabs;
@@ -57,12 +60,13 @@ const TIME_3SEC = 3000;
 
 /* sidebar */
 const sidebar = {
+  context: null,
+  contextualIds: null,
   firstSelectedTab: null,
   incognito: false,
-  windowId: null,
-  context: null,
   lastClosedTab: null,
   tabGroupPutNewTabAtTheEnd: false,
+  windowId: null,
 };
 
 /**
@@ -85,6 +89,24 @@ const setSidebar = async () => {
     sidebar.incognito = incognito;
     sidebar.windowId = id;
   }
+};
+
+/**
+ * set contextual identities cookieStoreIds
+ * @returns {void}
+ */
+const setContextualIds = async () => {
+  const items = await getAllContextualIdentities();
+  const arr = [];
+  if (items) {
+    for (const item of items) {
+      const {cookieStoreId} = item;
+      if (isString(cookieStoreId)) {
+        arr.push(cookieStoreId);
+      }
+    }
+  }
+  sidebar.contextualIds = arr.length && arr || null;
 };
 
 /**
@@ -1614,7 +1636,7 @@ const setVars = async (data = {}) => {
  */
 const handleClickedMenu = async info => {
   const {menuItemId} = info;
-  const {context} = sidebar;
+  const {context, contextualIds, windowId} = sidebar;
   const tab =
     context && context.classList && context.classList.contains(TAB) && context;
   const tabId =
@@ -1829,7 +1851,18 @@ const handleClickedMenu = async info => {
         func.push(syncTab(tabId));
       }
       break;
-    default:
+    default: {
+      if (Array.isArray(contextualIds) && contextualIds.includes(menuItemId) &&
+          tabsTab) {
+        const {index, url} = tabsTab;
+        const opt = {
+          url, windowId,
+          cookieStoreId: menuItemId,
+          index: index + 1,
+        };
+        func.push(createTab(opt));
+      }
+    }
   }
   return Promise.all(func).then(removeHighlightFromTabs);
 };
@@ -1849,7 +1882,8 @@ const handleEvt = async evt => {
     const tabMenu = menuItems[TAB];
     const tabKeys = [
       TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
-      TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_SYNC,
+      TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+      TAB_SYNC,
     ];
     const tabGroupMenu = menuItems[TAB_GROUP];
     const tabGroupKeys = [
@@ -1859,6 +1893,7 @@ const handleEvt = async evt => {
     ];
     const allTabsKeys = [TAB_BOOKMARK_ALL, TAB_CLOSE_UNDO];
     if (tab) {
+      const {contextualIds} = sidebar;
       const {classList: tabClass, parentNode} = tab;
       const {classList: parentClass} = parentNode;
       const tabId = tab.dataset && tab.dataset.tabId * 1;
@@ -1931,6 +1966,14 @@ const handleEvt = async evt => {
             } else {
               data.title = title;
             }
+            break;
+          case TAB_REOPEN_CONTAINER:
+            if (Array.isArray(contextualIds) && contextualIds.length) {
+              data.enabled = true;
+            } else {
+              data.enabled = false;
+            }
+            data.title = title;
             break;
           default:
             data.enabled = true;
@@ -2096,6 +2139,15 @@ const handleMsg = async (msg, sender) => {
 };
 
 /* listeners */
+contextualIdentities.onCreated.addListener(() =>
+  setContextualIds().catch(throwErr)
+);
+contextualIdentities.onRemoved.addListener(() =>
+  setContextualIds().catch(throwErr)
+);
+contextualIdentities.onUpdated.addListener(() =>
+  setContextualIds().catch(throwErr)
+);
 menus.onClicked.addListener(info => handleClickedMenu(info).catch(throwErr));
 storage.onChanged.addListener(data => setVars(data).catch(throwErr));
 runtime.onMessage.addListener((msg, sender) =>
@@ -2145,6 +2197,7 @@ Promise.all([
   createContextMenu(),
   localizeHtml(),
   makeConnection({name: TAB}),
+  setContextualIds(),
   setSidebar(),
   setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroup).then(restoreTabContainers)

@@ -332,6 +332,18 @@
       }
     }
   },
+  "reopenTabInContainer": {
+    "message": "コンテナーを開き直す"
+  },
+  "reopenTabInContainer_title": {
+    "message": "コンテナーを開き直す$KEY$",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(&E)"
+      }
+    }
+  },
   "sendTabToDevice": {
     "message": "タブを端末に送る"
   },

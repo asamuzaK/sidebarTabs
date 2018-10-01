@@ -332,6 +332,12 @@
       }
     }
   },
+  "reopenTabInContainer": {
+    "message": "Reopen in Container"
+  },
+  "reopenTabInContainer_title": {
+    "message": "R&eopen in Container"
+  },
   "selectTheme": {
     "message": "Select Theme"
   },
