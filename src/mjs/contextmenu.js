@@ -11,7 +11,7 @@ import {
   TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_EXPAND, TAB_GROUP_PIN,
   TAB_GROUP_RELOAD, TAB_GROUP_SELECTED, TAB_GROUP_SYNC, TAB_GROUP_UNGROUP,
   TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN,
-  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SYNC,
+  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SELECT_ALL, TAB_SYNC,
 } from "./constant.js";
 
 /* api */
@@ -241,14 +241,12 @@ export const menuItems = {
     type: "normal",
     enabled: false,
   },
-  /*
   [TAB_SELECT_ALL]: {
     id: TAB_SELECT_ALL,
-    title: i18n.getMessage(`${TAB_SELECT_ALL}_title`, "(&B)"),
+    title: i18n.getMessage(`${TAB_SELECT_ALL}_title`, "(&S)"),
     type: "normal",
     enabled: false,
   },
-  */
   "sep-3": {
     id: "sep-3",
     type: "separator",

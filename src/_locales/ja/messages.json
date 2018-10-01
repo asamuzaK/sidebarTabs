@@ -344,6 +344,18 @@
       }
     }
   },
+  "selectAllTabs": {
+    "message": "すべてのタブを選択"
+  },
+  "selectAllTabs_title": {
+    "message": "すべてのタブを選択(&S)",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(&S)"
+      }
+    }
+  },
   "sendTabToDevice": {
     "message": "タブを端末に送る"
   },

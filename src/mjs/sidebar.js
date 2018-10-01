@@ -39,7 +39,7 @@ import {
   TAB_GROUP_PIN, TAB_GROUP_RELOAD, TAB_GROUP_SELECTED, TAB_GROUP_SYNC,
   TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_OBSERVE, TAB_PIN, TAB_QUERY,
-  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SYNC,
+  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SELECT_ALL, TAB_SYNC,
   THEME_DARK, THEME_LIGHT,
 } from "./constant.js";
 
@@ -467,6 +467,51 @@ const removeHighlightFromTabs = async () => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * highlight all tabs
+ * @returns {?AsyncFunction} - highlightTab()
+ */
+const highlightAllTabs = async () => {
+  const items = document.querySelectorAll(TAB_QUERY);
+  let func;
+  if (items) {
+    const {firstSelectedTab, windowId} = sidebar;
+    const arr = [];
+    let firstIndex;
+    if (firstSelectedTab) {
+      const index = getSidebarTabIndex(firstSelectedTab);
+      if (Number.isInteger(index)) {
+        firstIndex = index;
+        arr.push(index);
+      }
+    } else {
+      const tab = await getActiveTab(windowId);
+      if (tab) {
+        const {id, index} = tab;
+        const item = document.querySelector(`[data-tab-id="${id}"]`);
+        if (item) {
+          firstIndex = index;
+          arr.push(index);
+        }
+      }
+    }
+    for (const item of items) {
+      const itemIndex = getSidebarTabIndex(item);
+      if (Number.isInteger(itemIndex)) {
+        if (Number.isInteger(firstIndex)) {
+           if (itemIndex !== firstIndex) {
+             arr.push(itemIndex);
+           }
+        } else {
+          arr.push(itemIndex);
+        }
+      }
+    }
+    func = highlightTab(arr, windowId);
+  }
+  return func || null;
 };
 
 /**
@@ -1632,7 +1677,7 @@ const setVars = async (data = {}) => {
 /**
  * handle clicked menu
  * @param {!Object} info - clicked menu info
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {AsyncFunction} - clicked menu handler
  */
 const handleClickedMenu = async info => {
   const {menuItemId} = info;
@@ -1642,7 +1687,7 @@ const handleClickedMenu = async info => {
   const tabId =
     tab && tab.dataset && tab.dataset.tabId && tab.dataset.tabId * 1;
   const func = [];
-  let tabsTab;
+  let tabsTab, retFunc;
   if (Number.isInteger(tabId)) {
     tabsTab = await getTab(tabId);
   } else {
@@ -1846,6 +1891,9 @@ const handleClickedMenu = async info => {
     case TAB_RELOAD_ALL:
       func.push(reloadAllTabs());
       break;
+    case TAB_SELECT_ALL:
+      func.push(highlightAllTabs());
+      break;
     case TAB_SYNC:
       if (Number.isInteger(tabId)) {
         func.push(syncTab(tabId));
@@ -1864,7 +1912,12 @@ const handleClickedMenu = async info => {
       }
     }
   }
-  return Promise.all(func).then(removeHighlightFromTabs);
+  if (menuItemId === TAB_SELECT_ALL) {
+    retFunc = Promise.all(func);
+  } else {
+    retFunc = Promise.all(func).then(removeHighlightFromTabs);
+  }
+  return retFunc;
 };
 
 /**
@@ -1891,7 +1944,9 @@ const handleEvt = async evt => {
       TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_PIN, TAB_GROUP_RELOAD,
       TAB_GROUP_SELECTED, TAB_GROUP_SYNC, TAB_GROUP_UNGROUP,
     ];
-    const allTabsKeys = [TAB_BOOKMARK_ALL, TAB_CLOSE_UNDO];
+    const allTabsKeys = [
+      TAB_BOOKMARK_ALL, TAB_CLOSE_UNDO, TAB_RELOAD_ALL, TAB_SELECT_ALL,
+    ];
     if (tab) {
       const {contextualIds} = sidebar;
       const {classList: tabClass, parentNode} = tab;
@@ -2053,33 +2108,22 @@ const handleEvt = async evt => {
           enabled: false,
           title: tabMenu.title,
         }),
+        updateContextMenu(tabGroupMenu.id, {
+          enabled: false,
+          title: tabGroupMenu.title,
+        }),
       );
-      for (const itemKey of tabKeys) {
-        const item = tabMenu.subItems[itemKey];
-        const {id, title} = item;
-        const enabled = false;
-        func.push(updateContextMenu(id, {enabled, title}));
-      }
-      func.push(updateContextMenu(tabGroupMenu.id, {
-        enabled: false,
-        title: tabGroupMenu.title,
-      }));
-      for (const itemKey of tabGroupKeys) {
-        const item = tabGroupMenu.subItems[itemKey];
-        const {id, title} = item;
-        const enabled = false;
-        func.push(updateContextMenu(id, {enabled, title}));
-      }
     }
     for (const itemKey of allTabsKeys) {
       const item = menuItems[itemKey];
       const {id, title} = item;
       const data = {};
       switch (itemKey) {
-        case TAB_BOOKMARK_ALL: {
-          const items =
-            document.querySelectorAll(`${TAB_QUERY}`);
-          if (items.length > 1) {
+        case TAB_BOOKMARK_ALL:
+        case TAB_RELOAD_ALL:
+        case TAB_SELECT_ALL: {
+          const items = document.querySelectorAll(`${TAB_QUERY}`);
+          if (items && items.length > 1) {
             data.enabled = true;
           } else {
             data.enabled = false;
@@ -2096,7 +2140,6 @@ const handleEvt = async evt => {
           break;
         }
         default:
-          data.enabled = true;
       }
       data.title = title;
       func.push(updateContextMenu(id, data));

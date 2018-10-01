@@ -288,7 +288,7 @@
     "message": "Play Audio"
   },
   "playAudio_title": {
-    "message": "&Play Audio",
+    "message": "Play Audio (&M)",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -300,7 +300,7 @@
     "message": "Reload All Tabs"
   },
   "reloadAllTabs_title": {
-    "message": "Reload All Tabs",
+    "message": "&Reload All Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -312,7 +312,7 @@
     "message": "Reload Grouped Tabs"
   },
   "reloadTabGroup_title": {
-    "message": "Reload Grouped Tabs",
+    "message": "&Reload Grouped Tabs",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -324,7 +324,7 @@
     "message": "Reload Tab"
   },
   "reloadTab_title": {
-    "message": "Reload Tab",
+    "message": "&Reload Tab",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -336,16 +336,31 @@
     "message": "Reopen in Container"
   },
   "reopenTabInContainer_title": {
-    "message": "R&eopen in Container"
+    "message": "R&eopen in Container",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(&E)"
+      }
+    }
   },
-  "selectTheme": {
-    "message": "Select Theme"
+  "selectAllTabs": {
+    "message": "Select All Tabs"
+  },
+  "selectAllTabs_title": {
+    "message": "&Select All Tabs",
+    "placeholders": {
+      "key" : {
+        "content" : "$1",
+        "example" : "(&S)"
+      }
+    }
   },
   "sendTabToDevice": {
     "message": "Send tab to device"
   },
   "sendTabToDevice_title": {
-    "message": "&Send tab to device",
+    "message": "&Send Tab to Device",
     "placeholders": {
       "key" : {
         "content" : "$1",
@@ -357,7 +372,7 @@
     "message": "Send to all devices"
   },
   "sendToAllDevices_title": {
-    "message": "Send to &all devices",
+    "message": "Send to &All Devices",
     "placeholders": {
       "key" : {
         "content" : "$1",
