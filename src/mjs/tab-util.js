@@ -4,14 +4,17 @@
 
 import {getType, isString, sleep} from "./common.js";
 import {
-  getCurrentWindow, getSessionWindowValue, getTab, setSessionWindowValue,
-  updateTab,
+  createBookmark, createTab, getCurrentWindow, getSessionWindowValue, getTab,
+  reloadTab, removeTab, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {setTabContent} from "./tab-content.js";
 import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
   NEW_TAB, TAB_LIST, TAB_QUERY,
 } from "./constant.js";
+
+/* api */
+const {windows} = browser;
 
 /* constants */
 const TIME_3SEC = 3000;
@@ -248,6 +251,212 @@ export const observeTab = async tabId => {
       func.push(setSessionTabList());
     } else {
       func.push(observeTab(id));
+    }
+  }
+  return Promise.all(func);
+};
+
+/* bookmark */
+/**
+ * bookmark all tabs
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const bookmarkAllTabs = async () => {
+  const func = [];
+  const items = document.querySelectorAll(TAB_QUERY);
+  for (const item of items) {
+    const {dataset} = item;
+    const itemTab = dataset && dataset.tab && JSON.parse(dataset.tab);
+    const {title, url} = itemTab;
+    func.push(createBookmark({title, url}));
+  }
+  return Promise.all(func);
+};
+
+/**
+ * bookmark tabs
+ * @param {Object} nodes - node list
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const bookmarkTabs = async nodes => {
+  const func = [];
+  if (nodes instanceof NodeList) {
+    for (const item of nodes) {
+      if (item.nodeType === Node.ELEMENT_NODE) {
+        const {dataset} = item;
+        const itemTab = dataset && dataset.tab && JSON.parse(dataset.tab);
+        if (itemTab) {
+          const {title, url} = itemTab;
+          func.push(createBookmark({title, url}));
+        }
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/* close */
+/**
+ * close other tabs
+ * @param {Array} tabIds - array of tab ID
+ * @returns {?AsyncFunction} - removeTab()
+ */
+export const closeOtherTabs = async tabIds => {
+  if (!Array.isArray(tabIds)) {
+    throw new TypeError(`Expected Array but got ${getType(tabIds)}`);
+  }
+  let func;
+  const items = document.querySelectorAll(TAB_QUERY);
+  const arr = [];
+  for (const item of items) {
+    if (item.nodeType === Node.ELEMENT_NODE) {
+      const {dataset} = item;
+      const itemId = dataset && dataset.tabId && dataset.tabId * 1;
+      if (Number.isInteger(itemId) && !tabIds.includes(itemId)) {
+        arr.push(itemId);
+      }
+    }
+  }
+  if (arr.length) {
+    func = removeTab(arr);
+  }
+  return func || null;
+};
+
+/**
+ * close tabs
+ * @param {Object} nodes - node list
+ * @returns {?AsyncFunction} - removeTab()
+ */
+export const closeTabs = async nodes => {
+  let func;
+  if (nodes instanceof NodeList) {
+    const arr = [];
+    for (const item of nodes) {
+      if (item.nodeType === Node.ELEMENT_NODE) {
+        const {dataset} = item;
+        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        if (Number.isInteger(tabId)) {
+          arr.push(tabId);
+        }
+      }
+    }
+    if (arr.length) {
+      func = removeTab(arr);
+    }
+  }
+  return func || null;
+};
+
+/* dupe */
+/**
+ * duplicate tab
+ * @param {number} tabId - tab ID
+ * @param {number} windowId - window ID
+ * @returns {?AsyncFunction} - createTab()
+ */
+export const dupeTab = async (tabId, windowId) => {
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
+  }
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
+  let func;
+  const tabsTab = await getTab(tabId);
+  if (tabsTab) {
+    const {index, url} = tabsTab;
+    const opt = {
+      url, windowId,
+      active: true,
+      index: index + 1,
+      openerTabId: tabId,
+    };
+    func = createTab(opt);
+  }
+  return func || null;
+};
+
+/* mute */
+/**
+ * mute tabs
+ * @param {Object} nodes - node list
+ * @param {boolean} muted - muted
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const muteTabs = async (nodes, muted) => {
+  const func = [];
+  if (nodes instanceof NodeList) {
+    for (const item of nodes) {
+      if (item.nodeType === Node.ELEMENT_NODE) {
+        const {dataset} = item;
+        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        if (Number.isInteger(tabId)) {
+          func.push(updateTab(tabId, {muted: !!muted}));
+        }
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/* pin */
+/**
+ * pin tabs
+ * @param {Object} nodes - node list
+ * @param {boolean} pinned - pinned
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const pinTabs = async (nodes, pinned) => {
+  const func = [];
+  if (nodes instanceof NodeList) {
+    for (const item of nodes) {
+      if (item.nodeType === Node.ELEMENT_NODE) {
+        const {dataset} = item;
+        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        if (Number.isInteger(tabId)) {
+          func.push(updateTab(tabId, {pinned: !!pinned}));
+        }
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/* reload */
+/**
+ * reload all tabs
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const reloadAllTabs = async () => {
+  const func = [];
+  const items = document.querySelectorAll(TAB_QUERY);
+  for (const item of items) {
+    const {dataset} = item;
+    const itemId = dataset && dataset.tabId && dataset.tabId * 1;
+    if (Number.isInteger(itemId)) {
+      func.push(reloadTab(itemId));
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * reload tabs
+ * @param {Object} nodes - node list
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const reloadTabs = async nodes => {
+  const func = [];
+  if (nodes instanceof NodeList) {
+    for (const item of nodes) {
+      if (item.nodeType === Node.ELEMENT_NODE) {
+        const {dataset} = item;
+        const itemId = dataset && dataset.tabId && dataset.tabId * 1;
+        if (Number.isInteger(itemId)) {
+          func.push(reloadTab(itemId));
+        }
+      }
     }
   }
   return Promise.all(func);
