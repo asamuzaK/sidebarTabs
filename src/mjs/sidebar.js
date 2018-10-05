@@ -3,7 +3,7 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, sleep, throwErr,
+  getType, isObjectNotEmpty, isString, throwErr,
 } from "./common.js";
 import {
   clearStorage, createBookmark, createNewWindow, createTab,
@@ -13,16 +13,19 @@ import {
   removeTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  getSessionTabList, getSidebarTab, getSidebarTabId, getSidebarTabIndex,
-  getSidebarTabContainer, getTabsInRange, getTemplate, restoreTabContainer,
-  setSessionTabList,
+  activateTab, bookmarkAllTabs, bookmarkTabs, closeOtherTabs, closeTabs,
+  dupeTab, getSessionTabList, getSidebarTab, getSidebarTabId,
+  getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
+  // moveTabsToEnd, moveTabsToStart, moveTabsToNewWin,
+  muteTabs, observeTab,
+  pinTabs, reloadAllTabs, reloadTabs, restoreTabContainer, setSessionTabList,
 } from "./tab-util.js";
 import {
   addTabAudioClickListener, addTabCloseClickListener, setTabAudio,
   setTabAudioIcon, setTabContent, setTabIcon, addTabIconErrorListener,
 } from "./tab-content.js";
 import {
-  createContextMenu, menuItems, updateContextMenu,
+  createContextMenu, getTargetElement, menuItems, updateContextMenu,
 } from "./contextmenu.js";
 import {setSidebarTheme, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
@@ -31,15 +34,17 @@ import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
   CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  COOKIE_STORE_DEFAULT, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB,
-  PINNED, TAB, TAB_BOOKMARK, TAB_BOOKMARK_ALL, TAB_CLOSE, TAB_CLOSE_END,
-  TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
-  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
-  TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_EXPAND, TAB_GROUP_NEW_TAB_AT_END,
-  TAB_GROUP_PIN, TAB_GROUP_RELOAD, TAB_GROUP_SELECTED, TAB_GROUP_SYNC,
-  TAB_GROUP_UNGROUP,
-  TAB_LIST, TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_OBSERVE, TAB_PIN, TAB_QUERY,
-  TAB_RELOAD, TAB_RELOAD_ALL, TAB_REOPEN_CONTAINER, TAB_SELECT_ALL, TAB_SYNC,
+  COOKIE_STORE_DEFAULT, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, TAB,
+  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
+  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER,
+  TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_EXPAND,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
+  TAB_OBSERVE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_MOVE, TABS_MOVE_END,
+  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE, TABS_PIN,
+  TABS_PIN_UNPIN, TABS_RELOAD,
   THEME_DARK, THEME_LIGHT,
 } from "./constant.js";
 
@@ -56,11 +61,9 @@ const AUDIBLE = "audible";
 const HIGHLIGHTED = "highlighted";
 const MOUSE_BUTTON_RIGHT = 2;
 const SIDEBAR_MAIN = "sidebar-tabs-container";
-const TIME_3SEC = 3000;
 
 /* sidebar */
 const sidebar = {
-  context: null,
   contextualIds: null,
   firstSelectedTab: null,
   incognito: false,
@@ -121,45 +124,95 @@ const initSidebar = async (bool = false) => {
   window.location.reload(bool);
 };
 
-/* tab util */
 /**
- * activate tab
- * @param {Object} elm - element
- * @returns {?AsyncFunction} - updateTab()
+ * get last closed tab
+ * @returns {Object} - tabs.Tab
  */
-const activateTab = async elm => {
-  const tabId = getSidebarTabId(elm);
+const getLastClosedTab = async () => {
+  const {windowId} = sidebar;
+  const tab = await getRecentlyClosedTab(windowId);
+  if (tab) {
+    sidebar.lastClosedTab = tab;
+  }
+  return tab || null;
+};
+
+/**
+ * undo close tab
+ * @returns {?AsyncFunction} - restoreSession()
+ */
+const undoCloseTab = async () => {
+  const {lastClosedTab} = sidebar;
   let func;
-  if (Number.isInteger(tabId)) {
-    const active = true;
-    func = updateTab(tabId, {active});
+  if (lastClosedTab) {
+    const {sessionId} = lastClosedTab;
+    if (isString(sessionId)) {
+      func = restoreSession(sessionId);
+    }
   }
   return func || null;
 };
 
 /**
- * observe tab
+ * duplicate tab and get duplicated tab index
  * @param {number} tabId - tab ID
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {number} - index
  */
-const observeTab = async tabId => {
+const getDupedTabIndex = async tabId => {
   if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
   }
-  await sleep(TIME_3SEC);
-  const tabsTab = await getTab(tabId);
-  const func = [];
-  if (tabsTab) {
-    const {status, id} = tabsTab;
-    if (status === "complete") {
-      await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
-                          tabsTab);
-      func.push(setSessionTabList());
-    } else {
-      func.push(observeTab(id));
+  const {windowId} = sidebar;
+  const {id} = await dupeTab(tabId, windowId);
+  const dupedTab = document.querySelector(`[data-tab-id="${id}"]`);
+  const {parentNode} = dupedTab;
+  const {nextElementSibling: parentNextSibling} = parentNode;
+  const {firstElementChild: nextSiblingFirstChild} = parentNextSibling;
+  const {dataset} = nextSiblingFirstChild;
+  const nextSiblingFirstChildTabsTab = dataset.tab && JSON.parse(dataset.tab);
+  let index;
+  if (nextSiblingFirstChildTabsTab) {
+    index = nextSiblingFirstChildTabsTab.index * 1;
+  } else {
+    index = -1;
+  }
+  if (Number.isInteger(index)) {
+    const [tabsTab] = await moveTab(tabId, {index, windowId});
+    if (tabsTab) {
+      const items = document.querySelectorAll(TAB_QUERY);
+      if (items && items.length === tabsTab.index + 1) {
+        index = -1;
+      } else {
+        index = tabsTab.index + 1;
+      }
     }
   }
-  return Promise.all(func);
+  return index;
+};
+
+/**
+ * duplicate tabs and get duplicated tab IDs
+ * @param {Array} arr - array of tab ID
+ * @returns {Array} - array of duped tab ID
+ */
+const getDupedTabIds = async arr => {
+  if (!Array.isArray(arr)) {
+    throw new TypeError(`Expected Array but got ${getType(arr)}`);
+  }
+  const {windowId} = sidebar;
+  const dupeTabArr = [];
+  for (const tabId of arr) {
+    dupeTabArr.push(dupeTab(tabId, windowId));
+  }
+  const tabsTabArr = await Promise.all(dupeTabArr);
+  const dupedTabIdArr = [];
+  for (const tabsTab of tabsTabArr) {
+    const {id} = tabsTab;
+    const dupedTab = document.querySelector(`[data-tab-id="${id}"]`);
+    dupedTab.dataset.group = true;
+    dupedTabIdArr.push(id);
+  }
+  return dupedTabIdArr;
 };
 
 /* tab group */
@@ -227,11 +280,11 @@ const expandActivatedCollapsedTab = async () => {
 const detachTabFromGroup = async elm => {
   let arr;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const {parentNode} = elm;
+    const {dataset, parentNode} = elm;
     if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
         !parentNode.classList.contains(PINNED)) {
       const {lastElementChild, nextElementSibling} = parentNode;
-      const tabId = elm.dataset && elm.dataset.tabId && elm.dataset.tabId * 1;
+      const tabId = dataset && dataset.tabId && dataset.tabId * 1;
       if (elm === lastElementChild) {
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(elm);
@@ -274,19 +327,19 @@ const groupSelectedTabs = async () => {
       [tabsTab] = tabsTabArr;
     }
     if (!tabsTab) {
-      tabsTab = tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
+      const {dataset} = tab;
+      tabsTab = dataset && dataset.tab && JSON.parse(dataset.tab);
     }
     const {id: tabId, index: tabIndex} = tabsTab;
     const {parentNode: tabParent} = tab;
     let arr = [], indexShift = 0;
     for (const item of items) {
       if (item !== tab) {
-        const {dataset: itemDataset, parentNode: itemParent} = item;
+        const {dataset, parentNode: itemParent} = item;
         const {
           previousElementSibling: itemParentPreviousSibling,
         } = itemParent;
-        const itemTabId =
-          itemDataset && itemDataset.tabId && itemDataset.tabId * 1;
+        const itemTabId = dataset && dataset.tabId && dataset.tabId * 1;
         if (Number.isInteger(itemTabId)) {
           if (itemParentPreviousSibling === tabParent) {
             tabParent.appendChild(item);
@@ -297,7 +350,7 @@ const groupSelectedTabs = async () => {
             if (Number.isInteger(itemIndex) && itemIndex < tabIndex) {
               indexShift++;
             }
-            itemDataset.group = true;
+            dataset.group = true;
             arr.push(itemTabId);
           }
         }
@@ -532,223 +585,6 @@ const restoreHighlightedTab = async () => {
   }
 };
 
-/* bookmark */
-/**
- * bookmark all tabs
- * @returns {Promise.<Array>} - results of each handler
- */
-const bookmarkAllTabs = async () => {
-  const func = [];
-  const items = document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
-  for (const item of items) {
-    const itemTab =
-      item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
-    const {title, url} = itemTab;
-    func.push(createBookmark({title, url}));
-  }
-  return Promise.all(func);
-};
-
-/**
- * bookmark tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
- */
-const bookmarkTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const {classList} = container;
-    if (classList.contains(CLASS_TAB_GROUP)) {
-      const items = container.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
-      for (const item of items) {
-        const itemTab =
-          item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
-        const {title, url} = itemTab;
-        func.push(createBookmark({title, url}));
-      }
-    }
-  }
-  return Promise.all(func);
-};
-
-/* close */
-/**
- * close tab group
- * @param {Object} node - tab group container
- * @returns {?AsyncFunction} - removeTab()
- */
-const closeTabGroup = async node => {
-  const {id, classList, nodeType} = node;
-  let func;
-  if (nodeType === Node.ELEMENT_NODE && id !== PINNED &&
-      classList.contains(CLASS_TAB_GROUP)) {
-    const items = node.querySelectorAll(TAB_QUERY);
-    const arr = [];
-    for (const item of items) {
-      const {dataset} = item;
-      const tabId = dataset && dataset.tabId && dataset.tabId * 1;
-      Number.isInteger(tabId) && arr.push(tabId);
-    }
-    func = arr.length && removeTab(arr);
-  }
-  return func || null;
-};
-
-/**
- * get last closed tab
- * @returns {Object} - tabs.Tab
- */
-const getLastClosedTab = async () => {
-  const {windowId} = sidebar;
-  const tab = await getRecentlyClosedTab(windowId);
-  if (tab) {
-    sidebar.lastClosedTab = tab;
-  }
-  return tab || null;
-};
-
-/**
- * undo close tab
- * @returns {?AsyncFunction} - restoreSession()
- */
-const undoCloseTab = async () => {
-  const {lastClosedTab} = sidebar;
-  let func;
-  if (lastClosedTab) {
-    const {sessionId} = lastClosedTab;
-    if (isString(sessionId)) {
-      func = restoreSession(sessionId);
-    }
-  }
-  return func || null;
-};
-
-/* dupe */
-/**
- * duplicate tab
- * @param {number} tabId - tab ID
- * @returns {?AsyncFunction} - createTab()
- */
-const dupeTab = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
-  }
-  let func;
-  const tabsTab = await getTab(tabId);
-  if (tabsTab) {
-    const {index, url} = tabsTab;
-    const {windowId} = sidebar;
-    const opt = {
-      active: true,
-      index: index + 1,
-      openerTabId: tabId,
-      url, windowId,
-    };
-    func = createTab(opt);
-  }
-  return func || null;
-};
-
-/**
- * duplicate tab and get duplicated tab index
- * @param {number} tabId - tab ID
- * @returns {number} - index
- */
-const getDupedTabIndex = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
-  }
-  const {windowId} = sidebar;
-  const {id} = await dupeTab(tabId);
-  const dupedTab = document.querySelector(`[data-tab-id="${id}"]`);
-  const {parentNode} = dupedTab;
-  const {nextElementSibling: parentNextSibling} = parentNode;
-  const {firstElementChild: nextSiblingFirstChild} = parentNextSibling;
-  const {dataset} = nextSiblingFirstChild;
-  const nextSiblingFirstChildTabsTab = dataset.tab && JSON.parse(dataset.tab);
-  let index;
-  if (nextSiblingFirstChildTabsTab) {
-    index = nextSiblingFirstChildTabsTab.index * 1;
-  } else {
-    index = -1;
-  }
-  if (Number.isInteger(index)) {
-    const [tabsTab] = await moveTab(tabId, {index, windowId});
-    if (tabsTab) {
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (items && items.length === tabsTab.index + 1) {
-        index = -1;
-      } else {
-        index = tabsTab.index + 1;
-      }
-    }
-  }
-  return index;
-};
-
-/**
- * duplicate tabs and get duplicated tab IDs
- * @param {Array} arr - array of tab ID
- * @returns {Array} - array of duped tab ID
- */
-const getDupedTabIds = async arr => {
-  if (!Array.isArray(arr)) {
-    throw new TypeError(`Expected Array but got ${getType(arr)}`);
-  }
-  const dupeTabArr = [];
-  for (const tabId of arr) {
-    dupeTabArr.push(dupeTab(tabId));
-  }
-  const tabsTabArr = await Promise.all(dupeTabArr);
-  const dupedTabIdArr = [];
-  for (const tabsTab of tabsTabArr) {
-    const {id} = tabsTab;
-    const dupedTab = document.querySelector(`[data-tab-id="${id}"]`);
-    dupedTab.dataset.group = true;
-    dupedTabIdArr.push(id);
-  }
-  return dupedTabIdArr;
-};
-
-/**
- * duplicate tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
- */
-const dupeTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const {classList} = container;
-    if (classList.contains(CLASS_TAB_GROUP)) {
-      const items = container.querySelectorAll(TAB_QUERY);
-      if (items && items.length) {
-        const itemArr = [];
-        let firstTabId;
-        for (const item of items) {
-          const tabId = item.dataset && item.dataset.tabId * 1;
-          if (Number.isInteger(tabId)) {
-            if (Number.isInteger(firstTabId)) {
-              itemArr.push(tabId);
-            } else {
-              firstTabId = tabId;
-            }
-          }
-        }
-        if (Number.isInteger(firstTabId) && itemArr.length) {
-          const {windowId} = sidebar;
-          const index = await getDupedTabIndex(firstTabId);
-          const idArr = await getDupedTabIds(itemArr);
-          const opt = {
-            index, windowId,
-          };
-          func.push(moveTab(idArr.filter(id => Number.isInteger(id)), opt));
-        }
-      }
-    }
-  }
-  return Promise.all(func);
-};
-
 /* new tab */
 /**
  * create new tab
@@ -769,66 +605,6 @@ const createNewTab = async () => {
 const addNewTabClickListener = async () => {
   const newTab = document.getElementById(NEW_TAB);
   newTab.addEventListener("click", evt => createNewTab(evt).catch(throwErr));
-};
-
-/* pin */
-/**
- * pin tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
- */
-const pinTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const {classList} = container;
-    if (classList.contains(CLASS_TAB_GROUP)) {
-      const items = container.querySelectorAll(TAB_QUERY);
-      if (items && items.length) {
-        for (const item of items) {
-          const tabId = item.dataset && item.dataset.tabId * 1;
-          const tabsTab =
-            item.dataset && item.dataset.tab && JSON.parse(item.dataset.tab);
-          if (Number.isInteger(tabId) && tabsTab) {
-            const {pinned} = tabsTab;
-            func.push(updateTab(tabId, {pinned: !pinned}));
-          }
-        }
-      }
-    }
-  }
-  return Promise.all(func);
-};
-
-/* reload */
-/**
- * reload all tabs
- * @returns {Promise.<Array>} - results of each handler
- */
-const reloadAllTabs = async () => {
-  const func = [];
-  const items = document.querySelectorAll(TAB_QUERY);
-  for (const item of items) {
-    const itemId = item && item.dataset && item.dataset.tabId * 1;
-    Number.isInteger(itemId) && func.push(reloadTab(itemId));
-  }
-  return Promise.all(func);
-};
-
-/**
- * reload tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
- */
-const reloadTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const items = container.querySelectorAll(TAB_QUERY);
-    for (const item of items) {
-      const itemId = item && item.dataset && item.dataset.tabId * 1;
-      Number.isInteger(itemId) && func.push(reloadTab(itemId));
-    }
-  }
-  return Promise.all(func);
 };
 
 /* DnD */
@@ -1580,43 +1356,6 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
   return Promise.all(func);
 };
 
-/* sync */
-/**
- * sync tab
- * @param {number} tabId - tab ID
- * @returns {?AsyncFunction} - handleUpdatedTab()
- */
-const syncTab = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
-  }
-  let func;
-  const tabsTab = await getTab(tabId);
-  if (tabsTab) {
-    const {favIconUrl, status, title} = tabsTab;
-    const info = {favIconUrl, status, title};
-    func = handleUpdatedTab(tabId, info, tabsTab);
-  }
-  return func || null;
-};
-
-/**
- * sync tab group
- * @param {Object} container - tab container
- * @returns {Promise.<Array>} - results of each handler
- */
-const syncTabGroup = async container => {
-  const func = [];
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const items = container.querySelectorAll(TAB_QUERY);
-    for (const item of items) {
-      const itemId = item && item.dataset && item.dataset.tabId * 1;
-      Number.isInteger(itemId) && func.push(syncTab(itemId));
-    }
-  }
-  return Promise.all(func);
-};
-
 /**
  * emulate tabs to sidebar
  * @returns {void}
@@ -1680,37 +1419,44 @@ const setVars = async (data = {}) => {
  * @returns {AsyncFunction} - clicked menu handler
  */
 const handleClickedMenu = async info => {
-  const {menuItemId} = info;
-  const {context, contextualIds, windowId} = sidebar;
-  const tab =
-    context && context.classList && context.classList.contains(TAB) && context;
-  const tabId =
-    tab && tab.dataset && tab.dataset.tabId && tab.dataset.tabId * 1;
+  const {menuItemId, targetElementId} = info;
+  const {contextualIds, windowId} = sidebar;
+  const selectedTabs = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+  const target = await getTargetElement(targetElementId);
+  const tab = await getSidebarTab(target);
   const func = [];
-  let tabsTab, retFunc;
-  if (Number.isInteger(tabId)) {
-    tabsTab = await getTab(tabId);
-  } else {
-    tabsTab =
-      tab && tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
+  let tabId, tabsTab, retFunc;
+  if (tab) {
+    tabId = tab && tab.dataset && tab.dataset.tabId && tab.dataset.tabId * 1;
+    if (Number.isInteger(tabId)) {
+      tabsTab = await getTab(tabId);
+    } else {
+      tabsTab =
+        tab && tab.dataset && tab.dataset.tab && JSON.parse(tab.dataset.tab);
+    }
   }
   switch (menuItemId) {
-    case TAB_BOOKMARK: {
+    case TAB_ALL_BOOKMARK:
+      func.push(bookmarkAllTabs());
+      break;
+    case TAB_ALL_RELOAD:
+      func.push(reloadAllTabs());
+      break;
+    case TAB_ALL_SELECT:
+      func.push(highlightAllTabs());
+      break;
+    case TAB_BOOKMARK:
       if (tabsTab) {
         const {title, url} = tabsTab;
         func.push(createBookmark({title, url}));
       }
-      break;
-    }
-    case TAB_BOOKMARK_ALL:
-      func.push(bookmarkAllTabs());
       break;
     case TAB_CLOSE:
       if (Number.isInteger(tabId)) {
         func.push(removeTab(tabId));
       }
       break;
-    case TAB_CLOSE_END: {
+    case TAB_CLOSE_END:
       if (Number.isInteger(tabId)) {
         const index = tabsTab && tabsTab.index && tabsTab.index * 1;
         const arr = [];
@@ -1719,9 +1465,11 @@ const handleClickedMenu = async info => {
             `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
           );
           for (const item of items) {
-            const {dataset} = item;
-            const itemId = dataset && dataset.tabId && dataset.tabId * 1;
-            const itemTab = dataset && dataset.tab && JSON.parse(dataset.tab);
+            const {dataset: itemDataset} = item;
+            const itemId =
+              itemDataset && itemDataset.tabId && itemDataset.tabId * 1;
+            const itemTab =
+              itemDataset && itemDataset.tab && JSON.parse(itemDataset.tab);
             const itemIndex = itemTab && itemTab.index && itemTab.index * 1;
             Number.isInteger(itemId) && Number.isInteger(itemIndex) &&
               itemIndex > index && arr.push(itemId);
@@ -1730,54 +1478,20 @@ const handleClickedMenu = async info => {
         arr.length && func.push(removeTab(arr));
       }
       break;
-    }
-    case TAB_CLOSE_OTHER: {
+    case TAB_CLOSE_OTHER:
       if (Number.isInteger(tabId)) {
-        const items = document.querySelectorAll(
-          `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
-        );
-        const arr = [];
-        for (const item of items) {
-          const {dataset} = item;
-          const itemId = dataset && dataset.tabId && dataset.tabId * 1;
-          Number.isInteger(itemId) && arr.push(itemId);
-        }
-        arr.length && func.push(removeTab(arr));
+        func.push(closeOtherTabs([tabId]));
       }
       break;
-    }
     case TAB_CLOSE_UNDO:
       func.push(undoCloseTab());
       break;
     case TAB_DUPE:
       if (Number.isInteger(tabId)) {
-        func.push(dupeTab(tabId));
+        func.push(dupeTab(tabId, windowId));
       }
       break;
-    case TAB_GROUP_BOOKMARK: {
-      if (tab && tabsTab) {
-        const {parentNode: tabParent} = tab;
-        const {classList: tabParentClassList} = tabParent;
-        if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(bookmarkTabGroup(tabParent));
-        }
-      }
-      break;
-    }
-    case TAB_GROUP_CLOSE: {
-      if (tab && tabsTab && !tabsTab.pinned) {
-        const {parentNode: tabParent} = tab;
-        const {classList: tabParentClassList} = tabParent;
-        if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(
-            closeTabGroup(tabParent).then(restoreTabContainers)
-              .then(setSessionTabList)
-          );
-        }
-      }
-      break;
-    }
-    case TAB_GROUP_COLLAPSE: {
+    case TAB_GROUP_COLLAPSE:
       if (tab) {
         const {parentNode: tabParent} = tab;
         const {classList: tabParentClassList} = tabParent;
@@ -1788,8 +1502,7 @@ const handleClickedMenu = async info => {
         }
       }
       break;
-    }
-    case TAB_GROUP_DETACH: {
+    case TAB_GROUP_DETACH:
       if (tab) {
         const {parentNode: tabParent} = tab;
         const {classList: tabParentClassList} = tabParent;
@@ -1802,53 +1515,12 @@ const handleClickedMenu = async info => {
         }
       }
       break;
-    }
-    case TAB_GROUP_DUPE: {
-      if (tab && tabsTab && !tabsTab.pinned) {
-        const {parentNode: tabParent} = tab;
-        const {classList: tabParentClassList} = tabParent;
-        if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(dupeTabGroup(tabParent));
-        }
-      }
-      break;
-    }
-    case TAB_GROUP_PIN: {
-      if (tab) {
-        const {parentNode: tabParent} = tab;
-        const {classList: tabParentClassList} = tabParent;
-        if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(pinTabGroup(tabParent));
-        }
-      }
-      break;
-    }
-    case TAB_GROUP_RELOAD: {
-      if (tab) {
-        const {parentNode: tabParent} = tab;
-        const {classList: tabParentClassList} = tabParent;
-        if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(reloadTabGroup(tabParent));
-        }
-      }
-      break;
-    }
     case TAB_GROUP_SELECTED:
       func.push(
         groupSelectedTabs().then(restoreTabContainers).then(setSessionTabList)
       );
       break;
-    case TAB_GROUP_SYNC: {
-      if (tab) {
-        const {parentNode: tabParent} = tab;
-        const {classList: tabParentClassList} = tabParent;
-        if (tabParentClassList.contains(CLASS_TAB_GROUP)) {
-          func.push(syncTabGroup(tabParent));
-        }
-      }
-      break;
-    }
-    case TAB_GROUP_UNGROUP: {
+    case TAB_GROUP_UNGROUP:
       if (tab && tabsTab && !tabsTab.pinned) {
         const {parentNode: tabParent} = tab;
         const {classList: tabParentClassList} = tabParent;
@@ -1860,8 +1532,7 @@ const handleClickedMenu = async info => {
         }
       }
       break;
-    }
-    case TAB_MOVE_WIN_NEW:
+    case TAB_MOVE_WIN:
       if (Number.isInteger(tabId)) {
         func.push(createNewWindow({
           tabId,
@@ -1869,37 +1540,67 @@ const handleClickedMenu = async info => {
         }));
       }
       break;
-    case TAB_MUTE: {
+    case TAB_MUTE:
       if (Number.isInteger(tabId) && tabsTab) {
         const {mutedInfo: {muted}} = tabsTab;
         func.push(updateTab(tabId, {muted: !muted}));
       }
       break;
-    }
-    case TAB_PIN: {
+    case TAB_PIN:
       if (tabsTab) {
         const {pinned} = tabsTab;
         func.push(updateTab(tabId, {pinned: !pinned}));
       }
       break;
-    }
     case TAB_RELOAD:
       if (Number.isInteger(tabId)) {
         func.push(reloadTab(tabId));
       }
       break;
-    case TAB_RELOAD_ALL:
-      func.push(reloadAllTabs());
+    case TABS_BOOKMARK:
+      func.push(bookmarkTabs(selectedTabs));
       break;
-    case TAB_SELECT_ALL:
-      func.push(highlightAllTabs());
+    case TABS_CLOSE:
+      func.push(closeTabs(selectedTabs));
       break;
-    case TAB_SYNC:
-      if (Number.isInteger(tabId)) {
-        func.push(syncTab(tabId));
+    case TABS_CLOSE_OTHER: {
+      const arr = [];
+      for (const item of selectedTabs) {
+        const itemId = getSidebarTabId(item);
+        if (Number.isInteger(itemId)) {
+          arr.push(itemId);
+        }
+      }
+      if (arr.length) {
+        func.push(closeOtherTabs(arr));
       }
       break;
-    default: {
+    }
+    case TABS_MOVE_END:
+      // TODO:
+      break;
+    case TABS_MOVE_START:
+      // TODO:
+      break;
+    case TABS_MOVE_WIN:
+      // TODO:
+      break;
+    case TABS_MUTE:
+      if (tabsTab) {
+        const {mutedInfo: {muted}} = tabsTab;
+        func.push(muteTabs(selectedTabs, !muted));
+      }
+      break;
+    case TABS_PIN:
+      if (tabsTab) {
+        const {pinned} = tabsTab;
+        func.push(pinTabs(selectedTabs, !pinned));
+      }
+      break;
+    case TABS_RELOAD:
+      func.push(reloadTabs(selectedTabs));
+      break;
+    default:
       if (Array.isArray(contextualIds) && contextualIds.includes(menuItemId) &&
           tabsTab) {
         const {index, url} = tabsTab;
@@ -1910,9 +1611,8 @@ const handleClickedMenu = async info => {
         };
         func.push(createTab(opt));
       }
-    }
   }
-  if (menuItemId === TAB_SELECT_ALL) {
+  if (menuItemId === TAB_ALL_SELECT) {
     retFunc = Promise.all(func);
   } else {
     retFunc = Promise.all(func).then(removeHighlightFromTabs);
@@ -1932,110 +1632,247 @@ const handleEvt = async evt => {
   if (shiftKey && key === "F10" || key === "ContextMenu" ||
       button === MOUSE_BUTTON_RIGHT) {
     const tab = getSidebarTab(target);
-    const tabMenu = menuItems[TAB];
-    const tabKeys = [
-      TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
-      TAB_MOVE_WIN_NEW, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-      TAB_SYNC,
-    ];
+    const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
     const tabGroupMenu = menuItems[TAB_GROUP];
-    const tabGroupKeys = [
-      TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
-      TAB_GROUP_DETACH, TAB_GROUP_DUPE, TAB_GROUP_PIN, TAB_GROUP_RELOAD,
-      TAB_GROUP_SELECTED, TAB_GROUP_SYNC, TAB_GROUP_UNGROUP,
+    const tabKeys = [
+      TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_OPTIONS, TAB_DUPE, TAB_MOVE,
+      TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
     ];
-    const allTabsKeys = [
-      TAB_BOOKMARK_ALL, TAB_RELOAD_ALL, TAB_SELECT_ALL,
-      TAB_CLOSE_UNDO,
+    const tabsKeys = [
+      TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_MOVE,
+      TABS_MUTE, TABS_PIN, TABS_RELOAD,
     ];
+    const pageKeys = [TAB_CLOSE_UNDO, TAB_ALL_RELOAD, TAB_ALL_SELECT];
+    const sepKeys = ["sep-1", "sep-2", "sep-4"];
+    const allTabs = document.querySelectorAll(TAB_QUERY);
+    const selectedTabs =
+      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+    const pinnedContainer = document.getElementById(PINNED);
+    const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
+    const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
+    const multiTabsSelected = selectedTabs && selectedTabs.length > 1;
+    const allTabsSelected =
+      multiTabsSelected && allTabs && selectedTabs.length === allTabs.length;
     if (tab) {
       const {contextualIds} = sidebar;
-      const {classList: tabClass, parentNode} = tab;
-      const {classList: parentClass} = parentNode;
-      const tabId = tab.dataset && tab.dataset.tabId * 1;
+      const {classList: tabClass, dataset, parentNode} = tab;
+      const {
+        classList: parentClass,
+        firstElementChild: parentFirstChild,
+        lastElementChild: parentLastChild,
+      } = parentNode;
+      const tabId = dataset && dataset.tabId && dataset.tabId * 1;
       const tabsTab = await getTab(tabId);
-      sidebar.context = tab;
-      func.push(
-        updateContextMenu(tabMenu.id, {
-          enabled: true,
-          title: tabMenu.title,
-        }),
-      );
+      const {index, mutedInfo: {muted}, pinned} = tabsTab;
+      const tabGroupKeys = [
+        TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_SELECTED,
+        TAB_GROUP_UNGROUP,
+      ];
       for (const itemKey of tabKeys) {
-        const item = tabMenu.subItems[itemKey];
+        const item = menuItems[itemKey];
         const {id, title, toggleTitle} = item;
         const data = {};
-        switch (itemKey) {
-          case TAB_DUPE:
-            if (tabsTab.pinned) {
-              data.enabled = false;
-            } else {
+        if (itemKey === TAB_REOPEN_CONTAINER) {
+          if (Array.isArray(contextualIds) && contextualIds.length) {
+            data.enabled = true;
+          } else {
+            data.enabled = false;
+          }
+          data.title = title;
+          data.visible = true;
+        } else if (multiTabsSelected) {
+          data.visible = false;
+        } else {
+          switch (itemKey) {
+            case TAB_MUTE:
               data.enabled = true;
-            }
-            data.title = title;
-            break;
-          case TAB_CLOSE_END: {
-            if (tabsTab.pinned) {
-              data.enabled = false;
+              if (muted) {
+                data.title = toggleTitle;
+              } else {
+                data.title = title;
+              }
+              break;
+            case TAB_PIN:
+              data.enabled = true;
+              if (pinned) {
+                data.title = toggleTitle;
+              } else {
+                data.title = title;
+              }
+              break;
+            default:
+              data.enabled = true;
+              data.title = title;
+          }
+          data.visible = true;
+        }
+        func.push(updateContextMenu(id, data));
+      }
+      for (const itemKey of tabsKeys) {
+        const item = menuItems[itemKey];
+        const {id, title, toggleTitle} = item;
+        const data = {};
+        if (multiTabsSelected) {
+          if (itemKey === TABS_CLOSE_OTHER) {
+            if (allTabsSelected) {
+              data.visible = false;
             } else {
-              const index = getSidebarTabIndex(tab);
-              const obj = document.querySelectorAll(TAB_QUERY);
-              if (Number.isInteger(index) && obj.length - 1 > index) {
+              data.visible = true;
+              data.enabled = true;
+              data.title = title;
+            }
+          } else {
+            switch (itemKey) {
+              case TABS_MUTE:
+                data.enabled = true;
+                if (muted) {
+                  data.title = toggleTitle;
+                } else {
+                  data.title = title;
+                }
+                break;
+              case TABS_PIN:
+                data.enabled = true;
+                if (pinned) {
+                  data.title = toggleTitle;
+                } else {
+                  data.title = title;
+                }
+                break;
+              default:
+                data.enabled = true;
+                data.title = title;
+            }
+            data.visible = true;
+          }
+        } else {
+          data.visible = false;
+        }
+        func.push(updateContextMenu(id, data));
+      }
+      if (multiTabsSelected) {
+        const tabsMoveMenu = menuItems[TABS_MOVE];
+        const tabsMoveKeys = [TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN];
+        for (const itemKey of tabsMoveKeys) {
+          const item = tabsMoveMenu.subItems[itemKey];
+          const {id, title} = item;
+          const data = {};
+          switch (itemKey) {
+            case TABS_MOVE_END:
+              if (allTabsSelected) {
+                data.enabled = false;
+              } else if (pinned) {
+                if (tab === parentLastChild) {
+                  data.enabled = false;
+                } else {
+                  data.enabled = true;
+                }
+              } else if (index === allTabs.length - 1) {
+                data.enabled = false;
+              } else {
+                data.enabled = true;
+              }
+              data.title = title;
+              break;
+            case TABS_MOVE_START:
+              if (allTabsSelected) {
+                data.enabled = false;
+              } else if (pinned) {
+                if (tab === parentFirstChild) {
+                  data.enabled = false;
+                } else {
+                  data.enabled = true;
+                }
+              } else if (tab === firstUnpinnedTab) {
+                data.enabled = false;
+              } else {
+                data.enabled = true;
+              }
+              data.title = title;
+              break;
+            default:
+              data.enabled = true;
+              data.title = title;
+          }
+          data.visible = true;
+          func.push(updateContextMenu(id, data));
+        }
+      } else {
+        const tabCloseMenu = menuItems[TAB_CLOSE_OPTIONS];
+        const tabCloseKeys = [TAB_CLOSE_END, TAB_CLOSE_OTHER];
+        const tabMoveMenu = menuItems[TAB_MOVE];
+        const tabMoveKeys = [TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN];
+        for (const itemKey of tabCloseKeys) {
+          const item = tabCloseMenu.subItems[itemKey];
+          const {id, title} = item;
+          const data = {};
+          switch (itemKey) {
+            case TAB_CLOSE_END:
+              if (index < allTabs.length - 1) {
                 data.enabled = true;
               } else {
                 data.enabled = false;
               }
-            }
-            data.title = title;
-            break;
-          }
-          case TAB_CLOSE_OTHER: {
-            if (tabsTab.pinned) {
-              data.enabled = false;
-            } else {
-              const obj = Number.isInteger(tabId) && document.querySelectorAll(
-                `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
-              );
+              data.title = title;
+              break;
+            case TAB_CLOSE_OTHER: {
+              const obj =
+                Number.isInteger(tabId) && document.querySelectorAll(
+                  `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+                );
               if (obj && obj.length) {
                 data.enabled = true;
               } else {
                 data.enabled = false;
               }
-            }
-            data.title = title;
-            break;
-          }
-          case TAB_MUTE: {
-            const {mutedInfo: {muted}} = tabsTab;
-            data.enabled = true;
-            if (muted) {
-              data.title = toggleTitle;
-            } else {
               data.title = title;
+              break;
             }
-            break;
+            default:
           }
-          case TAB_PIN:
-            data.enabled = true;
-            if (parentClass.contains(PINNED)) {
-              data.title = toggleTitle;
-            } else {
-              data.title = title;
-            }
-            break;
-          case TAB_REOPEN_CONTAINER:
-            if (Array.isArray(contextualIds) && contextualIds.length) {
-              data.enabled = true;
-            } else {
-              data.enabled = false;
-            }
-            data.title = title;
-            break;
-          default:
-            data.enabled = true;
-            data.title = title;
+          data.visible = true;
+          func.push(updateContextMenu(id, data));
         }
-        func.push(updateContextMenu(id, data));
+        for (const itemKey of tabMoveKeys) {
+          const item = tabMoveMenu.subItems[itemKey];
+          const {id, title} = item;
+          const data = {};
+          switch (itemKey) {
+            case TAB_MOVE_END:
+              if (pinned) {
+                if (tab === parentLastChild) {
+                  data.enabled = false;
+                } else {
+                  data.enabled = true;
+                }
+              } else if (index === allTabs.length - 1) {
+                data.enabled = false;
+              } else {
+                data.enabled = true;
+              }
+              data.title = title;
+              break;
+            case TAB_MOVE_START:
+              if (pinned) {
+                if (tab === parentFirstChild) {
+                  data.enabled = false;
+                } else {
+                  data.enabled = true;
+                }
+              } else if (tab === firstUnpinnedTab) {
+                data.enabled = false;
+              } else {
+                data.enabled = true;
+              }
+              data.title = title;
+              break;
+            default:
+              data.enabled = true;
+              data.title = title;
+          }
+          data.visible = true;
+          func.push(updateContextMenu(id, data));
+        }
       }
       if (parentClass.contains(CLASS_TAB_GROUP) ||
           tabClass.contains(HIGHLIGHTED)) {
@@ -2043,6 +1880,7 @@ const handleEvt = async evt => {
           updateContextMenu(tabGroupMenu.id, {
             enabled: true,
             title: tabGroupMenu.title,
+            visible: true,
           }),
         );
       } else {
@@ -2050,6 +1888,7 @@ const handleEvt = async evt => {
           updateContextMenu(tabGroupMenu.id, {
             enabled: false,
             title: tabGroupMenu.title,
+            visible: true,
           }),
         );
       }
@@ -2058,19 +1897,16 @@ const handleEvt = async evt => {
         const {id, title, toggleTitle} = item;
         const data = {};
         switch (itemKey) {
-          case TAB_GROUP_CLOSE:
           case TAB_GROUP_DETACH:
-          case TAB_GROUP_DUPE:
-          case TAB_GROUP_PIN:
           case TAB_GROUP_UNGROUP:
-            if (!tabsTab.pinned && parentClass.contains(CLASS_TAB_GROUP)) {
+            if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
               data.enabled = true;
             } else {
               data.enabled = false;
             }
             data.title = title;
             break;
-          case TAB_GROUP_COLLAPSE: {
+          case TAB_GROUP_COLLAPSE:
             if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
               data.enabled = true;
               if (parentClass.contains(CLASS_TAB_COLLAPSED)) {
@@ -2082,16 +1918,14 @@ const handleEvt = async evt => {
               data.enabled = false;
             }
             break;
-          }
-          case TAB_GROUP_SELECTED: {
-            if (!tabsTab.pinned && tabClass.contains(HIGHLIGHTED)) {
+          case TAB_GROUP_SELECTED:
+            if (!pinned && tabClass.contains(HIGHLIGHTED)) {
               data.enabled = true;
             } else {
               data.enabled = false;
             }
             data.title = title;
             break;
-          }
           default:
             if (parentClass.contains(CLASS_TAB_GROUP)) {
               data.enabled = true;
@@ -2100,37 +1934,71 @@ const handleEvt = async evt => {
             }
             data.title = title;
         }
+        data.visible = true;
         func.push(updateContextMenu(id, data));
       }
+      for (const sep of sepKeys) {
+        func.push(updateContextMenu(sep, {
+          visible: true,
+        }));
+      }
+      func.push(updateContextMenu(bookmarkMenu.id, {
+        visible: false,
+      }));
     } else {
-      sidebar.context = target;
+      for (const itemKey of tabKeys) {
+        const item = menuItems[itemKey];
+        func.push(updateContextMenu(item.id, {
+          visible: false,
+        }));
+      }
+      for (const itemKey of tabsKeys) {
+        const item = menuItems[itemKey];
+        func.push(updateContextMenu(item.id, {
+          visible: false,
+        }));
+      }
+      for (const sep of sepKeys) {
+        func.push(updateContextMenu(sep, {
+          visible: false,
+        }));
+      }
       func.push(
-        updateContextMenu(tabMenu.id, {
-          enabled: false,
-          title: tabMenu.title,
-        }),
         updateContextMenu(tabGroupMenu.id, {
-          enabled: false,
-          title: tabGroupMenu.title,
+          visible: false,
+        }),
+        updateContextMenu(bookmarkMenu.id, {
+          enabled: true,
+          title: bookmarkMenu.title,
+          visible: true,
         }),
       );
     }
-    for (const itemKey of allTabsKeys) {
+    for (const itemKey of pageKeys) {
       const item = menuItems[itemKey];
       const {id, title} = item;
       const data = {};
       switch (itemKey) {
-        case TAB_BOOKMARK_ALL:
-        case TAB_RELOAD_ALL:
-        case TAB_SELECT_ALL: {
-          const items = document.querySelectorAll(`${TAB_QUERY}`);
-          if (items && items.length > 1) {
+        case TAB_ALL_RELOAD:
+          if (allTabs.length > 1 && !allTabsSelected) {
             data.enabled = true;
           } else {
             data.enabled = false;
           }
+          if (allTabsSelected) {
+            data.visible = false;
+          } else {
+            data.visible = true;
+          }
           break;
-        }
+        case TAB_ALL_SELECT:
+          if (allTabs.length > 1 && !allTabsSelected) {
+            data.enabled = true;
+          } else {
+            data.enabled = false;
+          }
+          data.visible = true;
+          break;
         case TAB_CLOSE_UNDO: {
           const {lastClosedTab} = sidebar;
           if (lastClosedTab) {
@@ -2138,6 +2006,7 @@ const handleEvt = async evt => {
           } else {
             data.enabled = false;
           }
+          data.visible = true;
           break;
         }
         default:
@@ -2162,20 +2031,18 @@ const handleMsg = async (msg, sender) => {
   for (const item of items) {
     const obj = msg[item];
     switch (item) {
-      case EXT_INIT: {
+      case EXT_INIT:
         if (obj) {
           func.push(initSidebar(obj));
         }
         break;
-      }
-      case TAB_OBSERVE: {
+      case TAB_OBSERVE:
         if (obj) {
           const {tab} = sender;
           const {id} = tab;
           Number.isInteger(id) && func.push(observeTab(id));
         }
         break;
-      }
       default:
     }
   }
