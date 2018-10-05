@@ -11,33 +11,15 @@
   "extensionShortName": {
     "message": "Tabs"
   },
-  "allTabs": {
-    "message": "All Tabs"
-  },
-  "allTabs_title": {
-    "message": "All Tabs"
-  },
   "bookmarkAllTabs": {
     "message": "Bookmark All Tabs"
   },
   "bookmarkAllTabs_title": {
     "message": "&Bookmark All Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&B)"
-      }
-    }
-  },
-  "bookmarkTabGroup": {
-    "message": "Bookmark Group Tabs"
-  },
-  "bookmarkTabGroup_title": {
-    "message": "&Bookmark Group Tabs",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&B)"
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
       }
     }
   },
@@ -47,21 +29,33 @@
   "bookmarkTab_title": {
     "message": "&Bookmark Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&B)"
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
       }
     }
   },
-  "closeTabGroup": {
-    "message": "Close Grouped Tabs"
+  "bookmarkTabs": {
+    "message": "Bookmark Tabs"
   },
-  "closeTabGroup_title": {
-    "message": "&Close Grouped Tabs",
+  "bookmarkTabs_title": {
+    "message": "&Bookmark Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&C)"
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "closeDupeTabs": {
+    "message": "Close Duplicate Tabs"
+  },
+  "closeDupeTabs_title": {
+    "message": "Close &Duplicate Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
       }
     }
   },
@@ -71,9 +65,9 @@
   "closeOtherTabs_title": {
     "message": "Close &Other Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&O)"
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
       }
     }
   },
@@ -83,14 +77,38 @@
   "closeTab_title": {
     "message": "&Close Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&C)"
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
       }
     }
   },
   "closeTab_tooltip": {
     "message": "Close Tab"
+  },
+  "closeTabs": {
+    "message": "Close Tabs"
+  },
+  "closeTabs_title": {
+    "message": "&Close Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTabsOptions": {
+    "message": "Close Tab Options"
+  },
+  "closeTabsOptions_title": {
+    "message": "Close Tab &Options",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
   },
   "closeTabsToTheEnd": {
     "message": "Close Tabs to the End"
@@ -98,9 +116,9 @@
   "closeTabsToTheEnd_title": {
     "message": "Close Tabs to the &End",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&E)"
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
       }
     }
   },
@@ -110,9 +128,9 @@
   "collapseTabGroup_title": {
     "message": "Collaps&e Tab Group",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&E)"
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
       }
     }
   },
@@ -131,9 +149,9 @@
   "detachTabFromGroup_title": {
     "message": "&Detach Tab From Group",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&D)"
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
       }
     }
   },
@@ -143,21 +161,9 @@
   "dupeTab_title": {
     "message": "&Duplicate Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&D)"
-      }
-    }
-  },
-  "dupeTabGroup": {
-    "message": "Duplicate Grouped Tabs"
-  },
-  "dupeTabGroup_title": {
-    "message": "&Duplicate Grouped Tabs",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&D)"
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
       }
     }
   },
@@ -167,9 +173,9 @@
   "expandTabGroup_title": {
     "message": "&Expand Tab Group",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&E)"
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
       }
     }
   },
@@ -182,24 +188,108 @@
   "groupSelectedTabs_title": {
     "message": "&Group Selected Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&G)"
+      "key": {
+        "content": "$1",
+        "example": "(&G)"
       }
     }
   },
   "lightTheme": {
     "message": "Light Theme"
   },
+  "moveTab": {
+    "message": "Move Tab"
+  },
+  "moveTab_title": {
+    "message": "Mo&ve Tab",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&V)"
+      }
+    }
+  },
+  "moveTabToEnd": {
+    "message": "Move to End"
+  },
+  "moveTabToEndw_title": {
+    "message": "Move to &End",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "moveTabToNewWindow": {
-    "message": "Move Tab to New Window"
+    "message": "Move to New Window"
   },
   "moveTabToNewWindow_title": {
-    "message": "Move Tab to New &Window",
+    "message": "Move to New &Window",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&W)"
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "moveTabToStart": {
+    "message": "Move to Start"
+  },
+  "moveTabToStart_title": {
+    "message": "Move to &Start",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "moveTabs": {
+    "message": "Move Tabs"
+  },
+  "moveTabs_title": {
+    "message": "Mo&ve Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&V)"
+      }
+    }
+  },
+  "moveTabsToEnd": {
+    "message": "Move to End"
+  },
+  "moveTabsToEndw_title": {
+    "message": "Move to &End",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "moveTabsToNewWindow": {
+    "message": "Move to New Window"
+  },
+  "moveTabsToNewWindow_title": {
+    "message": "Move to New &Window",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "moveTabsToStart": {
+    "message": "Move to Start"
+  },
+  "moveTabsToStart_title": {
+    "message": "Move to &Start",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
       }
     }
   },
@@ -209,14 +299,26 @@
   "muteTab_title": {
     "message": "&Mute Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&M)"
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
       }
     }
   },
   "muteTab_tooltip": {
     "message": "Mute Tab"
+  },
+  "muteTabs": {
+    "message": "Mute Tabs"
+  },
+  "muteTabs_title": {
+    "message": "&Mute Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
   },
   "newTabButton": {
     "message": "New Tab"
@@ -266,21 +368,21 @@
   "pinTab_title": {
     "message": "&Pin Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&P)"
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
       }
     }
   },
-  "pinTabGroup": {
-    "message": "Pin Grouped Tabs"
+  "pinTabs": {
+    "message": "Pin Tabs"
   },
-  "pinTabGroup_title": {
-    "message": "&Pin Grouped Tabs",
+  "pinTabs_title": {
+    "message": "&Pin Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&P)"
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
       }
     }
   },
@@ -290,9 +392,9 @@
   "playAudio_title": {
     "message": "Play Audio (&M)",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&M)"
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
       }
     }
   },
@@ -302,21 +404,9 @@
   "reloadAllTabs_title": {
     "message": "&Reload All Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&R)"
-      }
-    }
-  },
-  "reloadTabGroup": {
-    "message": "Reload Grouped Tabs"
-  },
-  "reloadTabGroup_title": {
-    "message": "&Reload Grouped Tabs",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&R)"
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
       }
     }
   },
@@ -326,9 +416,21 @@
   "reloadTab_title": {
     "message": "&Reload Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&R)"
+      "key": {
+        "content": "$1",
+        "example": "(&R)"
+      }
+    }
+  },
+  "reloadTabs": {
+    "message": "Reload Tabs"
+  },
+  "reloadTabs_title": {
+    "message": "&Reload Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&R)"
       }
     }
   },
@@ -338,9 +440,9 @@
   "reopenTabInContainer_title": {
     "message": "R&eopen in Container",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&E)"
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
       }
     }
   },
@@ -350,71 +452,54 @@
   "selectAllTabs_title": {
     "message": "&Select All Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&S)"
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
       }
     }
   },
   "sendTabToDevice": {
-    "message": "Send tab to device"
+    "message": "Send Tab to Device"
   },
   "sendTabToDevice_title": {
-    "message": "&Send Tab to Device",
+    "message": "Se&nd Tab to Device",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&S)"
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      }
+    }
+  },
+  "sendTabsToDevice": {
+    "message": "Send Tabs to Device"
+  },
+  "sendTabsToDevice_title": {
+    "message": "Se&nd $NUM$ Tabs to Device",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      },
+      "num": {
+        "content": "$2",
+        "example": "2"
       }
     }
   },
   "sendToAllDevices": {
-    "message": "Send to all devices"
+    "message": "Send to All Devices"
   },
   "sendToAllDevices_title": {
     "message": "Send to &All Devices",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&A)"
-      }
-    }
-  },
-  "syncTab": {
-    "message": "Sync Tab"
-  },
-  "syncTab_title": {
-    "message": "&Sync Tab",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&S)"
-      }
-    }
-  },
-  "syncTabGroup": {
-    "message": "Sync Grouped Tabs"
-  },
-  "syncTabGroup_title": {
-    "message": "&Sync Grouped Tabs",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&S)"
+      "key": {
+        "content": "$1",
+        "example": "(&A)"
       }
     }
   },
   "tab": {
     "message": "Tab"
-  },
-  "tab_title": {
-    "message": "&Tab",
-    "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&T)"
-      }
-    }
   },
   "tabGroup": {
     "message": "Tab Group"
@@ -422,9 +507,9 @@
   "tabGroup_title": {
     "message": "Tab &Group",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&G)"
+      "key": {
+        "content": "$1",
+        "example": "(&G)"
       }
     }
   },
@@ -434,9 +519,9 @@
   "undoCloseTab_title": {
     "message": "&Undo Close Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&U)"
+      "key": {
+        "content": "$1",
+        "example": "(&U)"
       }
     }
   },
@@ -446,9 +531,9 @@
   "ungroupTabs_title": {
     "message": "&Ungroup Tabs",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&U)"
+      "key": {
+        "content": "$1",
+        "example": "(&U)"
       }
     }
   },
@@ -458,14 +543,26 @@
   "unmuteTab_title": {
     "message": "Un&mute Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&M)"
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
       }
     }
   },
   "unmuteTab_tooltip": {
     "message": "Unmute Tab"
+  },
+  "unmuteTabs": {
+    "message": "Unmute Tabs"
+  },
+  "unmuteTabs_title": {
+    "message": "Un&mute Tab",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
   },
   "unpinTab": {
     "message": "Unpin Tab"
@@ -473,9 +570,21 @@
   "unpinTab_title": {
     "message": "Un&pin Tab",
     "placeholders": {
-      "key" : {
-        "content" : "$1",
-        "example" : "(&P)"
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "unpinTabs": {
+    "message": "Unpin Tabs"
+  },
+  "unpinTabs_title": {
+    "message": "Un&pin Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
       }
     }
   }
