@@ -2,9 +2,7 @@
  * sidebar.js
  */
 
-import {
-  getType, isObjectNotEmpty, isString, throwErr,
-} from "./common.js";
+import {isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {
   clearStorage, createBookmark, createNewWindow, createTab,
   getActiveTab, getAllContextualIdentities, getAllTabsInWindow, getContextualId,
@@ -21,7 +19,7 @@ import {
   pinTabs, reloadAllTabs, reloadTabs, restoreTabContainer, setSessionTabList,
 } from "./tab-util.js";
 import {
-  addTabAudioClickListener, addTabCloseClickListener, setTabAudio,
+  addTabAudioClickListener, addTabCloseClickListener, setCloseTab, setTabAudio,
   setTabAudioIcon, setTabContent, setTabIcon, addTabIconErrorListener,
 } from "./tab-content.js";
 import {
@@ -43,8 +41,7 @@ import {
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_OBSERVE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_MOVE, TABS_MOVE_END,
-  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE, TABS_PIN,
-  TABS_PIN_UNPIN, TABS_RELOAD,
+  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
   THEME_DARK, THEME_LIGHT,
 } from "./constant.js";
 
@@ -153,68 +150,6 @@ const undoCloseTab = async () => {
   return func || null;
 };
 
-/**
- * duplicate tab and get duplicated tab index
- * @param {number} tabId - tab ID
- * @returns {number} - index
- */
-const getDupedTabIndex = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
-  }
-  const {windowId} = sidebar;
-  const {id} = await dupeTab(tabId, windowId);
-  const dupedTab = document.querySelector(`[data-tab-id="${id}"]`);
-  const {parentNode} = dupedTab;
-  const {nextElementSibling: parentNextSibling} = parentNode;
-  const {firstElementChild: nextSiblingFirstChild} = parentNextSibling;
-  const {dataset} = nextSiblingFirstChild;
-  const nextSiblingFirstChildTabsTab = dataset.tab && JSON.parse(dataset.tab);
-  let index;
-  if (nextSiblingFirstChildTabsTab) {
-    index = nextSiblingFirstChildTabsTab.index * 1;
-  } else {
-    index = -1;
-  }
-  if (Number.isInteger(index)) {
-    const [tabsTab] = await moveTab(tabId, {index, windowId});
-    if (tabsTab) {
-      const items = document.querySelectorAll(TAB_QUERY);
-      if (items && items.length === tabsTab.index + 1) {
-        index = -1;
-      } else {
-        index = tabsTab.index + 1;
-      }
-    }
-  }
-  return index;
-};
-
-/**
- * duplicate tabs and get duplicated tab IDs
- * @param {Array} arr - array of tab ID
- * @returns {Array} - array of duped tab ID
- */
-const getDupedTabIds = async arr => {
-  if (!Array.isArray(arr)) {
-    throw new TypeError(`Expected Array but got ${getType(arr)}`);
-  }
-  const {windowId} = sidebar;
-  const dupeTabArr = [];
-  for (const tabId of arr) {
-    dupeTabArr.push(dupeTab(tabId, windowId));
-  }
-  const tabsTabArr = await Promise.all(dupeTabArr);
-  const dupedTabIdArr = [];
-  for (const tabsTab of tabsTabArr) {
-    const {id} = tabsTab;
-    const dupedTab = document.querySelector(`[data-tab-id="${id}"]`);
-    dupedTab.dataset.group = true;
-    dupedTabIdArr.push(id);
-  }
-  return dupedTabIdArr;
-};
-
 /* tab group */
 /**
  * toggle tab group collapsed state
@@ -280,11 +215,11 @@ const expandActivatedCollapsedTab = async () => {
 const detachTabFromGroup = async elm => {
   let arr;
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const {dataset, parentNode} = elm;
+    const {parentNode} = elm;
     if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
         !parentNode.classList.contains(PINNED)) {
       const {lastElementChild, nextElementSibling} = parentNode;
-      const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+      const tabId = getSidebarTabId(elm);
       if (elm === lastElementChild) {
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(elm);
@@ -339,7 +274,7 @@ const groupSelectedTabs = async () => {
         const {
           previousElementSibling: itemParentPreviousSibling,
         } = itemParent;
-        const itemTabId = dataset && dataset.tabId && dataset.tabId * 1;
+        const itemTabId = getSidebarTabId(item);
         if (Number.isInteger(itemTabId)) {
           if (itemParentPreviousSibling === tabParent) {
             tabParent.appendChild(item);
@@ -437,27 +372,28 @@ const restoreTabGroup = async () => {
 
 /* highlight */
 /**
- * toggle highlight class of tab
- * @param {Object} elm - element
- * @returns {Object} - element
- */
-const toggleHighlight = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.classList.toggle(HIGHLIGHTED);
-  }
-  return elm;
-};
-
-/**
  * add hightlight class to tab
  * @param {Object} elm - element
- * @returns {Object} - element
+ * @returns {Promise.<Array>} - results of each handler
  */
 const addHighlight = async elm => {
+  const func = [];
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabId = getSidebarTabId(elm);
+    const tab = await getTab(tabId);
+    const {audible, mutedInfo: {muted}} = tab;
+    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
+    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
     elm.classList.add(HIGHLIGHTED);
+    func.push(
+      setCloseTab(closeElm, true),
+      setTabAudio(muteElm, {
+        audible, muted,
+        highlighted: true,
+      }),
+    );
   }
-  return elm;
+  return Promise.all(func);
 };
 
 /**
@@ -481,16 +417,29 @@ const addHighlightToTabs = async arr => {
 /**
  * remove hightlight class from tab
  * @param {Object} elm - element
- * @returns {Object} - element
+ * @returns {Promise.<Array>} - results of each handler
  */
 const removeHighlight = async elm => {
+  const func = [];
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabId = getSidebarTabId(elm);
+    const tab = await getTab(tabId);
+    const {audible, mutedInfo: {muted}} = tab;
+    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
+    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
     elm.classList.remove(HIGHLIGHTED);
     if (sidebar.firstSelectedTab === elm) {
       sidebar.firstSelectedTab = null;
     }
+    func.push(
+      setCloseTab(closeElm, false),
+      setTabAudio(muteElm, {
+        audible, muted,
+        highlighted: false,
+      }),
+    );
   }
-  return elm;
+  return Promise.all(func);
 };
 
 /**
@@ -520,6 +469,23 @@ const removeHighlightFromTabs = async () => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * toggle highlight class of tab
+ * @param {Object} elm - element
+ * @returns {AsyncFunction} - results of each handler
+ */
+const toggleHighlight = async elm => {
+  let func;
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    if (elm.classList.contains(HIGHLIGHTED)) {
+      func = removeHighlight(elm);
+    } else {
+      func = addHighlight(elm);
+    }
+  }
+  return func;
 };
 
 /**
@@ -622,7 +588,7 @@ const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
       Number.isInteger(dropIndex) && Array.isArray(tabIds) &&
       Number.isInteger(dragWindowId) && dragWindowId !== WINDOW_ID_NONE) {
-    const {dataset: dropDataset, parentNode: dropParent} = dropTarget;
+    const {parentNode: dropParent} = dropTarget;
     const {classList: dropParentClassList} = dropParent;
     const {windowId} = sidebar;
     const {ctrlKey, shiftKey} = opt;
@@ -658,8 +624,7 @@ const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
         if (dropIndex === lastTabIndex) {
           index = -1;
         } else if (arr.length > 1 && indexShift) {
-          const dropTargetId =
-            dropDataset && dropDataset.tabId && dropDataset.tabId * 1;
+          const dropTargetId = getSidebarTabId(dropTarget);
           arr = await moveTabsInOrder(dropTargetId, arr, indexShift, windowId);
           if (Array.isArray(arr) && arr.length) {
             const dropTargetTabsTab = await getTab(dropTargetId);
@@ -708,16 +673,8 @@ const handleDrop = evt => {
   const {windowId} = sidebar;
   const url = dataTransfer.getData(MIME_URI);
   const data = dataTransfer.getData(MIME_PLAIN);
+  const dropTarget = getSidebarTab(target);
   const func = [];
-  let dropTarget, node = target;
-  while (node && node.parentNode) {
-    const {dataset} = node;
-    if (dataset && dataset.tabId) {
-      dropTarget = node;
-      break;
-    }
-    node = node.parentNode;
-  }
   if (url) {
     const opt = {
       url,
@@ -801,7 +758,7 @@ const addDropEventListener = async elm => {
  */
 const handleDragStart = evt => {
   const {ctrlKey, target} = evt;
-  const {classList, dataset} = target;
+  const {classList} = target;
   const {windowId} = sidebar;
   const container = getSidebarTabContainer(target);
   const data = {
@@ -819,10 +776,11 @@ const handleDragStart = evt => {
   }
   if (items && items.length) {
     const arr = [];
-    for (const tab of items) {
-      const {dataset: tabDataset} = tab;
-      const {tabId} = tabDataset;
-      arr.push(tabId * 1);
+    for (const item of items) {
+      const tabId = getSidebarTabId(item);
+      if (Number.isInteger(tabId)) {
+        arr.push(tabId);
+      }
     }
     if (arr.length) {
       data.tabIds = arr;
@@ -830,9 +788,9 @@ const handleDragStart = evt => {
       evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
     }
   } else {
-    const {tabId} = dataset;
-    if (tabId) {
-      data.tabIds = [tabId * 1];
+    const tabId = getSidebarTabId(target);
+    if (Number.isInteger(tabId)) {
+      data.tabIds = [tabId];
       evt.dataTransfer.effectAllowed = "move";
       evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
     }
@@ -853,7 +811,7 @@ const addDragEventListener = async elm => {
 /* tab event handlers */
 /**
  * restore sidebar tab containers
- * @returns {Promise.<Array>} - result of each handler
+ * @returns {Promise.<Array>} - results of each handler
  */
 const restoreTabContainers = async () => {
   const items =
@@ -1079,7 +1037,7 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
         const {lastElementChild: lastChildTab} = container;
         if (lastChildTab && lastChildTab.dataset &&
             lastChildTab.dataset.tabId) {
-          const lastChildTabId = lastChildTab.dataset.tabId * 1;
+          const lastChildTabId = getSidebarTabId(lastChildTab);
           const lastChildTabsTab = await getTab(lastChildTabId);
           if (lastChildTabsTab) {
             const {index: lastChildTabIndex} = lastChildTabsTab;
@@ -1427,7 +1385,7 @@ const handleClickedMenu = async info => {
   const func = [];
   let tabId, tabsTab, retFunc;
   if (tab) {
-    tabId = tab && tab.dataset && tab.dataset.tabId && tab.dataset.tabId * 1;
+    tabId = getSidebarTabId(tab);
     if (Number.isInteger(tabId)) {
       tabsTab = await getTab(tabId);
     } else {
@@ -1466,8 +1424,7 @@ const handleClickedMenu = async info => {
           );
           for (const item of items) {
             const {dataset: itemDataset} = item;
-            const itemId =
-              itemDataset && itemDataset.tabId && itemDataset.tabId * 1;
+            const itemId = getSidebarTabId(item);
             const itemTab =
               itemDataset && itemDataset.tab && JSON.parse(itemDataset.tab);
             const itemIndex = itemTab && itemTab.index && itemTab.index * 1;
@@ -1655,13 +1612,13 @@ const handleEvt = async evt => {
       multiTabsSelected && allTabs && selectedTabs.length === allTabs.length;
     if (tab) {
       const {contextualIds} = sidebar;
-      const {classList: tabClass, dataset, parentNode} = tab;
+      const {classList: tabClass, parentNode} = tab;
       const {
         classList: parentClass,
         firstElementChild: parentFirstChild,
         lastElementChild: parentLastChild,
       } = parentNode;
-      const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+      const tabId = getSidebarTabId(tab);
       const tabsTab = await getTab(tabId);
       const {index, mutedInfo: {muted}, pinned} = tabsTab;
       const tabGroupKeys = [

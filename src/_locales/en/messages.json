@@ -98,6 +98,9 @@
       }
     }
   },
+  "closeTabs_tooltip": {
+    "message": "Close Selected Tabs"
+  },
   "closeTabsOptions": {
     "message": "Close Tab Options"
   },
@@ -319,6 +322,9 @@
         "example": "(&M)"
       }
     }
+  },
+  "muteTabs_tooltip": {
+    "message": "Mute Selected Tabs"
   },
   "newTabButton": {
     "message": "New Tab"
@@ -563,6 +569,9 @@
         "example": "(&M)"
       }
     }
+  },
+  "unmuteTabs_tooltip": {
+    "message": "Unmute Selected Tabs"
   },
   "unpinTab": {
     "message": "Unpin Tab"

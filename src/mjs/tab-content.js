@@ -6,7 +6,8 @@ import {escapeMatchingChars, isString, throwErr} from "./common.js";
 import {removeTab, updateTab} from "./browser.js";
 import {getSidebarTabId} from "./tab-util.js";
 import {
-  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, TAB_MUTE, TAB_MUTE_UNMUTE,
+  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE,
+  TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE,
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
 
@@ -190,11 +191,19 @@ export const addTabAudioClickListener = async elm => {
  */
 export const setTabAudio = async (elm, info) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const {audible, muted} = info;
+    const {audible, muted, highlighted} = info;
     if (muted) {
-      elm.title = i18n.getMessage(`${TAB_MUTE_UNMUTE}_tooltip`);
+      if (highlighted) {
+        elm.title = i18n.getMessage(`${TABS_MUTE_UNMUTE}_tooltip`);
+      } else {
+        elm.title = i18n.getMessage(`${TAB_MUTE_UNMUTE}_tooltip`);
+      }
     } else if (audible) {
-      elm.title = i18n.getMessage(`${TAB_MUTE}_tooltip`);
+      if (highlighted) {
+        elm.title = i18n.getMessage(`${TABS_MUTE}_tooltip`);
+      } else {
+        elm.title = i18n.getMessage(`${TAB_MUTE}_tooltip`);
+      }
     } else {
       elm.title = "";
     }
@@ -224,6 +233,22 @@ export const setTabAudioIcon = async (elm, info) => {
 };
 
 /* close button */
+/**
+ * set close tab
+ * @param {Object} elm - element
+ * @param {boolean} highlighted - highlighted
+ * @returns {void}
+ */
+export const setCloseTab = async (elm, highlighted) => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    if (highlighted) {
+      elm.title = i18n.getMessage(`${TABS_CLOSE}_tooltip`);
+    } else {
+      elm.title = i18n.getMessage(`${TAB_CLOSE}_tooltip`);
+    }
+  }
+};
+
 /**
  * close tab
  * @param {!Object} evt - event

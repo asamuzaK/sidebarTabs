@@ -98,6 +98,9 @@
       }
     }
   },
+  "closeTabs_tooltip": {
+    "message": "選択したタブを閉じます"
+  },
   "closeTabsOptions": {
     "message": "他のタブを閉じる"
   },
@@ -319,6 +322,9 @@
         "example": "(&M)"
       }
     }
+  },
+  "muteTabs_tooltip": {
+    "message": "選択したタブをミュートします"
   },
   "newTabButton": {
     "message": "新しいタブ"
@@ -566,6 +572,9 @@
         "example": "(&M)"
       }
     }
+  },
+  "unmuteTabs_tooltip": {
+    "message": "選択したタブのミュートを解除します"
   },
   "unpinTab": {
     "message": "タブのピン留めを外す"
