@@ -624,7 +624,7 @@ export const highlightTab = async (index, windowId) => {
  * move tab
  * @param {number|Array} tabId - tab ID
  * @param {Object} opt - options
- * @returns {?Array} - array of tabs.Tab;
+ * @returns {?Array} - array of tabs.Tab
  */
 export const moveTab = async (tabId, opt) => {
   if (!(Array.isArray(tabId) || Number.isInteger(tabId))) {
@@ -745,7 +745,7 @@ export const isVisibleInMenuSupported = async () => {
 /**
  * create new window
  * @param {Object} opt - options
- * @returns {Object} - windows.Window;
+ * @returns {Object} - windows.Window
  */
 export const createNewWindow = async opt => {
   const win = await windows.create(isObjectNotEmpty(opt) && opt || null);

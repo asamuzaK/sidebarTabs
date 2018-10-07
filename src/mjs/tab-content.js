@@ -162,9 +162,8 @@ export const toggleAudio = async evt => {
   const tabId = getSidebarTabId(target);
   let func;
   if (Number.isInteger(tabId)) {
-    const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-    if (tab) {
-      const tabsTab = JSON.parse(tab.dataset.tab);
+    const tabsTab = await getTab(tabId);
+    if (tabsTab) {
       const {mutedInfo: {muted}} = tabsTab;
       func = updateTab(tabId, {muted: !muted});
     }
