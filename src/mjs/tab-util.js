@@ -475,18 +475,18 @@ export const moveTabsToEnd = async (tabIds, windowId) => {
         tabArr.push(itemId);
       }
     }
-    if (pinArr.length) {
-      func.push(moveTab(pinArr, {
-        windowId,
-        index: pinnedLastTabIndex,
-      }));
-    }
-    if (tabArr.length) {
-      func.push(moveTab(tabArr, {
-        windowId,
-        index: -1,
-      }));
-    }
+  }
+  if (pinArr.length) {
+    func.push(moveTab(pinArr, {
+      windowId,
+      index: pinnedLastTabIndex,
+    }));
+  }
+  if (tabArr.length) {
+    func.push(moveTab(tabArr, {
+      windowId,
+      index: -1,
+    }));
   }
   return Promise.all(func);
 };
@@ -508,23 +508,31 @@ export const moveTabsToStart = async (tabIds, windowId) => {
   const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
   const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
   const firstUnpinnedTabIndex = getSidebarTabIndex(firstUnpinnedTab);
+  const pinArr = [];
+  const tabArr = [];
   const func = [];
   for (const item of tabIds) {
     const {parentNode} = item;
     const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {
       if (parentNode.classList.contains(PINNED)) {
-        func.push(moveTab(itemId, {
-          windowId,
-          index: 0,
-        }));
+        pinArr.push(itemId);
       } else {
-        func.push(moveTab(itemId, {
-          windowId,
-          index: firstUnpinnedTabIndex,
-        }));
+        tabArr.push(itemId);
       }
     }
+  }
+  if (pinArr.length) {
+    func.push(moveTab(pinArr, {
+      windowId,
+      index: 0,
+    }));
+  }
+  if (tabArr.length) {
+    func.push(moveTab(tabArr, {
+      windowId,
+      index: firstUnpinnedTabIndex,
+    }));
   }
   return Promise.all(func);
 };
