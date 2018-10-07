@@ -96,7 +96,8 @@ export const getFavicon = async (elm, favIconUrl) => {
  * @returns {void}
  */
 export const setTabIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+      isObjectNotEmpty(info)) {
     const {favIconUrl, status, title, url} = info;
     if (status === "loading") {
       const str = await escapeMatchingChars(title, /([/.?-])/g);
@@ -191,7 +192,7 @@ export const addTabAudioClickListener = async elm => {
  * @returns {void}
  */
 export const setTabAudio = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(info)) {
     const {audible, muted, highlighted} = info;
     if (muted) {
       if (highlighted) {
@@ -218,7 +219,8 @@ export const setTabAudio = async (elm, info) => {
  * @returns {void}
  */
 export const setTabAudioIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+      isObjectNotEmpty(info)) {
     const {audible, muted} = info;
     if (muted) {
       elm.alt = i18n.getMessage(`${TAB_MUTE_UNMUTE}`);
