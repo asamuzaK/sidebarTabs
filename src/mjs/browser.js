@@ -640,44 +640,6 @@ export const moveTab = async (tabId, opt) => {
   return arr || null;
 };
 
-//TODO: need to verify
-/**
- * move tabs in order
- * @param {number} tabId - tab ID
- * @param {Array} arr - array of tab IDs
- * @param {number} indexShift - index shift
- * @param {number} windowId - window ID
- * @returns {Array} - array of tab IDs
- */
-export const moveTabsInOrder = async (tabId, arr, indexShift, windowId) => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-  }
-  if (!Array.isArray(arr)) {
-    throw new TypeError(`Expected Array but got ${getType(arr)}.`);
-  }
-  if (!Number.isInteger(indexShift)) {
-    throw new TypeError(`Expected Number but got ${getType(indexShift)}.`);
-  }
-  const [id] = arr;
-  if (Number.isInteger(id) && indexShift) {
-    const tabsTab = await getTab(tabId);
-    if (tabsTab) {
-      const {index} = tabsTab;
-      if (!Number.isInteger(windowId)) {
-        windowId = windows.WINDOW_ID_CURRENT;
-      }
-      await moveTab(id, {index, windowId});
-      indexShift--;
-      arr = arr.length === 1 && [] || arr.slice(1);
-      if (indexShift) {
-        arr = await moveTabsInOrder(tabId, arr, indexShift, windowId);
-      }
-    }
-  }
-  return arr;
-};
-
 /**
  * reload tab
  * @param {number} tabId - tab ID
