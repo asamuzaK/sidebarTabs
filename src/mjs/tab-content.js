@@ -3,7 +3,7 @@
  */
 
 import {escapeMatchingChars, isString, throwErr} from "./common.js";
-import {removeTab, updateTab} from "./browser.js";
+import {removeTab, getTab, updateTab} from "./browser.js";
 import {getSidebarTabId} from "./tab-util.js";
 import {
   CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE,
