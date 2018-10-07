@@ -2,11 +2,13 @@
  * tab-content.js
  */
 
-import {escapeMatchingChars, isString, throwErr} from "./common.js";
+import {
+  escapeMatchingChars, isObjectNotEmpty, isString, throwErr,
+} from "./common.js";
 import {removeTab, getTab, updateTab} from "./browser.js";
 import {getSidebarTabId} from "./tab-util.js";
 import {
-  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE,
+  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, IDENTIFIED,
   TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE,
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
@@ -216,7 +218,7 @@ export const setTabAudio = async (elm, info) => {
  * @returns {void}
  */
 export const setTabAudioIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
     const {audible, muted} = info;
     if (muted) {
       elm.alt = i18n.getMessage(`${TAB_MUTE_UNMUTE}`);
@@ -271,5 +273,24 @@ export const closeTab = async evt => {
 export const addTabCloseClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     elm.addEventListener("click", evt => closeTab(evt).catch(throwErr));
+  }
+};
+
+/* contextual identities */
+/**
+ * set contextual identities icon
+ * @param {Object} elm - element
+ * @param {Object} info - contextual identities info
+ * @returns {void}
+ */
+export const setContextualIdentitiesIcon = async (elm, info) => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+      isObjectNotEmpty(info)) {
+    const {color, icon, name} = info;
+    if (color && icon && name) {
+      elm.parentNode.classList.add(IDENTIFIED);
+      elm.src = `../img/${icon}.svg#${color}`;
+      elm.alt = name;
+    }
   }
 };

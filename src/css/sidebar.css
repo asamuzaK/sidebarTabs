@@ -230,6 +230,24 @@ main {
   height: var(--icon-small-size);
 }
 
+/* contextual identities */
+.tab-ident {
+  display: none;
+}
+.tab-ident.identified {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex: 0 0 var(--icon-size);
+  margin: 0;
+  padding: calc(var(--scale-size) / 3);
+  height: var(--icon-size);
+}
+.tab-ident-icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
 /* close button */
 .tab-close {
   display: flex;

@@ -2,6 +2,8 @@
  * constant.js
  */
 
+export const ACTIVE = "active";
+export const AUDIBLE = "audible";
 export const CLASS_TAB_AUDIO = "tab-audio";
 export const CLASS_TAB_AUDIO_ICON = "tab-audio-icon";
 export const CLASS_TAB_CLOSE = "tab-close";
@@ -13,6 +15,8 @@ export const CLASS_TAB_CONTENT = "tab-content";
 export const CLASS_TAB_CONTEXT = "tab-context";
 export const CLASS_TAB_GROUP = "tab-group";
 export const CLASS_TAB_ICON = "tab-icon";
+export const CLASS_TAB_IDENT = "tab-ident";
+export const CLASS_TAB_IDENT_ICON = "tab-ident-icon";
 export const CLASS_TAB_TITLE = "tab-title";
 export const CLASS_TAB_TMPL = "tab-template";
 export const CLASS_TAB_TOGGLE_ICON = "tab-toggle-icon";
@@ -23,10 +27,13 @@ export const DATA_I18N = "data-i18n";
 export const EXT_INIT = "initExtension";
 export const EXT_LOCALE = "extensionLocale";
 export const EXT_NAME = "extensionName";
+export const HIGHLIGHTED = "highlighted";
+export const IDENTIFIED = "identified";
 export const MIME_PLAIN = "text/plain";
 export const MIME_URI = "text/uri-list";
 export const NEW_TAB = "newtab";
 export const PINNED = "pinned";
+export const SIDEBAR_MAIN = "sidebar-tabs-container";
 export const TAB = "tab";
 export const TAB_ALL_BOOKMARK = "bookmarkAllTabs";
 export const TAB_ALL_RELOAD = "reloadAllTabs";

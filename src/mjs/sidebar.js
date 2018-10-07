@@ -19,8 +19,9 @@ import {
   setSessionTabList,
 } from "./tab-util.js";
 import {
-  addTabAudioClickListener, addTabCloseClickListener, setCloseTab, setTabAudio,
-  setTabAudioIcon, setTabContent, setTabIcon, addTabIconErrorListener,
+  addTabAudioClickListener, addTabCloseClickListener, setCloseTab,
+  setContextualIdentitiesIcon, setTabAudio, setTabAudioIcon, setTabContent,
+  setTabIcon, addTabIconErrorListener,
 } from "./tab-content.js";
 import {
   createContextMenu, getTargetElement, menuItems, updateContextMenu,
@@ -28,12 +29,14 @@ import {
 import {setSidebarTheme, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
 import {
+  ACTIVE, AUDIBLE,
   CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
-  CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  COOKIE_STORE_DEFAULT, EXT_INIT, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, TAB,
-  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
+  CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
+  COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
+  PINNED, SIDEBAR_MAIN,
+  TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER,
   TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_EXPAND,
@@ -53,11 +56,7 @@ const {
 /* constants */
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
-const ACTIVE = "active";
-const AUDIBLE = "audible";
-const HIGHLIGHTED = "highlighted";
 const MOUSE_BUTTON_RIGHT = 2;
-const SIDEBAR_MAIN = "sidebar-tabs-container";
 
 /* sidebar */
 const sidebar = {
@@ -1007,10 +1006,12 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
     if (cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
       const ident = await getContextualId(cookieStoreId);
       if (ident) {
-        const {color} = ident;
-        if (color) {
-          tab.style.borderColor = color;
+        const {color, colorCode, icon, name} = ident;
+        const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
+        if (colorCode) {
+          tab.style.borderColor = colorCode;
         }
+        func.push(setContextualIdentitiesIcon(identIcon, {color, icon, name}));
       }
     }
     if (Number.isInteger(openerTabId) && !emulate) {
