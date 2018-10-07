@@ -288,9 +288,9 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
       isObjectNotEmpty(info)) {
     const {color, icon, name} = info;
     if (color && icon && name) {
-      elm.parentNode.classList.add(IDENTIFIED);
-      elm.src = `../img/${icon}.svg#${color}`;
       elm.alt = name;
+      elm.src = `../img/${icon}.svg#${color}`;
+      elm.parentNode.classList.add(IDENTIFIED);
     }
   }
 };
