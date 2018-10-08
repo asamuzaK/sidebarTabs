@@ -6,9 +6,11 @@ import {
   escapeMatchingChars, isObjectNotEmpty, isString, throwErr,
 } from "./common.js";
 import {removeTab, getTab, updateTab} from "./browser.js";
-import {getSidebarTabId} from "./tab-util.js";
 import {
-  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, IDENTIFIED,
+  closeTabs, getSidebarTab, getSidebarTabId, muteTabs,
+} from "./tab-util.js";
+import {
+  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED,
   TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE,
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
@@ -156,19 +158,28 @@ export const setTabContent = async (tab, tabsTab) => {
 
 /* audio */
 /**
- * toggle audio state
+ * handle clicked audio button
  * @param {!Object} evt - event
- * @returns {?AsyncFunction} - updateTab()
+ * @returns {?AsyncFunction} - muteTabs / updateTab()
  */
-export const toggleAudio = async evt => {
+export const handleClickedTabAudio = async evt => {
   const {target} = evt;
-  const tabId = getSidebarTabId(target);
+  const tab = getSidebarTab(target);
   let func;
-  if (Number.isInteger(tabId)) {
-    const tabsTab = await getTab(tabId);
-    if (tabsTab) {
-      const {mutedInfo: {muted}} = tabsTab;
-      func = updateTab(tabId, {muted: !muted});
+  if (tab) {
+    const tabId = getSidebarTabId(tab);
+    if (Number.isInteger(tabId)) {
+      const tabsTab = await getTab(tabId);
+      if (tabsTab) {
+        const {classList} = tab;
+        const {mutedInfo: {muted}} = tabsTab;
+        if (classList.contains(HIGHLIGHTED)) {
+          const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+          func = muteTabs(selectedTabs, !muted);
+        } else {
+          func = updateTab(tabId, {muted: !muted});
+        }
+      }
     }
   }
   return func || null;
@@ -181,7 +192,9 @@ export const toggleAudio = async evt => {
  */
 export const addTabAudioClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.addEventListener("click", evt => toggleAudio(evt).catch(throwErr));
+    elm.addEventListener("click", evt =>
+      handleClickedTabAudio(evt).catch(throwErr)
+    );
   }
 };
 
@@ -237,7 +250,7 @@ export const setTabAudioIcon = async (elm, info) => {
 
 /* close button */
 /**
- * set close tab
+ * set close tab button tooltip
  * @param {Object} elm - element
  * @param {boolean} highlighted - highlighted
  * @returns {void}
@@ -253,16 +266,25 @@ export const setCloseTab = async (elm, highlighted) => {
 };
 
 /**
- * close tab
- * @param {!Object} evt - event
- * @returns {?AsyncFunction} - removeTab()
+ * handle clicked close button
+ * @param {Object} evt - event
+ * @returns {?AsyncFunction} - closeTabs() / removeTab()
  */
-export const closeTab = async evt => {
+export const handleClickedCloseButton = async evt => {
   const {target} = evt;
-  const tabId = getSidebarTabId(target);
+  const tab = getSidebarTab(target);
   let func;
-  if (Number.isInteger(tabId)) {
-    func = removeTab(tabId);
+  if (tab) {
+    const {classList} = tab;
+    if (classList.contains(HIGHLIGHTED)) {
+      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      func = closeTabs(selectedTabs);
+    } else {
+      const tabId = getSidebarTabId(target);
+      if (Number.isInteger(tabId)) {
+        func = removeTab(tabId);
+      }
+    }
   }
   return func || null;
 };
@@ -274,7 +296,9 @@ export const closeTab = async evt => {
  */
 export const addTabCloseClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.addEventListener("click", evt => closeTab(evt).catch(throwErr));
+    elm.addEventListener("click", evt =>
+      handleClickedCloseButton(evt).catch(throwErr)
+    );
   }
 };
 
