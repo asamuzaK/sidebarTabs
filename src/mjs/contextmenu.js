@@ -405,19 +405,6 @@ export const menuItems = {
 };
 
 /**
- * get target element
- * @param {number} id - target element ID
- * @returns {Object} - target element
- */
-export const getTargetElement = async id => {
-  if (!Number.isInteger(id)) {
-    throw new TypeError(`Expected Number but got ${getType(id)}`);
-  }
-  const target = await menus.getTargetElement(id);
-  return target || null;
-};
-
-/**
  * create context menu item
  * @param {Object} data - context data
  * @returns {?string|number} - menu item ID

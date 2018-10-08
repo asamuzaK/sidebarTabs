@@ -24,7 +24,7 @@ import {
   setTabIcon, addTabIconErrorListener,
 } from "./tab-content.js";
 import {
-  createContextMenu, getTargetElement, menuItems, updateContextMenu,
+  createContextMenu, menuItems, updateContextMenu,
 } from "./contextmenu.js";
 import {setSidebarTheme, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
