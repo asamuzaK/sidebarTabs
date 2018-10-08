@@ -60,6 +60,7 @@ const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
 const sidebar = {
+  context: null,
   contextualIds: null,
   firstSelectedTab: null,
   incognito: false,
@@ -1398,11 +1399,10 @@ const setVars = async (data = {}) => {
  * @returns {AsyncFunction} - clicked menu handler
  */
 const handleClickedMenu = async info => {
-  const {menuItemId, targetElementId} = info;
-  const {contextualIds, windowId} = sidebar;
+  const {menuItemId} = info;
+  const {context, contextualIds, windowId} = sidebar;
   const selectedTabs = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-  const target = await getTargetElement(targetElementId);
-  const tab = await getSidebarTab(target);
+  const tab = getSidebarTab(context);
   const func = [];
   let isGrouped, tabId, tabParent, tabParentClassList, tabsTab, retFunc;
   if (tab) {
@@ -1921,6 +1921,7 @@ const handleEvt = async evt => {
           visible: true,
         }));
       }
+      sidebar.context = tab;
       func.push(updateContextMenu(bookmarkMenu.id, {
         visible: false,
       }));
@@ -1942,6 +1943,7 @@ const handleEvt = async evt => {
           visible: false,
         }));
       }
+      sidebar.context = target;
       func.push(
         updateContextMenu(tabGroupMenu.id, {
           visible: false,
