@@ -564,6 +564,6 @@ contextualIdentities.onUpdated.addListener(info =>
   updateContextualIdentitiesMenu(info).catch(throwErr)
 );
 
-window.addEventListener("contextmenu", evt => 
+window.addEventListener("contextmenu", evt =>
   overrideContextMenu(evt).catch(throwErr)
 );
