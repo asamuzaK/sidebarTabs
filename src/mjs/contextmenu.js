@@ -4,6 +4,7 @@
 
 import {getType, isString, throwErr} from "./common.js";
 import {getAllContextualIdentities} from "./browser.js";
+import {getSidebarTab, getSidebarTabId} from "./tab-util.js";
 import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER,
@@ -18,9 +19,10 @@ import {
 } from "./constant.js";
 
 /* api */
-const {contextualIdentities, i18n, menus} = browser;
+const {contextualIdentities, i18n, menus, tabs} = browser;
 
 /* constants */
+const {TAB_ID_NONE} = tabs;
 const ICON_SIZE_16 = "16";
 
 /* context menu items */
@@ -29,7 +31,7 @@ export const menuItems = {
     id: TAB_RELOAD,
     title: i18n.getMessage(`${TAB_RELOAD}_title`, "(&R)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -38,7 +40,7 @@ export const menuItems = {
     id: TABS_RELOAD,
     title: i18n.getMessage(`${TABS_RELOAD}_title`, "(&R)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -48,7 +50,7 @@ export const menuItems = {
     title: i18n.getMessage(`${TAB_MUTE}_title`, "(&M)"),
     toggleTitle: i18n.getMessage(`${TAB_MUTE_UNMUTE}_title`, "(&M)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -58,7 +60,7 @@ export const menuItems = {
     title: i18n.getMessage(`${TABS_MUTE}_title`, "(&M)"),
     toggleTitle: i18n.getMessage(`${TABS_MUTE_UNMUTE}_title`, "(&M)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -66,7 +68,7 @@ export const menuItems = {
   "sep-1": {
     id: "sep-1",
     type: "separator",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
   },
   [TAB_PIN]: {
@@ -74,7 +76,7 @@ export const menuItems = {
     title: i18n.getMessage(`${TAB_PIN}_title`, "(&P)"),
     toggleTitle: i18n.getMessage(`${TAB_PIN_UNPIN}_title`, "(&P)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -84,7 +86,7 @@ export const menuItems = {
     title: i18n.getMessage(`${TABS_PIN}_title`, "(&P)"),
     toggleTitle: i18n.getMessage(`${TABS_PIN_UNPIN}_title`, "(&P)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -93,7 +95,7 @@ export const menuItems = {
     id: TAB_BOOKMARK,
     title: i18n.getMessage(`${TAB_BOOKMARK}_title`, "(&B)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -102,7 +104,7 @@ export const menuItems = {
     id: TABS_BOOKMARK,
     title: i18n.getMessage(`${TABS_BOOKMARK}_title`, "(&B)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -111,7 +113,7 @@ export const menuItems = {
     id: TAB_DUPE,
     title: i18n.getMessage(`${TAB_DUPE}_title`, "(&D)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -120,7 +122,7 @@ export const menuItems = {
     id: TAB_REOPEN_CONTAINER,
     title: i18n.getMessage(`${TAB_REOPEN_CONTAINER}_title`, "(&E)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -129,7 +131,7 @@ export const menuItems = {
     id: TAB_MOVE,
     title: i18n.getMessage(`${TAB_MOVE}_title`, "(&V)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -138,7 +140,7 @@ export const menuItems = {
         id: TAB_MOVE_START,
         title: i18n.getMessage(`${TAB_MOVE_START}_title`, "(&S)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -147,7 +149,7 @@ export const menuItems = {
         id: TAB_MOVE_END,
         title: i18n.getMessage(`${TAB_MOVE_END}_title`, "(&E)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -156,7 +158,7 @@ export const menuItems = {
         id: TAB_MOVE_WIN,
         title: i18n.getMessage(`${TAB_MOVE_WIN}_title`, "(&W)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -167,7 +169,7 @@ export const menuItems = {
     id: TABS_MOVE,
     title: i18n.getMessage(`${TABS_MOVE}_title`, "(&V)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -176,7 +178,7 @@ export const menuItems = {
         id: TABS_MOVE_START,
         title: i18n.getMessage(`${TAB_MOVE_START}_title`, "(&S)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -185,7 +187,7 @@ export const menuItems = {
         id: TABS_MOVE_END,
         title: i18n.getMessage(`${TAB_MOVE_END}_title`, "(&E)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -194,7 +196,7 @@ export const menuItems = {
         id: TABS_MOVE_WIN,
         title: i18n.getMessage(`${TABS_MOVE_WIN}_title`, "(&W)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -207,7 +209,7 @@ export const menuItems = {
     id: TAB_SEND,
     title: i18n.getMessage(`${TAB_SEND}_title`, "(&N)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -216,7 +218,7 @@ export const menuItems = {
     id: TABS_SEND,
     title: i18n.getMessage(`${TABS_SEND}_title`, "(&N)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -225,7 +227,7 @@ export const menuItems = {
   "sep-2": {
     id: "sep-2",
     type: "separator",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
   },
   /* all tabs */
@@ -233,7 +235,7 @@ export const menuItems = {
     id: TAB_ALL_RELOAD,
     title: i18n.getMessage(`${TAB_ALL_RELOAD}_title`, "(&L)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -242,7 +244,7 @@ export const menuItems = {
     id: TAB_ALL_SELECT,
     title: i18n.getMessage(`${TAB_ALL_SELECT}_title`, "(&S)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -251,7 +253,7 @@ export const menuItems = {
     id: TAB_ALL_BOOKMARK,
     title: i18n.getMessage(`${TAB_ALL_BOOKMARK}_title`, "(&B)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -259,7 +261,7 @@ export const menuItems = {
   "sep-3": {
     id: "sep-3",
     type: "separator",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
   },
   /* tab group */
@@ -267,7 +269,7 @@ export const menuItems = {
     id: TAB_GROUP,
     title: i18n.getMessage(`${TAB_GROUP}_title`, "(&G)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -277,7 +279,7 @@ export const menuItems = {
         title: i18n.getMessage(`${TAB_GROUP_COLLAPSE}_title`, "(&E)"),
         toggleTitle: i18n.getMessage(`${TAB_GROUP_EXPAND}_title`, "(&E)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -285,14 +287,14 @@ export const menuItems = {
       "sepTabGroup-1": {
         id: "sepTabGroup-1",
         type: "separator",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
       },
       [TAB_GROUP_SELECTED]: {
         id: TAB_GROUP_SELECTED,
         title: i18n.getMessage(`${TAB_GROUP_SELECTED}_title`, "(&G)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -301,7 +303,7 @@ export const menuItems = {
         id: TAB_GROUP_DETACH,
         title: i18n.getMessage(`${TAB_GROUP_DETACH}_title`, "(&T)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -310,7 +312,7 @@ export const menuItems = {
         id: TAB_GROUP_UNGROUP,
         title: i18n.getMessage(`${TAB_GROUP_UNGROUP}_title`, "(&U)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -320,14 +322,14 @@ export const menuItems = {
   "sep-4": {
     id: "sep-4",
     type: "separator",
-    contexts: ["page"],
+    contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
   },
   [TAB_CLOSE_OPTIONS]: {
     id: TAB_CLOSE_OPTIONS,
     title: i18n.getMessage(`${TAB_CLOSE_OPTIONS}_title`, "(&O)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -336,7 +338,7 @@ export const menuItems = {
         id: TAB_CLOSE_END,
         title: i18n.getMessage(`${TAB_CLOSE_END}_title`, "(&E)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -345,7 +347,7 @@ export const menuItems = {
         id: TAB_CLOSE_OTHER,
         title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -356,7 +358,7 @@ export const menuItems = {
         id: TAB_CLOSE_DUPE,
         title: i18n.getMessage(`${TAB_CLOSE_DUPE}_title`, "(&D)"),
         type: "normal",
-        contexts: ["page"],
+        contexts: ["tab"],
         viewTypes: ["sidebar"],
         enabled: false,
         visible: true,
@@ -368,7 +370,7 @@ export const menuItems = {
     id: TABS_CLOSE_OTHER,
     title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -377,7 +379,7 @@ export const menuItems = {
     id: TAB_CLOSE_UNDO,
     title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, "(&U)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -386,7 +388,7 @@ export const menuItems = {
     id: TAB_CLOSE,
     title: i18n.getMessage(`${TAB_CLOSE}_title`, "(&C)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
@@ -395,7 +397,7 @@ export const menuItems = {
     id: TABS_CLOSE,
     title: i18n.getMessage(`${TABS_CLOSE}_title`, "(&U)"),
     type: "normal",
-    contexts: ["page"],
+    contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: false,
@@ -444,7 +446,7 @@ export const createContextualIdentitiesMenu = async () => {
     for (const item of items) {
       const {color, cookieStoreId, icon, name} = item;
       const opt = {
-        contexts: ["page"],
+        contexts: ["tab"],
         enabled: true,
         icons: {
           [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
@@ -496,7 +498,7 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
 export const updateContextualIdentitiesMenu = async info => {
   const {color, cookieStoreId, icon, name} = info;
   const opt = {
-    contexts: ["page"],
+    contexts: ["tab"],
     enabled: true,
     icons: {
       [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
@@ -533,6 +535,25 @@ export const removeContextualIdentitiesMenu = async info => {
   await menus.remove(cookieStoreId);
 };
 
+/**
+ * override context menu
+ * @param {Object} evt - event
+ * @returns {AsyncFunction} - menus.overrideContext()
+ */
+const overrideContextMenu = async evt => {
+  const {target} = evt;
+  const tab = getSidebarTab(target);
+  const opt = {};
+  if (tab) {
+    const tabId = getSidebarTabId(tab);
+    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
+      opt.tabId = tabId;
+      opt.context = "tab";
+    }
+  }
+  return menus.overrideContext(opt);
+};
+
 contextualIdentities.onCreated.addListener(info =>
   createContextualIdentitiesMenu(info).catch(throwErr)
 );
@@ -543,4 +564,6 @@ contextualIdentities.onUpdated.addListener(info =>
   updateContextualIdentitiesMenu(info).catch(throwErr)
 );
 
-window.addEventListener("contextmenu", () => menus.overrideContext({}));
+window.addEventListener("contextmenu", evt => 
+  overrideContextMenu(evt).catch(throwErr)
+);

@@ -1614,7 +1614,7 @@ const handleEvt = async evt => {
       TABS_MUTE, TABS_PIN, TABS_RELOAD,
     ];
     const pageKeys = [TAB_CLOSE_UNDO, TAB_ALL_RELOAD, TAB_ALL_SELECT];
-    const sepKeys = ["sep-1", "sep-2", "sep-4"];
+    const sepKeys = ["sep-1", "sep-2", "sep-3"];
     const allTabs = document.querySelectorAll(TAB_QUERY);
     const selectedTabs =
       document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
