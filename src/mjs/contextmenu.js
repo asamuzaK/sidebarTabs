@@ -2,7 +2,7 @@
  * contextmenu.js
  */
 
-import {getType, isString, throwErr} from "./common.js";
+import {isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {getAllContextualIdentities} from "./browser.js";
 import {getSidebarTab, getSidebarTabId} from "./tab-util.js";
 import {
@@ -409,15 +409,17 @@ export const menuItems = {
  * @param {Object} data - context data
  * @returns {?string|number} - menu item ID
  */
-export const createMenuItem = async (data = {}) => {
-  const {
-    contexts, enabled, id, parentId, title, type, viewTypes, visible,
-  } = data;
+export const createMenuItem = async data => {
   let menuItemId;
-  if (isString(id)) {
-    menuItemId = await menus.create({
+  if (isObjectNotEmpty(data)) {
+    const {
       contexts, enabled, id, parentId, title, type, viewTypes, visible,
-    });
+    } = data;
+    if (isString(id)) {
+      menuItemId = await menus.create({
+        contexts, enabled, id, parentId, title, type, viewTypes, visible,
+      });
+    }
   }
   return menuItemId || null;
 };
@@ -483,20 +485,22 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
  * @returns {void}
  */
 export const updateContextualIdentitiesMenu = async info => {
-  const {color, cookieStoreId, icon, name} = info;
-  const opt = {
-    contexts: ["tab"],
-    enabled: true,
-    icons: {
-      [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
-    },
-    parentId: TAB_REOPEN_CONTAINER,
-    title: name,
-    type: "normal",
-    viewTypes: ["sidebar"],
-    visible: true,
-  };
-  await menus.update(cookieStoreId, opt);
+  if (isObjectNotEmpty(info)) {
+    const {color, cookieStoreId, icon, name} = info;
+    const opt = {
+      contexts: ["tab"],
+      enabled: true,
+      icons: {
+        [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
+      },
+      parentId: TAB_REOPEN_CONTAINER,
+      title: name,
+      type: "normal",
+      viewTypes: ["sidebar"],
+      visible: true,
+    };
+    await menus.update(cookieStoreId, opt);
+  }
 };
 
 /**
@@ -505,8 +509,8 @@ export const updateContextualIdentitiesMenu = async info => {
  * @param {Object} data - update items data
  * @returns {void}
  */
-export const updateContextMenu = async (menuItemId, data = {}) => {
-  if (isString(menuItemId)) {
+export const updateContextMenu = async (menuItemId, data) => {
+  if (isString(menuItemId) && isObjectNotEmpty(data)) {
     const {enabled, title, visible} = data;
     await menus.update(menuItemId, {enabled, title, visible});
   }
@@ -518,13 +522,15 @@ export const updateContextMenu = async (menuItemId, data = {}) => {
  * @returns {void}
  */
 export const removeContextualIdentitiesMenu = async info => {
-  const {cookieStoreId} = info;
-  await menus.remove(cookieStoreId);
+  if (isObjectNotEmpty(info)) {
+    const {cookieStoreId} = info;
+    await menus.remove(cookieStoreId);
+  }
 };
 
 /**
  * override context menu
- * @param {Object} evt - event
+ * @param {!Object} evt - event
  * @returns {AsyncFunction} - menus.overrideContext()
  */
 const overrideContextMenu = async evt => {
