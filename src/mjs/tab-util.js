@@ -476,7 +476,7 @@ export const moveTabsToEnd = async (tabIds, windowId) => {
       }
     }
   }
-  if (pinArr.length) {
+  if (pinArr.length && Number.isInteger(pinnedLastTabIndex)) {
     func.push(moveTab(pinArr, {
       windowId,
       index: pinnedLastTabIndex,
@@ -528,7 +528,7 @@ export const moveTabsToStart = async (tabIds, windowId) => {
       index: 0,
     }));
   }
-  if (tabArr.length) {
+  if (tabArr.length && Number.isInteger(firstUnpinnedTabIndex)) {
     func.push(moveTab(tabArr, {
       windowId,
       index: firstUnpinnedTabIndex,
