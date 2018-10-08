@@ -1655,6 +1655,14 @@ const handleEvt = async evt => {
           data.visible = false;
         } else {
           switch (itemKey) {
+            case TAB_CLOSE_OPTIONS:
+              if (allTabs.length > 1) {
+                data.enabled = true;
+              } else {
+                data.enabled = false;
+              }
+              data.title = title;
+              break;
             case TAB_MUTE:
               data.enabled = true;
               if (muted) {
