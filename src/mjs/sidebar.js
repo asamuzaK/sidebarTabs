@@ -1349,6 +1349,19 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
         }
       }
       if (info.hasOwnProperty("status")) {
+        if (info.status === "complete") {
+          const activeTabsTab = await getActiveTab(windowId);
+          const {id: activeTabId} = activeTabsTab;
+          const activeTab =
+            document.querySelector(`[data-tab-id="${activeTabId}"]`);
+          const {classList} = activeTab;
+          if (!classList.contains(ACTIVE)) {
+            func.push(handleActivatedTab({
+              windowId,
+              tabId: activeTabId,
+            }));
+          }
+        }
         func.push(observeTab(tabId));
       }
       if (info.hasOwnProperty("discarded")) {
