@@ -1093,7 +1093,9 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
         target.parentNode.insertBefore(container, target);
       }
     }
-    active && func.push(handleActivatedTab({tabId: id, windowId}));
+    if (active) {
+      func.push(handleActivatedTab({tabId: id, windowId}));
+    }
   }
   return Promise.all(func);
 };
