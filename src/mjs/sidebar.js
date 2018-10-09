@@ -1012,11 +1012,8 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
       if (cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
         const ident = await getContextualId(cookieStoreId);
         if (ident) {
-          const {color, colorCode, icon, name} = ident;
+          const {color, icon, name} = ident;
           const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
-          if (colorCode) {
-            tab.style.borderColor = colorCode;
-          }
           func.push(
             setContextualIdentitiesIcon(identIcon, {color, icon, name})
           );
