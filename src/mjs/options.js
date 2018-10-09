@@ -13,7 +13,9 @@ import {EXT_INIT} from "./constant.js";
  * @returns {void}
  */
 const sendMsg = async msg => {
-  msg && sendMessage(null, msg);
+  if (msg) {
+    await sendMessage(null, msg);
+  }
 };
 
 /**
@@ -21,10 +23,15 @@ const sendMsg = async msg => {
  * @param {boolean} init - init
  * @returns {?AsyncFunction} - port message
  */
-const portInitExt = async (init = false) =>
-  init && sendMsg({
-    [EXT_INIT]: !!init,
-  }) || null;
+const portInitExt = async (init = false) => {
+  let func;
+  if (init) {
+    func = sendMsg({
+      [EXT_INIT]: !!init,
+    });
+  }
+  return func || null;
+};
 
 /**
  * create pref
@@ -129,7 +136,9 @@ const setValuesFromStorage = async () => {
   if (isObjectNotEmpty(pref)) {
     const items = Object.values(pref);
     for (const item of items) {
-      isObjectNotEmpty(item) && func.push(setHtmlInputValue(item));
+      if (isObjectNotEmpty(item)) {
+        func.push(setHtmlInputValue(item));
+      }
     }
   }
   return Promise.all(func);

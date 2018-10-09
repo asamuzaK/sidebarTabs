@@ -34,7 +34,9 @@ export const getTheme = async () => {
         }
       }
     }
-    !themes.length && themes.push(THEME_LIGHT);
+    if (!themes.length) {
+      themes.push(THEME_LIGHT);
+    }
   }
   return themes;
 };

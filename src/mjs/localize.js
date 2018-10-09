@@ -62,7 +62,9 @@ export const localizeHtml = async () => {
         if (data && localName !== "img" && !classList.contains(NEW_TAB)) {
           node.textContent = data;
         }
-        node.hasAttributes() && localizeAttr(node, `(${accessKey})`);
+        if (node.hasAttributes())
+          localizeAttr(node, `(${accessKey})`);
+        }
       }
     }
   }

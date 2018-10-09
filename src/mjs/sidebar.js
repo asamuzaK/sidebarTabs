@@ -867,8 +867,7 @@ const handleClickedTab = async evt => {
     }
   } else if (isMac && metaKey || !isMac && ctrlKey) {
     if (Number.isInteger(firstTabIndex)) {
-      const items =
-        document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+      const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
       const tabIndex = getSidebarTabIndex(tab);
       const index = [firstTabIndex];
       if (tab !== firstSelectedTab) {
@@ -1036,8 +1035,9 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
         } else {
           container.appendChild(tab);
         }
-        container.childElementCount > 1 &&
+        if (container.childElementCount > 1) {
           container.classList.add(CLASS_TAB_GROUP);
+        }
       } else if (openerTab && !openerTab.classList.contains(PINNED) &&
                  openerTabsTab) {
         await addDragEventListener(tab);
@@ -1067,8 +1067,9 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
         } else {
           container.appendChild(tab);
         }
-        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+        if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
           func.push(toggleTabGroupCollapsedState({target: tab}));
+        }
       } else if (list.length !== index && listedTab && listedTab.parentNode &&
                  listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                  listedTabPrev && listedTabPrev.parentNode &&
@@ -1077,8 +1078,9 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
         await addDragEventListener(tab);
         container = listedTab.parentNode;
         container.insertBefore(tab, listedTab);
-        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+        if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
           func.push(toggleTabGroupCollapsedState({target: tab}));
+        }
       } else {
         let target;
         if (list.length !== index && listedTab && listedTab.parentNode) {
@@ -1148,8 +1150,7 @@ const handleHighlightedTab = async info => {
   const {tabIds, windowId} = info;
   const func = [];
   if (Array.isArray(tabIds) && windowId === sidebar.windowId) {
-    const items =
-      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+    const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     if (tabIds.length > 1) {
       const highlightTabs = Array.from(tabIds);
       for (const item of items) {
@@ -1287,7 +1288,9 @@ const handleRemovedTab = async (tabId, info) => {
   if (windowId === sidebar.windowId && !isWindowClosing &&
       tabId !== TAB_ID_NONE) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-    tab && tab.parentNode.removeChild(tab);
+    if (tab) {
+      tab.parentNode.removeChild(tab);
+    }
   }
 };
 
@@ -1318,7 +1321,9 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
           }
           func.push(setTabAudio(tabAudio, opt));
         }
-        tabAudioIcon && func.push(setTabAudioIcon(tabAudioIcon, opt));
+        if (tabAudioIcon {
+          func.push(setTabAudioIcon(tabAudioIcon, opt));
+        }
       }
       if (info.hasOwnProperty("pinned")) {
         const pinnedContainer = document.getElementById(PINNED);
@@ -1343,8 +1348,12 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
           func.push(restoreTabContainers().then(setSessionTabList));
         }
       }
-      info.hasOwnProperty("status") && func.push(observeTab(tabId));
-      info.hasOwnProperty("discarded") && func.push(setSessionTabList());
+      if (info.hasOwnProperty("status")) {
+        func.push(observeTab(tabId));
+      }
+      if (info.hasOwnProperty("discarded")) {
+        func.push(setSessionTabList());
+      }
       tab.dataset.tab = JSON.stringify(tabsTab);
     }
   }
@@ -1381,7 +1390,9 @@ const setVar = async (item, obj, changed = false) => {
         break;
       case THEME_DARK:
       case THEME_LIGHT:
-        changed && checked && func.push(setTheme([item]));
+        if (changed && checked) {
+          func.push(setTheme([item]));
+        }
         break;
       default:
     }
@@ -2036,7 +2047,9 @@ const handleMsg = async (msg, sender) => {
         if (obj) {
           const {tab} = sender;
           const {id} = tab;
-          Number.isInteger(id) && func.push(observeTab(id));
+          if (Number.isInteger(id)) {
+            func.push(observeTab(id));
+          }
         }
         break;
       default:

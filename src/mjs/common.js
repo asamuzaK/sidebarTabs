@@ -36,7 +36,9 @@ export const logError = e => {
  * @returns {boolean} - false
  */
 export const logWarn = msg => {
-  msg && console.warn(msg);
+  if (msg) {
+    console.warn(msg);
+  }
   return false;
 };
 
@@ -46,7 +48,9 @@ export const logWarn = msg => {
  * @returns {Object} - message
  */
 export const logMsg = msg => {
-  msg && console.log(msg);
+  if (msg) {
+    console.log(msg);
+  }
   return msg;
 };
 
@@ -81,8 +85,13 @@ export const isObjectNotEmpty = o => {
  * @param {boolean} zero - treat 0 as a positive integer
  * @returns {?string} - stringified integer
  */
-export const stringifyPositiveInt = (i, zero = false) =>
-  Number.isSafeInteger(i) && (zero && i >= 0 || i > 0) && `${i}` || null;
+export const stringifyPositiveInt = (i, zero = false) => {
+  let str;
+  if (Number.isSafeInteger(i) && (i > 0 || zero && i === 0)) {
+    str = `${i}`;
+  }
+  return str || null;
+};
 
 /**
  * parse stringified integer
