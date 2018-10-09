@@ -1321,7 +1321,7 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
           }
           func.push(setTabAudio(tabAudio, opt));
         }
-        if (tabAudioIcon {
+        if (tabAudioIcon) {
           func.push(setTabAudioIcon(tabAudioIcon, opt));
         }
       }

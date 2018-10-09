@@ -57,12 +57,12 @@ export const localizeHtml = async () => {
         const {accessKey} = parentNode;
         const attr = node.getAttribute(DATA_I18N);
         const data = accessKey &&
-                       i18n.getMessage(`${attr}_title`, `(${accessKey})`) ||
-                       i18n.getMessage(attr);
+                     i18n.getMessage(`${attr}_title`, `(${accessKey})`) ||
+                     i18n.getMessage(attr);
         if (data && localName !== "img" && !classList.contains(NEW_TAB)) {
           node.textContent = data;
         }
-        if (node.hasAttributes())
+        if (node.hasAttributes()) {
           localizeAttr(node, `(${accessKey})`);
         }
       }
