@@ -170,6 +170,18 @@
       }
     }
   },
+  "dupeTabs": {
+    "message": "選択したタブを複製"
+  },
+  "dupeTabs_title": {
+    "message": "選択したタブを複製$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
   "expandTabGroup": {
     "message": "タブグループを展開"
   },

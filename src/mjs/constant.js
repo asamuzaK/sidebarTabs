@@ -69,6 +69,7 @@ export const TAB_REOPEN_CONTAINER = "reopenTabInContainer";
 export const TABS_BOOKMARK = "bookmarkTabs";
 export const TABS_CLOSE = "closeTabs";
 export const TABS_CLOSE_OTHER = "closeOtherTabs";
+export const TABS_DUPE = "dupeTabs";
 export const TABS_MOVE = "moveTabs";
 export const TABS_MOVE_END = "moveTabsToEnd";
 export const TABS_MOVE_START = "moveTabsToStart";

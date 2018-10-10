@@ -13,9 +13,9 @@ import {
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_MOVE, TABS_MOVE_END,
-  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE, TABS_PIN,
-  TABS_PIN_UNPIN, TABS_RELOAD,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
+  TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
+  TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD,
 } from "./constant.js";
 
 /* api */
@@ -117,6 +117,15 @@ export const menuItems = {
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
+  },
+  [TABS_DUPE]: {
+    id: TABS_DUPE,
+    title: i18n.getMessage(`${TABS_DUPE}_title`, "(&D)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
   },
   [TAB_REOPEN_CONTAINER]: {
     id: TAB_REOPEN_CONTAINER,

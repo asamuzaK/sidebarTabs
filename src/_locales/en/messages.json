@@ -170,6 +170,18 @@
       }
     }
   },
+  "dupeTabs": {
+    "message": "Duplicate Tabs"
+  },
+  "dupeTabs_title": {
+    "message": "&Duplicate Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
   "expandTabGroup": {
     "message": "Expand Tab Group"
   },

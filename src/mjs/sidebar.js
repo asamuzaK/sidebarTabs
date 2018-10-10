@@ -12,8 +12,9 @@ import {
 } from "./browser.js";
 import {
   activateTab, bookmarkAllTabs, bookmarkTabs, closeOtherTabs, closeTabs,
-  closeTabsToEnd, dupeTab, getSessionTabList, getSidebarTab, getSidebarTabId,
-  getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
+  closeTabsToEnd, dupeTab, dupeTabs,
+  getSessionTabList, getSidebarTab, getSidebarTabId, getSidebarTabIndex,
+  getSidebarTabContainer, getTabsInRange, getTemplate,
   moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, observeTab, pinTabs, reloadAllTabs, reloadTabs, restoreTabContainer,
   setSessionTabList,
@@ -43,8 +44,9 @@ import {
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_OBSERVE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_MOVE, TABS_MOVE_END,
-  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
+  TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
+  TABS_RELOAD,
   THEME_DARK, THEME_LIGHT,
 } from "./constant.js";
 
@@ -1597,6 +1599,9 @@ const handleClickedMenu = async info => {
       }
       break;
     }
+    case TABS_DUPE:
+      func.push(dupeTabs(selectedTabs, windowId));
+      break;
     case TABS_MOVE_END:
       func.push(moveTabsToEnd(Array.from(selectedTabs), windowId));
       break;
@@ -1660,7 +1665,7 @@ const handleEvt = async evt => {
       TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
     ];
     const tabsKeys = [
-      TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_MOVE,
+      TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
       TABS_MUTE, TABS_PIN, TABS_RELOAD,
     ];
     const pageKeys = [TAB_CLOSE_UNDO, TAB_ALL_RELOAD, TAB_ALL_SELECT];
