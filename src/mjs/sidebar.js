@@ -352,7 +352,7 @@ const restoreTabGroup = async () => {
             const container = document.getElementById(PINNED);
             const containerChildTabs = container.children;
             const containerChildTab = containerChildTabs[i];
-            if (containerChildTabs.length === 0) {
+            if (containerChildTabs.length === 0 || !containerChildTab) {
               container.appendChild(item);
             } else if (containerChildTab && containerChildTab !== item) {
               container.insertBefore(item, containerChildTab);
