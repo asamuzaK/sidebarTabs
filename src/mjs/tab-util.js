@@ -186,8 +186,8 @@ export const setSessionTabList = async () => {
   });
   if (win) {
     const {id: windowId, incognito} = win;
-    const tabLength = document.querySelectorAll(TAB_QUERY).length;
-    if (!incognito && tabLength) {
+    const allTabs = document.querySelectorAll(TAB_QUERY);
+    if (!incognito && allTabs && allTabs.length) {
       const tabList = {};
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);

@@ -347,8 +347,22 @@ const restoreTabGroup = async () => {
           const {collapsed, containerIndex, url} = list;
           const item = items[i];
           const {dataset: {tab: itemTab}} = item;
-          const {url: itemUrl} = JSON.parse(itemTab);
-          if (Number.isInteger(containerIndex) && itemUrl === url) {
+          const {pinned, url: itemUrl} = JSON.parse(itemTab);
+          if (pinned) {
+            const container = document.getElementById(PINNED);
+            const containerChildTabs = container.children;
+            const containerChildTab = containerChildTabs[i];
+            if (containerChildTabs.length === 0) {
+              container.appendChild(item);
+            } else if (containerChildTab && containerChildTab !== item) {
+              container.insertBefore(item, containerChildTab);
+            }
+            if (collapsed) {
+              container.classList.add(CLASS_TAB_COLLAPSED);
+            } else {
+              container.classList.remove(CLASS_TAB_COLLAPSED);
+            }
+          } else if (Number.isInteger(containerIndex) && itemUrl === url) {
             const container = containers[containerIndex];
             container.appendChild(item);
             if (collapsed) {
@@ -359,11 +373,11 @@ const restoreTabGroup = async () => {
           } else {
             j++;
           }
-          i++;
-          j++;
         } else {
           break;
         }
+        i++;
+        j++;
       }
     }
   }
