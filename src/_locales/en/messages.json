@@ -158,6 +158,18 @@
       }
     }
   },
+  "detachTabsFromGroup": {
+    "message": "Detach Tabs From Group"
+  },
+  "detachTabsFromGroup_title": {
+    "message": "&Detach Tabs From Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
   "dupeTab": {
     "message": "Duplicate Tab"
   },

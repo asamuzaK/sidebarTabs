@@ -2,7 +2,7 @@
  * tab-util.js
  */
 
-import {getType, isString, sleep} from "./common.js";
+import {getType, isObjectNotEmpty, isString, sleep} from "./common.js";
 import {
   createBookmark, createNewWindow, createTab, getCurrentWindow,
   getSessionWindowValue, getTab, moveTab, reloadTab, removeTab,
@@ -432,41 +432,33 @@ export const dupeTabs = async (nodes, windowId) => {
 /* move */
 /**
  * move tabs in order
- * @param {number} tabId - tab ID
- * @param {Array} arr - array of tab ID
- * @param {number} indexShift - index shift
+ * @param {Array} arr - array of tab info
  * @param {number} windowId - window ID
- * @returns {Array} - array of tab ID
+ * @returns {?AsyncFunction} - recurse moveTabsInOrder()
  */
-export const moveTabsInOrder = async (tabId, arr, indexShift, windowId) => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-  }
+export const moveTabsInOrder = async (arr, windowId) => {
   if (!Array.isArray(arr)) {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
-  if (!Number.isInteger(indexShift)) {
-    throw new TypeError(`Expected Number but got ${getType(indexShift)}.`);
+  const info = arr.shift();
+  let func;
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
   }
-  const [id] = arr;
-  if (Number.isInteger(id) && indexShift) {
-    const tab = document.querySelector(`[data-tab-id="${id}"]`);
-    const tabsTab = await getTab(tabId);
-    if (tabsTab) {
-      const {index} = tabsTab;
-      if (!Number.isInteger(windowId)) {
-        windowId = windows.WINDOW_ID_CURRENT;
-      }
-      tab.dataset.enroute = true;
-      await moveTab(id, {index, windowId});
-      indexShift--;
-      arr = arr.length === 1 && [] || arr.slice(1);
-      if (indexShift) {
-        arr = await moveTabsInOrder(tabId, arr, indexShift, windowId);
-      }
+  if (isObjectNotEmpty(info)) {
+    const {index, tabId} = info;
+    if (!Number.isInteger(index)) {
+      throw new TypeError(`Expected Array but got ${getType(index)}.`);
     }
+    if (!Number.isInteger(tabId)) {
+      throw new TypeError(`Expected Array but got ${getType(tabId)}.`);
+    }
+    await moveTab(tabId, {index, windowId});
   }
-  return arr;
+  if (arr.length) {
+    func = moveTabsInOrder(arr, windowId);
+  }
+  return func || null;
 };
 
 /**

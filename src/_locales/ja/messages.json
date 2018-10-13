@@ -158,6 +158,18 @@
       }
     }
   },
+  "detachTabsFromGroup": {
+    "message": "選択したタブをグループから切り離す"
+  },
+  "detachTabsFromGroup_title": {
+    "message": "選択したタブをグループから切り離す$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
   "dupeTab": {
     "message": "タブを複製"
   },
