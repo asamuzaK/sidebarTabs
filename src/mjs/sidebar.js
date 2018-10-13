@@ -1716,11 +1716,17 @@ const handleClickedMenu = async info => {
  * @returns {Promse.<Array>} - results of each handler
  */
 const handleEvt = async evt => {
-  const {button, key, shiftKey, target} = evt;
+  const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
+  const {isMac} = sidebar;
   const func = [];
+  // select all tabs
+  if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
+    func.push(highlightAllTabs());
+    evt.stopPropagation();
+    evt.preventDefault();
   // context menu
-  if (shiftKey && key === "F10" || key === "ContextMenu" ||
-      button === MOUSE_BUTTON_RIGHT) {
+  } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
+             button === MOUSE_BUTTON_RIGHT) {
     const tab = getSidebarTab(target);
     const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
     const tabGroupMenu = menuItems[TAB_GROUP];
