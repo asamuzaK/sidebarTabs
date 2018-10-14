@@ -1450,18 +1450,6 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
   return Promise.all(func);
 };
 
-/**
- * emulate tabs to sidebar
- * @returns {void}
- */
-const emulateTabs = async () => {
-  const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  for (const item of items) {
-    // eslint-disable-next-line no-await-in-loop
-    await handleCreatedTab(item, true);
-  }
-};
-
 /* storage */
 /**
  * set variable
@@ -2240,6 +2228,18 @@ window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
 
 /* start up */
+/**
+ * emulate tabs to sidebar
+ * @returns {void}
+ */
+const emulateTabs = async () => {
+  const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
+  for (const item of items) {
+    // eslint-disable-next-line no-await-in-loop
+    await handleCreatedTab(item, true);
+  }
+};
+
 Promise.all([
   addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
   addNewTabClickListener(),
