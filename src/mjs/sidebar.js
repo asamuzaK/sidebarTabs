@@ -16,12 +16,12 @@ import {
   getSessionTabList, getSidebarTab, getSidebarTabId, getSidebarTabIndex,
   getSidebarTabContainer, getTabsInRange, getTemplate,
   moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
-  muteTabs, observeTab, pinTabs, reloadAllTabs, reloadTabs, setSessionTabList,
+  muteTabs, pinTabs, reloadAllTabs, reloadTabs, setSessionTabList,
 } from "./tab-util.js";
 import {
-  addTabAudioClickListener, addTabCloseClickListener, setCloseTab,
-  setContextualIdentitiesIcon, setTabAudio, setTabAudioIcon, setTabContent,
-  setTabIcon, addTabIconErrorListener,
+  addTabAudioClickListener, addTabCloseClickListener, addTabIconErrorListener,
+  observeTab, setCloseTab, setContextualIdentitiesIcon, setTabAudio,
+  setTabAudioIcon, setTabContent, setTabIcon,
 } from "./tab-content.js";
 import {
   createContextMenu, menuItems, updateContextMenu,

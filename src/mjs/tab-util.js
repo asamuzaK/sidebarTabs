@@ -2,13 +2,12 @@
  * tab-util.js
  */
 
-import {getType, isObjectNotEmpty, isString, sleep} from "./common.js";
+import {getType, isObjectNotEmpty, isString} from "./common.js";
 import {
   createBookmark, createNewWindow, createTab, getCurrentWindow,
   getSessionWindowValue, getTab, moveTab, reloadTab, removeTab,
   setSessionWindowValue, updateTab,
 } from "./browser.js";
-import {setTabContent} from "./tab-content.js";
 import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
   NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
@@ -16,9 +15,6 @@ import {
 
 /* api */
 const {windows} = browser;
-
-/* constants */
-const TIME_3SEC = 3000;
 
 /**
  * get template
@@ -230,31 +226,6 @@ export const activateTab = async elm => {
     func = updateTab(tabId, {active});
   }
   return func || null;
-};
-
-/**
- * observe tab
- * @param {number} tabId - tab ID
- * @returns {Promise.<Array>} - results of each handler
- */
-export const observeTab = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-  }
-  await sleep(TIME_3SEC);
-  const tabsTab = await getTab(tabId);
-  const func = [];
-  if (tabsTab) {
-    const {status, id} = tabsTab;
-    if (status === "complete") {
-      await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
-                          tabsTab);
-      func.push(setSessionTabList());
-    } else {
-      func.push(observeTab(id));
-    }
-  }
-  return Promise.all(func);
 };
 
 /* bookmark */
