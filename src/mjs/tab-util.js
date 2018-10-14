@@ -419,10 +419,10 @@ export const moveTabsInOrder = async (arr, windowId) => {
   if (isObjectNotEmpty(info)) {
     const {index, tabId} = info;
     if (!Number.isInteger(index)) {
-      throw new TypeError(`Expected Array but got ${getType(index)}.`);
+      throw new TypeError(`Expected Number but got ${getType(index)}.`);
     }
     if (!Number.isInteger(tabId)) {
-      throw new TypeError(`Expected Array but got ${getType(tabId)}.`);
+      throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
     }
     await moveTab(tabId, {index, windowId});
   }
@@ -576,8 +576,7 @@ export const muteTabs = async (nodes, muted) => {
   if (nodes instanceof NodeList) {
     for (const item of nodes) {
       if (item.nodeType === Node.ELEMENT_NODE) {
-        const {dataset} = item;
-        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        const tabId = getSidebarTabId(item);
         if (Number.isInteger(tabId)) {
           func.push(updateTab(tabId, {muted: !!muted}));
         }
@@ -599,8 +598,7 @@ export const pinTabs = async (nodes, pinned) => {
   if (nodes instanceof NodeList) {
     for (const item of nodes) {
       if (item.nodeType === Node.ELEMENT_NODE) {
-        const {dataset} = item;
-        const tabId = dataset && dataset.tabId && dataset.tabId * 1;
+        const tabId = getSidebarTabId(item);
         if (Number.isInteger(tabId)) {
           func.push(updateTab(tabId, {pinned: !!pinned}));
         }
@@ -619,8 +617,7 @@ export const reloadAllTabs = async () => {
   const func = [];
   const items = document.querySelectorAll(TAB_QUERY);
   for (const item of items) {
-    const {dataset} = item;
-    const itemId = dataset && dataset.tabId && dataset.tabId * 1;
+    const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {
       func.push(reloadTab(itemId));
     }
@@ -638,8 +635,7 @@ export const reloadTabs = async nodes => {
   if (nodes instanceof NodeList) {
     for (const item of nodes) {
       if (item.nodeType === Node.ELEMENT_NODE) {
-        const {dataset} = item;
-        const itemId = dataset && dataset.tabId && dataset.tabId * 1;
+        const itemId = getSidebarTabId(item);
         if (Number.isInteger(itemId)) {
           func.push(reloadTab(itemId));
         }
