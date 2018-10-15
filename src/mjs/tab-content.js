@@ -328,7 +328,7 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
 /**
  * observe tab
  * @param {number} tabId - tab ID
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {?AsyncFunction} - setSessionTabList() / recurse observeTab()
  */
 export const observeTab = async tabId => {
   if (!Number.isInteger(tabId)) {
@@ -336,16 +336,16 @@ export const observeTab = async tabId => {
   }
   await sleep(TIME_3SEC);
   const tabsTab = await getTab(tabId);
-  const func = [];
+  let func;
   if (tabsTab) {
-    const {status, id} = tabsTab;
+    const {status} = tabsTab;
     if (status === "complete") {
-      await setTabContent(document.querySelector(`[data-tab-id="${id}"]`),
+      await setTabContent(document.querySelector(`[data-tab-id="${tabId}"]`),
                           tabsTab);
-      func.push(setSessionTabList());
+      func = setSessionTabList();
     } else {
-      func.push(observeTab(id));
+      func = observeTab(tabId);
     }
   }
-  return Promise.all(func);
+  return func || null;
 };
