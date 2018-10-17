@@ -359,6 +359,12 @@
   "newTabButton_title": {
     "message": "Open a new tab"
   },
+  "optionsCompactTab": {
+    "message": "Reduce tab height"
+  },
+  "optionsCompactTabDetail": {
+    "message": "Reduce the height of the tab to display more tabs."
+  },
   "optionsInit": {
     "message": "Init"
   },

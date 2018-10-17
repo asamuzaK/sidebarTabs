@@ -29,6 +29,7 @@
   --tab-group-8: #C9C;
   --scale-size: calc(1rem / 3);
   --tab-height: calc(var(--scale-size) * 8);
+  --tab-height-compact: calc(var(--scale-size) * 6);
   --icon-size: calc(var(--scale-size) * 4);
   --icon-small-size: calc(var(--scale-size) * 3);
   --icon-x-small-size: calc(var(--scale-size) * 2);
@@ -94,6 +95,9 @@ main {
   -moz-user-select: none;
   user-select: none;
   z-index: 2;
+}
+.compact .tab {
+  height: var(--tab-height-compact);
 }
 .tab.active {
   border: 1px solid var(--border-active-color);
@@ -364,6 +368,9 @@ main {
   flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
   fill: var(--foreground-selection-color);
+}
+.compact .tab-group > .tab > .tab-context {
+  height: var(--tab-height-compact);
 }
 .tab-group:nth-child(8n + 1) > .tab > .tab-context {
   background-color: var(--tab-group-1);

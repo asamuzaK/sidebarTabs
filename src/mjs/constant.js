@@ -22,6 +22,7 @@ export const CLASS_TAB_TMPL = "tab-template";
 export const CLASS_TAB_TOGGLE_ICON = "tab-toggle-icon";
 export const CLASS_THEME_DARK = "dark-theme";
 export const CLASS_THEME_LIGHT = "light-theme";
+export const COMPACT = "compact";
 export const COOKIE_STORE_DEFAULT = "firefox-default";
 export const DATA_I18N = "data-i18n";
 export const EXT_INIT = "initExtension";
@@ -87,6 +88,7 @@ export const THEME_DARK_ID =
 export const THEME_LIGHT = "lightTheme";
 export const THEME_LIGHT_ID =
   "firefox-compact-light@mozilla.org@personas.mozilla.org";
+export const THEME_TAB_COMPACT = "compactTab";
 export const URL_AUDIO_MUTED = "../img/audio-muted.svg";
 export const URL_AUDIO_PLAYING = "../img/audio-play.svg";
 export const URL_FAVICON_DEFAULT = "../img/default-favicon.svg";

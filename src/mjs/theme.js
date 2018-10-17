@@ -2,11 +2,11 @@
  * theme.js
  */
 
-import {getType} from "./common.js";
+import {getType, isObjectNotEmpty} from "./common.js";
 import {getEnabledTheme, getStorage, setStorage} from "./browser.js";
 import {
-  CLASS_THEME_DARK, CLASS_THEME_LIGHT, THEME, THEME_DARK, THEME_DARK_ID,
-  THEME_LIGHT, THEME_LIGHT_ID,
+  CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, THEME, THEME_DARK,
+  THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
 } from "./constant.js";
 
 /**
@@ -69,6 +69,35 @@ export const setTheme = async themes => {
 };
 
 /**
+ * get tab height
+ * @returns {boolean} - result
+ */
+export const getTabHeight = async () => {
+  const data = await getStorage(THEME_TAB_COMPACT);
+  let compact;
+  if (isObjectNotEmpty(data)) {
+    const {checked} = data[THEME_TAB_COMPACT];
+    compact = checked;
+  }
+  return !!compact;
+};
+
+/**
+ * set tab height
+ * @param {boolean} compact - compact
+ * @returns {void}
+ */
+export const setTabHeight = async compact => {
+  const elm = document.querySelector("body");
+  const {classList} = elm;
+  if (compact) {
+    classList.add(COMPACT);
+  } else {
+    classList.remove(COMPACT);
+  }
+};
+
+/**
  * apply CSS
  * @returns {void}
  */
@@ -83,5 +112,7 @@ export const applyCss = async () => {
  * set sidebar theme
  * @returns {void}
  */
-export const setSidebarTheme = async () =>
-  getTheme().then(setTheme).then(applyCss);
+export const setSidebarTheme = async () => Promise.all([
+  getTheme().then(setTheme),
+  getTabHeight().then(setTabHeight),
+]).then(applyCss);

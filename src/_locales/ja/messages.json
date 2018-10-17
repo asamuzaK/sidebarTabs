@@ -359,6 +359,12 @@
   "newTabButton_title": {
     "message": "新しいタブを開きます"
   },
+  "optionsCompactTab": {
+    "message": "タブの高さを縮める"
+  },
+  "optionsCompactTabDetail": {
+    "message": "タブの高さを縮めてより多くのタブを表示できるようにします。"
+  },
   "optionsInit": {
     "message": "初期化"
   },

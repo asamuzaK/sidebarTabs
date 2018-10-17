@@ -26,7 +26,7 @@ import {
 import {
   createContextMenu, menuItems, updateContextMenu,
 } from "./contextmenu.js";
-import {setSidebarTheme, setTheme} from "./theme.js";
+import {setSidebarTheme, setTabHeight, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
 import {
   ACTIVE, AUDIBLE,
@@ -47,7 +47,7 @@ import {
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD,
-  THEME_DARK, THEME_LIGHT,
+  THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "./constant.js";
 
 /* api */
@@ -1482,6 +1482,11 @@ const setVar = async (item, obj, changed = false) => {
       case THEME_LIGHT:
         if (changed && checked) {
           func.push(setTheme([item]));
+        }
+        break;
+      case THEME_TAB_COMPACT:
+        if (changed) {
+          func.push(setTabHeight(!!checked));
         }
         break;
       default:
