@@ -371,14 +371,14 @@ const restoreTabGroup = async () => {
   if (!sidebar.incognito) {
     const tabList = await getSessionTabList(TAB_LIST);
     const items = document.querySelectorAll(TAB_QUERY);
-    if (tabList && items) {
+    if (Array.isArray(tabList) && tabList.length && items) {
       const containers =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
       const l = items.length;
       let i = 0, j = 0;
       while (i < l) {
         const list = tabList[j];
-        if (list) {
+        if (list && isObjectNotEmpty(list)) {
           const {collapsed, containerIndex, url} = list;
           const item = items[i];
           const {dataset: {tab: itemTab}} = item;
