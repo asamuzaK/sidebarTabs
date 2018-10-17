@@ -4,7 +4,7 @@
 
 import {getType, isObjectNotEmpty, isString} from "./common.js";
 import {
-  createBookmark, createNewWindow, createTab, getCurrentWindow,
+  createBookmark, createNewWindow, createTab, getAllStorage, getCurrentWindow,
   getSessionWindowValue, getStorage, getTab, moveTab, reloadTab, removeTab,
   setSessionWindowValue, setStorage, updateTab,
 } from "./browser.js";
@@ -164,11 +164,17 @@ export const getSessionTabList = async key => {
   let tabList;
   if (win && isString(key)) {
     const {id: windowId} = win;
-    let value = await getSessionWindowValue(key, windowId);
-    if (value) {
-      tabList = JSON.parse(value);
-    } else {
-      value = await getStorage(key);
+    let value;
+    try {
+      value = await getSessionWindowValue(key, windowId);
+      if (value) {
+        tabList = JSON.parse(value);
+      } else {
+        value = await getStorage(key);
+        tabList = value[key];
+      }
+    } catch (e) {
+      value = await getAllStorage();
       tabList = value[key];
     }
   }
