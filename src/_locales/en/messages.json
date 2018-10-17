@@ -360,7 +360,7 @@
     "message": "Open a new tab"
   },
   "optionsInit": {
-    "message": "init"
+    "message": "Init"
   },
   "optionsInitSidebar": {
     "message": "Init Sidebar Tabs"
