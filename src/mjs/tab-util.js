@@ -5,8 +5,8 @@
 import {getType, isObjectNotEmpty, isString} from "./common.js";
 import {
   createBookmark, createNewWindow, createTab, getCurrentWindow,
-  getSessionWindowValue, getTab, moveTab, reloadTab, removeTab,
-  setSessionWindowValue, updateTab,
+  getSessionWindowValue, getStorage, getTab, moveTab, reloadTab, removeTab,
+  setSessionWindowValue, setStorage, updateTab,
 } from "./browser.js";
 import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
@@ -164,9 +164,12 @@ export const getSessionTabList = async key => {
   let tabList;
   if (win && isString(key)) {
     const {id: windowId} = win;
-    tabList = await getSessionWindowValue(key, windowId);
-    if (tabList) {
-      tabList = JSON.parse(tabList);
+    let value = await getSessionWindowValue(key, windowId);
+    if (value) {
+      tabList = JSON.parse(value);
+    } else {
+      value = await getStorage(key);
+      tabList = value[key];
     }
   }
   return tabList || null;
@@ -208,7 +211,12 @@ export const setSessionTabList = async () => {
         }
         i++;
       }
-      await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
+      await Promise.all([
+        setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId),
+        setStorage({
+          [TAB_LIST]: tabList,
+        }),
+      ]);
     }
   }
 };
