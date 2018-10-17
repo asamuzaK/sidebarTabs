@@ -90,6 +90,7 @@ main {
   min-width: min-content;
   width: auto;
   height: var(--tab-height);
+  max-height: var(--tab-height);
   transition: margin-top 0.1s, height 0.1s, border-top-width 0.1s,
               border-bottom-width 0.1s;
   -moz-user-select: none;
@@ -98,6 +99,7 @@ main {
 }
 .compact .tab {
   height: var(--tab-height-compact);
+  max-height: var(--tab-height-compact);
 }
 .tab.active {
   border: 1px solid var(--border-active-color);
