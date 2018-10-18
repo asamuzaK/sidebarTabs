@@ -436,11 +436,15 @@ export const moveTabsInOrder = async (arr, windowId) => {
  * move tabs to end
  * @param {Array} nodeArr - array of node
  * @param {number} windowId - window ID
+ * @param {number} tabId - tab ID
  * @returns {Promise.<Array>} - results of each handler
  */
-export const moveTabsToEnd = async (nodeArr, windowId) => {
+export const moveTabsToEnd = async (nodeArr, windowId, tabId) => {
   if (!Array.isArray(nodeArr)) {
     throw new TypeError(`Expected Array but got ${getType(nodeArr)}`);
+  }
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
   }
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
@@ -451,7 +455,10 @@ export const moveTabsToEnd = async (nodeArr, windowId) => {
   const pinArr = [];
   const tabArr = [];
   const func = [];
-  for (const item of nodeArr) {
+  const l = nodeArr.length;
+  let i = 0;
+  while (i < l) {
+    const item = nodeArr[i];
     if (item && item.nodeType === Node.ELEMENT_NODE) {
       const {parentNode} = item;
       const itemId = getSidebarTabId(item);
@@ -461,8 +468,12 @@ export const moveTabsToEnd = async (nodeArr, windowId) => {
         } else {
           tabArr.push(itemId);
         }
+        if (i === l - 1) {
+          item.dataset.restore = tabId;
+        }
       }
     }
+    i++;
   }
   if (pinArr.length && Number.isInteger(pinnedLastTabIndex)) {
     func.push(moveTab(pinArr, {
@@ -482,12 +493,16 @@ export const moveTabsToEnd = async (nodeArr, windowId) => {
 /**
  * move tabs to start
  * @param {Array} nodeArr - array of node
- * @param {integer} windowId - window ID
+ * @param {number} windowId - window ID
+ * @param {number} tabId - tab ID
  * @returns {Promise.<Array>} - results of each handler
  */
-export const moveTabsToStart = async (nodeArr, windowId) => {
+export const moveTabsToStart = async (nodeArr, windowId, tabId) => {
   if (!Array.isArray(nodeArr)) {
     throw new TypeError(`Expected Array but got ${getType(nodeArr)}`);
+  }
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}`);
   }
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
@@ -499,7 +514,10 @@ export const moveTabsToStart = async (nodeArr, windowId) => {
   const pinArr = [];
   const tabArr = [];
   const func = [];
-  for (const item of nodeArr) {
+  const l = nodeArr.length;
+  let i = 0;
+  while (i < l) {
+    const item = nodeArr[i];
     if (item && item.nodeType === Node.ELEMENT_NODE) {
       const {parentNode} = item;
       const itemId = getSidebarTabId(item);
@@ -509,8 +527,12 @@ export const moveTabsToStart = async (nodeArr, windowId) => {
         } else {
           tabArr.push(itemId);
         }
+        if (i === l - 1) {
+          item.dataset.restore = tabId;
+        }
       }
     }
+    i++;
   }
   if (pinArr.length) {
     func.push(moveTab(pinArr, {

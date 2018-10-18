@@ -668,6 +668,9 @@ const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
             } else {
               moveUpArr.push(itemId);
             }
+            if (i === l - 1) {
+              item.dataset.restore = dropTargetId;
+            }
           }
           i++;
           j++;
@@ -808,7 +811,7 @@ const handleDrop = evt => {
     if (isObjectNotEmpty(item)) {
       func.push(
         extractDroppedTabs(dropTarget, item, {ctrlKey, metaKey, shiftKey})
-          .then(removeHighlightFromTabs).then(setSessionTabList)
+          .then(removeHighlightFromTabs)
       );
     }
   }
@@ -1153,7 +1156,6 @@ const handleCreatedTab = async (tabsTab, emulate = false) => {
             if (lastChildTabsTab) {
               const {index: lastChildTabIndex} = lastChildTabsTab;
               if (index < lastChildTabIndex) {
-                tab.dataset.enroute = lastChildTabIndex;
                 await moveTab(id, {
                   index: lastChildTabIndex,
                   windowId: sidebar.windowId,
@@ -1299,11 +1301,14 @@ const handleMovedTab = async (tabId, info) => {
       const allTabs = document.querySelectorAll(TAB_QUERY);
       const tabsTab = await getTab(tabId);
       const {pinned} = tabsTab;
-      const {enroute, group} = tab.dataset;
+      const {group, restore} = tab.dataset;
       if (pinned) {
         const container = document.getElementById(PINNED);
         const {firstElementChild, lastElementChild} = container;
         const lastPinnedTabIndex = getSidebarTabIndex(lastElementChild);
+        if (group) {
+          tab.dataset.group = null;
+        }
         if (toIndex === 0) {
           container.insertBefore(tab, firstElementChild);
         } else if (toIndex === lastPinnedTabIndex) {
@@ -1318,6 +1323,7 @@ const handleMovedTab = async (tabId, info) => {
         if (openerTab && openerTab.parentNode !== tab.parentNode) {
           openerTab.parentNode.appendChild(tab);
         }
+        tab.dataset.group = null;
       } else if (toIndex === 0) {
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         const [target] = allTabs;
@@ -1356,9 +1362,8 @@ const handleMovedTab = async (tabId, info) => {
           targetParent.insertBefore(tab, targetNextSibling);
         }
       }
-      tab.dataset.group = null;
-      if (enroute) {
-        tab.dataset.enroute = null;
+      if (restore) {
+        tab.dataset.restore = null;
         func = restoreTabContainers().then(setSessionTabList);
       }
     }
@@ -1606,22 +1611,12 @@ const handleClickedMenu = async info => {
       break;
     case TAB_MOVE_END:
       if (tab) {
-        if (isGrouped) {
-          func.push(moveTabsToEnd([tab], windowId).then(restoreTabContainers));
-        } else {
-          func.push(moveTabsToEnd([tab], windowId));
-        }
+        func.push(moveTabsToEnd([tab], windowId, tabId));
       }
       break;
     case TAB_MOVE_START:
       if (tab) {
-        if (isGrouped) {
-          func.push(
-            moveTabsToStart([tab], windowId).then(restoreTabContainers)
-          );
-        } else {
-          func.push(moveTabsToStart([tab], windowId));
-        }
+        func.push(moveTabsToStart([tab], windowId, tabId));
       }
       break;
     case TAB_MOVE_WIN:
@@ -1672,10 +1667,10 @@ const handleClickedMenu = async info => {
       func.push(dupeTabs(selectedTabs, windowId));
       break;
     case TABS_MOVE_END:
-      func.push(moveTabsToEnd(Array.from(selectedTabs), windowId));
+      func.push(moveTabsToEnd(Array.from(selectedTabs), windowId, tabId));
       break;
     case TABS_MOVE_START:
-      func.push(moveTabsToStart(Array.from(selectedTabs), windowId));
+      func.push(moveTabsToStart(Array.from(selectedTabs), windowId, tabId));
       break;
     case TABS_MOVE_WIN:
       func.push(moveTabsToNewWindow(Array.from(selectedTabs)));
