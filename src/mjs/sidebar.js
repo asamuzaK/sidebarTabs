@@ -491,35 +491,6 @@ const removeHighlight = async elm => {
 };
 
 /**
- * remove highlight class from tabs
- * @returns {Promise.<Array>} - results of each handler
- */
-const removeHighlightFromTabs = async () => {
-  const {firstSelectedTab, windowId} = sidebar;
-  const func = [];
-  if (firstSelectedTab) {
-    const index = getSidebarTabIndex(firstSelectedTab);
-    func.push(
-      removeHighlight(firstSelectedTab),
-      highlightTab(index, windowId),
-    );
-  } else {
-    const tab = await getActiveTab(windowId);
-    if (tab) {
-      const {id, index} = tab;
-      const item = document.querySelector(`[data-tab-id="${id}"]`);
-      if (item) {
-        func.push(
-          removeHighlight(item),
-          highlightTab(index, windowId),
-        );
-      }
-    }
-  }
-  return Promise.all(func);
-};
-
-/**
  * toggle highlight class of tab
  * @param {Object} elm - element
  * @returns {AsyncFunction} - addHighlight() / removeHightlight()
@@ -720,6 +691,9 @@ const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
             } else {
               moveUpArr.push(itemId);
             }
+            if (i === l - 1) {
+              item.dataset.restore = dropTargetId;
+            }
           }
           i++;
         }
@@ -762,7 +736,8 @@ const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
           await moveTabsInOrder(arr, windowId);
         }
       }
-    } else {
+    // dragged from other window
+    } else if (!tabIds.includes(dropTargetId)) {
       let index;
       if (dropTargetIndex === lastTabIndex) {
         index = -1;
@@ -811,7 +786,6 @@ const handleDrop = evt => {
     if (isObjectNotEmpty(item)) {
       func.push(
         extractDroppedTabs(dropTarget, item, {ctrlKey, metaKey, shiftKey})
-          .then(removeHighlightFromTabs)
       );
     }
   }
@@ -970,8 +944,6 @@ const handleClickedTab = async evt => {
         }
       }
       func.push(highlightTab(index, windowId));
-    } else {
-      func.push(removeHighlightFromTabs());
     }
   } else if (isMac && metaKey || !isMac && ctrlKey) {
     if (Number.isInteger(firstTabIndex)) {
@@ -1003,8 +975,6 @@ const handleClickedTab = async evt => {
       } else {
         func.push(toggleHighlight(firstSelectedTab));
       }
-    } else {
-      func.push(removeHighlightFromTabs());
     }
   } else {
     func.push(activateTab(tab));
@@ -1278,8 +1248,6 @@ const handleHighlightedTab = async info => {
             func.push(removeHighlight(item));
           }
         }
-      } else {
-        func.push(removeHighlightFromTabs());
       }
     }
   }
@@ -1456,6 +1424,8 @@ const handleUpdatedTab = async (tabId, info, tabsTab) => {
             }));
           }
         }
+      }
+      if (info.hasOwnProperty("url")) {
         func.push(observeTab(tabId));
       }
       if (info.hasOwnProperty("discarded")) {
@@ -1530,7 +1500,7 @@ const handleClickedMenu = async info => {
   const selectedTabs = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const func = [];
-  let isGrouped, tabId, tabParent, tabParentClassList, tabsTab, retFunc;
+  let isGrouped, tabId, tabParent, tabParentClassList, tabsTab;
   if (tab) {
     tabId = getSidebarTabId(tab);
     tabParent = tab.parentNode;
@@ -1702,12 +1672,7 @@ const handleClickedMenu = async info => {
         func.push(createTab(opt));
       }
   }
-  if (menuItemId === TAB_ALL_SELECT) {
-    retFunc = Promise.all(func);
-  } else {
-    retFunc = Promise.all(func).then(removeHighlightFromTabs);
-  }
-  return retFunc;
+  return Promise.all(func);
 };
 
 /**
