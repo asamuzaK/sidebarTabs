@@ -483,34 +483,7 @@ const addDragEventListener = async elm => {
   }
 };
 
-/* tab event handlers */
-/**
- * restore sidebar tab containers
- * @returns {Promise.<Array>} - results of each handler
- */
-const restoreTabContainers = async () => {
-  const items =
-    document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-  const func = [];
-  if (items) {
-    for (const item of items) {
-      const {childElementCount, classList, id, parentNode} = item;
-      switch (childElementCount) {
-        case 0:
-          id !== PINNED && parentNode.removeChild(item);
-          break;
-        case 1:
-          classList.remove(CLASS_TAB_GROUP);
-          break;
-        default:
-          classList.add(CLASS_TAB_GROUP);
-      }
-      func.push(addDropEventListener(item));
-    }
-  }
-  return Promise.all(func);
-};
-
+/* sidebar tab event handlers */
 /**
  * handle clicked tab
  * @param {!Object} evt - event
@@ -580,6 +553,33 @@ const addTabClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     elm.addEventListener("click", handleClickedTab);
   }
+};
+
+/**
+ * restore sidebar tab containers
+ * @returns {Promise.<Array>} - results of each handler
+ */
+const restoreTabContainers = async () => {
+  const items =
+    document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+  const func = [];
+  if (items) {
+    for (const item of items) {
+      const {childElementCount, classList, id, parentNode} = item;
+      switch (childElementCount) {
+        case 0:
+          id !== PINNED && parentNode.removeChild(item);
+          break;
+        case 1:
+          classList.remove(CLASS_TAB_GROUP);
+          break;
+        default:
+          classList.add(CLASS_TAB_GROUP);
+      }
+      func.push(addDropEventListener(item));
+    }
+  }
+  return Promise.all(func);
 };
 
 /* tab handlers */

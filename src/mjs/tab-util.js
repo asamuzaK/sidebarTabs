@@ -8,9 +8,7 @@ import {
   getSessionWindowValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
   setSessionWindowValue, updateTab,
 } from "./browser.js";
-import {
-  setCloseTab, setTabAudio,
-} from "./tab-content.js";
+import {setCloseTab, setTabAudio} from "./tab-content.js";
 import {
   ACTIVE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
@@ -364,11 +362,11 @@ export const dupeTab = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}`);
   }
+  const tabsTab = await getTab(tabId);
+  let func;
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const tabsTab = await getTab(tabId);
-  let func;
   if (tabsTab) {
     const {index, url} = tabsTab;
     const opt = {
@@ -451,9 +449,6 @@ export const moveTabsToEnd = async (nodeArr, windowId, tabId) => {
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}`);
   }
-  if (!Number.isInteger(windowId)) {
-    windowId = windows.WINDOW_ID_CURRENT;
-  }
   const pinnedContainer = document.getElementById(PINNED);
   const {lastElementChild: pinnedLastTab} = pinnedContainer;
   const pinnedLastTabIndex = getSidebarTabIndex(pinnedLastTab);
@@ -495,6 +490,9 @@ export const moveTabsToEnd = async (nodeArr, windowId, tabId) => {
     }
     i++;
   }
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
   if (pinArr.length && Number.isInteger(pinnedLastTabIndex)) {
     func.push(moveTab(pinArr, {
       windowId,
@@ -523,9 +521,6 @@ export const moveTabsToStart = async (nodeArr, windowId, tabId) => {
   }
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}`);
-  }
-  if (!Number.isInteger(windowId)) {
-    windowId = windows.WINDOW_ID_CURRENT;
   }
   const pinnedContainer = document.getElementById(PINNED);
   const {
@@ -570,6 +565,9 @@ export const moveTabsToStart = async (nodeArr, windowId, tabId) => {
       }
     }
     i++;
+  }
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
   }
   if (pinArr.length) {
     func.push(moveTab(pinArr, {
@@ -787,15 +785,15 @@ export const detachTabFromGroup = async (elm, windowId, enroute) => {
         const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
         const tabIndex = getSidebarTabIndex(elm);
         let index;
-        if (!Number.isInteger(windowId)) {
-          windowId = windows.WINDOW_ID_CURRENT;
-        }
         if (tabIndex === lastTabIndex) {
           index = -1;
         } else {
           index = tabIndex;
         }
         elm.dataset.restore = tabId;
+        if (!Number.isInteger(windowId)) {
+          windowId = windows.WINDOW_ID_CURRENT;
+        }
         func = moveTab([tabId], {windowId, index});
       }
     }
