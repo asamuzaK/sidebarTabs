@@ -2,7 +2,7 @@
  * sidebar.js
  */
 
-import {getType, isObjectNotEmpty, isString, throwErr} from "./common.js";
+import {isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {
   clearStorage, createBookmark, createNewWindow, createTab,
   getActiveTab, getAllContextualIdentities, getAllTabsInWindow, getContextualId,
@@ -11,12 +11,16 @@ import {
   removeTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  activateTab, bookmarkAllTabs, bookmarkTabs, closeOtherTabs, closeTabs,
-  closeTabsToEnd, dupeTab, dupeTabs,
+  activateTab, addTabContextClickListener, bookmarkAllTabs, bookmarkTabs,
+  closeOtherTabs, closeTabs,
+  closeTabsToEnd, detachTabFromGroup, detachTabsFromGroup, dupeTab, dupeTabs,
+  expandActivatedCollapsedTab,
   getSessionTabList, getSidebarTab, getSidebarTabId, getSidebarTabIndex,
   getSidebarTabContainer, getTabsInRange, getTemplate,
+  groupSelectedTabs,
   moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, pinTabs, reloadAllTabs, reloadTabs, setSessionTabList,
+  toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-util.js";
 import {
   addTabAudioClickListener, addTabCloseClickListener, addTabIconErrorListener,
@@ -40,8 +44,7 @@ import {
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER,
   TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_EXPAND, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_OBSERVE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
@@ -155,215 +158,6 @@ const undoCloseTab = async () => {
     }
   }
   return func || null;
-};
-
-/* tab group */
-/**
- * toggle tab group collapsed state
- * @param {!Object} evt - event
- * @returns {?AsyncFunction} - activateTab()
- */
-const toggleTabGroupCollapsedState = async evt => {
-  const {target} = evt;
-  const container = getSidebarTabContainer(target);
-  let func;
-  if (container && container.classList.contains(CLASS_TAB_GROUP)) {
-    const {firstElementChild: tab} = container;
-    const {firstElementChild: tabContext} = tab;
-    const {firstElementChild: toggleIcon} = tabContext;
-    container.classList.toggle(CLASS_TAB_COLLAPSED);
-    if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
-      tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
-      func = activateTab(tab);
-    } else {
-      tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
-    }
-  }
-  return func || null;
-};
-
-/**
- * add tab context click listener
- * @param {Object} elm - element
- * @returns {void}
- */
-const addTabContextClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.addEventListener("click", evt =>
-      toggleTabGroupCollapsedState(evt).then(setSessionTabList).catch(throwErr)
-    );
-  }
-};
-
-/**
- * expand activated collapsed tab
- * @returns {?AsyncFunction} - toggleTabGroupCollapsedState()
- */
-const expandActivatedCollapsedTab = async () => {
-  const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
-  let func;
-  if (tab) {
-    const {parentNode} = tab;
-    if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
-        parentNode.firstElementChild !== tab) {
-      func = toggleTabGroupCollapsedState({target: tab});
-    }
-  }
-  return func || null;
-};
-
-/**
- * detach tab from tab group
- * @param {Object} elm - element
- * @param {boolean} enroute - enroute
- * @returns {?AsyncFunction} - moveTab()
- */
-const detachTabFromGroup = async (elm, enroute = false) => {
-  let func;
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const {parentNode} = elm;
-    if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
-        !parentNode.classList.contains(PINNED)) {
-      const {
-        lastElementChild: parentLastChild,
-        nextElementSibling: parentNextSibling,
-      } = parentNode;
-      const tabId = getSidebarTabId(elm);
-      const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-      container.appendChild(elm);
-      container.removeAttribute("hidden");
-      parentNode.parentNode.insertBefore(container, parentNextSibling);
-      if (elm !== parentLastChild && !enroute) {
-        const {windowId} = sidebar;
-        const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
-        const tabIndex = getSidebarTabIndex(elm);
-        let index;
-        if (tabIndex === lastTabIndex) {
-          index = -1;
-        } else {
-          index = tabIndex;
-        }
-        elm.dataset.restore = tabId;
-        func = moveTab([tabId], {windowId, index});
-      }
-    }
-  }
-  return func || null;
-};
-
-/**
- * detach tabs from tab group
- * @param {Object} nodeArr - node array
- * @param {boolean} enroute - enroute
- * @returns {?AsyncFunction} - moveTabsInOrder()
- */
-const detachTabsFromGroup = async (nodeArr, enroute = false) => {
-  if (!Array.isArray(nodeArr)) {
-    throw new TypeError(`Expected Array but got ${getType(nodeArr)}.`);
-  }
-  let func;
-  if (nodeArr.length) {
-    const {windowId} = sidebar;
-    const revArr = nodeArr.reverse();
-    const arr = [];
-    for (const item of revArr) {
-      if (item && item.nodeType === Node.ELEMENT_NODE) {
-        arr.push(detachTabFromGroup(item, true));
-      }
-    }
-    if (arr.length) {
-      const moveArr = [];
-      await Promise.all(arr);
-      for (const item of revArr) {
-        if (item && item.nodeType === Node.ELEMENT_NODE) {
-          const itemId = getSidebarTabId(item);
-          const itemIndex = getSidebarTabIndex(item);
-          if (Number.isInteger(itemId) && Number.isInteger(itemIndex) &&
-              !enroute) {
-            moveArr.push({
-              index: itemIndex,
-              tabId: itemId,
-            });
-          }
-        }
-      }
-      if (moveArr.length) {
-        func = moveTabsInOrder(moveArr, windowId);
-      }
-    }
-  }
-  return func || null;
-};
-
-/**
- * group selected tabs
- * @returns {?AsyncFunction} - moveTabsInOrder()
- */
-const groupSelectedTabs = async () => {
-  const selectedTabs =
-    document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}:not(.${PINNED})`);
-  let func;
-  if (selectedTabs && selectedTabs.length > 1) {
-    const {windowId} = sidebar;
-    const [tab] = selectedTabs;
-    const tabId = getSidebarTabId(tab);
-    const arr = [];
-    let container;
-    if (tab.parentNode.classList.contains(CLASS_TAB_GROUP)) {
-      const tabParent = tab.parentNode;
-      container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-      container.appendChild(tab);
-      container.removeAttribute("hidden");
-      tabParent.parentNode.insertBefore(container,
-                                        tabParent.nextElementSibling);
-    } else {
-      container = tab.parentNode;
-    }
-    for (const item of selectedTabs) {
-      const itemId = getSidebarTabId(item);
-      let itemIndex;
-      if (item === tab) {
-        item.dataset.group = tabId;
-        itemIndex = getSidebarTabIndex(item);
-      } else {
-        item.dataset.group = tabId;
-        container.appendChild(item);
-        itemIndex = getSidebarTabIndex(item);
-      }
-      if (Number.isInteger(itemId) && Number.isInteger(itemIndex)) {
-        arr.push({
-          index: itemIndex,
-          tabId: itemId,
-        });
-      }
-    }
-    if (arr.length) {
-      func = moveTabsInOrder(arr, windowId);
-    }
-  }
-  return func || null;
-};
-
-/**
- * ungroup tabs
- * @param {Object} node - tab group container
- * @returns {void}
- */
-const ungroupTabs = async node => {
-  if (node && node.nodeType === Node.ELEMENT_NODE) {
-    const {id, classList, parentNode} = node;
-    if (id !== PINNED && classList.contains(CLASS_TAB_GROUP)) {
-      const items = node.querySelectorAll(TAB_QUERY);
-      for (const item of items) {
-        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        container.appendChild(item);
-        container.removeAttribute("hidden");
-        parentNode.insertBefore(container, node);
-      }
-    }
-  }
 };
 
 /**
@@ -1650,15 +1444,16 @@ const handleClickedMenu = async info => {
     case TAB_GROUP_DETACH:
       if (tab && isGrouped &&
           tabParentClassList && !tabParentClassList.contains(PINNED)) {
-        func.push(detachTabFromGroup(tab));
+        func.push(detachTabFromGroup(tab, windowId));
       }
       break;
     case TAB_GROUP_DETACH_TABS:
-      func.push(detachTabsFromGroup(Array.from(selectedTabs)));
+      func.push(detachTabsFromGroup(Array.from(selectedTabs), windowId));
       break;
     case TAB_GROUP_SELECTED:
       func.push(
-        groupSelectedTabs().then(restoreTabContainers).then(setSessionTabList)
+        groupSelectedTabs(windowId).then(restoreTabContainers)
+          .then(setSessionTabList)
       );
       break;
     case TAB_GROUP_UNGROUP:
