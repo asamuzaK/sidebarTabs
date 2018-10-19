@@ -1938,7 +1938,7 @@ tabs.onActivated.addListener(info =>
 );
 tabs.onAttached.addListener((tabId, info) =>
   handleAttachedTab(tabId, info).then(restoreTabContainers)
-    .then(setSessionTabList).catch(throwErr)
+    .then(restoreHighlightedTabs).then(setSessionTabList).catch(throwErr)
 );
 tabs.onCreated.addListener(tabsTab =>
   handleCreatedTab(tabsTab).then(restoreTabContainers)
