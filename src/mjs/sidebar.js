@@ -68,7 +68,9 @@ const sidebar = {
   incognito: false,
   isMac: false,
   lastClosedTab: null,
+  pinnedTabsWaitingToMove: null,
   tabGroupPutNewTabAtTheEnd: false,
+  tabsWaitingToMove: null,
   windowId: null,
 };
 
@@ -243,6 +245,7 @@ const detachTabFromGroup = async (elm, enroute = false) => {
         } else {
           index = tabIndex;
         }
+        elm.dataset.restore = tabId;
         func = moveTab([tabId], {windowId, index});
       }
     }
@@ -1262,36 +1265,78 @@ const handleHighlightedTab = async info => {
  */
 const handleMovedTab = async (tabId, info) => {
   const {fromIndex, toIndex, windowId} = info;
+  const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
   let func;
-  if (windowId === sidebar.windowId && tabId !== TAB_ID_NONE) {
-    const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-    if (tab) {
+  if (windowId === sidebar.windowId && tab) {
+    const tabIndex = getSidebarTabIndex(tab);
+    const tabsTab = await getTab(tabId);
+    const {index, pinned} = tabsTab;
+    const {group, restore} = tab.dataset;
+    if (tabIndex !== index) {
       const allTabs = document.querySelectorAll(TAB_QUERY);
-      const tabsTab = await getTab(tabId);
-      const {pinned} = tabsTab;
-      const {group, restore} = tab.dataset;
-      if (pinned) {
+      if (toIndex !== index) {
+        const obj = {
+          index, tabId, toIndex,
+        };
+        if (pinned) {
+          if (Array.isArray(sidebar.pinnedTabsWaitingToMove)) {
+            sidebar.pinnedTabsWaitingToMove[index] = obj;
+          } else {
+            sidebar.pinnedTabsWaitingToMove = [];
+            sidebar.pinnedTabsWaitingToMove[index] = obj;
+          }
+        } else if (Array.isArray(sidebar.tabsWaitingToMove)) {
+          sidebar.tabsWaitingToMove[index] = obj;
+        } else {
+          sidebar.tabsWaitingToMove = [];
+          sidebar.tabsWaitingToMove[index] = obj;
+        }
+      } else if (pinned) {
         const container = document.getElementById(PINNED);
         const {firstElementChild, lastElementChild} = container;
         const lastPinnedTabIndex = getSidebarTabIndex(lastElementChild);
-        if (group) {
-          tab.dataset.group = null;
-        }
         if (toIndex === 0) {
           container.insertBefore(tab, firstElementChild);
-        } else if (toIndex === lastPinnedTabIndex) {
-          container.appendChild(tab);
+          if (Array.isArray(sidebar.pinnedTabsWaitingToMove)) {
+            const {pinnedTabsWaitingToMove: arr} = sidebar;
+            for (const item of arr) {
+              if (isObjectNotEmpty(item)) {
+                const {tabId: itemTabId} = item;
+                const itemTab =
+                  document.querySelector(`[data-tab-id="${itemTabId}"]`);
+                container.insertBefore(itemTab, firstElementChild);
+              }
+            }
+            sidebar.pinnedTabsWaitingToMove = null;
+            func = restoreTabContainers().then(setSessionTabList);
+          }
         } else {
-          const target = allTabs[toIndex];
-          const {nextElementSibling} = target;
-          container.insertBefore(tab, nextElementSibling);
+          if (toIndex === lastPinnedTabIndex) {
+            container.appendChild(tab);
+          } else {
+            const target = allTabs[toIndex];
+            const {nextElementSibling} = target;
+            container.insertBefore(tab, nextElementSibling);
+          }
+          if (Array.isArray(sidebar.pinnedTabsWaitingToMove)) {
+            const {pinnedTabsWaitingToMove: arr} = sidebar;
+            for (const item of arr) {
+              if (isObjectNotEmpty(item)) {
+                const {tabId: itemTabId} = item;
+                const itemTab =
+                  document.querySelector(`[data-tab-id="${itemTabId}"]`);
+                container.insertBefore(itemTab, tab);
+              }
+            }
+            sidebar.pinnedTabsWaitingToMove = null;
+            func = restoreTabContainers().then(setSessionTabList);
+          }
         }
       } else if (group) {
         const openerTab = document.querySelector(`[data-tab-id="${group}"]`);
         if (openerTab && openerTab.parentNode !== tab.parentNode) {
           openerTab.parentNode.appendChild(tab);
         }
-        tab.dataset.group = null;
       } else if (toIndex === 0) {
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         const [target] = allTabs;
@@ -1299,6 +1344,22 @@ const handleMovedTab = async (tabId, info) => {
         container.appendChild(tab);
         container.removeAttribute("hidden");
         parentNode.parentNode.insertBefore(container, parentNode);
+        if (Array.isArray(sidebar.tabsWaitingToMove)) {
+          const {tabsWaitingToMove: arr} = sidebar;
+          for (const item of arr) {
+            if (isObjectNotEmpty(item)) {
+              const {tabId: itemTabId} = item;
+              const itemTab =
+                document.querySelector(`[data-tab-id="${itemTabId}"]`);
+              const itemContainer = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+              itemContainer.appendChild(itemTab);
+              itemContainer.removeAttribute("hidden");
+              parentNode.parentNode.insertBefore(itemContainer, parentNode);
+            }
+          }
+          sidebar.tabsWaitingToMove = null;
+          func = restoreTabContainers().then(setSessionTabList);
+        }
       } else {
         const lastTabIndex = allTabs.length - 1;
         const target = allTabs[toIndex];
@@ -1315,8 +1376,7 @@ const handleMovedTab = async (tabId, info) => {
           allTabs[fromIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
           allTabs[fromIndex].parentNode.nextElementSibling === targetParent &&
           target === targetParent.firstElementChild;
-        if (unPinned || detached ||
-            target === targetParent.firstElementChild) {
+        if (unPinned || detached || target === targetParent.firstElementChild) {
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
           container.appendChild(tab);
           container.removeAttribute("hidden");
@@ -1326,14 +1386,44 @@ const handleMovedTab = async (tabId, info) => {
           } else {
             targetParent.parentNode.insertBefore(container, targetParent);
           }
+          if (Array.isArray(sidebar.tabsWaitingToMove)) {
+            const {tabsWaitingToMove: arr} = sidebar;
+            for (const item of arr) {
+              if (isObjectNotEmpty(item)) {
+                const {tabId: itemTabId} = item;
+                const itemTab =
+                  document.querySelector(`[data-tab-id="${itemTabId}"]`);
+                const itemContainer = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+                itemContainer.appendChild(itemTab);
+                itemContainer.removeAttribute("hidden");
+                container.parentNode.insertBefore(itemContainer, container);
+              }
+            }
+            sidebar.tabsWaitingToMove = null;
+            func = restoreTabContainers().then(setSessionTabList);
+          }
         } else {
           targetParent.insertBefore(tab, targetNextSibling);
+          if (Array.isArray(sidebar.tabsWaitingToMove)) {
+            const {tabsWaitingToMove: arr} = sidebar;
+            for (const item of arr) {
+              const {tabId: itemTabId} = item;
+              const itemTab =
+                document.querySelector(`[data-tab-id="${itemTabId}"]`);
+              targetParent.insertBefore(itemTab, tab);
+            }
+            sidebar.tabsWaitingToMove = null;
+            func = restoreTabContainers().then(setSessionTabList);
+          }
         }
       }
-      if (restore) {
-        tab.dataset.restore = null;
-        func = restoreTabContainers().then(setSessionTabList);
-      }
+    }
+    if (group) {
+      tab.dataset.group = null;
+    }
+    if (restore) {
+      tab.dataset.restore = null;
+      func = restoreTabContainers().then(setSessionTabList);
     }
   }
   return func || null;

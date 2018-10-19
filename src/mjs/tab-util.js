@@ -9,8 +9,8 @@ import {
   setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
-  NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
 } from "./constant.js";
 
 /* api */
@@ -452,6 +452,9 @@ export const moveTabsToEnd = async (nodeArr, windowId, tabId) => {
   const pinnedContainer = document.getElementById(PINNED);
   const {lastElementChild: pinnedLastTab} = pinnedContainer;
   const pinnedLastTabIndex = getSidebarTabIndex(pinnedLastTab);
+  const allTabs = document.querySelectorAll(TAB_QUERY);
+  const lastTab = allTabs[allTabs.length - 1];
+  const newTab = document.getElementById(NEW_TAB);
   const pinArr = [];
   const tabArr = [];
   const func = [];
@@ -463,9 +466,21 @@ export const moveTabsToEnd = async (nodeArr, windowId, tabId) => {
       const {parentNode} = item;
       const itemId = getSidebarTabId(item);
       if (Number.isInteger(itemId)) {
-        if (parentNode.classList.contains(PINNED)) {
+        if (parentNode.classList.contains(PINNED) && item !== pinnedLastTab) {
+          pinnedContainer.appendChild(item);
           pinArr.push(itemId);
-        } else {
+        } else if (item !== lastTab) {
+          if (parentNode.classList.contains(CLASS_TAB_GROUP)) {
+            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            if (item.dataset.group) {
+              item.dataset.group = null;
+            }
+            container.appendChild(item);
+            container.removeAttribute("hidden");
+            newTab.parentNode.insertBefore(container, newTab);
+          } else {
+            newTab.parentNode.insertBefore(item.parentNode, newTab);
+          }
           tabArr.push(itemId);
         }
         if (i === l - 1) {
@@ -508,7 +523,10 @@ export const moveTabsToStart = async (nodeArr, windowId, tabId) => {
     windowId = windows.WINDOW_ID_CURRENT;
   }
   const pinnedContainer = document.getElementById(PINNED);
-  const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
+  const {
+    firstElementChild: firstPinnedTab,
+    nextElementSibling: firstUnpinnedContainer,
+  } = pinnedContainer;
   const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
   const firstUnpinnedTabIndex = getSidebarTabIndex(firstUnpinnedTab);
   const pinArr = [];
@@ -522,9 +540,23 @@ export const moveTabsToStart = async (nodeArr, windowId, tabId) => {
       const {parentNode} = item;
       const itemId = getSidebarTabId(item);
       if (Number.isInteger(itemId)) {
-        if (parentNode.classList.contains(PINNED)) {
+        if (parentNode.classList.contains(PINNED) && item !== firstPinnedTab) {
+          parentNode.insertBefore(item, firstPinnedTab);
           pinArr.push(itemId);
-        } else {
+        } else if (item !== firstUnpinnedTab) {
+          if (parentNode.classList.contains(CLASS_TAB_GROUP)) {
+            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            if (item.dataset.group) {
+              item.dataset.group = null;
+            }
+            container.appendChild(item);
+            container.removeAttribute("hidden");
+            firstUnpinnedContainer.parentNode
+              .insertBefore(container, firstUnpinnedContainer);
+          } else {
+            firstUnpinnedContainer.parentNode
+              .insertBefore(item.parentNode, firstUnpinnedContainer);
+          }
           tabArr.push(itemId);
         }
         if (i === l - 1) {
