@@ -19,7 +19,6 @@ Firefox用の拡張機能。
 試験的な機能を使っているので以下の設定を有効化する必要があります。
 
 * `svg.context-properties.content.enabled`を`true`にセットする。
-* コンテナタブを有効化している場合は、`privacy.userContext.enabled`を`true`にセットする。
 
 ## タブグループ
 

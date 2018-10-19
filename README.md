@@ -16,17 +16,16 @@ Emulate tabs in sidebar and...
 
 ## about:config
 
-Experimental features are used, so you need to activate the following settings.
+Experimental features are used, so you need to activate the following.
 
 * set `svg.context-properties.content.enabled` to `true`.
-* If you have enabled Container Tab, set `privacy.userContext.enabled` to `true`.
 
 ## Tab group
 
 * Select tabs by "Shift + left click" or "Ctrl + left click" ("Cmd + left click" on Mac) on each tab.
 * Drag one of the selected tabs with "Shift + left click" and drop it on the tab you want to group.
 * You can also group tabs by selecting "Tab Group" from the context menu and selecting "Group Selected Tabs".
-* Tab groups are color-coded for each group.
+* Tab groups are color-coded for each.
 * Collapse / expand tab groups can be done by clicking on the colored part, or from the context menu.
 * The new tab opened from the tab in the tab group will be displayed as the tab of that group.
 * To cancel the grouping of tabs, you can do it from the context menu.
