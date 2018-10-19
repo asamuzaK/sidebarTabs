@@ -4,14 +4,18 @@
 
 import {getType, isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {
-  createBookmark, createNewWindow, createTab, getCurrentWindow,
-  getSessionWindowValue, getTab, moveTab, reloadTab, removeTab,
+  createBookmark, createNewWindow, createTab, getActiveTab, getCurrentWindow,
+  getSessionWindowValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
   setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE,
-  TAB_GROUP_EXPAND, TAB_LIST, TAB_QUERY,
+  setCloseTab, setTabAudio,
+} from "./tab-content.js";
+import {
+  ACTIVE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND,
+  TAB_LIST, TAB_QUERY,
 } from "./constant.js";
 
 /* api */
@@ -918,3 +922,137 @@ export const ungroupTabs = async node => {
   }
 };
 
+/* highlight */
+/**
+ * add hightlight class to tab
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const addHighlight = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabId = getSidebarTabId(elm);
+    const tab = await getTab(tabId);
+    const {audible, mutedInfo: {muted}} = tab;
+    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
+    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
+    elm.classList.add(HIGHLIGHTED);
+    func.push(
+      setCloseTab(closeElm, true),
+      setTabAudio(muteElm, {
+        audible, muted,
+        highlighted: true,
+      }),
+    );
+  }
+  return Promise.all(func);
+};
+
+/**
+ * add highlight class to tabs
+ * @param {Array} arr - array of tab ID
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const addHighlightToTabs = async arr => {
+  const func = [];
+  if (Array.isArray(arr)) {
+    arr.forEach(id => {
+      const item = document.querySelector(`[data-tab-id="${id}"]`);
+      if (item) {
+        func.push(addHighlight(item));
+      }
+    });
+  }
+  return Promise.all(func);
+};
+
+/**
+ * remove hightlight class from tab
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const removeHighlight = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabId = getSidebarTabId(elm);
+    const tab = await getTab(tabId);
+    const {audible, mutedInfo: {muted}} = tab;
+    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
+    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
+    elm.classList.remove(HIGHLIGHTED);
+    func.push(
+      setCloseTab(closeElm, false),
+      setTabAudio(muteElm, {
+        audible, muted,
+        highlighted: false,
+      }),
+    );
+  }
+  return Promise.all(func);
+};
+
+/**
+ * toggle highlight class of tab
+ * @param {Object} elm - element
+ * @returns {AsyncFunction} - addHighlight() / removeHightlight()
+ */
+export const toggleHighlight = async elm => {
+  let func;
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    if (elm.classList.contains(HIGHLIGHTED)) {
+      func = removeHighlight(elm);
+    } else {
+      func = addHighlight(elm);
+    }
+  }
+  return func;
+};
+
+/**
+ * highlight all tabs
+ * @param {Object} elm - first selected tab
+ * @param {number} windowId - window ID
+ * @returns {?AsyncFunction} - highlightTab()
+ */
+export const highlightAllTabs = async (elm, windowId) => {
+  const items = document.querySelectorAll(TAB_QUERY);
+  let func;
+  if (items) {
+    const arr = [];
+    let firstIndex;
+    if (!Number.isInteger(windowId)) {
+      windowId = windows.WINDOW_ID_CURRENT;
+    }
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const index = getSidebarTabIndex(elm);
+      if (Number.isInteger(index)) {
+        firstIndex = index;
+        arr.push(index);
+      }
+    } else {
+      const tab = await getActiveTab(windowId);
+      if (tab) {
+        const {id, index} = tab;
+        const item = document.querySelector(`[data-tab-id="${id}"]`);
+        if (item) {
+          firstIndex = index;
+          arr.push(index);
+        }
+      }
+    }
+    for (const item of items) {
+      const itemIndex = getSidebarTabIndex(item);
+      if (Number.isInteger(itemIndex)) {
+        if (Number.isInteger(firstIndex)) {
+          if (itemIndex !== firstIndex) {
+            arr.push(itemIndex);
+          }
+        } else {
+          arr.push(itemIndex);
+        }
+      }
+    }
+    func = highlightTab(arr, windowId);
+  }
+  return func || null;
+};

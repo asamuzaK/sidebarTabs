@@ -11,20 +11,19 @@ import {
   removeTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  activateTab, addTabContextClickListener, bookmarkAllTabs, bookmarkTabs,
-  closeOtherTabs, closeTabs,
-  closeTabsToEnd, detachTabFromGroup, detachTabsFromGroup, dupeTab, dupeTabs,
-  expandActivatedCollapsedTab,
+  activateTab, addHighlightToTabs, addTabContextClickListener, bookmarkAllTabs,
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, detachTabFromGroup,
+  detachTabsFromGroup, dupeTab, dupeTabs, expandActivatedCollapsedTab,
   getSessionTabList, getSidebarTab, getSidebarTabId, getSidebarTabIndex,
   getSidebarTabContainer, getTabsInRange, getTemplate,
-  groupSelectedTabs,
-  moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
-  muteTabs, pinTabs, reloadAllTabs, reloadTabs, setSessionTabList,
+  groupSelectedTabs, highlightAllTabs, moveTabsInOrder, moveTabsToEnd,
+  moveTabsToStart, moveTabsToNewWindow, muteTabs, pinTabs, reloadAllTabs,
+  reloadTabs, removeHighlight, setSessionTabList, toggleHighlight,
   toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-util.js";
 import {
   addTabAudioClickListener, addTabCloseClickListener, addTabIconErrorListener,
-  observeTab, setCloseTab, setContextualIdentitiesIcon, setTabAudio,
+  observeTab, setContextualIdentitiesIcon, setTabAudio,
   setTabAudioIcon, setTabContent, setTabIcon,
 } from "./tab-content.js";
 import {
@@ -158,158 +157,6 @@ const undoCloseTab = async () => {
     }
   }
   return func || null;
-};
-
-/* highlight */
-/**
- * add hightlight class to tab
- * @param {Object} elm - element
- * @returns {Promise.<Array>} - results of each handler
- */
-const addHighlight = async elm => {
-  const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const tabId = getSidebarTabId(elm);
-    const tab = await getTab(tabId);
-    const {audible, mutedInfo: {muted}} = tab;
-    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
-    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
-    elm.classList.add(HIGHLIGHTED);
-    func.push(
-      setCloseTab(closeElm, true),
-      setTabAudio(muteElm, {
-        audible, muted,
-        highlighted: true,
-      }),
-    );
-  }
-  return Promise.all(func);
-};
-
-/**
- * add highlight class to tabs
- * @param {Array} arr - array of tab ID
- * @returns {Promise.<Array>} - results of each handler
- */
-const addHighlightToTabs = async arr => {
-  const func = [];
-  if (Array.isArray(arr)) {
-    arr.forEach(id => {
-      const item = document.querySelector(`[data-tab-id="${id}"]`);
-      if (item) {
-        func.push(addHighlight(item));
-      }
-    });
-  }
-  return Promise.all(func);
-};
-
-/**
- * remove hightlight class from tab
- * @param {Object} elm - element
- * @returns {Promise.<Array>} - results of each handler
- */
-const removeHighlight = async elm => {
-  const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const tabId = getSidebarTabId(elm);
-    const tab = await getTab(tabId);
-    const {audible, mutedInfo: {muted}} = tab;
-    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
-    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
-    elm.classList.remove(HIGHLIGHTED);
-    if (sidebar.firstSelectedTab === elm) {
-      sidebar.firstSelectedTab = null;
-    }
-    func.push(
-      setCloseTab(closeElm, false),
-      setTabAudio(muteElm, {
-        audible, muted,
-        highlighted: false,
-      }),
-    );
-  }
-  return Promise.all(func);
-};
-
-/**
- * toggle highlight class of tab
- * @param {Object} elm - element
- * @returns {AsyncFunction} - addHighlight() / removeHightlight()
- */
-const toggleHighlight = async elm => {
-  let func;
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    if (elm.classList.contains(HIGHLIGHTED)) {
-      func = removeHighlight(elm);
-    } else {
-      func = addHighlight(elm);
-    }
-  }
-  return func;
-};
-
-/**
- * highlight all tabs
- * @returns {?AsyncFunction} - highlightTab()
- */
-const highlightAllTabs = async () => {
-  const items = document.querySelectorAll(TAB_QUERY);
-  let func;
-  if (items) {
-    const {firstSelectedTab, windowId} = sidebar;
-    const arr = [];
-    let firstIndex;
-    if (firstSelectedTab) {
-      const index = getSidebarTabIndex(firstSelectedTab);
-      if (Number.isInteger(index)) {
-        firstIndex = index;
-        arr.push(index);
-      }
-    } else {
-      const tab = await getActiveTab(windowId);
-      if (tab) {
-        const {id, index} = tab;
-        const item = document.querySelector(`[data-tab-id="${id}"]`);
-        if (item) {
-          firstIndex = index;
-          arr.push(index);
-        }
-      }
-    }
-    for (const item of items) {
-      const itemIndex = getSidebarTabIndex(item);
-      if (Number.isInteger(itemIndex)) {
-        if (Number.isInteger(firstIndex)) {
-          if (itemIndex !== firstIndex) {
-            arr.push(itemIndex);
-          }
-        } else {
-          arr.push(itemIndex);
-        }
-      }
-    }
-    func = highlightTab(arr, windowId);
-  }
-  return func || null;
-};
-
-/**
- * restore highlighted tab
- * @returns {void}
- */
-const restoreHighlightedTab = async () => {
-  const {windowId} = sidebar;
-  const items = await getHighlightedTab(windowId);
-  if (items && items.length > 1) {
-    for (const item of items) {
-      const {id} = item;
-      const tab = document.querySelector(`[data-tab-id="${id}"]`);
-      if (tab) {
-        tab.classList.add(HIGHLIGHTED);
-      }
-    }
-  }
 };
 
 /* new tab */
@@ -1325,7 +1172,7 @@ const setVars = async (data = {}) => {
  */
 const handleClickedMenu = async info => {
   const {menuItemId} = info;
-  const {context, contextualIds, windowId} = sidebar;
+  const {context, contextualIds, firstSelectedTab, windowId} = sidebar;
   const selectedTabs = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const func = [];
@@ -1350,7 +1197,7 @@ const handleClickedMenu = async info => {
       func.push(reloadAllTabs());
       break;
     case TAB_ALL_SELECT:
-      func.push(highlightAllTabs());
+      func.push(highlightAllTabs(firstSelectedTab, windowId));
       break;
     case TAB_BOOKMARK:
       if (tabsTab) {
@@ -1512,11 +1359,11 @@ const handleClickedMenu = async info => {
  */
 const handleEvt = async evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
-  const {isMac} = sidebar;
+  const {firstSelectedTab, isMac, windowId} = sidebar;
   const func = [];
   // select all tabs
   if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
-    func.push(highlightAllTabs());
+    func.push(highlightAllTabs(firstSelectedTab, windowId));
     evt.stopPropagation();
     evt.preventDefault();
   // context menu
@@ -2035,6 +1882,24 @@ window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
 
 /* start up */
+/**
+ * restore highlighted tab
+ * @returns {void}
+ */
+const restoreHighlightedTab = async () => {
+  const {windowId} = sidebar;
+  const items = await getHighlightedTab(windowId);
+  if (items && items.length > 1) {
+    for (const item of items) {
+      const {id} = item;
+      const tab = document.querySelector(`[data-tab-id="${id}"]`);
+      if (tab) {
+        tab.classList.add(HIGHLIGHTED);
+      }
+    }
+  }
+};
+
 /**
  * restore tab group
  * @returns {void}
