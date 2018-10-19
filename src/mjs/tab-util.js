@@ -225,8 +225,9 @@ export const activateTab = async elm => {
   const tabId = getSidebarTabId(elm);
   let func;
   if (Number.isInteger(tabId)) {
-    const active = true;
-    func = updateTab(tabId, {active});
+    func = updateTab(tabId, {
+      active: true,
+    });
   }
   return func || null;
 };
