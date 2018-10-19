@@ -160,61 +160,6 @@ const undoCloseTab = async () => {
   return func || null;
 };
 
-/**
- * restore tab group
- * @returns {void}
- */
-const restoreTabGroup = async () => {
-  if (!sidebar.incognito) {
-    const tabList = await getSessionTabList(TAB_LIST);
-    const items = document.querySelectorAll(TAB_QUERY);
-    if (tabList && items) {
-      const containers =
-        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-      const l = items.length;
-      let i = 0, j = 0;
-      while (i < l) {
-        const list = tabList[j];
-        if (list) {
-          const {collapsed, containerIndex, url} = list;
-          const item = items[i];
-          const {dataset: {tab: itemTab}} = item;
-          const {pinned, url: itemUrl} = JSON.parse(itemTab);
-          if (pinned) {
-            const container = document.getElementById(PINNED);
-            const containerChildTabs = container.children;
-            const containerChildTab = containerChildTabs[i];
-            if (containerChildTabs.length === 0 || !containerChildTab) {
-              container.appendChild(item);
-            } else if (containerChildTab && containerChildTab !== item) {
-              container.insertBefore(item, containerChildTab);
-            }
-            if (collapsed) {
-              container.classList.add(CLASS_TAB_COLLAPSED);
-            } else {
-              container.classList.remove(CLASS_TAB_COLLAPSED);
-            }
-          } else if (Number.isInteger(containerIndex) && itemUrl === url) {
-            const container = containers[containerIndex];
-            container.appendChild(item);
-            if (collapsed) {
-              container.classList.add(CLASS_TAB_COLLAPSED);
-            } else {
-              container.classList.remove(CLASS_TAB_COLLAPSED);
-            }
-          } else {
-            j++;
-          }
-        } else {
-          break;
-        }
-        i++;
-        j++;
-      }
-    }
-  }
-};
-
 /* highlight */
 /**
  * add hightlight class to tab
@@ -2090,6 +2035,61 @@ window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
 
 /* start up */
+/**
+ * restore tab group
+ * @returns {void}
+ */
+const restoreTabGroup = async () => {
+  if (!sidebar.incognito) {
+    const tabList = await getSessionTabList(TAB_LIST);
+    const items = document.querySelectorAll(TAB_QUERY);
+    if (tabList && items) {
+      const containers =
+        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+      const l = items.length;
+      let i = 0, j = 0;
+      while (i < l) {
+        const list = tabList[j];
+        if (list) {
+          const {collapsed, containerIndex, url} = list;
+          const item = items[i];
+          const {dataset: {tab: itemTab}} = item;
+          const {pinned, url: itemUrl} = JSON.parse(itemTab);
+          if (pinned) {
+            const container = document.getElementById(PINNED);
+            const containerChildTabs = container.children;
+            const containerChildTab = containerChildTabs[i];
+            if (containerChildTabs.length === 0 || !containerChildTab) {
+              container.appendChild(item);
+            } else if (containerChildTab && containerChildTab !== item) {
+              container.insertBefore(item, containerChildTab);
+            }
+            if (collapsed) {
+              container.classList.add(CLASS_TAB_COLLAPSED);
+            } else {
+              container.classList.remove(CLASS_TAB_COLLAPSED);
+            }
+          } else if (Number.isInteger(containerIndex) && itemUrl === url) {
+            const container = containers[containerIndex];
+            container.appendChild(item);
+            if (collapsed) {
+              container.classList.add(CLASS_TAB_COLLAPSED);
+            } else {
+              container.classList.remove(CLASS_TAB_COLLAPSED);
+            }
+          } else {
+            j++;
+          }
+        } else {
+          break;
+        }
+        i++;
+        j++;
+      }
+    }
+  }
+};
+
 /**
  * emulate tabs to sidebar
  * @returns {void}
