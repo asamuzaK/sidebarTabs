@@ -482,6 +482,18 @@
       }
     }
   },
+  "reopenTabsInContainer": {
+    "message": "選択したタブのコンテナーを開き直す"
+  },
+  "reopenTabsInContainer_title": {
+    "message": "選択したタブのコンテナーを開き直す$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "selectAllTabs": {
     "message": "すべてのタブを選択"
   },

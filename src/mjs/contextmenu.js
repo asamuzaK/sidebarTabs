@@ -15,7 +15,7 @@ import {
   TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
-  TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD,
+  TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
 } from "./constant.js";
 
 /* api */
@@ -135,6 +135,15 @@ export const menuItems = {
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
+  },
+  [TABS_REOPEN_CONTAINER]: {
+    id: TABS_REOPEN_CONTAINER,
+    title: i18n.getMessage(`${TABS_REOPEN_CONTAINER}_title`, "(&E)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
   },
   [TAB_MOVE]: {
     id: TAB_MOVE,
@@ -505,7 +514,7 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
 export const updateContextualIdentitiesMenu = async info => {
   if (isObjectNotEmpty(info)) {
     const {color, cookieStoreId, icon, name} = info;
-    const opt = {
+    const data = {
       contexts: ["tab"],
       enabled: true,
       icons: {
@@ -517,7 +526,7 @@ export const updateContextualIdentitiesMenu = async info => {
       viewTypes: ["sidebar"],
       visible: true,
     };
-    await menus.update(cookieStoreId, opt);
+    await menus.update(cookieStoreId, data);
   }
 };
 
@@ -528,9 +537,12 @@ export const updateContextualIdentitiesMenu = async info => {
  * @returns {void}
  */
 export const updateContextMenu = async (menuItemId, data) => {
-  if (isString(menuItemId) && isObjectNotEmpty(data)) {
-    const {enabled, title, visible} = data;
-    await menus.update(menuItemId, {enabled, title, visible});
+  if (isString(menuItemId) && isObjectNotEmpty(data) &&
+      (data.hasOwnProperty("contexts") || data.hasOwnProperty("enabled") ||
+       data.hasOwnProperty("icons") || data.hasOwnProperty("parentId") ||
+       data.hasOwnProperty("title") || data.hasOwnProperty("viewTypes") ||
+       data.hasOwnProperty("visible"))) {
+    await menus.update(menuItemId, data);
   }
 };
 

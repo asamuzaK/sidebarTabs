@@ -352,6 +352,69 @@ export const closeTabsToEnd = async elm => {
   return func || null;
 };
 
+/* contextual IDs */
+/**
+ * create tabs in order
+ * @param {Array} arr - array of option
+ * @returns {?AsyncFunction} - recurse createTabsInOrder()
+ */
+export const createTabsInOrder = async arr => {
+  if (!Array.isArray(arr)) {
+    throw new TypeError(`Expected Array but got ${getType(arr)}.`);
+  }
+  const opt = arr.shift();
+  let func;
+  if (isObjectNotEmpty(opt)) {
+    await createTab(opt);
+  }
+  if (arr.length) {
+    func = createTabsInOrder(arr);
+  }
+  return func || null;
+};
+
+/**
+ * reopen tabs in container
+ * @param {Array} tabArr - array of sidebar tab
+ * @param {string} cookieId - cookie store ID
+ * @param {number} windowId - window ID
+ * @returns {?AsyncFunction} - createTabsInOrder()
+ */
+export const reopenTabsInContainer = async (tabArr, cookieId, windowId) => {
+  if (!Array.isArray(tabArr)) {
+    throw new TypeError(`Expected Array but got ${getType(tabArr)}`);
+  }
+  if (!isString(cookieId)) {
+    throw new TypeError(`Expected String but got ${getType(cookieId)}`);
+  }
+  const opt = [];
+  let arr = [], func;
+  for (const item of tabArr) {
+    if (item && item.nodeType === Node.ELEMENT_NODE) {
+      const tabId = getSidebarTabId(item);
+      arr.push(getTab(tabId));
+    }
+  }
+  arr = await Promise.all(arr);
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
+  for (const item of arr) {
+    if (isObjectNotEmpty(item)) {
+      const {index, url} = item;
+      opt.push({
+        url, windowId,
+        cookieStoreId: cookieId,
+        index: index + 1,
+      });
+    }
+  }
+  if (opt.length) {
+    func = createTabsInOrder(opt.reverse());
+  }
+  return func || null;
+};
+
 /* dupe */
 /**
  * duplicate tab

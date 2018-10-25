@@ -18,8 +18,8 @@ import {
   getSidebarTabContainer, getTabsInRange, getTemplate,
   groupSelectedTabs, highlightAllTabs, moveTabsInOrder, moveTabsToEnd,
   moveTabsToStart, moveTabsToNewWindow, muteTabs, pinTabs, reloadAllTabs,
-  reloadTabs, removeHighlight, setSessionTabList, toggleHighlight,
-  toggleTabGroupCollapsedState, ungroupTabs,
+  reloadTabs, removeHighlight, reopenTabsInContainer, setSessionTabList,
+  toggleHighlight, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-util.js";
 import {
   addTabAudioClickListener, addTabCloseClickListener, addTabIconErrorListener,
@@ -48,7 +48,7 @@ import {
   TAB_OBSERVE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
-  TABS_RELOAD,
+  TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "./constant.js";
 
@@ -1287,17 +1287,17 @@ const handleClickedMenu = async info => {
     case TABS_RELOAD:
       func.push(reloadTabs(selectedTabs));
       break;
-    default:
-      if (Array.isArray(contextualIds) && contextualIds.includes(menuItemId) &&
-          tabsTab) {
-        const {index, url} = tabsTab;
-        const opt = {
-          url, windowId,
-          cookieStoreId: menuItemId,
-          index: index + 1,
-        };
-        func.push(createTab(opt));
+    default: {
+      if (Array.isArray(contextualIds) && contextualIds.includes(menuItemId)) {
+        let arr;
+        if (selectedTabs.length) {
+          arr = Array.from(selectedTabs);
+        } else {
+          arr = [tab];
+        }
+        func.push(reopenTabsInContainer(arr, menuItemId, windowId));
       }
+    }
   }
   return Promise.all(func);
 };
@@ -1328,7 +1328,7 @@ const handleEvt = async evt => {
     ];
     const tabsKeys = [
       TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
-      TABS_MUTE, TABS_PIN, TABS_RELOAD,
+      TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
     ];
     const pageKeys = [TAB_CLOSE_UNDO, TAB_ALL_RELOAD, TAB_ALL_SELECT];
     const sepKeys = ["sep-1", "sep-2", "sep-3"];
@@ -1338,9 +1338,10 @@ const handleEvt = async evt => {
     const pinnedContainer = document.getElementById(PINNED);
     const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
     const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
-    const multiTabsSelected = selectedTabs && selectedTabs.length > 1;
-    const allTabsSelected =
-      multiTabsSelected && allTabs && selectedTabs.length === allTabs.length;
+    const multiTabsSelected = !!(selectedTabs && selectedTabs.length > 1);
+    const allTabsSelected = !!(
+      multiTabsSelected && allTabs && selectedTabs.length === allTabs.length
+    );
     if (tab) {
       const {contextualIds} = sidebar;
       const {classList: tabClass, parentNode} = tab;
@@ -1360,41 +1361,26 @@ const handleEvt = async evt => {
         const item = menuItems[itemKey];
         const {id, title, toggleTitle} = item;
         const data = {};
-        if (itemKey === TAB_REOPEN_CONTAINER) {
-          if (Array.isArray(contextualIds) && contextualIds.length) {
-            data.enabled = true;
-          } else {
-            data.enabled = false;
-          }
-          data.title = title;
-          data.visible = true;
-        } else if (multiTabsSelected) {
+        if (multiTabsSelected) {
           data.visible = false;
         } else {
           switch (itemKey) {
             case TAB_CLOSE_OPTIONS:
-              if (allTabs.length > 1) {
-                data.enabled = true;
-              } else {
-                data.enabled = false;
-              }
+              data.enabled = allTabs.length > 1;
               data.title = title;
               break;
             case TAB_MUTE:
               data.enabled = true;
-              if (muted) {
-                data.title = toggleTitle;
-              } else {
-                data.title = title;
-              }
+              data.title = muted && toggleTitle || title;
               break;
             case TAB_PIN:
               data.enabled = true;
-              if (pinned) {
-                data.title = toggleTitle;
-              } else {
-                data.title = title;
-              }
+              data.title = pinned && toggleTitle || title;
+              break;
+            case TAB_REOPEN_CONTAINER:
+              data.enabled =
+                !!(Array.isArray(contextualIds) && contextualIds.length);
+              data.title = title;
               break;
             default:
               data.enabled = true;
@@ -1421,19 +1407,16 @@ const handleEvt = async evt => {
             switch (itemKey) {
               case TABS_MUTE:
                 data.enabled = true;
-                if (muted) {
-                  data.title = toggleTitle;
-                } else {
-                  data.title = title;
-                }
+                data.title = muted && toggleTitle || title;
                 break;
               case TABS_PIN:
                 data.enabled = true;
-                if (pinned) {
-                  data.title = toggleTitle;
-                } else {
-                  data.title = title;
-                }
+                data.title = pinned && toggleTitle || title;
+                break;
+              case TABS_REOPEN_CONTAINER:
+                data.enabled =
+                  !!(Array.isArray(contextualIds) && contextualIds.length);
+                data.title = title;
                 break;
               default:
                 data.enabled = true;
@@ -1458,15 +1441,9 @@ const handleEvt = async evt => {
               if (allTabsSelected) {
                 data.enabled = false;
               } else if (pinned) {
-                if (tab === parentLastChild) {
-                  data.enabled = false;
-                } else {
-                  data.enabled = true;
-                }
-              } else if (index === allTabs.length - 1) {
-                data.enabled = false;
+                data.enabled = tab !== parentLastChild;
               } else {
-                data.enabled = true;
+                data.enabled = index !== allTabs.length - 1;
               }
               data.title = title;
               break;
@@ -1474,15 +1451,9 @@ const handleEvt = async evt => {
               if (allTabsSelected) {
                 data.enabled = false;
               } else if (pinned) {
-                if (tab === parentFirstChild) {
-                  data.enabled = false;
-                } else {
-                  data.enabled = true;
-                }
-              } else if (tab === firstUnpinnedTab) {
-                data.enabled = false;
+                data.enabled = tab !== parentFirstChild;
               } else {
-                data.enabled = true;
+                data.enabled = tab !== firstUnpinnedTab;
               }
               data.title = title;
               break;
@@ -1492,6 +1463,13 @@ const handleEvt = async evt => {
           }
           data.visible = true;
           func.push(updateContextMenu(id, data));
+        }
+        for (const itemKey of contextualIds) {
+          if (isString(itemKey)) {
+            func.push(updateContextMenu(itemKey, {
+              parentId: TABS_REOPEN_CONTAINER,
+            }));
+          }
         }
       } else {
         const tabCloseMenu = menuItems[TAB_CLOSE_OPTIONS];
@@ -1504,11 +1482,7 @@ const handleEvt = async evt => {
           const data = {};
           switch (itemKey) {
             case TAB_CLOSE_END:
-              if (index < allTabs.length - 1) {
-                data.enabled = true;
-              } else {
-                data.enabled = false;
-              }
+              data.enabled = index < allTabs.length - 1;
               data.title = title;
               break;
             case TAB_CLOSE_OTHER: {
@@ -1516,11 +1490,7 @@ const handleEvt = async evt => {
                 Number.isInteger(tabId) && document.querySelectorAll(
                   `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
                 );
-              if (obj && obj.length) {
-                data.enabled = true;
-              } else {
-                data.enabled = false;
-              }
+              data.enabled = !!(obj && obj.length);
               data.title = title;
               break;
             }
@@ -1536,29 +1506,17 @@ const handleEvt = async evt => {
           switch (itemKey) {
             case TAB_MOVE_END:
               if (pinned) {
-                if (tab === parentLastChild) {
-                  data.enabled = false;
-                } else {
-                  data.enabled = true;
-                }
-              } else if (index === allTabs.length - 1) {
-                data.enabled = false;
+                data.enabled = tab !== parentLastChild;
               } else {
-                data.enabled = true;
+                data.enabled = index !== allTabs.length - 1;
               }
               data.title = title;
               break;
             case TAB_MOVE_START:
               if (pinned) {
-                if (tab === parentFirstChild) {
-                  data.enabled = false;
-                } else {
-                  data.enabled = true;
-                }
-              } else if (tab === firstUnpinnedTab) {
-                data.enabled = false;
+                data.enabled = tab !== parentFirstChild;
               } else {
-                data.enabled = true;
+                data.enabled = tab !== firstUnpinnedTab;
               }
               data.title = title;
               break;
@@ -1568,6 +1526,13 @@ const handleEvt = async evt => {
           }
           data.visible = true;
           func.push(updateContextMenu(id, data));
+        }
+        for (const itemKey of contextualIds) {
+          if (isString(itemKey)) {
+            func.push(updateContextMenu(itemKey, {
+              parentId: TAB_REOPEN_CONTAINER,
+            }));
+          }
         }
       }
       if (parentClass.contains(CLASS_TAB_GROUP) ||
@@ -1596,11 +1561,8 @@ const handleEvt = async evt => {
           case TAB_GROUP_COLLAPSE:
             if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
               data.enabled = true;
-              if (parentClass.contains(CLASS_TAB_COLLAPSED)) {
-                data.title = toggleTitle;
-              } else {
-                data.title = title;
-              }
+              data.title = parentClass.contains(CLASS_TAB_COLLAPSED) &&
+                           toggleTitle || title;
             } else {
               data.enabled = false;
             }
@@ -1636,29 +1598,17 @@ const handleEvt = async evt => {
             }
             break;
           case TAB_GROUP_SELECTED:
-            if (!pinned && tabClass.contains(HIGHLIGHTED)) {
-              data.enabled = true;
-            } else {
-              data.enabled = false;
-            }
+            data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
             data.title = title;
             data.visible = true;
             break;
           case TAB_GROUP_UNGROUP:
-            if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
-              data.enabled = true;
-            } else {
-              data.enabled = false;
-            }
+            data.enabled = !pinned && parentClass.contains(CLASS_TAB_GROUP);
             data.title = title;
             data.visible = true;
             break;
           default:
-            if (parentClass.contains(CLASS_TAB_GROUP)) {
-              data.enabled = true;
-            } else {
-              data.enabled = false;
-            }
+            data.enabled = parentClass.contains(CLASS_TAB_GROUP);
             data.title = title;
             data.visible = true;
         }
@@ -1709,32 +1659,16 @@ const handleEvt = async evt => {
       const data = {};
       switch (itemKey) {
         case TAB_ALL_RELOAD:
-          if (allTabs.length > 1 && !allTabsSelected) {
-            data.enabled = true;
-          } else {
-            data.enabled = false;
-          }
-          if (allTabsSelected) {
-            data.visible = false;
-          } else {
-            data.visible = true;
-          }
+          data.enabled = allTabs.length > 1 && !allTabsSelected;
+          data.visible = allTabsSelected;
           break;
         case TAB_ALL_SELECT:
-          if (allTabs.length > 1 && !allTabsSelected) {
-            data.enabled = true;
-          } else {
-            data.enabled = false;
-          }
+          data.enabled = allTabs.length > 1 && !allTabsSelected;
           data.visible = true;
           break;
         case TAB_CLOSE_UNDO: {
           const {lastClosedTab} = sidebar;
-          if (lastClosedTab) {
-            data.enabled = true;
-          } else {
-            data.enabled = false;
-          }
+          data.enabled = !!lastClosedTab;
           data.visible = true;
           break;
         }

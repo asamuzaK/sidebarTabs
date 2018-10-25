@@ -482,6 +482,18 @@
       }
     }
   },
+  "reopenTabsInContainer": {
+    "message": "Reopen Tabs in Container"
+  },
+  "reopenTabsInContainer_title": {
+    "message": "R&eopen Tabs in Container",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "selectAllTabs": {
     "message": "Select All Tabs"
   },
