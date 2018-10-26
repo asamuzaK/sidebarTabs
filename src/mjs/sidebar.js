@@ -1798,12 +1798,21 @@ const restoreTabGroups = async () => {
       const l = items.length;
       let i = 0, j = 0;
       while (i < l) {
+        const recent = tabList.hasOwnProperty("recent") && tabList.recent[j] ||
+                       tabList[j];
+        const prev = tabList.hasOwnProperty("prev") && tabList.prev[j];
         let list;
-        if (tabList.hasOwnProperty("recent")) {
-          list = tabList.recent[j];
-        // for backward compat
+        if (recent && prev) {
+          const {containerIndex: recentContainerIndex, url: recentUrl} = recent;
+          const {containerIndex: prevContainerIndex, url: prevUrl} = prev;
+          if (Number.isInteger(recentContainerIndex) &&
+              Number.isInteger(prevContainerIndex) && recentUrl === prevUrl) {
+            list = recentContainerIndex > prevContainerIndex && prev || recent;
+          } else {
+            list = recent;
+          }
         } else {
-          list = tabList[j];
+          list = recent;
         }
         if (list) {
           const {collapsed, containerIndex, url} = list;
