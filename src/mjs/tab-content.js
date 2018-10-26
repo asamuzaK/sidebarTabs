@@ -105,9 +105,19 @@ export const setTabIcon = async (elm, info) => {
       isObjectNotEmpty(info)) {
     const {favIconUrl, status, title, url} = info;
     if (status === "loading") {
-      const str = await escapeMatchingChars(title, /([/.?-])/g);
-      const reg = new RegExp(`^(?:f(?:ile|tp)|https?)://(?:www\\.)?${str}$`);
-      const isUrl = reg.test(url);
+      let isUrl;
+      try {
+        const str = escapeMatchingChars(title, /([/.?-])/g);
+        if (isString(str)) {
+          const reg =
+            new RegExp(`^(?:f(?:ile|tp)|https?)://(?:www\\.)?${str}$`);
+          isUrl = reg.test(url);
+        } else {
+          isUrl = false;
+        }
+      } catch (e) {
+        isUrl = false;
+      }
       if (elm.dataset.connecting && !isUrl) {
         const {stroke} = window.getComputedStyle(elm);
         elm.style.fill = stroke;
