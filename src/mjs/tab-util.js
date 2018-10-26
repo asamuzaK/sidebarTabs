@@ -192,7 +192,7 @@ export const setSessionTabList = async () => {
       };
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-      const prevList = await getSessionWindowValue(TAB_LIST, windowId);
+      const prevList = await getSessionWindowValue(TAB_LIST);
       const l = items.length;
       let i = 0;
       while (i < l) {
