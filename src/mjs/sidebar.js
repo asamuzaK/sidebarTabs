@@ -1801,6 +1801,7 @@ const restoreTabGroups = async () => {
         let list;
         if (tabList.hasOwnProperty("recent")) {
           list = tabList.recent[j];
+        // for backward compat
         } else {
           list = tabList[j];
         }
