@@ -1798,6 +1798,9 @@ const restoreTabGroups = async () => {
       const l = items.length;
       let i = 0, j = 0;
       while (i < l) {
+        const item = items[i];
+        const {dataset: {tab: itemTab}} = item;
+        const {pinned, url: itemUrl} = JSON.parse(itemTab);
         // NOTE: `tabList[j]` is for backward compat. Remove it in the future.
         const recent = tabList.hasOwnProperty("recent") && tabList.recent[j] ||
                        tabList[j];
@@ -1810,14 +1813,13 @@ const restoreTabGroups = async () => {
                  Number.isInteger(recentContainerIndex) &&
                  Number.isInteger(prevContainerIndex) &&
                  recentContainerIndex > prevContainerIndex && prev || recent;
+        } else if (prev && (pinned || prev.url === itemUrl)) {
+          list = prev;
         } else {
           list = recent;
         }
         if (list) {
           const {collapsed, containerIndex, url} = list;
-          const item = items[i];
-          const {dataset: {tab: itemTab}} = item;
-          const {pinned, url: itemUrl} = JSON.parse(itemTab);
           if (pinned) {
             const container = document.getElementById(PINNED);
             const containerChildTabs = container.children;
