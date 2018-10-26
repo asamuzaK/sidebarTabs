@@ -187,9 +187,12 @@ export const setSessionTabList = async () => {
     const {id: windowId, incognito} = win;
     const allTabs = document.querySelectorAll(TAB_QUERY);
     if (!incognito && allTabs && allTabs.length) {
-      const tabList = {};
+      const tabList = {
+        recent: {},
+      };
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+      const prevList = await getSessionWindowValue(TAB_LIST, windowId);
       const l = items.length;
       let i = 0;
       while (i < l) {
@@ -202,7 +205,7 @@ export const setSessionTabList = async () => {
             const {url} = JSON.parse(tabsTab);
             const tabIndex = getSidebarTabIndex(tab);
             if (Number.isInteger(tabIndex)) {
-              tabList[tabIndex] = {
+              tabList.recent[tabIndex] = {
                 collapsed, url,
                 containerIndex: i,
               };
@@ -210,6 +213,9 @@ export const setSessionTabList = async () => {
           }
         }
         i++;
+      }
+      if (isObjectNotEmpty(prevList) && prevList.hasOwnProperty("recent")) {
+        tabList.prev = prevList.recent;
       }
       await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
     }
