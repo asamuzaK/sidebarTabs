@@ -2,7 +2,7 @@
  * sidebar.js
  */
 
-import {isObjectNotEmpty, isString, throwErr} from "./common.js";
+import {isObjectNotEmpty, isString, logErr, throwErr} from "./common.js";
 import {
   clearStorage, createBookmark, createNewWindow, createTab,
   getActiveTab, getAllContextualIdentities, getAllTabsInWindow, getContextualId,
@@ -215,7 +215,7 @@ const handleDrop = evt => {
     try {
       item = JSON.parse(data);
     } catch (e) {
-      // silent fail
+      logErr(e);
     }
     if (isObjectNotEmpty(item)) {
       const opt = {

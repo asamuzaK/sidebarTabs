@@ -3,7 +3,8 @@
  */
 
 import {
-  escapeMatchingChars, getType, isObjectNotEmpty, isString, sleep, throwErr,
+  escapeMatchingChars, getType, isObjectNotEmpty, isString, logErr, sleep,
+  throwErr,
 } from "./common.js";
 import {removeTab, getTab, updateTab} from "./browser.js";
 import {
@@ -116,6 +117,7 @@ export const setTabIcon = async (elm, info) => {
           isUrl = false;
         }
       } catch (e) {
+        logErr(e);
         isUrl = false;
       }
       if (elm.dataset.connecting && !isUrl) {
