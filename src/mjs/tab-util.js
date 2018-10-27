@@ -1124,3 +1124,165 @@ export const highlightAllTabs = async (elm, windowId) => {
   }
   return func || null;
 };
+
+/* DnD */
+/**
+ * extract drag and drop tabs
+ * @param {Object} dropTarget - target element
+ * @param {number} windowId - window ID
+ * @param {Object} data - dragged data
+ * @param {Object} opt - key options
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const extractDroppedTabs = async (
+  dropTarget, windowId, data = {}, opt = {}
+) => {
+  const {tabIds, windowId: dragWindowId} = data;
+  const func = [];
+  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
+      Array.isArray(tabIds) && tabIds.length &&
+      Number.isInteger(dragWindowId) &&
+      dragWindowId !== windows.WINDOW_ID_NONE) {
+    const {shiftKey} = opt;
+    const {parentNode: dropParent} = dropTarget;
+    const dropTargetIndex = getSidebarTabIndex(dropTarget);
+    const dropTargetId = getSidebarTabId(dropTarget);
+    const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+    if (!Number.isInteger(windowId)) {
+      windowId = windows.WINDOW_ID_CURRENT;
+    }
+    if (dragWindowId === windowId && !tabIds.includes(dropTargetId)) {
+      if (dropParent.classList.contains(PINNED)) {
+        for (const itemId of tabIds) {
+          const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+          if (item && !item.classList.contains(PINNED)) {
+            func.push(updateTab(itemId, {pinned: true}));
+          }
+        }
+      } else if (dropParent.classList.contains(CLASS_TAB_GROUP) || shiftKey) {
+        const moveDownArr = [];
+        const moveUpArr = [];
+        const l = tabIds.length;
+        let i = 0, j = dropTargetIndex + 1;
+        while (i < l) {
+          const itemId = tabIds[i];
+          const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+          if (item) {
+            const itemIndex = getSidebarTabIndex(item);
+            if (itemIndex === j) {
+              dropParent.appendChild(item);
+            } else if (itemIndex < dropTargetIndex) {
+              moveDownArr.push(itemId);
+            } else {
+              moveUpArr.push(itemId);
+            }
+            if (i === l - 1) {
+              item.dataset.restore = dropTargetId;
+            }
+          }
+          i++;
+          j++;
+        }
+        if (moveUpArr.length) {
+          const revArr = moveUpArr.reverse();
+          const arr = [];
+          for (const itemId of revArr) {
+            const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+            if (item) {
+              dropParent.insertBefore(item, dropTarget.nextElementSibling);
+              arr.push({
+                index: getSidebarTabIndex(item),
+                tabId: itemId,
+              });
+            }
+          }
+          await moveTabsInOrder(arr, windowId);
+        }
+        if (moveDownArr.length) {
+          const revArr = moveDownArr.reverse();
+          const arr = [];
+          for (const itemId of revArr) {
+            const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+            if (item) {
+              dropParent.insertBefore(item, dropTarget.nextElementSibling);
+              arr.push({
+                index: getSidebarTabIndex(item),
+                tabId: itemId,
+              });
+            }
+          }
+          await moveTabsInOrder(arr, windowId);
+        }
+      } else {
+        const moveDownArr = [];
+        const moveUpArr = [];
+        const l = tabIds.length;
+        let i = 0;
+        while (i < l) {
+          const itemId = tabIds[i];
+          const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+          if (item) {
+            const itemIndex = getSidebarTabIndex(item);
+            if (itemIndex < dropTargetIndex) {
+              moveDownArr.push(itemId);
+            } else {
+              moveUpArr.push(itemId);
+            }
+            if (i === l - 1) {
+              item.dataset.restore = dropTargetId;
+            }
+          }
+          i++;
+        }
+        if (moveUpArr.length) {
+          const revArr = moveUpArr.reverse();
+          const arr = [];
+          for (const itemId of revArr) {
+            const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+            if (item) {
+              const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+              container.appendChild(item);
+              container.removeAttribute("hidden");
+              dropParent.parentNode.insertBefore(container,
+                                                 dropParent.nextElementSibling);
+              arr.push({
+                index: getSidebarTabIndex(item),
+                tabId: itemId,
+              });
+            }
+          }
+          await moveTabsInOrder(arr, windowId);
+        }
+        if (moveDownArr.length) {
+          const revArr = moveDownArr.reverse();
+          const arr = [];
+          for (const itemId of revArr) {
+            const item = document.querySelector(`[data-tab-id="${itemId}"]`);
+            if (item) {
+              const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+              container.appendChild(item);
+              container.removeAttribute("hidden");
+              dropParent.parentNode.insertBefore(container,
+                                                 dropParent.nextElementSibling);
+              arr.push({
+                index: getSidebarTabIndex(item),
+                tabId: itemId,
+              });
+            }
+          }
+          await moveTabsInOrder(arr, windowId);
+        }
+      }
+    // dragged from other window
+    } else if (!tabIds.includes(dropTargetId)) {
+      let index;
+      if (dropTargetIndex === lastTabIndex) {
+        index = -1;
+      } else {
+        index = dropTargetIndex + 1;
+      }
+      func.push(moveTab(tabIds, {index, windowId}));
+    }
+  }
+  return Promise.all(func);
+};
