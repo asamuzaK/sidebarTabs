@@ -5,6 +5,11 @@
 import {isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {getAllContextualIdentities} from "./browser.js";
 import {getSidebarTab, getSidebarTabId} from "./tab-util.js";
+
+/* api */
+const {contextualIdentities, i18n, menus, tabs} = browser;
+
+/* constants */
 import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER,
@@ -17,11 +22,6 @@ import {
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
   TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
 } from "./constant.js";
-
-/* api */
-const {contextualIdentities, i18n, menus, tabs} = browser;
-
-/* constants */
 const {TAB_ID_NONE} = tabs;
 const ICON_SIZE_16 = "16";
 

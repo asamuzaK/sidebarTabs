@@ -9,15 +9,17 @@ import {
   setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {setCloseTab, setTabAudio} from "./tab-content.js";
+
+/* api */
+const {i18n, windows} = browser;
+
+/* constants */
 import {
   ACTIVE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND,
   TAB_LIST, TAB_QUERY,
 } from "./constant.js";
-
-/* api */
-const {i18n, windows} = browser;
 
 /**
  * get template

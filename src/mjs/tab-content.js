@@ -10,16 +10,16 @@ import {removeTab, getTab, updateTab} from "./browser.js";
 import {
   closeTabs, getSidebarTab, getSidebarTabId, muteTabs, setSessionTabList,
 } from "./tab-util.js";
-import {
-  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED,
-  TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE,
-  URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
-} from "./constant.js";
 
 /* api */
 const {i18n} = browser;
 
 /* constants */
+import {
+  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED,
+  TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE,
+  URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
+} from "./constant.js";
 const TIME_3SEC = 3000;
 
 /* favicon */

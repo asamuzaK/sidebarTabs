@@ -7,7 +7,7 @@ import {throwErr} from "./common.js";
 /* api */
 const {browserAction, sidebarAction, runtime, windows} = browser;
 
-/* constants */
+/* constant */
 const {WINDOW_ID_NONE} = windows;
 
 /* sidebar */

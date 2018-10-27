@@ -5,6 +5,8 @@
 import {isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {getAllStorage, sendMessage, setStorage} from "./browser.js";
 import {localizeHtml} from "./localize.js";
+
+/* constant */
 import {EXT_INIT} from "./constant.js";
 
 /**

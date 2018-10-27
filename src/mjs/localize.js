@@ -3,10 +3,12 @@
  */
 
 import {isString} from "./common.js";
-import {DATA_I18N, EXT_LOCALE, NEW_TAB} from "./constant.js";
 
 /* api */
 const {i18n} = browser;
+
+/* constants */
+import {DATA_I18N, EXT_LOCALE, NEW_TAB} from "./constant.js";
 
 /**
  * localize attribute value

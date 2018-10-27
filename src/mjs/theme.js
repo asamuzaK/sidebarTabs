@@ -4,6 +4,8 @@
 
 import {getType, isObjectNotEmpty} from "./common.js";
 import {getEnabledTheme, getStorage, setStorage} from "./browser.js";
+
+/* constants */
 import {
   CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, THEME, THEME_DARK,
   THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
