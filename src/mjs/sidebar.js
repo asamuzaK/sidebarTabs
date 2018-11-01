@@ -1502,8 +1502,8 @@ const handleEvt = async evt => {
       const data = {};
       switch (itemKey) {
         case TAB_ALL_RELOAD:
-          data.enabled = allTabs.length > 1 && !allTabsSelected;
-          data.visible = allTabsSelected;
+          data.enabled = !tab || allTabs.length > 1 && !allTabsSelected;
+          data.visible = tab && !allTabsSelected || !tab;
           break;
         case TAB_ALL_SELECT:
           data.enabled = allTabs.length > 1 && !allTabsSelected;
