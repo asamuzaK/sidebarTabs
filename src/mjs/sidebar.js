@@ -1502,7 +1502,7 @@ const handleEvt = async evt => {
       const data = {};
       switch (itemKey) {
         case TAB_ALL_RELOAD:
-          data.enabled = !tab || allTabs.length > 1 && !allTabsSelected;
+          data.enabled = true;
           data.visible = tab && !allTabsSelected || !tab;
           break;
         case TAB_ALL_SELECT:
