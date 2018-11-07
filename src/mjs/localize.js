@@ -51,23 +51,19 @@ export const localizeAttr = async (elm, placeholders) => {
 export const localizeHtml = async () => {
   const lang = i18n.getMessage(EXT_LOCALE);
   if (lang) {
-    document.documentElement.setAttribute("lang", lang);
     const nodes = document.querySelectorAll(`[${DATA_I18N}]`);
-    if (nodes instanceof NodeList) {
-      for (const node of nodes) {
-        const {classList, localName, parentNode} = node;
-        const {accessKey} = parentNode;
-        const attr = node.getAttribute(DATA_I18N);
-        const data = accessKey &&
-                     i18n.getMessage(`${attr}_title`, `(${accessKey})`) ||
-                     i18n.getMessage(attr);
-        if (data && localName !== "img" && !classList.contains(NEW_TAB)) {
-          node.textContent = data;
-        }
-        if (node.hasAttributes()) {
-          localizeAttr(node, `(${accessKey})`);
-        }
+    for (const node of nodes) {
+      const {classList, localName, parentNode} = node;
+      const {accessKey} = parentNode;
+      const attr = node.getAttribute(DATA_I18N);
+      const data = accessKey &&
+                   i18n.getMessage(`${attr}_title`, `(${accessKey})`) ||
+                   i18n.getMessage(attr);
+      if (data && localName !== "img" && !classList.contains(NEW_TAB)) {
+        node.textContent = data;
       }
+      localizeAttr(node, `(${accessKey})`);
     }
+    document.documentElement.setAttribute("lang", lang);
   }
 };
