@@ -13,31 +13,25 @@ import {DATA_I18N, EXT_LOCALE, NEW_TAB} from "./constant.js";
 /**
  * localize attribute value
  * @param {Object} elm - element
- * @param {string|Array.<string>} placeholders - placeholders for localization
  * @returns {void}
  */
-export const localizeAttr = async (elm, placeholders) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.hasAttributes()) {
-    const attrs = {
-      alt: "alt",
-      ariaLabel: "aria-label",
-      href: "href",
-      placeholder: "placeholder",
-      title: "title",
-    };
-    const dataAttr = elm.getAttribute(DATA_I18N);
-    const items = Object.entries(attrs);
-    for (const item of items) {
-      const [key, value] = item;
-      if (elm.hasAttribute(value)) {
-        if ((isString(placeholders) || Array.isArray(placeholders)) &&
-            placeholders.length) {
-          elm.setAttribute(
-            value,
-            i18n.getMessage(`${dataAttr}_${key}`, placeholders)
-          );
-        } else {
-          elm.setAttribute(value, i18n.getMessage(`${dataAttr}_${key}`));
+export const localizeAttr = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.hasAttribute(DATA_I18N)) {
+    const [id] = elm.getAttribute(DATA_I18N).split(/\s*,\s*/);
+    if (id) {
+      const attrs = {
+        alt: "alt",
+        ariaLabel: "aria-label",
+        href: "href",
+        placeholder: "placeholder",
+        title: "title",
+      };
+      const items = Object.entries(attrs);
+      for (const item of items) {
+        const [key, value] = item;
+        if (elm.hasAttribute(value)) {
+          elm.setAttribute(value, i18n.getMessage(`${id}_${key}`));
         }
       }
     }
@@ -53,16 +47,12 @@ export const localizeHtml = async () => {
   if (lang) {
     const nodes = document.querySelectorAll(`[${DATA_I18N}]`);
     for (const node of nodes) {
-      const {classList, localName, parentNode} = node;
-      const {accessKey} = parentNode;
-      const attr = node.getAttribute(DATA_I18N);
-      const data = accessKey &&
-                   i18n.getMessage(`${attr}_title`, `(${accessKey})`) ||
-                   i18n.getMessage(attr);
-      if (data && localName !== "img" && !classList.contains(NEW_TAB)) {
+      const [id, ph] = node.getAttribute(DATA_I18N).split(/\s*,\s*/);
+      const data = i18n.getMessage(id, ph);
+      if (data) {
         node.textContent = data;
       }
-      localizeAttr(node, `(${accessKey})`);
+      localizeAttr(node);
     }
     document.documentElement.setAttribute("lang", lang);
   }
