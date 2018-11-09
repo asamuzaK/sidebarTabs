@@ -43,7 +43,6 @@ export const TAB_BOOKMARK = "bookmarkTab";
 export const TAB_CLOSE = "closeTab";
 export const TAB_CLOSE_DUPE = "closeDupeTabs";
 export const TAB_CLOSE_END = "closeTabsToTheEnd";
-export const TAB_CLOSE_OPTIONS = "closeTabsOptions";
 export const TAB_CLOSE_OTHER = "closeOtherTabs_tab";
 export const TAB_CLOSE_UNDO = "undoCloseTab";
 export const TAB_DUPE = "dupeTab";

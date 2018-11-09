@@ -101,18 +101,6 @@
   "closeTabs_tooltip": {
     "message": "Close Selected Tabs"
   },
-  "closeTabsOptions": {
-    "message": "Close Tab Options"
-  },
-  "closeTabsOptions_title": {
-    "message": "Close Tab &Options",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&O)"
-      }
-    }
-  },
   "closeTabsToTheEnd": {
     "message": "Close Tabs to the End"
   },

@@ -46,7 +46,7 @@ import {
   CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON, COOKIE_STORE_DEFAULT, EXT_INIT,
   HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN, TAB,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP, TAB_LIST,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_OBSERVE,
@@ -1166,8 +1166,8 @@ const handleEvt = async evt => {
     const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
     const tabGroupMenu = menuItems[TAB_GROUP];
     const tabKeys = [
-      TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_OPTIONS, TAB_DUPE, TAB_MOVE,
-      TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+      TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
+      TAB_MOVE, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
     ];
     const tabsKeys = [
       TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
@@ -1208,10 +1208,19 @@ const handleEvt = async evt => {
           data.visible = false;
         } else {
           switch (itemKey) {
-            case TAB_CLOSE_OPTIONS:
-              data.enabled = allTabs.length > 1;
+            case TAB_CLOSE_END:
+              data.enabled = index < allTabs.length - 1;
               data.title = title;
               break;
+            case TAB_CLOSE_OTHER: {
+              const obj =
+                Number.isInteger(tabId) && document.querySelectorAll(
+                  `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+                );
+              data.enabled = !!(obj && obj.length);
+              data.title = title;
+              break;
+            }
             case TAB_MUTE:
               data.enabled = true;
               data.title = muted && toggleTitle || title;
@@ -1315,33 +1324,8 @@ const handleEvt = async evt => {
           }
         }
       } else {
-        const tabCloseMenu = menuItems[TAB_CLOSE_OPTIONS];
-        const tabCloseKeys = [TAB_CLOSE_END, TAB_CLOSE_OTHER];
         const tabMoveMenu = menuItems[TAB_MOVE];
         const tabMoveKeys = [TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN];
-        for (const itemKey of tabCloseKeys) {
-          const item = tabCloseMenu.subItems[itemKey];
-          const {id, title} = item;
-          const data = {};
-          switch (itemKey) {
-            case TAB_CLOSE_END:
-              data.enabled = index < allTabs.length - 1;
-              data.title = title;
-              break;
-            case TAB_CLOSE_OTHER: {
-              const obj =
-                Number.isInteger(tabId) && document.querySelectorAll(
-                  `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
-                );
-              data.enabled = !!(obj && obj.length);
-              data.title = title;
-              break;
-            }
-            default:
-          }
-          data.visible = true;
-          func.push(updateContextMenu(id, data));
-        }
         for (const itemKey of tabMoveKeys) {
           const item = tabMoveMenu.subItems[itemKey];
           const {id, title} = item;

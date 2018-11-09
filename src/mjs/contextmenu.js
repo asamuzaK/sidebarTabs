@@ -12,8 +12,8 @@ const {contextualIdentities, i18n, menus, tabs} = browser;
 /* constants */
 import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
-  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OPTIONS, TAB_CLOSE_OTHER,
-  TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
+  TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_EXPAND, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
@@ -352,47 +352,36 @@ export const menuItems = {
     contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
   },
-  [TAB_CLOSE_OPTIONS]: {
-    id: TAB_CLOSE_OPTIONS,
-    title: i18n.getMessage(`${TAB_CLOSE_OPTIONS}_title`, "(&O)"),
+  [TAB_CLOSE_END]: {
+    id: TAB_CLOSE_END,
+    title: i18n.getMessage(`${TAB_CLOSE_END}_title`, "(&E)"),
     type: "normal",
     contexts: ["tab"],
     viewTypes: ["sidebar"],
     enabled: false,
     visible: true,
-    subItems: {
-      [TAB_CLOSE_END]: {
-        id: TAB_CLOSE_END,
-        title: i18n.getMessage(`${TAB_CLOSE_END}_title`, "(&E)"),
-        type: "normal",
-        contexts: ["tab"],
-        viewTypes: ["sidebar"],
-        enabled: false,
-        visible: true,
-      },
-      [TAB_CLOSE_OTHER]: {
-        id: TAB_CLOSE_OTHER,
-        title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
-        type: "normal",
-        contexts: ["tab"],
-        viewTypes: ["sidebar"],
-        enabled: false,
-        visible: true,
-      },
-      // Not implemented yet in Firefox
-      /*
-      [TAB_CLOSE_DUPE]: {
-        id: TAB_CLOSE_DUPE,
-        title: i18n.getMessage(`${TAB_CLOSE_DUPE}_title`, "(&D)"),
-        type: "normal",
-        contexts: ["tab"],
-        viewTypes: ["sidebar"],
-        enabled: false,
-        visible: true,
-      },
-      */
-    },
   },
+  [TAB_CLOSE_OTHER]: {
+    id: TAB_CLOSE_OTHER,
+    title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: true,
+  },
+  // Not implemented yet in Firefox
+  /*
+  [TAB_CLOSE_DUPE]: {
+    id: TAB_CLOSE_DUPE,
+    title: i18n.getMessage(`${TAB_CLOSE_DUPE}_title`, "(&D)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: true,
+  },
+  */
   [TABS_CLOSE_OTHER]: {
     id: TABS_CLOSE_OTHER,
     title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
