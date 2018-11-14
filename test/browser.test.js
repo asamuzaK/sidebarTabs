@@ -7,8 +7,6 @@ import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
-import fs from "fs";
-import path from "path";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/browser.js";
 
@@ -48,6 +46,20 @@ describe("browser", () => {
   describe("is accesskey supported in context menu", () => {
     const func = mjs.isAccessKeySupported;
 
+    it("should get false", async () => {
+      browser.runtime.getBrowserInfo.returns({});
+      const res = await func();
+      assert.isFalse(res, "result");
+      browser.runtime.getBrowserInfo.flush();
+    });
+
+    it("should get false", async () => {
+      browser.runtime.getBrowserInfo.returns({foo: "bar"});
+      const res = await func();
+      assert.isFalse(res, "result");
+      browser.runtime.getBrowserInfo.flush();
+    });
+
     it("should get true", async () => {
       browser.runtime.getBrowserInfo.returns({version: "63.0a1"});
       const res = await func();
@@ -65,6 +77,20 @@ describe("browser", () => {
 
   describe("is visible supported in context menu", () => {
     const func = mjs.isVisibleInMenuSupported;
+
+    it("should get false", async () => {
+      browser.runtime.getBrowserInfo.returns({});
+      const res = await func();
+      assert.isFalse(res, "result");
+      browser.runtime.getBrowserInfo.flush();
+    });
+
+    it("should get false", async () => {
+      browser.runtime.getBrowserInfo.returns({foo: "bar"});
+      const res = await func();
+      assert.isFalse(res, "result");
+      browser.runtime.getBrowserInfo.flush();
+    });
 
     it("should get true", async () => {
       browser.runtime.getBrowserInfo.returns({version: "63.0a1"});
@@ -300,6 +326,11 @@ describe("browser", () => {
   describe("get enabled theme", () => {
     const func = mjs.getEnabledTheme;
 
+    it("should get null", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
+
     it("should get array", async () => {
       browser.management.getAll.resolves([
         {
@@ -346,6 +377,14 @@ describe("browser", () => {
       });
     });
 
+    it("should reject if given id is not found", async () => {
+      browser.management.get.withArgs("foo").rejects(new Error("error"));
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "error");
+      });
+      browser.management.get.flush();
+    });
+
     it("should get object", async () => {
       browser.management.get.withArgs("foo").resolves({});
       const res = await func("foo");
@@ -355,6 +394,11 @@ describe("browser", () => {
 
   describe("get external extensions", () => {
     const func = mjs.getExternalExtensions;
+
+    it("should get null", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
 
     it("should get array", async () => {
       browser.management.getAll.resolves([
@@ -511,59 +555,6 @@ describe("browser", () => {
       const res = await func(["foo"]);
       assert.isTrue(res, "result");
       browser.permissions.request.flush();
-    });
-  });
-
-  describe("fetch data", () => {
-    const func = mjs.fetchData;
-    beforeEach(() => {
-      // Fetch API not implemented in jsdom
-      // See https://github.com/jsdom/jsdom/issues/1724
-      const fetch = async file => new Promise((resolve, reject) => {
-        const body = fs.readFileSync(path.resolve(file), "utf8");
-        if (body) {
-          resolve({
-            body,
-            json: () => JSON.parse(body),
-          });
-        } else {
-          reject();
-        }
-      });
-      if (!window.fetch) {
-        window.fetch = fetch;
-      }
-      global.fetch = fetch;
-    });
-    afterEach(() => {
-      delete global.fetch;
-    });
-
-    it("should throw if no argument given", async () => {
-      await func().catch(e => {
-        assert.strictEqual(e.message, "Expected String but got Undefined.");
-      });
-    });
-
-    it("should throw if argument is not string", async () => {
-      await func(1).catch(e => {
-        assert.strictEqual(e.message, "Expected String but got Number.");
-      });
-    });
-
-    it("should throw if argument is not string", async () => {
-      await func(1).catch(e => {
-        assert.strictEqual(e.message, "Expected String but got Number.");
-      });
-    });
-
-    it("should get JSON", async () => {
-      const url = "test/files/data.json";
-      browser.runtime.getURL.withArgs(url).returns(path.resolve(url));
-      window.func = func;
-      const res = await window.func(url);
-      assert.deepEqual(res, {foo: "bar"}, "result");
-      browser.runtime.getURL.flush();
     });
   });
 
