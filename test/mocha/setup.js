@@ -5,6 +5,7 @@
 "use strict";
 const {JSDOM} = require("jsdom");
 const browser = require("sinon-chrome/webextensions");
+const sinon = require("sinon");
 
 /**
  * create jsdom
@@ -20,6 +21,32 @@ const createJsdom = () => {
 
 const {window} = createJsdom();
 const {document} = window;
+
+/* mock runtime.Port */
+class Port {
+  /**
+   * Create stubbed object
+   * @param {Object} opt - options
+   */
+  constructor(opt = {}) {
+    this.name = opt.name;
+    this.error = {
+      message: sinon.stub(),
+    };
+    this.onDisconnect = {
+      addListener: sinon.stub(),
+      removeListener: sinon.stub(),
+    };
+    this.onMessage = {
+      addListener: sinon.stub(),
+      removeListener: sinon.stub(),
+    };
+    this.disconnect = sinon.stub();
+    this.postMessage = sinon.stub();
+  }
+}
+
+browser.runtime.Port = Port;
 
 global.browser = browser;
 global.window = window;

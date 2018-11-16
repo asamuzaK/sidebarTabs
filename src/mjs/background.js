@@ -2,7 +2,7 @@
  * background.js
  */
 
-import {throwErr} from "./common.js";
+import {getType, throwErr} from "./common.js";
 
 /* api */
 const {browserAction, sidebarAction, runtime, windows} = browser;
@@ -11,7 +11,7 @@ const {browserAction, sidebarAction, runtime, windows} = browser;
 const {WINDOW_ID_NONE} = windows;
 
 /* sidebar */
-const sidebar = {
+export const sidebar = {
   windowId: windows.WINDOW_ID_CURRENT,
   isOpen: false,
 };
@@ -21,11 +21,14 @@ const sidebar = {
  * @param {number} windowId - window ID
  * @returns {void}
  */
-const setSidebarWindowId = async windowId => {
-  if (Number.isInteger(windowId) && windowId !== WINDOW_ID_NONE) {
-    sidebar.windowId = windowId;
-  } else {
+export const setSidebarWindowId = async windowId => {
+  if (!Number.isInteger(windowId)) {
+    throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
+  }
+  if (windowId === WINDOW_ID_NONE) {
     sidebar.windowId = windows.WINDOW_ID_CURRENT;
+  } else {
+    sidebar.windowId = windowId;
   }
 };
 
@@ -33,48 +36,72 @@ const setSidebarWindowId = async windowId => {
  * set sidebar isOpen state
  * @returns {void}
  */
-const setSidebarIsOpenState = async () => {
-  const {windowId} = sidebar;
-  const isOpen = await sidebarAction.isOpen({windowId});
-  sidebar.isOpen = !!isOpen;
+export const setSidebarIsOpenState = async () => {
+  if (typeof sidebarAction.isOpen === "function") {
+    const {windowId} = sidebar;
+    const isOpen = await sidebarAction.isOpen({windowId});
+    sidebar.isOpen = !!isOpen;
+  }
 };
 
 /**
  * toggle sidebar
- * @returns {AsyncFunction} - sidebarAction.close() / sidebarAction.open()
+ * @returns {?AsyncFunction} - sidebarAction.close() / sidebarAction.open()
  */
-const toggleSidebar = async () => {
-  const {isOpen} = sidebar;
+export const toggleSidebar = async () => {
   let func;
+  const {isOpen} = sidebar;
   if (isOpen) {
     func = sidebarAction.close();
   } else {
     func = sidebarAction.open();
   }
-  return func;
+  return func || null;
 };
+
+/**
+ * handle port.onDisconnect
+ * @returns {?AsyncFunction} - setSidebarIsOpenState()
+ */
+export const portOnDisconnect = () => setSidebarIsOpenState().catch(throwErr);
 
 /**
  * handle connected port
  * @param {Object} port - runtime.Port
  * @returns {void}
  */
-const handlePort = async port => {
-  port.onDisconnect.addListener(() =>
-    setSidebarIsOpenState().catch(throwErr)
-  );
+export const handlePort = async port => {
+  port.onDisconnect.addListener(portOnDisconnect);
 };
 
+/* browser event handlers */
+/**
+ * handle browserAction.onClicked
+ * @returns {AsyncFunction} - promise chain
+ */
+export const browserActionOnClicked = () =>
+  toggleSidebar().then(setSidebarIsOpenState).catch(throwErr);
+
+/**
+ * handle runtime.onConnect
+ * @param {Object} port - runtime.Port
+ * @returns {AsyncFunction} - promise chain
+ */
+export const runtimeOnConnect = port =>
+  handlePort(port).then(setSidebarIsOpenState).catch(throwErr);
+
+/**
+ * handle windows.onFocusChanged
+ * @param {number} windowId - window ID
+ * @returns {AsyncFunction} - promise chain
+ */
+export const windowsOnFocusChanged = windowId =>
+  setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr);
+
 /* listeners */
-browserAction.onClicked.addListener(() =>
-  toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
-);
-runtime.onConnect.addListener(port =>
-  handlePort(port).then(setSidebarIsOpenState).catch(throwErr)
-);
-windows.onFocusChanged.addListener(windowId =>
-  setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr)
-);
+browserAction.onClicked.addListener(browserActionOnClicked);
+runtime.onConnect.addListener(runtimeOnConnect);
+windows.onFocusChanged.addListener(windowsOnFocusChanged);
 
 /* startup */
 setSidebarIsOpenState().catch(throwErr);
