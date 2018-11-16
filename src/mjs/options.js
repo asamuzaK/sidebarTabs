@@ -21,11 +21,11 @@ export const sendMsg = async msg => {
 };
 
 /**
- * port init extension
+ * init extension
  * @param {boolean} init - init
- * @returns {?AsyncFunction} - port message
+ * @returns {?AsyncFunction} - sendMessage()
  */
-export const portInitExt = async (init = false) => {
+export const initExt = async (init = false) => {
   let func;
   if (init) {
     func = sendMsg({
@@ -76,13 +76,13 @@ export const storePref = async evt => {
 /**
  * handle init extension click
  * @param {!Object} evt - event
- * @returns {AsyncFunction} - portInitExt()
+ * @returns {AsyncFunction} - initExt()
  */
 export const handleInitExtClick = evt => {
   const {currentTarget, target} = evt;
   evt.preventDefault();
   evt.stopPropagation();
-  return portInitExt(currentTarget === target).catch(throwErr);
+  return initExt(currentTarget === target).catch(throwErr);
 };
 
 /**

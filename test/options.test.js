@@ -69,8 +69,8 @@ describe("options", () => {
     });
   });
 
-  describe("port init extension", () => {
-    const func = mjs.portInitExt;
+  describe("init extension", () => {
+    const func = mjs.initExt;
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
