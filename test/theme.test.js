@@ -49,6 +49,17 @@ describe("theme", () => {
   describe("get theme", () => {
     const func = mjs.getTheme;
 
+    it("should get light theme", async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: "foo",
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.deepEqual(res, [THEME_LIGHT], "result");
+      browser.storage.local.get.flush();
+    });
+
     it("should get stored theme", async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: ["foo"],
