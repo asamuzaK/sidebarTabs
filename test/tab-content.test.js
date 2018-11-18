@@ -927,6 +927,9 @@ describe("tab-content", () => {
     });
 
     it("should call function", async () => {
+      browser.windows.getCurrent.resolves({
+        id: "foo",
+      });
       browser.tabs.get.withArgs(1).onFirstCall().resolves({
         status: "loading",
       }).onSecondCall().resolves({
@@ -936,6 +939,8 @@ describe("tab-content", () => {
       const res = await func(1);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, "called");
       assert.isUndefined(res, "result");
+      browser.windows.getCurrent.flush()
+      browser.tabs.get.flush();
     });
   });
 });
