@@ -16,13 +16,18 @@ import {
  * @returns {Array} - theme class list
  */
 export const getTheme = async () => {
-  const {theme: storedTheme} = await getStorage(THEME);
-  let themes = [];
-  if (Array.isArray(storedTheme) && storedTheme.length) {
-    themes = storedTheme;
+  const data = await getStorage(THEME);
+  const themes = [];
+  if (isObjectNotEmpty(data)) {
+    const {theme: storedTheme} = data;
+    if (Array.isArray(storedTheme)) {
+      for (const item of storedTheme) {
+        themes.push(item);
+      }
+    }
   } else {
     const items = await getEnabledTheme();
-    if (Array.isArray(items) && items.length) {
+    if (Array.isArray(items)) {
       for (const item of items) {
         const {id} = item;
         switch (id) {
@@ -36,9 +41,9 @@ export const getTheme = async () => {
         }
       }
     }
-    if (!themes.length) {
-      themes.push(THEME_LIGHT);
-    }
+  }
+  if (!themes.length) {
+    themes.push(THEME_LIGHT);
   }
   return themes;
 };
@@ -104,7 +109,7 @@ export const setTabHeight = async compact => {
  * @returns {void}
  */
 export const applyCss = async () => {
-  const items = document.querySelectorAll("section[hidden], menu[hidden]");
+  const items = document.querySelectorAll("section[hidden]");
   for (const item of items) {
     item.removeAttribute("hidden");
   }
