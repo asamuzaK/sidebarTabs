@@ -939,7 +939,7 @@ describe("tab-content", () => {
       const res = await func(1);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, "called");
       assert.isUndefined(res, "result");
-      browser.windows.getCurrent.flush()
+      browser.windows.getCurrent.flush();
       browser.tabs.get.flush();
     });
   });
