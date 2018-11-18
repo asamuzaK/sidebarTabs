@@ -149,8 +149,7 @@ describe("options", () => {
       elm2.type = "radio";
       body.appendChild(elm);
       body.appendChild(elm2);
-      window.func = func;
-      const res = await window.func(evt);
+      const res = await func(evt);
       assert.strictEqual(browser.storage.local.set.callCount, i + 2, "called");
       assert.strictEqual(res.length, 2, "array length");
       assert.deepEqual(res, [undefined, undefined], "result");
@@ -188,8 +187,7 @@ describe("options", () => {
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");
       body.appendChild(elm);
-      window.func = func;
-      await window.func();
+      await func();
       assert.isTrue(spy.notCalled, "not called");
       elm.addEventListener.restore();
     });
@@ -200,8 +198,7 @@ describe("options", () => {
       const spy = sinon.spy(elm, "addEventListener");
       elm.id = EXT_INIT;
       body.appendChild(elm);
-      window.func = func;
-      await window.func();
+      await func();
       assert.isTrue(spy.calledOnce, "called");
       elm.addEventListener.restore();
     });
@@ -215,8 +212,7 @@ describe("options", () => {
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");
       body.appendChild(elm);
-      window.func = func;
-      await window.func();
+      await func();
       assert.isTrue(spy.calledOnce, "called");
       elm.addEventListener.restore();
     });
@@ -228,22 +224,20 @@ describe("options", () => {
     it("should not set value if argument not given", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await window.func();
+      await func();
       assert.strictEqual(elm.checked, false, "checked");
     });
 
     it("should not set value if element not found", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "bar",
         checked: true,
       });
@@ -253,13 +247,12 @@ describe("options", () => {
     it("should not set value if type does not match", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "bar";
       elm.checked = false;
       elm.value = "baz";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
         checked: true,
         value: "qux",
@@ -271,11 +264,10 @@ describe("options", () => {
     it("should set checkbox value", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
         checked: true,
       });
@@ -285,11 +277,10 @@ describe("options", () => {
     it("should set checkbox value", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
       });
       assert.strictEqual(elm.checked, false, "checked");
@@ -298,11 +289,10 @@ describe("options", () => {
     it("should set radio value", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "radio";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
         checked: true,
       });
@@ -312,11 +302,10 @@ describe("options", () => {
     it("should set text value", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "text";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
         value: "bar",
       });
@@ -326,11 +315,10 @@ describe("options", () => {
     it("should set text value", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "text";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
       });
       assert.strictEqual(elm.value, "", "value");
@@ -339,11 +327,10 @@ describe("options", () => {
     it("should set url value", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
-      window.func = func;
       elm.id = "foo";
       elm.type = "url";
       body.appendChild(elm);
-      await window.func({
+      await func({
         id: "foo",
         value: "bar/baz",
       });
@@ -357,8 +344,7 @@ describe("options", () => {
     it("should get empty array", async () => {
       const i = browser.storage.local.get.callCount;
       browser.storage.local.get.resolves({});
-      window.func = func;
-      const res = await window.func();
+      const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(res.length, 0, "array length");
       assert.deepEqual(res, [], "result");
@@ -370,8 +356,7 @@ describe("options", () => {
         foo: {},
         bar: {},
       });
-      window.func = func;
-      const res = await window.func();
+      const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(res.length, 0, "array length");
       assert.deepEqual(res, [], "result");
@@ -387,8 +372,7 @@ describe("options", () => {
           qux: {},
         },
       });
-      window.func = func;
-      const res = await window.func();
+      const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(res.length, 2, "array length");
       assert.deepEqual(res, [undefined, undefined], "result");

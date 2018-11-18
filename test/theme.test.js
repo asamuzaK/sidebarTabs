@@ -148,8 +148,7 @@ describe("theme", () => {
       const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
-      window.func = func;
-      await window.func(["foo"]);
+      await func(["foo"]);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, "called");
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), "theme dark");
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), "theme light");
@@ -160,8 +159,7 @@ describe("theme", () => {
       const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
-      window.func = func;
-      await window.func([THEME_LIGHT]);
+      await func([THEME_LIGHT]);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, "called");
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), "theme dark");
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), "theme light");
@@ -172,8 +170,7 @@ describe("theme", () => {
       const i = browser.storage.local.set.callCount;
       body.classList.remove(CLASS_THEME_DARK);
       body.classList.add(CLASS_THEME_LIGHT);
-      window.func = func;
-      await window.func([THEME_DARK]);
+      await func([THEME_DARK]);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, "called");
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), "theme dark");
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), "theme light");
@@ -225,16 +222,14 @@ describe("theme", () => {
     it("should set height", async () => {
       const body = document.querySelector("body");
       body.classList.remove(COMPACT);
-      window.func = func;
-      await window.func(true);
+      await func(true);
       assert.isTrue(body.classList.contains(COMPACT));
     });
 
     it("should set height", async () => {
       const body = document.querySelector("body");
       body.classList.add(COMPACT);
-      window.func = func;
-      await window.func(false);
+      await func(false);
       assert.isFalse(body.classList.contains(COMPACT));
     });
   });
@@ -247,8 +242,7 @@ describe("theme", () => {
       const body = document.querySelector("body");
       elm.setAttribute("hidden", "hidden");
       body.appendChild(elm);
-      window.func = func;
-      await window.func();
+      await func();
       assert.isFalse(elm.hasAttribute("hidden"), "hidden");
     });
   });

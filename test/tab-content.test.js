@@ -110,8 +110,7 @@ describe("tab-content", () => {
       const elm = document.createElement("img");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func();
+      const res = await func();
       assert.strictEqual(elm.src, "", "src");
       assert.isFalse(res, "result");
     });
@@ -120,8 +119,7 @@ describe("tab-content", () => {
       const elm = document.createElement("img");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({});
+      const res = await func({});
       assert.strictEqual(elm.src, "", "src");
       assert.isFalse(res, "result");
     });
@@ -130,8 +128,7 @@ describe("tab-content", () => {
       const elm = document.createElement("img");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
         type: "foo",
       });
@@ -143,8 +140,7 @@ describe("tab-content", () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
         type: "error",
       });
@@ -156,8 +152,7 @@ describe("tab-content", () => {
       const elm = document.createElement("img");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
         type: "error",
       });
@@ -170,8 +165,7 @@ describe("tab-content", () => {
       const body = document.querySelector("body");
       elm.src = "https://example.com/favicon.ico";
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
         type: "error",
       });
@@ -184,8 +178,7 @@ describe("tab-content", () => {
       const body = document.querySelector("body");
       elm.src = "chrome://foo.svg";
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
         type: "error",
       });
@@ -202,8 +195,7 @@ describe("tab-content", () => {
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");
       body.appendChild(elm);
-      window.func = func;
-      await window.func(elm);
+      await func(elm);
       assert.isFalse(spy.calledOnce, "not called");
       elm.addEventListener.restore();
     });
@@ -213,8 +205,7 @@ describe("tab-content", () => {
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");
       body.appendChild(elm);
-      window.func = func;
-      await window.func(elm);
+      await func(elm);
       assert.isTrue(spy.calledOnce, "called");
       elm.addEventListener.restore();
     });
@@ -463,8 +454,7 @@ describe("tab-content", () => {
       const elm = document.createElement("button");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.isUndefined(res, "result");
@@ -487,8 +477,7 @@ describe("tab-content", () => {
       parent.dataset.tabId = "1";
       parent.appendChild(elm);
       body.appendChild(parent);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
@@ -523,8 +512,7 @@ describe("tab-content", () => {
       parent2.classList.add(HIGHLIGHTED);
       body.appendChild(parent);
       body.appendChild(parent2);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
@@ -767,8 +755,7 @@ describe("tab-content", () => {
       const elm = document.createElement("button");
       const body = document.querySelector("body");
       body.appendChild(elm);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.isNull(res, "result");
@@ -783,8 +770,7 @@ describe("tab-content", () => {
       parent.dataset.tabId = "1";
       parent.appendChild(elm);
       body.appendChild(parent);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, "called");
@@ -804,8 +790,7 @@ describe("tab-content", () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       body.appendChild(parent2);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, "called");
@@ -826,8 +811,7 @@ describe("tab-content", () => {
       parent.dataset.tabId = "1";
       parent.appendChild(elm);
       body.appendChild(parent);
-      window.func = func;
-      const res = await window.func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, "called");
