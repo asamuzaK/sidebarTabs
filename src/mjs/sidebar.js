@@ -31,7 +31,7 @@ import {
 } from "./tab-content.js";
 import {
   createContextMenu, menuItems, updateContextMenu,
-} from "./contextmenu.js";
+} from "./menu.js";
 import {setSidebarTheme, setTabHeight, setTheme} from "./theme.js";
 import {localizeHtml} from "./localize.js";
 

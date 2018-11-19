@@ -1,5 +1,5 @@
 /**
- * contextmenu.js
+ * menu.js
  */
 
 import {isObjectNotEmpty, isString, throwErr} from "./common.js";
