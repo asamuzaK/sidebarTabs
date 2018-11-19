@@ -30,10 +30,15 @@ import {
   setTabIcon, toggleHighlight, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-content.js";
 import {
-  createContextMenu, menuItems, updateContextMenu,
+  localizeHtml,
+} from "./localize.js";
+import {
+  setSidebarTheme, setTabHeight, setTheme,
+} from "./theme.js";
+import {
+  createContextMenu, updateContextMenu,
 } from "./menu.js";
-import {setSidebarTheme, setTabHeight, setTheme} from "./theme.js";
-import {localizeHtml} from "./localize.js";
+import menuItems from "./menu-items.js";
 
 /* api */
 const {
