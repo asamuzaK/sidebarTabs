@@ -6,14 +6,10 @@
 import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
-import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/util.js";
 import {
-  ACTIVE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_COLLAPSED,
-  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
-  HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND,
-  TAB, TAB_LIST, TAB_QUERY,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, TAB, TAB_LIST,
 } from "../src/mjs/constant.js";
 
 describe("util", () => {
