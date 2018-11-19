@@ -5,19 +5,28 @@
 import {
   getType, isObjectNotEmpty, isString, logErr, sleep, throwErr,
 } from "./common.js";
-import {removeTab, getTab, updateTab} from "./browser.js";
 import {
-  closeTabs, getSidebarTab, getSidebarTabId, muteTabs, setSessionTabList,
-} from "./tab-util.js";
+  highlightTab, removeTab, getActiveTab, getTab, updateTab,
+} from "./browser.js";
+import {
+  closeTabs, muteTabs,
+} from "./browser-tabs.js";
+import {
+  activateTab, getSidebarTab, getSidebarTabContainer, getSidebarTabId,
+  getSidebarTabIndex, getTemplate, setSessionTabList,
+} from "./util.js";
 
 /* api */
-const {i18n} = browser;
+const {i18n, windows} = browser;
 
 /* constants */
 import {
-  CLASS_TAB_CONTENT, CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED,
-  TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE,
-  URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
+  ACTIVE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_GROUP,
+  CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, PINNED, TAB_CLOSE,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_MUTE, TAB_MUTE_UNMUTE, TAB_QUERY,
+  TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED, URL_AUDIO_PLAYING,
+  URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
 const TIME_500MSEC = 500;
 
@@ -324,6 +333,218 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
       elm.alt = name;
       elm.src = `../img/${icon}.svg#${color}`;
       elm.parentNode.classList.add(IDENTIFIED);
+    }
+  }
+};
+
+/* highlight */
+/**
+ * add hightlight class to tab
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const addHighlight = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabId = getSidebarTabId(elm);
+    const tab = await getTab(tabId);
+    const {audible, mutedInfo: {muted}} = tab;
+    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
+    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
+    elm.classList.add(HIGHLIGHTED);
+    func.push(
+      setCloseTab(closeElm, true),
+      setTabAudio(muteElm, {
+        audible, muted,
+        highlighted: true,
+      }),
+    );
+  }
+  return Promise.all(func);
+};
+
+/**
+ * add highlight class to tabs
+ * @param {Array} arr - array of tab ID
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const addHighlightToTabs = async arr => {
+  const func = [];
+  if (Array.isArray(arr)) {
+    arr.forEach(id => {
+      const item = document.querySelector(`[data-tab-id="${id}"]`);
+      if (item) {
+        func.push(addHighlight(item));
+      }
+    });
+  }
+  return Promise.all(func);
+};
+
+/**
+ * remove hightlight class from tab
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const removeHighlight = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabId = getSidebarTabId(elm);
+    const tab = await getTab(tabId);
+    const {audible, mutedInfo: {muted}} = tab;
+    const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
+    const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
+    elm.classList.remove(HIGHLIGHTED);
+    func.push(
+      setCloseTab(closeElm, false),
+      setTabAudio(muteElm, {
+        audible, muted,
+        highlighted: false,
+      }),
+    );
+  }
+  return Promise.all(func);
+};
+
+/**
+ * toggle highlight class of tab
+ * @param {Object} elm - element
+ * @returns {AsyncFunction} - addHighlight() / removeHightlight()
+ */
+export const toggleHighlight = async elm => {
+  let func;
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    if (elm.classList.contains(HIGHLIGHTED)) {
+      func = removeHighlight(elm);
+    } else {
+      func = addHighlight(elm);
+    }
+  }
+  return func;
+};
+
+/**
+ * highlight all tabs
+ * @param {Object} elm - first selected tab
+ * @param {number} windowId - window ID
+ * @returns {?AsyncFunction} - highlightTab()
+ */
+export const highlightAllTabs = async (elm, windowId) => {
+  const items = document.querySelectorAll(TAB_QUERY);
+  let func;
+  if (items) {
+    const arr = [];
+    let firstIndex;
+    if (!Number.isInteger(windowId)) {
+      windowId = windows.WINDOW_ID_CURRENT;
+    }
+    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+      const index = getSidebarTabIndex(elm);
+      if (Number.isInteger(index)) {
+        firstIndex = index;
+        arr.push(index);
+      }
+    } else {
+      const tab = await getActiveTab(windowId);
+      if (tab) {
+        const {id, index} = tab;
+        const item = document.querySelector(`[data-tab-id="${id}"]`);
+        if (item) {
+          firstIndex = index;
+          arr.push(index);
+        }
+      }
+    }
+    for (const item of items) {
+      const itemIndex = getSidebarTabIndex(item);
+      if (Number.isInteger(itemIndex)) {
+        if (Number.isInteger(firstIndex)) {
+          if (itemIndex !== firstIndex) {
+            arr.push(itemIndex);
+          }
+        } else {
+          arr.push(itemIndex);
+        }
+      }
+    }
+    func = highlightTab(arr, windowId);
+  }
+  return func || null;
+};
+
+/* tab group */
+/**
+ * toggle tab group collapsed state
+ * @param {!Object} evt - event
+ * @returns {?AsyncFunction} - activateTab()
+ */
+export const toggleTabGroupCollapsedState = async evt => {
+  const {target} = evt;
+  const container = getSidebarTabContainer(target);
+  let func;
+  if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+    const {firstElementChild: tab} = container;
+    const {firstElementChild: tabContext} = tab;
+    const {firstElementChild: toggleIcon} = tabContext;
+    container.classList.toggle(CLASS_TAB_COLLAPSED);
+    if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
+      tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
+      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
+      func = activateTab(tab);
+    } else {
+      tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
+      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
+    }
+  }
+  return func || null;
+};
+
+/**
+ * add tab context click listener
+ * @param {Object} elm - element
+ * @returns {void}
+ */
+export const addTabContextClickListener = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    elm.addEventListener("click", evt =>
+      toggleTabGroupCollapsedState(evt).then(setSessionTabList).catch(throwErr)
+    );
+  }
+};
+
+/**
+ * expand activated collapsed tab
+ * @returns {?AsyncFunction} - toggleTabGroupCollapsedState()
+ */
+export const expandActivatedCollapsedTab = async () => {
+  const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
+  let func;
+  if (tab) {
+    const {parentNode} = tab;
+    if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
+        parentNode.firstElementChild !== tab) {
+      func = toggleTabGroupCollapsedState({target: tab});
+    }
+  }
+  return func || null;
+};
+
+/**
+ * ungroup tabs
+ * @param {Object} node - tab group container
+ * @returns {void}
+ */
+export const ungroupTabs = async node => {
+  if (node && node.nodeType === Node.ELEMENT_NODE) {
+    const {id, classList, parentNode} = node;
+    if (id !== PINNED && classList.contains(CLASS_TAB_GROUP)) {
+      const items = node.querySelectorAll(TAB_QUERY);
+      for (const item of items) {
+        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+        container.appendChild(item);
+        container.removeAttribute("hidden");
+        parentNode.insertBefore(container, node);
+      }
     }
   }
 };

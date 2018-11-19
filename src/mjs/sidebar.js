@@ -11,20 +11,23 @@ import {
   removeTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  activateTab, addHighlightToTabs, addTabContextClickListener, bookmarkAllTabs,
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, detachTabFromGroup,
-  detachTabsFromGroup, dupeTab, dupeTabs, expandActivatedCollapsedTab,
-  extractDroppedTabs, getSessionTabList, getSidebarTab, getSidebarTabId,
-  getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
-  groupSelectedTabs, highlightAllTabs, moveTabsToEnd, moveTabsToStart,
+  bookmarkAllTabs, bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
+  detachTabFromGroup, detachTabsFromGroup, dupeTab, dupeTabs,
+  extractDroppedTabs, groupSelectedTabs, moveTabsToEnd, moveTabsToStart,
   moveTabsToNewWindow, muteTabs, pinTabs, reloadAllTabs, reloadTabs,
-  removeHighlight, reopenTabsInContainer, setSessionTabList, toggleHighlight,
-  toggleTabGroupCollapsedState, ungroupTabs,
-} from "./tab-util.js";
+  reopenTabsInContainer,
+} from "./browser-tabs.js";
 import {
-  addTabAudioClickListener, addTabCloseClickListener, addTabIconErrorListener,
-  observeTab, setContextualIdentitiesIcon, setTabAudio,
-  setTabAudioIcon, setTabContent, setTabIcon,
+  activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
+  getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
+  setSessionTabList,
+} from "./util.js";
+import {
+  addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
+  addTabContextClickListener, addTabIconErrorListener,
+  expandActivatedCollapsedTab, highlightAllTabs, observeTab, removeHighlight,
+  setContextualIdentitiesIcon, setTabAudio, setTabAudioIcon, setTabContent,
+  setTabIcon, toggleHighlight, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-content.js";
 import {
   createContextMenu, menuItems, updateContextMenu,
