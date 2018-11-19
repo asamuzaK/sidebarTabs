@@ -4,7 +4,7 @@
 
 import {isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {getAllContextualIdentities} from "./browser.js";
-import {getSidebarTab, getSidebarTabId} from "./tab-util.js";
+import {getSidebarTab, getSidebarTabId} from "./util.js";
 
 /* api */
 const {contextualIdentities, i18n, menus, tabs} = browser;
@@ -552,7 +552,7 @@ export const removeContextualIdentitiesMenu = async info => {
  * @param {!Object} evt - event
  * @returns {AsyncFunction} - menus.overrideContext()
  */
-const overrideContextMenu = async evt => {
+export const overrideContextMenu = async evt => {
   const {target} = evt;
   const tab = getSidebarTab(target);
   const opt = {};
@@ -566,16 +566,42 @@ const overrideContextMenu = async evt => {
   return menus.overrideContext(opt);
 };
 
-contextualIdentities.onCreated.addListener(info =>
-  createContextualIdentitiesMenu(info).catch(throwErr)
-);
-contextualIdentities.onRemoved.addListener(info =>
-  removeContextualIdentitiesMenu(info).catch(throwErr)
-);
-contextualIdentities.onUpdated.addListener(info =>
-  updateContextualIdentitiesMenu(info).catch(throwErr)
-);
+/**
+ * handle contextmenu click
+ * @param {Object} evt - Event
+ * @returns {AsyncFunction} - overrideContextMenu
+ */
+export const contextmenuOnClick = evt =>
+  overrideContextMenu(evt).catch(throwErr);
 
-window.addEventListener("contextmenu", evt =>
-  overrideContextMenu(evt).catch(throwErr)
-);
+/* browser event handlers */
+/**
+ * handle contextualIdentities.onCreated
+ * @param {Object} info - info
+ * @returns {AsyncFunction} - createContextualIdentitiesMenu()
+ */
+export const contextualIdentitiesOnCreated = info =>
+  createContextualIdentitiesMenu(info).catch(throwErr);
+
+/**
+ * handle contextualIdentities.onRemoved
+ * @param {Object} info - info
+ * @returns {AsyncFunction} - contextualIdentitiesOnRemoved()
+ */
+export const contextualIdentitiesOnRemoved = info =>
+  removeContextualIdentitiesMenu(info).catch(throwErr);
+
+/**
+ * handle contextualIdentities.onUpdated
+ * @param {Object} info - info
+ * @returns {AsyncFunction} - contextualIdentitiesOnUpdated()
+ */
+export const contextualIdentitiesOnUpdated = info =>
+  removeContextualIdentitiesMenu(info).catch(throwErr);
+
+/* listeners */
+contextualIdentities.onCreated.addListener(contextualIdentitiesOnCreated);
+contextualIdentities.onRemoved.addListener(removeContextualIdentitiesMenu);
+contextualIdentities.onUpdated.addListener(contextualIdentitiesOnUpdated);
+
+window.addEventListener("contextmenu", contextmenuOnClick);
