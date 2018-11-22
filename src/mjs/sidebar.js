@@ -1181,11 +1181,17 @@ const handleClickedMenu = async info => {
     case TAB_GROUP_DETACH:
       if (tab && isGrouped &&
           tabParentClassList && !tabParentClassList.contains(PINNED)) {
-        func.push(detachTabsFromGroup([tab], windowId));
+        func.push(
+          detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
+          .then(setSessionTabList)
+        );
       }
       break;
     case TAB_GROUP_DETACH_TABS:
-      func.push(detachTabsFromGroup(Array.from(selectedTabs), windowId));
+      func.push(
+        detachTabsFromGroup(Array.from(selectedTabs), windowId)
+          .then(restoreTabContainers).then(setSessionTabList)
+      );
       break;
     case TAB_GROUP_SELECTED:
       func.push(
