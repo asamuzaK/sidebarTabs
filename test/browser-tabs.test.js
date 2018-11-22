@@ -1,0 +1,2385 @@
+/**
+ * browser-tabs.test.js
+ */
+/*
+  eslint-disable max-nested-callbacks, no-await-in-loop, no-magic-numbers,
+  array-bracket-newline
+*/
+
+import {JSDOM} from "jsdom";
+import {assert} from "chai";
+import {afterEach, beforeEach, describe, it} from "mocha";
+import {browser} from "./mocha/setup.js";
+import * as mjs from "../src/mjs/browser-tabs.js";
+import {
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED, TAB,
+} from "../src/mjs/constant.js";
+
+describe("browser-tabs", () => {
+  /**
+   * create jsdom
+   * @returns {Object} - jsdom instance
+   */
+  const createJsdom = () => {
+    const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
+    const opt = {
+      runScripts: "dangerously",
+    };
+    return new JSDOM(domstr, opt);
+  };
+  const globalKeys = ["Node"];
+  let window, document;
+  beforeEach(() => {
+    const dom = createJsdom();
+    window = dom && dom.window;
+    document = window && window.document;
+    global.browser = browser;
+    global.window = window;
+    global.document = document;
+    for (const key of globalKeys) {
+      global[key] = window[key];
+    }
+  });
+  afterEach(() => {
+    window = null;
+    document = null;
+    delete global.browser;
+    delete global.window;
+    delete global.document;
+    for (const key of globalKeys) {
+      delete global[key];
+    }
+  });
+
+  it("should get browser object", () => {
+    assert.isObject(browser, "browser");
+  });
+
+  describe("bookmark tabs", () => {
+    const func = mjs.bookmarkTabs;
+
+    it("should throw if no argument given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func(1).catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Number.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if argument is empty array", async () => {
+      const i = browser.bookmarks.create.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.bookmarks.create.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element not contained", async () => {
+      const i = browser.bookmarks.create.callCount;
+      const res = await func(["foo"]);
+      assert.strictEqual(browser.bookmarks.create.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.bookmarks.create.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.bookmarks.create.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.bookmarks.create.withArgs({
+        title: "foo",
+        url: "https://example.com",
+      }).resolves("foo");
+      browser.bookmarks.create.withArgs({
+        title: "bar",
+        url: "https://www.example.com",
+      }).resolves("bar");
+      const i = browser.bookmarks.create.withArgs({
+        title: "foo",
+        url: "https://example.com",
+      }).callCount;
+      const j = browser.bookmarks.create.withArgs({
+        title: "bar",
+        url: "https://www.example.com",
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tab = JSON.stringify({
+        title: "foo",
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        title: "bar",
+        url: "https://www.example.com",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tab = JSON.stringify({
+        title: "baz",
+        url: "http://example.com",
+      });
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items));
+      assert.strictEqual(browser.bookmarks.create.withArgs({
+        title: "foo",
+        url: "https://example.com",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.bookmarks.create.withArgs({
+        title: "bar",
+        url: "https://www.example.com",
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, ["foo", "bar"], "result");
+      browser.bookmarks.create.flush();
+    });
+  });
+
+  describe("close tabs", () => {
+    const func = mjs.closeTabs;
+
+    it("should throw if no argument given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if argument is empty array", async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.remove.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.remove.withArgs([1, 2]).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items));
+      assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("close other tabs", () => {
+    const func = mjs.closeOtherTabs;
+
+    it("should throw if no argument given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if argument is empty array", async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.remove.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.remove.withArgs([3, 4]).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items));
+      assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("close tabs to the end", () => {
+    const func = mjs.closeTabsToEnd;
+
+    it("should not call function if no argument given", async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func();
+      assert.strictEqual(browser.tabs.remove.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function if argument is not element", async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func("foo");
+      assert.strictEqual(browser.tabs.remove.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.remove.withArgs([3, 4]).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func(elm2);
+      assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("create tabs in order", () => {
+    const func = mjs.createTabsInOrder;
+
+    it("should throw if no argument given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if object is empty", async () => {
+      const i = browser.tabs.create.callCount;
+      const res = await func([{}]);
+      assert.strictEqual(browser.tabs.create.callCount, i, "not called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.create.withArgs({foo: "bar"}).callCount;
+      const j = browser.tabs.create.withArgs({foo: "baz"}).callCount;
+      const res = await func([{foo: "bar"}, {foo: "baz"}]);
+      assert.strictEqual(browser.tabs.create.withArgs({foo: "bar"}).callCount,
+                         i + 1, "called");
+      assert.strictEqual(browser.tabs.create.withArgs({foo: "baz"}).callCount,
+                         j + 1, "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("reopen tabs in container", () => {
+    const func = mjs.reopenTabsInContainer;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 2nd argument not given", async () => {
+      await func([]).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 2nd argument is not string", async () => {
+      await func([], 1).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Number.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if arg is not array of element", async () => {
+      const i = browser.tabs.get.callCount;
+      const res = await func(["foo"], "bar");
+      assert.strictEqual(browser.tabs.get.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        url: "https://example.com",
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        url: "https://www.example.com",
+      });
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const j = browser.tabs.get.withArgs(2).callCount;
+      const k = browser.tabs.create.withArgs({
+        url: "https://www.example.com",
+        windowId: 1,
+        cookieStoreId: "bar",
+        index: 2,
+      }).callCount;
+      const l = browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: 1,
+        cookieStoreId: "bar",
+        index: 1,
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.dataset.tabId = "1";
+      elm2.dataset.tabId = "2";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func([elm, elm2], "bar", 1);
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+                         "called");
+      assert.strictEqual(browser.tabs.get.withArgs(2).callCount, j + 1,
+                         "called");
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: "https://www.example.com",
+        windowId: 1,
+        cookieStoreId: "bar",
+        index: 2,
+      }).callCount, k + 1, "called");
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: 1,
+        cookieStoreId: "bar",
+        index: 1,
+      }).callCount, l + 1, "called");
+      assert.isUndefined(res, "result");
+      browser.tabs.get.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        url: "https://example.com",
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        url: "https://www.example.com",
+      });
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const j = browser.tabs.get.withArgs(2).callCount;
+      const k = browser.tabs.create.withArgs({
+        url: "https://www.example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: "bar",
+        index: 2,
+      }).callCount;
+      const l = browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: "bar",
+        index: 1,
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.dataset.tabId = "1";
+      elm2.dataset.tabId = "2";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func([elm, elm2], "bar");
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+                         "called");
+      assert.strictEqual(browser.tabs.get.withArgs(2).callCount, j + 1,
+                         "called");
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: "https://www.example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: "bar",
+        index: 2,
+      }).callCount, k + 1, "called");
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: "bar",
+        index: 1,
+      }).callCount, l + 1, "called");
+      assert.isUndefined(res, "result");
+      browser.tabs.get.flush();
+    });
+  });
+
+  describe("duplicate tab", () => {
+    const func = mjs.dupeTab;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not number", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got String.",
+                           "throw");
+      });
+    });
+
+    it("should call function", async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        url: "https://example.com",
+      });
+      browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: 1,
+        index: 1,
+        openerTabId: 1,
+      }).resolves({});
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const j = browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: 1,
+        index: 1,
+        openerTabId: 1,
+      }).callCount;
+      const res = await func(1, 1);
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+                         "called get");
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: 1,
+        index: 1,
+        openerTabId: 1,
+      }).callCount, j + 1, "called create");
+      assert.deepEqual(res, {}, "result");
+      browser.tabs.get.flush();
+      browser.tabs.create.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        url: "https://example.com",
+      });
+      browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 1,
+        openerTabId: 1,
+      }).resolves({});
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const j = browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 1,
+        openerTabId: 1,
+      }).callCount;
+      const res = await func(1);
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+                         "called get");
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 1,
+        openerTabId: 1,
+      }).callCount, j + 1, "called create");
+      assert.deepEqual(res, {}, "result");
+      browser.tabs.get.flush();
+      browser.tabs.create.flush();
+    });
+  });
+
+  describe("duplicate tabs", () => {
+    const func = mjs.dupeTabs;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.create.callCount;
+      const res = await func(["foo"]);
+      assert.strictEqual(browser.tabs.create.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.get.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.get.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items));
+      assert.strictEqual(browser.tabs.get.callCount, i + 2, "called");
+      assert.deepEqual(res, [null, null], "result");
+    });
+  });
+
+  describe("highlight tabs", () => {
+    const func = mjs.highlightTabs;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not number", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should call function", async () => {
+      browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        windowType: "normal",
+      }).resolves([{
+        index: 0,
+      }]);
+      browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0],
+      }).resolves({});
+      const i = browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        windowType: "normal",
+      }).callCount;
+      const j = browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0],
+      }).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        windowType: "normal",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0],
+      }).callCount, j + 1, "called");
+      assert.isObject(res, "result");
+      browser.tabs.query.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: "normal",
+      }).resolves([{
+        index: 0,
+      }]);
+      browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [0, 2],
+      }).resolves({});
+      const i = browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: "normal",
+      }).callCount;
+      const j = browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [0, 2],
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "1";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(selectedTabs), 1);
+      assert.strictEqual(browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: "normal",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [0, 2],
+      }).callCount, j + 1, "called");
+      assert.isObject(res, "result");
+      browser.tabs.query.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        windowType: "normal",
+      }).resolves([{
+        index: 0,
+      }]);
+      browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0, 2],
+      }).resolves({});
+      const i = browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        windowType: "normal",
+      }).callCount;
+      const j = browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0, 2],
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "1";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(selectedTabs));
+      assert.strictEqual(browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        windowType: "normal",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0, 2],
+      }).callCount, j + 1, "called");
+      assert.isObject(res, "result");
+      browser.tabs.query.flush();
+    });
+  });
+
+  describe("move tabs in order", () => {
+    const func = mjs.moveTabsInOrder;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not number", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if object is empty", async () => {
+      const i = browser.tabs.move.callCount;
+      await func([{}]);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+    });
+
+    it("should throw if index is not contained", async () => {
+      await func([{foo: "bar"}]).catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if index is not number", async () => {
+      await func([{index: "foo"}]).catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got String.",
+                           "throw");
+      });
+    });
+
+    it("should throw if tabId is not contained", async () => {
+      await func([{index: 0}]).catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if index is not number", async () => {
+      await func([{index: 0, tabId: "foo"}]).catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got String.",
+                           "throw");
+      });
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.move.withArgs(1, {
+        index: 0,
+        windowId: 1,
+      }).callCount;
+      await func([{index: 0, tabId: 1}], 1);
+      assert.strictEqual(browser.tabs.move.withArgs(1, {
+        index: 0,
+        windowId: 1,
+      }).callCount, i + 1, "called");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.move.withArgs(1, {
+        index: 0,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      }).callCount;
+      await func([{index: 0, tabId: 1}]);
+      assert.strictEqual(browser.tabs.move.withArgs(1, {
+        index: 0,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      }).callCount, i + 1, "called");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.move.withArgs(1, {
+        index: 0,
+        windowId: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs(2, {
+        index: 1,
+        windowId: 1,
+      }).callCount;
+      await func([{index: 0, tabId: 1}, {index: 1, tabId: 2}], 1);
+      assert.strictEqual(browser.tabs.move.withArgs(1, {
+        index: 0,
+        windowId: 1,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs(2, {
+        index: 1,
+        windowId: 1,
+      }).callCount, j + 1, "called");
+      browser.tabs.move.flush();
+    });
+  });
+
+  describe("move tabs to end", () => {
+    const func = mjs.moveTabsToEnd;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 2nd argument not number", async () => {
+      await func([]).catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 2nd argument is not number", async () => {
+      await func([], "foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if empty array", async () => {
+      const i = browser.tabs.move.callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      elm.classList.add(TAB);
+      container.appendChild(elm);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      const res = await func([], 1);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.move.callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      elm.classList.add(TAB);
+      container.appendChild(elm);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      const res = await func(["foo"], 1);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.move.callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      elm.classList.add(TAB);
+      container.appendChild(elm);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(elm2);
+      const res = await func([elm2], 1);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount, i + 1, "called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).resolves({});
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm3], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).resolves({});
+      browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm, elm3], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 1,
+      }).resolves({});
+      browser.tabs.move.withArgs([3], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: -1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: -1,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm, elm3], 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 1,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).resolves({});
+      browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("div");
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      cnt.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(cnt);
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      container.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.group = "foo";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(tmpl);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(newTabContainer);
+      const res = await func([elm, elm3], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).resolves({});
+      browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("div");
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      cnt.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(cnt);
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      container.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(tmpl);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(newTabContainer);
+      const res = await func([elm, elm3], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 1,
+      }).resolves({});
+      browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2, elm3], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 1,
+      }).callCount, i, "not called");
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).resolves({});
+      browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: -1,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm, elm4], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 1,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j, "not called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+  });
+
+  describe("move tabs to start", () => {
+    const func = mjs.moveTabsToStart;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 1st argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 2nd argument not number", async () => {
+      await func([]).catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if 2nd argument is not number", async () => {
+      await func([], "foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Number but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if empty array", async () => {
+      const i = browser.tabs.move.callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      elm.classList.add(TAB);
+      container.appendChild(elm);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      const res = await func([], 1);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.move.callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      elm.classList.add(TAB);
+      container.appendChild(elm);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      const res = await func(["foo"], 1);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.move.callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      elm.classList.add(TAB);
+      container.appendChild(elm);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(elm2);
+      const res = await func([elm2], 2);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2], 2, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount, i + 1, "called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).resolves({});
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm4], 4, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).resolves({});
+      browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2, elm4], 2, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 0,
+      }).resolves({});
+      browser.tabs.move.withArgs([4], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 2,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 0,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 2,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2, elm4], 2);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 0,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        index: 2,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).resolves({});
+      browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("div");
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      cnt.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(cnt);
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      container.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.group = "foo";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(tmpl);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2, elm4], 2, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).resolves({});
+      browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("div");
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      cnt.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(cnt);
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      container.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(tmpl);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2, elm4], 2, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}], [{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 0,
+      }).resolves({});
+      browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 0,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm, elm4], 1, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([1], {
+        windowId: 1,
+        index: 0,
+      }).callCount, i, "not called");
+      assert.strictEqual(browser.tabs.move.withArgs([4], {
+        windowId: 1,
+        index: 2,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).resolves({});
+      browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: 2,
+      }).resolves({});
+      const i = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount;
+      const j = browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: 2,
+      }).callCount;
+      const pinnedContainer = document.createElement("div");
+      const container = document.createElement("div");
+      const container2 = document.createElement("div");
+      const newTabContainer = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      pinnedContainer.id = PINNED;
+      pinnedContainer.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      newTab.id = NEW_TAB;
+      pinnedContainer.appendChild(elm);
+      pinnedContainer.appendChild(elm2);
+      container.appendChild(elm3);
+      container2.appendChild(elm4);
+      newTabContainer.appendChild(newTab);
+      body.appendChild(pinnedContainer);
+      body.appendChild(container);
+      body.appendChild(container2);
+      body.appendChild(newTabContainer);
+      const res = await func([elm2, elm3], 2, 1);
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: 0,
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([3], {
+        windowId: 1,
+        index: 2,
+      }).callCount, j, "not called");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.move.flush();
+    });
+  });
+
+  describe("move tabs to new window", () => {
+    const func = mjs.moveTabsToNewWindow;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if empty array", async () => {
+      const i = browser.tabs.move.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.move.callCount;
+      const res = await func(["foo"]);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.move.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.move.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should create window but not call move if only 1 tab", async () => {
+      browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).resolves({
+        id: 1,
+      });
+      const i = browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).callCount;
+      const j = browser.tabs.move.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isNull(res, "result");
+      browser.windows.create.flush();
+    });
+
+    it("should create window and call move", async () => {
+      browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).resolves({
+        id: 1,
+      });
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: -1,
+      }).resolves([{}]);
+      const i = browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).callCount;
+      const j = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func([elm, elm2]);
+      assert.strictEqual(browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j + 1, "called");
+      assert.deepEqual(res, [{}], "result");
+      browser.windows.create.flush();
+      browser.tabs.move.flush();
+    });
+
+    it("should create window but not call move", async () => {
+      browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).resolves({
+        id: 1,
+      });
+      browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: -1,
+      }).resolves([{}]);
+      const i = browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).callCount;
+      const j = browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: -1,
+      }).callCount;
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func([elm, elm2]);
+      assert.strictEqual(browser.windows.create.withArgs({
+        tabId: 1,
+        type: "normal",
+      }).callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.move.withArgs([2], {
+        windowId: 1,
+        index: -1,
+      }).callCount, j, "not called");
+      assert.isNull(res, "result");
+      browser.windows.create.flush();
+      browser.tabs.move.flush();
+    });
+  });
+
+  describe("mute tabs", () => {
+    const func = mjs.muteTabs;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if empty array", async () => {
+      const i = browser.tabs.update.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.update.callCount;
+      const res = await func(["foo"]);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.tabs.update.withArgs(1, {
+        muted: false,
+      }).resolves({});
+      const i = browser.tabs.update.withArgs(1, {
+        muted: false,
+      }).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.update.withArgs(1, {
+        muted: false,
+      }).callCount, i + 1, "called");
+      assert.deepEqual(res, [{}], "result");
+      browser.tabs.update.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.update.withArgs(1, {
+        muted: true,
+      }).resolves({});
+      const i = browser.tabs.update.withArgs(1, {
+        muted: true,
+      }).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm], true);
+      assert.strictEqual(browser.tabs.update.withArgs(1, {
+        muted: true,
+      }).callCount, i + 1, "called");
+      assert.deepEqual(res, [{}], "result");
+      browser.tabs.update.flush();
+    });
+  });
+
+  describe("pin tabs", () => {
+    const func = mjs.pinTabs;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if empty array", async () => {
+      const i = browser.tabs.update.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.update.callCount;
+      const res = await func(["foo"]);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.tabs.update.withArgs(1, {
+        pinned: false,
+      }).resolves({});
+      const i = browser.tabs.update.withArgs(1, {
+        pinned: false,
+      }).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.update.withArgs(1, {
+        pinned: false,
+      }).callCount, i + 1, "called");
+      assert.deepEqual(res, [{}], "result");
+      browser.tabs.update.flush();
+    });
+
+    it("should call function", async () => {
+      browser.tabs.update.withArgs(1, {
+        pinned: true,
+      }).resolves({});
+      const i = browser.tabs.update.withArgs(1, {
+        pinned: true,
+      }).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm], true);
+      assert.strictEqual(browser.tabs.update.withArgs(1, {
+        pinned: true,
+      }).callCount, i + 1, "called");
+      assert.deepEqual(res, [{}], "result");
+      browser.tabs.update.flush();
+    });
+  });
+
+  describe("reload tabs", () => {
+    const func = mjs.reloadTabs;
+
+    it("should throw if argument not given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if argument is not array", async () => {
+      await func("foo").catch(e => {
+        assert.strictEqual(e.message, "Expected Array but got String.",
+                           "throw");
+      });
+    });
+
+    it("should not call function if empty array", async () => {
+      const i = browser.tabs.reload.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.reload.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not contained", async () => {
+      const i = browser.tabs.reload.callCount;
+      const res = await func(["foo"]);
+      assert.strictEqual(browser.tabs.reload.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if element is not tab", async () => {
+      const i = browser.tabs.reload.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.reload.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.tabs.reload.withArgs(1).resolves(undefined);
+      const i = browser.tabs.reload.withArgs(1).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.reload.withArgs(1).callCount, i + 1,
+                         "called");
+      assert.deepEqual(res, [undefined], "result");
+      browser.tabs.reload.flush();
+    });
+  });
+});

@@ -6,27 +6,24 @@ import {
   getType, isObjectNotEmpty, isString, logErr, sleep, throwErr,
 } from "./common.js";
 import {
-  highlightTab, removeTab, getActiveTab, getTab, updateTab,
+  getTab, updateTab,
 } from "./browser.js";
 import {
   closeTabs, muteTabs,
 } from "./browser-tabs.js";
 import {
-  activateTab, getSidebarTab, getSidebarTabContainer, getSidebarTabId,
-  getSidebarTabIndex, getTemplate, setSessionTabList,
+  getSidebarTab, getSidebarTabId, setSessionTabList,
 } from "./util.js";
 
 /* api */
-const {i18n, windows} = browser;
+const {i18n} = browser;
 
 /* constants */
 import {
-  ACTIVE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_COLLAPSED,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_GROUP,
-  CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, PINNED, TAB_CLOSE,
-  TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_MUTE, TAB_MUTE_UNMUTE, TAB_QUERY,
-  TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED, URL_AUDIO_PLAYING,
-  URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
+  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
+  CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,
+  TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED,
+  URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
 const TIME_500MSEC = 500;
 
@@ -52,6 +49,18 @@ export const favicon = new Map([
     "chrome://mozapps/skin/extensions/extensionGeneric-16.svg",
     "../img/addons-favicon.svg",
   ],
+]);
+
+/* contextual identities icon name */
+export const contextualIdentitiesIconName = new Set([
+  "briefcase", "cart", "chill", "dollar", "fingerprint", "food", "fruit",
+  "gift", "pet", "tree", "vacation",
+]);
+
+/* contextual identities icon color */
+export const contextualIdentitiesIconColor = new Set([
+  "blue", "purple", "pink", "red", "orange", "yellow", "green",
+  "turquoise",
 ]);
 
 /**
@@ -96,12 +105,12 @@ export const setTabIcon = async (elm, info) => {
           const {hostname} = new URL(url);
           const connecting =
             title.endsWith("/") && hostname.endsWith(title.replace(/\/$/, ""));
-          if (elm.dataset.connecting && !connecting) {
+          if (connecting) {
+            elm.dataset.connecting = url;
+          } else if (elm.dataset.connecting) {
             const {stroke} = window.getComputedStyle(elm);
             elm.style.fill = stroke;
             elm.dataset.connecting = "";
-          } else if (connecting) {
-            elm.dataset.connecting = url;
           }
         } else {
           elm.dataset.connecting = url;
@@ -136,15 +145,9 @@ export const setTabContent = async (tab, tabsTab) => {
     const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
     const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
     const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
-    if (tabContent) {
-      tabContent.title = title;
-    }
-    if (tabTitle) {
-      tabTitle.textContent = title;
-    }
-    if (tabIcon) {
-      await setTabIcon(tabIcon, {favIconUrl, status, title, url});
-    }
+    tabContent.title = title;
+    tabTitle.textContent = title;
+    await setTabIcon(tabIcon, {favIconUrl, status, title, url});
     tab.dataset.tab = JSON.stringify(tabsTab);
   }
 };
@@ -158,19 +161,17 @@ export const setTabContent = async (tab, tabsTab) => {
 export const handleClickedTabAudio = async evt => {
   const {target} = evt;
   const tab = getSidebarTab(target);
+  const tabId = getSidebarTabId(tab);
   let func;
-  if (tab) {
-    const tabId = getSidebarTabId(tab);
-    if (Number.isInteger(tabId)) {
-      const tabsTab = await getTab(tabId);
-      const {mutedInfo: {muted}} = tabsTab;
-      const {classList} = tab;
-      if (classList.contains(HIGHLIGHTED)) {
-        const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-        func = muteTabs(selectedTabs, !muted);
-      } else {
-        func = updateTab(tabId, {muted: !muted});
-      }
+  if (Number.isInteger(tabId)) {
+    const tabsTab = await getTab(tabId);
+    const {mutedInfo: {muted}} = tabsTab;
+    const {classList} = tab;
+    if (classList.contains(HIGHLIGHTED)) {
+      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      func = muteTabs(Array.from(selectedTabs), !muted);
+    } else {
+      func = updateTab(tabId, {muted: !muted});
     }
   }
   return func;
@@ -190,7 +191,8 @@ export const tabAudioOnClick = evt =>
  * @returns {void}
  */
 export const addTabAudioClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_AUDIO)) {
     elm.addEventListener("click", tabAudioOnClick);
   }
 };
@@ -253,7 +255,8 @@ export const setTabAudioIcon = async (elm, info) => {
  * @returns {void}
  */
 export const setCloseTab = async (elm, highlighted) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_CLOSE)) {
     if (highlighted) {
       elm.title = i18n.getMessage(`${TABS_CLOSE}_tooltip`);
     } else {
@@ -265,7 +268,7 @@ export const setCloseTab = async (elm, highlighted) => {
 /**
  * handle clicked close button
  * @param {Object} evt - event
- * @returns {?AsyncFunction} - closeTabs() / removeTab()
+ * @returns {?AsyncFunction} - closeTabs()
  */
 export const handleClickedCloseButton = async evt => {
   const {target} = evt;
@@ -275,12 +278,9 @@ export const handleClickedCloseButton = async evt => {
     const {classList} = tab;
     if (classList.contains(HIGHLIGHTED)) {
       const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-      func = closeTabs(selectedTabs);
+      func = closeTabs(Array.from(selectedTabs));
     } else {
-      const tabId = getSidebarTabId(target);
-      if (Number.isInteger(tabId)) {
-        func = removeTab(tabId);
-      }
+      func = closeTabs([tab]);
     }
   }
   return func || null;
@@ -300,24 +300,13 @@ export const tabCloseOnClick = evt =>
  * @returns {void}
  */
 export const addTabCloseClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_CLOSE)) {
     elm.addEventListener("click", tabCloseOnClick);
   }
 };
 
 /* contextual identities */
-/* contextual identities icon name */
-export const contextualIdentitiesIconName = new Set([
-  "briefcase", "cart", "chill", "dollar", "fingerprint", "food", "fruit",
-  "gift", "pet", "tree", "vacation",
-]);
-
-/* contextual identities icon color */
-export const contextualIdentitiesIconColor = new Set([
-  "blue", "purple", "pink", "red", "orange", "yellow", "green",
-  "turquoise",
-]);
-
 /**
  * set contextual identities icon
  * @param {Object} elm - element
@@ -329,7 +318,8 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
       isObjectNotEmpty(info)) {
     const {color, icon, name} = info;
     if (contextualIdentitiesIconColor.has(color) &&
-        contextualIdentitiesIconName.has(icon) && isString(name)) {
+        contextualIdentitiesIconName.has(icon) &&
+        isString(name)) {
       elm.alt = name;
       elm.src = `../img/${icon}.svg#${color}`;
       elm.parentNode.classList.add(IDENTIFIED);
@@ -345,8 +335,8 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
  */
 export const addHighlight = async elm => {
   const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const tabId = getSidebarTabId(elm);
+  const tabId = getSidebarTabId(elm);
+  if (Number.isInteger(tabId)) {
     const tab = await getTab(tabId);
     const {audible, mutedInfo: {muted}} = tab;
     const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
@@ -365,18 +355,19 @@ export const addHighlight = async elm => {
 
 /**
  * add highlight class to tabs
- * @param {Array} arr - array of tab ID
+ * @param {Array} tabIds - array of tab ID
  * @returns {Promise.<Array>} - results of each handler
  */
-export const addHighlightToTabs = async arr => {
+export const addHighlightToTabs = async tabIds => {
+  if (!Array.isArray(tabIds)) {
+    throw new TypeError(`Expected Array but got ${getType(tabIds)}.`);
+  }
   const func = [];
-  if (Array.isArray(arr)) {
-    arr.forEach(id => {
-      const item = document.querySelector(`[data-tab-id="${id}"]`);
-      if (item) {
-        func.push(addHighlight(item));
-      }
-    });
+  for (const id of tabIds) {
+    const item = document.querySelector(`[data-tab-id="${id}"]`);
+    if (item) {
+      func.push(addHighlight(item));
+    }
   }
   return Promise.all(func);
 };
@@ -388,8 +379,8 @@ export const addHighlightToTabs = async arr => {
  */
 export const removeHighlight = async elm => {
   const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    const tabId = getSidebarTabId(elm);
+  const tabId = getSidebarTabId(elm);
+  if (Number.isInteger(tabId)) {
     const tab = await getTab(tabId);
     const {audible, mutedInfo: {muted}} = tab;
     const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
@@ -421,132 +412,6 @@ export const toggleHighlight = async elm => {
     }
   }
   return func;
-};
-
-/**
- * highlight all tabs
- * @param {Object} elm - first selected tab
- * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - highlightTab()
- */
-export const highlightAllTabs = async (elm, windowId) => {
-  const items = document.querySelectorAll(TAB_QUERY);
-  let func;
-  if (items) {
-    const arr = [];
-    let firstIndex;
-    if (!Number.isInteger(windowId)) {
-      windowId = windows.WINDOW_ID_CURRENT;
-    }
-    if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-      const index = getSidebarTabIndex(elm);
-      if (Number.isInteger(index)) {
-        firstIndex = index;
-        arr.push(index);
-      }
-    } else {
-      const tab = await getActiveTab(windowId);
-      if (tab) {
-        const {id, index} = tab;
-        const item = document.querySelector(`[data-tab-id="${id}"]`);
-        if (item) {
-          firstIndex = index;
-          arr.push(index);
-        }
-      }
-    }
-    for (const item of items) {
-      const itemIndex = getSidebarTabIndex(item);
-      if (Number.isInteger(itemIndex)) {
-        if (Number.isInteger(firstIndex)) {
-          if (itemIndex !== firstIndex) {
-            arr.push(itemIndex);
-          }
-        } else {
-          arr.push(itemIndex);
-        }
-      }
-    }
-    func = highlightTab(arr, windowId);
-  }
-  return func || null;
-};
-
-/* tab group */
-/**
- * toggle tab group collapsed state
- * @param {!Object} evt - event
- * @returns {?AsyncFunction} - activateTab()
- */
-export const toggleTabGroupCollapsedState = async evt => {
-  const {target} = evt;
-  const container = getSidebarTabContainer(target);
-  let func;
-  if (container && container.classList.contains(CLASS_TAB_GROUP)) {
-    const {firstElementChild: tab} = container;
-    const {firstElementChild: tabContext} = tab;
-    const {firstElementChild: toggleIcon} = tabContext;
-    container.classList.toggle(CLASS_TAB_COLLAPSED);
-    if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
-      tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
-      func = activateTab(tab);
-    } else {
-      tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
-    }
-  }
-  return func || null;
-};
-
-/**
- * add tab context click listener
- * @param {Object} elm - element
- * @returns {void}
- */
-export const addTabContextClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.addEventListener("click", evt =>
-      toggleTabGroupCollapsedState(evt).then(setSessionTabList).catch(throwErr)
-    );
-  }
-};
-
-/**
- * expand activated collapsed tab
- * @returns {?AsyncFunction} - toggleTabGroupCollapsedState()
- */
-export const expandActivatedCollapsedTab = async () => {
-  const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
-  let func;
-  if (tab) {
-    const {parentNode} = tab;
-    if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
-        parentNode.firstElementChild !== tab) {
-      func = toggleTabGroupCollapsedState({target: tab});
-    }
-  }
-  return func || null;
-};
-
-/**
- * ungroup tabs
- * @param {Object} node - tab group container
- * @returns {void}
- */
-export const ungroupTabs = async node => {
-  if (node && node.nodeType === Node.ELEMENT_NODE) {
-    const {id, classList, parentNode} = node;
-    if (id !== PINNED && classList.contains(CLASS_TAB_GROUP)) {
-      const items = node.querySelectorAll(TAB_QUERY);
-      for (const item of items) {
-        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        container.appendChild(item);
-        container.removeAttribute("hidden");
-        parentNode.insertBefore(container, node);
-      }
-    }
-  }
 };
 
 /* observe */

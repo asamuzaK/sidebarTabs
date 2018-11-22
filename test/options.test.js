@@ -207,7 +207,7 @@ describe("options", () => {
   describe("add event listener to input elements", () => {
     const func = mjs.addInputChangeListener;
 
-    it("should set listener", async () => {
+    it("should add listener", async () => {
       const elm = document.createElement("input");
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");

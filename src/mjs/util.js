@@ -108,13 +108,33 @@ export const getSidebarTabId = node => {
 };
 
 /**
+ * get sidebar tab IDs
+ * @param {Array} nodes - array of node
+ * @returns {Array} - array of tab IDs
+ */
+export const getSidebarTabIds = nodes => {
+  if (!Array.isArray(nodes)) {
+    throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
+  }
+  const arr = [];
+  for (const item of nodes) {
+    const tabId = getSidebarTabId(item);
+    if (Number.isInteger(tabId)) {
+      arr.push(tabId);
+    }
+  }
+  return arr;
+};
+
+/**
  * get sidebar tab index
- * @param {Object} tab - tab
+ * @param {Object} node - node
  * @returns {?number} - index
  */
-export const getSidebarTabIndex = tab => {
+export const getSidebarTabIndex = node => {
   let index;
-  if (tab && tab.nodeType === Node.ELEMENT_NODE) {
+  const tab = getSidebarTab(node);
+  if (tab) {
     const items = document.querySelectorAll(TAB_QUERY);
     const l = items.length;
     let i = 0;
@@ -200,16 +220,12 @@ export const setSessionTabList = async () => {
       const childTabs = item.querySelectorAll(TAB_QUERY);
       for (const tab of childTabs) {
         const tabsTab = tab.dataset.tab;
-        if (isString(tabsTab)) {
-          const {url} = JSON.parse(tabsTab);
-          const tabIndex = getSidebarTabIndex(tab);
-          if (isString(url) && Number.isInteger(tabIndex)) {
-            tabList.recent[tabIndex] = {
-              collapsed, url,
-              containerIndex: i,
-            };
-          }
-        }
+        const {url} = JSON.parse(tabsTab);
+        const tabIndex = getSidebarTabIndex(tab);
+        tabList.recent[tabIndex] = {
+          collapsed, url,
+          containerIndex: i,
+        };
       }
       i++;
     }

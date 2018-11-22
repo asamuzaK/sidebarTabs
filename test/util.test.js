@@ -233,6 +233,43 @@ describe("util", () => {
     });
   });
 
+  describe("get sidebar tab IDs", () => {
+    const func = mjs.getSidebarTabIds;
+
+    it("should throw if no argument given", () => {
+      assert.throws(() => func(), "Expected Array but got Undefined.", "throw");
+    });
+
+    it("should throw if argument is not array", () => {
+      assert.throws(() => func(1), "Expected Array but got Number.", "throw");
+    });
+
+    it("should get empty array if array does not contain element", async () => {
+      const res = await func(["foo"]);
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should get empty array if element is not tab", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should get array", async () => {
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.dataset.tabId = "1";
+      elm2.dataset.tabId = "2";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func([elm, elm2]);
+      assert.deepEqual(res, [1, 2], "result");
+    });
+  });
+
   describe("get sidebar tab index", () => {
     const func = mjs.getSidebarTabIndex;
 
@@ -258,6 +295,7 @@ describe("util", () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
       body.appendChild(elm);
       const res = await func(elm);
       assert.strictEqual(res, 0, "result");
@@ -268,7 +306,9 @@ describe("util", () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       prev.classList.add(TAB);
+      prev.dataset.tabId = "1";
       elm.classList.add(TAB);
+      elm.dataset.tabId = "2";
       body.appendChild(prev);
       body.appendChild(elm);
       const res = await func(elm);
@@ -310,10 +350,15 @@ describe("util", () => {
       const elm5 = document.createElement("p");
       const body = document.querySelector("body");
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
       elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
       elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
       elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
@@ -334,10 +379,15 @@ describe("util", () => {
       const elm5 = document.createElement("p");
       const body = document.querySelector("body");
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
       elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
       elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
       elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
@@ -358,10 +408,15 @@ describe("util", () => {
       const elm5 = document.createElement("p");
       const body = document.querySelector("body");
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
       elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
       elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
       elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
@@ -459,8 +514,30 @@ describe("util", () => {
     it("should call function", async () => {
       browser.windows.getCurrent.resolves({
         incognito: false,
+        id: 1,
       });
-      const i = browser.sessions.setWindowValue.callCount;
+      browser.sessions.getWindowValue.withArgs(1, TAB_LIST).resolves(undefined);
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            url: "http://example.com",
+            containerIndex: 0,
+          },
+          1: {
+            collapsed: false,
+            url: "https://example.com",
+            containerIndex: 1,
+          },
+          2: {
+            collapsed: false,
+            url: "https://www.example.com",
+            containerIndex: 1,
+          },
+        },
+      });
+      const i = browser.sessions.setWindowValue.withArgs(1, "tabList", arg)
+        .callCount;
       const parent = document.createElement("div");
       const parent2 = document.createElement("div");
       const elm = document.createElement("p");
@@ -470,19 +547,34 @@ describe("util", () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "http://example.com",
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
       elm3.classList.add(TAB);
       elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://www.example.com",
+      });
       parent.appendChild(elm);
       parent2.appendChild(elm2);
       parent2.appendChild(elm3);
       body.appendChild(parent);
       body.appendChild(parent2);
       await func();
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-                         "called set");
+      assert.strictEqual(
+        browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
+        i + 1, "called set"
+      );
       browser.windows.getCurrent.flush();
+      browser.sessions.getWindowValue.flush();
     });
 
     it("should call function", async () => {
@@ -496,7 +588,30 @@ describe("util", () => {
             foo: "bar",
           },
         }));
-      const i = browser.sessions.setWindowValue.callCount;
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            url: "http://example.com",
+            containerIndex: 0,
+          },
+          1: {
+            collapsed: false,
+            url: "https://example.com",
+            containerIndex: 1,
+          },
+          2: {
+            collapsed: false,
+            url: "https://www.example.com",
+            containerIndex: 1,
+          },
+        },
+        prev: {
+          foo: "bar",
+        },
+      });
+      const i = browser.sessions.setWindowValue.withArgs(1, "tabList", arg)
+        .callCount;
       const parent = document.createElement("div");
       const parent2 = document.createElement("div");
       const elm = document.createElement("p");
@@ -506,16 +621,19 @@ describe("util", () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
         url: "http://example.com",
       });
       elm2.classList.add(TAB);
       elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
         url: "https://example.com",
       });
       elm3.classList.add(TAB);
       elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
         url: "https://www.example.com",
       });
@@ -525,8 +643,10 @@ describe("util", () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       await func();
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-                         "called set");
+      assert.strictEqual(
+        browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
+        i + 1, "called set"
+      );
       browser.windows.getCurrent.flush();
       browser.sessions.getWindowValue.flush();
     });
