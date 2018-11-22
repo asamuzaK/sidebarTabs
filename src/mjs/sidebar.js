@@ -1127,7 +1127,7 @@ const handleClickedMenu = async info => {
   const {menuItemId} = info;
   const {context, contextualIds, windowId} = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
-  const selectedTabs = allTabs.querySelectorAll(`.${HIGHLIGHTED}`);
+  const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const func = [];
   let isGrouped, tabId, tabParent, tabParentClassList, tabsTab;
