@@ -1183,7 +1183,7 @@ const handleClickedMenu = async info => {
           tabParentClassList && !tabParentClassList.contains(PINNED)) {
         func.push(
           detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+            .then(setSessionTabList)
         );
       }
       break;
