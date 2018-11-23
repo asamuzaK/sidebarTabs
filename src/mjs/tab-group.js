@@ -18,16 +18,17 @@ const {i18n, windows} = browser;
 
 /* constants */
 import {
-  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
+  CLASS_TAB_GROUP,
   HIGHLIGHTED, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_QUERY,
 } from "./constant.js";
 
 /**
  * toggle tab group collapsed state
- * @param {!Object} evt - event
+ * @param {Object} evt - event
  * @returns {?AsyncFunction} - activateTab()
  */
-export const toggleTabGroupCollapsedState = async evt => {
+export const toggleTabGroupCollapsedState = async (evt = {}) => {
   const {target} = evt;
   const container = getSidebarTabContainer(target);
   let func;
@@ -38,14 +39,14 @@ export const toggleTabGroupCollapsedState = async evt => {
     container.classList.toggle(CLASS_TAB_COLLAPSED);
     if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
       tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_EXPAND}`);
+      toggleIcon.alt = i18n.getMessage(TAB_GROUP_EXPAND);
       func = activateTab(tab);
     } else {
       tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(`${TAB_GROUP_COLLAPSE}`);
+      toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
     }
   }
-  return func || null;
+  return func;
 };
 
 /**
@@ -62,7 +63,8 @@ export const tabContextOnClick = evt =>
  * @returns {void}
  */
 export const addTabContextClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_CONTEXT)) {
     elm.addEventListener("click", tabContextOnClick);
   }
 };
@@ -102,8 +104,7 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
   }
   for (const item of revArr) {
     const itemId = getSidebarTabId(item);
-    const itemIndex = getSidebarTabIndex(item);
-    if (Number.isInteger(itemId) && Number.isInteger(itemIndex)) {
+    if (Number.isInteger(itemId)) {
       const {parentNode} = item;
       if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
           !parentNode.classList.contains(PINNED)) {
@@ -116,6 +117,7 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
         container.removeAttribute("hidden");
         parentNode.parentNode.insertBefore(container, parentNextSibling);
         if (item !== parentLastChild) {
+          const itemIndex = getSidebarTabIndex(item);
           arr.push({
             index: itemIndex,
             tabId: itemId,
