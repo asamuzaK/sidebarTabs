@@ -11,8 +11,8 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/tab-group.js";
 import {
   ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP,
-  HIGHLIGHTED, PINNED, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_QUERY,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, HIGHLIGHTED, PINNED, TAB,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND,
 } from "../src/mjs/constant.js";
 
 describe("tab-group", () => {
