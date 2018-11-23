@@ -141,7 +141,7 @@ export const groupSelectedTabs = async windowId => {
   const selectedTabs =
     document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}:not(.${PINNED})`);
   let func;
-  if (selectedTabs && selectedTabs.length > 1) {
+  if (selectedTabs.length > 1) {
     const [tab] = selectedTabs;
     const tabId = getSidebarTabId(tab);
     const arr = [];
@@ -159,27 +159,22 @@ export const groupSelectedTabs = async windowId => {
     for (const item of selectedTabs) {
       const itemId = getSidebarTabId(item);
       let itemIndex;
+      item.dataset.group = tabId;
       if (item === tab) {
-        item.dataset.group = tabId;
         itemIndex = getSidebarTabIndex(item);
       } else {
-        item.dataset.group = tabId;
         container.appendChild(item);
         itemIndex = getSidebarTabIndex(item);
       }
-      if (Number.isInteger(itemId) && Number.isInteger(itemIndex)) {
-        arr.push({
-          index: itemIndex,
-          tabId: itemId,
-        });
-      }
+      arr.push({
+        index: itemIndex,
+        tabId: itemId,
+      });
     }
-    if (arr.length) {
-      if (!Number.isInteger(windowId)) {
-        windowId = windows.WINDOW_ID_CURRENT;
-      }
-      func = moveTabsInOrder(arr, windowId);
+    if (!Number.isInteger(windowId)) {
+      windowId = windows.WINDOW_ID_CURRENT;
     }
+    func = moveTabsInOrder(arr, windowId);
   }
   return func || null;
 };
