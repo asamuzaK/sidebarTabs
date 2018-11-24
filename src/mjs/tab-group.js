@@ -112,11 +112,12 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
           lastElementChild: parentLastChild,
           nextElementSibling: parentNextSibling,
         } = parentNode;
+        const move = item !== parentLastChild;
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(item);
         container.removeAttribute("hidden");
         parentNode.parentNode.insertBefore(container, parentNextSibling);
-        if (item !== parentLastChild) {
+        if (move) {
           const itemIndex = getSidebarTabIndex(item);
           arr.push({
             index: itemIndex,
