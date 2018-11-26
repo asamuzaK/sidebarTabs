@@ -24,12 +24,11 @@ import {
   createContextMenu,
 } from "./menu.js";
 import {
-  addDropEventListener, addNewTabClickListener, emulateTabs, getLastClosedTab,
-  handleActivatedTab, handleAttachedTab, handleClickedMenu, handleCreatedTab,
-  handleDetachedTab, handleEvt, handleHighlightedTab, handleMovedTab,
-  handleMsg, handleRemovedTab, handleUpdatedTab,
-  restoreHighlightedTabs, restoreTabContainers, restoreTabGroups,
-  setContextualIds, setSidebar, setVars,
+  emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
+  handleClickedMenu, handleCreatedTab, handleDetachedTab, handleEvt,
+  handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
+  handleUpdatedTab, restoreHighlightedTabs, restoreTabContainers,
+  restoreTabGroups, setContextualIds, setMain, setSidebar, setVars,
 } from "./main.js";
 
 /* api */
@@ -39,7 +38,7 @@ const {
 
 /* constants */
 import {
-  SIDEBAR_MAIN, TAB,
+  TAB,
 } from "./constant.js";
 
 /* listeners */
@@ -95,13 +94,11 @@ window.addEventListener("mousedown",
 
 /* start up */
 Promise.all([
-  addDropEventListener(document.getElementById(SIDEBAR_MAIN)),
-  addNewTabClickListener(),
   menus.removeAll().then(createContextMenu),
   localizeHtml(),
   makeConnection({name: TAB}),
   setContextualIds(),
-  setSidebar(),
+  setSidebar().then(setMain),
   setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
