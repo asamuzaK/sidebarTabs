@@ -1037,7 +1037,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           if (audible || muted) {
             tabAudio.classList.add(AUDIBLE);
           } else {
-            tabAudio.classList.remove(audible);
+            tabAudio.classList.remove(AUDIBLE);
           }
           func.push(setTabAudio(tabAudio, opt));
         }
