@@ -6,11 +6,8 @@ import {
   isObjectNotEmpty, isString, logErr, throwErr,
 } from "./common.js";
 import {
-  clearStorage, createNewWindow, createTab, getActiveTab,
-  getAllContextualIdentities, getAllTabsInWindow, getContextualId,
-  getCurrentWindow, getHighlightedTab, getOs, getRecentlyClosedTab,
-  getStorage, getTab, highlightTab, moveTab,
-  restoreSession, setSessionWindowValue, updateTab,
+  createNewWindow, createTab, getActiveTab, getAllTabsInWindow, getContextualId,
+  getHighlightedTab, getTab, highlightTab, moveTab, updateTab,
 } from "./browser.js";
 import {
   bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, dupeTabs,
@@ -33,14 +30,11 @@ import {
   groupSelectedTabs, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
-  setTabHeight, setTheme,
-} from "./theme.js";
-import {
   updateContextMenu,
 } from "./menu.js";
 import menuItems from "./menu-items.js";
 import {
-  getLastClosedTab, initSidebar, sidebar, setSidebar, setContextualIds, setVar,
+  initSidebar, sidebar, setVar,
   undoCloseTab,
 } from "./sidebar-variables.js";
 
@@ -60,12 +54,12 @@ import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP, TAB_LIST,
+  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP, TAB_LIST,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_OBSERVE,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
   TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
   TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
-  TABS_REOPEN_CONTAINER, THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
+  TABS_REOPEN_CONTAINER,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;

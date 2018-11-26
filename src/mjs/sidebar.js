@@ -24,13 +24,15 @@ import {
   createContextMenu,
 } from "./menu.js";
 import {
-  addDropEventListener, addNewTabClickListener, emulateTabs, getLastClosedTab,
+  addDropEventListener, addNewTabClickListener, emulateTabs,
   handleActivatedTab, handleAttachedTab, handleClickedMenu, handleCreatedTab,
-  handleDetachedTab, handleEvt, handleHighlightedTab, handleMovedTab,
-  handleMsg, handleRemovedTab, handleUpdatedTab,
-  restoreHighlightedTabs, restoreTabContainers, restoreTabGroups,
-  setContextualIds, setSidebar, setVars,
+  handleDetachedTab, handleEvt, handleHighlightedTab, handleMovedTab, handleMsg,
+  handleRemovedTab, handleUpdatedTab,
+  restoreHighlightedTabs, restoreTabContainers, restoreTabGroups, setVars,
 } from "./main.js";
+import {
+  getLastClosedTab, setSidebar, setContextualIds,
+} from "./sidebar-variables.js";
 
 /* api */
 const {
