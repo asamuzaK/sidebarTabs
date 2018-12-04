@@ -1200,7 +1200,7 @@ export const handleClickedMenu = async info => {
     case TAB_PIN:
       if (tabsTab) {
         const {pinned} = tabsTab;
-        func.push(pinTabs([tab], {pinned: !pinned}));
+        func.push(pinTabs([tab], !pinned));
       }
       break;
     case TAB_RELOAD:
