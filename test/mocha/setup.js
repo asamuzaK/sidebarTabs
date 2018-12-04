@@ -47,6 +47,7 @@ class Port {
 }
 
 browser.runtime.Port = Port;
+browser.i18n.getMessage.callsFake((...args) => args.toString());
 
 global.browser = browser;
 global.window = window;
