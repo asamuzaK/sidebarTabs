@@ -418,7 +418,7 @@ export const toggleHighlight = async elm => {
 /**
  * observe tab
  * @param {number} tabId - tab ID
- * @returns {?AsyncFunction} - setSessionTabList() / recurse observeTab()
+ * @returns {AsyncFunction} - setSessionTabList() / recurse observeTab()
  */
 export const observeTab = async tabId => {
   if (!Number.isInteger(tabId)) {
