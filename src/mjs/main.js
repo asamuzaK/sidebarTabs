@@ -1747,7 +1747,7 @@ export const restoreTabGroups = async () => {
     let i = 0;
     while (i < l) {
       // NOTE: `tabList[j]` is for backward compat. Remove it in the future.
-      const list = Array.isArray(recent) && recent[i] || tabList[i];
+      const list = recent && recent[i] || tabList[i];
       if (list) {
         const {collapsed, containerIndex, url} = list;
         const item = items[i];
@@ -1769,8 +1769,7 @@ export const restoreTabGroups = async () => {
           const container = containers[containerIndex];
           if (item.parentNode !== container) {
             // NOTE: `tabList[i - 1]` is for backward compat.
-            const prevList = Array.isArray(recent) && recent[i - 1] ||
-                             tabList[i - 1];
+            const prevList = recent && recent[i - 1] || tabList[i - 1];
             const {url: prevUrl} = prevList;
             const prevItem = items[i - 1];
             const {dataset: {tab: prevItemTab}} = prevItem;
