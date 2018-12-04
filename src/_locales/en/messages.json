@@ -275,7 +275,7 @@
   "moveTabsToEnd": {
     "message": "Move to End"
   },
-  "moveTabsToEndw_title": {
+  "moveTabsToEnd_title": {
     "message": "Move to &End",
     "placeholders": {
       "key": {
