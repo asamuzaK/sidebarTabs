@@ -5581,7 +5581,42 @@ describe("main", () => {
       browser.tabs.get.withArgs(1).resolves({
         pinned: true,
       });
-      browser.tabs.update.resolves({});
+      browser.tabs.update.withArgs(1, {pinned: false}).resolves({});
+      browser.tabs.update.withArgs(2, {pinned: false}).resolves({});
+      const info = {
+        menuItemId: TABS_PIN,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
+      assert.deepEqual(res, [[{}, {}]], "result");
+      browser.tabs.get.flush();
+      browser.tabs.update.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      browser.tabs.get.withArgs(1).resolves({
+        pinned: false,
+      });
+      browser.tabs.update.withArgs(1, {pinned: true}).resolves({});
+      browser.tabs.update.withArgs(2, {pinned: true}).resolves({});
       const info = {
         menuItemId: TABS_PIN,
       };
@@ -5614,7 +5649,40 @@ describe("main", () => {
       browser.tabs.get.withArgs(1).resolves({
         pinned: true,
       });
-      browser.tabs.update.resolves({});
+      browser.tabs.update.withArgs(1, {pinned: false}).resolves({});
+      const info = {
+        menuItemId: TAB_PIN,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.get.flush();
+      browser.tabs.update.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      browser.tabs.get.withArgs(1).resolves({
+        pinned: false,
+      });
+      browser.tabs.update.withArgs(1, {pinned: true}).resolves({});
       const info = {
         menuItemId: TAB_PIN,
       };
@@ -5649,7 +5717,44 @@ describe("main", () => {
           muted: true,
         },
       });
-      browser.tabs.update.resolves({});
+      browser.tabs.update.withArgs(1, {muted: false}).resolves({});
+      browser.tabs.update.withArgs(2, {muted: false}).resolves({});
+      const info = {
+        menuItemId: TABS_MUTE,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
+      assert.deepEqual(res, [[{}, {}]], "result");
+      browser.tabs.get.flush();
+      browser.tabs.update.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      browser.tabs.get.withArgs(1).resolves({
+        mutedInfo: {
+          muted: false,
+        },
+      });
+      browser.tabs.update.withArgs(1, {muted: true}).resolves({});
+      browser.tabs.update.withArgs(2, {muted: true}).resolves({});
       const info = {
         menuItemId: TABS_MUTE,
       };
@@ -5684,7 +5789,42 @@ describe("main", () => {
           muted: true,
         },
       });
-      browser.tabs.update.resolves({});
+      browser.tabs.update.withArgs(1, {muted: false}).resolves({});
+      const info = {
+        menuItemId: TAB_MUTE,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
+      assert.deepEqual(res, [[{}]], "result");
+      browser.tabs.get.flush();
+      browser.tabs.update.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      browser.tabs.get.withArgs(1).resolves({
+        mutedInfo: {
+          muted: false,
+        },
+      });
+      browser.tabs.update.withArgs(1, {muted: true}).resolves({});
       const info = {
         menuItemId: TAB_MUTE,
       };
