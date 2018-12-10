@@ -1234,39 +1234,4 @@ describe("tab-content", () => {
       assert.deepEqual(res, [], "result");
     });
   });
-
-  describe("observe", () => {
-    const func = mjs.observeTab;
-
-    it("should throw if no argument given", async () => {
-      await func().catch(e => {
-        assert.strictEqual(e.message, "Expected Number but got Undefined.",
-                           "throw");
-      });
-    });
-
-    it("should throw if argument is not number", async () => {
-      await func("foo").catch(e => {
-        assert.strictEqual(e.message, "Expected Number but got String.",
-                           "throw");
-      });
-    });
-
-    it("should call function", async () => {
-      browser.windows.getCurrent.resolves({
-        id: "foo",
-      });
-      browser.tabs.get.withArgs(1).onFirstCall().resolves({
-        status: "loading",
-      }).onSecondCall().resolves({
-        status: "complete",
-      });
-      const i = browser.tabs.get.callCount;
-      const res = await func(1);
-      assert.strictEqual(browser.tabs.get.callCount, i + 2, "called");
-      assert.isUndefined(res, "result");
-      browser.windows.getCurrent.flush();
-      browser.tabs.get.flush();
-    });
-  });
 });
