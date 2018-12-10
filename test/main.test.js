@@ -5213,33 +5213,6 @@ describe("main", () => {
       browser.windows.getCurrent.flush();
     });
 
-    it("should update, call function", async () => {
-      const i = browser.windows.getCurrent.callCount;
-      const j = browser.tabs.get.callCount;
-      const info = {
-        url: "https://example.com",
-      };
-      const tabsTab = {
-        status: "complete",
-        title: "foo",
-        url: "https://example.com",
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      };
-      browser.windows.getCurrent.resolves({
-        incognito: true,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      browser.tabs.get.withArgs(1).resolves(tabsTab);
-      const res = await func(1, info, tabsTab);
-      const elm = document.querySelector("[data-tab-id=\"1\"]");
-      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
-      assert.strictEqual(browser.tabs.get.callCount, j + 1, "called");
-      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
-      assert.deepEqual(res, [undefined], "result");
-      browser.windows.getCurrent.flush();
-      browser.tabs.get.flush();
-    });
-
     it("should not update, not call function", async () => {
       const i = browser.tabs.query.callCount;
       const info = {
@@ -8532,7 +8505,7 @@ describe("main", () => {
     const func = mjs.handleMsg;
 
     it("should not call function", async () => {
-      const res = await func({}, {});
+      const res = await func({});
       assert.deepEqual(res, [], "result");
     });
 
@@ -8540,12 +8513,7 @@ describe("main", () => {
       const msg = {
         foo: true,
       };
-      const sender = {
-        tab: {
-          id: 1,
-        },
-      };
-      const res = await func(msg, sender);
+      const res = await func(msg);
       assert.deepEqual(res, [], "result");
     });
 
@@ -8553,25 +8521,7 @@ describe("main", () => {
       const msg = {
         [EXT_INIT]: false,
       };
-      const sender = {
-        tab: {
-          id: 1,
-        },
-      };
-      const res = await func(msg, sender);
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not call function", async () => {
-      const msg = {
-        [TAB_OBSERVE]: false,
-      };
-      const sender = {
-        tab: {
-          id: 1,
-        },
-      };
-      const res = await func(msg, sender);
+      const res = await func(msg);
       assert.deepEqual(res, [], "result");
     });
 
@@ -8659,119 +8609,12 @@ describe("main", () => {
       const msg = {
         [EXT_INIT]: true,
       };
-      const sender = {
-        tab: {
-          id: 1,
-        },
-      };
-      const res = await func(msg, sender);
+      const res = await func(msg);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
       assert.strictEqual(browser.windows.getCurrent.callCount, j,
                          "not called windows get current");
       assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
                          "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const sect = document.createElement("section");
-      const div = document.createElement("div");
-      const body = document.querySelector("body");
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      div.classList.add(TAB);
-      div.dataset.tabId = "1";
-      div.dataset.tab = JSON.stringify({
-        index: 0,
-        url: "https://example.com",
-      });
-      const span = document.createElement("span");
-      span.classList.add("tab-context");
-      span.setAttribute("title", "");
-      const img = document.createElement("img");
-      img.classList.add("tab-toggle-icon");
-      img.src = "";
-      img.alt = "";
-      span.appendChild(img);
-      div.appendChild(span);
-      const span2 = document.createElement("span");
-      span2.classList.add("tab-content");
-      span2.setAttribute("title", "");
-      const img2 = document.createElement("img");
-      img2.classList.add("tab-icon");
-      img2.src = "";
-      img2.alt = "";
-      img2.dataset.connecting = "";
-      span2.appendChild(img2);
-      const span2_1 = document.createElement("span");
-      span2_1.classList.add("tab-title");
-      span2.appendChild(span2_1);
-      div.appendChild(span2);
-      const span3 = document.createElement("span");
-      span3.classList.add("tab-audio");
-      span3.setAttribute("title", "");
-      const img3 = document.createElement("img");
-      img3.classList.add("tab-audio-icon");
-      img3.src = "";
-      img3.alt = "";
-      span3.appendChild(img3);
-      div.appendChild(span3);
-      const span4 = document.createElement("span");
-      span4.classList.add("tab-ident");
-      span4.setAttribute("title", "");
-      const img4 = document.createElement("img");
-      img4.classList.add("tab-ident-icon");
-      img4.src = "";
-      img4.alt = "";
-      span4.appendChild(img4);
-      div.appendChild(span4);
-      const span5 = document.createElement("span");
-      span5.classList.add("tab-close");
-      span5.setAttribute("title", "");
-      const img5 = document.createElement("img");
-      img5.classList.add("tab-close-icon");
-      img5.src = "";
-      img5.alt = "";
-      span5.appendChild(img5);
-      div.appendChild(span5);
-      const span6 = document.createElement("span");
-      span6.classList.add("tab-pinned");
-      const img6 = document.createElement("img");
-      img6.classList.add("tab-pinned-icon");
-      img6.src = "";
-      img6.alt = "";
-      span6.appendChild(img6);
-      div.appendChild(span6);
-      sect.appendChild(div);
-      body.appendChild(sect);
-      browser.tabs.get.withArgs(1).resolves({
-        status: "complete",
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      const msg = {
-        [TAB_OBSERVE]: true,
-      };
-      const sender = {
-        tab: {
-          id: 1,
-        },
-      };
-      const res = await func(msg, sender);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get current");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
       assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
                          "called sessions set");
       assert.deepEqual(res, [undefined], "result");

@@ -13,16 +13,6 @@
     "default_icon": "img/icon.svg#context",
     "default_title": "__MSG_extensionName__"
   },
-  "content_scripts": [
-    {
-      "all_frames": false,
-      "js": [
-        "js/twitter.js"
-      ],
-      "matches": ["https://twitter.com/*"],
-      "run_at": "document_start"
-    }
-  ],
   "default_locale": "en",
   "description": "__MSG_extensionDescription__",
   "homepage_url": "https://github.com/asamuzaK/sidebarTabs",

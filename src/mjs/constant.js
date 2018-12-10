@@ -61,7 +61,6 @@ export const TAB_MOVE_START = "moveTabToStart";
 export const TAB_MOVE_WIN = "moveTabToNewWindow";
 export const TAB_MUTE = "muteTab";
 export const TAB_MUTE_UNMUTE = "unmuteTab";
-export const TAB_OBSERVE = "observeTab";
 export const TAB_PIN = "pinTab";
 export const TAB_PIN_UNPIN = "unpinTab";
 export const TAB_QUERY = `.${TAB}:not(.${NEW_TAB})`;

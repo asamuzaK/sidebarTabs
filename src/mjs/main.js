@@ -23,7 +23,7 @@ import {
 } from "./util.js";
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
-  addTabIconErrorListener, observeTab, removeHighlight,
+  addTabIconErrorListener, removeHighlight,
   setContextualIdentitiesIcon, setTabAudio, setTabAudioIcon, setTabContent,
   setTabIcon, toggleHighlight,
 } from "./tab-content.js";
@@ -56,11 +56,11 @@ import {
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP, TAB_LIST,
-  TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_OBSERVE,
-  TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
-  TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
-  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
-  TABS_REOPEN_CONTAINER, THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
+  TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
+  TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK, TABS_CLOSE,
+  TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END, TABS_MOVE_START,
+  TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
+  THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
@@ -1088,9 +1088,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           }));
         }
       }
-      if (info.hasOwnProperty("url")) {
-        func.push(observeTab(tabId));
-      }
       if (info.hasOwnProperty("discarded")) {
         func.push(setSessionTabList());
       }
@@ -1634,7 +1631,7 @@ export const handleEvt = async evt => {
  * @param {!Object} sender - sender
  * @returns {Promise.<Array>} - results of each handler
  */
-export const handleMsg = async (msg, sender) => {
+export const handleMsg = async msg => {
   const items = Object.entries(msg);
   const func = [];
   for (const [key, value] of items) {
@@ -1642,13 +1639,6 @@ export const handleMsg = async (msg, sender) => {
       case EXT_INIT:
         if (value) {
           func.push(initSidebar(value));
-        }
-        break;
-      case TAB_OBSERVE:
-        if (value) {
-          const {tab} = sender;
-          const {id} = tab;
-          func.push(observeTab(id));
         }
         break;
       default:

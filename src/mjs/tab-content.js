@@ -3,7 +3,7 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr,
+  getType, isObjectNotEmpty, isString, logErr, throwErr,
 } from "./common.js";
 import {
   getTab, updateTab,
@@ -12,7 +12,7 @@ import {
   closeTabs, muteTabs,
 } from "./browser-tabs.js";
 import {
-  getSidebarTab, getSidebarTabId, setSessionTabList,
+  getSidebarTab, getSidebarTabId,
 } from "./util.js";
 
 /* api */
@@ -25,7 +25,6 @@ import {
   TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED,
   URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
 } from "./constant.js";
-const TIME_500MSEC = 500;
 
 /* favicon */
 export const favicon = new Map([
@@ -410,30 +409,6 @@ export const toggleHighlight = async elm => {
     } else {
       func = addHighlight(elm);
     }
-  }
-  return func;
-};
-
-/* observe */
-/**
- * observe tab
- * @param {number} tabId - tab ID
- * @returns {AsyncFunction} - setSessionTabList() / recurse observeTab()
- */
-export const observeTab = async tabId => {
-  if (!Number.isInteger(tabId)) {
-    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
-  }
-  await sleep(TIME_500MSEC);
-  const tabsTab = await getTab(tabId);
-  const {status} = tabsTab;
-  let func;
-  if (status === "complete") {
-    await setTabContent(document.querySelector(`[data-tab-id="${tabId}"]`),
-                        tabsTab);
-    func = setSessionTabList();
-  } else {
-    func = observeTab(tabId);
   }
   return func;
 };
