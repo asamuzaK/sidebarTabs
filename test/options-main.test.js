@@ -1,5 +1,5 @@
 /**
- * options.test.js
+ * options-main.test.js
  */
 /* eslint-disable  max-nested-callbacks, no-await-in-loop, no-magic-numbers */
 
@@ -8,10 +8,10 @@ import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
-import * as mjs from "../src/mjs/options.js";
+import * as mjs from "../src/mjs/options-main.js";
 import {EXT_INIT} from "../src/mjs/constant.js";
 
-describe("options", () => {
+describe("options-main", () => {
   /**
    * create jsdom
    * @returns {Object} - jsdom instance
@@ -201,6 +201,24 @@ describe("options", () => {
       await func();
       assert.isTrue(spy.calledOnce, "called");
       elm.addEventListener.restore();
+    });
+  });
+
+  describe("handle input change", () => {
+    const func = mjs.handleInputChange;
+
+    it("should call function", async () => {
+      const i = browser.storage.local.set.callCount;
+      const evt = {
+        target: {
+          id: "foo",
+          type: "text",
+        },
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, "called");
+      assert.strictEqual(res.length, 1, "array length");
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 
