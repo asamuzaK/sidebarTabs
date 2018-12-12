@@ -1,5 +1,5 @@
 /**
- * background.test.js
+ * background-main.test.js
  */
 /* eslint-disable  max-nested-callbacks, no-await-in-loop, no-magic-numbers */
 
@@ -8,9 +8,9 @@ import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
-import * as mjs from "../src/mjs/background.js";
+import * as mjs from "../src/mjs/background-main.js";
 
-describe("background", () => {
+describe("background-main", () => {
   /**
    * create jsdom
    * @returns {Object} - jsdom instance
@@ -180,35 +180,6 @@ describe("background", () => {
       await func(port);
       assert.strictEqual(port.onDisconnect.addListener.callCount, i + 1,
                          "called");
-    });
-  });
-
-  describe("handle browserAction.onClicked", () => {
-    const func = mjs.browserActionOnClicked;
-
-    it("should create promise chain", async () => {
-      const res = await func();
-      assert.isUndefined(res, "result");
-    });
-  });
-
-  describe("handle runtime.onConnect", () => {
-    const func = mjs.runtimeOnConnect;
-
-    it("should create promise chain", async () => {
-      const port = new browser.runtime.Port({name: "foo"});
-      assert.strictEqual(port.name, "foo");
-      const res = await func(port);
-      assert.isUndefined(res, "result");
-    });
-  });
-
-  describe("handle windows.onFocusChanged", () => {
-    const func = mjs.windowsOnFocusChanged;
-
-    it("should create promise chain", async () => {
-      const res = await func(1);
-      assert.isUndefined(res, "result");
     });
   });
 });
