@@ -33,13 +33,14 @@ import {
 
 /* api */
 const {
-  contextualIdentities, menus, runtime, storage, tabs,
+  contextualIdentities, menus, runtime, storage, tabs, windows,
 } = browser;
 
 /* constants */
 import {
   TAB,
 } from "./constant.js";
+const {WINDOW_ID_CURRENT} = windows;
 
 /* listeners */
 contextualIdentities.onCreated.addListener(() =>
@@ -84,8 +85,16 @@ tabs.onRemoved.addListener((tabId, info) =>
     .then(expandActivatedCollapsedTab).then(setSessionTabList)
     .then(getLastClosedTab).catch(throwErr)
 );
-tabs.onUpdated.addListener((tabId, info, tabsTab) =>
-  handleUpdatedTab(tabId, info, tabsTab).catch(throwErr)
+tabs.onUpdated.addListener(
+  (tabId, info, tabsTab) =>
+    handleUpdatedTab(tabId, info, tabsTab).catch(throwErr),
+  {
+    properties: [
+      "audible", "discarded", "favIconUrl", "mutedInfo", "pinned",
+      "status", "title",
+    ],
+    windowId: WINDOW_ID_CURRENT,
+  }
 );
 
 window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
