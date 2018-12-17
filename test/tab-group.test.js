@@ -55,6 +55,40 @@ describe("tab-group", () => {
     assert.isObject(browser, "browser");
   });
 
+  describe("restore sidebar tab containers", () => {
+    const func = mjs.restoreTabContainers;
+
+    it("should call function", async () => {
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const child = document.createElement("p");
+      const child2 = document.createElement("p");
+      const child3 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.id = PINNED;
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(CLASS_TAB_GROUP);
+      elm4.classList.add(CLASS_TAB_CONTAINER);
+      elm3.appendChild(child);
+      elm4.appendChild(child2);
+      elm4.appendChild(child3);
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      await func();
+      assert.strictEqual(body.childElementCount, 3, "child count");
+      assert.deepEqual(elm.parentNode, body, "pinned");
+      assert.isNull(elm2.parentNode, "removed");
+      assert.isFalse(elm3.classList.contains(CLASS_TAB_GROUP), "remove class");
+      assert.isTrue(elm4.classList.contains(CLASS_TAB_GROUP), "add class");
+    });
+  });
+
   describe("toggle tab group collapsed state", () => {
     const func = mjs.toggleTabGroupCollapsedState;
 

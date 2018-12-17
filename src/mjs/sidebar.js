@@ -12,7 +12,7 @@ import {
   setSessionTabList,
 } from "./util.js";
 import {
-  expandActivatedCollapsedTab,
+  expandActivatedCollapsedTab, restoreTabContainers,
 } from "./tab-group.js";
 import {
   localizeHtml,
@@ -27,8 +27,8 @@ import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
   handleClickedMenu, handleCreatedTab, handleDetachedTab, handleEvt,
   handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleUpdatedTab, restoreHighlightedTabs, restoreTabContainers,
-  restoreTabGroups, setContextualIds, setMain, setSidebar, setVars,
+  handleUpdatedTab, restoreHighlightedTabs, restoreTabGroups,
+  setContextualIds, setMain, setSidebar, setVars,
 } from "./main.js";
 
 /* api */

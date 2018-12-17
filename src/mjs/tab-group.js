@@ -19,9 +19,31 @@ const {i18n, windows} = browser;
 /* constants */
 import {
   ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP,
-  HIGHLIGHTED, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_QUERY,
+  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_QUERY,
 } from "./constant.js";
+
+/**
+ * restore sidebar tab containers
+ * @returns {void}
+ */
+export const restoreTabContainers = async () => {
+  const items =
+    document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+  for (const item of items) {
+    const {childElementCount, classList, id, parentNode} = item;
+    switch (childElementCount) {
+      case 0:
+        id !== PINNED && parentNode.removeChild(item);
+        break;
+      case 1:
+        classList.remove(CLASS_TAB_GROUP);
+        break;
+      default:
+        classList.add(CLASS_TAB_GROUP);
+    }
+  }
+};
 
 /**
  * toggle tab group collapsed state

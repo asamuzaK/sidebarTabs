@@ -28,8 +28,8 @@ import {
   setTabIcon, toggleHighlight,
 } from "./tab-content.js";
 import {
-  addTabContextClickListener, detachTabsFromGroup,
-  groupSelectedTabs, toggleTabGroupCollapsedState, ungroupTabs,
+  addTabContextClickListener, detachTabsFromGroup, groupSelectedTabs,
+  restoreTabContainers, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
   setTabHeight, setTheme,
@@ -212,7 +212,7 @@ export const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
         const moveDownArr = [];
         const moveUpArr = [];
         const l = tabIds.length;
-        let i = 0, j = dropTargetIndex + 1;
+        let restore, i = 0, j = dropTargetIndex + 1;
         while (i < l) {
           const itemId = tabIds[i];
           const item = document.querySelector(`[data-tab-id="${itemId}"]`);
@@ -220,6 +220,7 @@ export const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
             const itemIndex = getSidebarTabIndex(item);
             if (itemIndex === j) {
               dropParent.appendChild(item);
+              restore = true;
             } else if (itemIndex < dropTargetIndex) {
               moveDownArr.push([itemId, item]);
             } else {
@@ -255,6 +256,9 @@ export const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
             });
           }
           await moveTabsInOrder(arr, windowId);
+        }
+        if (restore) {
+          func.push(restoreTabContainers().then(setSessionTabList));
         }
       } else {
         const moveDownArr = [];
@@ -520,32 +524,6 @@ export const addTabClickListener = async elm => {
   }
 };
 
-/**
- * restore sidebar tab containers
- * @returns {Promise.<Array>} - results of each handler
- */
-export const restoreTabContainers = async () => {
-  const items =
-    document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-  const func = [];
-  for (const item of items) {
-    const {childElementCount, classList, id, parentNode} = item;
-    switch (childElementCount) {
-      case 0:
-        id !== PINNED && parentNode.removeChild(item);
-        break;
-      case 1:
-        classList.remove(CLASS_TAB_GROUP);
-        func.push(addDropEventListener(item));
-        break;
-      default:
-        classList.add(CLASS_TAB_GROUP);
-        func.push(addDropEventListener(item));
-    }
-  }
-  return Promise.all(func);
-};
-
 /* tab handlers */
 /**
  * handle activated tab
@@ -723,6 +701,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       container.appendChild(tab);
       container.removeAttribute("hidden");
       target.parentNode.insertBefore(container, target);
+      func.push(addDropEventListener(container));
     }
   }
   if (active) {

@@ -913,6 +913,8 @@ describe("main", () => {
       const {move, update} = browser.tabs;
       const i = update.callCount;
       const j = move.callCount;
+      const k = browser.sessions.setWindowValue.callCount;
+      const l = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement("template");
       const cnt = document.createElement("div");
       const dropParent = document.createElement("div");
@@ -926,6 +928,9 @@ describe("main", () => {
       sidebar.windowId = 1;
       move.resolves([{}]);
       update.resolves({});
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
       parent.classList.add(CLASS_TAB_GROUP);
@@ -955,12 +960,17 @@ describe("main", () => {
       const res = await func(dropTarget, data, opt);
       assert.strictEqual(update.callCount, i, "not called");
       assert.strictEqual(move.callCount, j, "not called");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, k + 1,
+                         "called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, l + 2, "called");
       assert.strictEqual(dropParent.childElementCount, 2, "child");
       assert.strictEqual(parent.childElementCount, 2, "child");
+      assert.isTrue(elm2.parentNode === dropParent, "parent");
       assert.strictEqual(elm2.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [], "result");
+      assert.deepEqual(res, [undefined], "result");
       browser.tabs.move.flush();
       browser.tabs.update.flush();
+      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -1982,41 +1992,6 @@ describe("main", () => {
     });
   });
 
-  describe("restore sidebar tab containers", () => {
-    const func = mjs.restoreTabContainers;
-
-    it("should call function", async () => {
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const child = document.createElement("p");
-      const child2 = document.createElement("p");
-      const child3 = document.createElement("p");
-      const body = document.querySelector("body");
-      elm.id = PINNED;
-      elm.classList.add(CLASS_TAB_CONTAINER);
-      elm2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(CLASS_TAB_GROUP);
-      elm4.classList.add(CLASS_TAB_CONTAINER);
-      elm3.appendChild(child);
-      elm4.appendChild(child2);
-      elm4.appendChild(child3);
-      body.appendChild(elm);
-      body.appendChild(elm2);
-      body.appendChild(elm3);
-      body.appendChild(elm4);
-      const res = await func();
-      assert.strictEqual(body.childElementCount, 3, "child count");
-      assert.deepEqual(elm.parentNode, body, "pinned");
-      assert.isNull(elm2.parentNode, "removed");
-      assert.isFalse(elm3.classList.contains(CLASS_TAB_GROUP), "remove class");
-      assert.isTrue(elm4.classList.contains(CLASS_TAB_GROUP), "add class");
-      assert.deepEqual(res, [undefined, undefined], "result");
-    });
-  });
-
   describe("handle activated tab", () => {
     const func = mjs.handleActivatedTab;
     beforeEach(() => {
@@ -2322,7 +2297,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2354,7 +2329,7 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(ACTIVE), "class");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2385,7 +2360,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2424,7 +2399,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2465,7 +2440,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2966,7 +2941,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
       browser.contextualIdentities.get.flush();
@@ -3132,7 +3107,7 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
     });
   });
