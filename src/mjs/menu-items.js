@@ -313,7 +313,7 @@ export default {
       },
       [TAB_GROUP_DETACH]: {
         id: TAB_GROUP_DETACH,
-        title: i18n.getMessage(`${TAB_GROUP_DETACH}_title`, "(&T)"),
+        title: i18n.getMessage(`${TAB_GROUP_DETACH}_title`, "(&D)"),
         type: "normal",
         contexts: ["tab"],
         viewTypes: ["sidebar"],
@@ -322,7 +322,7 @@ export default {
       },
       [TAB_GROUP_DETACH_TABS]: {
         id: TAB_GROUP_DETACH_TABS,
-        title: i18n.getMessage(`${TAB_GROUP_DETACH_TABS}_title`, "(&T)"),
+        title: i18n.getMessage(`${TAB_GROUP_DETACH_TABS}_title`, "(&D)"),
         type: "normal",
         contexts: ["tab"],
         viewTypes: ["sidebar"],
