@@ -86,7 +86,6 @@ main {
   margin: 0;
   border: 1px solid var(--border-color);
   padding: 0;
-  min-width: min-content;
   width: auto;
   height: var(--tab-height);
   max-height: var(--tab-height);
