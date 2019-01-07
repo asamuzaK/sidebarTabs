@@ -90,7 +90,7 @@ tabs.onUpdated.addListener(
     handleUpdatedTab(tabId, info, tabsTab).catch(throwErr),
   {
     properties: [
-      "audible", "discarded", "favIconUrl", "mutedInfo", "pinned",
+      "audible", "discarded", "favIconUrl", "hidden", "mutedInfo", "pinned",
       "status", "title",
     ],
     windowId: WINDOW_ID_CURRENT,

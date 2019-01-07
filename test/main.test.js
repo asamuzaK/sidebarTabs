@@ -2239,12 +2239,13 @@ describe("main", () => {
       assert.deepEqual(res, [], "result");
     });
 
-    it("should create element", async () => {
+    it("should create element, but hide", async () => {
       const i = browser.i18n.getMessage.callCount;
       const tabsTab = {
         active: false,
         audible: false,
         cookieStoreId: COOKIE_STORE_DEFAULT,
+        hidden: true,
         id: 1,
         index: 0,
         pinned: false,
@@ -2264,6 +2265,72 @@ describe("main", () => {
         CLASS_TAB_TITLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
       ];
       assert.isOk(elm, "created");
+      assert.isTrue(elm.classList.contains("hidden"), "class");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, "called");
+      for (const tabItem of tabItems) {
+        const item = elm.querySelector(`.${tabItem}`);
+        switch (tabItem) {
+          case CLASS_TAB_CONTEXT:
+            assert.strictEqual(item.title, `${TAB_GROUP_COLLAPSE}_tooltip`,
+                               `item ${tabItem}`);
+            break;
+          case CLASS_TAB_TOGGLE_ICON:
+            assert.strictEqual(item.alt, TAB_GROUP_COLLAPSE, `item ${tabItem}`);
+            break;
+          case CLASS_TAB_CONTENT:
+            assert.strictEqual(item.title, "foo", `item ${tabItem}`);
+            break;
+          case CLASS_TAB_TITLE:
+            assert.strictEqual(item.textContent, "foo", `item ${tabItem}`);
+            break;
+          case CLASS_TAB_AUDIO:
+            assert.isFalse(item.classList.contains(AUDIBLE), `item ${tabItem}`);
+            break;
+          case CLASS_TAB_CLOSE:
+            assert.strictEqual(item.title, `${TAB_CLOSE}_tooltip`,
+                               `item ${tabItem}`);
+            break;
+          case CLASS_TAB_CLOSE_ICON:
+            assert.strictEqual(item.alt, TAB_CLOSE, `item ${tabItem}`);
+            break;
+        }
+      }
+      assert.strictEqual(elm.dataset.tabId, "1", "id");
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined,
+      ], "result");
+      browser.i18n.getMessage.flush();
+    });
+
+    it("should create element", async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        hidden: false,
+        id: 1,
+        index: 0,
+        pinned: false,
+        status: "complete",
+        title: "foo",
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false,
+        },
+      };
+      browser.i18n.getMessage.callsFake(arg => arg);
+      const res = await func(tabsTab);
+      const elm = document.querySelector("[data-tab-id=\"1\"]");
+      const tabItems = [
+        CLASS_TAB_CONTEXT, CLASS_TAB_TOGGLE_ICON, CLASS_TAB_CONTENT,
+        CLASS_TAB_TITLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+      ];
+      assert.isOk(elm, "created");
+      assert.isFalse(elm.classList.contains("hidden"), "class");
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, "called");
       for (const tabItem of tabItems) {
         const item = elm.querySelector(`.${tabItem}`);
@@ -5160,6 +5227,41 @@ describe("main", () => {
       };
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should update, add class", async () => {
+      const elm = document.querySelector("[data-tab-id=\"1\"]");
+      const info = {
+        hidden: true,
+      };
+      const tabsTab = {
+        status: "complete",
+        title: "foo",
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      const res = await func(1, info, tabsTab);
+      assert.isTrue(elm.classList.contains("hidden"), "class");
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should update, add class", async () => {
+      const elm = document.querySelector("[data-tab-id=\"1\"]");
+      const info = {
+        hidden: false,
+      };
+      const tabsTab = {
+        status: "complete",
+        title: "foo",
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      elm.classList.add("hidden");
+      const res = await func(1, info, tabsTab);
+      assert.isFalse(elm.classList.contains("hidden"), "class");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
     });

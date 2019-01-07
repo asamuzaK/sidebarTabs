@@ -568,8 +568,8 @@ export const handleActivatedTab = async info => {
  */
 export const handleCreatedTab = async (tabsTab, emulate = false) => {
   const {
-    active, audible, cookieStoreId, favIconUrl, id, index, openerTabId, pinned,
-    status, title, url, windowId,
+    active, audible, cookieStoreId, favIconUrl, hidden, id, index, openerTabId,
+    pinned, status, title, url, windowId,
     mutedInfo: {
       muted,
     },
@@ -702,6 +702,11 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       container.removeAttribute("hidden");
       target.parentNode.insertBefore(container, target);
       func.push(addDropEventListener(container));
+    }
+    if (hidden) {
+      tab.classList.add("hidden");
+    } else {
+      tab.classList.remove("hidden");
     }
   }
   if (active) {
@@ -1069,6 +1074,13 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
       }
       if (info.hasOwnProperty("discarded")) {
         func.push(setSessionTabList());
+      }
+      if (info.hasOwnProperty("hidden")) {
+        if (info.hidden) {
+          tab.classList.add("hidden");
+        } else {
+          tab.classList.remove("hidden");
+        }
       }
       tab.dataset.tab = JSON.stringify(tabsTab);
     }

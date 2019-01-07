@@ -129,6 +129,9 @@ main {
 .tab.active.highlighted:hover {
   background: var(--background-selection-hover-color);
 }
+.tab.hidden {
+  display: none;
+}
 
 /* new tab */
 .tab-container.newtab {
