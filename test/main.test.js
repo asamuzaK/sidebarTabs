@@ -2265,7 +2265,7 @@ describe("main", () => {
         CLASS_TAB_TITLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
       ];
       assert.isOk(elm, "created");
-      assert.isTrue(elm.classList.contains("hidden"), "class");
+      assert.isTrue(elm.hasAttribute("hidden"), "hidden");
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, "called");
       for (const tabItem of tabItems) {
         const item = elm.querySelector(`.${tabItem}`);
@@ -2330,7 +2330,7 @@ describe("main", () => {
         CLASS_TAB_TITLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
       ];
       assert.isOk(elm, "created");
-      assert.isFalse(elm.classList.contains("hidden"), "class");
+      assert.isFalse(elm.hasAttribute("hidden"), "hidden");
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, "called");
       for (const tabItem of tabItems) {
         const item = elm.querySelector(`.${tabItem}`);
@@ -5243,7 +5243,7 @@ describe("main", () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
       };
       const res = await func(1, info, tabsTab);
-      assert.isTrue(elm.classList.contains("hidden"), "class");
+      assert.isTrue(elm.hasAttribute("hidden"), "hidden");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
     });
@@ -5259,9 +5259,9 @@ describe("main", () => {
         url: "https://example.com",
         windowId: browser.windows.WINDOW_ID_CURRENT,
       };
-      elm.classList.add("hidden");
+      elm.setAttribute("hidden", "hidden");
       const res = await func(1, info, tabsTab);
-      assert.isFalse(elm.classList.contains("hidden"), "class");
+      assert.isFalse(elm.hasAttribute("hidden"), "hidden");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
     });

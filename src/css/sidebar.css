@@ -129,7 +129,7 @@ main {
 .tab.active.highlighted:hover {
   background: var(--background-selection-hover-color);
 }
-.tab.hidden {
+.tab[hidden] {
   display: none;
 }
 

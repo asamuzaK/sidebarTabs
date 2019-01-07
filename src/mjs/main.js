@@ -704,9 +704,9 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       func.push(addDropEventListener(container));
     }
     if (hidden) {
-      tab.classList.add("hidden");
+      tab.setAttribute("hidden", "hidden");
     } else {
-      tab.classList.remove("hidden");
+      tab.removeAttribute("hidden");
     }
   }
   if (active) {
@@ -1077,9 +1077,9 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
       }
       if (info.hasOwnProperty("hidden")) {
         if (info.hidden) {
-          tab.classList.add("hidden");
+          tab.setAttribute("hidden", "hidden");
         } else {
-          tab.classList.remove("hidden");
+          tab.removeAttribute("hidden");
         }
       }
       tab.dataset.tab = JSON.stringify(tabsTab);
