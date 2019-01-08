@@ -21,70 +21,6 @@ describe("browser", () => {
     assert.isObject(browser, "browser");
   });
 
-  describe("is accesskey supported in context menu", () => {
-    const func = mjs.isAccessKeySupported;
-
-    it("should get false", async () => {
-      browser.runtime.getBrowserInfo.returns({});
-      const res = await func();
-      assert.isFalse(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-
-    it("should get false", async () => {
-      browser.runtime.getBrowserInfo.returns({foo: "bar"});
-      const res = await func();
-      assert.isFalse(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-
-    it("should get true", async () => {
-      browser.runtime.getBrowserInfo.returns({version: "63.0a1"});
-      const res = await func();
-      assert.isTrue(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-
-    it("should get false", async () => {
-      browser.runtime.getBrowserInfo.returns({version: "62.0"});
-      const res = await func();
-      assert.isFalse(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-  });
-
-  describe("is visible supported in context menu", () => {
-    const func = mjs.isVisibleInMenuSupported;
-
-    it("should get false", async () => {
-      browser.runtime.getBrowserInfo.returns({});
-      const res = await func();
-      assert.isFalse(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-
-    it("should get false", async () => {
-      browser.runtime.getBrowserInfo.returns({foo: "bar"});
-      const res = await func();
-      assert.isFalse(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-
-    it("should get true", async () => {
-      browser.runtime.getBrowserInfo.returns({version: "63.0a1"});
-      const res = await func();
-      assert.isTrue(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-
-    it("should get false", async () => {
-      browser.runtime.getBrowserInfo.returns({version: "62.0"});
-      const res = await func();
-      assert.isFalse(res, "result");
-      browser.runtime.getBrowserInfo.flush();
-    });
-  });
-
   describe("create bookmark", () => {
     const func = mjs.createBookmark;
 
@@ -1096,9 +1032,19 @@ describe("browser", () => {
     });
 
     it("should call function", async () => {
-      const i = browser.tabs.reload.callCount;
+      const i = browser.tabs.reload.withArgs(1, null).callCount;
       await func(1);
-      assert.strictEqual(browser.tabs.reload.callCount, i + 1, "res");
+      assert.strictEqual(browser.tabs.reload.withArgs(1, null).callCount, i + 1,
+                         "res");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.reload.withArgs(1, {foo: "bar"}).callCount;
+      await func(1, {foo: "bar"});
+      assert.strictEqual(
+        browser.tabs.reload.withArgs(1, {foo: "bar"}).callCount,
+        i + 1, "res"
+      );
     });
   });
 
