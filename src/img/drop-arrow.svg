@@ -12,6 +12,6 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <polygon points="0,4 16,4 8,12" fill="context-fill"
+  <polygon points="0,4 16,4 8,12" fill="context-fill #FFF"
            style="transform:rotate(0deg); transform-origin: 50% 50%"/>
 </svg>
