@@ -370,7 +370,6 @@ main {
   justify-content: space-around;
   flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
-  fill: var(--foreground-selection-color);
 }
 .compact .tab-group > .tab > .tab-context {
   height: var(--tab-height-compact);
