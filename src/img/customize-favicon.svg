@@ -13,7 +13,7 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <path fill="context-fill #0C0C0D" fill-opacity="context-fill-opacity 1.0"
+  <path fill="context-fill" fill-opacity="context-fill-opacity"
         d="M4 10a1.994 1.994 0 0 0-1.911 1.44c0 .01-.014.015-.017.025-.362
            1.135-.705 2.11-1.759 2.573l-.023.012-.024.012A.5.5
            0 0 0 0 14.5a.5.5 0 0 0 .5.5 6.974 6.974
