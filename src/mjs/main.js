@@ -1781,10 +1781,11 @@ export const restoreTabGroups = async () => {
  */
 export const emulateTabs = async () => {
   const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
+  const func = [];
   for (const item of items) {
-    // eslint-disable-next-line no-await-in-loop
-    await handleCreatedTab(item, true);
+    func.push(handleCreatedTab(item, true));
   }
+  await Promise.all(func);
 };
 
 /**
