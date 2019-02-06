@@ -10661,53 +10661,6 @@ describe("main", () => {
       assert.strictEqual(items[0].textContent, "foo", "title");
       browser.tabs.query.flush();
     });
-
-    /*
-    it("should create tabs", async () => {
-      const i = browser.tabs.query.callCount;
-      const arr = [
-        {
-          active: false,
-          audible: false,
-          cookieStoreId: COOKIE_STORE_DEFAULT,
-          id: 1,
-          index: 0,
-          pinned: true,
-          status: "complete",
-          title: "foo",
-          url: "https://example.com",
-          windowId: browser.windows.WINDOW_ID_CURRENT,
-          mutedInfo: {
-            muted: false,
-          },
-        },
-        {
-          active: false,
-          audible: false,
-          cookieStoreId: COOKIE_STORE_DEFAULT,
-          id: 2,
-          index: 1,
-          pinned: false,
-          status: "complete",
-          title: "bar",
-          url: "http://example.com/bar",
-          windowId: browser.windows.WINDOW_ID_CURRENT,
-          mutedInfo: {
-            muted: false,
-          },
-        },
-      ];
-      browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        windowType: "normal",
-      }).resolves(arr);
-      await func();
-      const items = document.querySelectorAll(TAB_QUERY);
-      assert.strictEqual(browser.tabs.query.callCount, i + 1, "called");
-      assert.strictEqual(items.length, 2, "created");
-      browser.tabs.query.flush();
-    });
-    */
   });
 
   describe("set main", () => {
