@@ -8,12 +8,12 @@ import {
 import {
   clearStorage, createTab, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, setSessionWindowValue, updateTab,
+  getOs, getRecentlyClosedTab, getStorage, getTab,
+  highlightTab, moveTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, dupeTabs,
-  highlightTabs, moveTabsInOrder, moveTabsToEnd, moveTabsToStart,
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, createNewTab,
+  dupeTabs, highlightTabs, moveTabsInOrder, moveTabsToEnd, moveTabsToStart,
   moveTabsToNewWindow, muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
 } from "./browser-tabs.js";
 import {
@@ -162,22 +162,13 @@ export const undoCloseTab = async () => {
 
 /* new tab */
 /**
- * create new tab
- * @returns {AsyncFunction} - createTab()
- */
-export const createNewTab = async () => {
-  const {windowId} = sidebar;
-  return createTab({
-    windowId,
-    active: true,
-  });
-};
-
-/**
  * handle new tab on click
  * @returns {AsyncFunction} - createNewTab()
  */
-export const newTabOnClick = () => createNewTab().catch(throwErr);
+export const newTabOnClick = () => {
+  const {windowId} = sidebar;
+  return createNewTab(windowId).catch(throwErr);
+};
 
 /* DnD */
 /**

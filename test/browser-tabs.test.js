@@ -2244,6 +2244,75 @@ describe("browser-tabs", () => {
     });
   });
 
+  describe("create new tab", () => {
+    const func = mjs.createNewTab;
+
+    it("should call function", async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func();
+      assert.strictEqual(create.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
+      browser.tabs.create.flush();
+    });
+
+    it("should call function", async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true,
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1);
+      assert.strictEqual(create.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
+      browser.tabs.create.flush();
+    });
+  });
+
+  describe("create new tab in container", () => {
+    const func = mjs.createNewTabInContainer;
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError);
+        assert.strictEqual(e.message, "Expected String but got Undefined.");
+      });
+    });
+
+    it("should call function", async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        cookieStoreId: "foo",
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func("foo");
+      assert.strictEqual(create.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
+      browser.tabs.create.flush();
+    });
+
+    it("should call function", async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true,
+        cookieStoreId: "foo",
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func("foo", 1);
+      assert.strictEqual(create.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
+      browser.tabs.create.flush();
+    });
+  });
+
   describe("pin tabs", () => {
     const func = mjs.pinTabs;
 
