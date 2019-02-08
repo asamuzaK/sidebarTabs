@@ -5486,7 +5486,7 @@ describe("main", () => {
       }
     });
 
-    it("should call function", async () => {
+    it("should not call function", async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.create.callCount;
       const sect = document.createElement("section");
@@ -5502,6 +5502,30 @@ describe("main", () => {
       browser.tabs.get.withArgs(1).resolves({});
       const info = {
         menuItemId: "foo",
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.tabs.create.callCount, j, "called create");
+      assert.deepEqual(res, [], "result");
+      browser.tabs.get.flush();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.create.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      sect.appendChild(elm);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.contextualIds = ["foo"];
+      browser.tabs.get.withArgs(1).resolves({});
+      const info = {
+        menuItemId: "fooReopen",
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, "called get");
@@ -5531,13 +5555,24 @@ describe("main", () => {
       mjs.sidebar.contextualIds = ["foo"];
       browser.tabs.get.resolves({});
       const info = {
-        menuItemId: "foo",
+        menuItemId: "fooReopen",
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 3, "called get");
       assert.strictEqual(browser.tabs.create.callCount, j + 2, "called create");
       assert.deepEqual(res, [undefined], "result");
       browser.tabs.get.flush();
+    });
+
+    it("should call function", async () => {
+      const j = browser.tabs.create.callCount;
+      mjs.sidebar.contextualIds = ["foo"];
+      const info = {
+        menuItemId: "fooNewTab",
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.create.callCount, j + 1, "called create");
+      assert.deepEqual(res, [null], "result");
     });
 
     it("should call function", async () => {

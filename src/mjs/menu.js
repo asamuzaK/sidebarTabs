@@ -45,20 +45,34 @@ export const createContextualIdentitiesMenu = async () => {
   if (items) {
     for (const item of items) {
       const {color, cookieStoreId, icon, name} = item;
-      const opt = {
+      const icons = {
+        [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
+      };
+      const reopenOpt = {
+        icons,
         contexts: ["tab"],
         enabled: true,
-        icons: {
-          [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
-        },
-        id: cookieStoreId,
+        id: `${cookieStoreId}Reopen`,
         parentId: TAB_REOPEN_CONTAINER,
         title: name,
         type: "normal",
         viewTypes: ["sidebar"],
         visible: true,
       };
-      func.push(createMenuItem(opt));
+      const newTabOpt = {
+        icons,
+        contexts: ["tab"],
+        enabled: true,
+        id: `${cookieStoreId}NewTab`,
+        title: name,
+        type: "normal",
+        viewTypes: ["sidebar"],
+        visible: false,
+      };
+      func.push(
+        createMenuItem(reopenOpt),
+        createMenuItem(newTabOpt),
+      );
     }
   }
   return Promise.all(func);
@@ -93,9 +107,10 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
 /**
  * update contextual identities menu
  * @param {Object} info - contextual identities info
- * @returns {void}
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const updateContextualIdentitiesMenu = async info => {
+  const func = [];
   if (isObjectNotEmpty(info)) {
     const {color, cookieStoreId, icon, name} = info;
     if (!isString(color)) {
@@ -110,50 +125,72 @@ export const updateContextualIdentitiesMenu = async info => {
     if (!isString(name)) {
       throw new TypeError(`Expected String but got ${getType(name)}.`);
     }
-    const data = {
+    const icons = {
+      [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
+    };
+    const reopenOpt = {
+      icons,
       contexts: ["tab"],
       enabled: true,
-      icons: {
-        [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
-      },
       parentId: TAB_REOPEN_CONTAINER,
       title: name,
       type: "normal",
       viewTypes: ["sidebar"],
       visible: true,
     };
-    await menus.update(cookieStoreId, data);
+    const newTabOpt = {
+      icons,
+      contexts: ["tab"],
+      enabled: true,
+      parentId: TAB_REOPEN_CONTAINER,
+      title: name,
+      type: "normal",
+      viewTypes: ["sidebar"],
+      visible: false,
+    };
+    func.push(
+      menus.update(`${cookieStoreId}Reopen`, reopenOpt),
+      menus.update(`${cookieStoreId}NewTab`, newTabOpt),
+    );
   }
+  return Promise.all(func);
 };
 
 /**
  * update context menu
  * @param {string} menuItemId - menu item ID
  * @param {Object} data - update items data
- * @returns {void}
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const updateContextMenu = async (menuItemId, data) => {
+  const func = [];
   if (isString(menuItemId) && isObjectNotEmpty(data) &&
       (data.hasOwnProperty("contexts") || data.hasOwnProperty("enabled") ||
        data.hasOwnProperty("icons") || data.hasOwnProperty("parentId") ||
        data.hasOwnProperty("title") || data.hasOwnProperty("viewTypes") ||
        data.hasOwnProperty("visible"))) {
-    await menus.update(menuItemId, data);
+    func.push(menus.update(menuItemId, data));
   }
+  return Promise.all(func);
 };
 
 /**
  * remove contextual identities menu
  * @param {Object} info - contextual identities info
- * @returns {void}
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const removeContextualIdentitiesMenu = async info => {
+  const func = [];
   if (isObjectNotEmpty(info)) {
     const {cookieStoreId} = info;
     if (isString(cookieStoreId)) {
-      await menus.remove(cookieStoreId);
+      func.push(
+        menus.remove(`${cookieStoreId}Reopen`),
+        menus.remove(`${cookieStoreId}NewTab`),
+      );
     }
   }
+  return Promise.all(func);
 };
 
 /**

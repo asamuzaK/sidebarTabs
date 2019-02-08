@@ -12,9 +12,10 @@ import {
   highlightTab, moveTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, createNewTab,
-  dupeTabs, highlightTabs, moveTabsInOrder, moveTabsToEnd, moveTabsToStart,
-  moveTabsToNewWindow, muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
+  createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
+  moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
+  muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
 } from "./browser-tabs.js";
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
@@ -1222,14 +1223,24 @@ export const handleClickedMenu = async info => {
       func.push(reloadTabs(Array.from(selectedTabs)));
       break;
     default: {
-      if (Array.isArray(contextualIds) && contextualIds.includes(menuItemId)) {
-        let arr;
-        if (selectedTabs.length) {
-          arr = Array.from(selectedTabs);
-        } else {
-          arr = [tab];
+      if (Array.isArray(contextualIds)) {
+        if (menuItemId.endsWith("Reopen")) {
+          const itemId = menuItemId.replace(/Reopen$/, "");
+          if (contextualIds.includes(itemId)) {
+            let arr;
+            if (selectedTabs.length) {
+              arr = Array.from(selectedTabs);
+            } else {
+              arr = [tab];
+            }
+            func.push(reopenTabsInContainer(arr, itemId, windowId));
+          }
+        } else if (menuItemId.endsWith("NewTab")) {
+          const itemId = menuItemId.replace(/NewTab$/, "");
+          if (contextualIds.includes(itemId)) {
+            func.push(createNewTabInContainer(itemId, windowId));
+          }
         }
-        func.push(reopenTabsInContainer(arr, menuItemId, windowId));
       }
     }
   }

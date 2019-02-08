@@ -118,8 +118,8 @@ describe("menu", () => {
       const res = await func();
       assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
                          "called");
-      assert.strictEqual(browser.menus.create.callCount, j + 2, "called");
-      assert.deepEqual(res, [null, null], "result");
+      assert.strictEqual(browser.menus.create.callCount, j + 4, "called");
+      assert.deepEqual(res, [null, null, null, null], "result");
     });
   });
 
@@ -188,13 +188,14 @@ describe("menu", () => {
 
     it("should call function", async () => {
       const i = browser.menus.update.callCount;
-      await func({
+      const res = await func({
         color: "red",
         cookieStoreId: "foo",
         icon: "fingerprint",
         name: "bar",
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
   });
 
@@ -203,42 +204,48 @@ describe("menu", () => {
 
     it("should not call function if 1st arg is not given", async () => {
       const i = browser.menus.update.callCount;
-      await func();
+      const res = await func();
       assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not call function if 1st arg is not string", async () => {
       const i = browser.menus.update.callCount;
-      await func(1);
+      const res = await func(1);
       assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not call function if 2nd arg is not given", async () => {
       const i = browser.menus.update.callCount;
-      await func("foo");
+      const res = await func("foo");
       assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not call function if 2nd arg is empty object", async () => {
       const i = browser.menus.update.callCount;
-      await func("foo", {});
+      const res = await func("foo", {});
       assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not call function if prop does not match", async () => {
       const i = browser.menus.update.callCount;
-      await func("foo", {
+      const res = await func("foo", {
         bar: "baz",
       });
       assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should call function", async () => {
       const i = browser.menus.update.callCount;
-      await func("foo", {
+      const res = await func("foo", {
         enabled: true,
       });
       assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 
@@ -247,30 +254,34 @@ describe("menu", () => {
 
     it("should not call function if no argument given", async () => {
       const i = browser.menus.remove.callCount;
-      await func();
+      const res = await func();
       assert.strictEqual(browser.menus.remove.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not call function if argument is empty object", async () => {
       const i = browser.menus.remove.callCount;
-      await func({});
+      const res = await func({});
       assert.strictEqual(browser.menus.remove.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not call function if cookieStoreId not contained", async () => {
       const i = browser.menus.remove.callCount;
-      await func({
+      const res = await func({
         foo: "bar",
       });
       assert.strictEqual(browser.menus.remove.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should call function", async () => {
       const i = browser.menus.remove.callCount;
-      await func({
+      const res = await func({
         cookieStoreId: "foo",
       });
-      assert.strictEqual(browser.menus.remove.callCount, i + 1, "called");
+      assert.strictEqual(browser.menus.remove.callCount, i + 2, "called");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
   });
 
@@ -284,9 +295,10 @@ describe("menu", () => {
 
     it("should call function with empty object argument", async () => {
       const i = browser.menus.overrideContext.withArgs({}).callCount;
-      await func({});
+      const res = await func({});
       assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
                          i + 1, "called");
+      assert.isUndefined(res, "result");
     });
 
     it("should call function with object argument", async () => {
@@ -298,13 +310,14 @@ describe("menu", () => {
       const body = document.querySelector("body");
       elm.dataset.tabId = "1";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.menus.overrideContext.withArgs({
         tabId: 1,
         context: "tab",
       }).callCount, i + 1, "called");
+      assert.isUndefined(res, "result");
     });
 
     it("should call function with empty object argument", async () => {
@@ -313,11 +326,12 @@ describe("menu", () => {
       const body = document.querySelector("body");
       elm.dataset.tabId = browser.tabs.TAB_ID_NONE;
       body.appendChild(elm);
-      await func({
+      const res = await func({
         target: elm,
       });
       assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
                          i + 1, "called");
+      assert.isUndefined(res, "result");
     });
   });
 
@@ -331,9 +345,10 @@ describe("menu", () => {
 
     it("should call function", async () => {
       const i = browser.menus.overrideContext.callCount;
-      await func({});
+      const res = await func({});
       assert.strictEqual(browser.menus.overrideContext.callCount, i + 1,
                          "called");
+      assert.isUndefined(res, "result");
     });
   });
 
@@ -342,9 +357,10 @@ describe("menu", () => {
 
     it("should call function", async () => {
       const i = browser.contextualIdentities.query.callCount;
-      await func();
+      const res = await func();
       assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
                          "called");
+      assert.deepEqual(res, [null, null, null, null], "result");
     });
   });
 
@@ -353,10 +369,11 @@ describe("menu", () => {
 
     it("should call function", async () => {
       const i = browser.menus.remove.callCount;
-      await func({
+      const res = await func({
         cookieStoreId: "foo",
       });
-      assert.strictEqual(browser.menus.remove.callCount, i + 1, "called");
+      assert.strictEqual(browser.menus.remove.callCount, i + 2, "called");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
   });
 
@@ -365,13 +382,14 @@ describe("menu", () => {
 
     it("should call function", async () => {
       const i = browser.menus.update.callCount;
-      await func({
+      const res = await func({
         color: "red",
         cookieStoreId: "foo",
         icon: "fingerprint",
         name: "bar",
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
   });
 });
