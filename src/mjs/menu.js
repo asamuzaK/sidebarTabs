@@ -13,7 +13,7 @@ const {contextualIdentities, menus, tabs} = browser;
 /* constants */
 import {TAB_REOPEN_CONTAINER} from "./constant.js";
 const {TAB_ID_NONE} = tabs;
-const ICON_SIZE_16 = "16";
+const ICON_SIZE_16 = 16;
 
 /**
  * create context menu item
@@ -24,11 +24,11 @@ export const createMenuItem = async data => {
   let menuItemId;
   if (isObjectNotEmpty(data)) {
     const {
-      contexts, enabled, id, parentId, title, type, viewTypes, visible,
+      contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
     } = data;
     if (isString(id)) {
       menuItemId = await menus.create({
-        contexts, enabled, id, parentId, title, type, viewTypes, visible,
+        contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
       });
     }
   }
