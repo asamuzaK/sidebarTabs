@@ -139,15 +139,6 @@ export default {
     enabled: false,
     visible: false,
   },
-  [NEW_TAB_OPEN_CONTAINER]: {
-    id: NEW_TAB_OPEN_CONTAINER,
-    title: i18n.getMessage(`${NEW_TAB_OPEN_CONTAINER}_title`, "(&E)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
   [TAB_MOVE]: {
     id: TAB_MOVE,
     title: i18n.getMessage(`${TAB_MOVE}_title`, "(&V)"),
@@ -353,6 +344,21 @@ export default {
     id: "sep-4",
     type: "separator",
     contexts: ["page", "tab"],
+    viewTypes: ["sidebar"],
+  },
+  [NEW_TAB_OPEN_CONTAINER]: {
+    id: NEW_TAB_OPEN_CONTAINER,
+    title: i18n.getMessage(`${NEW_TAB_OPEN_CONTAINER}_title`, "(&E)"),
+    type: "normal",
+    contexts: ["page"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
+  },
+  "sep-5": {
+    id: "sep-5",
+    type: "separator",
+    contexts: ["page"],
     viewTypes: ["sidebar"],
   },
   [TAB_CLOSE_END]: {
