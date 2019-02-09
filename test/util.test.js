@@ -9,7 +9,8 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/util.js";
 import {
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, TAB, TAB_LIST,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, NEW_TAB, TAB,
+  TAB_LIST,
 } from "../src/mjs/constant.js";
 
 describe("util", () => {
@@ -428,6 +429,36 @@ describe("util", () => {
       assert.isTrue(res[1] === elm2, "result");
       assert.isTrue(res[2] === elm3, "result");
       assert.isTrue(res[3] === elm4, "result");
+    });
+  });
+
+  describe("is newtab", () => {
+    const func = mjs.isNewTab;
+
+    it("should get false if no argument given", async () => {
+      const res = await func();
+      assert.isFalse(res, "result");
+    });
+
+    it("should get false", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.id = NEW_TAB;
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isTrue(res, "result");
     });
   });
 

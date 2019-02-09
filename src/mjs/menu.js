@@ -11,7 +11,7 @@ import menuItems from "./menu-items.js";
 const {contextualIdentities, menus, tabs} = browser;
 
 /* constants */
-import {TAB_REOPEN_CONTAINER} from "./constant.js";
+import {NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER} from "./constant.js";
 const {TAB_ID_NONE} = tabs;
 const ICON_SIZE_16 = 16;
 

@@ -179,6 +179,24 @@ export const getTabsInRange = async (tabA, tabB) => {
 };
 
 /**
+ * is newtab
+ * @param {Object} node - node
+ * @returns {boolean} - result
+ */
+export const isNewTab = async node => {
+  let tab;
+  while (node && node.parentNode) {
+    const {id, parentNode} = node;
+    if (id === NEW_TAB) {
+      tab = node;
+      break;
+    }
+    node = parentNode;
+  }
+  return !!tab;
+};
+
+/**
  * get tab list from sessions
  * @param {string} key - key
  * @returns {Object} - tab list
