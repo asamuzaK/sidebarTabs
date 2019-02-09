@@ -1266,6 +1266,7 @@ export const handleEvt = async evt => {
   // context menu
   } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
              button === MOUSE_BUTTON_RIGHT) {
+    const {contextualIds} = sidebar;
     const tab = getSidebarTab(target);
     const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
     const tabGroupMenu = menuItems[TAB_GROUP];
@@ -1294,7 +1295,6 @@ export const handleEvt = async evt => {
       allTabs && selectedTabs.length === allTabs.length
     );
     if (tab) {
-      const {contextualIds} = sidebar;
       const {classList: tabClass, parentNode} = tab;
       const {
         classList: parentClass,
@@ -1588,6 +1588,33 @@ export const handleEvt = async evt => {
           title: bookmarkMenu.title,
           visible: true,
         }),
+      );
+    }
+    if (isNewTab(target)) {
+      const data = {};
+      data.enabled = !!(Array.isArray(contextualIds) && contextualIds.length);
+      data.visible = true;
+      func.push(
+        updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
+        updateContextMenu("sep-5", {
+          visible: true,
+        }),
+      );
+      if (Array.isArray(contextualIds)) {
+        const itemKeys = contextualIds.filter(k => isString(k) && k);
+        for (const itemKey of itemKeys) {
+          func.push(updateContextMenu(`${itemKey}NewTab`, {
+            parentId: NEW_TAB_OPEN_CONTAINER,
+          }));
+        }
+      }
+    } else {
+      const data = {
+        visible: false,
+      };
+      func.push(
+        updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
+        updateContextMenu("sep-5", data),
       );
     }
     for (const itemKey of pageKeys) {
