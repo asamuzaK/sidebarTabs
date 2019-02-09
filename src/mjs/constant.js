@@ -33,6 +33,7 @@ export const IDENTIFIED = "identified";
 export const MIME_PLAIN = "text/plain";
 export const MIME_URI = "text/uri-list";
 export const NEW_TAB = "newtab";
+export const NEW_TAB_OPEN_CONTAINER = "openNewTabInContainer";
 export const PINNED = "pinned";
 export const SIDEBAR_MAIN = "sidebar-tabs-container";
 export const TAB = "tab";

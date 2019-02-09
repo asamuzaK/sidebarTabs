@@ -64,10 +64,11 @@ export const createContextualIdentitiesMenu = async () => {
         contexts: ["tab"],
         enabled: true,
         id: `${cookieStoreId}NewTab`,
+        parentId: NEW_TAB_OPEN_CONTAINER,
         title: name,
         type: "normal",
         viewTypes: ["sidebar"],
-        visible: false,
+        visible: true,
       };
       func.push(
         createMenuItem(reopenOpt),
@@ -142,11 +143,11 @@ export const updateContextualIdentitiesMenu = async info => {
       icons,
       contexts: ["tab"],
       enabled: true,
-      parentId: TAB_REOPEN_CONTAINER,
+      parentId: NEW_TAB_OPEN_CONTAINER,
       title: name,
       type: "normal",
       viewTypes: ["sidebar"],
-      visible: false,
+      visible: true,
     };
     func.push(
       menus.update(`${cookieStoreId}Reopen`, reopenOpt),

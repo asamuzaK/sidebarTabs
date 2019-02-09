@@ -347,6 +347,18 @@
   "newTabButton_title": {
     "message": "Open a new tab"
   },
+  "openNewTabInContainer": {
+    "message": "Open in Container"
+  },
+  "openNewTabInContainer_title": {
+    "message": "Op&en in Container",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "optionsCompactTab": {
     "message": "Reduce tab height"
   },

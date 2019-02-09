@@ -139,6 +139,15 @@ export default {
     enabled: false,
     visible: false,
   },
+  [NEW_TAB_OPEN_CONTAINER]: {
+    id: NEW_TAB_OPEN_CONTAINER,
+    title: i18n.getMessage(`${NEW_TAB_OPEN_CONTAINER}_title`, "(&E)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
+  },
   [TAB_MOVE]: {
     id: TAB_MOVE,
     title: i18n.getMessage(`${TAB_MOVE}_title`, "(&V)"),

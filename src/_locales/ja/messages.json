@@ -347,6 +347,18 @@
   "newTabButton_title": {
     "message": "新しいタブを開きます"
   },
+  "openNewTabInContainer": {
+    "message": "コンテナーを開く"
+  },
+  "openNewTabInContainer_title": {
+    "message": "コンテナーを開く$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "optionsCompactTab": {
     "message": "タブの高さを縮める"
   },
