@@ -488,6 +488,42 @@ export const muteTabs = async (nodes, muted) => {
   return Promise.all(func);
 };
 
+/* new tab */
+/**
+ * create new tab
+ * @param {number} windowId - window ID
+ * @returns {AsyncFunction} - createTab()
+ */
+export const createNewTab = async windowId => {
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
+  return createTab({
+    windowId,
+    active: true,
+  });
+};
+
+/**
+ * create new tab in container
+ * @param {string} cookieId - cookie store ID
+ * @param {number} windowId - window ID
+ * @returns {AsyncFunction} - createTab()
+ */
+export const createNewTabInContainer = async (cookieId, windowId) => {
+  if (!isString(cookieId)) {
+    throw new TypeError(`Expected String but got ${getType(cookieId)}.`);
+  }
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
+  return createTab({
+    windowId,
+    active: true,
+    cookieStoreId: cookieId,
+  });
+};
+
 /* pin */
 /**
  * pin tabs

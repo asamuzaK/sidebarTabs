@@ -7,7 +7,7 @@ const {i18n} = browser;
 
 /* constants */
 import {
-  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
+  NEW_TAB_OPEN_CONTAINER, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
   TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -21,6 +21,23 @@ import {
 
 /* context menu items */
 export default {
+  /* new tab */
+  [NEW_TAB_OPEN_CONTAINER]: {
+    id: NEW_TAB_OPEN_CONTAINER,
+    title: i18n.getMessage(`${NEW_TAB_OPEN_CONTAINER}_title`, "(&E)"),
+    type: "normal",
+    contexts: ["page"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
+  },
+  "sep-0": {
+    id: "sep-0",
+    type: "separator",
+    contexts: ["page"],
+    viewTypes: ["sidebar"],
+  },
+  /* tab */
   [TAB_RELOAD]: {
     id: TAB_RELOAD,
     title: i18n.getMessage(`${TAB_RELOAD}_title`, "(&R)"),

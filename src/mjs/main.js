@@ -8,18 +8,19 @@ import {
 import {
   clearStorage, createTab, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, setSessionWindowValue, updateTab,
+  getOs, getRecentlyClosedTab, getStorage, getTab,
+  highlightTab, moveTab, restoreSession, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, dupeTabs,
-  highlightTabs, moveTabsInOrder, moveTabsToEnd, moveTabsToStart,
-  moveTabsToNewWindow, muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
+  createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
+  moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
+  muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
 } from "./browser-tabs.js";
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
   getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
-  setSessionTabList,
+  isNewTab, setSessionTabList,
 } from "./util.js";
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
@@ -46,12 +47,13 @@ const {
 
 /* constants */
 import {
-  ACTIVE, AUDIBLE, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE,
-  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE,
-  CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON, COOKIE_STORE_DEFAULT, EXT_INIT,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  ACTIVE, AUDIBLE,
+  CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
+  CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
+  COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
+  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_MAIN,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -162,22 +164,13 @@ export const undoCloseTab = async () => {
 
 /* new tab */
 /**
- * create new tab
- * @returns {AsyncFunction} - createTab()
- */
-export const createNewTab = async () => {
-  const {windowId} = sidebar;
-  return createTab({
-    windowId,
-    active: true,
-  });
-};
-
-/**
  * handle new tab on click
  * @returns {AsyncFunction} - createNewTab()
  */
-export const newTabOnClick = () => createNewTab().catch(throwErr);
+export const newTabOnClick = () => {
+  const {windowId} = sidebar;
+  return createNewTab(windowId).catch(throwErr);
+};
 
 /* DnD */
 /**
@@ -1231,14 +1224,24 @@ export const handleClickedMenu = async info => {
       func.push(reloadTabs(Array.from(selectedTabs)));
       break;
     default: {
-      if (Array.isArray(contextualIds) && contextualIds.includes(menuItemId)) {
-        let arr;
-        if (selectedTabs.length) {
-          arr = Array.from(selectedTabs);
-        } else {
-          arr = [tab];
+      if (Array.isArray(contextualIds)) {
+        if (menuItemId.endsWith("Reopen")) {
+          const itemId = menuItemId.replace(/Reopen$/, "");
+          if (contextualIds.includes(itemId)) {
+            let arr;
+            if (selectedTabs.length) {
+              arr = Array.from(selectedTabs);
+            } else {
+              arr = [tab];
+            }
+            func.push(reopenTabsInContainer(arr, itemId, windowId));
+          }
+        } else if (menuItemId.endsWith("NewTab")) {
+          const itemId = menuItemId.replace(/NewTab$/, "");
+          if (contextualIds.includes(itemId)) {
+            func.push(createNewTabInContainer(itemId, windowId));
+          }
         }
-        func.push(reopenTabsInContainer(arr, menuItemId, windowId));
       }
     }
   }
@@ -1263,6 +1266,7 @@ export const handleEvt = async evt => {
   // context menu
   } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
              button === MOUSE_BUTTON_RIGHT) {
+    const {contextualIds} = sidebar;
     const tab = getSidebarTab(target);
     const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
     const tabGroupMenu = menuItems[TAB_GROUP];
@@ -1291,7 +1295,6 @@ export const handleEvt = async evt => {
       allTabs && selectedTabs.length === allTabs.length
     );
     if (tab) {
-      const {contextualIds} = sidebar;
       const {classList: tabClass, parentNode} = tab;
       const {
         classList: parentClass,
@@ -1424,7 +1427,7 @@ export const handleEvt = async evt => {
         if (Array.isArray(contextualIds)) {
           const itemKeys = contextualIds.filter(k => isString(k) && k);
           for (const itemKey of itemKeys) {
-            func.push(updateContextMenu(itemKey, {
+            func.push(updateContextMenu(`${itemKey}Reopen`, {
               parentId: TABS_REOPEN_CONTAINER,
             }));
           }
@@ -1463,7 +1466,7 @@ export const handleEvt = async evt => {
         if (Array.isArray(contextualIds)) {
           const itemKeys = contextualIds.filter(k => isString(k) && k);
           for (const itemKey of itemKeys) {
-            func.push(updateContextMenu(itemKey, {
+            func.push(updateContextMenu(`${itemKey}Reopen`, {
               parentId: TAB_REOPEN_CONTAINER,
             }));
           }
@@ -1585,6 +1588,33 @@ export const handleEvt = async evt => {
           title: bookmarkMenu.title,
           visible: true,
         }),
+      );
+    }
+    if (isNewTab(target)) {
+      const data = {};
+      data.enabled = !!(Array.isArray(contextualIds) && contextualIds.length);
+      data.visible = true;
+      func.push(
+        updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
+        updateContextMenu("sep-0", {
+          visible: true,
+        }),
+      );
+      if (Array.isArray(contextualIds)) {
+        const itemKeys = contextualIds.filter(k => isString(k) && k);
+        for (const itemKey of itemKeys) {
+          func.push(updateContextMenu(`${itemKey}NewTab`, {
+            parentId: NEW_TAB_OPEN_CONTAINER,
+          }));
+        }
+      }
+    } else {
+      const data = {
+        visible: false,
+      };
+      func.push(
+        updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
+        updateContextMenu("sep-0", data),
       );
     }
     for (const itemKey of pageKeys) {
