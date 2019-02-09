@@ -93,33 +93,67 @@ describe("menu", () => {
   describe("create contextual identities menu", () => {
     const func = mjs.createContextualIdentitiesMenu;
 
-    it("should get empty array", async () => {
-      browser.contextualIdentities.query.withArgs({}).resolves(null);
-      const i = browser.contextualIdentities.query.callCount;
-      const j = browser.menus.create.callCount;
-      const res = await func();
-      assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
-                         "called");
-      assert.strictEqual(browser.menus.create.callCount, j, "not called");
-      assert.deepEqual(res, [], "result");
+    it("should not call function", async () => {
+      const i = browser.menus.create.callCount;
+      await func();
+      assert.strictEqual(browser.menus.create.callCount, i, "not called");
     });
 
-    it("should get array", async () => {
-      browser.contextualIdentities.query.withArgs({}).resolves([
-        {
-          cookieStoreId: "foo",
-        },
-        {
-          cookieStoreId: "bar",
-        },
-      ]);
-      const i = browser.contextualIdentities.query.callCount;
-      const j = browser.menus.create.callCount;
-      const res = await func();
-      assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
-                         "called");
-      assert.strictEqual(browser.menus.create.callCount, j + 4, "called");
-      assert.deepEqual(res, [null, null, null, null], "result");
+    it("should not call function if argument is empty object", async () => {
+      const i = browser.menus.create.callCount;
+      await func({});
+      assert.strictEqual(browser.menus.create.callCount, i, "not called");
+    });
+
+    it("should throw if color not contained", async () => {
+      await func({
+        foo: "bar",
+      }).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if cookieStoreId not contained", async () => {
+      await func({
+        color: "red",
+      }).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if icon not contained", async () => {
+      await func({
+        color: "red",
+        cookieStoreId: "foo",
+      }).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should throw if name not contained", async () => {
+      await func({
+        color: "red",
+        cookieStoreId: "foo",
+        icon: "fingerprint",
+      }).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "throw");
+      });
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.create.callCount;
+      const res = await func({
+        color: "red",
+        cookieStoreId: "foo",
+        icon: "fingerprint",
+        name: "bar",
+      });
+      assert.strictEqual(browser.menus.create.callCount, i + 2, "called");
+      assert.deepEqual(res, [null, null], "result");
     });
   });
 
@@ -127,7 +161,20 @@ describe("menu", () => {
     const func = mjs.createContextMenu;
 
     it("should get array", async () => {
+      browser.contextualIdentities.query.withArgs({}).resolves([{}, {}]);
+      const i = browser.contextualIdentities.query.callCount;
       const res = await func();
+      assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
+                         "called");
+      assert.isTrue(res.length > 0, "result");
+    });
+
+    it("should get array", async () => {
+      browser.contextualIdentities.query.withArgs({}).resolves(null);
+      const i = browser.contextualIdentities.query.callCount;
+      const res = await func();
+      assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
+                         "called");
       assert.isTrue(res.length > 0, "result");
     });
   });
@@ -356,11 +403,16 @@ describe("menu", () => {
     const func = mjs.contextualIdentitiesOnCreated;
 
     it("should call function", async () => {
-      const i = browser.contextualIdentities.query.callCount;
-      const res = await func();
-      assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
-                         "called");
-      assert.deepEqual(res, [null, null, null, null], "result");
+      const i = browser.menus.create.callCount;
+      const info = {
+        color: "blue",
+        cookieStoreId: "foo",
+        icon: "briefcase",
+        name: "bar",
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.menus.create.callCount, i + 2, "called");
+      assert.deepEqual(res, [null, null], "result");
     });
   });
 

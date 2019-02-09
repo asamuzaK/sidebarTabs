@@ -37,44 +37,54 @@ export const createMenuItem = async data => {
 
 /**
  * create contextual identities menu
-* @returns {Promise.<array>} - results of each handler
+ * @param {Object} info - info
+ * @returns {Promise.<array>} - results of each handler
  */
-export const createContextualIdentitiesMenu = async () => {
-  const items = await getAllContextualIdentities();
+export const createContextualIdentitiesMenu = async info => {
   const func = [];
-  if (items) {
-    for (const item of items) {
-      const {color, cookieStoreId, icon, name} = item;
-      const icons = {
-        [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
-      };
-      const reopenOpt = {
-        icons,
-        contexts: ["tab"],
-        enabled: true,
-        id: `${cookieStoreId}Reopen`,
-        parentId: TAB_REOPEN_CONTAINER,
-        title: name,
-        type: "normal",
-        viewTypes: ["sidebar"],
-        visible: true,
-      };
-      const newTabOpt = {
-        icons,
-        contexts: ["tab"],
-        enabled: true,
-        id: `${cookieStoreId}NewTab`,
-        parentId: NEW_TAB_OPEN_CONTAINER,
-        title: name,
-        type: "normal",
-        viewTypes: ["sidebar"],
-        visible: true,
-      };
-      func.push(
-        createMenuItem(reopenOpt),
-        createMenuItem(newTabOpt),
-      );
+  if (isObjectNotEmpty(info)) {
+    const {color, cookieStoreId, icon, name} = info;
+    if (!isString(color)) {
+      throw new TypeError(`Expected String but got ${getType(color)}.`);
     }
+    if (!isString(cookieStoreId)) {
+      throw new TypeError(`Expected String but got ${getType(cookieStoreId)}.`);
+    }
+    if (!isString(icon)) {
+      throw new TypeError(`Expected String but got ${getType(icon)}.`);
+    }
+    if (!isString(name)) {
+      throw new TypeError(`Expected String but got ${getType(name)}.`);
+    }
+    const icons = {
+      [ICON_SIZE_16]: `img/${icon}.svg#${color}`,
+    };
+    const reopenOpt = {
+      icons,
+      contexts: ["tab"],
+      enabled: true,
+      id: `${cookieStoreId}Reopen`,
+      parentId: TAB_REOPEN_CONTAINER,
+      title: name,
+      type: "normal",
+      viewTypes: ["sidebar"],
+      visible: true,
+    };
+    const newTabOpt = {
+      icons,
+      contexts: ["page"],
+      enabled: true,
+      id: `${cookieStoreId}NewTab`,
+      parentId: NEW_TAB_OPEN_CONTAINER,
+      title: name,
+      type: "normal",
+      viewTypes: ["sidebar"],
+      visible: true,
+    };
+    func.push(
+      createMenuItem(reopenOpt),
+      createMenuItem(newTabOpt),
+    );
   }
   return Promise.all(func);
 };
@@ -96,10 +106,16 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
       contexts, enabled, id, parentId, title, type, viewTypes, visible,
     };
     func.push(createMenuItem(opt));
-    if (id === TAB_REOPEN_CONTAINER) {
-      func.push(createContextualIdentitiesMenu());
-    } else if (subItems) {
+    if (subItems) {
       func.push(createContextMenu(subItems, id));
+    }
+  }
+  if (!parentId) {
+    const contextualIds = await getAllContextualIdentities();
+    if (contextualIds) {
+      for (const item of contextualIds) {
+        func.push(createContextualIdentitiesMenu(item));
+      }
     }
   }
   return Promise.all(func);
