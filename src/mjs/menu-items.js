@@ -21,6 +21,23 @@ import {
 
 /* context menu items */
 export default {
+  /* new tab */
+  [NEW_TAB_OPEN_CONTAINER]: {
+    id: NEW_TAB_OPEN_CONTAINER,
+    title: i18n.getMessage(`${NEW_TAB_OPEN_CONTAINER}_title`, "(&E)"),
+    type: "normal",
+    contexts: ["page"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
+  },
+  "sep-0": {
+    id: "sep-0",
+    type: "separator",
+    contexts: ["page"],
+    viewTypes: ["sidebar"],
+  },
+  /* tab */
   [TAB_RELOAD]: {
     id: TAB_RELOAD,
     title: i18n.getMessage(`${TAB_RELOAD}_title`, "(&R)"),
@@ -240,22 +257,6 @@ export default {
     id: "sep-2",
     type: "separator",
     contexts: ["tab"],
-    viewTypes: ["sidebar"],
-  },
-  /* new tab */
-  [NEW_TAB_OPEN_CONTAINER]: {
-    id: NEW_TAB_OPEN_CONTAINER,
-    title: i18n.getMessage(`${NEW_TAB_OPEN_CONTAINER}_title`, "(&E)"),
-    type: "normal",
-    contexts: ["page"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
-  "sep-5": {
-    id: "sep-5",
-    type: "separator",
-    contexts: ["page"],
     viewTypes: ["sidebar"],
   },
   /* all tabs */

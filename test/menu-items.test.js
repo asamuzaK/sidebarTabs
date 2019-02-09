@@ -34,11 +34,12 @@ describe("menu items", () => {
 
   describe("should get string and object", () => {
     const itemKeys = [
+      NEW_TAB_OPEN_CONTAINER, "sep-0",
       TAB_RELOAD, TABS_RELOAD, TAB_MUTE, TABS_MUTE, "sep-1",
       TAB_PIN, TABS_PIN, TAB_BOOKMARK, TABS_BOOKMARK, TAB_DUPE, TABS_DUPE,
       TAB_REOPEN_CONTAINER, TABS_REOPEN_CONTAINER, TAB_MOVE, TABS_MOVE, "sep-2",
       TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_ALL_BOOKMARK, "sep-3",
-      TAB_GROUP, "sep-4", NEW_TAB_OPEN_CONTAINER, "sep-5",
+      TAB_GROUP, "sep-4",
       TAB_CLOSE_END, TAB_CLOSE_OTHER, TABS_CLOSE_OTHER,
       TAB_CLOSE_UNDO, TAB_CLOSE, TABS_CLOSE,
     ];

@@ -1596,7 +1596,7 @@ export const handleEvt = async evt => {
       data.visible = true;
       func.push(
         updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
-        updateContextMenu("sep-5", {
+        updateContextMenu("sep-0", {
           visible: true,
         }),
       );
@@ -1614,7 +1614,7 @@ export const handleEvt = async evt => {
       };
       func.push(
         updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
-        updateContextMenu("sep-5", data),
+        updateContextMenu("sep-0", data),
       );
     }
     for (const itemKey of pageKeys) {
