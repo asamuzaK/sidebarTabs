@@ -183,7 +183,7 @@ export const getTabsInRange = async (tabA, tabB) => {
  * @param {Object} node - node
  * @returns {boolean} - result
  */
-export const isNewTab = async node => {
+export const isNewTab = node => {
   let tab;
   while (node && node.parentNode) {
     const {id, parentNode} = node;

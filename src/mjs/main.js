@@ -20,7 +20,7 @@ import {
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
   getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
-  setSessionTabList,
+  isNewTab, setSessionTabList,
 } from "./util.js";
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
@@ -47,12 +47,13 @@ const {
 
 /* constants */
 import {
-  ACTIVE, AUDIBLE, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE,
-  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE,
-  CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON, COOKIE_STORE_DEFAULT, EXT_INIT,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  ACTIVE, AUDIBLE,
+  CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
+  CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
+  COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
+  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_MAIN,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -1426,7 +1427,7 @@ export const handleEvt = async evt => {
         if (Array.isArray(contextualIds)) {
           const itemKeys = contextualIds.filter(k => isString(k) && k);
           for (const itemKey of itemKeys) {
-            func.push(updateContextMenu(itemKey, {
+            func.push(updateContextMenu(`${itemKey}Reopen`, {
               parentId: TABS_REOPEN_CONTAINER,
             }));
           }
@@ -1465,7 +1466,7 @@ export const handleEvt = async evt => {
         if (Array.isArray(contextualIds)) {
           const itemKeys = contextualIds.filter(k => isString(k) && k);
           for (const itemKey of itemKeys) {
-            func.push(updateContextMenu(itemKey, {
+            func.push(updateContextMenu(`${itemKey}Reopen`, {
               parentId: TAB_REOPEN_CONTAINER,
             }));
           }
