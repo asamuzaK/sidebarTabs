@@ -1255,7 +1255,7 @@ export const handleClickedMenu = async info => {
  */
 export const handleEvt = async evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
-  const {isMac, windowId} = sidebar;
+  const {contextualIds, isMac, windowId} = sidebar;
   const func = [];
   // select all tabs
   if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
@@ -1266,7 +1266,6 @@ export const handleEvt = async evt => {
   // context menu
   } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
              button === MOUSE_BUTTON_RIGHT) {
-    const {contextualIds} = sidebar;
     const tab = getSidebarTab(target);
     const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
     const tabGroupMenu = menuItems[TAB_GROUP];
@@ -1395,7 +1394,9 @@ export const handleEvt = async evt => {
         for (const itemKey of tabsMoveKeys) {
           const item = tabsMoveMenu.subItems[itemKey];
           const {id, title} = item;
-          const data = {};
+          const data = {
+            visible: true,
+          };
           switch (itemKey) {
             case TABS_MOVE_END:
               if (allTabsSelected) {
@@ -1421,7 +1422,6 @@ export const handleEvt = async evt => {
               data.enabled = true;
               data.title = title;
           }
-          data.visible = true;
           func.push(updateContextMenu(id, data));
         }
         if (Array.isArray(contextualIds)) {
@@ -1438,7 +1438,9 @@ export const handleEvt = async evt => {
         for (const itemKey of tabMoveKeys) {
           const item = tabMoveMenu.subItems[itemKey];
           const {id, title} = item;
-          const data = {};
+          const data = {
+            visible: true,
+          };
           switch (itemKey) {
             case TAB_MOVE_END:
               if (pinned) {
@@ -1460,7 +1462,6 @@ export const handleEvt = async evt => {
               data.enabled = true;
               data.title = title;
           }
-          data.visible = true;
           func.push(updateContextMenu(id, data));
         }
         if (Array.isArray(contextualIds)) {
@@ -1591,11 +1592,11 @@ export const handleEvt = async evt => {
       );
     }
     if (isNewTab(target)) {
-      const data = {};
-      data.enabled = !!(Array.isArray(contextualIds) && contextualIds.length);
-      data.visible = true;
       func.push(
-        updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
+        updateContextMenu(NEW_TAB_OPEN_CONTAINER, {
+          enabled: !!(Array.isArray(contextualIds) && contextualIds.length),
+          visible: true,
+        }),
         updateContextMenu("sep-0", {
           visible: true,
         }),
@@ -1620,7 +1621,9 @@ export const handleEvt = async evt => {
     for (const itemKey of pageKeys) {
       const item = menuItems[itemKey];
       const {id, title} = item;
-      const data = {};
+      const data = {
+        title,
+      };
       switch (itemKey) {
         case TAB_ALL_RELOAD:
           data.enabled = true;
@@ -1638,7 +1641,6 @@ export const handleEvt = async evt => {
         }
         default:
       }
-      data.title = title;
       func.push(updateContextMenu(id, data));
     }
   }
