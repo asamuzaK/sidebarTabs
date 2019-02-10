@@ -162,16 +162,6 @@ export const undoCloseTab = async () => {
   return func || null;
 };
 
-/* new tab */
-/**
- * handle new tab on click
- * @returns {AsyncFunction} - createNewTab()
- */
-export const newTabOnClick = () => {
-  const {windowId} = sidebar;
-  return createNewTab(windowId).catch(throwErr);
-};
-
 /* DnD */
 /**
  * extract drag and drop tabs
@@ -459,7 +449,16 @@ export const addDragEventListener = async elm => {
 
 /* sidebar tab event handlers */
 /**
- * handle clicked tab
+ * handle new tab on click
+ * @returns {AsyncFunction} - createNewTab()
+ */
+export const handleClickedNewTab = () => {
+  const {windowId} = sidebar;
+  return createNewTab(windowId).catch(throwErr);
+};
+
+/**
+ * handle tab on click
  * @param {!Object} evt - event
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -1828,5 +1827,5 @@ export const setMain = async () => {
   const elm = document.getElementById(SIDEBAR_MAIN);
   const newTab = document.getElementById(NEW_TAB);
   await addDropEventListener(elm);
-  newTab.addEventListener("click", newTabOnClick);
+  newTab.addEventListener("click", handleClickedNewTab);
 };

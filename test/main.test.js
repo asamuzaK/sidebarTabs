@@ -262,19 +262,6 @@ describe("main", () => {
     });
   });
 
-  describe("handle new tab on click", () => {
-    const func = mjs.newTabOnClick;
-
-    it("should call function", async () => {
-      const {create} = browser.tabs;
-      const i = create.callCount;
-      create.resolves({});
-      const res = await func();
-      assert.strictEqual(create.callCount, i + 1, "called");
-      assert.deepEqual(res, {}, "result");
-    });
-  });
-
   describe("extract drag and drop tabs", () => {
     const func = mjs.extractDroppedTabs;
     beforeEach(() => {
@@ -1647,7 +1634,20 @@ describe("main", () => {
     });
   });
 
-  describe("handle clicked tab", () => {
+  describe("handle new tab on click", () => {
+    const func = mjs.handleClickedNewTab;
+
+    it("should call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func();
+      assert.strictEqual(create.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
+    });
+  });
+
+  describe("handle tab on click", () => {
     const func = mjs.handleClickedTab;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
@@ -5458,6 +5458,8 @@ describe("main", () => {
     const func = mjs.handleClickedMenu;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      mjs.sidebar.contextualIds = null;
+      mjs.sidebar.context = null;
     });
 
     it("should not call function", async () => {
@@ -5565,14 +5567,26 @@ describe("main", () => {
     });
 
     it("should call function", async () => {
-      const j = browser.tabs.create.callCount;
+      const i = browser.tabs.create.callCount;
+      const newTab = document.getElementById(NEW_TAB);
+      browser.tabs.create.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        active: true,
+        cookieStoreId: "foo",
+      }).resolves({
+        id: "foo",
+      });
+      mjs.sidebar.context = newTab;
       mjs.sidebar.contextualIds = ["foo"];
       const info = {
         menuItemId: "fooNewTab",
       };
       const res = await func(info);
-      assert.strictEqual(browser.tabs.create.callCount, j + 1, "called create");
-      assert.deepEqual(res, [null], "result");
+      assert.strictEqual(browser.tabs.create.callCount, i + 1, "called create");
+      assert.deepEqual(res, [{
+        id: "foo",
+      }], "result");
+      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
