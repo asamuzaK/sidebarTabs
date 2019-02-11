@@ -102,7 +102,7 @@ window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
 
 /* start up */
-Promise.all([
+document.addEventListener("DOMContentLoaded", () => Promise.all([
   menus.removeAll().then(createContextMenu),
   localizeHtml(),
   makeConnection({name: TAB}),
@@ -111,4 +111,5 @@ Promise.all([
   setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
-  .catch(throwErr);
+  .catch(throwErr)
+);
