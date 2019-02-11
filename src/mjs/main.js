@@ -3,7 +3,7 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, logErr, throwErr,
+  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr,
 } from "./common.js";
 import {
   clearStorage, createTab, getActiveTab, getAllContextualIdentities,
@@ -67,6 +67,7 @@ import {
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
 const MOUSE_BUTTON_RIGHT = 2;
+const MSEC100 = 100;
 
 /* sidebar */
 export const sidebar = {
@@ -1807,15 +1808,47 @@ export const restoreTabGroups = async () => {
 };
 
 /**
- * emulate tabs in sidebar
+ * wait until all tabs are loaded and then get them
+ * @returns {Array} - array of tabs.Tab
+ */
+export const waitAndGetAllTabs = async () => {
+  let allTabs;
+  const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
+  await sleep(MSEC100);
+  const items2 = await getAllTabsInWindow(WINDOW_ID_CURRENT);
+  if (items.length === items2.length) {
+    allTabs = items2;
+  } else {
+    allTabs = await waitAndGetAllTabs();
+  }
+  return allTabs;
+};
+
+/**
+ * emulate tabs in order
+ * @param {Array} arr - array of tabs.Tab
  * @returns {void}
  */
-export const emulateTabs = async () => {
-  const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  for (const item of items) {
-    // eslint-disable-next-line no-await-in-loop
-    await handleCreatedTab(item, true);
+export const emulateTabsInOrder = async arr => {
+  if (!Array.isArray(arr)) {
+    throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
+  const tab = arr.shift();
+  if (isObjectNotEmpty(tab)) {
+    await handleCreatedTab(tab, true);
+  }
+  if (arr.length) {
+    await emulateTabsInOrder(arr);
+  }
+};
+
+/**
+ * emulate tabs in sidebar
+ * @returns {AsyncFunction} - emulateTabsInOrder()
+ */
+export const emulateTabs = async () => {
+  const allTabs = await waitAndGetAllTabs();
+  return emulateTabsInOrder(allTabs);
 };
 
 /**

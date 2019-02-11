@@ -10644,6 +10644,161 @@ describe("main", () => {
     });
   });
 
+  describe("wait until all tabs are loaded and then get them", () => {
+    const func = mjs.waitAndGetAllTabs;
+
+    it("should get array", async () => {
+      const i = browser.tabs.query.callCount;
+      browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowType: "normal",
+      }).onCall(i + 1).resolves([{}]);
+      browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowType: "normal",
+      }).resolves([{}, {}]);
+      const res = await func();
+      assert.strictEqual(browser.tabs.query.callCount, i + 4, "called");
+      assert.deepEqual(res, [{}, {}], "result");
+    });
+  });
+
+  describe("emulate tabs in order", () => {
+    const func = mjs.emulateTabsInOrder;
+    beforeEach(() => {
+      const body = document.querySelector("body");
+      const tmpl = document.createElement("template");
+      tmpl.id = "tab-container-template";
+      const sect = document.createElement("section");
+      sect.classList.add("tab-container");
+      sect.dataset.tabControls = "";
+      sect.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(sect);
+      body.appendChild(tmpl);
+      const tmpl2 = document.createElement("template");
+      tmpl2.id = "tab-template";
+      const div = document.createElement("div");
+      div.classList.add("tab");
+      div.setAttribute("draggable", "true");
+      div.dataset.tabId = "";
+      div.dataset.tab = "";
+      const span = document.createElement("span");
+      span.classList.add("tab-context");
+      span.setAttribute("title", "");
+      const img = document.createElement("img");
+      img.classList.add("tab-toggle-icon");
+      img.src = "";
+      img.alt = "";
+      span.appendChild(img);
+      div.appendChild(span);
+      const span2 = document.createElement("span");
+      span2.classList.add("tab-content");
+      span2.setAttribute("title", "");
+      const img2 = document.createElement("img");
+      img2.classList.add("tab-icon");
+      img2.src = "";
+      img2.alt = "";
+      img2.dataset.connecting = "";
+      span2.appendChild(img2);
+      const span2_1 = document.createElement("span");
+      span2_1.classList.add("tab-title");
+      span2.appendChild(span2_1);
+      div.appendChild(span2);
+      const span3 = document.createElement("span");
+      span3.classList.add("tab-audio");
+      span3.setAttribute("title", "");
+      const img3 = document.createElement("img");
+      img3.classList.add("tab-audio-icon");
+      img3.src = "";
+      img3.alt = "";
+      span3.appendChild(img3);
+      div.appendChild(span3);
+      const span4 = document.createElement("span");
+      span4.classList.add("tab-ident");
+      span4.setAttribute("title", "");
+      const img4 = document.createElement("img");
+      img4.classList.add("tab-ident-icon");
+      img4.src = "";
+      img4.alt = "";
+      span4.appendChild(img4);
+      div.appendChild(span4);
+      const span5 = document.createElement("span");
+      span5.classList.add("tab-close");
+      span5.setAttribute("title", "");
+      const img5 = document.createElement("img");
+      img5.classList.add("tab-close-icon");
+      img5.src = "";
+      img5.alt = "";
+      span5.appendChild(img5);
+      div.appendChild(span5);
+      const span6 = document.createElement("span");
+      span6.classList.add("tab-pinned");
+      const img6 = document.createElement("img");
+      img6.classList.add("tab-pinned-icon");
+      img6.src = "";
+      img6.alt = "";
+      span6.appendChild(img6);
+      div.appendChild(span6);
+      tmpl2.content.appendChild(div);
+      body.appendChild(tmpl2);
+      const pinned = document.createElement("section");
+      pinned.id = PINNED;
+      body.appendChild(pinned);
+      const newTab = document.createElement("section");
+      newTab.id = NEW_TAB;
+      body.appendChild(newTab);
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+    });
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "instance");
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "message");
+      });
+    });
+
+    it("should create tabs in order", async () => {
+      const arr = [
+        {
+          active: false,
+          audible: false,
+          cookieStoreId: COOKIE_STORE_DEFAULT,
+          id: 1,
+          index: 0,
+          pinned: true,
+          status: "complete",
+          title: "foo",
+          url: "https://example.com",
+          windowId: browser.windows.WINDOW_ID_CURRENT,
+          mutedInfo: {
+            muted: false,
+          },
+        },
+        {
+          active: false,
+          audible: false,
+          cookieStoreId: COOKIE_STORE_DEFAULT,
+          id: 2,
+          index: 1,
+          pinned: false,
+          status: "complete",
+          title: "bar",
+          url: "https://www.example.com",
+          windowId: browser.windows.WINDOW_ID_CURRENT,
+          mutedInfo: {
+            muted: false,
+          },
+        },
+      ];
+      await func(arr);
+      const items = document.querySelectorAll(TAB_QUERY);
+      assert.strictEqual(items.length, 2, "created");
+      assert.strictEqual(items[0].textContent, "foo", "title");
+      assert.strictEqual(items[1].textContent, "bar", "title");
+    });
+  });
+
   describe("emulate tabs in sidebar", () => {
     const func = mjs.emulateTabs;
     beforeEach(() => {
@@ -10756,7 +10911,7 @@ describe("main", () => {
       }).resolves(arr);
       await func();
       const items = document.querySelectorAll(TAB_QUERY);
-      assert.strictEqual(browser.tabs.query.callCount, i + 1, "called");
+      assert.strictEqual(browser.tabs.query.callCount, i + 2, "called");
       assert.strictEqual(items.length, 1, "created");
       assert.strictEqual(items[0].textContent, "foo", "title");
       browser.tabs.query.flush();
