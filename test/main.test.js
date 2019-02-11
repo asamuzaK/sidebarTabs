@@ -10804,7 +10804,7 @@ describe("main", () => {
       ];
       await func(arr);
       const items = document.querySelectorAll(TAB_QUERY);
-      //assert.strictEqual(items.length, 2, "created");
+      assert.strictEqual(items.length, 2, "created");
       assert.strictEqual(items[0].textContent, "foo", "title");
       assert.strictEqual(items[1].textContent, "bar", "title");
     });
