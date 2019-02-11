@@ -10777,7 +10777,7 @@ describe("main", () => {
           cookieStoreId: COOKIE_STORE_DEFAULT,
           id: 1,
           index: 0,
-          pinned: true,
+          pinned: false,
           status: "complete",
           title: "foo",
           url: "https://example.com",
