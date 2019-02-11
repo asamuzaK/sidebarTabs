@@ -10652,6 +10652,17 @@ describe("main", () => {
       browser.tabs.query.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
         windowType: "normal",
+      }).resolves([{}, {}]);
+      const res = await func();
+      assert.strictEqual(browser.tabs.query.callCount, i + 2, "called");
+      assert.deepEqual(res, [{}, {}], "result");
+    });
+
+    it("should get array", async () => {
+      const i = browser.tabs.query.callCount;
+      browser.tabs.query.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowType: "normal",
       }).onCall(i + 1).resolves([{}]);
       browser.tabs.query.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
