@@ -449,7 +449,7 @@ export const addDragEventListener = async elm => {
 
 /* sidebar tab event handlers */
 /**
- * handle new tab on click
+ * handle clicked new tab
  * @returns {AsyncFunction} - createNewTab()
  */
 export const handleClickedNewTab = () => {
@@ -458,7 +458,7 @@ export const handleClickedNewTab = () => {
 };
 
 /**
- * handle tab on click
+ * handle clicked tab
  * @param {!Object} evt - event
  * @returns {Promise.<Array>} - results of each handler
  */

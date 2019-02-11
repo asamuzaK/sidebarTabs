@@ -1634,7 +1634,7 @@ describe("main", () => {
     });
   });
 
-  describe("handle new tab on click", () => {
+  describe("handle clicked new tab", () => {
     const func = mjs.handleClickedNewTab;
 
     it("should call function", async () => {
@@ -1647,7 +1647,7 @@ describe("main", () => {
     });
   });
 
-  describe("handle tab on click", () => {
+  describe("handle clicked tab", () => {
     const func = mjs.handleClickedTab;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
