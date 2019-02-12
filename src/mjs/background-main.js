@@ -63,10 +63,7 @@ export const toggleSidebar = async () => {
  * handle port.onDisconnect
  * @returns {AsyncFunction} - setSidebarIsOpenState()
  */
-export const portOnDisconnect = () => {
-  console.log("port disconnected");
-  return setSidebarIsOpenState().catch(throwErr);
-};
+export const portOnDisconnect = () => setSidebarIsOpenState().catch(throwErr);
 
 /**
  * handle connected port
@@ -74,6 +71,5 @@ export const portOnDisconnect = () => {
  * @returns {void}
  */
 export const handlePort = async port => {
-  console.log(`port connected: ${port.name}`);
   port.onDisconnect.addListener(portOnDisconnect);
 };

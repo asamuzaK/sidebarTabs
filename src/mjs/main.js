@@ -1816,7 +1816,6 @@ export const waitAndGetAllTabs = async () => {
   const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
   await sleep(MSEC100);
   const items2 = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  console.log(`tabs length: before: ${items.length} after: ${items2.length}`);
   if (items.length === items2.length) {
     allTabs = items2;
   } else {

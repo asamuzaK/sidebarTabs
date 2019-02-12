@@ -24,9 +24,6 @@ windows.onFocusChanged.addListener(windowId =>
 );
 
 /* startup */
-document.addEventListener("DOMContentLoaded", () => {
-  console.log(`background startup: ${window.performance.now()}`);
-  return setSidebarIsOpenState().then(() => {
-    console.log(`background startup done: ${window.performance.now()}`);
-  }).catch(throwErr);
-});
+document.addEventListener("DOMContentLoaded", () =>
+  setSidebarIsOpenState().catch(throwErr)
+);
