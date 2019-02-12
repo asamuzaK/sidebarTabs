@@ -10786,6 +10786,30 @@ describe("main", () => {
             muted: false,
           },
         },
+      ];
+      await func(arr);
+      const items = document.querySelectorAll(TAB_QUERY);
+      assert.strictEqual(items.length, 1, "created");
+      assert.strictEqual(items[0].textContent, "foo", "title");
+    });
+
+    it("should create tabs in order", async () => {
+      const arr = [
+        {
+          active: false,
+          audible: false,
+          cookieStoreId: COOKIE_STORE_DEFAULT,
+          id: 1,
+          index: 0,
+          pinned: false,
+          status: "complete",
+          title: "foo",
+          url: "https://example.com",
+          windowId: browser.windows.WINDOW_ID_CURRENT,
+          mutedInfo: {
+            muted: false,
+          },
+        },
         {
           active: false,
           audible: false,
