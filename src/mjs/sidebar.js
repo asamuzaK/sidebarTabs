@@ -102,14 +102,41 @@ window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
 
 /* start up */
-document.addEventListener("DOMContentLoaded", () => Promise.all([
-  menus.removeAll().then(createContextMenu),
-  localizeHtml(),
-  makeConnection({name: TAB}),
-  setContextualIds(),
-  setSidebar().then(setMain),
-  setSidebarTheme(),
-]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
-  .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
-  .catch(throwErr)
-);
+document.addEventListener("DOMContentLoaded", () => {
+  console.log(`sidebar startup: ${window.performance.now()}`);
+  return Promise.all([
+    menus.removeAll().then(createContextMenu).then(() => {
+      console.log(`create context menu done: ${window.performance.now()}`);
+    }),
+    localizeHtml().then(() => {
+      console.log(`localize HTML done: ${window.performance.now()}`);
+    }),
+    makeConnection({name: TAB}).then(() => {
+      console.log(`make connection done: ${window.performance.now()}`);
+    }),
+    setContextualIds().then(() => {
+      console.log(`set contextual IDs done: ${window.performance.now()}`);
+    }),
+    setSidebar().then(setMain).then(() => {
+      console.log(`set main done: ${window.performance.now()}`);
+    }),
+    setSidebarTheme().then(() => {
+      console.log(`set theme done: ${window.performance.now()}`);
+    }),
+  ]).then(emulateTabs).then(() => {
+    console.log(`emulate tabs done: ${window.performance.now()}`);
+  }).then(restoreTabGroups).then(() => {
+    console.log(`restore tab groups done: ${window.performance.now()}`);
+  }).then(restoreTabContainers).then(() => {
+    console.log(`restore tab containers done: ${window.performance.now()}`);
+  }).then(restoreHighlightedTabs).then(() => {
+    console.log(`restore highlighted tabs done: ${window.performance.now()}`);
+  }).then(setSessionTabList).then(() => {
+    console.log(`set session tab list done: ${window.performance.now()}`);
+  }).then(getLastClosedTab)
+    .then(() => {
+      console.log(`get last closed tab done: ${window.performance.now()}`);
+      console.log(`sidebar startup done: ${window.performance.now()}`);
+    })
+    .catch(throwErr);
+});
