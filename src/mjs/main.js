@@ -3,7 +3,7 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr,
+  getType, isObjectNotEmpty, isString, logErr, throwErr,
 } from "./common.js";
 import {
   clearStorage, createTab, getActiveTab, getAllContextualIdentities,
@@ -67,7 +67,6 @@ import {
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
 const MOUSE_BUTTON_RIGHT = 2;
-const MSEC100 = 100;
 
 /* sidebar */
 export const sidebar = {
@@ -1808,23 +1807,6 @@ export const restoreTabGroups = async () => {
 };
 
 /**
- * wait until all tabs are loaded and then get them
- * @returns {Array} - array of tabs.Tab
- */
-export const waitAndGetAllTabs = async () => {
-  let allTabs;
-  const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  await sleep(MSEC100);
-  const items2 = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  if (items.length === items2.length) {
-    allTabs = items2;
-  } else {
-    allTabs = await waitAndGetAllTabs();
-  }
-  return allTabs;
-};
-
-/**
  * emulate tabs in order
  * @param {Array} arr - array of tabs.Tab
  * @returns {void}
@@ -1847,7 +1829,7 @@ export const emulateTabsInOrder = async arr => {
  * @returns {AsyncFunction} - emulateTabsInOrder()
  */
 export const emulateTabs = async () => {
-  const allTabs = await waitAndGetAllTabs();
+  const allTabs = await getAllTabsInWindow(WINDOW_ID_CURRENT);
   return emulateTabsInOrder(allTabs);
 };
 

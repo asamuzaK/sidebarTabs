@@ -10646,36 +10646,6 @@ describe("main", () => {
     });
   });
 
-  describe("wait until all tabs are loaded and then get them", () => {
-    const func = mjs.waitAndGetAllTabs;
-
-    it("should get array", async () => {
-      const i = browser.tabs.query.callCount;
-      browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        windowType: "normal",
-      }).resolves([{}, {}]);
-      const res = await func();
-      assert.strictEqual(browser.tabs.query.callCount, i + 2, "called");
-      assert.deepEqual(res, [{}, {}], "result");
-    });
-
-    it("should get array", async () => {
-      const i = browser.tabs.query.callCount;
-      browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        windowType: "normal",
-      }).onCall(i + 1).resolves([{}]);
-      browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        windowType: "normal",
-      }).resolves([{}, {}]);
-      const res = await func();
-      assert.strictEqual(browser.tabs.query.callCount, i + 4, "called");
-      assert.deepEqual(res, [{}, {}], "result");
-    });
-  });
-
   describe("emulate tabs in order", () => {
     const func = mjs.emulateTabsInOrder;
     beforeEach(() => {
@@ -10951,7 +10921,7 @@ describe("main", () => {
       }).resolves(arr);
       await func();
       const items = document.querySelectorAll(TAB_QUERY);
-      assert.strictEqual(browser.tabs.query.callCount, i + 2, "called");
+      assert.strictEqual(browser.tabs.query.callCount, i + 1, "called");
       assert.strictEqual(items.length, 1, "created");
       assert.strictEqual(items[0].textContent, "foo", "title");
       browser.tabs.query.flush();
