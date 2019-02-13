@@ -43,6 +43,87 @@ describe("menu", () => {
     assert.isObject(browser, "browser");
   });
 
+  describe("update context menu", () => {
+    const func = mjs.updateContextMenu;
+
+    it("should not call function if 1st arg is not given", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func();
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if 1st arg is not string", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func(1);
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if 2nd arg is not given", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func("foo");
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if 2nd arg is empty object", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func("foo", {});
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function if prop does not match", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func("foo", {
+        bar: "baz",
+      });
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func("foo", {
+        enabled: true,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [undefined], "result");
+    });
+  });
+
+  describe("handle create menu item last error", () => {
+    const func = mjs.handleCreateMenuItemError;
+
+    it("should not call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func();
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should throw", async () => {
+      browser.runtime.lastError = new Error("unknown error");
+      const i = browser.menus.update.callCount;
+      assert.throws(() => func(), "unknown error", "error");
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      browser.runtime.lastError = null;
+    });
+
+    it("should call function", async () => {
+      browser.runtime.lastError = new Error("ID already exists: foo");
+      const i = browser.menus.update.callCount;
+      const opt = {
+        visible: true,
+      };
+      const res = await func("foo", opt);
+      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [[undefined]]);
+      browser.runtime.lastError = null;
+    });
+  });
+
   describe("create context menu item", () => {
     const func = mjs.createMenuItem;
 
@@ -243,56 +324,6 @@ describe("menu", () => {
       });
       assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
       assert.deepEqual(res, [undefined, undefined], "result");
-    });
-  });
-
-  describe("update context menu", () => {
-    const func = mjs.updateContextMenu;
-
-    it("should not call function if 1st arg is not given", async () => {
-      const i = browser.menus.update.callCount;
-      const res = await func();
-      assert.strictEqual(browser.menus.update.callCount, i, "not called");
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not call function if 1st arg is not string", async () => {
-      const i = browser.menus.update.callCount;
-      const res = await func(1);
-      assert.strictEqual(browser.menus.update.callCount, i, "not called");
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not call function if 2nd arg is not given", async () => {
-      const i = browser.menus.update.callCount;
-      const res = await func("foo");
-      assert.strictEqual(browser.menus.update.callCount, i, "not called");
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not call function if 2nd arg is empty object", async () => {
-      const i = browser.menus.update.callCount;
-      const res = await func("foo", {});
-      assert.strictEqual(browser.menus.update.callCount, i, "not called");
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not call function if prop does not match", async () => {
-      const i = browser.menus.update.callCount;
-      const res = await func("foo", {
-        bar: "baz",
-      });
-      assert.strictEqual(browser.menus.update.callCount, i, "not called");
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.menus.update.callCount;
-      const res = await func("foo", {
-        enabled: true,
-      });
-      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
-      assert.deepEqual(res, [undefined], "result");
     });
   });
 
