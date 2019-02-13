@@ -21,12 +21,9 @@ import {
   setSidebarTheme,
 } from "./theme.js";
 import {
-  createContextMenu,
-} from "./menu.js";
-import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
-  handleClickedMenu, handleCreatedTab, handleDetachedTab, handleEvt,
-  handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
+  handleClickedMenu, handleContextmenuEvt, handleCreatedTab, handleDetachedTab,
+  handleEvt, handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
   handleUpdatedTab, restoreHighlightedTabs, restoreTabGroups,
   setContextualIds, setMain, setSidebar, setVars,
 } from "./main.js";
@@ -100,10 +97,11 @@ tabs.onUpdated.addListener(
 window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
 window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
+window.addEventListener("contextmenu",
+                        evt => handleContextmenuEvt(evt).catch(throwErr));
 
 /* start up */
 document.addEventListener("DOMContentLoaded", () => Promise.all([
-  menus.removeAll().then(createContextMenu),
   localizeHtml(),
   makeConnection({name: TAB}),
   setContextualIds(),

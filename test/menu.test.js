@@ -373,6 +373,14 @@ describe("menu", () => {
 
     it("should call function with empty object argument", async () => {
       const i = browser.menus.overrideContext.withArgs({}).callCount;
+      const res = await func();
+      assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
+                         i + 1, "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should call function with empty object argument", async () => {
+      const i = browser.menus.overrideContext.withArgs({}).callCount;
       const res = await func({});
       assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
                          i + 1, "called");
@@ -380,52 +388,14 @@ describe("menu", () => {
     });
 
     it("should call function with object argument", async () => {
-      const i = browser.menus.overrideContext.withArgs({
+      const opt = {
         tabId: 1,
         context: "tab",
-      }).callCount;
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      elm.dataset.tabId = "1";
-      body.appendChild(elm);
-      const res = await func({
-        target: elm,
-      });
-      assert.strictEqual(browser.menus.overrideContext.withArgs({
-        tabId: 1,
-        context: "tab",
-      }).callCount, i + 1, "called");
-      assert.isUndefined(res, "result");
-    });
-
-    it("should call function with empty object argument", async () => {
-      const i = browser.menus.overrideContext.withArgs({}).callCount;
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      elm.dataset.tabId = browser.tabs.TAB_ID_NONE;
-      body.appendChild(elm);
-      const res = await func({
-        target: elm,
-      });
-      assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
+      };
+      const i = browser.menus.overrideContext.withArgs(opt).callCount;
+      const res = await func(opt);
+      assert.strictEqual(browser.menus.overrideContext.withArgs(opt).callCount,
                          i + 1, "called");
-      assert.isUndefined(res, "result");
-    });
-  });
-
-  describe("handle contextmenu click", () => {
-    const func = mjs.contextmenuOnClick;
-    beforeEach(() => {
-      if (typeof browser.menus.overrideContext !== "function") {
-        browser.menus.overrideContext = sinon.stub();
-      }
-    });
-
-    it("should call function", async () => {
-      const i = browser.menus.overrideContext.callCount;
-      const res = await func({});
-      assert.strictEqual(browser.menus.overrideContext.callCount, i + 1,
-                         "called");
       assert.isUndefined(res, "result");
     });
   });

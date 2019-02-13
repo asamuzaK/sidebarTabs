@@ -8,9 +8,12 @@ import {
 import {
   handlePort, setSidebarIsOpenState, setSidebarWindowId, toggleSidebar,
 } from "./background-main.js";
+import {
+  createContextMenu,
+} from "./menu.js";
 
 /* api */
-const {browserAction, runtime, windows} = browser;
+const {browserAction, menus, runtime, windows} = browser;
 
 /* listeners */
 browserAction.onClicked.addListener(() =>
@@ -24,6 +27,7 @@ windows.onFocusChanged.addListener(windowId =>
 );
 
 /* startup */
-document.addEventListener("DOMContentLoaded", () =>
-  setSidebarIsOpenState().catch(throwErr)
-);
+document.addEventListener("DOMContentLoaded", () => Promise.all([
+  menus.removeAll().then(createContextMenu),
+  setSidebarIsOpenState(),
+]).catch(throwErr));

@@ -4,15 +4,13 @@
 
 import {getType, isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {getAllContextualIdentities} from "./browser.js";
-import {getSidebarTab, getSidebarTabId} from "./util.js";
 import menuItems from "./menu-items.js";
 
 /* api */
-const {contextualIdentities, menus, runtime, tabs} = browser;
+const {contextualIdentities, menus, runtime} = browser;
 
 /* constants */
 import {NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER} from "./constant.js";
-const {TAB_ID_NONE} = tabs;
 const ICON_SIZE_16 = 16;
 
 /**
@@ -236,30 +234,11 @@ export const removeContextualIdentitiesMenu = async info => {
 
 /**
  * override context menu
- * @param {!Object} evt - event
+ * @param {Object} opt - options
  * @returns {AsyncFunction} - menus.overrideContext()
  */
-export const overrideContextMenu = async evt => {
-  const {target} = evt;
-  const tab = getSidebarTab(target);
-  const opt = {};
-  if (tab) {
-    const tabId = getSidebarTabId(tab);
-    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
-      opt.tabId = tabId;
-      opt.context = "tab";
-    }
-  }
-  return menus.overrideContext(opt);
-};
-
-/**
- * handle contextmenu click
- * @param {Object} evt - Event
- * @returns {AsyncFunction} - overrideContextMenu
- */
-export const contextmenuOnClick = evt =>
-  overrideContextMenu(evt).catch(throwErr);
+export const overrideContextMenu = async (opt = {}) =>
+  menus.overrideContext(opt);
 
 /* browser event handlers */
 /**
@@ -290,5 +269,3 @@ export const contextualIdentitiesOnUpdated = info =>
 contextualIdentities.onCreated.addListener(contextualIdentitiesOnCreated);
 contextualIdentities.onRemoved.addListener(contextualIdentitiesOnRemoved);
 contextualIdentities.onUpdated.addListener(contextualIdentitiesOnUpdated);
-
-window.addEventListener("contextmenu", contextmenuOnClick);

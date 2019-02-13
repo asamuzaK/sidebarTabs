@@ -36,7 +36,7 @@ import {
   setTabHeight, setTheme,
 } from "./theme.js";
 import {
-  updateContextMenu,
+  overrideContextMenu, updateContextMenu,
 } from "./menu.js";
 import menuItems from "./menu-items.js";
 
@@ -1644,6 +1644,25 @@ export const handleEvt = async evt => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * handle contextmenu event
+ * @param {!Object} evt - event
+ * @returns {AsyncFunction} - overrideContextMenu()
+ */
+export const handleContextmenuEvt = async evt => {
+  const {target} = evt;
+  const tab = getSidebarTab(target);
+  const opt = {};
+  if (tab) {
+    const tabId = getSidebarTabId(tab);
+    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
+      opt.tabId = tabId;
+      opt.context = "tab";
+    }
+  }
+  return overrideContextMenu(opt);
 };
 
 /* runtime message */
