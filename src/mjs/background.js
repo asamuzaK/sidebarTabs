@@ -27,16 +27,7 @@ windows.onFocusChanged.addListener(windowId =>
 );
 
 /* startup */
-document.addEventListener("DOMContentLoaded", () => {
-  console.log(`background: startup: ${window.performance.now()}`);
-  return Promise.all([
-    menus.removeAll().then(createContextMenu).then(() => {
-      console.log(`background: context menu: ${window.performance.now()}`);
-    }),
-    setSidebarIsOpenState().then(() => {
-      console.log(`background: sidebar state: ${window.performance.now()}`);
-    }),
-  ]).then(() => {
-    console.log(`background: startup done: ${window.performance.now()}`);
-  }).catch(throwErr);
-});
+document.addEventListener("DOMContentLoaded", () => Promise.all([
+  menus.removeAll().then(createContextMenu),
+  setSidebarIsOpenState(),
+]).catch(throwErr));
