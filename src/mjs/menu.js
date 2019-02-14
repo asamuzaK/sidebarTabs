@@ -7,7 +7,7 @@ import {getAllContextualIdentities} from "./browser.js";
 import menuItems from "./menu-items.js";
 
 /* api */
-const {contextualIdentities, menus, runtime} = browser;
+const {menus, runtime} = browser;
 
 /* constants */
 import {NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER} from "./constant.js";
@@ -239,33 +239,3 @@ export const removeContextualIdentitiesMenu = async info => {
  */
 export const overrideContextMenu = async (opt = {}) =>
   menus.overrideContext(opt);
-
-/* browser event handlers */
-/**
- * handle contextualIdentities.onCreated
- * @param {Object} info - info
- * @returns {AsyncFunction} - createContextualIdentitiesMenu()
- */
-export const contextualIdentitiesOnCreated = info =>
-  createContextualIdentitiesMenu(info).catch(throwErr);
-
-/**
- * handle contextualIdentities.onRemoved
- * @param {Object} info - info
- * @returns {AsyncFunction} - removeContextualIdentitiesMenu()
- */
-export const contextualIdentitiesOnRemoved = info =>
-  removeContextualIdentitiesMenu(info).catch(throwErr);
-
-/**
- * handle contextualIdentities.onUpdated
- * @param {Object} info - info
- * @returns {AsyncFunction} - updateContextualIdentitiesMenu()
- */
-export const contextualIdentitiesOnUpdated = info =>
-  updateContextualIdentitiesMenu(info).catch(throwErr);
-
-/* listeners */
-contextualIdentities.onCreated.addListener(contextualIdentitiesOnCreated);
-contextualIdentities.onRemoved.addListener(contextualIdentitiesOnRemoved);
-contextualIdentities.onUpdated.addListener(contextualIdentitiesOnUpdated);

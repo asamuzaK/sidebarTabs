@@ -15,19 +15,22 @@ import os from "os";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
-  ACTIVE, AUDIBLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE,
-  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_LIGHT, CLASS_THEME_DARK,
+  ACTIVE, AUDIBLE,
+  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
+  CLASS_THEME_LIGHT, CLASS_THEME_DARK,
   COMPACT, COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI,
-  NEW_TAB, PINNED, SIDEBAR_MAIN, TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD,
-  TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER,
-  TAB_CLOSE_UNDO, TAB_DUPE, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH,
-  TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP, TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN,
-  TAB_MUTE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TABS_BOOKMARK, TABS_CLOSE,
-  TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN,
-  TABS_MUTE, TABS_PIN, TABS_RELOAD, THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
+  NEW_TAB, PINNED, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
+  TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
+  TAB_QUERY, TAB_RELOAD,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
+  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
+  THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
 const IS_WIN = os.platform() === "win32";
 
@@ -8840,6 +8843,69 @@ describe("main", () => {
       assert.deepEqual(res, [undefined], "result");
       browser.tabs.get.flush();
       browser.windows.getCurrent.flush();
+    });
+  });
+
+  describe("requestSidebarStateUpdate", () => {
+    const func = mjs.requestSidebarStateUpdate;
+    beforeEach(() => {
+      mjs.sidebar.windowId = null;
+    });
+    afterEach(() => {
+      mjs.sidebar.windowId = null;
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j,
+                         "not called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        id: 2,
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        id: 1,
+      });
+      browser.runtime.sendMessage.callsFake(msg => msg);
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.deepEqual(res, {
+        [SIDEBAR_STATE_UPDATE]: {
+          windowId: 1,
+        },
+      }, "result");
+      browser.windows.getCurrent.flush();
+      browser.runtime.sendMessage.flush();
     });
   });
 

@@ -8,6 +8,7 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/background-main.js";
+import {SIDEBAR_STATE_UPDATE} from "../src/mjs/constant.js";
 
 describe("background-main", () => {
   beforeEach(() => {
@@ -136,28 +137,47 @@ describe("background-main", () => {
     });
   });
 
-  describe("handle port.onDisconnect", () => {
-    const func = mjs.portOnDisconnect;
+  describe("handle runtime message", () => {
+    const func = mjs.handleMsg;
+    beforeEach(() => {
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      mjs.sidebar.isOpen = false;
+    });
+    afterEach(() => {
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      mjs.sidebar.isOpen = false;
+    });
+
+    it("should not call function", async () => {
+      const res = await func({});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const msg = {
+        foo: true,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [], "result");
+    });
 
     it("should call function", async () => {
-      const stub = sinon.stub();
-      browser.sidebarAction.isOpen = stub;
-      await func();
-      assert.isTrue(stub.calledOnce, "called");
+      browser.sidebarAction.isOpen = sinon.stub();
+      browser.sidebarAction.isOpen.withArgs({windowId: 1}).resolves(true);
+      const i = browser.sidebarAction.isOpen.withArgs({windowId: 1}).callCount;
+      const msg = {
+        [SIDEBAR_STATE_UPDATE]: {
+          windowId: 1,
+        },
+      };
+      const res = await func(msg);
+      assert.strictEqual(
+        browser.sidebarAction.isOpen.withArgs({windowId: 1}).callCount,
+        i + 1, "called");
+      assert.isTrue(mjs.sidebar.isOpen, "isOpen");
+      assert.strictEqual(mjs.sidebar.windowId, 1, "windowId");
+      assert.deepEqual(res, [undefined], "result");
       delete browser.sidebarAction.isOpen;
-    });
-  });
-
-  describe("handle connected port", () => {
-    const func = mjs.handlePort;
-
-    it("should add listener", async () => {
-      const port = new browser.runtime.Port({name: "foo"});
-      assert.strictEqual(port.name, "foo");
-      const i = port.onDisconnect.addListener.callCount;
-      await func(port);
-      assert.strictEqual(port.onDisconnect.addListener.callCount, i + 1,
-                         "called");
     });
   });
 });

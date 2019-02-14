@@ -6,9 +6,6 @@ import {
   throwErr,
 } from "./common.js";
 import {
-  makeConnection,
-} from "./browser.js";
-import {
   setSessionTabList,
 } from "./util.js";
 import {
@@ -24,8 +21,8 @@ import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
   handleClickedMenu, handleContextmenuEvt, handleCreatedTab, handleDetachedTab,
   handleEvt, handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleUpdatedTab, restoreHighlightedTabs, restoreTabGroups,
-  setContextualIds, setMain, setSidebar, setVars,
+  handleUpdatedTab, requestSidebarStateUpdate, restoreHighlightedTabs,
+  restoreTabGroups, setContextualIds, setMain, setSidebar, setVars,
 } from "./main.js";
 
 /* api */
@@ -34,9 +31,6 @@ const {
 } = browser;
 
 /* constants */
-import {
-  TAB,
-} from "./constant.js";
 const {WINDOW_ID_CURRENT} = windows;
 
 /* listeners */
@@ -103,9 +97,8 @@ window.addEventListener("contextmenu",
 /* start up */
 document.addEventListener("DOMContentLoaded", () => Promise.all([
   localizeHtml(),
-  makeConnection({name: TAB}),
   setContextualIds(),
-  setSidebar().then(setMain),
+  setSidebar().then(setMain).then(requestSidebarStateUpdate),
   setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)

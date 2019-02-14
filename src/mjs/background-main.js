@@ -3,13 +3,14 @@
  */
 
 import {
-  getType, throwErr,
+  getType,
 } from "./common.js";
 
 /* api */
 const {sidebarAction, windows} = browser;
 
 /* constant */
+import {SIDEBAR_STATE_UPDATE} from "./constant.js";
 const {WINDOW_ID_NONE} = windows;
 
 /* sidebar */
@@ -60,16 +61,23 @@ export const toggleSidebar = async () => {
 };
 
 /**
- * handle port.onDisconnect
- * @returns {AsyncFunction} - setSidebarIsOpenState()
+ * handle runtime message
+ * @param {!Object} msg - message
+ * @param {!Object} sender - sender
+ * @returns {Promise.<Array>} - results of each handler
  */
-export const portOnDisconnect = () => setSidebarIsOpenState().catch(throwErr);
-
-/**
- * handle connected port
- * @param {Object} port - runtime.Port
- * @returns {void}
- */
-export const handlePort = async port => {
-  port.onDisconnect.addListener(portOnDisconnect);
+export const handleMsg = async msg => {
+  const items = Object.entries(msg);
+  const func = [];
+  for (const [key, value] of items) {
+    switch (key) {
+      case SIDEBAR_STATE_UPDATE: {
+        const {windowId} = value;
+        func.push(setSidebarWindowId(windowId).then(setSidebarIsOpenState));
+        break;
+      }
+      default:
+    }
+  }
+  return Promise.all(func);
 };
