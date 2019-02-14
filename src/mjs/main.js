@@ -1698,8 +1698,8 @@ export const requestSidebarStateUpdate = async () => {
   let func;
   if (Number.isInteger(windowId)) {
     const win = await getCurrentWindow();
-    const {id} = win;
-    if (windowId === id) {
+    const {focused, id, type} = win;
+    if (windowId === id && focused && type === "normal") {
       const msg = {
         [SIDEBAR_STATE_UPDATE]: {
           windowId,

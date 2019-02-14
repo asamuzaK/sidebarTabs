@@ -8872,7 +8872,9 @@ describe("main", () => {
 
     it("should not call function", async () => {
       browser.windows.getCurrent.resolves({
-        id: 2,
+        focused: false,
+        id: 1,
+        type: "normal",
       });
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
@@ -8888,7 +8890,45 @@ describe("main", () => {
 
     it("should not call function", async () => {
       browser.windows.getCurrent.resolves({
+        focused: true,
+        id: 2,
+        type: "normal",
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
+        type: "popup",
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should call function", async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true,
+        id: 1,
+        type: "normal",
       });
       browser.runtime.sendMessage.callsFake(msg => msg);
       const i = browser.runtime.sendMessage.callCount;
@@ -8896,7 +8936,7 @@ describe("main", () => {
       mjs.sidebar.windowId = 1;
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-                         "not called");
+                         "called");
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
       assert.deepEqual(res, {
