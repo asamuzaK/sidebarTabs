@@ -6,7 +6,7 @@ import {
   throwErr,
 } from "./common.js";
 import {
-  handleMsg, setSidebarIsOpenState, setSidebarWindowId, toggleSidebar,
+  handleMsg, setSidebarState, toggleSidebar,
 } from "./background-main.js";
 import {
   createContextMenu, createContextualIdentitiesMenu,
@@ -18,7 +18,7 @@ const {browserAction, contextualIdentities, menus, runtime, windows} = browser;
 
 /* listeners */
 browserAction.onClicked.addListener(() =>
-  toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
+  toggleSidebar().then(setSidebarState).catch(throwErr)
 );
 contextualIdentities.onCreated.addListener(info =>
   createContextualIdentitiesMenu(info).catch(throwErr)
@@ -29,11 +29,11 @@ contextualIdentities.onRemoved.addListener(info =>
 contextualIdentities.onUpdated.addListener(info =>
   updateContextualIdentitiesMenu(info).catch(throwErr)
 );
-runtime.onMessage.addListener((msg, sender, sendResponse) =>
-  handleMsg(msg, sender, sendResponse).catch(throwErr)
+runtime.onMessage.addListener((msg, sender) =>
+  handleMsg(msg, sender).catch(throwErr)
 );
 windows.onFocusChanged.addListener(windowId =>
-  setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr)
+  setSidebarState(windowId).catch(throwErr)
 );
 
 /* startup */

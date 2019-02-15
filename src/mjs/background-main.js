@@ -2,10 +2,6 @@
  * background-main.js
  */
 
-import {
-  getType,
-} from "./common.js";
-
 /* api */
 const {sidebarAction, windows} = browser;
 
@@ -15,34 +11,27 @@ const {WINDOW_ID_NONE} = windows;
 
 /* sidebar */
 export const sidebar = {
-  windowId: windows.WINDOW_ID_CURRENT,
+  windowId: null,
   isOpen: false,
 };
 
 /**
- * set sidebar window ID
+ * set sidebar state
  * @param {number} windowId - window ID
  * @returns {void}
  */
-export const setSidebarWindowId = async windowId => {
+export const setSidebarState = async windowId => {
   if (!Number.isInteger(windowId)) {
-    throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
+    windowId = windows.WINDOW_ID_CURRENT;
   }
   if (windowId === WINDOW_ID_NONE) {
-    sidebar.windowId = windows.WINDOW_ID_CURRENT;
+    sidebar.windowId = null;
+    sidebar.isOpen = false;
   } else {
+    const isOpen = await sidebarAction.isOpen({});
     sidebar.windowId = windowId;
+    sidebar.isOpen = !!isOpen;
   }
-};
-
-/**
- * set sidebar isOpen state
- * @returns {void}
- */
-export const setSidebarIsOpenState = async () => {
-  const {windowId} = sidebar;
-  const isOpen = await sidebarAction.isOpen({windowId});
-  sidebar.isOpen = !!isOpen;
 };
 
 /**
@@ -50,12 +39,14 @@ export const setSidebarIsOpenState = async () => {
  * @returns {?AsyncFunction} - sidebarAction.close() / sidebarAction.open()
  */
 export const toggleSidebar = async () => {
+  const {isOpen, windowId} = sidebar;
   let func;
-  const {isOpen} = sidebar;
-  if (isOpen) {
-    func = sidebarAction.close();
-  } else {
-    func = sidebarAction.open();
+  if (Number.isInteger(windowId)) {
+    if (isOpen) {
+      func = sidebarAction.close();
+    } else {
+      func = sidebarAction.open();
+    }
   }
   return func;
 };
@@ -73,7 +64,7 @@ export const handleMsg = async msg => {
     switch (key) {
       case SIDEBAR_STATE_UPDATE: {
         const {windowId} = value;
-        func.push(setSidebarWindowId(windowId).then(setSidebarIsOpenState));
+        func.push(setSidebarState(windowId));
         break;
       }
       default:
