@@ -36,15 +36,6 @@ describe("common", () => {
     delete global.document;
   });
 
-  describe("throw error", () => {
-    const func = mjs.throwErr;
-
-    it("should throw", () => {
-      const e = new Error("error");
-      assert.throws(() => func(e), "error");
-    });
-  });
-
   describe("log error", () => {
     const func = mjs.logErr;
 
@@ -74,6 +65,19 @@ describe("common", () => {
       assert.strictEqual(msg, "error");
       assert.isTrue(calledOnce);
       assert.isFalse(res);
+    });
+  });
+
+  describe("throw error", () => {
+    const func = mjs.throwErr;
+
+    it("should throw", () => {
+      const stub = sinon.stub(console, "error");
+      const i = stub.callCount;
+      const e = new Error("error");
+      assert.throws(() => func(e), "error");
+      assert.strictEqual(stub.callCount, i + 1, "called");
+      stub.restore();
     });
   });
 
