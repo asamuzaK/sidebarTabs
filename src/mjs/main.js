@@ -65,7 +65,7 @@ import {
   THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
-const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
+const {WINDOW_ID_NONE} = windows;
 const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
@@ -1871,7 +1871,7 @@ export const emulateTabsInOrder = async arr => {
  * @returns {AsyncFunction} - emulateTabsInOrder()
  */
 export const emulateTabs = async () => {
-  const allTabs = await getAllTabsInWindow(WINDOW_ID_CURRENT);
+  const allTabs = await getAllTabsInWindow();
   return emulateTabsInOrder(allTabs);
 };
 
