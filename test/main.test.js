@@ -8930,7 +8930,7 @@ describe("main", () => {
         id: 1,
         type: "normal",
       });
-      browser.runtime.sendMessage.callsFake(msg => msg);
+      browser.runtime.sendMessage.resolves(true);
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
       mjs.sidebar.windowId = 1;
@@ -8939,11 +8939,7 @@ describe("main", () => {
                          "called");
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
-      assert.deepEqual(res, {
-        [SIDEBAR_STATE_UPDATE]: {
-          windowId: 1,
-        },
-      }, "result");
+      assert.isTrue(res, "result");
       browser.windows.getCurrent.flush();
       browser.runtime.sendMessage.flush();
     });

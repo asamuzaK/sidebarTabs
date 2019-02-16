@@ -8,8 +8,8 @@ import {
 import {
   clearStorage, createTab, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab,
-  highlightTab, moveTab, restoreSession, setSessionWindowValue, updateTab,
+  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
+  restoreSession, sendMessage, setSessionWindowValue, updateTab,
 } from "./browser.js";
 import {
   bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
@@ -42,7 +42,7 @@ import menuItems from "./menu-items.js";
 
 /* api */
 const {
-  i18n, runtime, tabs, windows,
+  i18n, tabs, windows,
 } = browser;
 
 /* constants */
@@ -1691,7 +1691,7 @@ export const handleMsg = async msg => {
 
 /**
  * request sidebar state update
- * @returns {?AsyncFunction} - runtime.sendMessage()
+ * @returns {?AsyncFunction} - sendMessage()
  */
 export const requestSidebarStateUpdate = async () => {
   const {windowId} = sidebar;
@@ -1705,7 +1705,7 @@ export const requestSidebarStateUpdate = async () => {
           windowId,
         },
       };
-      func = runtime.sendMessage(msg);
+      func = sendMessage(null, msg);
     }
   }
   return func || null;

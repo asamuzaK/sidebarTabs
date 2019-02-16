@@ -54,7 +54,6 @@ export const toggleSidebar = async () => {
 /**
  * handle runtime message
  * @param {!Object} msg - message
- * @param {!Object} sender - sender
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {
