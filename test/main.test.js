@@ -11,23 +11,28 @@ import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
+import os from "os";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
-  ACTIVE, AUDIBLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE,
-  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_LIGHT, CLASS_THEME_DARK,
+  ACTIVE, AUDIBLE,
+  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
+  CLASS_THEME_LIGHT, CLASS_THEME_DARK,
   COMPACT, COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI,
-  NEW_TAB, PINNED, SIDEBAR_MAIN, TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD,
-  TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER,
-  TAB_CLOSE_UNDO, TAB_DUPE, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH,
-  TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP, TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN,
-  TAB_MUTE, TAB_PIN, TAB_QUERY, TAB_RELOAD, TABS_BOOKMARK, TABS_CLOSE,
-  TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN,
-  TABS_MUTE, TABS_PIN, TABS_RELOAD, THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
+  NEW_TAB, PINNED, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
+  TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
+  TAB_QUERY, TAB_RELOAD,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
+  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
+  THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
+const IS_WIN = os.platform() === "win32";
 
 describe("main", () => {
   /**
@@ -8677,6 +8682,48 @@ describe("main", () => {
     });
   });
 
+  describe("handle contextmenu event", () => {
+    const func = mjs.handleContextmenuEvt;
+    beforeEach(() => {
+      if (typeof browser.menus.overrideContext !== "function") {
+        browser.menus.overrideContext = sinon.stub();
+      }
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.overrideContext.withArgs({
+        tabId: 1,
+        context: "tab",
+      }).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func({
+        target: elm,
+      });
+      assert.strictEqual(browser.menus.overrideContext.withArgs({
+        tabId: 1,
+        context: "tab",
+      }).callCount, i + 1, "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.overrideContext.withArgs({}).callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.dataset.tabId = browser.tabs.TAB_ID_NONE;
+      body.appendChild(elm);
+      const res = await func({
+        target: elm,
+      });
+      assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
+                         i + 1, "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
   describe("handle runtime message", () => {
     const func = mjs.handleMsg;
 
@@ -8796,6 +8843,109 @@ describe("main", () => {
       assert.deepEqual(res, [undefined], "result");
       browser.tabs.get.flush();
       browser.windows.getCurrent.flush();
+    });
+  });
+
+  describe("requestSidebarStateUpdate", () => {
+    const func = mjs.requestSidebarStateUpdate;
+    beforeEach(() => {
+      mjs.sidebar.windowId = null;
+    });
+    afterEach(() => {
+      mjs.sidebar.windowId = null;
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j,
+                         "not called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        focused: false,
+        id: 1,
+        type: "normal",
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true,
+        id: 2,
+        type: "normal",
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true,
+        id: 1,
+        type: "popup",
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.isNull(res, "result");
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should call function", async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true,
+        id: 1,
+        type: "normal",
+      });
+      browser.runtime.sendMessage.callsFake(msg => msg);
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      mjs.sidebar.windowId = 1;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+                         "called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called");
+      assert.deepEqual(res, {
+        [SIDEBAR_STATE_UPDATE]: {
+          windowId: 1,
+        },
+      }, "result");
+      browser.windows.getCurrent.flush();
+      browser.runtime.sendMessage.flush();
     });
   });
 
@@ -10641,6 +10791,169 @@ describe("main", () => {
       assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
       assert.strictEqual(sect4.childElementCount, 1, "child sect 4");
       assert.strictEqual(sect5.childElementCount, 1, "child sect 5");
+    });
+  });
+
+  describe("emulate tabs in order", () => {
+    const func = mjs.emulateTabsInOrder;
+    beforeEach(() => {
+      const body = document.querySelector("body");
+      const tmpl = document.createElement("template");
+      tmpl.id = "tab-container-template";
+      const sect = document.createElement("section");
+      sect.classList.add("tab-container");
+      sect.dataset.tabControls = "";
+      sect.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(sect);
+      body.appendChild(tmpl);
+      const tmpl2 = document.createElement("template");
+      tmpl2.id = "tab-template";
+      const div = document.createElement("div");
+      div.classList.add("tab");
+      div.setAttribute("draggable", "true");
+      div.dataset.tabId = "";
+      div.dataset.tab = "";
+      const span = document.createElement("span");
+      span.classList.add("tab-context");
+      span.setAttribute("title", "");
+      const img = document.createElement("img");
+      img.classList.add("tab-toggle-icon");
+      img.src = "";
+      img.alt = "";
+      span.appendChild(img);
+      div.appendChild(span);
+      const span2 = document.createElement("span");
+      span2.classList.add("tab-content");
+      span2.setAttribute("title", "");
+      const img2 = document.createElement("img");
+      img2.classList.add("tab-icon");
+      img2.src = "";
+      img2.alt = "";
+      img2.dataset.connecting = "";
+      span2.appendChild(img2);
+      const span2_1 = document.createElement("span");
+      span2_1.classList.add("tab-title");
+      span2.appendChild(span2_1);
+      div.appendChild(span2);
+      const span3 = document.createElement("span");
+      span3.classList.add("tab-audio");
+      span3.setAttribute("title", "");
+      const img3 = document.createElement("img");
+      img3.classList.add("tab-audio-icon");
+      img3.src = "";
+      img3.alt = "";
+      span3.appendChild(img3);
+      div.appendChild(span3);
+      const span4 = document.createElement("span");
+      span4.classList.add("tab-ident");
+      span4.setAttribute("title", "");
+      const img4 = document.createElement("img");
+      img4.classList.add("tab-ident-icon");
+      img4.src = "";
+      img4.alt = "";
+      span4.appendChild(img4);
+      div.appendChild(span4);
+      const span5 = document.createElement("span");
+      span5.classList.add("tab-close");
+      span5.setAttribute("title", "");
+      const img5 = document.createElement("img");
+      img5.classList.add("tab-close-icon");
+      img5.src = "";
+      img5.alt = "";
+      span5.appendChild(img5);
+      div.appendChild(span5);
+      const span6 = document.createElement("span");
+      span6.classList.add("tab-pinned");
+      const img6 = document.createElement("img");
+      img6.classList.add("tab-pinned-icon");
+      img6.src = "";
+      img6.alt = "";
+      span6.appendChild(img6);
+      div.appendChild(span6);
+      tmpl2.content.appendChild(div);
+      body.appendChild(tmpl2);
+      const pinned = document.createElement("section");
+      pinned.id = PINNED;
+      body.appendChild(pinned);
+      const newTab = document.createElement("section");
+      newTab.id = NEW_TAB;
+      body.appendChild(newTab);
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+    });
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "instance");
+        assert.strictEqual(e.message, "Expected Array but got Undefined.",
+                           "message");
+      });
+    });
+
+    it("should create tabs in order", async () => {
+      const arr = [
+        {
+          active: false,
+          audible: false,
+          cookieStoreId: COOKIE_STORE_DEFAULT,
+          id: 1,
+          index: 0,
+          pinned: false,
+          status: "complete",
+          title: "foo",
+          url: "https://example.com",
+          windowId: browser.windows.WINDOW_ID_CURRENT,
+          mutedInfo: {
+            muted: false,
+          },
+        },
+      ];
+      await func(arr);
+      const items = document.querySelectorAll(TAB_QUERY);
+      assert.strictEqual(items.length, 1, "created");
+      assert.strictEqual(items[0].textContent, "foo", "title");
+    });
+
+    it("should create tabs in order", async () => {
+      const arr = [
+        {
+          active: false,
+          audible: false,
+          cookieStoreId: COOKIE_STORE_DEFAULT,
+          id: 1,
+          index: 0,
+          pinned: false,
+          status: "complete",
+          title: "foo",
+          url: "https://example.com",
+          windowId: browser.windows.WINDOW_ID_CURRENT,
+          mutedInfo: {
+            muted: false,
+          },
+        },
+        {
+          active: false,
+          audible: false,
+          cookieStoreId: COOKIE_STORE_DEFAULT,
+          id: 2,
+          index: 1,
+          pinned: false,
+          status: "complete",
+          title: "bar",
+          url: "https://www.example.com",
+          windowId: browser.windows.WINDOW_ID_CURRENT,
+          mutedInfo: {
+            muted: false,
+          },
+        },
+      ];
+      await func(arr);
+      const items = document.querySelectorAll(TAB_QUERY);
+      // NOTE: temporary skipping assertation in travis. Bug in JSDOM?
+      if (IS_WIN) {
+        assert.strictEqual(items.length, 2, "created");
+        assert.strictEqual(items[1].textContent, "bar", "title");
+      }
+      assert.strictEqual(items[0].textContent, "foo", "title");
     });
   });
 

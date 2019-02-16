@@ -13,15 +13,6 @@ const VERSION_TOOLKIT =
 const VERSION_TOOLKIT_REGEXP = new RegExp(`^(?:${VERSION_TOOLKIT})$`);
 
 /**
- * throw error
- * @param {!Object} e - Error
- * @throws
- */
-export const throwErr = e => {
-  throw e;
-};
-
-/**
  * log error
  * @param {!Object} e - Error
  * @returns {boolean} - false
@@ -33,6 +24,16 @@ export const logErr = e => {
     console.error(e);
   }
   return false;
+};
+
+/**
+ * throw error
+ * @param {!Object} e - Error
+ * @throws
+ */
+export const throwErr = e => {
+  logErr(e);
+  throw e;
 };
 
 /**

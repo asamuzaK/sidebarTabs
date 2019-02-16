@@ -8,6 +8,7 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/background-main.js";
+import {SIDEBAR_STATE_UPDATE} from "../src/mjs/constant.js";
 
 describe("background-main", () => {
   beforeEach(() => {
@@ -21,97 +22,75 @@ describe("background-main", () => {
     assert.isObject(browser, "browser");
   });
 
-  describe("set sidebar window ID", () => {
-    const func = mjs.setSidebarWindowId;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
-    afterEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
-
-    it("should throw if no argument given", async () => {
-      await func().catch(e => {
-        assert.strictEqual(e.message, "Expected Number but got Undefined.",
-                           "result");
-      });
-    });
-
-    it("should throw if argument is not number", async () => {
-      await func("foo").catch(e => {
-        assert.strictEqual(e.message, "Expected Number but got String.",
-                           "result");
-      });
-    });
-
-    it("should set WINDOW_ID_CURRENT if WINDOW_ID_NONE is given", async () => {
-      const i = browser.windows.WINDOW_ID_CURRENT;
-      mjs.sidebar.windowId = i + 1;
-      await func(browser.windows.WINDOW_ID_NONE);
-      assert.strictEqual(mjs.sidebar.windowId, i, "result");
-    });
-
-    it("should set widowId", async () => {
-      await func(1);
-      assert.strictEqual(mjs.sidebar.windowId, 1, "result");
-    });
-  });
-
   // NOTE: sidebarAction.isOpen is not implemented in sinon-chrome
-  describe("set sidebar isOpen state", () => {
-    const func = mjs.setSidebarIsOpenState;
+  describe("set sidebar state", () => {
+    const func = mjs.setSidebarState;
     beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      browser.sidebarAction.isOpen = sinon.stub();
+      mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
     afterEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-    });
-
-    it("should set isOpen", async () => {
-      browser.sidebarAction.isOpen = sinon.stub();
-      browser.sidebarAction.isOpen.withArgs({
-        windowId: 1,
-      }).resolves(true);
-      mjs.sidebar.windowId = 1;
-      mjs.sidebar.isOpen = false;
-      await func();
-      assert.isTrue(mjs.sidebar.isOpen, "result");
       delete browser.sidebarAction.isOpen;
     });
 
-    it("should set isOpen", async () => {
-      browser.sidebarAction.isOpen = sinon.stub();
-      browser.sidebarAction.isOpen.withArgs({
-        windowId: 1,
-      }).resolves(false);
+    it("should set values", async () => {
+      const i = browser.sidebarAction.isOpen.callCount;
+      browser.sidebarAction.isOpen.resolves(true);
+      await func();
+      assert.strictEqual(browser.sidebarAction.isOpen.callCount, i + 1,
+                         "called");
+      assert.strictEqual(mjs.sidebar.windowId,
+                         browser.windows.WINDOW_ID_CURRENT, "windowId");
+      assert.isTrue(mjs.sidebar.isOpen, "windowId");
+    });
+
+    it("should set values", async () => {
+      const i = browser.sidebarAction.isOpen.callCount;
+      browser.sidebarAction.isOpen.resolves(true);
+      await func(1);
+      assert.strictEqual(browser.sidebarAction.isOpen.callCount, i + 1,
+                         "called");
+      assert.strictEqual(mjs.sidebar.windowId, 1, "windowId");
+      assert.isTrue(mjs.sidebar.isOpen, "windowId");
+    });
+
+    it("should set default values", async () => {
+      const i = browser.sidebarAction.isOpen.callCount;
+      browser.sidebarAction.isOpen.resolves(true);
       mjs.sidebar.windowId = 1;
       mjs.sidebar.isOpen = true;
-      await func();
-      assert.isFalse(mjs.sidebar.isOpen, "result");
-      delete browser.sidebarAction.isOpen;
+      await func(browser.windows.WINDOW_ID_NONE);
+      assert.strictEqual(browser.sidebarAction.isOpen.callCount, i,
+                         "not called");
+      assert.isNull(mjs.sidebar.windowId, "windowId");
+      assert.isFalse(mjs.sidebar.isOpen, "windowId");
     });
   });
 
   describe("toggle sidebar", () => {
     const func = mjs.toggleSidebar;
     beforeEach(() => {
+      mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
     afterEach(() => {
+      mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
 
-    it("should call function", async () => {
-      browser.sidebarAction.close.resolves(undefined);
-      browser.sidebarAction.open.resolves(undefined);
+    it("should not call function", async () => {
+      browser.sidebarAction.close.resolves(true);
+      browser.sidebarAction.open.resolves(true);
       const i = browser.sidebarAction.close.callCount;
       const j = browser.sidebarAction.open.callCount;
+      mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = true;
       const res = await func();
-      assert.strictEqual(browser.sidebarAction.close.callCount, i + 1,
-                         "called");
+      assert.strictEqual(browser.sidebarAction.close.callCount, i,
+                         "not called");
       assert.strictEqual(browser.sidebarAction.open.callCount, j,
                          "not called");
       assert.isUndefined(res, "result");
@@ -120,44 +99,80 @@ describe("background-main", () => {
     });
 
     it("should call function", async () => {
-      browser.sidebarAction.close.resolves(undefined);
-      browser.sidebarAction.open.resolves(undefined);
+      browser.sidebarAction.close.resolves(true);
+      browser.sidebarAction.open.resolves(true);
       const i = browser.sidebarAction.close.callCount;
       const j = browser.sidebarAction.open.callCount;
+      mjs.sidebar.windowId = 1;
+      mjs.sidebar.isOpen = true;
+      const res = await func();
+      assert.strictEqual(browser.sidebarAction.close.callCount, i + 1,
+                         "called");
+      assert.strictEqual(browser.sidebarAction.open.callCount, j,
+                         "not called");
+      assert.isTrue(res, "result");
+      browser.sidebarAction.close.flush();
+      browser.sidebarAction.open.flush();
+    });
+
+    it("should call function", async () => {
+      browser.sidebarAction.close.resolves(true);
+      browser.sidebarAction.open.resolves(true);
+      const i = browser.sidebarAction.close.callCount;
+      const j = browser.sidebarAction.open.callCount;
+      mjs.sidebar.windowId = 1;
       mjs.sidebar.isOpen = false;
       const res = await func();
       assert.strictEqual(browser.sidebarAction.close.callCount, i,
                          "not called");
       assert.strictEqual(browser.sidebarAction.open.callCount, j + 1,
                          "called");
-      assert.isUndefined(res, "result");
+      assert.isTrue(res, "result");
       browser.sidebarAction.close.flush();
       browser.sidebarAction.open.flush();
     });
   });
 
-  describe("handle port.onDisconnect", () => {
-    const func = mjs.portOnDisconnect;
-
-    it("should call function", async () => {
-      const stub = sinon.stub();
-      browser.sidebarAction.isOpen = stub;
-      await func();
-      assert.isTrue(stub.calledOnce, "called");
+  describe("handle runtime message", () => {
+    const func = mjs.handleMsg;
+    beforeEach(() => {
+      browser.sidebarAction.isOpen = sinon.stub();
+      mjs.sidebar.windowId = null;
+      mjs.sidebar.isOpen = false;
+    });
+    afterEach(() => {
+      mjs.sidebar.windowId = null;
+      mjs.sidebar.isOpen = false;
       delete browser.sidebarAction.isOpen;
     });
-  });
 
-  describe("handle connected port", () => {
-    const func = mjs.handlePort;
+    it("should not call function", async () => {
+      const res = await func({});
+      assert.deepEqual(res, [], "result");
+    });
 
-    it("should add listener", async () => {
-      const port = new browser.runtime.Port({name: "foo"});
-      assert.strictEqual(port.name, "foo");
-      const i = port.onDisconnect.addListener.callCount;
-      await func(port);
-      assert.strictEqual(port.onDisconnect.addListener.callCount, i + 1,
+    it("should not call function", async () => {
+      const msg = {
+        foo: true,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      browser.sidebarAction.isOpen.resolves(true);
+      const i = browser.sidebarAction.isOpen.callCount;
+      const msg = {
+        [SIDEBAR_STATE_UPDATE]: {
+          windowId: 1,
+        },
+      };
+      const res = await func(msg);
+      assert.strictEqual(browser.sidebarAction.isOpen.callCount, i + 1,
                          "called");
+      assert.strictEqual(mjs.sidebar.windowId, 1, "windowId");
+      assert.isTrue(mjs.sidebar.isOpen, "isOpen");
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 });

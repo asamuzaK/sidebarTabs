@@ -36,13 +36,13 @@ import {
   setTabHeight, setTheme,
 } from "./theme.js";
 import {
-  updateContextMenu,
+  overrideContextMenu, updateContextMenu,
 } from "./menu.js";
 import menuItems from "./menu-items.js";
 
 /* api */
 const {
-  i18n, tabs, windows,
+  i18n, runtime, tabs, windows,
 } = browser;
 
 /* constants */
@@ -53,7 +53,7 @@ import {
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
   CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
   COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
-  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_MAIN,
+  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -65,7 +65,7 @@ import {
   THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
-const {WINDOW_ID_CURRENT, WINDOW_ID_NONE} = windows;
+const {WINDOW_ID_NONE} = windows;
 const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
@@ -1247,6 +1247,7 @@ export const handleClickedMenu = async info => {
   return Promise.all(func);
 };
 
+/* events */
 /**
  * handle event
  * @param {!Object} evt - event
@@ -1646,6 +1647,25 @@ export const handleEvt = async evt => {
   return Promise.all(func);
 };
 
+/**
+ * handle contextmenu event
+ * @param {!Object} evt - event
+ * @returns {AsyncFunction} - overrideContextMenu()
+ */
+export const handleContextmenuEvt = async evt => {
+  const {target} = evt;
+  const tab = getSidebarTab(target);
+  const opt = {};
+  if (tab) {
+    const tabId = getSidebarTabId(tab);
+    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
+      opt.tabId = tabId;
+      opt.context = "tab";
+    }
+  }
+  return overrideContextMenu(opt);
+};
+
 /* runtime message */
 /**
  * handle runtime message
@@ -1667,6 +1687,28 @@ export const handleMsg = async msg => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * request sidebar state update
+ * @returns {?AsyncFunction} - runtime.sendMessage()
+ */
+export const requestSidebarStateUpdate = async () => {
+  const {windowId} = sidebar;
+  let func;
+  if (Number.isInteger(windowId)) {
+    const win = await getCurrentWindow();
+    const {focused, id, type} = win;
+    if (windowId === id && focused && type === "normal") {
+      const msg = {
+        [SIDEBAR_STATE_UPDATE]: {
+          windowId,
+        },
+      };
+      func = runtime.sendMessage(msg);
+    }
+  }
+  return func || null;
 };
 
 /* storage */
@@ -1807,15 +1849,30 @@ export const restoreTabGroups = async () => {
 };
 
 /**
- * emulate tabs in sidebar
+ * emulate tabs in order
+ * @param {Array} arr - array of tabs.Tab
  * @returns {void}
  */
-export const emulateTabs = async () => {
-  const items = await getAllTabsInWindow(WINDOW_ID_CURRENT);
-  for (const item of items) {
-    // eslint-disable-next-line no-await-in-loop
-    await handleCreatedTab(item, true);
+export const emulateTabsInOrder = async arr => {
+  if (!Array.isArray(arr)) {
+    throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
+  const tab = arr.shift();
+  if (isObjectNotEmpty(tab)) {
+    await handleCreatedTab(tab, true);
+  }
+  if (arr.length) {
+    await emulateTabsInOrder(arr);
+  }
+};
+
+/**
+ * emulate tabs in sidebar
+ * @returns {AsyncFunction} - emulateTabsInOrder()
+ */
+export const emulateTabs = async () => {
+  const allTabs = await getAllTabsInWindow();
+  return emulateTabsInOrder(allTabs);
 };
 
 /**

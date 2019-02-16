@@ -6,9 +6,6 @@ import {
   throwErr,
 } from "./common.js";
 import {
-  makeConnection,
-} from "./browser.js";
-import {
   setSessionTabList,
 } from "./util.js";
 import {
@@ -21,14 +18,11 @@ import {
   setSidebarTheme,
 } from "./theme.js";
 import {
-  createContextMenu,
-} from "./menu.js";
-import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
-  handleClickedMenu, handleCreatedTab, handleDetachedTab, handleEvt,
-  handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleUpdatedTab, restoreHighlightedTabs, restoreTabGroups,
-  setContextualIds, setMain, setSidebar, setVars,
+  handleClickedMenu, handleContextmenuEvt, handleCreatedTab, handleDetachedTab,
+  handleEvt, handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
+  handleUpdatedTab, requestSidebarStateUpdate, restoreHighlightedTabs,
+  restoreTabGroups, setContextualIds, setMain, setSidebar, setVars,
 } from "./main.js";
 
 /* api */
@@ -37,9 +31,6 @@ const {
 } = browser;
 
 /* constants */
-import {
-  TAB,
-} from "./constant.js";
 const {WINDOW_ID_CURRENT} = windows;
 
 /* listeners */
@@ -100,15 +91,16 @@ tabs.onUpdated.addListener(
 window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
 window.addEventListener("mousedown",
                         evt => handleEvt(evt).catch(throwErr), true);
+window.addEventListener("contextmenu",
+                        evt => handleContextmenuEvt(evt).catch(throwErr));
 
 /* start up */
-Promise.all([
-  menus.removeAll().then(createContextMenu),
+document.addEventListener("DOMContentLoaded", () => Promise.all([
   localizeHtml(),
-  makeConnection({name: TAB}),
   setContextualIds(),
-  setSidebar().then(setMain),
+  setSidebar().then(setMain).then(requestSidebarStateUpdate),
   setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
-  .catch(throwErr);
+  .catch(throwErr)
+);

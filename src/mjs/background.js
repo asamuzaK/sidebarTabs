@@ -6,22 +6,37 @@ import {
   throwErr,
 } from "./common.js";
 import {
-  handlePort, setSidebarIsOpenState, setSidebarWindowId, toggleSidebar,
+  handleMsg, setSidebarState, toggleSidebar,
 } from "./background-main.js";
+import {
+  createContextMenu, createContextualIdentitiesMenu,
+  removeContextualIdentitiesMenu, updateContextualIdentitiesMenu,
+} from "./menu.js";
 
 /* api */
-const {browserAction, runtime, windows} = browser;
+const {browserAction, contextualIdentities, menus, runtime, windows} = browser;
 
 /* listeners */
 browserAction.onClicked.addListener(() =>
-  toggleSidebar().then(setSidebarIsOpenState).catch(throwErr)
+  toggleSidebar().then(setSidebarState).catch(throwErr)
 );
-runtime.onConnect.addListener(port =>
-  handlePort(port).then(setSidebarIsOpenState).catch(throwErr)
+contextualIdentities.onCreated.addListener(info =>
+  createContextualIdentitiesMenu(info).catch(throwErr)
+);
+contextualIdentities.onRemoved.addListener(info =>
+  removeContextualIdentitiesMenu(info).catch(throwErr)
+);
+contextualIdentities.onUpdated.addListener(info =>
+  updateContextualIdentitiesMenu(info).catch(throwErr)
+);
+runtime.onMessage.addListener((msg, sender) =>
+  handleMsg(msg, sender).catch(throwErr)
 );
 windows.onFocusChanged.addListener(windowId =>
-  setSidebarWindowId(windowId).then(setSidebarIsOpenState).catch(throwErr)
+  setSidebarState(windowId).catch(throwErr)
 );
 
 /* startup */
-setSidebarIsOpenState().catch(throwErr);
+document.addEventListener("DOMContentLoaded", () =>
+  menus.removeAll().then(createContextMenu).catch(throwErr)
+);

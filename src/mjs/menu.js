@@ -4,16 +4,52 @@
 
 import {getType, isObjectNotEmpty, isString, throwErr} from "./common.js";
 import {getAllContextualIdentities} from "./browser.js";
-import {getSidebarTab, getSidebarTabId} from "./util.js";
 import menuItems from "./menu-items.js";
 
 /* api */
-const {contextualIdentities, menus, tabs} = browser;
+const {menus, runtime} = browser;
 
 /* constants */
 import {NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER} from "./constant.js";
-const {TAB_ID_NONE} = tabs;
 const ICON_SIZE_16 = 16;
+
+/**
+ * update context menu
+ * @param {string} menuItemId - menu item ID
+ * @param {Object} data - update items data
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const updateContextMenu = async (menuItemId, data) => {
+  const func = [];
+  if (isString(menuItemId) && isObjectNotEmpty(data) &&
+      (data.hasOwnProperty("contexts") || data.hasOwnProperty("enabled") ||
+       data.hasOwnProperty("icons") || data.hasOwnProperty("parentId") ||
+       data.hasOwnProperty("title") || data.hasOwnProperty("viewTypes") ||
+       data.hasOwnProperty("visible"))) {
+    func.push(menus.update(menuItemId, data));
+  }
+  return Promise.all(func);
+};
+
+/**
+ * handle create menu item last error
+ * @param {string} menuItemId - menu item ID
+ * @param {Object} data - update items data
+ * @returns {Promise} - promise chain
+ */
+export const handleCreateMenuItemError = (menuItemId, data) => {
+  const func = [];
+  if (runtime.lastError) {
+    const e = runtime.lastError;
+    if (e.message.includes("ID already exists") &&
+        e.message.includes(menuItemId)) {
+      func.push(updateContextMenu(menuItemId, data));
+    } else {
+      throw e;
+    }
+  }
+  return Promise.all(func).catch(throwErr);
+};
 
 /**
  * create context menu item
@@ -27,9 +63,13 @@ export const createMenuItem = async data => {
       contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
     } = data;
     if (isString(id)) {
-      menuItemId = await menus.create({
-        contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
+      const callback = () => handleCreateMenuItemError(id, {
+        contexts, enabled, icons, parentId, title, type, viewTypes, visible,
       });
+      menuItemId = await menus.create({
+        contexts, enabled, icons, id, parentId, title, type, viewTypes,
+        visible,
+      }, callback);
     }
   }
   return menuItemId || null;
@@ -174,24 +214,6 @@ export const updateContextualIdentitiesMenu = async info => {
 };
 
 /**
- * update context menu
- * @param {string} menuItemId - menu item ID
- * @param {Object} data - update items data
- * @returns {Promise.<Array>} - results of each handler
- */
-export const updateContextMenu = async (menuItemId, data) => {
-  const func = [];
-  if (isString(menuItemId) && isObjectNotEmpty(data) &&
-      (data.hasOwnProperty("contexts") || data.hasOwnProperty("enabled") ||
-       data.hasOwnProperty("icons") || data.hasOwnProperty("parentId") ||
-       data.hasOwnProperty("title") || data.hasOwnProperty("viewTypes") ||
-       data.hasOwnProperty("visible"))) {
-    func.push(menus.update(menuItemId, data));
-  }
-  return Promise.all(func);
-};
-
-/**
  * remove contextual identities menu
  * @param {Object} info - contextual identities info
  * @returns {Promise.<Array>} - results of each handler
@@ -212,59 +234,8 @@ export const removeContextualIdentitiesMenu = async info => {
 
 /**
  * override context menu
- * @param {!Object} evt - event
+ * @param {Object} opt - options
  * @returns {AsyncFunction} - menus.overrideContext()
  */
-export const overrideContextMenu = async evt => {
-  const {target} = evt;
-  const tab = getSidebarTab(target);
-  const opt = {};
-  if (tab) {
-    const tabId = getSidebarTabId(tab);
-    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
-      opt.tabId = tabId;
-      opt.context = "tab";
-    }
-  }
-  return menus.overrideContext(opt);
-};
-
-/**
- * handle contextmenu click
- * @param {Object} evt - Event
- * @returns {AsyncFunction} - overrideContextMenu
- */
-export const contextmenuOnClick = evt =>
-  overrideContextMenu(evt).catch(throwErr);
-
-/* browser event handlers */
-/**
- * handle contextualIdentities.onCreated
- * @param {Object} info - info
- * @returns {AsyncFunction} - createContextualIdentitiesMenu()
- */
-export const contextualIdentitiesOnCreated = info =>
-  createContextualIdentitiesMenu(info).catch(throwErr);
-
-/**
- * handle contextualIdentities.onRemoved
- * @param {Object} info - info
- * @returns {AsyncFunction} - removeContextualIdentitiesMenu()
- */
-export const contextualIdentitiesOnRemoved = info =>
-  removeContextualIdentitiesMenu(info).catch(throwErr);
-
-/**
- * handle contextualIdentities.onUpdated
- * @param {Object} info - info
- * @returns {AsyncFunction} - updateContextualIdentitiesMenu()
- */
-export const contextualIdentitiesOnUpdated = info =>
-  updateContextualIdentitiesMenu(info).catch(throwErr);
-
-/* listeners */
-contextualIdentities.onCreated.addListener(contextualIdentitiesOnCreated);
-contextualIdentities.onRemoved.addListener(contextualIdentitiesOnRemoved);
-contextualIdentities.onUpdated.addListener(contextualIdentitiesOnUpdated);
-
-window.addEventListener("contextmenu", contextmenuOnClick);
+export const overrideContextMenu = async (opt = {}) =>
+  menus.overrideContext(opt);
