@@ -13,6 +13,11 @@
     "default_icon": "img/icon.svg#context",
     "default_title": "__MSG_extensionName__"
   },
+  "commands": {
+    "toggleOpenCloseState": {
+      "description": "__MSG_toggleOpenCloseState__"
+    }
+  },
   "default_locale": "en",
   "description": "__MSG_extensionDescription__",
   "homepage_url": "https://github.com/asamuzaK/sidebarTabs",

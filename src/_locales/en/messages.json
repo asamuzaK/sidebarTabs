@@ -561,6 +561,9 @@
       }
     }
   },
+  "toggleOpenCloseState": {
+    "message": "Toggle open/close state"
+  },
   "undoCloseTab": {
     "message": "Undo Close Tab"
   },

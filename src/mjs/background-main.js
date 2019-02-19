@@ -2,11 +2,15 @@
  * background-main.js
  */
 
+import {
+  getType, isString,
+} from "./common.js";
+
 /* api */
 const {sidebarAction, windows} = browser;
 
 /* constant */
-import {SIDEBAR_STATE_UPDATE} from "./constant.js";
+import {SIDEBAR_STATE_UPDATE, TOGGLE_STATE} from "./constant.js";
 const {WINDOW_ID_NONE} = windows;
 
 /* sidebar */
@@ -70,4 +74,23 @@ export const handleMsg = async msg => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * handle command
+ * @param {!string} cmd - command
+ * @returns {?AsyncFunction} - command handler function
+ */
+export const handleCmd = async cmd => {
+  if (!isString(cmd)) {
+    throw new TypeError(`Expected String but got ${getType(cmd)}.`);
+  }
+  let func;
+  switch (cmd) {
+    case TOGGLE_STATE:
+      func = toggleSidebar().then(setSidebarState);
+      break;
+    default:
+  }
+  return func || null;
 };

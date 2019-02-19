@@ -8,7 +8,7 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/background-main.js";
-import {SIDEBAR_STATE_UPDATE} from "../src/mjs/constant.js";
+import {SIDEBAR_STATE_UPDATE, TOGGLE_STATE} from "../src/mjs/constant.js";
 
 describe("background-main", () => {
   beforeEach(() => {
@@ -173,6 +173,55 @@ describe("background-main", () => {
       assert.strictEqual(mjs.sidebar.windowId, 1, "windowId");
       assert.isTrue(mjs.sidebar.isOpen, "isOpen");
       assert.deepEqual(res, [undefined], "result");
+    });
+  });
+
+  describe("handle command", () => {
+    const func = mjs.handleCmd;
+    beforeEach(() => {
+      browser.sidebarAction.isOpen = sinon.stub();
+      mjs.sidebar.windowId = null;
+      mjs.sidebar.isOpen = false;
+    });
+    afterEach(() => {
+      browser.sidebarAction.isOpen = null;
+      mjs.sidebar.windowId = null;
+      mjs.sidebar.isOpen = false;
+    });
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "message");
+      });
+    });
+
+    it("should get null", async () => {
+      const res = await func("foo");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.sidebarAction.close.callCount;
+      const j = browser.sidebarAction.open.callCount;
+      const k = browser.sidebarAction.isOpen.callCount;
+      browser.sidebarAction.close.resolves(true);
+      browser.sidebarAction.open.resolves(true);
+      browser.sidebarAction.isOpen.resolves(false);
+      mjs.sidebar.windowId = 1;
+      mjs.sidebar.isOpen = true;
+      const res = await func(TOGGLE_STATE);
+      assert.strictEqual(browser.sidebarAction.close.callCount, i + 1,
+                         "called");
+      assert.strictEqual(browser.sidebarAction.open.callCount, j,
+                         "not called");
+      assert.strictEqual(browser.sidebarAction.isOpen.callCount, k + 1,
+                         "called");
+      assert.isFalse(mjs.sidebar.isOpen, "isOpen");
+      assert.isUndefined(res, "result");
+      browser.sidebarAction.close.flush();
+      browser.sidebarAction.open.flush();
     });
   });
 });

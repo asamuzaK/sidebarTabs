@@ -564,6 +564,9 @@
       }
     }
   },
+  "toggleOpenCloseState": {
+    "message": "開閉状態を切り替える"
+  },
   "undoCloseTab": {
     "message": "閉じたタブを元に戻す"
   },

@@ -82,6 +82,7 @@ export const TABS_PIN = "pinTabs";
 export const TABS_PIN_UNPIN = "unpinTabs";
 export const TABS_RELOAD = "reloadTabs";
 export const TABS_REOPEN_CONTAINER = "reopenTabsInContainer";
+export const TOGGLE_STATE = "toggleOpenCloseState";
 export const THEME = "theme";
 export const THEME_DARK = "darkTheme";
 export const THEME_DARK_ID =
