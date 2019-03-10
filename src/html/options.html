@@ -20,13 +20,18 @@
             <p aria-details="themeDetail">
               <input type="radio" id="lightTheme" name="themeRadio"
                      value="light-theme" />
-              <label for="themeLight" data-i18n="optionsThemeLightLabel">
+              <label for="lightTheme" data-i18n="optionsThemeLightLabel">
                 Light Theme
               </label>
               <input type="radio" id="darkTheme" name="themeRadio"
                      value="dark-theme" />
-              <label for="themeDark" data-i18n="optionsThemeDarkLabel">
+              <label for="darkTheme" data-i18n="optionsThemeDarkLabel">
                 Dark Theme
+              </label>
+              <input type="radio" id="customTheme" name="themeRadio"
+                     value="custom-theme" aria-controls="customThemeSettings" />
+              <label for="customTheme" data-i18n="optionsThemeCustomLabel">
+                Custom Theme
               </label>
             </p>
             <details id="themeDetail">
@@ -36,6 +41,127 @@
                 </p>
               </div>
             </details>
+            <table id="customThemeSettings" border="1" hidden>
+              <caption>
+                <span  data-i18n="optionsThemeCustomCaption">
+                  Customize Theme
+                </span>
+                <button id="initCustomTheme" data-i18n="optionsInit">
+                  Init
+                </button>
+              </caption>
+              <tbody>
+                <tr>
+                  <td>
+                  </td>
+                  <th data-i18n="optionsThemeCustomBackground">
+                    Background Color
+                  </th>
+                  <th data-i18n="optionsThemeCustomText">
+                    Text Color
+                  </th>
+                  <th data-i18n="optionsThemeCustomTextSecondary">
+                    Secondary Color
+                  </th>
+                  <th data-i18n="optionsThemeCustomBorder">
+                    Border Color
+                  </th>
+                </tr>
+                <tr>
+                  <th data-i18n="optionsThemeCustomBody">
+                    Body
+                  </th>
+                  <td>
+                    <input id="customBackgroundColor" type="color"
+                           value="#ededf0" data-default-value="#ededf0" />
+                  </td>
+                  <td>
+                    <input id="customColor" type="color"
+                           value="#0c0c0d" data-default-value="#0c0c0d" />
+                  </td>
+                  <td>
+                    <input id="customSecondaryColor" type="color"
+                           value="#737373" data-default-value="#737373" />
+                  </td>
+                  <td>
+                    <input id="customBorderColor" type="color"
+                           value="#cccccc" data-default-value="#cccccc" />
+                  </td>
+                </tr>
+                <tr>
+                  <th data-i18n="optionsThemeCustomTabActive">
+                    Active Tab
+                  </th>
+                  <td>
+                    <input id="customActiveBackgroundColor" type="color"
+                           value="#f9f9fa" data-default-value="#f9f9fa" />
+                  </td>
+                  <td>
+                    <input id="customActiveColor" type="color"
+                           value="#0c0c0d" data-default-value="#0c0c0d" />
+                  </td>
+                  <td>
+                    <input id="customActiveSecondaryColor" type="color"
+                           value="#737373" data-default-value="#737373" />
+                  </td>
+                  <td>
+                    <input id="customActiveBorderColor" type="color"
+                           value="#999999" data-default-value="#999999" />
+                  </td>
+                </tr>
+                <tr>
+                  <th data-i18n="optionsThemeCustomTabHover">
+                    Hovering Over Tab
+                  </th>
+                  <td>
+                    <input id="customHoverBackgroundColor" type="color"
+                           value="#d7d7db" data-default-value="#d7d7db" />
+                  </td>
+                  <td>
+                    <input id="customHoverColor" type="color"
+                           value="#0c0c0d" data-default-value="#0c0c0d" />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                <tr>
+                  <th data-i18n="optionsThemeCustomTabSelected">
+                    Selected Tab
+                  </th>
+                  <td>
+                    <input id="customSelectionBackgroundColor" type="color"
+                           value="#0a84ff" data-default-value="#0a84ff" />
+                  </td>
+                  <td>
+                    <input id="customSelectionColor" type="color"
+                           value="#ffffff" data-default-value="#ffffff" />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                <tr>
+                  <th data-i18n="optionsThemeCustomTabSelectedHover">
+                    Hovering Over Selected Tab
+                  </th>
+                  <td>
+                    <input id="customSelectionHoverBackgroundColor" type="color"
+                           value="#0060df" data-default-value="#0060df" />
+                  </td>
+                  <td>
+                    <input id="customSelectionHoverColor" type="color"
+                           value="#ffffff" data-default-value="" />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div>
             <p>

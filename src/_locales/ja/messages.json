@@ -386,6 +386,39 @@
   "optionsTheme": {
     "message": "サイドバーテーマ"
   },
+  "optionsThemeCustomLabel": {
+    "message": "カスタムテーマ"
+  },
+  "optionsThemeCustomBackground": {
+    "message": "背景色"
+  },
+  "optionsThemeCustomBody": {
+    "message": "ボディ"
+  },
+  "optionsThemeCustomBorder": {
+    "message": "ボーダー色"
+  },
+  "optionsThemeCustomCaption": {
+    "message": "テーマをカスタマイズ"
+  },
+  "optionsThemeCustomTabActive": {
+    "message": "アクティブタブ"
+  },
+  "optionsThemeCustomTabHover": {
+    "message": "ホバー状態のタブ"
+  },
+  "optionsThemeCustomTabSelected": {
+    "message": "選択タブ"
+  },
+  "optionsThemeCustomTabSelectedHover": {
+    "message": "ホバー状態の選択タブ"
+  },
+  "optionsThemeCustomText": {
+    "message": "テキスト色"
+  },
+  "optionsThemeCustomTextSecondary": {
+    "message": "副次色"
+  },
   "optionsThemeDarkLabel": {
     "message": "暗いテーマ"
   },
