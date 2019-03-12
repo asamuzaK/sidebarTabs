@@ -1,11 +1,10 @@
 /**
  * color.test.js
  */
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, max-nested-callbacks */
 
 import {assert} from "chai";
-import {afterEach, beforeEach, describe, it} from "mocha";
-import sinon from "sinon";
+import {describe, it} from "mocha";
 import * as mjs from "../src/mjs/color.js";
 
 describe("color", () => {

@@ -3,7 +3,7 @@
  */
 
 import {
-  getType, isString, throwErr,
+  getType, isString,
 } from "./common.js";
 
 /* constants */

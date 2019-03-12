@@ -251,8 +251,10 @@ describe("theme", () => {
     const func = mjs.setSidebarTheme;
 
     it("should call functions", async () => {
+      browser.storage.local.get.resolves({});
       const res = await func();
       assert.isUndefined(res, "result");
+      browser.storage.local.get.flush();
     });
   });
 });
