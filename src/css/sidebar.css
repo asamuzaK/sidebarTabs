@@ -18,7 +18,7 @@
   --foreground-hover-color: #0C0C0D;
   --foreground-highlight-color: #0A84FF;
   --foreground-selection-color: #FFF;
-  --foreground-selection-active-color: #FFF;
+  --foreground-selection-hover-color: #FFF;
   --tab-group-pinned: #7D004F;
   --tab-group-1: #669;
   --tab-group-2: #C96;
@@ -49,7 +49,7 @@
   --foreground-active-secondary-color: #F9F9FA;
   --foreground-hover-color: #FFF;
   --foreground-selection-color: #FFF;
-  --foreground-selection-active-color: #FFF;
+  --foreground-selection-hover-color: #FFF;
 }
 body {
   margin: 0;
@@ -130,7 +130,7 @@ main {
 .tab.highlighted:hover,
 .tab.active.highlighted:hover {
   background: var(--background-selection-hover-color);
-  color: var(--foreground-selection-active-color);
+  color: var(--foreground-selection-hover-color);
 }
 .tab[hidden] {
   display: none;
