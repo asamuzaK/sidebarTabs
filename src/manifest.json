@@ -42,7 +42,8 @@
     "menus.overrideContext",
     "sessions",
     "storage",
-    "tabs"
+    "tabs",
+    "theme"
   ],
   "short_name": "__MSG_extensionShortName__",
   "sidebar_action": {
