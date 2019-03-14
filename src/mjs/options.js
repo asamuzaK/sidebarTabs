@@ -9,15 +9,23 @@ import {
   localizeHtml,
 } from "./localize.js";
 import {
-  addInitExtensionListener,
-  addInputChangeListener,
-  setValuesFromStorage,
+  addCustomThemeListener, addInitCustomThemeListener, addInitExtensionListener,
+  addInputChangeListener, handleMsg, requestCustomTheme, setValuesFromStorage,
 } from "./options-main.js";
 
+const {runtime} = browser;
+
+runtime.onMessage.addListener((msg, sender) =>
+  handleMsg(msg, sender).catch(throwErr)
+);
+
 /* startup */
-Promise.all([
-  localizeHtml(),
-  setValuesFromStorage(),
-  addInputChangeListener(),
+document.addEventListener("DOMContentLoaded", () => Promise.all([
+  addCustomThemeListener(),
+  addInitCustomThemeListener(),
   addInitExtensionListener(),
-]).catch(throwErr);
+  addInputChangeListener(),
+  localizeHtml(),
+  requestCustomTheme(true),
+  setValuesFromStorage(),
+]).catch(throwErr));
