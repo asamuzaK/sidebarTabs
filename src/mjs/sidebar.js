@@ -15,7 +15,7 @@ import {
   localizeHtml,
 } from "./localize.js";
 import {
-  setSidebarTheme,
+  initCustomTheme, setSidebarTheme,
 } from "./theme.js";
 import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
@@ -27,7 +27,7 @@ import {
 
 /* api */
 const {
-  contextualIdentities, menus, runtime, storage, tabs, windows,
+  contextualIdentities, menus, runtime, storage, tabs, theme, windows,
 } = browser;
 
 /* constants */
@@ -87,6 +87,9 @@ tabs.onUpdated.addListener(
     windowId: WINDOW_ID_CURRENT,
   }
 );
+theme.onUpdated.addListener(info =>
+  setSidebarTheme(info).then(initCustomTheme).catch(throwErr)
+);
 
 window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
 window.addEventListener("mousedown",
@@ -99,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => Promise.all([
   localizeHtml(),
   setContextualIds(),
   setSidebar().then(setMain).then(requestSidebarStateUpdate),
-  setSidebarTheme(),
+  setSidebarTheme().then(initCustomTheme),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
   .catch(throwErr)
