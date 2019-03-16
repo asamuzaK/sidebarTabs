@@ -16,6 +16,7 @@ import {
 /* constants */
 import {
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CSS_ID,
+  COMPACT,
   CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_SELECT,
   CSS_VAR_BG_SELECT_HOVER, CSS_VAR_BORDER, CSS_VAR_BORDER_ACTIVE, CSS_VAR_COLOR,
   CSS_VAR_COLOR_2ND, CSS_VAR_COLOR_2ND_ACTIVE, CSS_VAR_COLOR_ACTIVE,
@@ -24,9 +25,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_COLOR,
   CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
   CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  COMPACT, THEME, THEME_CURRENT, THEME_CURRENT_COLOR, THEME_CUSTOM,
-  THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_TAB_COMPACT,
+  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
 } from "./constant.js";
 
 /* theme map */
@@ -203,10 +203,10 @@ export const getCurrentThemeBaseValues = async () => {
  * @returns {Object} - values
  */
 export const getBaseValues = async () => {
-  const currentTheme = await getCurrentTheme();
+  const appliedTheme = await getCurrentTheme();
   let values;
-  if (isObjectNotEmpty(currentTheme)) {
-    const {colors} = currentTheme;
+  if (isObjectNotEmpty(appliedTheme)) {
+    const {colors} = appliedTheme;
     if (isObjectNotEmpty(colors)) {
       const colorsItems = Object.entries(colors);
       const func = [];

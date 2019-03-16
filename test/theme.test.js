@@ -10,12 +10,9 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/theme.js";
 import {
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
-  CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_COLOR,
-  CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
-  CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  CSS_ID, CSS_VAR_BG,
-  THEME, THEME_CURRENT, THEME_CURRENT_COLOR, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
+  CUSTOM_COLOR, CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
+  CSS_ID, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
 
@@ -55,19 +52,19 @@ describe("theme", () => {
   describe("theme map", () => {
     it("should get object", async () => {
       assert.isObject(mjs.themeMap, "themeMap");
-    })
+    });
   });
 
   describe("current theme colors", () => {
     it("should get map", async () => {
       assert.instanceOf(mjs.currentThemeColors, Map, "currentThemeColors");
-    })
+    });
   });
 
   describe("current theme", () => {
     it("should get map", async () => {
       assert.instanceOf(mjs.currentTheme, Map, "currentTheme");
-    })
+    });
   });
 
   describe("set current theme colors map", () => {
@@ -370,11 +367,13 @@ describe("theme", () => {
 
     it("should get fallback values", async () => {
       browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([{
-        id: "foo",
-        enabled: true,
-        type: "theme",
-      }]);
+      browser.management.getAll.resolves([
+        {
+          id: "foo",
+          enabled: true,
+          type: "theme",
+        },
+      ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
       browser.theme.getCurrent.flush();
@@ -383,11 +382,13 @@ describe("theme", () => {
 
     it("should get values", async () => {
       browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([{
-        id: THEME_DARK_ID,
-        enabled: true,
-        type: "theme",
-      }]);
+      browser.management.getAll.resolves([
+        {
+          id: THEME_DARK_ID,
+          enabled: true,
+          type: "theme",
+        },
+      ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], "result");
       browser.theme.getCurrent.flush();
@@ -396,11 +397,13 @@ describe("theme", () => {
 
     it("should get values", async () => {
       browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([{
-        id: THEME_LIGHT_ID,
-        enabled: true,
-        type: "theme",
-      }]);
+      browser.management.getAll.resolves([
+        {
+          id: THEME_LIGHT_ID,
+          enabled: true,
+          type: "theme",
+        },
+      ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
       browser.theme.getCurrent.flush();
@@ -497,11 +500,15 @@ describe("theme", () => {
         foo: "bar",
       });
       const res = await func();
-      assert.deepEqual(res, [null, {
-        [THEME_CUSTOM_SETTING]: {
-          foo: "bar",
+      assert.deepEqual(res, [
+        null,
+        {
+          [THEME_CUSTOM_SETTING]: {
+            foo: "bar",
+          },
         },
-      }, null], "result");
+        null,
+      ], "result");
       browser.runtime.sendMessage.flush();
     });
   });
@@ -748,9 +755,13 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
-      assert.deepEqual(res, [null, {
-        [THEME_CUSTOM_SETTING]: currentTheme,
-      }, null], "result");
+      assert.deepEqual(res, [
+        null,
+        {
+          [THEME_CUSTOM_SETTING]: currentTheme,
+        },
+        null,
+      ], "result");
       browser.runtime.sendMessage.flush();
       browser.storage.local.get.flush();
     });

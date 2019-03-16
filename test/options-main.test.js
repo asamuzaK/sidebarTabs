@@ -243,7 +243,7 @@ describe("options-main", () => {
   describe("toggle custom theme settings", () => {
     const func = mjs.toggleCustomThemeSettings;
 
-    it ("should remove attribute", async () => {
+    it("should remove attribute", async () => {
       const elm = document.createElement("input");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -264,7 +264,7 @@ describe("options-main", () => {
       assert.isFalse(elm2.hasAttribute("hidden"), "attr");
     });
 
-    it ("should add attribute", async () => {
+    it("should add attribute", async () => {
       const elm = document.createElement("input");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -319,7 +319,7 @@ describe("options-main", () => {
       elm.type = "text";
       elm.value = "baz";
       body.appendChild(elm);
-      const res = await func({
+      await func({
         foo: "#1234AB",
       });
       assert.strictEqual(elm.value, "baz", "value");
