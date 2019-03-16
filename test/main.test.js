@@ -19,9 +19,13 @@ import {
   CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
   CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_LIGHT, CLASS_THEME_DARK,
-  COMPACT, COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI,
-  NEW_TAB, PINNED, SIDEBAR_MAIN,
+  CLASS_THEME_CUSTOM, CLASS_THEME_LIGHT, CLASS_THEME_DARK,
+  COMPACT, COOKIE_STORE_DEFAULT,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
+  CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
+  CUSTOM_COLOR, CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
+  CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -30,7 +34,8 @@ import {
   TAB_QUERY, TAB_RELOAD,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
   TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
-  THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
+  THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
 const IS_WIN = os.platform() === "win32";
 
@@ -8748,6 +8753,22 @@ describe("main", () => {
       assert.deepEqual(res, [], "result");
     });
 
+    it("should not call function", async () => {
+      const msg = {
+        [THEME_CUSTOM_INIT]: false,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const msg = {
+        [THEME_CUSTOM_REQ]: false,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [], "result");
+    });
+
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.windows.getCurrent.callCount;
@@ -8844,6 +8865,23 @@ describe("main", () => {
       browser.tabs.get.flush();
       browser.windows.getCurrent.flush();
     });
+
+    it("should call function", async () => {
+      const msg = {
+        [THEME_CUSTOM_INIT]: true,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [null], "result");
+    });
+
+    it("should call function", async () => {
+      const msg = {
+        [THEME_CUSTOM_REQ]: true,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [null], "result");
+    });
+
   });
 
   describe("requestSidebarStateUpdate", () => {
@@ -8962,6 +9000,76 @@ describe("main", () => {
     });
 
     it("should not set variable", async () => {
+      const res = await func(CUSTOM_BG, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_BG_ACTIVE, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_BG_HOVER, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_BG_SELECT, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_BG_SELECT_HOVER, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_BORDER, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_BORDER_ACTIVE, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR_2ND, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR_2ND_ACTIVE, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR_ACTIVE, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR_HOVER, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR_SELECT, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
+      const res = await func(CUSTOM_COLOR_SELECT_HOVER, {value: "#ff0000"});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
       const res = await func(THEME_TAB_COMPACT, {checked: true});
       assert.deepEqual(res, [], "result");
     });
@@ -8974,6 +9082,77 @@ describe("main", () => {
     it("should not set variable", async () => {
       const res = await func(THEME_DARK, {checked: true});
       assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BG, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BG_ACTIVE, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BG_HOVER, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BG_SELECT, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BG_SELECT_HOVER, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BORDER, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_BORDER_ACTIVE, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR_2ND, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR_2ND_ACTIVE, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR_ACTIVE, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR_HOVER, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR_SELECT, {value: "#ff0000"}, true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(CUSTOM_COLOR_SELECT_HOVER, {value: "#ff0000"},
+                             true);
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should set variable", async () => {

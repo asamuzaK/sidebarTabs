@@ -33,7 +33,8 @@ import {
   restoreTabContainers, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
-  setTabHeight, setTheme,
+  initCustomTheme, sendCurrentTheme, setTabHeight, setTheme,
+  updateCustomThemeCss,
 } from "./theme.js";
 import {
   overrideContextMenu, updateContextMenu,
@@ -52,7 +53,13 @@ import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
   CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  COOKIE_STORE_DEFAULT, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
+  CLASS_THEME_CUSTOM,
+  COOKIE_STORE_DEFAULT,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
+  CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_COLOR,
+  CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
+  CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
   NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -62,7 +69,8 @@ import {
   TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK, TABS_CLOSE,
   TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  THEME_DARK, THEME_LIGHT, THEME_TAB_COMPACT,
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
+  THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_NONE} = windows;
@@ -1683,6 +1691,16 @@ export const handleMsg = async msg => {
           func.push(initSidebar(value));
         }
         break;
+      case THEME_CUSTOM_INIT:
+        if (value) {
+          func.push(initCustomTheme());
+        }
+        break;
+      case THEME_CUSTOM_REQ:
+        if (value) {
+          func.push(sendCurrentTheme());
+        }
+        break;
       default:
     }
   }
@@ -1722,11 +1740,32 @@ export const requestSidebarStateUpdate = async () => {
 export const setVar = async (item, obj, changed = false) => {
   const func = [];
   if (item && obj) {
-    const {checked} = obj;
+    const {checked, value} = obj;
     switch (item) {
+      case CUSTOM_BG:
+      case CUSTOM_BG_ACTIVE:
+      case CUSTOM_BG_HOVER:
+      case CUSTOM_BG_SELECT:
+      case CUSTOM_BG_SELECT_HOVER:
+      case CUSTOM_BORDER:
+      case CUSTOM_BORDER_ACTIVE:
+      case CUSTOM_COLOR:
+      case CUSTOM_COLOR_2ND:
+      case CUSTOM_COLOR_2ND_ACTIVE:
+      case CUSTOM_COLOR_ACTIVE:
+      case CUSTOM_COLOR_HOVER:
+      case CUSTOM_COLOR_SELECT:
+      case CUSTOM_COLOR_SELECT_HOVER:
+        if (changed) {
+          func.push(
+            updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value)
+          );
+        }
+        break;
       case TAB_GROUP_NEW_TAB_AT_END:
         sidebar[item] = !!checked;
         break;
+      case THEME_CUSTOM:
       case THEME_DARK:
       case THEME_LIGHT:
         if (changed && checked) {
