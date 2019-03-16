@@ -386,6 +386,39 @@
   "optionsTheme": {
     "message": "Sidebar Theme"
   },
+  "optionsThemeCustomLabel": {
+    "message": "Custom Theme"
+  },
+  "optionsThemeCustomBackground": {
+    "message": "Background"
+  },
+  "optionsThemeCustomBody": {
+    "message": "Body"
+  },
+  "optionsThemeCustomBorder": {
+    "message": "Border"
+  },
+  "optionsThemeCustomCaption": {
+    "message": "Customize Theme"
+  },
+  "optionsThemeCustomTabActive": {
+    "message": "Active Tab"
+  },
+  "optionsThemeCustomTabHover": {
+    "message": "Hovering Over Tab"
+  },
+  "optionsThemeCustomTabSelected": {
+    "message": "Selected Tab"
+  },
+  "optionsThemeCustomTabSelectedHover": {
+    "message": "Hovering Over Selected Tab"
+  },
+  "optionsThemeCustomText": {
+    "message": "Text"
+  },
+  "optionsThemeCustomTextSecondary": {
+    "message": "Secondary"
+  },
   "optionsThemeDarkLabel": {
     "message": "Dark Theme"
   },

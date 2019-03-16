@@ -163,3 +163,24 @@ img {
   width: 1.728rem;
   height: 1.728rem;
 }
+#customThemeSettings[hidden] {
+  display: none;
+}
+#customThemeSettings {
+  display: table;
+  margin: 0.5rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 15rem;
+  width: calc(100% / 13 * 8 - 1rem);
+  font-size: smaller;
+}
+#customThemeSettings caption {
+  padding: 0.25rem;
+}
+#customThemeSettings th,
+#customThemeSettings td {
+  padding: 0.25rem;
+  text-align: center;
+  vertical-align: middle;
+}

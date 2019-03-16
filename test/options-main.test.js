@@ -9,7 +9,9 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/options-main.js";
-import {EXT_INIT} from "../src/mjs/constant.js";
+import {
+  EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO,
+} from "../src/mjs/constant.js";
 
 describe("options-main", () => {
   /**
@@ -71,6 +73,46 @@ describe("options-main", () => {
 
   describe("init extension", () => {
     const func = mjs.initExt;
+
+    it("should not call function if no argument given", async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("init custom theme", () => {
+    const func = mjs.initCustomTheme;
+
+    it("should not call function if no argument given", async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("request custom theme", () => {
+    const func = mjs.requestCustomTheme;
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -153,6 +195,195 @@ describe("options-main", () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 2, "called");
       assert.strictEqual(res.length, 2, "array length");
       assert.deepEqual(res, [undefined, undefined], "result");
+    });
+  });
+
+  describe("add event listener to custom theme radio button", () => {
+    const func = mjs.addCustomThemeListener;
+
+    it("should not set listener", async () => {
+      const elm = document.createElement("input");
+      const elm2 = document.createElement("input");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm2, "addEventListener");
+      elm.type = "radio";
+      elm.name = "foo";
+      elm2.type = "radio";
+      elm2.name = "foo";
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      await func();
+      assert.isTrue(spy.notCalled, "not called");
+      assert.isTrue(spy2.notCalled, "not called");
+      elm.addEventListener.restore();
+      elm2.addEventListener.restore();
+    });
+
+    it("should set listener", async () => {
+      const elm = document.createElement("input");
+      const elm2 = document.createElement("input");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm2, "addEventListener");
+      elm.type = "radio";
+      elm.name = THEME_RADIO;
+      elm2.type = "radio";
+      elm2.name = THEME_RADIO;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      await func();
+      assert.isTrue(spy.called, "not called");
+      assert.isTrue(spy2.called, "not called");
+      elm.addEventListener.restore();
+      elm2.addEventListener.restore();
+    });
+  });
+
+  describe("toggle custom theme settings", () => {
+    const func = mjs.toggleCustomThemeSettings;
+
+    it("should remove attribute", async () => {
+      const elm = document.createElement("input");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.id = THEME_CUSTOM;
+      elm.type = "radio";
+      elm.checked = true;
+      elm2.id = THEME_CUSTOM_SETTING;
+      elm2.setAttribute("hidden", "hidden");
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const evt = {
+        target: {
+          id: elm.id,
+          checked: elm.checked,
+        },
+      };
+      await func(evt);
+      assert.isFalse(elm2.hasAttribute("hidden"), "attr");
+    });
+
+    it("should add attribute", async () => {
+      const elm = document.createElement("input");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.id = THEME_CUSTOM;
+      elm.type = "radio";
+      elm.checked = false;
+      elm2.id = THEME_CUSTOM_SETTING;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const evt = {
+        target: {
+          id: elm.id,
+          checked: elm.checked,
+        },
+      };
+      await func(evt);
+      assert.isTrue(elm2.hasAttribute("hidden"), "attr");
+    });
+  });
+
+  describe("set custom theme value", () => {
+    const func = mjs.setCustomThemeValue;
+
+    it("should not set value if argument not given", async () => {
+      const elm = document.createElement("input");
+      const body = document.querySelector("body");
+      elm.id = "foo";
+      elm.type = "color";
+      elm.value = "#ffffff";
+      body.appendChild(elm);
+      await func();
+      assert.strictEqual(elm.value, "#ffffff", "value");
+    });
+
+    it("should not set value if element not found", async () => {
+      const elm = document.createElement("input");
+      const body = document.querySelector("body");
+      elm.id = "foo";
+      elm.type = "color";
+      elm.value = "#ffffff";
+      body.appendChild(elm);
+      await func({
+        bar: "#1234AB",
+      });
+      assert.strictEqual(elm.value, "#ffffff", "value");
+    });
+
+    it("should not set value if type does not match", async () => {
+      const elm = document.createElement("input");
+      const body = document.querySelector("body");
+      elm.id = "foo";
+      elm.type = "text";
+      elm.value = "baz";
+      body.appendChild(elm);
+      await func({
+        foo: "#1234AB",
+      });
+      assert.strictEqual(elm.value, "baz", "value");
+    });
+
+    it("should set color value", async () => {
+      const elm = document.createElement("input");
+      const body = document.querySelector("body");
+      elm.id = "foo";
+      elm.type = "color";
+      elm.value = "#ffffff";
+      body.appendChild(elm);
+      await func({
+        foo: "#1234AB",
+      });
+      assert.strictEqual(elm.value, "#1234ab", "value");
+    });
+  });
+
+  describe("add event listener to init custom theme button", () => {
+    const func = mjs.addInitCustomThemeListener;
+
+    it("should not set listener", async () => {
+      const elm = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      body.appendChild(elm);
+      await func();
+      assert.isTrue(spy.notCalled, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should set listener", async () => {
+      const elm = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      elm.id = THEME_CUSTOM_INIT;
+      body.appendChild(elm);
+      await func();
+      assert.isTrue(spy.calledOnce, "called");
+      elm.addEventListener.restore();
+    });
+  });
+
+  describe("handle init custom theme click", () => {
+    const func = mjs.handleInitCustomThemeClick;
+
+    it("should get undefined", async () => {
+      browser.runtime.sendMessage.resolves(undefined);
+      const i = browser.runtime.sendMessage.callCount;
+      const fake = sinon.fake();
+      const fake2 = sinon.fake();
+      const res = await func({
+        currentTarget: "foo",
+        target: "foo",
+        preventDefault: fake,
+        stopPropagation: fake2,
+      });
+      assert.isTrue(fake.calledOnce, "preventDefault");
+      assert.isTrue(fake2.calledOnce, "stopPropagation");
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+      browser.runtime.sendMessage.flush();
     });
   });
 
@@ -245,8 +476,9 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await func();
+      const res = await func();
       assert.strictEqual(elm.checked, false, "checked");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not set value if element not found", async () => {
@@ -255,11 +487,12 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "bar",
         checked: true,
       });
       assert.strictEqual(elm.checked, false, "checked");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not set value if type does not match", async () => {
@@ -270,13 +503,14 @@ describe("options-main", () => {
       elm.checked = false;
       elm.value = "baz";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
         checked: true,
         value: "qux",
       });
       assert.strictEqual(elm.checked, false, "checked");
       assert.strictEqual(elm.value, "baz", "checked");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should set checkbox value", async () => {
@@ -285,11 +519,12 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
         checked: true,
       });
       assert.strictEqual(elm.checked, true, "checked");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should set checkbox value", async () => {
@@ -298,10 +533,11 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "checkbox";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
       });
       assert.strictEqual(elm.checked, false, "checked");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should set radio value", async () => {
@@ -310,11 +546,26 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "radio";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
         checked: true,
       });
       assert.strictEqual(elm.checked, true, "checked");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set radio value", async () => {
+      const elm = document.createElement("input");
+      const body = document.querySelector("body");
+      elm.id = THEME_CUSTOM;
+      elm.type = "radio";
+      body.appendChild(elm);
+      const res = await func({
+        id: THEME_CUSTOM,
+        checked: true,
+      });
+      assert.strictEqual(elm.checked, true, "checked");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should set text value", async () => {
@@ -323,11 +574,12 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "text";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
         value: "bar",
       });
       assert.strictEqual(elm.value, "bar", "value");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should set text value", async () => {
@@ -336,10 +588,11 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "text";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
       });
       assert.strictEqual(elm.value, "", "value");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should set url value", async () => {
@@ -348,11 +601,26 @@ describe("options-main", () => {
       elm.id = "foo";
       elm.type = "url";
       body.appendChild(elm);
-      await func({
+      const res = await func({
         id: "foo",
         value: "bar/baz",
       });
       assert.strictEqual(elm.value, "bar/baz", "value");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set color value", async () => {
+      const elm = document.createElement("input");
+      const body = document.querySelector("body");
+      elm.id = "foo";
+      elm.type = "color";
+      body.appendChild(elm);
+      const res = await func({
+        id: "foo",
+        value: "#ffffff",
+      });
+      assert.strictEqual(elm.value, "#ffffff", "value");
+      assert.deepEqual(res, [], "result");
     });
   });
 
@@ -393,7 +661,40 @@ describe("options-main", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(res.length, 2, "array length");
-      assert.deepEqual(res, [undefined, undefined], "result");
+      assert.deepEqual(res, [[], []], "result");
+    });
+  });
+
+  describe("handle runtime message", () => {
+    const func = mjs.handleMsg;
+
+    it("should not call function", async () => {
+      const res = await func({});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const msg = {
+        foo: true,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const msg = {
+        [THEME_CUSTOM_SETTING]: false,
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      const msg = {
+        [THEME_CUSTOM_SETTING]: {},
+      };
+      const res = await func(msg);
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 });
