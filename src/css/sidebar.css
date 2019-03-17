@@ -112,9 +112,7 @@ main {
   stroke: var(--foreground-highlight-color);
   z-index: 3;
 }
-.tab:focus,
 .tab:hover,
-.tab.active:focus,
 .tab.active:hover {
   background: var(--background-hover-color);
   border-color: var(--border-active-color);
@@ -160,9 +158,7 @@ main {
   fill: var(--foreground-active-color);
   stroke: var(--foreground-highlight-color);
 }
-.tab:focus .tab-icon,
 .tab:hover .tab-icon,
-.tab.active:focus .tab-icon,
 .tab.active:hover .tab-icon {
   fill: var(--foreground-hover-color);
   stroke: var(--foreground-highlight-color);
@@ -208,9 +204,7 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.tab:focus .tab-audio.audible,
 .tab:hover .tab-audio.audible,
-.tab.active:focus .tab-audio.audible,
 .tab.active:hover .tab-audio.audible {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
@@ -268,9 +262,7 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.tab:focus > .tab-close,
 .tab:hover > .tab-close,
-.tab.active:focus > .tab-close,
 .tab.active:hover > .tab-close {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
@@ -281,13 +273,11 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.tab.highlighted:focus > .tab-close,
 .tab.highlighted:hover > .tab-close {
   fill: var(--foreground-selection-hover-color);
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.tab-close:focus,
 .tab-close:hover {
   background-color: var(--background-hover-shadow);
 }
@@ -326,9 +316,7 @@ main {
   fill-opacity: 0.7;
   stroke: var(--foreground-highlight-color);
 }
-.tab-container.pinned > .tab:focus > .tab-pinned,
 .tab-container.pinned > .tab:hover > .tab-pinned,
-.tab-container.pinned > .tab.active:focus > .tab-pinned,
 .tab-container.pinned > .tab.active:hover > .tab-pinned {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.7;
@@ -339,7 +327,6 @@ main {
   fill-opacity: 0.7;
   stroke: var(--foreground-highlight-color);
 }
-.tab-container.pinned > .tab.highlighted:focus > .tab-pinned,
 .tab-container.pinned > .tab.highlighted:hover > .tab-pinned {
   fill: var(--foreground-selection-hover-color);
   fill-opacity: 0.7;
@@ -361,7 +348,6 @@ main {
   fill-opacity: 0.8;
   stroke: none;
 }
-.tab.newtab:focus,
 .tab.newtab:hover {
   border-color: var(--border-active-color);
   fill: var(--foreground-hover-color);
