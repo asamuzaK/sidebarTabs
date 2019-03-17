@@ -430,6 +430,7 @@ export const setTheme = async themes => {
       }
     }
   }
+  await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
   await setStorage({
     [THEME]: themes,
   });
