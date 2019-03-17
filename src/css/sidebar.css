@@ -51,6 +51,10 @@ body {
   margin: 0;
   padding: 0;
   -moz-context-properties: fill, fill-opacity, stroke, stroke-opacity;
+  background: var(--background-color);
+  color: var(--foreground-color);
+  fill: var(--foreground-color);
+  stroke: var(--foreground-highlight-color);
 }
 main {
   position: fixed;
@@ -70,6 +74,13 @@ main {
   height: auto;
   z-index: 1;
 }
+.tab-container.newtab,
+.tab-container.pinned {
+  background-color: var(--background-color);
+  color: var(--foreground-color);
+  fill: var(--foreground-color);
+  stroke: var(--foreground-highlight-color);
+}
 
 /* tab */
 .tab {
@@ -78,7 +89,7 @@ main {
   flex-flow: row nowrap;
   align-items: center;
   margin: 0;
-  border: 1px solid;
+  border: 1px solid var(--border-color);
   padding: 0;
   width: auto;
   height: var(--tab-height);
@@ -94,14 +105,37 @@ main {
   max-height: var(--tab-height-compact);
 }
 .tab.active {
+  background: var(--background-active-color);
+  border-color: var(--border-active-color);
+  color: var(--foreground-active-color);
+  fill: var(--foreground-active-color);
+  stroke: var(--foreground-highlight-color);
   z-index: 3;
 }
+.tab:focus,
+.tab:hover,
+.tab.active:focus,
+.tab.active:hover {
+  background: var(--background-hover-color);
+  border-color: var(--border-active-color);
+  color: var(--foreground-hover-color);
+  fill: var(--foreground-hover-color);
+  stroke: var(--foreground-highlight-color);
+  z-index: 5;
+}
 .tab.highlighted {
+  background: var(--background-selection-color);
+  border-color: var(--border-active-color);
+  color: var(--foreground-selection-color);
+  fill: var(--foreground-selection-color);
+  stroke: var(--foreground-highlight-color);
   z-index: 4;
 }
-.tab:focus,
-.tab:hover {
-  z-index: 5;
+.tab.highlighted:hover {
+  background: var(--background-selection-hover-color);
+  color: var(--foreground-selection-hover-color);
+  fill: var(--foreground-selection-hover-color);
+  stroke: var(--foreground-highlight-color);
 }
 .tab[hidden] {
   display: none;
@@ -119,6 +153,27 @@ main {
   margin: var(--scale-size);
   width: var(--icon-size);
   height: var(--icon-size);
+  fill: var(--foreground-color);
+  stroke: var(--foreground-highlight-color);
+}
+.tab.active .tab-icon {
+  fill: var(--foreground-active-color);
+  stroke: var(--foreground-highlight-color);
+}
+.tab:focus .tab-icon,
+.tab:hover .tab-icon,
+.tab.active:focus .tab-icon,
+.tab.active:hover .tab-icon {
+  fill: var(--foreground-hover-color);
+  stroke: var(--foreground-highlight-color);
+}
+.tab.highlighted .tab-icon {
+  fill: var(--foreground-selection-color);
+  stroke: var(--foreground-highlight-color);
+}
+.tab.highlighted:hover .tab-icon {
+  fill: var(--foreground-selection-hover-color);
+  stroke: var(--foreground-highlight-color);
 }
 .tab-title {
   display: block;
@@ -144,6 +199,32 @@ main {
   margin: 0;
   padding: calc(var(--scale-size) / 2);
   height: var(--icon-small-size);
+  fill: var(--foreground-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab.active .tab-audio.audible {
+  fill: var(--foreground-active-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab:focus .tab-audio.audible,
+.tab:hover .tab-audio.audible,
+.tab.active:focus .tab-audio.audible,
+.tab.active:hover .tab-audio.audible {
+  fill: var(--foreground-hover-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab.highlighted .tab-audio.audible {
+  fill: var(--foreground-selection-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab.highlighted:hover .tab-audio.audible {
+  fill: var(--foreground-selection-hover-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
 }
 .tab-audio-icon {
   width: var(--icon-small-size);
@@ -178,6 +259,37 @@ main {
   border-radius: calc(var(--scale-size) / 2);
   padding: calc(var(--scale-size) / 3);
   height: var(--icon-size);
+  fill: var(--foreground-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab.active > .tab-close {
+  fill: var(--foreground-active-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab:focus > .tab-close,
+.tab:hover > .tab-close,
+.tab.active:focus > .tab-close,
+.tab.active:hover > .tab-close {
+  fill: var(--foreground-hover-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab.highlighted > .tab-close {
+  fill: var(--foreground-selection-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab.highlighted:focus > .tab-close,
+.tab.highlighted:hover > .tab-close {
+  fill: var(--foreground-selection-hover-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.tab-close:focus,
+.tab-close:hover {
+  background-color: var(--background-hover-shadow);
 }
 .tab-close-icon {
   width: var(--icon-size);
@@ -205,6 +317,33 @@ main {
   margin: var(--scale-size);
   padding: calc(var(--scale-size) / 3);
   height: var(--icon-size);
+  fill: var(--foreground-color);
+  fill-opacity: 0.7;
+  stroke: var(--foreground-highlight-color);
+}
+.tab-container.pinned > .tab.active > .tab-pinned {
+  fill: var(--foreground-active-color);
+  fill-opacity: 0.7;
+  stroke: var(--foreground-highlight-color);
+}
+.tab-container.pinned > .tab:focus > .tab-pinned,
+.tab-container.pinned > .tab:hover > .tab-pinned,
+.tab-container.pinned > .tab.active:focus > .tab-pinned,
+.tab-container.pinned > .tab.active:hover > .tab-pinned {
+  fill: var(--foreground-hover-color);
+  fill-opacity: 0.7;
+  stroke: var(--foreground-highlight-color);
+}
+.tab-container.pinned > .tab.highlighted > .tab-pinned {
+  fill: var(--foreground-selection-color);
+  fill-opacity: 0.7;
+  stroke: var(--foreground-highlight-color);
+}
+.tab-container.pinned > .tab.highlighted:focus > .tab-pinned,
+.tab-container.pinned > .tab.highlighted:hover > .tab-pinned {
+  fill: var(--foreground-selection-hover-color);
+  fill-opacity: 0.7;
+  stroke: var(--foreground-highlight-color);
 }
 .tab-pinned-icon {
   flex: 0 0 var(--icon-small-size);
@@ -216,168 +355,6 @@ main {
   bottom: 0;
   z-index: 6;
 }
-.tab.newtab:hover,
-.tab.newtab:focus {
-  z-index: 7;
-}
-.tab.newtab > .newtab {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex: 1 1 auto;
-}
-
-/* colors */
-body {
-  background: var(--background-color);
-  color: var(--foreground-color);
-  fill: var(--foreground-color);
-  stroke: var(--foreground-highlight-color);
-}
-
-.tab-container.newtab,
-.tab-container.pinned {
-  background-color: var(--background-color);
-  color: var(--foreground-color);
-  fill: var(--foreground-color);
-  stroke: var(--foreground-highlight-color);
-}
-
-.tab {
-  border-color: var(--border-color);
-}
-.tab.active {
-  background: var(--background-active-color);
-  border-color: var(--border-active-color);
-  color: var(--foreground-active-color);
-  fill: var(--foreground-active-color);
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted {
-  background: var(--background-selection-color);
-  border-color: var(--border-active-color);
-  color: var(--foreground-selection-color);
-  fill: var(--foreground-selection-color);
-  stroke: var(--foreground-highlight-color);
-}
-
-.tab-icon {
-  fill: var(--foreground-color);
-  fill-opacity: 1.0;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.active .tab-icon {
-  fill: var(--foreground-active-color);
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted .tab-icon {
-  fill: var(--foreground-selection-color);
-  stroke: var(--foreground-highlight-color);
-}
-.tab-audio.audible {
-  fill: var(--foreground-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.active .tab-audio.audible {
-  fill: var(--foreground-active-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted .tab-audio.audible {
-  fill: var(--foreground-selection-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab-close {
-  fill: var(--foreground-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.active > .tab-close {
-  fill: var(--foreground-active-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted > .tab-close {
-  fill: var(--foreground-selection-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab-container.pinned .tab-pinned {
-  fill: var(--foreground-color);
-  fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
-}
-.tab-container.pinned > .tab.active > .tab-pinned {
-  fill: var(--foreground-active-color);
-  fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
-}
-.tab-container.pinned > .tab.highlighted > .tab-pinned {
-  fill: var(--foreground-selection-color);
-  fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
-}
-
-/* state */
-.tab:focus,
-.tab:hover {
-  border-color: var(--border-active-color);
-  background: var(--background-hover-color);
-  color: var(--foreground-hover-color);
-  fill: var(--foreground-hover-color);
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted:focus,
-.tab.highlighted:hover {
-  background: var(--background-selection-hover-color);
-  color: var(--foreground-selection-hover-color);
-  fill: var(--foreground-selection-hover-color);
-  stroke: var(--foreground-highlight-color);
-}
-
-.tab.active:focus .tab-icon,
-.tab.active:hover .tab-icon {
-  fill: var(--foreground-hover-color);
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted:focus .tab-icon,
-.tab.highlighted:hover .tab-icon {
-  fill: var(--foreground-selection-hover-color);
-  stroke: var(--foreground-highlight-color);
-}
-.tab:focus > .tab-close,
-.tab:hover > .tab-close {
-  fill: var(--foreground-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.active:focus > .tab-close,
-.tab.active:hover > .tab-close {
-  fill: var(--foreground-active-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab.highlighted:focus > .tab-close,
-.tab.highlighted:hover > .tab-close {
-  fill: var(--foreground-selection-hover-color);
-  fill-opacity: 0.8;
-  stroke: var(--foreground-highlight-color);
-}
-.tab-close:focus,
-.tab-close:hover {
-  background-color: var(--background-hover-shadow);
-}
-
-.tab-container.pinned > .tab.highlighted:focus > .tab-pinned,
-.tab-container.pinned > .tab.highlighted:hover > .tab-pinned {
-  fill: var(--foreground-selection-hover-color);
-  fill-opacity: 0.8;
-  stroke: none;
-}
-
-/* newtab */
 .tab.newtab {
   border-color: transparent;
   fill: var(--foreground-color);
@@ -390,6 +367,13 @@ body {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
   stroke: none;
+  z-index: 7;
+}
+.tab.newtab > .newtab {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex: 1 1 auto;
 }
 
 /* tab group */
