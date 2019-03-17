@@ -23,8 +23,8 @@ import {
   COMPACT, COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
-  CUSTOM_COLOR, CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
-  CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
+  CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -9040,16 +9040,6 @@ describe("main", () => {
     });
 
     it("should not set variable", async () => {
-      const res = await func(CUSTOM_COLOR_2ND, {value: "#ff0000"});
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not set variable", async () => {
-      const res = await func(CUSTOM_COLOR_2ND_ACTIVE, {value: "#ff0000"});
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not set variable", async () => {
       const res = await func(CUSTOM_COLOR_ACTIVE, {value: "#ff0000"});
       assert.deepEqual(res, [], "result");
     });
@@ -9121,16 +9111,6 @@ describe("main", () => {
 
     it("should set variable", async () => {
       const res = await func(CUSTOM_COLOR, {value: "#ff0000"}, true);
-      assert.deepEqual(res, [undefined], "result");
-    });
-
-    it("should set variable", async () => {
-      const res = await func(CUSTOM_COLOR_2ND, {value: "#ff0000"}, true);
-      assert.deepEqual(res, [undefined], "result");
-    });
-
-    it("should set variable", async () => {
-      const res = await func(CUSTOM_COLOR_2ND_ACTIVE, {value: "#ff0000"}, true);
       assert.deepEqual(res, [undefined], "result");
     });
 

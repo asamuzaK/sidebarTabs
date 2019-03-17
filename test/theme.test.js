@@ -11,7 +11,7 @@ import * as mjs from "../src/mjs/theme.js";
 import {
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
-  CUSTOM_COLOR, CUSTOM_COLOR_2ND, CUSTOM_COLOR_2ND_ACTIVE, CUSTOM_COLOR_ACTIVE,
+  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
   CSS_ID, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
@@ -287,21 +287,6 @@ describe("theme", () => {
     });
 
     it("should get values", async () => {
-      mjs.currentThemeColors.set("icons", "#ff0000");
-      const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
-      assert.notDeepEqual(res, themeMap[THEME_LIGHT], "result");
-      for (const [key, value] of items) {
-        if (key === CUSTOM_COLOR_2ND || key === CUSTOM_COLOR_2ND_ACTIVE) {
-          assert.strictEqual(value, "#ff0000", `${key}`);
-        } else {
-          assert.strictEqual(value, obj[key], `${key}`);
-        }
-      }
-    });
-
-    it("should get values", async () => {
       mjs.currentThemeColors.set("sidebar_highlight_text", "#ff0000");
       const res = await func();
       const obj = themeMap[THEME_LIGHT];
@@ -441,10 +426,8 @@ describe("theme", () => {
       });
       browser.management.getAll.resolves(null);
       const res = await func();
-      const obj = mjs.themeMap[THEME_LIGHT];
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
       assert.strictEqual(res[CUSTOM_BG], "#ff0000", "color");
-      assert.strictEqual(res[CUSTOM_COLOR_2ND], obj[CUSTOM_COLOR_2ND], "color");
       browser.theme.getCurrent.flush();
       browser.management.getAll.flush();
     });
