@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => Promise.all([
   localizeHtml(),
   setContextualIds(),
   setSidebar().then(setMain).then(requestSidebarStateUpdate),
-  setSidebarTheme().then(initCustomTheme),
+  setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
   .catch(throwErr)
