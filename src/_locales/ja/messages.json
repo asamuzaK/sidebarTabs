@@ -416,9 +416,6 @@
   "optionsThemeCustomText": {
     "message": "テキスト色"
   },
-  "optionsThemeCustomTextSecondary": {
-    "message": "副次色"
-  },
   "optionsThemeDarkLabel": {
     "message": "暗いテーマ"
   },

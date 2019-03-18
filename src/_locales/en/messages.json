@@ -416,9 +416,6 @@
   "optionsThemeCustomText": {
     "message": "Text"
   },
-  "optionsThemeCustomTextSecondary": {
-    "message": "Secondary"
-  },
   "optionsThemeDarkLabel": {
     "message": "Dark Theme"
   },
