@@ -5,7 +5,7 @@
   --background-color: #ededf0;
   --background-active-color: #f9f9fa;
   --background-hover-color: #d7d7db;
-  --background-hover-shadow: rgba(12, 12, 13, 0.1);
+  --background-hover-shadow: #0c0c0d1a;
   --background-selection-color: #0a84ff;
   --background-selection-hover-color: #0060df;
   --border-color: #ccc;
@@ -35,6 +35,7 @@
   --background-color: #0c0c0d;
   --background-active-color: #38383d;
   --background-hover-color: #2a2a2e;
+  --background-hover-shadow: #f9f9fa1a;
   --background-selection-color: #003eaa;
   --background-selection-hover-color: #0060df;
   --border-color: #666;

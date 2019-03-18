@@ -16,12 +16,14 @@ import {
 /* constants */
 import {
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, CSS_ID,
-  CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_SELECT,
-  CSS_VAR_BG_SELECT_HOVER, CSS_VAR_BORDER, CSS_VAR_BORDER_ACTIVE,
+  CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
+  CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
+  CSS_VAR_BORDER, CSS_VAR_BORDER_ACTIVE,
   CSS_VAR_COLOR, CSS_VAR_COLOR_ACTIVE, CSS_VAR_COLOR_HOVER,
   CSS_VAR_COLOR_SELECT, CSS_VAR_COLOR_SELECT_HOVER,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
-  CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
+  CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
+  CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
@@ -34,6 +36,7 @@ export const themeMap = {
     [CUSTOM_BG]: CSS_VAR_BG,
     [CUSTOM_BG_ACTIVE]: CSS_VAR_BG_ACTIVE,
     [CUSTOM_BG_HOVER]: CSS_VAR_BG_HOVER,
+    [CUSTOM_BG_HOVER_SHADOW]: CSS_VAR_BG_HOVER_SHADOW,
     [CUSTOM_BG_SELECT]: CSS_VAR_BG_SELECT,
     [CUSTOM_BG_SELECT_HOVER]: CSS_VAR_BG_SELECT_HOVER,
     [CUSTOM_BORDER]: CSS_VAR_BORDER,
@@ -48,6 +51,7 @@ export const themeMap = {
     [CUSTOM_BG]: "#ededf0",
     [CUSTOM_BG_ACTIVE]: "#f9f9fa",
     [CUSTOM_BG_HOVER]: "#d7d7db",
+    [CUSTOM_BG_HOVER_SHADOW]: "#0c0c0d1a",
     [CUSTOM_BG_SELECT]: "#0a84ff",
     [CUSTOM_BG_SELECT_HOVER]: "#0060df",
     [CUSTOM_BORDER]: "#cccccc",
@@ -62,6 +66,7 @@ export const themeMap = {
     [CUSTOM_BG]: "#0c0c0d",
     [CUSTOM_BG_ACTIVE]: "#38383d",
     [CUSTOM_BG_HOVER]: "#2a2a2e",
+    [CUSTOM_BG_HOVER_SHADOW]: "#f9f9fa1a",
     [CUSTOM_BG_SELECT]: "#003eaa",
     [CUSTOM_BG_SELECT_HOVER]: "#0060df",
     [CUSTOM_BORDER]: "#666666",
@@ -125,6 +130,15 @@ export const getCurrentThemeBaseValues = async () => {
         const valueC = currentThemeColors.get("toolbar");
         if (valueA || valueB || valueC) {
           values[key] = valueA || valueB || valueC;
+        } else {
+          values[key] = baseValues[key];
+        }
+        break;
+      }
+      case CUSTOM_BG_HOVER_SHADOW: {
+        const valueA = currentThemeColors.get("textcolor");
+        if (valueA) {
+          values[key] = `${valueA}1a`;
         } else {
           values[key] = baseValues[key];
         }

@@ -9,10 +9,10 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/theme.js";
 import {
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
-  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
-  CSS_ID, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, CSS_ID,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER_SHADOW,
+  CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
+  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
 
@@ -280,6 +280,8 @@ describe("theme", () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_ACTIVE) {
           assert.strictEqual(value, "#ff0000", `${key}`);
+        } else if (key === CUSTOM_BG_HOVER_SHADOW) {
+          assert.strictEqual(value, "#ff00001a", `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
