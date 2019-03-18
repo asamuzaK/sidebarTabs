@@ -96,7 +96,6 @@ main {
   max-height: var(--tab-height);
   transition: margin-top 0.1s, height 0.1s, border-top-width 0.1s,
               border-bottom-width 0.1s;
-  -moz-user-select: none;
   user-select: none;
   z-index: 2;
 }
