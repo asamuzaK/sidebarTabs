@@ -34,5 +34,5 @@
     "sinon": "^7.2.7",
     "sinon-chrome": "^2.3.2"
   },
-  "version": "1.3.0"
+  "version": "1.3.1"
 }
