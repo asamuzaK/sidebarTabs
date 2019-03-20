@@ -246,6 +246,7 @@ main {
 
 /* close button */
 .tab-close {
+  all: unset;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -357,10 +358,14 @@ main {
   z-index: 7;
 }
 .tab.newtab > .newtab {
+  all: unset;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 1 1 auto;
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 /* tab group */
