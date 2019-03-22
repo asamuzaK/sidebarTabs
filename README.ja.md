@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/asamuzaK/sidebarTabs.svg?branch=master)](https://travis-ci.org/asamuzaK/sidebarTabs)
 [![devDependency Status](https://david-dm.org/asamuzaK/sidebarTabs/dev-status.svg)](https://david-dm.org/asamuzaK/sidebarTabs?type=dev)
+[![Mozilla Add-on](https://img.shields.io/amo/v/sidebarTabs@asamuzak.jp.svg)](https://addons.mozilla.org/firefox/addon/sidebartabs/)
 
 # sidebarTabs
 
