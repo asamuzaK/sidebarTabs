@@ -116,9 +116,10 @@ export const getCurrentThemeBaseValues = async () => {
     switch (key) {
       case CUSTOM_BG: {
         const valueA = currentThemeColors.get("sidebar");
-        const valueB = currentThemeColors.get("accentcolor");
-        if (valueA || valueB) {
-          values[key] = valueA || valueB;
+        const valueB = currentThemeColors.get("frame");
+        const valueC = currentThemeColors.get("accentcolor");
+        if (valueA || valueB || valueC) {
+          values[key] = valueA || valueB || valueC;
         } else {
           values[key] = baseValues[key];
         }
@@ -136,9 +137,12 @@ export const getCurrentThemeBaseValues = async () => {
         break;
       }
       case CUSTOM_BG_HOVER_SHADOW: {
-        const valueA = currentThemeColors.get("textcolor");
+        const valueA = currentThemeColors.get("tab_background_text");
+        const valueB = currentThemeColors.get("textcolor");
         if (valueA) {
           values[key] = `${valueA}1a`;
+        } else if (valueB) {
+          values[key] = `${valueB}1a`;
         } else {
           values[key] = baseValues[key];
         }
@@ -168,9 +172,10 @@ export const getCurrentThemeBaseValues = async () => {
       }
       case CUSTOM_COLOR: {
         const valueA = currentThemeColors.get("sidebar_text");
-        const valueB = currentThemeColors.get("textcolor");
-        if (valueA || valueB) {
-          values[key] = valueA || valueB;
+        const valueB = currentThemeColors.get("tab_background_text");
+        const valueC = currentThemeColors.get("textcolor");
+        if (valueA || valueB || valueC) {
+          values[key] = valueA || valueB || valueC;
         } else {
           values[key] = baseValues[key];
         }
@@ -179,10 +184,13 @@ export const getCurrentThemeBaseValues = async () => {
       case CUSTOM_COLOR_ACTIVE: {
         const valueA = currentThemeColors.get("sidebar_highlight_text");
         const valueB = currentThemeColors.get("tab_text");
-        const valueC = currentThemeColors.get("toolbar_text");
-        const valueD = currentThemeColors.get("textcolor");
-        if (valueA || valueB || valueC || valueD) {
-          values[key] = valueA || valueB || valueC || valueD;
+        const valueC = currentThemeColors.get("bookmark_text");
+        const valueD = currentThemeColors.get("toolbar_text");
+        const valueE = currentThemeColors.get("tab_background_text");
+        const valueF = currentThemeColors.get("textcolor");
+        if (valueA || valueB || valueC || valueD || valueE || valueF) {
+          values[key] = valueA || valueB || valueC || valueD || valueE ||
+                        valueF;
         } else {
           values[key] = baseValues[key];
         }
