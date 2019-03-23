@@ -1,5 +1,6 @@
 /**
  * color.js
+ * NOTE: "currentColor" keyword is not supported
  */
 
 import {
@@ -370,6 +371,77 @@ export const parseRgb = async value => {
 };
 
 /**
+ * parse hex-color
+ * @param {string} value - value
+ * @returns {Array} - [r, g, b, a]
+ */
+export const parseHex = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  if (!(/^#[\da-f]{6}$/i.test(value) || /^#[\da-f]{8}$/i.test(value) ||
+        /^#[\da-f]{4}$/i.test(value) || /^#[\da-f]{3}$/i.test(value))) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const arr = [];
+  if (/^#[\da-f]{6}$/.test(value)) {
+    const [, r, g, b] = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+    arr.push(
+      parseInt(r, HEX),
+      parseInt(g, HEX),
+      parseInt(b, HEX),
+      1,
+    );
+  } else if (/^#[\da-f]{8}$/.test(value)) {
+    const [, r, g, b, a] =
+      value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+    arr.push(
+      parseInt(r, HEX),
+      parseInt(g, HEX),
+      parseInt(b, HEX),
+      parseInt(a, HEX) / NUM_MAX,
+    );
+  } else if (/^#[\da-f]{4}$/i.test(value)) {
+    const [, r, g, b, a] =
+      value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/i);
+    arr.push(
+      parseInt(`${r}${r}`, HEX),
+      parseInt(`${g}${g}`, HEX),
+      parseInt(`${b}${b}`, HEX),
+      parseInt(`${a}${a}`, HEX) / NUM_MAX,
+    );
+  } else if (/^#[\da-f]{3}$/i.test(value)) {
+    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/i);
+    arr.push(
+      parseInt(`${r}${r}`, HEX),
+      parseInt(`${g}${g}`, HEX),
+      parseInt(`${b}${b}`, HEX),
+      1,
+    );
+  }
+  return arr;
+};
+
+/**
+ * number to hex string
+ * @param {number} value - value
+ * @returns {string} - hex
+ */
+export const numberToHexString = async value => {
+  if (Number.isNaN(Number(value))) {
+    throw new TypeError(`${getType(value)} is not a Number.`);
+  }
+  if (value < 0 || value > NUM_MAX) {
+    throw new RangeError(`${value} is not between 0 and ${NUM_MAX}.`);
+  }
+  let hex = Math.round(value).toString(HEX);
+  if (hex.length === 1) {
+    hex = `0${hex}`;
+  }
+  return hex;
+};
+
+/**
  * convert color to hex
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -380,10 +452,14 @@ export const convertColorToHex = async (value, alpha = false) => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   let hex;
-  value = value.toLowerCase();
+  value = value.toLowerCase().trim();
   // named-color
   if (/^[a-z]+$/i.test(value)) {
-    hex = colorname[value];
+    if (value === "transparent" && alpha) {
+      hex = "#00000000";
+    } else {
+      hex = colorname[value];
+    }
   // hex-color
   } else if (value.startsWith("#")) {
     if (/^#[\da-f]{6}$/.test(value)) {
@@ -410,57 +486,76 @@ export const convertColorToHex = async (value, alpha = false) => {
     }
   // rgb()
   } else if (value.startsWith("rgb")) {
-    let [r, g, b, a] = await parseRgb(value);
+    const [r, g, b, a] = await parseRgb(value);
     if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
           Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
-      r = Math.round(r).toString(HEX);
-      g = Math.round(g).toString(HEX);
-      b = Math.round(b).toString(HEX);
-      a = Math.round(a * NUM_MAX).toString(HEX);
-      if (r.length === 1) {
-        r = `0${r}`;
-      }
-      if (g.length === 1) {
-        g = `0${g}`;
-      }
-      if (b.length === 1) {
-        b = `0${b}`;
-      }
-      if (a.length === 1) {
-        a = `0${a}`;
-      }
+      const [rr, gg, bb, aa] = await Promise.all([
+        numberToHexString(r),
+        numberToHexString(g),
+        numberToHexString(b),
+        numberToHexString(a * NUM_MAX),
+      ]);
       if (alpha) {
-        hex = `#${r}${g}${b}${a}`;
+        hex = `#${rr}${gg}${bb}${aa}`;
       } else {
-        hex = `#${r}${g}${b}`;
+        hex = `#${rr}${gg}${bb}`;
       }
     }
   // hsl()
   } else if (value.startsWith("hsl")) {
-    let [r, g, b, a] = await parseHsl(value);
+    const [r, g, b, a] = await parseHsl(value);
     if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
           Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
-      r = Math.round(r).toString(HEX);
-      g = Math.round(g).toString(HEX);
-      b = Math.round(b).toString(HEX);
-      a = Math.round(a * NUM_MAX).toString(HEX);
-      if (r.length === 1) {
-        r = `0${r}`;
-      }
-      if (g.length === 1) {
-        g = `0${g}`;
-      }
-      if (b.length === 1) {
-        b = `0${b}`;
-      }
-      if (a.length === 1) {
-        a = `0${a}`;
-      }
+      const [rr, gg, bb, aa] = await Promise.all([
+        numberToHexString(r),
+        numberToHexString(g),
+        numberToHexString(b),
+        numberToHexString(a * NUM_MAX),
+      ]);
       if (alpha) {
-        hex = `#${r}${g}${b}${a}`;
+        hex = `#${rr}${gg}${bb}${aa}`;
       } else {
-        hex = `#${r}${g}${b}`;
+        hex = `#${rr}${gg}${bb}`;
       }
+    }
+  }
+  return hex || null;
+};
+
+/**
+ * blend two colors
+ * @param {string} base - base color
+ * @param {string} blend - color to blend
+ * @returns {?string} - hex
+ */
+export const blendColors = async (base, blend) => {
+  if (!isString(base)) {
+    throw new TypeError(`Expected String but got ${getType(base)}.`);
+  }
+  if (!isString(blend)) {
+    throw new TypeError(`Expected String but got ${getType(blend)}.`);
+  }
+  const baseHex = await convertColorToHex(base, true);
+  const blendHex = await convertColorToHex(blend, true);
+  let hex;
+  if (baseHex && blendHex) {
+    const [baseR, baseG, baseB, baseA] = await parseHex(baseHex);
+    const [blendR, blendG, blendB, blendA] = await parseHex(blendHex);
+    const alpha = 1 - (1 - baseA) * (1 - blendA);
+    if (blendA === 1) {
+      hex = blendHex;
+    } else if (blendA === 0) {
+      hex = baseHex;
+    } else if (alpha) {
+      const baseAlpha = baseA * (1 - blendA) / alpha;
+      const blendAlpha = blendA / alpha;
+      const [r, g, b, a] = await Promise.all([
+        numberToHexString((baseR * baseAlpha) + (blendR * blendAlpha)),
+        numberToHexString((baseG * baseAlpha) + (blendG * blendAlpha)),
+        numberToHexString((baseB * baseAlpha) + (blendB * blendAlpha)),
+        numberToHexString(alpha * NUM_MAX),
+      ]);
+      hex = `#${r}${g}${b}${a}`;
     }
   }
   return hex || null;

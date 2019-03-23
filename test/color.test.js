@@ -226,6 +226,147 @@ describe("color", () => {
     });
   });
 
+  describe("parse hex", () => {
+    const func = mjs.parseHex;
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("white").catch(e => {
+        assert.instanceOf(e, Error, "error");
+        assert.strictEqual(e.message,
+                           "Invalid property value: white",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("#1").catch(e => {
+        assert.instanceOf(e, Error, "error");
+        assert.strictEqual(e.message,
+                           "Invalid property value: #1",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("#12").catch(e => {
+        assert.instanceOf(e, Error, "error");
+        assert.strictEqual(e.message,
+                           "Invalid property value: #12",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("#12345").catch(e => {
+        assert.instanceOf(e, Error, "error");
+        assert.strictEqual(e.message,
+                           "Invalid property value: #12345",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("#1234567").catch(e => {
+        assert.instanceOf(e, Error, "error");
+        assert.strictEqual(e.message,
+                           "Invalid property value: #1234567",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("#123456789").catch(e => {
+        assert.instanceOf(e, Error, "error");
+        assert.strictEqual(e.message,
+                           "Invalid property value: #123456789",
+                           "error message");
+      });
+    });
+
+    it("should get value", async () => {
+      const res = await func("#ff0000");
+      assert.deepEqual(res, [255, 0, 0, 1], "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#ff0000ff");
+      assert.deepEqual(res, [255, 0, 0, 1], "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#ff00001a");
+      res[3] = parseFloat(res[3].toFixed(1));
+      assert.deepEqual(res, [255, 0, 0, 0.1], "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#f001");
+      res[3] = parseFloat(res[3].toFixed(1));
+      assert.deepEqual(res, [255, 0, 0, 0.1], "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#f00");
+      assert.deepEqual(res, [255, 0, 0, 1], "result");
+    });
+  });
+
+  describe("number to hex string", () => {
+    const func = mjs.numberToHexString;
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Undefined is not a Number.",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func(-1).catch(e => {
+        assert.instanceOf(e, RangeError, "error");
+        assert.strictEqual(e.message, "-1 is not between 0 and 255.",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func(256).catch(e => {
+        assert.instanceOf(e, RangeError, "error");
+        assert.strictEqual(e.message, "256 is not between 0 and 255.",
+                           "error message");
+      });
+    });
+
+    it("should get value", async () => {
+      const res = await func(0);
+      assert.strictEqual(res, "00", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func(16);
+      assert.strictEqual(res, "10", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func(0.15 * 255);
+      assert.strictEqual(res, "26", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func(255);
+      assert.strictEqual(res, "ff", "result");
+    });
+  });
+
   describe("convert color to hex", () => {
     const func = mjs.convertColorToHex;
 
@@ -243,13 +384,18 @@ describe("color", () => {
     });
 
     it("should get null", async () => {
-      const res = await func("transparent");
+      const res = await func("currentColor");
       assert.isNull(res, "result");
     });
 
     it("should get null", async () => {
-      const res = await func("currentColor");
+      const res = await func("transparent");
       assert.isNull(res, "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("transparent", true);
+      assert.strictEqual(res, "#00000000", "result");
     });
 
     it("should get value", async () => {
@@ -340,6 +486,91 @@ describe("color", () => {
     it("should get value", async () => {
       const res = await func("hsl(240 100% 50%)");
       assert.strictEqual(res, "#0000ff", "result");
+    });
+  });
+
+  describe("blend two colors", () => {
+    const func = mjs.blendColors;
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "error message");
+      });
+    });
+
+    it("should throw", async () => {
+      await func("foo").catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "error message");
+      });
+    });
+
+    it("should get null", async () => {
+      const res = await func("black", "foo");
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", async () => {
+      const res = await func("foo", "black");
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", async () => {
+      const res = await func("foo", "bar");
+      assert.isNull(res, "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("black", "#00000000");
+      assert.strictEqual(res, "#000000", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("black", "#ff0000");
+      assert.strictEqual(res, "#ff0000", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#0000ff00", "#ff000000");
+      assert.strictEqual(res, "#0000ff00", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#0000ffff", "#0000ff11");
+      assert.strictEqual(res, "#0000ffff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#000000ff", "#ffffff11");
+      assert.strictEqual(res, "#111111ff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#000000ff", "#ffffff22");
+      assert.strictEqual(res, "#222222ff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#000000ff", "#ffffff33");
+      assert.strictEqual(res, "#333333ff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#000000ff", "#ffffff66");
+      assert.strictEqual(res, "#666666ff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#000000ff", "#ffffff99");
+      assert.strictEqual(res, "#999999ff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#000000ff", "#ffffffcc");
+      assert.strictEqual(res, "#ccccccff", "result");
     });
   });
 });
