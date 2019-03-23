@@ -550,9 +550,9 @@ export const blendColors = async (base, blend) => {
       const baseAlpha = baseA * (1 - blendA) / alpha;
       const blendAlpha = blendA / alpha;
       const [r, g, b, a] = await Promise.all([
-        numberToHexString((baseR * baseAlpha) + (blendR * blendAlpha)),
-        numberToHexString((baseG * baseAlpha) + (blendG * blendAlpha)),
-        numberToHexString((baseB * baseAlpha) + (blendB * blendAlpha)),
+        numberToHexString(baseR * baseAlpha + blendR * blendAlpha),
+        numberToHexString(baseG * baseAlpha + blendG * blendAlpha),
+        numberToHexString(baseB * baseAlpha + blendB * blendAlpha),
         numberToHexString(alpha * NUM_MAX),
       ]);
       hex = `#${r}${g}${b}${a}`;
