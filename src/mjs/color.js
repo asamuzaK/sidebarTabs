@@ -524,16 +524,16 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * blend two colors
- * @param {string} base - base color
  * @param {string} blend - color to blend
+ * @param {string} base - base color
  * @returns {?string} - hex
  */
-export const blendColors = async (base, blend) => {
-  if (!isString(base)) {
-    throw new TypeError(`Expected String but got ${getType(base)}.`);
-  }
+export const blendColors = async (blend, base) => {
   if (!isString(blend)) {
     throw new TypeError(`Expected String but got ${getType(blend)}.`);
+  }
+  if (!isString(base)) {
+    throw new TypeError(`Expected String but got ${getType(base)}.`);
   }
   const baseHex = await convertColorToHex(base, true);
   const blendHex = await convertColorToHex(blend, true);

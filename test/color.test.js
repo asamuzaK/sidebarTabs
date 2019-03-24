@@ -524,83 +524,88 @@ describe("color", () => {
     });
 
     it("should get value", async () => {
-      const res = await func("black", "#00000000");
+      const res = await func("#00000000", "black");
       assert.strictEqual(res, "#000000", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("black", "#ff0000");
+      const res = await func("#ff0000", "black");
       assert.strictEqual(res, "#ff0000", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0000ff00", "#ff000000");
+      const res = await func("#ff000000", "#0000ff00");
       assert.strictEqual(res, "#0000ff00", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0000ffff", "#0000ff11");
+      const res = await func("#0000ff11", "#0000ff");
       assert.strictEqual(res, "#0000ffff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#000000ff", "#ffffff11");
+      const res = await func("#ffffff11", "#000000");
       assert.strictEqual(res, "#111111ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#000000ff", "#ffffff22");
+      const res = await func("#ffffff22", "#000000");
       assert.strictEqual(res, "#222222ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#000000ff", "#ffffff33");
+      const res = await func("#ffffff33", "#000000");
       assert.strictEqual(res, "#333333ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#000000ff", "#ffffff66");
+      const res = await func("#ffffff66", "#000000");
       assert.strictEqual(res, "#666666ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#000000ff", "#ffffff99");
+      const res = await func("#ffffff99", "#000000");
       assert.strictEqual(res, "#999999ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#000000ff", "#ffffffcc");
+      const res = await func("#ffffffcc", "#000000");
       assert.strictEqual(res, "#ccccccff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0a84ff", "#0c0c0d1a");
+      const res = await func("#0c0c0d1a", "#0a84ff");
       assert.strictEqual(res, "#0a78e6ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0a84ff", "#d7d7db1a");
+      const res = await func("#d7d7db1a", "#0a84ff");
       assert.strictEqual(res, "#1f8cfbff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0a84ff", "#d7d7db33");
+      const res = await func("#d7d7db33", "#0a84ff");
       assert.strictEqual(res, "#3395f8ff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0a84ff", "#f9f9fa1a");
+      const res = await func("#f9f9fa1a", "#0a84ff");
       assert.strictEqual(res, "#2290feff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0a84ff", "#2a2a2e1a");
+      const res = await func("#2a2a2e1a", "#0a84ff");
       assert.strictEqual(res, "#0d7beaff", "result");
     });
 
     it("should get value", async () => {
-      const res = await func("#0a84ff", "#2a2a2e33");
+      const res = await func("#2a2a2e33", "#0a84ff");
       assert.strictEqual(res, "#1072d5ff", "result");
+    });
+
+    it("should get value", async () => {
+      const res = await func("#ffffff11", "#000000ee");
+      assert.strictEqual(res, "#121212ef", "result");
     });
   });
 });
