@@ -817,12 +817,15 @@ describe("theme", () => {
     it("should not call function", async () => {
       browser.runtime.sendMessage.callsFake((...args) => args);
       const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
       const elm = document.createElement("style");
       const body = document.querySelector("body");
       elm.id = CSS_ID;
       body.appendChild(elm);
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.storage.local.remove.callCount, j,
                          "not called");
       assert.isNull(res, "result");
       browser.runtime.sendMessage.flush();
@@ -831,10 +834,30 @@ describe("theme", () => {
     it("should not call function", async () => {
       browser.runtime.sendMessage.callsFake((...args) => args);
       const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
+      const elm = document.createElement("style");
+      const body = document.querySelector("body");
+      elm.id = CSS_ID;
+      body.appendChild(elm);
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.storage.local.remove.callCount, j,
+                         "not called");
+      assert.isNull(res, "result");
+      browser.runtime.sendMessage.flush();
+    });
+
+    it("should not call function", async () => {
+      browser.runtime.sendMessage.callsFake((...args) => args);
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+                         "not called");
+      assert.strictEqual(browser.storage.local.remove.callCount, j,
                          "not called");
       assert.isNull(res, "result");
       browser.runtime.sendMessage.flush();
@@ -844,6 +867,7 @@ describe("theme", () => {
       browser.runtime.sendMessage.callsFake((...args) => args);
       browser.storage.local.get.resolves({});
       const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement("style");
       const body = document.querySelector("body");
@@ -853,6 +877,8 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
+      assert.strictEqual(browser.storage.local.remove.callCount, j,
+                         "not called");
       assert.deepEqual(res, [
         null,
         {
@@ -864,6 +890,32 @@ describe("theme", () => {
       browser.storage.local.get.flush();
     });
 
+    it("should call function", async () => {
+      browser.runtime.sendMessage.callsFake((...args) => args);
+      browser.storage.local.get.resolves({});
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
+      const currentTheme = mjs.themeMap[THEME_LIGHT];
+      const elm = document.createElement("style");
+      const body = document.querySelector("body");
+      elm.id = CSS_ID;
+      body.appendChild(elm);
+      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+                         "called");
+      assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
+                         "called");
+      assert.deepEqual(res, [
+        null,
+        {
+          [THEME_CUSTOM_SETTING]: currentTheme,
+        },
+        null,
+      ], "result");
+      browser.runtime.sendMessage.flush();
+      browser.storage.local.get.flush();
+    });
   });
 
   describe("get theme", () => {

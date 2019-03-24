@@ -1693,7 +1693,7 @@ export const handleMsg = async msg => {
         break;
       case THEME_CUSTOM_INIT:
         if (value) {
-          func.push(initCustomTheme());
+          func.push(initCustomTheme(value));
         }
         break;
       case THEME_CUSTOM_REQ:

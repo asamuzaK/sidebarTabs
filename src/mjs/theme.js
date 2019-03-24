@@ -378,21 +378,24 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
 
 /**
  * init custom theme
+ * @param {boolean} rem - remove storage
  * @returns {?AsyncFunction} - sendCurrentTheme()
  */
-export const initCustomTheme = async () => {
-  const obj = currentTheme.get(THEME_CURRENT);
+export const initCustomTheme = async (rem = false) => {
   const elm = document.getElementById(CSS_ID);
+  const obj = currentTheme.get(THEME_CURRENT);
   let func;
   if (elm && obj) {
-    const items = Object.keys(obj);
-    const arr = [];
-    for (const key of items) {
-      arr.push(key);
+    if (rem) {
+      const items = Object.keys(obj);
+      const arr = [];
+      for (const key of items) {
+        arr.push(key);
+      }
+      await removeStorage(arr);
     }
     currentThemeColors.clear();
     currentTheme.clear();
-    await removeStorage(arr);
     await deleteCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
     await setCurrentThemeValue();
     await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
