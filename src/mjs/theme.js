@@ -10,7 +10,7 @@ import {
   sendMessage, setStorage,
 } from "./browser.js";
 import {
-  convertColorToHex,
+  blendColors, convertColorToHex,
 } from "./color.js";
 
 /* constants */
@@ -148,6 +148,15 @@ export const getCurrentThemeBaseValues = async () => {
         }
         break;
       }
+      case CUSTOM_BG_SELECT: {
+        const valueA = currentThemeColors.get("tab_line");
+        if (valueA) {
+          values[key] = valueA;
+        } else {
+          values[key] = baseValues[key];
+        }
+        break;
+      }
       case CUSTOM_BORDER: {
         const valueA = currentThemeColors.get("sidebar_border");
         const valueB = currentThemeColors.get("tab_background_separator");
@@ -198,6 +207,15 @@ export const getCurrentThemeBaseValues = async () => {
       }
       default:
         values[key] = baseValues[key];
+    }
+  }
+  // override CUSTOM_BG_SELECT_HOVER color
+  if (currentThemeColors.get("tab_line")) {
+    const base = currentThemeColors.get("tab_line");
+    const blend = values[CUSTOM_BG_HOVER_SHADOW];
+    const value = await blendColors(blend, base).then(convertColorToHex);
+    if (value) {
+      values[CUSTOM_BG_SELECT_HOVER] = value;
     }
   }
   return values;

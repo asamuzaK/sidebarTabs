@@ -11,7 +11,8 @@ import * as mjs from "../src/mjs/theme.js";
 import {
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, CSS_ID,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER_SHADOW,
-  CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
+  CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
+  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
@@ -205,6 +206,71 @@ describe("theme", () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_BG_ACTIVE) {
           assert.strictEqual(value, "#ff0000", `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it("should get values", async () => {
+      mjs.currentThemeColors.set("tab_line", "#ff0000");
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], "result");
+      for (const [key, value] of items) {
+        if (key === CUSTOM_BG_SELECT) {
+          assert.strictEqual(value, "#ff0000", `${key}`);
+        } else if (key === CUSTOM_BG_SELECT_HOVER) {
+          assert.strictEqual(value, "#e60101", `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it("should get values", async () => {
+      mjs.currentThemeColors.set("tab_line", "#ff0000");
+      mjs.currentThemeColors.set("tab_background_text", "#0000ff");
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], "result");
+      for (const [key, value] of items) {
+        if (key === CUSTOM_BG_SELECT) {
+          assert.strictEqual(value, "#ff0000", `${key}`);
+        } else if (key === CUSTOM_BG_SELECT_HOVER) {
+          assert.strictEqual(value, "#e5001a", `${key}`);
+        } else if (key === CUSTOM_BG_HOVER_SHADOW) {
+          assert.strictEqual(value, "#0000ff1a", `${key}`);
+        } else if (key === CUSTOM_COLOR) {
+          assert.strictEqual(value, "#0000ff", `${key}`);
+        } else if (key === CUSTOM_COLOR_ACTIVE) {
+          assert.strictEqual(value, "#0000ff", `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it("should get values", async () => {
+      mjs.currentThemeColors.set("tab_line", "#ff0000");
+      mjs.currentThemeColors.set("textcolor", "#0000ff");
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], "result");
+      for (const [key, value] of items) {
+        if (key === CUSTOM_BG_SELECT) {
+          assert.strictEqual(value, "#ff0000", `${key}`);
+        } else if (key === CUSTOM_BG_SELECT_HOVER) {
+          assert.strictEqual(value, "#e5001a", `${key}`);
+        } else if (key === CUSTOM_BG_HOVER_SHADOW) {
+          assert.strictEqual(value, "#0000ff1a", `${key}`);
+        } else if (key === CUSTOM_COLOR) {
+          assert.strictEqual(value, "#0000ff", `${key}`);
+        } else if (key === CUSTOM_COLOR_ACTIVE) {
+          assert.strictEqual(value, "#0000ff", `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
