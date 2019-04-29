@@ -67,8 +67,7 @@ export const createMenuItem = async data => {
         contexts, enabled, icons, parentId, title, type, viewTypes, visible,
       });
       menuItemId = await menus.create({
-        contexts, enabled, icons, id, parentId, title, type, viewTypes,
-        visible,
+        contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
       }, callback);
     }
   }
