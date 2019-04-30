@@ -13,6 +13,9 @@ const {menus, runtime} = browser;
 import {NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER} from "./constant.js";
 const ICON_SIZE_16 = 16;
 
+/* menu item map */
+export const menuItemMap = new Map();
+
 /**
  * update context menu
  * @param {string} menuItemId - menu item ID
@@ -32,18 +35,22 @@ export const updateContextMenu = async (menuItemId, data) => {
 };
 
 /**
- * handle create menu item last error
- * @param {string} menuItemId - menu item ID
- * @param {Object} data - update items data
+ * handle create menu item callback
  * @returns {Promise} - promise chain
  */
-export const handleCreateMenuItemError = (menuItemId, data) => {
+export const createMenuItemCallback = () => {
   const func = [];
   if (runtime.lastError) {
     const e = runtime.lastError;
-    if (e.message.includes("ID already exists") &&
-        e.message.includes(menuItemId)) {
-      func.push(updateContextMenu(menuItemId, data));
+    if (e.message.includes("ID already exists:")) {
+      const [, menuItemId] = /ID\s+already\s+exists:\s+(.+)$/.exec(e.message);
+      const data = menuItemId && menuItemMap.has(menuItemId) &&
+                     menuItemMap.get(menuItemId);
+      if (data) {
+        func.push(updateContextMenu(menuItemId, data));
+      } else {
+        throw e;
+      }
     } else {
       throw e;
     }
@@ -63,12 +70,12 @@ export const createMenuItem = async data => {
       contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
     } = data;
     if (isString(id)) {
-      const callback = () => handleCreateMenuItemError(id, {
+      await menuItemMap.set(id, {
         contexts, enabled, icons, parentId, title, type, viewTypes, visible,
       });
       menuItemId = await menus.create({
         contexts, enabled, icons, id, parentId, title, type, viewTypes, visible,
-      }, callback);
+      }, createMenuItemCallback);
     }
   }
   return menuItemId || null;

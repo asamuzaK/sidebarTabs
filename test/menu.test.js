@@ -94,7 +94,17 @@ describe("menu", () => {
   });
 
   describe("handle create menu item last error", () => {
-    const func = mjs.handleCreateMenuItemError;
+    const func = mjs.createMenuItemCallback;
+    beforeEach(() => {
+      const {menuItemMap} = mjs;
+      menuItemMap.clear();
+      browser.runtime.lastError = null;
+    });
+    afterEach(() => {
+      const {menuItemMap} = mjs;
+      menuItemMap.clear();
+      browser.runtime.lastError = null;
+    });
 
     it("should not call function", async () => {
       const i = browser.menus.update.callCount;
@@ -108,19 +118,30 @@ describe("menu", () => {
       const i = browser.menus.update.callCount;
       assert.throws(() => func(), "unknown error", "error");
       assert.strictEqual(browser.menus.update.callCount, i, "not called");
-      browser.runtime.lastError = null;
+    });
+
+    it("should throw", async () => {
+      browser.runtime.lastError = new Error("ID already exists: foo");
+      const i = browser.menus.update.callCount;
+      assert.throws(() => func(), "ID already exists: foo", "error");
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+    });
+
+    it("should throw", async () => {
+      browser.runtime.lastError = new Error("ID already exists: foo");
+      mjs.menuItemMap.set("foo", null);
+      const i = browser.menus.update.callCount;
+      assert.throws(() => func(), "ID already exists: foo", "error");
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
     });
 
     it("should call function", async () => {
       browser.runtime.lastError = new Error("ID already exists: foo");
+      mjs.menuItemMap.set("foo", {enabled: true});
       const i = browser.menus.update.callCount;
-      const opt = {
-        visible: true,
-      };
-      const res = await func("foo", opt);
+      const res = await func();
       assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
       assert.deepEqual(res, [[undefined]]);
-      browser.runtime.lastError = null;
     });
   });
 
