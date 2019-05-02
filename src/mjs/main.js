@@ -698,6 +698,15 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       tab.setAttribute("hidden", "hidden");
     } else {
       tab.removeAttribute("hidden");
+      if (active) {
+        const newTab = document.getElementById(NEW_TAB);
+        const {top: newTabTop} = newTab.getBoundingClientRect();
+        const {bottom: tabBottom} = tab.getBoundingClientRect();
+        newTabTop < tabBottom && tab.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
     }
   }
   active && func.push(handleActivatedTab({tabId: id, windowId}));
