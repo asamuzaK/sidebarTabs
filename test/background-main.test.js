@@ -5,7 +5,6 @@
 
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
-import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/background-main.js";
 import {SIDEBAR_STATE_UPDATE, TOGGLE_STATE} from "../src/mjs/constant.js";
@@ -22,18 +21,15 @@ describe("background-main", () => {
     assert.isObject(browser, "browser");
   });
 
-  // NOTE: sidebarAction.isOpen is not implemented in sinon-chrome
   describe("set sidebar state", () => {
     const func = mjs.setSidebarState;
     beforeEach(() => {
-      browser.sidebarAction.isOpen = sinon.stub();
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      delete browser.sidebarAction.isOpen;
     });
 
     it("should set values", async () => {
@@ -136,14 +132,12 @@ describe("background-main", () => {
   describe("handle runtime message", () => {
     const func = mjs.handleMsg;
     beforeEach(() => {
-      browser.sidebarAction.isOpen = sinon.stub();
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      delete browser.sidebarAction.isOpen;
     });
 
     it("should not call function", async () => {
@@ -179,12 +173,10 @@ describe("background-main", () => {
   describe("handle command", () => {
     const func = mjs.handleCmd;
     beforeEach(() => {
-      browser.sidebarAction.isOpen = sinon.stub();
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
     afterEach(() => {
-      browser.sidebarAction.isOpen = null;
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
     });
