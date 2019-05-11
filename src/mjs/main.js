@@ -698,10 +698,12 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       tab.setAttribute("hidden", "hidden");
     } else {
       tab.removeAttribute("hidden");
-      active || Number.isInteger(openerTabId) && openerTabId !== TAB_ID_NONE &&
+      if (active ||
+          Number.isInteger(openerTabId) && openerTabId !== TAB_ID_NONE) {
         func.push(scrollTabIntoView(tab, {
           active, openerTabId,
         }));
+      }
     }
   }
   active && func.push(handleActivatedTab({tabId: id, windowId}));

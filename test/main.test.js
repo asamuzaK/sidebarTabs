@@ -2387,7 +2387,7 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(ACTIVE), "class");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
