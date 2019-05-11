@@ -12,7 +12,7 @@ import {
 /* constants */
 import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
-  NEW_TAB, TAB_LIST, TAB_QUERY,
+  NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
 } from "./constant.js";
 
 /**
@@ -268,4 +268,33 @@ export const activateTab = async elm => {
     });
   }
   return func || null;
+};
+
+/**
+ * scroll tab into view
+ * @param {Object} elm - Element
+ * @returns {void}
+ */
+export const scrollTabIntoView = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tabsTab = elm.dataset.tab;
+    if (tabsTab) {
+      const {active, openerTabId} = JSON.parse(tabsTab);
+      if (active || Number.isInteger(openerTabId)) {
+        const pinned = document.getElementById(PINNED);
+        const newTab = document.getElementById(NEW_TAB);
+        const {bottom: pinnedBottom} = pinned.getBoundingClientRect();
+        const {top: newTabTop} = newTab.getBoundingClientRect();
+        const {bottom: tabBottom, top: tabTop} = elm.getBoundingClientRect();
+        const viewTop = Number.isInteger(openerTabId) && tabTop < pinnedBottom;
+        const behavior = viewTop && "auto" || "smooth";
+        if (viewTop || tabBottom > newTabTop) {
+          elm.scrollIntoView({
+            behavior,
+            block: "center",
+          });
+        }
+      }
+    }
+  }
 };

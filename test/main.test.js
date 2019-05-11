@@ -2498,7 +2498,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2660,7 +2660,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
       browser.tabs.get.flush();
       browser.i18n.getMessage.flush();
@@ -2718,7 +2718,7 @@ describe("main", () => {
                      "collapse");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
       browser.tabs.get.flush();
       browser.i18n.getMessage.flush();
@@ -2779,7 +2779,7 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 1, "called move");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.tabs.get.flush();
       browser.i18n.getMessage.flush();
@@ -2840,7 +2840,7 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.move.callCount, j, "not called move");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.tabs.get.flush();
       browser.i18n.getMessage.flush();

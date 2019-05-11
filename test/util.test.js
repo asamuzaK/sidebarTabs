@@ -6,11 +6,12 @@
 import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
+import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/util.js";
 import {
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, NEW_TAB, TAB,
-  TAB_LIST,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, NEW_TAB, PINNED,
+  TAB, TAB_LIST,
 } from "../src/mjs/constant.js";
 
 describe("util", () => {
@@ -714,6 +715,263 @@ describe("util", () => {
       assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
       assert.isTrue(res, "result");
       browser.tabs.update.flush();
+    });
+  });
+
+  describe("scroll tab into view", () => {
+    const func = mjs.scrollTabIntoView;
+
+    it("should not call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(newTab);
+      await func();
+      assert.isFalse(stubPinned.called, "not called");
+      assert.isFalse(stubNewTab.called, "not called");
+    });
+
+    it("should not call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 150,
+        bottom: 250,
+      });
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isFalse(stubPinned.called, "not called");
+      assert.isFalse(stubNewTab.called, "not called");
+      assert.isFalse(stubElm.called, "not called");
+    });
+
+    it("should not call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 150,
+        bottom: 250,
+      });
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      elm.dataset.tab = JSON.stringify({
+        active: false,
+      });
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isFalse(stubPinned.called, "not called");
+      assert.isFalse(stubNewTab.called, "not called");
+      assert.isFalse(stubElm.called, "not called");
+    });
+
+    it("should not call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 150,
+        bottom: 250,
+      });
+      const stubFunc = sinon.stub();
+      elm.dataset.tab = JSON.stringify({
+        active: true,
+      });
+      elm.scrollIntoView = stubFunc;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isTrue(stubPinned.called, "called");
+      assert.isTrue(stubNewTab.called, "called");
+      assert.isTrue(stubElm.called, "called");
+      assert.isFalse(stubFunc.called, "not called");
+    });
+
+    it("should not call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 150,
+        bottom: 250,
+      });
+      const stubFunc = sinon.stub();
+      elm.dataset.tab = JSON.stringify({
+        active: false,
+        openerTabId: 1,
+      });
+      elm.scrollIntoView = stubFunc;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isTrue(stubPinned.called, "called");
+      assert.isTrue(stubNewTab.called, "called");
+      assert.isTrue(stubElm.called, "called");
+      assert.isFalse(stubFunc.called, "not called");
+    });
+
+    it("should call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 350,
+        bottom: 450,
+      });
+      const stubFunc = sinon.stub();
+      elm.dataset.tab = JSON.stringify({
+        active: true,
+      });
+      elm.scrollIntoView = stubFunc;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isTrue(stubPinned.called, "called");
+      assert.isTrue(stubNewTab.called, "called");
+      assert.isTrue(stubElm.called, "called");
+      assert.isTrue(stubFunc.called, "not called");
+    });
+
+    it("should call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 350,
+        bottom: 450,
+      });
+      const stubFunc = sinon.stub();
+      elm.dataset.tab = JSON.stringify({
+        active: false,
+        openerTabId: 1,
+      });
+      elm.scrollIntoView = stubFunc;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isTrue(stubPinned.called, "called");
+      assert.isTrue(stubNewTab.called, "called");
+      assert.isTrue(stubElm.called, "called");
+      assert.isTrue(stubFunc.called, "not called");
+    });
+
+    it("should call function", async () => {
+      const pinned = document.createElement("p");
+      const newTab = document.createElement("p");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const stubPinned = sinon.stub(pinned, "getBoundingClientRect").returns({
+        top: 0,
+        bottom: 100,
+      });
+      const stubNewTab = sinon.stub(newTab, "getBoundingClientRect").returns({
+        top: 300,
+        bottom: 400,
+      });
+      const stubElm = sinon.stub(elm, "getBoundingClientRect").returns({
+        top: 50,
+        bottom: 150,
+      });
+      const stubFunc = sinon.stub();
+      elm.dataset.tab = JSON.stringify({
+        active: false,
+        openerTabId: 1,
+      });
+      elm.scrollIntoView = stubFunc;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(elm);
+      body.appendChild(newTab);
+      await func(elm);
+      assert.isTrue(stubPinned.called, "called");
+      assert.isTrue(stubNewTab.called, "called");
+      assert.isTrue(stubElm.called, "called");
+      assert.isTrue(stubFunc.called, "not called");
     });
   });
 });
