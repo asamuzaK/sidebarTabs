@@ -20,7 +20,7 @@ import {
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
   getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
-  isNewTab, setSessionTabList,
+  isNewTab, scrollTabIntoView, setSessionTabList,
 } from "./util.js";
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
@@ -698,15 +698,10 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       tab.setAttribute("hidden", "hidden");
     } else {
       tab.removeAttribute("hidden");
-      if (active) {
-        const newTab = document.getElementById(NEW_TAB);
-        const {top: newTabTop} = newTab.getBoundingClientRect();
-        const {bottom: tabBottom} = tab.getBoundingClientRect();
-        newTabTop < tabBottom && tab.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }
+      active || Number.isInteger(openerTabId) && openerTabId !== TAB_ID_NONE &&
+        func.push(scrollTabIntoView(tab, {
+          active, openerTabId,
+        }));
     }
   }
   active && func.push(handleActivatedTab({tabId: id, windowId}));
