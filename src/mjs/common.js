@@ -280,3 +280,18 @@ export const focusElement = evt => {
   }
   return target || null;
 };
+
+/**
+ * set element dataset
+ * @param {Object} elm - Element
+ * @param {string} key - dataset key
+ * @param {string} value - dataset value
+ * @returns {Object} - Element
+ */
+export const setElementDataset = (elm, key, value) => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      isString(key) && isString(value)) {
+    elm.dataset[key] = value;
+  }
+  return elm;
+};

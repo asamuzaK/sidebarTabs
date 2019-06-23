@@ -3,7 +3,7 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, logErr, throwErr,
+  getType, isObjectNotEmpty, isString, logErr, setElementDataset, throwErr,
 } from "./common.js";
 import {
   getTab, updateTab,
@@ -147,7 +147,7 @@ export const setTabContent = async (tab, tabsTab) => {
     tabContent.title = title;
     tabTitle.textContent = title;
     await setTabIcon(tabIcon, {favIconUrl, status, title, url});
-    tab.dataset.tab = JSON.stringify(tabsTab);
+    await setElementDataset(tab, "tab", JSON.stringify(tabsTab));
   }
 };
 

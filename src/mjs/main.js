@@ -114,6 +114,19 @@ export const setSidebar = async () => {
 };
 
 /**
+ * set context
+ * @param {Object} elm - Element
+ * @returns {void}
+ */
+export const setContext = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    sidebar.context = elm;
+  } else {
+    sidebar.context = null;
+  }
+};
+
+/**
  * set contextual identities cookieStoreIds
  * @returns {void}
  */
@@ -127,6 +140,45 @@ export const setContextualIds = async () => {
     }
   }
   sidebar.contextualIds = arr.length && arr || null;
+};
+
+/**
+ * set last closed tab
+ * @param {Object} tab - tabs.Tab
+ * @returns {void}
+ */
+export const setLastClosedTab = tab => {
+  if (isObjectNotEmpty(tab)) {
+    sidebar.lastClosedTab = tab;
+  } else {
+    sidebar.lastClosedTab = null;
+  }
+};
+
+/**
+ * set pinned tabs waiting to move
+ * @param {?Array} arr - array of tabs
+ * @returns {void}
+ */
+export const setPinnedTabsWaitingToMove = arr => {
+  if (Array.isArray(arr)) {
+    sidebar.pinnedTabsWaitingToMove = arr;
+  } else {
+    sidebar.pinnedTabsWaitingToMove = null;
+  }
+};
+
+/**
+ * set tabs waiting to move
+ * @param {?Array} arr - array of tabs
+ * @returns {void}
+ */
+export const setTabsWaitingToMove = arr => {
+  if (Array.isArray(arr)) {
+    sidebar.tabsWaitingToMove = arr;
+  } else {
+    sidebar.tabsWaitingToMove = null;
+  }
 };
 
 /**
@@ -148,11 +200,7 @@ export const initSidebar = async (bool = false) => {
 export const getLastClosedTab = async () => {
   const {windowId} = sidebar;
   const tab = await getRecentlyClosedTab(windowId);
-  if (tab) {
-    sidebar.lastClosedTab = tab;
-  } else {
-    sidebar.lastClosedTab = null;
-  }
+  await setLastClosedTab(tab);
   return tab || null;
 };
 
@@ -826,26 +874,22 @@ export const handleMovedTab = async (tabId, info) => {
     const {index, pinned} = tabsTab;
     const {group, restore} = tab.dataset;
     if (tabIndex !== index) {
+      const {pinnedTabsWaitingToMove, tabsWaitingToMove} = sidebar;
       const allTabs = document.querySelectorAll(TAB_QUERY);
       if (toIndex !== index) {
         const obj = {
           index, tabId, toIndex,
         };
         if (pinned) {
-          if (Array.isArray(sidebar.pinnedTabsWaitingToMove)) {
-            sidebar.pinnedTabsWaitingToMove[index] = obj;
-          } else {
-            sidebar.pinnedTabsWaitingToMove = [];
-            sidebar.pinnedTabsWaitingToMove[index] = obj;
-          }
-        } else if (Array.isArray(sidebar.tabsWaitingToMove)) {
-          sidebar.tabsWaitingToMove[index] = obj;
+          const arr = pinnedTabsWaitingToMove || [];
+          arr[index] = obj;
+          await setPinnedTabsWaitingToMove(arr);
         } else {
-          sidebar.tabsWaitingToMove = [];
-          sidebar.tabsWaitingToMove[index] = obj;
+          const arr = tabsWaitingToMove || [];
+          arr[index] = obj;
+          await setTabsWaitingToMove(arr);
         }
       } else if (pinned) {
-        const {pinnedTabsWaitingToMove} = sidebar;
         const container = document.getElementById(PINNED);
         if (toIndex === 0) {
           const {firstElementChild} = container;
@@ -858,7 +902,7 @@ export const handleMovedTab = async (tabId, info) => {
                 document.querySelector(`[data-tab-id="${itemTabId}"]`);
               container.insertBefore(itemTab, firstElementChild);
             }
-            sidebar.pinnedTabsWaitingToMove = null;
+            await setPinnedTabsWaitingToMove(null);
             func = restoreTabContainers().then(setSessionTabList);
           }
         } else {
@@ -880,7 +924,7 @@ export const handleMovedTab = async (tabId, info) => {
                 container.appendChild(itemTab);
               }
             }
-            sidebar.pinnedTabsWaitingToMove = null;
+            await setPinnedTabsWaitingToMove(null);
             func = restoreTabContainers().then(setSessionTabList);
           }
         }
@@ -889,7 +933,6 @@ export const handleMovedTab = async (tabId, info) => {
         openerTab && openerTab.parentNode !== tab.parentNode &&
           openerTab.parentNode.appendChild(tab);
       } else if (toIndex === 0) {
-        const {tabsWaitingToMove} = sidebar;
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         const [target] = allTabs;
         const {parentNode} = target;
@@ -907,11 +950,10 @@ export const handleMovedTab = async (tabId, info) => {
             itemContainer.removeAttribute("hidden");
             parentNode.parentNode.insertBefore(itemContainer, parentNode);
           }
-          sidebar.tabsWaitingToMove = null;
+          await setTabsWaitingToMove(null);
           func = restoreTabContainers().then(setSessionTabList);
         }
       } else {
-        const {tabsWaitingToMove} = sidebar;
         const target = allTabs[toIndex];
         const {parentNode: targetParent} = target;
         const unPinned =
@@ -945,7 +987,7 @@ export const handleMovedTab = async (tabId, info) => {
               itemContainer.removeAttribute("hidden");
               container.parentNode.insertBefore(itemContainer, container);
             }
-            sidebar.tabsWaitingToMove = null;
+            await setTabsWaitingToMove(null);
             func = restoreTabContainers().then(setSessionTabList);
           }
         } else {
@@ -958,7 +1000,7 @@ export const handleMovedTab = async (tabId, info) => {
                 document.querySelector(`[data-tab-id="${itemTabId}"]`);
               targetParent.insertBefore(itemTab, tab);
             }
-            sidebar.tabsWaitingToMove = null;
+            await setTabsWaitingToMove(null);
             func = restoreTabContainers().then(setSessionTabList);
           }
         }
@@ -1545,7 +1587,7 @@ export const handleEvt = async evt => {
           visible: true,
         }));
       }
-      sidebar.context = tab;
+      await setContext(tab);
       func.push(updateContextMenu(bookmarkMenu.id, {
         visible: false,
       }));
@@ -1567,7 +1609,7 @@ export const handleEvt = async evt => {
           visible: false,
         }));
       }
-      sidebar.context = target;
+      await setContext(target);
       func.push(
         updateContextMenu(tabGroupMenu.id, {
           visible: false,

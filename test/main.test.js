@@ -67,7 +67,11 @@ describe("main", () => {
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.windowId = null;
+    mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
+    mjs.sidebar.lastClosedTab = null;
+    mjs.sidebar.pinnedTabsWaitingToMove = null;
+    mjs.sidebar.tabsWaitingToMove = null;
   });
   afterEach(() => {
     window = null;
@@ -82,7 +86,11 @@ describe("main", () => {
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.windowId = null;
+    mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
+    mjs.sidebar.lastClosedTab = null;
+    mjs.sidebar.pinnedTabsWaitingToMove = null;
+    mjs.sidebar.tabsWaitingToMove = null;
   });
 
   it("should get browser object", () => {
@@ -161,6 +169,25 @@ describe("main", () => {
     });
   });
 
+  describe("set context", () => {
+    const func = mjs.setContext;
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const p = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(p);
+      await func(p);
+      assert.deepEqual(sidebar.context, p, "result");
+    });
+
+    it("should set null", async () => {
+      const {sidebar} = mjs;
+      await func("foo");
+      assert.isNull(sidebar.context, "result");
+    });
+  });
+
   describe("set contextual identities cookieStoreIds", () => {
     const func = mjs.setContextualIds;
 
@@ -198,6 +225,59 @@ describe("main", () => {
       assert.isTrue(calledOnce, "log error called");
       assert.isNull(sidebar.contextualIds, "ids");
       browser.contextualIdentities.query.flush();
+    });
+  });
+
+  describe("set last closed tab", () => {
+    const func = mjs.setLastClosedTab;
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const tab = {
+        id: 1,
+      };
+      await func(tab);
+      assert.deepEqual(sidebar.lastClosedTab, tab, "result");
+    });
+
+    it("should set null", async () => {
+      const {sidebar} = mjs;
+      await func({});
+      assert.isNull(sidebar.lastClosedTab, "result");
+    });
+  });
+
+  describe("set pinned tabs waiting to move", () => {
+    const func = mjs.setPinnedTabsWaitingToMove;
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const arr = [1, 2];
+      await func(arr);
+      assert.deepEqual(sidebar.pinnedTabsWaitingToMove, arr, "result");
+    });
+
+    it("should set null", async () => {
+      const {sidebar} = mjs;
+      await func("foo");
+      assert.isNull(sidebar.pinnedTabsWaitingToMove, "result");
+    });
+  });
+
+  describe("set tabs waiting to move", () => {
+    const func = mjs.setTabsWaitingToMove;
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const arr = [1, 2];
+      await func(arr);
+      assert.deepEqual(sidebar.tabsWaitingToMove, arr, "result");
+    });
+
+    it("should set null", async () => {
+      const {sidebar} = mjs;
+      await func("foo");
+      assert.isNull(sidebar.tabsWaitingToMove, "result");
     });
   });
 

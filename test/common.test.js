@@ -745,4 +745,34 @@ describe("common", () => {
       assert.strictEqual(fake.callCount, 1);
     });
   });
+
+  describe("set element dataset", () => {
+    const func = mjs.setElementDataset;
+    const globalKeys = ["Node"];
+    beforeEach(() => {
+      for (const key of globalKeys) {
+        global[key] = window[key];
+      }
+    });
+    afterEach(() => {
+      for (const key of globalKeys) {
+        delete global[key];
+      }
+    });
+
+    it("should get undefined", async () => {
+      const res = await func();
+      assert.isUndefined(res, "result");
+    });
+
+    it("should set dataset and get element", async () => {
+      const p = document.createElement("p");
+      p.id = "foo";
+      const body = document.querySelector("body");
+      body.appendChild(p);
+      const res = await func(p, "bar", "baz");
+      assert.strictEqual(p.dataset.bar, "baz", "dataset");
+      assert.strictEqual(res.id, "foo", "result");
+    });
+  });
 });
