@@ -186,12 +186,7 @@ export const convertAngleToDeg = async angle => {
   const reg = new RegExp(`^(${REG_NUM})(${REG_ANGLE})?$`);
   if (reg.test(angle)) {
     const [, val, unit] = angle.match(reg);
-    let value;
-    if (val.startsWith(".")) {
-      value = `0${val}`;
-    } else {
-      value = val;
-    }
+    const value = val.startsWith(".") && `0${val}` || val;
     switch (unit) {
       case "grad":
         deg = parseFloat(value) * DEG / GRAD;
@@ -475,11 +470,8 @@ export const convertColorToHex = async (value, alpha = false) => {
     } else if (/^#[\da-f]{4}$/i.test(value)) {
       const [, r, g, b, a] =
         value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/);
-      if (alpha) {
-        hex = `#${r}${r}${g}${g}${b}${b}${a}${a}`;
-      } else {
-        hex = `#${r}${r}${g}${g}${b}${b}`;
-      }
+      hex = alpha && `#${r}${r}${g}${g}${b}${b}${a}${a}` ||
+            `#${r}${r}${g}${g}${b}${b}`;
     } else if (/^#[\da-f]{3}$/i.test(value)) {
       const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
       hex = `#${r}${r}${g}${g}${b}${b}`;
@@ -495,11 +487,7 @@ export const convertColorToHex = async (value, alpha = false) => {
         numberToHexString(b),
         numberToHexString(a * NUM_MAX),
       ]);
-      if (alpha) {
-        hex = `#${rr}${gg}${bb}${aa}`;
-      } else {
-        hex = `#${rr}${gg}${bb}`;
-      }
+      hex = alpha && `#${rr}${gg}${bb}${aa}` || `#${rr}${gg}${bb}`;
     }
   // hsl()
   } else if (value.startsWith("hsl")) {
@@ -512,11 +500,7 @@ export const convertColorToHex = async (value, alpha = false) => {
         numberToHexString(b),
         numberToHexString(a * NUM_MAX),
       ]);
-      if (alpha) {
-        hex = `#${rr}${gg}${bb}${aa}`;
-      } else {
-        hex = `#${rr}${gg}${bb}`;
-      }
+      hex = alpha && `#${rr}${gg}${bb}${aa}` || `#${rr}${gg}${bb}`;
     }
   }
   return hex || null;

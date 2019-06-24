@@ -119,11 +119,7 @@ export const setSidebar = async () => {
  * @returns {void}
  */
 export const setContext = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    sidebar.context = elm;
-  } else {
-    sidebar.context = null;
-  }
+  sidebar.context = elm && elm.nodeType === Node.ELEMENT_NODE && elm || null;
 };
 
 /**
@@ -147,12 +143,8 @@ export const setContextualIds = async () => {
  * @param {Object} tab - tabs.Tab
  * @returns {void}
  */
-export const setLastClosedTab = tab => {
-  if (isObjectNotEmpty(tab)) {
-    sidebar.lastClosedTab = tab;
-  } else {
-    sidebar.lastClosedTab = null;
-  }
+export const setLastClosedTab = async tab => {
+  sidebar.lastClosedTab = isObjectNotEmpty(tab) && tab || null;
 };
 
 /**
@@ -160,12 +152,8 @@ export const setLastClosedTab = tab => {
  * @param {?Array} arr - array of tabs
  * @returns {void}
  */
-export const setPinnedTabsWaitingToMove = arr => {
-  if (Array.isArray(arr)) {
-    sidebar.pinnedTabsWaitingToMove = arr;
-  } else {
-    sidebar.pinnedTabsWaitingToMove = null;
-  }
+export const setPinnedTabsWaitingToMove = async arr => {
+  sidebar.pinnedTabsWaitingToMove = Array.isArray(arr) && arr || null;
 };
 
 /**
@@ -173,12 +161,8 @@ export const setPinnedTabsWaitingToMove = arr => {
  * @param {?Array} arr - array of tabs
  * @returns {void}
  */
-export const setTabsWaitingToMove = arr => {
-  if (Array.isArray(arr)) {
-    sidebar.tabsWaitingToMove = arr;
-  } else {
-    sidebar.tabsWaitingToMove = null;
-  }
+export const setTabsWaitingToMove = async arr => {
+  sidebar.tabsWaitingToMove = Array.isArray(arr) && arr || null;
 };
 
 /**
@@ -1903,12 +1887,8 @@ export const emulateTabsInOrder = async arr => {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
   const tab = arr.shift();
-  if (isObjectNotEmpty(tab)) {
-    await handleCreatedTab(tab, true);
-  }
-  if (arr.length) {
-    await emulateTabsInOrder(arr);
-  }
+  isObjectNotEmpty(tab) && await handleCreatedTab(tab, true);
+  arr.length && await emulateTabsInOrder(arr);
 };
 
 /**
