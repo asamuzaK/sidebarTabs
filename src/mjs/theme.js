@@ -325,6 +325,8 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
     for (const [key, val] of items) {
       if (key === prop && isString(value)) {
         cssText += `${propKeys[key]}: ${value};`;
+        customTheme[key] = value;
+        currentTheme.set(THEME_CURRENT, customTheme);
       } else {
         cssText += `${propKeys[key]}: ${val};`;
       }

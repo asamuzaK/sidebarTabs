@@ -724,8 +724,10 @@ describe("theme", () => {
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
       await func(".foo", CUSTOM_BG, "#0000ff");
       const {sheet} = elm;
+      const customTheme = mjs.currentTheme.get(THEME_CURRENT);
       assert.strictEqual(sheet.cssRules.length, 1, "length");
       assert.strictEqual(sheet.cssRules[0].selectorText, ".foo", "selector");
+      assert.strictEqual(customTheme[CUSTOM_BG], "#0000ff", "theme");
     });
   });
 
