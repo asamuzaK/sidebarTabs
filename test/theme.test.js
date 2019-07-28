@@ -13,8 +13,9 @@ import {
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER_SHADOW,
   CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
-  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
+  NARROW, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
 
 describe("theme", () => {
@@ -1120,6 +1121,64 @@ describe("theme", () => {
       body.classList.add(COMPACT);
       await func(false);
       assert.isFalse(body.classList.contains(COMPACT));
+    });
+  });
+
+  describe("get scrollbar width", () => {
+    const func = mjs.getScrollbarWidth;
+
+    it("should get result", async () => {
+      browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW)
+        .resolves(undefined);
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.isFalse(res, "result");
+      browser.storage.local.get.flush();
+    });
+
+    it("should get result", async () => {
+      browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW).resolves({
+        [THEME_SCROLLBAR_NARROW]: {
+          checked: true,
+        },
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.isTrue(res, "result");
+      browser.storage.local.get.flush();
+    });
+
+    it("should get result", async () => {
+      browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW).resolves({
+        [THEME_SCROLLBAR_NARROW]: {
+          checked: false,
+        },
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.isFalse(res, "result");
+      browser.storage.local.get.flush();
+    });
+  });
+
+  describe("set scrollbar width", () => {
+    const func = mjs.setScrollbarWidth;
+
+    it("should set height", async () => {
+      const body = document.querySelector("body");
+      body.classList.remove(NARROW);
+      await func(true);
+      assert.isTrue(body.classList.contains(NARROW));
+    });
+
+    it("should set height", async () => {
+      const body = document.querySelector("body");
+      body.classList.add(NARROW);
+      await func(false);
+      assert.isFalse(body.classList.contains(NARROW));
     });
   });
 

@@ -33,7 +33,7 @@ import {
   restoreTabContainers, toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
-  initCustomTheme, sendCurrentTheme, setTabHeight, setTheme,
+  initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
   updateCustomThemeCss,
 } from "./theme.js";
 import {
@@ -70,7 +70,7 @@ import {
   TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
-  THEME_TAB_COMPACT,
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
 const {WINDOW_ID_NONE} = windows;
@@ -1765,6 +1765,9 @@ export const setVar = async (item, obj, changed = false) => {
       case THEME_DARK:
       case THEME_LIGHT:
         changed && checked && func.push(setTheme([item]));
+        break;
+      case THEME_SCROLLBAR_NARROW:
+        changed && func.push(setScrollbarWidth(!!checked));
         break;
       case THEME_TAB_COMPACT:
         changed && func.push(setTabHeight(!!checked));

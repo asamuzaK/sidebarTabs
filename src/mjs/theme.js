@@ -26,8 +26,9 @@ import {
   CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_TAB_COMPACT,
+  NARROW, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
 
 /* theme map */
@@ -511,6 +512,36 @@ export const setTabHeight = async compact => {
   }
 };
 
+/* scrollbar */
+/**
+ * get scrollbar width
+ * @returns {boolean} - result
+ */
+export const getScrollbarWidth = async () => {
+  const data = await getStorage(THEME_SCROLLBAR_NARROW);
+  let narrow;
+  if (isObjectNotEmpty(data)) {
+    const {checked} = data[THEME_SCROLLBAR_NARROW];
+    narrow = checked;
+  }
+  return !!narrow;
+};
+
+/**
+ * set scrollbar width
+ * @param {boolean} narrow - narrow
+ * @returns {void}
+ */
+export const setScrollbarWidth = async narrow => {
+  const elm = document.querySelector("body");
+  const {classList} = elm;
+  if (narrow) {
+    classList.add(NARROW);
+  } else {
+    classList.remove(NARROW);
+  }
+};
+
 /**
  * apply CSS
  * @returns {void}
@@ -529,4 +560,5 @@ export const applyCss = async () => {
 export const setSidebarTheme = async () => Promise.all([
   setCurrentThemeValue().then(getTheme).then(setTheme),
   getTabHeight().then(setTabHeight),
+  getScrollbarWidth().then(setScrollbarWidth),
 ]).then(applyCss);

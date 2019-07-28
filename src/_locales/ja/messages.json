@@ -374,6 +374,15 @@
   "optionsInitSidebarDetail": {
     "message": "サイドバータブを初期化します。すべての設定データが削除されます。"
   },
+  "optionsNarrowScrollbar": {
+    "message": "スクロールバーの幅を狭める"
+  },
+  "optionsNarrowScrollbarDetail": {
+    "message": "既定のスクロールバー幅よりも細いスクロールバーを使用します"
+  },
+  "optionsNarrowScrollbarDetail2": {
+    "message": "実験的な機能です。about:configから\"layout.css.scrollbar-width.enabled\"の値を\"true\"にセットしてください。"
+  },
   "optionsTabGroup": {
     "message": "タブグループ"
   },

@@ -25,7 +25,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NARROW, NEW_TAB, PINNED,
+  SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -35,7 +36,7 @@ import {
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
   TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
   THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
-  THEME_TAB_COMPACT,
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
 const IS_WIN = os.platform() === "win32";
 
@@ -9140,6 +9141,11 @@ describe("main", () => {
     });
 
     it("should not set variable", async () => {
+      const res = await func(THEME_SCROLLBAR_NARROW, {checked: true});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not set variable", async () => {
       const res = await func(THEME_TAB_COMPACT, {checked: true});
       assert.deepEqual(res, [], "result");
     });
@@ -9212,6 +9218,13 @@ describe("main", () => {
     it("should set variable", async () => {
       const res = await func(CUSTOM_COLOR_SELECT_HOVER, {value: "#ff0000"},
                              true);
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const body = document.querySelector("body");
+      const res = await func(THEME_SCROLLBAR_NARROW, {checked: true}, true);
+      assert.isTrue(body.classList.contains(NARROW), "set");
       assert.deepEqual(res, [undefined], "result");
     });
 
