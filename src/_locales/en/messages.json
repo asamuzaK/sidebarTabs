@@ -380,9 +380,6 @@
   "optionsNarrowScrollbarDetail": {
     "message": "Reduce the width of the scrollbar."
   },
-  "optionsNarrowScrollbarDetail2": {
-    "message": "Experimental. Visit about:config, and set \"layout.css.scrollbar-width.enabled\" preference to \"true\"."
-  },
   "optionsTabGroup": {
     "message": "Tab Group"
   },
