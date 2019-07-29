@@ -15,8 +15,10 @@ import {
 
 /* constants */
 import {
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, CSS_ID,
-  CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
+  CLASS_COMPACT, CLASS_NARROW,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
+  CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE,
+  CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
   CSS_VAR_BORDER, CSS_VAR_BORDER_ACTIVE,
   CSS_VAR_COLOR, CSS_VAR_COLOR_ACTIVE, CSS_VAR_COLOR_HOVER,
@@ -26,7 +28,7 @@ import {
   CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  NARROW, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
@@ -506,9 +508,9 @@ export const setTabHeight = async compact => {
   const elm = document.querySelector("body");
   const {classList} = elm;
   if (compact) {
-    classList.add(COMPACT);
+    classList.add(CLASS_COMPACT);
   } else {
-    classList.remove(COMPACT);
+    classList.remove(CLASS_COMPACT);
   }
 };
 
@@ -536,9 +538,9 @@ export const setScrollbarWidth = async narrow => {
   const elm = document.querySelector("body");
   const {classList} = elm;
   if (narrow) {
-    classList.add(NARROW);
+    classList.add(CLASS_NARROW);
   } else {
-    classList.remove(NARROW);
+    classList.remove(CLASS_NARROW);
   }
 };
 

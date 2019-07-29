@@ -16,17 +16,17 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
   ACTIVE, AUDIBLE,
-  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
-  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
-  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
+  CLASS_COMPACT, CLASS_NARROW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE,
+  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
+  CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
   CLASS_THEME_LIGHT, CLASS_THEME_DARK,
-  COMPACT, COOKIE_STORE_DEFAULT,
+  COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NARROW, NEW_TAB, PINNED,
-  SIDEBAR_MAIN,
+  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -9224,14 +9224,14 @@ describe("main", () => {
     it("should set variable", async () => {
       const body = document.querySelector("body");
       const res = await func(THEME_SCROLLBAR_NARROW, {checked: true}, true);
-      assert.isTrue(body.classList.contains(NARROW), "set");
+      assert.isTrue(body.classList.contains(CLASS_NARROW), "set");
       assert.deepEqual(res, [undefined], "result");
     });
 
     it("should set variable", async () => {
       const body = document.querySelector("body");
       const res = await func(THEME_TAB_COMPACT, {checked: true}, true);
-      assert.isTrue(body.classList.contains(COMPACT), "set");
+      assert.isTrue(body.classList.contains(CLASS_COMPACT), "set");
       assert.deepEqual(res, [undefined], "result");
     });
 

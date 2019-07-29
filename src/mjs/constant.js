@@ -4,6 +4,8 @@
 
 export const ACTIVE = "active";
 export const AUDIBLE = "audible";
+export const CLASS_COMPACT = "compact";
+export const CLASS_NARROW = "narrow";
 export const CLASS_TAB_AUDIO = "tab-audio";
 export const CLASS_TAB_AUDIO_ICON = "tab-audio-icon";
 export const CLASS_TAB_CLOSE = "tab-close";
@@ -23,7 +25,6 @@ export const CLASS_TAB_TOGGLE_ICON = "tab-toggle-icon";
 export const CLASS_THEME_CUSTOM = "custom-theme";
 export const CLASS_THEME_DARK = "dark-theme";
 export const CLASS_THEME_LIGHT = "light-theme";
-export const COMPACT = "compact";
 export const COOKIE_STORE_DEFAULT = "firefox-default";
 export const CSS_ID = "custom-theme-style";
 export const CSS_VAR_BG = "--background-color";
@@ -64,7 +65,6 @@ export const HIGHLIGHTED = "highlighted";
 export const IDENTIFIED = "identified";
 export const MIME_PLAIN = "text/plain";
 export const MIME_URI = "text/uri-list";
-export const NARROW = "narrow";
 export const NEW_TAB = "newtab";
 export const NEW_TAB_OPEN_CONTAINER = "openNewTabInContainer";
 export const PINNED = "pinned";

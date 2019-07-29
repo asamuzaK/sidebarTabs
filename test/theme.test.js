@@ -9,11 +9,12 @@ import {afterEach, beforeEach, describe, it} from "mocha";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/theme.js";
 import {
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, COMPACT, CSS_ID,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER_SHADOW,
+  CLASS_COMPACT, CLASS_NARROW,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
+  CSS_ID, CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER_SHADOW,
   CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE,
-  NARROW, THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "../src/mjs/constant.js";
@@ -1111,16 +1112,16 @@ describe("theme", () => {
 
     it("should set height", async () => {
       const body = document.querySelector("body");
-      body.classList.remove(COMPACT);
+      body.classList.remove(CLASS_COMPACT);
       await func(true);
-      assert.isTrue(body.classList.contains(COMPACT));
+      assert.isTrue(body.classList.contains(CLASS_COMPACT));
     });
 
     it("should set height", async () => {
       const body = document.querySelector("body");
-      body.classList.add(COMPACT);
+      body.classList.add(CLASS_COMPACT);
       await func(false);
-      assert.isFalse(body.classList.contains(COMPACT));
+      assert.isFalse(body.classList.contains(CLASS_COMPACT));
     });
   });
 
@@ -1169,16 +1170,16 @@ describe("theme", () => {
 
     it("should set height", async () => {
       const body = document.querySelector("body");
-      body.classList.remove(NARROW);
+      body.classList.remove(CLASS_NARROW);
       await func(true);
-      assert.isTrue(body.classList.contains(NARROW));
+      assert.isTrue(body.classList.contains(CLASS_NARROW));
     });
 
     it("should set height", async () => {
       const body = document.querySelector("body");
-      body.classList.add(NARROW);
+      body.classList.add(CLASS_NARROW);
       await func(false);
-      assert.isFalse(body.classList.contains(NARROW));
+      assert.isFalse(body.classList.contains(CLASS_NARROW));
     });
   });
 
