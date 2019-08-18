@@ -102,9 +102,7 @@ export const setCurrentThemeColors = async (key, value) => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const hexValue = await convertColorToHex(value);
-  if (hexValue) {
-    currentThemeColors.set(key, hexValue);
-  }
+  hexValue && currentThemeColors.set(key, hexValue);
 };
 
 /**
@@ -121,22 +119,14 @@ export const getCurrentThemeBaseValues = async () => {
         const valueA = currentThemeColors.get("sidebar");
         const valueB = currentThemeColors.get("frame");
         const valueC = currentThemeColors.get("accentcolor");
-        if (valueA || valueB || valueC) {
-          values[key] = valueA || valueB || valueC;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || valueB || valueC || baseValues[key];
         break;
       }
       case CUSTOM_BG_ACTIVE: {
         const valueA = currentThemeColors.get("sidebar_highlight");
         const valueB = currentThemeColors.get("tab_selected");
         const valueC = currentThemeColors.get("toolbar");
-        if (valueA || valueB || valueC) {
-          values[key] = valueA || valueB || valueC;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || valueB || valueC || baseValues[key];
         break;
       }
       case CUSTOM_BG_HOVER_SHADOW: {
@@ -153,21 +143,13 @@ export const getCurrentThemeBaseValues = async () => {
       }
       case CUSTOM_BG_SELECT: {
         const valueA = currentThemeColors.get("tab_line");
-        if (valueA) {
-          values[key] = valueA;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || baseValues[key];
         break;
       }
       case CUSTOM_BORDER: {
         const valueA = currentThemeColors.get("sidebar_border");
         const valueB = currentThemeColors.get("tab_background_separator");
-        if (valueA || valueB) {
-          values[key] = valueA || valueB;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || valueB || baseValues[key];
         break;
       }
       case CUSTOM_BORDER_ACTIVE: {
@@ -175,22 +157,14 @@ export const getCurrentThemeBaseValues = async () => {
         const valueB = currentThemeColors.get("toolbar_top_separator");
         const valueC = currentThemeColors.get("toolbar_bottom_separator");
         const valueD = currentThemeColors.get("tab_background_separator");
-        if (valueA || valueB || valueC || valueD) {
-          values[key] = valueA || valueB || valueC || valueD;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || valueB || valueC || valueD || baseValues[key];
         break;
       }
       case CUSTOM_COLOR: {
         const valueA = currentThemeColors.get("sidebar_text");
         const valueB = currentThemeColors.get("tab_background_text");
         const valueC = currentThemeColors.get("textcolor");
-        if (valueA || valueB || valueC) {
-          values[key] = valueA || valueB || valueC;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || valueB || valueC || baseValues[key];
         break;
       }
       case CUSTOM_COLOR_ACTIVE: {
@@ -200,12 +174,8 @@ export const getCurrentThemeBaseValues = async () => {
         const valueD = currentThemeColors.get("toolbar_text");
         const valueE = currentThemeColors.get("tab_background_text");
         const valueF = currentThemeColors.get("textcolor");
-        if (valueA || valueB || valueC || valueD || valueE || valueF) {
-          values[key] = valueA || valueB || valueC || valueD || valueE ||
-                        valueF;
-        } else {
-          values[key] = baseValues[key];
-        }
+        values[key] = valueA || valueB || valueC || valueD || valueE ||
+                      valueF || baseValues[key];
         break;
       }
       default:
@@ -237,9 +207,7 @@ export const getBaseValues = async () => {
       const colorsItems = Object.entries(colors);
       const func = [];
       for (const [key, value] of colorsItems) {
-        if (value) {
-          func.push(setCurrentThemeColors(key, value));
-        }
+        value && func.push(setCurrentThemeColors(key, value));
       }
       await Promise.all(func);
       values = await getCurrentThemeBaseValues();
@@ -367,9 +335,7 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
       const arr = [];
       let i = 0;
       while (i < l) {
-        if (sheet.cssRules[i].selectorText === sel) {
-          arr.unshift(i);
-        }
+        sheet.cssRules[i].selectorText === sel && arr.unshift(i);
         i++;
       }
       if (arr.length) {
