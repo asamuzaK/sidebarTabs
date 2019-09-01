@@ -1,7 +1,7 @@
 /**
  * color.test.js
  */
-/* eslint-disable no-magic-numbers, max-nested-callbacks */
+/* eslint-disable max-nested-callbacks, no-magic-numbers */
 
 import {assert} from "chai";
 import {describe, it} from "mocha";

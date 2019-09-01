@@ -2,9 +2,8 @@
  * main.test.js
  */
 /*
-  eslint-disable max-nested-callbacks, no-await-in-loop, no-magic-numbers,
-                 no-sparse-arrays, array-bracket-newline, camelcase,
-                 default-case
+  eslint-disable array-bracket-newline, camelcase,, default-case,
+                 no-await-in-loop, no-magic-numbers, no-sparse-arrays
 */
 
 import {JSDOM} from "jsdom";

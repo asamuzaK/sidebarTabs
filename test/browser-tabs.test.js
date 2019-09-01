@@ -1,10 +1,7 @@
 /**
  * browser-tabs.test.js
  */
-/*
-  eslint-disable max-nested-callbacks, no-await-in-loop, no-magic-numbers,
-  array-bracket-newline
-*/
+/* eslint-disable array-bracket-newline, no-magic-numbers */
 
 import {JSDOM} from "jsdom";
 import {assert} from "chai";

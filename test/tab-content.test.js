@@ -1,7 +1,6 @@
 /**
  * tab-content.test.js
  */
-/* eslint-disable  max-nested-callbacks, no-await-in-loop, no-magic-numbers */
 
 import {JSDOM} from "jsdom";
 import {assert} from "chai";
