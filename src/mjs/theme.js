@@ -322,7 +322,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
 };
 
 /**
- * delete custom them CSS rule
+ * delete custom theme CSS rule
  * @param {string} sel - selector
  * @returns {void}
  */
