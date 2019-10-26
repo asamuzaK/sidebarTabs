@@ -16,7 +16,7 @@ import {
 const {runtime} = browser;
 
 runtime.onMessage.addListener((msg, sender) =>
-  handleMsg(msg, sender).catch(throwErr)
+  handleMsg(msg, sender).catch(throwErr),
 );
 
 /* startup */

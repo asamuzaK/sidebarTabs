@@ -9337,7 +9337,7 @@ describe("main", () => {
       await func();
       const items =
         document.querySelectorAll(
-          `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`
+          `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`,
         );
       assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
                          "called sessions get");

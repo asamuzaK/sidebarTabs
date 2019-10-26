@@ -569,7 +569,7 @@ export const handleActivatedTab = async info => {
       const {classList: newClass, parentNode: newParent} = tab;
       const {classList: newParentClass} = newParent;
       const items = document.querySelectorAll(
-        `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
+        `${TAB_QUERY}:not([data-tab-id="${tabId}"])`,
       );
       for (const item of items) {
         const {
@@ -1150,31 +1150,31 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE:
       tab && func.push(
-        toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList)
+        toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList),
       );
       break;
     case TAB_GROUP_DETACH:
       tab && func.push(
         detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(setSessionTabList),
       );
       break;
     case TAB_GROUP_DETACH_TABS:
       func.push(
         detachTabsFromGroup(Array.from(selectedTabs), windowId)
-          .then(restoreTabContainers).then(setSessionTabList)
+          .then(restoreTabContainers).then(setSessionTabList),
       );
       break;
     case TAB_GROUP_SELECTED:
       func.push(
         groupSelectedTabs(windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(setSessionTabList),
       );
       break;
     case TAB_GROUP_UNGROUP:
       tab && func.push(
         ungroupTabs(tab.parentNode).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(setSessionTabList),
       );
       break;
     case TAB_MOVE_END:
@@ -1336,7 +1336,7 @@ export const handleEvt = async evt => {
             case TAB_CLOSE_OTHER: {
               const obj =
                 Number.isInteger(tabId) && document.querySelectorAll(
-                  `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+                  `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`,
                 );
               data.enabled = !!(obj && obj.length);
               data.title = title;
@@ -1755,7 +1755,7 @@ export const setVar = async (item, obj, changed = false) => {
       case CUSTOM_COLOR_SELECT:
       case CUSTOM_COLOR_SELECT_HOVER:
         changed && func.push(
-          updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value)
+          updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value),
         );
         break;
       case TAB_GROUP_NEW_TAB_AT_END:

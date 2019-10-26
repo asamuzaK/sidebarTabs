@@ -603,7 +603,7 @@ describe("util", () => {
       await func();
       assert.strictEqual(
         browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
-        i + 1, "called set"
+        i + 1, "called set",
       );
       browser.windows.getCurrent.flush();
       browser.sessions.getWindowValue.flush();
@@ -677,7 +677,7 @@ describe("util", () => {
       await func();
       assert.strictEqual(
         browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
-        i + 1, "called set"
+        i + 1, "called set",
       );
       browser.windows.getCurrent.flush();
       browser.sessions.getWindowValue.flush();
