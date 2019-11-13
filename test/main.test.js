@@ -1534,6 +1534,7 @@ describe("main", () => {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
+          effectAllowed: "uninitialized",
         },
         ctrlKey: true,
         target: elm,
@@ -1541,6 +1542,7 @@ describe("main", () => {
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
       assert.deepEqual(parsedData, {
+        pinned: false,
         tabIds: [1, 3],
         windowId: browser.windows.WINDOW_ID_CURRENT,
       }, "data");
@@ -1575,6 +1577,7 @@ describe("main", () => {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
+          effectAllowed: "uninitialized",
         },
         ctrlKey: true,
         target: elm,
@@ -1582,6 +1585,7 @@ describe("main", () => {
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
       assert.deepEqual(parsedData, {
+        pinned: false,
         tabIds: [1, 2],
         windowId: browser.windows.WINDOW_ID_CURRENT,
       }, "data");
@@ -1618,6 +1622,7 @@ describe("main", () => {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
+          effectAllowed: "uninitialized",
         },
         metaKey: true,
         target: elm,
@@ -1625,6 +1630,7 @@ describe("main", () => {
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
       assert.deepEqual(parsedData, {
+        pinned: false,
         tabIds: [1, 2],
         windowId: browser.windows.WINDOW_ID_CURRENT,
       }, "data");
@@ -1661,6 +1667,7 @@ describe("main", () => {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
+          effectAllowed: "uninitialized",
         },
         ctrlKey: false,
         target: elm3,
@@ -1668,7 +1675,53 @@ describe("main", () => {
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
       assert.deepEqual(parsedData, {
+        pinned: false,
         tabIds: [3],
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      }, "data");
+    });
+
+    it("should set value", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      mjs.sidebar.isMac = false;
+      let parsedData;
+      const evt = {
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: "uninitialized",
+        },
+        ctrlKey: false,
+        target: elm,
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
+      assert.deepEqual(parsedData, {
+        pinned: true,
+        tabIds: [1],
         windowId: browser.windows.WINDOW_ID_CURRENT,
       }, "data");
     });
@@ -1704,7 +1757,7 @@ describe("main", () => {
     it("should not add listner", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
-      elm.setAttribute("draggable", "false");
+      elm.draggable = false;
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
       await func(elm);
@@ -1715,7 +1768,7 @@ describe("main", () => {
     it("should add listner", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
-      elm.setAttribute("draggable", "true");
+      elm.draggable = true;
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
       await func(elm);
@@ -2187,7 +2240,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -2962,7 +3015,7 @@ describe("main", () => {
       assert.strictEqual(elm.dataset.tabId, "1", "id");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
-      assert.isFalse(elm.hasAttribute("draggable"), "draggable");
+      assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3002,7 +3055,7 @@ describe("main", () => {
       assert.strictEqual(elm.dataset.tabId, "1", "id");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
-      assert.isFalse(elm.hasAttribute("draggable"), "draggable");
+      assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), "group");
       assert.deepEqual(res, [
@@ -3038,7 +3091,7 @@ describe("main", () => {
       assert.strictEqual(elm.dataset.tabId, "1", "id");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
-      assert.isFalse(elm.hasAttribute("draggable"), "draggable");
+      assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.isFalse(pinned.classList.contains(CLASS_TAB_GROUP), "group");
       assert.deepEqual(res, [
@@ -3102,7 +3155,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -5440,7 +5493,6 @@ describe("main", () => {
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isTrue(elm.classList.contains(PINNED), "class");
-      assert.isFalse(elm.hasAttribute("draggable"), "not draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 2,
                          "called windows get");
@@ -5482,7 +5534,6 @@ describe("main", () => {
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isFalse(elm.classList.contains(PINNED), "class");
-      assert.isTrue(elm.hasAttribute("draggable"), "draggable");
       assert.isTrue(elm.parentNode === pinned.nextElementSibling, "parent");
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 2,
                          "called windows get");
@@ -5490,7 +5541,7 @@ describe("main", () => {
                          "called sessions get");
       assert.strictEqual(browser.sessions.setWindowValue.callCount, k + 1,
                          "called sessions set");
-      assert.deepEqual(res, [undefined, undefined], "result");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should update", async () => {
@@ -11057,7 +11108,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -11220,7 +11271,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -11328,18 +11379,24 @@ describe("main", () => {
 
     it("should add listener", async () => {
       const main = document.createElement("main");
+      const pinned = document.createElement("section");
       const newTab = document.createElement("section");
       const body = document.querySelector("body");
       main.id = SIDEBAR_MAIN;
+      pinned.id = PINNED;
       newTab.id = NEW_TAB;
+      main.appendChild(pinned);
       main.appendChild(newTab);
       body.appendChild(main);
       const spy = sinon.spy(main, "addEventListener");
-      const spy2 = sinon.spy(newTab, "addEventListener");
+      const spy2 = sinon.spy(pinned, "addEventListener");
+      const spy3 = sinon.spy(newTab, "addEventListener");
       await func();
       assert.isTrue(spy.called);
       assert.isTrue(spy2.called);
+      assert.isTrue(spy3.called);
       main.addEventListener.restore();
+      pinned.addEventListener.restore();
       newTab.addEventListener.restore();
     });
   });

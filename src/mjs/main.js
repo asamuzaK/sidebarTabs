@@ -432,6 +432,7 @@ export const handleDragStart = evt => {
   const container = getSidebarTabContainer(target);
   const data = {
     windowId,
+    pinned: classList.contains(PINNED),
   };
   let items;
   if (classList.contains(HIGHLIGHTED)) {
@@ -450,14 +451,12 @@ export const handleDragStart = evt => {
       arr.push(tabId);
     }
     data.tabIds = arr;
-    evt.dataTransfer.effectAllowed = "move";
-    evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
   } else {
     const tabId = getSidebarTabId(target);
     data.tabIds = [tabId];
-    evt.dataTransfer.effectAllowed = "move";
-    evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
   }
+  evt.dataTransfer.effectAllowed = "move";
+  evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
 };
 
 /**
@@ -657,6 +656,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     }
     tab.dataset.tabId = id;
     tab.dataset.tab = JSON.stringify(tabsTab);
+    await addDragEventListener(tab);
     if (cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
       const ident = await getContextualId(cookieStoreId);
       const {color, icon, name} = ident;
@@ -670,7 +670,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     if (pinned) {
       container = document.getElementById(PINNED);
       tab.classList.add(PINNED);
-      tab.removeAttribute("draggable");
       if (container.children[index]) {
         container.insertBefore(tab, container.children[index]);
       } else {
@@ -681,7 +680,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       }
     } else if (openerTab && !openerTab.classList.contains(PINNED) &&
                openerTabsTab) {
-      await addDragEventListener(tab);
       container = openerTab.parentNode;
       if (sidebar.tabGroupPutNewTabAtTheEnd) {
         const {lastElementChild: lastChildTab} = container;
@@ -707,7 +705,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
                listedTabPrev && listedTabPrev.parentNode &&
                listedTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                listedTab.parentNode === listedTabPrev.parentNode) {
-      await addDragEventListener(tab);
       container = listedTab.parentNode;
       container.insertBefore(tab, listedTab);
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
@@ -719,7 +716,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       } else {
         target = document.getElementById(NEW_TAB);
       }
-      await addDragEventListener(tab);
       container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
       container.appendChild(tab);
       container.removeAttribute("hidden");
@@ -1059,7 +1055,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
         if (info.pinned) {
           const container = pinnedContainer;
           tab.classList.add(PINNED);
-          tab.removeAttribute("draggable");
           container.appendChild(tab);
           func.push(restoreTabContainers().then(setSessionTabList));
         } else {
@@ -1069,8 +1064,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           } = pinnedContainer;
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
           tab.classList.remove(PINNED);
-          tab.setAttribute("draggable", "true");
-          func.push(addDragEventListener(tab));
           container.appendChild(tab);
           container.removeAttribute("hidden");
           pinnedParentNode.insertBefore(container, pinnedNextSibling);
@@ -1909,7 +1902,9 @@ export const emulateTabs = async () => {
  */
 export const setMain = async () => {
   const elm = document.getElementById(SIDEBAR_MAIN);
+  const pinned = document.getElementById(PINNED);
   const newTab = document.getElementById(NEW_TAB);
   await addDropEventListener(elm);
+  await addDropEventListener(pinned);
   newTab.addEventListener("click", handleClickedNewTab);
 };
