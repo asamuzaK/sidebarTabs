@@ -25,7 +25,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  DROP_TARGET, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED,
+  SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -1224,8 +1225,7 @@ describe("main", () => {
       const {getData} = evt.dataTransfer;
       const k = getData.withArgs(MIME_URI).callCount;
       const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
+      const m = evt.preventDefault.callCount;
       getData.withArgs(MIME_URI).returns("https://example.com");
       getData.withArgs(MIME_PLAIN).returns("");
       create.resolves({});
@@ -1237,8 +1237,7 @@ describe("main", () => {
                          "called getData URI");
       assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
                          "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
+      assert.strictEqual(evt.preventDefault.callCount, m + 1, "called prevent");
       assert.deepEqual(res, [{}], "result");
       browser.tabs.create.flush();
       browser.tabs.update.flush();
@@ -1263,8 +1262,7 @@ describe("main", () => {
       const {getData} = evt.dataTransfer;
       const k = getData.withArgs(MIME_URI).callCount;
       const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
+      const m = evt.preventDefault.callCount;
       getData.withArgs(MIME_URI).returns("https://example.com");
       getData.withArgs(MIME_PLAIN).returns("");
       create.resolves({});
@@ -1276,8 +1274,7 @@ describe("main", () => {
                          "called getData URI");
       assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
                          "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
+      assert.strictEqual(evt.preventDefault.callCount, m + 1, "called prevent");
       assert.deepEqual(res, [{}], "result");
       browser.tabs.create.flush();
       browser.tabs.update.flush();
@@ -1310,8 +1307,7 @@ describe("main", () => {
       const {getData} = evt.dataTransfer;
       const k = getData.withArgs(MIME_URI).callCount;
       const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
+      const m = evt.preventDefault.callCount;
       getData.withArgs(MIME_URI).returns("");
       getData.withArgs(MIME_PLAIN).returns("foo");
       create.resolves({});
@@ -1325,8 +1321,7 @@ describe("main", () => {
                          "called getData URI");
       assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
                          "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
+      assert.strictEqual(evt.preventDefault.callCount, m + 1, "called prevent");
       assert.isTrue(calledOnce, "error");
       assert.deepEqual(res, [], "result");
       browser.tabs.create.flush();
@@ -1359,8 +1354,7 @@ describe("main", () => {
       const {getData} = evt.dataTransfer;
       const k = getData.withArgs(MIME_URI).callCount;
       const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
+      const m = evt.preventDefault.callCount;
       getData.withArgs(MIME_URI).returns("");
       getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
         foo: "bar",
@@ -1374,8 +1368,7 @@ describe("main", () => {
                          "called getData URI");
       assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
                          "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
+      assert.strictEqual(evt.preventDefault.callCount, m + 1, "called prevent");
       assert.deepEqual(res, [[]], "result");
       browser.tabs.create.flush();
       browser.tabs.update.flush();
@@ -1397,7 +1390,6 @@ describe("main", () => {
         dataTransfer: {
           getData: sinon.stub(),
         },
-        stopPropagation: sinon.stub(),
         preventDefault: sinon.stub(),
         ctrlKey: false,
         metaKey: false,
@@ -1407,8 +1399,7 @@ describe("main", () => {
       const {getData} = evt.dataTransfer;
       const k = getData.withArgs(MIME_URI).callCount;
       const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
+      const m = evt.preventDefault.callCount;
       getData.withArgs(MIME_URI).returns("");
       getData.withArgs(MIME_PLAIN).returns("");
       create.resolves({});
@@ -1420,81 +1411,411 @@ describe("main", () => {
                          "called getData URI");
       assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
                          "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
+      assert.strictEqual(evt.preventDefault.callCount, m + 1, "called prevent");
       assert.deepEqual(res, [], "result");
       browser.tabs.create.flush();
       browser.tabs.update.flush();
     });
   });
 
+  describe("handle dragend", () => {
+    const func = mjs.handleDragEnd;
+
+    it("should remove class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(DROP_TARGET);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
+    });
+  });
+
+  describe("handle dragleave", () => {
+    const func = mjs.handleDragLeave;
+
+    it("should remove class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(DROP_TARGET);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should remove class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(DROP_TARGET);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        target: elm,
+      };
+      await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
+    });
+  });
+
   describe("handle dragover", () => {
     const func = mjs.handleDragOver;
 
-    it("should prevent default", async () => {
+    it("should set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
       const evt = {
         dataTransfer: {
-          types: [MIME_PLAIN],
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true,
+          })),
+          dropEffect: "uninitialized",
         },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
+        preventDefault,
+        target: elm,
       };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
       await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j + 1, "called prevent");
+      assert.strictEqual(evt.dataTransfer.dropEffect, "move", "drop effect");
+      assert.strictEqual(preventDefault.callCount, i + 1, "called");
     });
 
-    it("should not prevent default", async () => {
+    it("should set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
       const evt = {
         dataTransfer: {
-          types: ["foo"],
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: false,
+          })),
+          dropEffect: "uninitialized",
         },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
+        preventDefault,
+        target: elm,
       };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
       await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i, "not called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j, "not called prevent");
+      assert.strictEqual(evt.dataTransfer.dropEffect, "none", "drop effect");
+      assert.strictEqual(preventDefault.callCount, i + 1, "called");
+    });
+
+    it("should set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns("pinned"),
+          dropEffect: "uninitialized",
+        },
+        preventDefault,
+        target: elm,
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.dropEffect, "none", "drop effect");
+      assert.strictEqual(preventDefault.callCount, i + 1, "called");
+    });
+
+    it("should set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns("pinned"),
+          dropEffect: "uninitialized",
+        },
+        preventDefault,
+        target: elm,
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.dropEffect, "move", "drop effect");
+      assert.strictEqual(preventDefault.callCount, i + 1, "called");
+    });
+
+    it("should not set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns(""),
+          dropEffect: "uninitialized",
+        },
+        preventDefault,
+        target: elm,
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.dropEffect, "uninitialized",
+                         "drop effect");
+      assert.strictEqual(preventDefault.callCount, i, "not called");
+    });
+
+    it("should not set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns(""),
+          dropEffect: "uninitialized",
+        },
+        preventDefault,
+        target: elm,
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.dropEffect, "uninitialized",
+                         "drop effect");
+      assert.strictEqual(preventDefault.callCount, i, "not called");
     });
   });
 
   describe("handle dragenter", () => {
     const func = mjs.handleDragEnter;
 
-    it("should set value", async () => {
+    it("should set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
       const evt = {
         dataTransfer: {
-          types: [MIME_PLAIN],
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true,
+          })),
         },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
+        target: elm,
       };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
       await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j + 1, "called prevent");
-      assert.strictEqual(evt.dataTransfer.dropEffect, "move", "value");
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
     });
 
-    it("should not set value", async () => {
+    it("should set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
       const evt = {
         dataTransfer: {
-          types: ["foo"],
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: false,
+          })),
         },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
+        target: elm,
       };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
       await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i, "not called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j, "not called prevent");
-      assert.isUndefined(evt.dataTransfer.dropEffect, "value");
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: false,
+          })),
+        },
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true,
+          })),
+        },
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns("pinned"),
+        },
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns("pinned"),
+        },
+        target: elm,
+      };
+      await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns(""),
+        },
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const evt = {
+        dataTransfer: {
+          getData: sinon.stub().returns("foo"),
+        },
+        target: elm,
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
     });
   });
 
@@ -1727,52 +2048,42 @@ describe("main", () => {
     });
   });
 
-  describe("add DnD drop event listener", () => {
-    const func = mjs.addDropEventListener;
+  describe("add DnD event listener", () => {
+    const func = mjs.addDnDEventListener;
 
-    it("should add listner", async () => {
+    it("should not add dragstart listner", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
       await func(elm);
-      assert.isTrue(spy.calledThrice, "called");
-      elm.addEventListener.restore();
-    });
-  });
-
-  describe("add DnD drag event listener", () => {
-    const func = mjs.addDragEventListener;
-
-    it("should not add listner", async () => {
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      body.appendChild(elm);
-      const spy = sinon.spy(elm, "addEventListener");
-      await func(elm);
-      assert.isFalse(spy.called, "not called");
+      assert.strictEqual(spy.callCount, i + 5, "not called");
       elm.addEventListener.restore();
     });
 
-    it("should not add listner", async () => {
+    it("should not add dragstart listner", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       elm.draggable = false;
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
       await func(elm);
-      assert.isFalse(spy.called, "not called");
+      const i = spy.callCount;
+      await func(elm);
+      assert.strictEqual(spy.callCount, i + 5, "not called");
       elm.addEventListener.restore();
     });
 
-    it("should add listner", async () => {
+    it("should add all listners", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       elm.draggable = true;
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
       await func(elm);
-      assert.isTrue(spy.called, "called");
+      assert.strictEqual(spy.callCount, i + 6, "called");
       elm.addEventListener.restore();
     });
   });
@@ -2423,7 +2734,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2488,7 +2799,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2520,7 +2831,7 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(ACTIVE), "class");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2551,7 +2862,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2590,7 +2901,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -2631,7 +2942,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
     });
@@ -3132,7 +3443,7 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
       browser.i18n.getMessage.flush();
       browser.contextualIdentities.get.flush();
@@ -3298,7 +3609,7 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
     });
   });
@@ -11388,15 +11699,9 @@ describe("main", () => {
       main.appendChild(pinned);
       main.appendChild(newTab);
       body.appendChild(main);
-      const spy = sinon.spy(main, "addEventListener");
-      const spy2 = sinon.spy(pinned, "addEventListener");
-      const spy3 = sinon.spy(newTab, "addEventListener");
+      const spy = sinon.spy(newTab, "addEventListener");
       await func();
       assert.isTrue(spy.called);
-      assert.isTrue(spy2.called);
-      assert.isTrue(spy3.called);
-      main.addEventListener.restore();
-      pinned.addEventListener.restore();
       newTab.addEventListener.restore();
     });
   });

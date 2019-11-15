@@ -59,8 +59,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
-  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  DROP_TARGET, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
+  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -387,9 +387,30 @@ export const handleDrop = evt => {
       func.push(extractDroppedTabs(dropTarget, item, opt));
     }
   }
-  evt.stopPropagation();
   evt.preventDefault();
   return Promise.all(func).catch(throwErr);
+};
+
+/**
+ * handle dragend
+ * @returns {void}
+ */
+export const handleDragEnd = () => {
+  const items = document.querySelectorAll(`.${DROP_TARGET}`);
+  for (const item of items) {
+    item.classList.remove(DROP_TARGET);
+  }
+};
+
+/**
+ * handle dragleave
+ * @param {!Object} evt - event
+ * @returns {void}
+ */
+export const handleDragLeave = evt => {
+  const {target} = evt;
+  const dropTarget = getSidebarTab(target);
+  dropTarget && dropTarget.classList.remove(DROP_TARGET);
 };
 
 /**
@@ -398,9 +419,23 @@ export const handleDrop = evt => {
  * @returns {void}
  */
 export const handleDragOver = evt => {
-  const {dataTransfer: {types}} = evt;
-  if (Array.isArray(types) && types.includes(MIME_PLAIN)) {
-    evt.stopPropagation();
+  const {dataTransfer, target} = evt;
+  const data = dataTransfer.getData(MIME_PLAIN);
+  const dropTarget = getSidebarTab(target);
+  if (data && dropTarget) {
+    let pinned;
+    try {
+      const item = JSON.parse(data);
+      pinned = !!item.pinned;
+    } catch (e) {
+      pinned = false;
+    }
+    const isPinned = dropTarget.classList.contains(PINNED);
+    if (isPinned && pinned || !(isPinned || pinned)) {
+      dataTransfer.dropEffect = "move";
+    } else {
+      dataTransfer.dropEffect = "none";
+    }
     evt.preventDefault();
   }
 };
@@ -411,12 +446,21 @@ export const handleDragOver = evt => {
  * @returns {void}
  */
 export const handleDragEnter = evt => {
-  const {dataTransfer} = evt;
-  const {types} = dataTransfer;
-  if (Array.isArray(types) && types.includes(MIME_PLAIN)) {
-    dataTransfer.dropEffect = "move";
-    evt.stopPropagation();
-    evt.preventDefault();
+  const {dataTransfer, target} = evt;
+  const data = dataTransfer.getData(MIME_PLAIN);
+  const dropTarget = getSidebarTab(target);
+  if (data && dropTarget) {
+    let pinned;
+    try {
+      const item = JSON.parse(data);
+      pinned = !!item.pinned;
+    } catch (e) {
+      pinned = false;
+    }
+    const isPinned = dropTarget.classList.contains(PINNED);
+    if (isPinned && pinned || !(isPinned || pinned)) {
+      dropTarget.classList.add(DROP_TARGET);
+    }
   }
 };
 
@@ -426,7 +470,7 @@ export const handleDragEnter = evt => {
  * @returns {void}
  */
 export const handleDragStart = evt => {
-  const {ctrlKey, metaKey, target} = evt;
+  const {ctrlKey, dataTransfer, metaKey, target} = evt;
   const {classList} = target;
   const {isMac, windowId} = sidebar;
   const container = getSidebarTabContainer(target);
@@ -455,31 +499,24 @@ export const handleDragStart = evt => {
     const tabId = getSidebarTabId(target);
     data.tabIds = [tabId];
   }
-  evt.dataTransfer.effectAllowed = "move";
-  evt.dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
+  dataTransfer.effectAllowed = "move";
+  dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
 };
 
 /**
- * add DnD drop event listener
+ * add DnD event listener
  * @param {Object} elm - draggable element
  * @returns {void}
  */
-export const addDropEventListener = async elm => {
+export const addDnDEventListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    elm.draggable && elm.addEventListener("dragstart", handleDragStart);
     elm.addEventListener("dragenter", handleDragEnter);
     elm.addEventListener("dragover", handleDragOver);
+    elm.addEventListener("dragleave", handleDragLeave);
+    elm.addEventListener("dragend", handleDragEnd);
     elm.addEventListener("drop", handleDrop);
   }
-};
-
-/**
- * add DnD drag event listener
- * @param {Object} elm - draggable element
- * @returns {void}
- */
-export const addDragEventListener = async elm => {
-  elm && elm.nodeType === Node.ELEMENT_NODE && elm.draggable &&
-    elm.addEventListener("dragstart", handleDragStart);
 };
 
 /* sidebar tab event handlers */
@@ -656,7 +693,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     }
     tab.dataset.tabId = id;
     tab.dataset.tab = JSON.stringify(tabsTab);
-    await addDragEventListener(tab);
+    await addDnDEventListener(tab);
     if (cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
       const ident = await getContextualId(cookieStoreId);
       const {color, icon, name} = ident;
@@ -720,7 +757,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       container.appendChild(tab);
       container.removeAttribute("hidden");
       target.parentNode.insertBefore(container, target);
-      func.push(addDropEventListener(container));
     }
     if (hidden) {
       tab.setAttribute("hidden", "hidden");
@@ -1901,10 +1937,6 @@ export const emulateTabs = async () => {
  * @returns {void} - result of each handler
  */
 export const setMain = async () => {
-  const elm = document.getElementById(SIDEBAR_MAIN);
-  const pinned = document.getElementById(PINNED);
   const newTab = document.getElementById(NEW_TAB);
-  await addDropEventListener(elm);
-  await addDropEventListener(pinned);
   newTab.addEventListener("click", handleClickedNewTab);
 };

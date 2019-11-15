@@ -58,6 +58,7 @@ export const CUSTOM_COLOR_HOVER = "customHoverColor";
 export const CUSTOM_COLOR_SELECT = "customSelectionColor";
 export const CUSTOM_COLOR_SELECT_HOVER = "customSelectionHoverColor";
 export const DATA_I18N = "data-i18n";
+export const DROP_TARGET = "drop-target";
 export const EXT_INIT = "initExtension";
 export const EXT_LOCALE = "extensionLocale";
 export const EXT_NAME = "extensionName";
