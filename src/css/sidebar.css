@@ -10,6 +10,7 @@
   --background-selection-hover-color: #0060df;
   --border-color: #ccc;
   --border-active-color: #999;
+  --border-drop-color: #00feff;
   --foreground-color: #0c0c0d;
   --foreground-active-color: #0c0c0d;
   --foreground-hover-color: #0c0c0d;
@@ -40,6 +41,7 @@
   --background-selection-hover-color: #0060df;
   --border-color: #666;
   --border-active-color: #999;
+  --border-drop-color: #00feff;
   --foreground-color: #f9f9fa;
   --foreground-active-color: #f9f9fa;
   --foreground-hover-color: #f9f9fa;
@@ -142,6 +144,18 @@ main {
 }
 .tab[hidden] {
   display: none;
+}
+
+/* dnd */
+.tab.drop-target {
+  background: var(--background-active-color);
+  border-color: var(--border-active-color);
+}
+.tab.drop-target.drop-after-target {
+  border-bottom-color: var(--border-drop-color);
+}
+.tab.drop-target.drop-before-target {
+  border-top-color: var(--border-drop-color);
 }
 
 /* tab items */

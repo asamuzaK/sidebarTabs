@@ -25,8 +25,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DROP_TARGET, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED,
-  SIDEBAR_MAIN,
+  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
+  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -353,7 +353,7 @@ describe("main", () => {
     });
   });
 
-  describe("extract drag and drop tabs", () => {
+  describe("extract dropped tabs", () => {
     const func = mjs.extractDroppedTabs;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
@@ -1453,13 +1453,13 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
-        target: elm,
+        currentTarget: elm,
       };
       await func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
     });
 
-    it("should remove class", async () => {
+    it("should not remove class", async () => {
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1470,7 +1470,7 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
-        target: elm,
+        currentTarget: elm,
       };
       await func(evt);
       assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
@@ -1489,22 +1489,29 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = "1";
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 0, left: 0, right: 100, bottom: 50,
+      });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const preventDefault = sinon.stub();
       const i = preventDefault.callCount;
       const evt = {
+        preventDefault,
+        clientY: 40,
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: true,
           })),
           dropEffect: "uninitialized",
         },
-        preventDefault,
-        target: elm,
       };
       await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "target");
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), "after");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), "before");
       assert.strictEqual(evt.dataTransfer.dropEffect, "move", "drop effect");
       assert.strictEqual(preventDefault.callCount, i + 1, "called");
     });
@@ -1518,27 +1525,34 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = "1";
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 0, left: 0, right: 100, bottom: 50,
+      });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const preventDefault = sinon.stub();
       const i = preventDefault.callCount;
       const evt = {
+        preventDefault,
+        clientY: 10,
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(JSON.stringify({
-            pinned: false,
+            pinned: true,
           })),
           dropEffect: "uninitialized",
         },
-        preventDefault,
-        target: elm,
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, "none", "drop effect");
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "target");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), "after");
+      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), "before");
+      assert.strictEqual(evt.dataTransfer.dropEffect, "move", "drop effect");
       assert.strictEqual(preventDefault.callCount, i + 1, "called");
     });
 
-    it("should set drop effect", async () => {
+    it("should set drop effect none", async () => {
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1553,14 +1567,49 @@ describe("main", () => {
       const preventDefault = sinon.stub();
       const i = preventDefault.callCount;
       const evt = {
+        preventDefault,
+        currentTarget: elm,
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: false,
+          })),
+          dropEffect: "uninitialized",
+        },
+      };
+      await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "target");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), "after");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), "before");
+      assert.strictEqual(evt.dataTransfer.dropEffect, "none", "drop effect");
+      assert.strictEqual(preventDefault.callCount, i + 1, "called");
+    });
+
+    it("should set drop effect none", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
+      const evt = {
+        preventDefault,
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns("pinned"),
           dropEffect: "uninitialized",
         },
-        preventDefault,
-        target: elm,
       };
       await func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "target");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), "after");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), "before");
       assert.strictEqual(evt.dataTransfer.dropEffect, "none", "drop effect");
       assert.strictEqual(preventDefault.callCount, i + 1, "called");
     });
@@ -1572,20 +1621,59 @@ describe("main", () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 0, left: 0, right: 100, bottom: 50,
+      });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const preventDefault = sinon.stub();
       const i = preventDefault.callCount;
       const evt = {
+        preventDefault,
+        clientY: 40,
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns("pinned"),
           dropEffect: "uninitialized",
         },
-        preventDefault,
-        target: elm,
       };
       await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "target");
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), "after");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), "before");
+      assert.strictEqual(evt.dataTransfer.dropEffect, "move", "drop effect");
+      assert.strictEqual(preventDefault.callCount, i + 1, "called");
+    });
+
+    it("should set drop effect", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 0, left: 0, right: 100, bottom: 50,
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      const preventDefault = sinon.stub();
+      const i = preventDefault.callCount;
+      const evt = {
+        preventDefault,
+        clientY: 10,
+        currentTarget: elm,
+        dataTransfer: {
+          getData: sinon.stub().returns("pinned"),
+          dropEffect: "uninitialized",
+        },
+      };
+      await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), "target");
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), "after");
+      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), "before");
       assert.strictEqual(evt.dataTransfer.dropEffect, "move", "drop effect");
       assert.strictEqual(preventDefault.callCount, i + 1, "called");
     });
@@ -1603,12 +1691,12 @@ describe("main", () => {
       const preventDefault = sinon.stub();
       const i = preventDefault.callCount;
       const evt = {
+        preventDefault,
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(""),
           dropEffect: "uninitialized",
         },
-        preventDefault,
-        target: elm,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.dropEffect, "uninitialized",
@@ -1628,12 +1716,12 @@ describe("main", () => {
       const preventDefault = sinon.stub();
       const i = preventDefault.callCount;
       const evt = {
+        preventDefault,
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(""),
           dropEffect: "uninitialized",
         },
-        preventDefault,
-        target: elm,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.dropEffect, "uninitialized",
@@ -1658,12 +1746,12 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: true,
           })),
         },
-        target: elm,
       };
       await func(evt);
       assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
@@ -1680,12 +1768,12 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: false,
           })),
         },
-        target: elm,
       };
       await func(evt);
       assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
@@ -1704,12 +1792,12 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: false,
           })),
         },
-        target: elm,
       };
       await func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
@@ -1726,12 +1814,12 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: true,
           })),
         },
-        target: elm,
       };
       await func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
@@ -1750,10 +1838,10 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns("pinned"),
         },
-        target: elm,
       };
       await func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
@@ -1770,10 +1858,10 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns("pinned"),
         },
-        target: elm,
       };
       await func(evt);
       assert.isTrue(elm.classList.contains(DROP_TARGET), "class");
@@ -1790,10 +1878,10 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(""),
         },
-        target: elm,
       };
       await func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
@@ -1809,10 +1897,10 @@ describe("main", () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns("foo"),
         },
-        target: elm,
       };
       await func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
@@ -1851,6 +1939,7 @@ describe("main", () => {
       mjs.sidebar.isMac = false;
       let parsedData;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
@@ -1858,7 +1947,6 @@ describe("main", () => {
           effectAllowed: "uninitialized",
         },
         ctrlKey: true,
-        target: elm,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
@@ -1894,6 +1982,7 @@ describe("main", () => {
       mjs.sidebar.isMac = false;
       let parsedData;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
@@ -1901,7 +1990,6 @@ describe("main", () => {
           effectAllowed: "uninitialized",
         },
         ctrlKey: true,
-        target: elm,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
@@ -1939,6 +2027,7 @@ describe("main", () => {
       mjs.sidebar.isMac = true;
       let parsedData;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
@@ -1946,7 +2035,6 @@ describe("main", () => {
           effectAllowed: "uninitialized",
         },
         metaKey: true,
-        target: elm,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
@@ -1984,6 +2072,7 @@ describe("main", () => {
       mjs.sidebar.isMac = false;
       let parsedData;
       const evt = {
+        currentTarget: elm3,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
@@ -1991,7 +2080,6 @@ describe("main", () => {
           effectAllowed: "uninitialized",
         },
         ctrlKey: false,
-        target: elm3,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
@@ -2029,6 +2117,7 @@ describe("main", () => {
       mjs.sidebar.isMac = false;
       let parsedData;
       const evt = {
+        currentTarget: elm,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
@@ -2036,7 +2125,6 @@ describe("main", () => {
           effectAllowed: "uninitialized",
         },
         ctrlKey: false,
-        target: elm,
       };
       await func(evt);
       assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");

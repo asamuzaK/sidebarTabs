@@ -59,7 +59,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DROP_TARGET, EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
+  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
+  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
   NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -204,7 +205,7 @@ export const undoCloseTab = async () => {
 
 /* DnD */
 /**
- * extract drag and drop tabs
+ * extract dropped tabs
  * @param {Object} dropTarget - target element
  * @param {Object} data - dragged data
  * @param {Object} opt - key options
@@ -398,7 +399,7 @@ export const handleDrop = evt => {
 export const handleDragEnd = () => {
   const items = document.querySelectorAll(`.${DROP_TARGET}`);
   for (const item of items) {
-    item.classList.remove(DROP_TARGET);
+    item.classList.remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
   }
 };
 
@@ -408,9 +409,10 @@ export const handleDragEnd = () => {
  * @returns {void}
  */
 export const handleDragLeave = evt => {
-  const {target} = evt;
-  const dropTarget = getSidebarTab(target);
-  dropTarget && dropTarget.classList.remove(DROP_TARGET);
+  const {currentTarget} = evt;
+  const dropTarget = getSidebarTab(currentTarget);
+  dropTarget && dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+                                            DROP_TARGET_BEFORE);
 };
 
 /**
@@ -419,9 +421,9 @@ export const handleDragLeave = evt => {
  * @returns {void}
  */
 export const handleDragOver = evt => {
-  const {dataTransfer, target} = evt;
+  const {clientY, currentTarget, dataTransfer} = evt;
   const data = dataTransfer.getData(MIME_PLAIN);
-  const dropTarget = getSidebarTab(target);
+  const dropTarget = getSidebarTab(currentTarget);
   if (data && dropTarget) {
     let pinned;
     try {
@@ -432,8 +434,18 @@ export const handleDragOver = evt => {
     }
     const isPinned = dropTarget.classList.contains(PINNED);
     if (isPinned && pinned || !(isPinned || pinned)) {
+      const {bottom, top} = dropTarget.getBoundingClientRect();
+      if (clientY > (bottom - top) / 2 + top) {
+        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+        dropTarget.classList.remove(DROP_TARGET_BEFORE);
+      } else {
+        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+        dropTarget.classList.remove(DROP_TARGET_AFTER);
+      }
       dataTransfer.dropEffect = "move";
     } else {
+      dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+                                  DROP_TARGET_BEFORE);
       dataTransfer.dropEffect = "none";
     }
     evt.preventDefault();
@@ -446,9 +458,9 @@ export const handleDragOver = evt => {
  * @returns {void}
  */
 export const handleDragEnter = evt => {
-  const {dataTransfer, target} = evt;
+  const {currentTarget, dataTransfer} = evt;
   const data = dataTransfer.getData(MIME_PLAIN);
-  const dropTarget = getSidebarTab(target);
+  const dropTarget = getSidebarTab(currentTarget);
   if (data && dropTarget) {
     let pinned;
     try {
@@ -470,10 +482,10 @@ export const handleDragEnter = evt => {
  * @returns {void}
  */
 export const handleDragStart = evt => {
-  const {ctrlKey, dataTransfer, metaKey, target} = evt;
-  const {classList} = target;
+  const {ctrlKey, currentTarget, dataTransfer, metaKey} = evt;
+  const {classList} = currentTarget;
   const {isMac, windowId} = sidebar;
-  const container = getSidebarTabContainer(target);
+  const container = getSidebarTabContainer(currentTarget);
   const data = {
     windowId,
     pinned: classList.contains(PINNED),
@@ -496,7 +508,7 @@ export const handleDragStart = evt => {
     }
     data.tabIds = arr;
   } else {
-    const tabId = getSidebarTabId(target);
+    const tabId = getSidebarTabId(currentTarget);
     data.tabIds = [tabId];
   }
   dataTransfer.effectAllowed = "move";
