@@ -277,7 +277,7 @@ export const handleDrop = evt => {
       const {windowId} = JSON.parse(dropTarget.dataset.tab);
       const uris = dataTransfer.getData(MIME_URI);
       const data = dataTransfer.getData(MIME_PLAIN);
-      // dropped native tab or something
+      // dropped uri list
       if (uris) {
         const dropTargetIndex = getSidebarTabIndex(currentTarget);
         const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
