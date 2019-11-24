@@ -317,6 +317,8 @@ export const handleDrop = evt => {
           logErr(e);
         }
       }
+      dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+                                  DROP_TARGET_BEFORE);
     }
   }
   return Promise.all(func).catch(throwErr);

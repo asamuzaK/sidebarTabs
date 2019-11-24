@@ -1489,6 +1489,7 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
       assert.deepEqual(res, [undefined], "result");
     });
@@ -1522,6 +1523,7 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
       assert.deepEqual(res, [undefined], "result");
     });
@@ -1559,6 +1561,7 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
       assert.deepEqual(res, [undefined], "result");
     });
@@ -1595,6 +1598,7 @@ describe("dnd", () => {
       assert.isTrue(errCalledOnce, "error");
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isFalse(preventDefault.called, "not called");
       assert.deepEqual(res, [], "result");
     });
@@ -1631,6 +1635,7 @@ describe("dnd", () => {
       assert.isFalse(errCalled, "error not called");
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isFalse(preventDefault.called, "not called");
       assert.deepEqual(res, [], "result");
     });
@@ -1670,6 +1675,7 @@ describe("dnd", () => {
       assert.isFalse(errCalled, "error not called");
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
       assert.deepEqual(res, [[]], "result");
     });
