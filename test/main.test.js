@@ -2,8 +2,8 @@
  * main.test.js
  */
 /*
-  eslint-disable array-bracket-newline, camelcase,, default-case,
-                 no-await-in-loop, no-magic-numbers, no-sparse-arrays
+  eslint-disable array-bracket-newline, camelcase, default-case,
+                 no-await-in-loop, no-magic-numbers
 */
 
 import {JSDOM} from "jsdom";
@@ -25,7 +25,7 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -99,6 +99,16 @@ describe("main", () => {
 
   describe("set sidebar", () => {
     const func = mjs.setSidebar;
+    beforeEach(() => {
+      browser.windows.getCurrent.flush();
+      browser.storage.local.get.flush();
+      browser.runtime.getPlatformInfo.flush();
+    });
+    afterEach(() => {
+      browser.windows.getCurrent.flush();
+      browser.storage.local.get.flush();
+      browser.runtime.getPlatformInfo.flush();
+    });
 
     it("should set value", async () => {
       const {sidebar} = mjs;
@@ -131,9 +141,6 @@ describe("main", () => {
       assert.isTrue(sidebar.incognito, "incognito");
       assert.isTrue(sidebar.isMac, "isMac");
       assert.strictEqual(sidebar.windowId, 1, "windowId");
-      browser.windows.getCurrent.flush();
-      browser.storage.local.get.flush();
-      browser.runtime.getPlatformInfo.flush();
     });
 
     it("should set value", async () => {
@@ -163,9 +170,6 @@ describe("main", () => {
       assert.isTrue(sidebar.incognito, "incognito");
       assert.isTrue(sidebar.isMac, "isMac");
       assert.strictEqual(sidebar.windowId, 1, "windowId");
-      browser.windows.getCurrent.flush();
-      browser.storage.local.get.flush();
-      browser.runtime.getPlatformInfo.flush();
     });
   });
 
@@ -190,6 +194,12 @@ describe("main", () => {
 
   describe("set contextual identities cookieStoreIds", () => {
     const func = mjs.setContextualIds;
+    beforeEach(() => {
+      browser.contextualIdentities.query.flush();
+    });
+    afterEach(() => {
+      browser.contextualIdentities.query.flush();
+    });
 
     it("should set value", async () => {
       const {sidebar} = mjs;
@@ -209,7 +219,6 @@ describe("main", () => {
       await func();
       assert.strictEqual(query.callCount, i + 1, "query called");
       assert.deepEqual(sidebar.contextualIds, ["foo", "bar", "baz"], "ids");
-      browser.contextualIdentities.query.flush();
     });
 
     it("should set value", async () => {
@@ -224,7 +233,6 @@ describe("main", () => {
       assert.strictEqual(query.callCount, i + 1, "query called");
       assert.isTrue(calledOnce, "log error called");
       assert.isNull(sidebar.contextualIds, "ids");
-      browser.contextualIdentities.query.flush();
     });
   });
 
@@ -298,6 +306,12 @@ describe("main", () => {
 
   describe("get last closed tab", () => {
     const func = mjs.getLastClosedTab;
+    beforeEach(() => {
+      browser.sessions.getRecentlyClosed.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getRecentlyClosed.flush();
+    });
 
     it("should call function", async () => {
       const {getRecentlyClosed} = browser.sessions;
@@ -312,7 +326,6 @@ describe("main", () => {
       assert.deepEqual(res, {
         windowId: browser.windows.WINDOW_ID_CURRENT,
       }, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
 
     it("should call function", async () => {
@@ -322,7 +335,6 @@ describe("main", () => {
       const res = await func();
       assert.strictEqual(getRecentlyClosed.callCount, i + 1, "called");
       assert.isNull(res, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
   });
 
@@ -352,1374 +364,104 @@ describe("main", () => {
     });
   });
 
-  describe("extract drag and drop tabs", () => {
-    const func = mjs.extractDroppedTabs;
+  describe("create DnD data", () => {
+    const func = mjs.createDnDData;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
     });
 
-    it("should not call function if no arguemnt given", async () => {
-      const res = await func();
-      assert.deepEqual(res, [], "result");
-    });
-
-    it("should not call function if tab not found", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
+    it("should not set data", async () => {
       const parent = document.createElement("div");
       const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
       const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(PINNED);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.classList.add(PINNED);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      dropParent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [-1],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j, "not called");
-      assert.strictEqual(dropParent.childElementCount, 2, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should not call function if tab not found", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      dropParent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [-1],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j, "not called");
-      assert.strictEqual(dropParent.childElementCount, 2, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should not call function if tab not found", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [-1],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j, "not called");
-      assert.strictEqual(dropParent.childElementCount, 1, "child");
-      assert.strictEqual(parent.childElementCount, 3, "child");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(PINNED);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.classList.add(PINNED);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      dropParent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [3],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i + 1, "called");
-      assert.strictEqual(move.callCount, j, "not called");
-      assert.strictEqual(dropParent.childElementCount, 2, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.deepEqual(res, [{}], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      dropParent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [3],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 3, "child");
-      assert.strictEqual(parent.childElementCount, 1, "child");
-      assert.strictEqual(elm3.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      dropParent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [3, 4],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 2, "called");
-      assert.strictEqual(dropParent.childElementCount, 4, "child");
-      assert.strictEqual(parent.childElementCount, 0, "child");
-      assert.isUndefined(elm3.dataset.restore, "restore not set");
-      assert.strictEqual(elm4.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
       parent.appendChild(elm);
-      parent.appendChild(elm2);
-      dropParent.appendChild(elm3);
-      dropParent.appendChild(elm4);
-      body.appendChild(tmpl);
       body.appendChild(parent);
-      body.appendChild(dropParent);
-      const dropTarget = elm3;
-      const data = {
+      mjs.sidebar.isMac = false;
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        dataTransfer: {
+          setData,
+          effectAllowed: "uninitialized",
+        },
+      };
+      await func(evt);
+      assert.isFalse(setData.called, "data");
+      assert.strictEqual(evt.dataTransfer.effectAllowed, "uninitialized",
+                         "effect");
+    });
+
+    it("should set data", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.draggable = true;
+      elm.dataset.tabId = "1";
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      let parsedData;
+      const evt = {
+        currentTarget: elm,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: "uninitialized",
+        },
+        type: "dragstart",
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
+      assert.deepEqual(parsedData, {
+        pinned: false,
         tabIds: [1],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 3, "child");
-      assert.strictEqual(parent.childElementCount, 1, "child");
-      assert.strictEqual(elm.dataset.restore, "3", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      dropParent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      dropParent.appendChild(elm3);
-      dropParent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(parent);
-      body.appendChild(dropParent);
-      const dropTarget = elm3;
-      const data = {
-        tabIds: [1, 2],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 2, "called");
-      assert.strictEqual(dropParent.childElementCount, 4, "child");
-      assert.strictEqual(parent.childElementCount, 0, "child");
-      assert.isUndefined(elm.dataset.restore, "restore not set");
-      assert.strictEqual(elm2.dataset.restore, "3", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [3],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 1, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.strictEqual(elm3.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [3, 4],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 2, "called");
-      assert.strictEqual(dropParent.childElementCount, 1, "child");
-      assert.strictEqual(parent.childElementCount, 1, "child");
-      assert.isUndefined(elm3.dataset.restore, "resotre not set");
-      assert.strictEqual(elm4.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [3],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: true,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 2, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.strictEqual(elm3.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const k = browser.sessions.setWindowValue.callCount;
-      const l = browser.windows.getCurrent.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      dropParent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      parent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(dropParent);
-      body.appendChild(parent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [2],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: true,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j, "not called");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, k + 1,
-                         "called");
-      assert.strictEqual(browser.windows.getCurrent.callCount, l + 2, "called");
-      assert.strictEqual(dropParent.childElementCount, 2, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.isTrue(elm2.parentNode === dropParent, "parent");
-      assert.strictEqual(elm2.dataset.restore, "1", "restore");
-      assert.deepEqual(res, [undefined], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-      browser.windows.getCurrent.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      dropParent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(parent);
-      body.appendChild(dropParent);
-      const dropTarget = elm4;
-      const data = {
-        tabIds: [1],
-        windowId: 1,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 1, "child");
-      assert.strictEqual(parent.childElementCount, 2, "child");
-      assert.strictEqual(elm.dataset.restore, "4", "restore");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      dropParent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(parent);
-      body.appendChild(dropParent);
-      const dropTarget = elm4;
-      const data = {
-        tabIds: [5],
-        windowId: 2,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 1, "child");
-      assert.strictEqual(parent.childElementCount, 3, "child");
-      assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {move, update} = browser.tabs;
-      const i = update.callCount;
-      const j = move.callCount;
-      const tmpl = document.createElement("template");
-      const cnt = document.createElement("div");
-      const dropParent = document.createElement("div");
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const elm4 = document.createElement("p");
-      const body = document.querySelector("body");
-      const {sidebar} = mjs;
-      sidebar.windowId = 1;
-      move.resolves([{}]);
-      update.resolves({});
-      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
-      tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent.appendChild(elm3);
-      dropParent.appendChild(elm4);
-      body.appendChild(tmpl);
-      body.appendChild(parent);
-      body.appendChild(dropParent);
-      const dropTarget = elm;
-      const data = {
-        tabIds: [5],
-        windowId: 2,
-      };
-      const opt = {
-        shiftKey: false,
-      };
-      const res = await func(dropTarget, data, opt);
-      assert.strictEqual(update.callCount, i, "not called");
-      assert.strictEqual(move.callCount, j + 1, "called");
-      assert.strictEqual(dropParent.childElementCount, 1, "child");
-      assert.strictEqual(parent.childElementCount, 3, "child");
-      assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
-      browser.tabs.update.flush();
-    });
-  });
-
-  describe("handle drop", () => {
-    const func = mjs.handleDrop;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
-
-    it("should call function", async () => {
-      const {create, update} = browser.tabs;
-      const i = create.callCount;
-      const j = update.callCount;
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const evt = {
-        dataTransfer: {
-          getData: sinon.stub(),
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-        ctrlKey: false,
-        metaKey: false,
-        shiftKey: false,
-        target: elm,
-      };
-      const {getData} = evt.dataTransfer;
-      const k = getData.withArgs(MIME_URI).callCount;
-      const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
-      getData.withArgs(MIME_URI).returns("https://example.com");
-      getData.withArgs(MIME_PLAIN).returns("");
-      create.resolves({});
-      update.resolves({});
-      const res = await func(evt);
-      assert.strictEqual(create.callCount, i, "not called create");
-      assert.strictEqual(update.callCount, j + 1, "called update");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, k + 1,
-                         "called getData URI");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
-                         "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
-      assert.deepEqual(res, [{}], "result");
-      browser.tabs.create.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {create, update} = browser.tabs;
-      const i = create.callCount;
-      const j = update.callCount;
-      const body = document.querySelector("body");
-      const evt = {
-        dataTransfer: {
-          getData: sinon.stub(),
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-        ctrlKey: false,
-        metaKey: false,
-        shiftKey: false,
-        target: body,
-      };
-      const {getData} = evt.dataTransfer;
-      const k = getData.withArgs(MIME_URI).callCount;
-      const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
-      getData.withArgs(MIME_URI).returns("https://example.com");
-      getData.withArgs(MIME_PLAIN).returns("");
-      create.resolves({});
-      update.resolves({});
-      const res = await func(evt);
-      assert.strictEqual(create.callCount, i + 1, "called create");
-      assert.strictEqual(update.callCount, j, "not called update");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, k + 1,
-                         "called getData URI");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
-                         "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
-      assert.deepEqual(res, [{}], "result");
-      browser.tabs.create.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const stub = sinon.stub(console, "error");
-      const {create, update} = browser.tabs;
-      const i = create.callCount;
-      const j = update.callCount;
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const evt = {
-        dataTransfer: {
-          getData: sinon.stub(),
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-        ctrlKey: false,
-        metaKey: false,
-        shiftKey: false,
-        target: elm,
-      };
-      const {getData} = evt.dataTransfer;
-      const k = getData.withArgs(MIME_URI).callCount;
-      const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
-      getData.withArgs(MIME_URI).returns("");
-      getData.withArgs(MIME_PLAIN).returns("foo");
-      create.resolves({});
-      update.resolves({});
-      const res = await func(evt);
-      const {calledOnce} = stub;
-      stub.restore();
-      assert.strictEqual(create.callCount, i, "not called create");
-      assert.strictEqual(update.callCount, j, "not called update");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, k + 1,
-                         "called getData URI");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
-                         "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
-      assert.isTrue(calledOnce, "error");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.create.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should call function", async () => {
-      const {create, update} = browser.tabs;
-      const i = create.callCount;
-      const j = update.callCount;
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const evt = {
-        dataTransfer: {
-          getData: sinon.stub(),
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-        ctrlKey: false,
-        metaKey: false,
-        shiftKey: false,
-        target: elm,
-      };
-      const {getData} = evt.dataTransfer;
-      const k = getData.withArgs(MIME_URI).callCount;
-      const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
-      getData.withArgs(MIME_URI).returns("");
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
-        foo: "bar",
-      }));
-      create.resolves({});
-      update.resolves({});
-      const res = await func(evt);
-      assert.strictEqual(create.callCount, i, "not called create");
-      assert.strictEqual(update.callCount, j, "not called update");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, k + 1,
-                         "called getData URI");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
-                         "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
-      assert.deepEqual(res, [[]], "result");
-      browser.tabs.create.flush();
-      browser.tabs.update.flush();
-    });
-
-    it("should not call function", async () => {
-      const {create, update} = browser.tabs;
-      const i = create.callCount;
-      const j = update.callCount;
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const evt = {
-        dataTransfer: {
-          getData: sinon.stub(),
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-        ctrlKey: false,
-        metaKey: false,
-        shiftKey: false,
-        target: elm,
-      };
-      const {getData} = evt.dataTransfer;
-      const k = getData.withArgs(MIME_URI).callCount;
-      const l = getData.withArgs(MIME_PLAIN).callCount;
-      const m = evt.stopPropagation.callCount;
-      const n = evt.preventDefault.callCount;
-      getData.withArgs(MIME_URI).returns("");
-      getData.withArgs(MIME_PLAIN).returns("");
-      create.resolves({});
-      update.resolves({});
-      const res = await func(evt);
-      assert.strictEqual(create.callCount, i, "not called create");
-      assert.strictEqual(update.callCount, j, "not called update");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, k + 1,
-                         "called getData URI");
-      assert.strictEqual(getData.withArgs(MIME_URI).callCount, l + 1,
-                         "called getData Text");
-      assert.strictEqual(evt.stopPropagation.callCount, m + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, n + 1, "called prevent");
-      assert.deepEqual(res, [], "result");
-      browser.tabs.create.flush();
-      browser.tabs.update.flush();
-    });
-  });
-
-  describe("handle dragover", () => {
-    const func = mjs.handleDragOver;
-
-    it("should prevent default", async () => {
-      const evt = {
-        dataTransfer: {
-          types: [MIME_PLAIN],
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-      };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
-      await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j + 1, "called prevent");
-    });
-
-    it("should not prevent default", async () => {
-      const evt = {
-        dataTransfer: {
-          types: ["foo"],
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-      };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
-      await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i, "not called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j, "not called prevent");
-    });
-  });
-
-  describe("handle dragenter", () => {
-    const func = mjs.handleDragEnter;
-
-    it("should set value", async () => {
-      const evt = {
-        dataTransfer: {
-          types: [MIME_PLAIN],
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-      };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
-      await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i + 1, "called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j + 1, "called prevent");
-      assert.strictEqual(evt.dataTransfer.dropEffect, "move", "value");
-    });
-
-    it("should not set value", async () => {
-      const evt = {
-        dataTransfer: {
-          types: ["foo"],
-        },
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
-      };
-      const i = evt.stopPropagation.callCount;
-      const j = evt.preventDefault.callCount;
-      await func(evt);
-      assert.strictEqual(evt.stopPropagation.callCount, i, "not called stop");
-      assert.strictEqual(evt.preventDefault.callCount, j, "not called prevent");
-      assert.isUndefined(evt.dataTransfer.dropEffect, "value");
-    });
-  });
-
-  describe("handle dragstart", () => {
-    const func = mjs.handleDragStart;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
-
-    it("should set value", async () => {
-      const parent = document.createElement("div");
-      const parent2 = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "3";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      mjs.sidebar.isMac = false;
-      let parsedData;
-      const evt = {
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-        },
-        ctrlKey: true,
-        target: elm,
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
-      assert.deepEqual(parsedData, {
-        tabIds: [1, 3],
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      }, "data");
-    });
-
-    it("should set value", async () => {
-      const parent = document.createElement("div");
-      const parent2 = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "3";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      mjs.sidebar.isMac = false;
-      let parsedData;
-      const evt = {
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-        },
-        ctrlKey: true,
-        target: elm,
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
-      assert.deepEqual(parsedData, {
-        tabIds: [1, 2],
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      }, "data");
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), "class");
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), "class");
-    });
-
-    it("should set value", async () => {
-      const parent = document.createElement("div");
-      const parent2 = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "3";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      mjs.sidebar.isMac = true;
-      let parsedData;
-      const evt = {
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-        },
-        metaKey: true,
-        target: elm,
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
-      assert.deepEqual(parsedData, {
-        tabIds: [1, 2],
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      }, "data");
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), "class");
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), "class");
-    });
-
-    it("should set value", async () => {
-      const parent = document.createElement("div");
-      const parent2 = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const elm3 = document.createElement("p");
-      const body = document.querySelector("body");
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      mjs.sidebar.isMac = false;
-      let parsedData;
-      const evt = {
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-        },
-        ctrlKey: false,
-        target: elm3,
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, "move", "effect");
-      assert.deepEqual(parsedData, {
-        tabIds: [3],
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
       }, "data");
     });
   });
 
-  describe("add DnD drop event listener", () => {
-    const func = mjs.addDropEventListener;
+  describe("add DnD event listener", () => {
+    const func = mjs.addDnDEventListener;
 
-    it("should add listner", async () => {
+    it("should not add dragstart listner", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
       await func(elm);
-      assert.isTrue(spy.calledThrice, "called");
-      elm.addEventListener.restore();
-    });
-  });
-
-  describe("add DnD drag event listener", () => {
-    const func = mjs.addDragEventListener;
-
-    it("should not add listner", async () => {
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      body.appendChild(elm);
-      const spy = sinon.spy(elm, "addEventListener");
-      await func(elm);
-      assert.isFalse(spy.called, "not called");
+      assert.strictEqual(spy.callCount, i + 5, "not called");
       elm.addEventListener.restore();
     });
 
-    it("should not add listner", async () => {
+    it("should not add dragstart listner", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
-      elm.setAttribute("draggable", "false");
+      elm.draggable = false;
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
       await func(elm);
-      assert.isFalse(spy.called, "not called");
+      const i = spy.callCount;
+      await func(elm);
+      assert.strictEqual(spy.callCount, i + 5, "not called");
       elm.addEventListener.restore();
     });
 
-    it("should add listner", async () => {
+    it("should add all listners", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
-      elm.setAttribute("draggable", "true");
+      elm.draggable = true;
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
       await func(elm);
-      assert.isTrue(spy.called, "called");
+      assert.strictEqual(spy.callCount, i + 6, "called");
       elm.addEventListener.restore();
     });
   });
@@ -1743,6 +485,14 @@ describe("main", () => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.firstSelectedTab = null;
       mjs.sidebar.isMac = false;
+      browser.tabs.highlight.flush();
+      browser.tabs.query.flush();
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.tabs.highlight.flush();
+      browser.tabs.query.flush();
+      browser.tabs.update.flush();
     });
 
     it("should not call function", async () => {
@@ -1820,7 +570,6 @@ describe("main", () => {
       const res = await func(evt);
       assert.strictEqual(update.callCount, i + 1, "called update");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -1857,8 +606,6 @@ describe("main", () => {
       assert.strictEqual(query.callCount, j + 1, "called query");
       assert.strictEqual(update.callCount, k, "not called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
     });
 
     it("should call function", async () => {
@@ -1892,7 +639,6 @@ describe("main", () => {
       assert.strictEqual(query.callCount, j, "not called query");
       assert.strictEqual(update.callCount, k, "not called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -1927,7 +673,6 @@ describe("main", () => {
       assert.strictEqual(query.callCount, j, "not called query");
       assert.strictEqual(update.callCount, k, "not called update");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -1962,7 +707,6 @@ describe("main", () => {
       assert.strictEqual(query.callCount, j, "not called query");
       assert.strictEqual(update.callCount, k, "not called update");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -2034,7 +778,6 @@ describe("main", () => {
       assert.strictEqual(query.callCount, j, "not called query");
       assert.strictEqual(update.callCount, k, "not called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.highlight.flush();
     });
   });
 
@@ -2187,7 +930,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -2257,6 +1000,14 @@ describe("main", () => {
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
+      browser.contextualIdentities.get.flush();
+      browser.i18n.getMessage.flush();
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.contextualIdentities.get.flush();
+      browser.i18n.getMessage.flush();
+      browser.tabs.get.flush();
     });
 
     it("should throw", async () => {
@@ -2370,9 +1121,8 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2435,9 +1185,8 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2467,9 +1216,8 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(ACTIVE), "class");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2498,9 +1246,8 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2537,9 +1284,8 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2578,9 +1324,8 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2633,7 +1378,6 @@ describe("main", () => {
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2685,7 +1429,6 @@ describe("main", () => {
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2742,8 +1485,6 @@ describe("main", () => {
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined, undefined,
       ], "result");
-      browser.tabs.get.flush();
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2800,8 +1541,6 @@ describe("main", () => {
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined, undefined,
       ], "result");
-      browser.tabs.get.flush();
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2861,8 +1600,6 @@ describe("main", () => {
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined,
       ], "result");
-      browser.tabs.get.flush();
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2922,8 +1659,6 @@ describe("main", () => {
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined,
       ], "result");
-      browser.tabs.get.flush();
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -2962,13 +1697,12 @@ describe("main", () => {
       assert.strictEqual(elm.dataset.tabId, "1", "id");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
-      assert.isFalse(elm.hasAttribute("draggable"), "draggable");
+      assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -3002,14 +1736,13 @@ describe("main", () => {
       assert.strictEqual(elm.dataset.tabId, "1", "id");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
-      assert.isFalse(elm.hasAttribute("draggable"), "draggable");
+      assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), "group");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -3038,14 +1771,13 @@ describe("main", () => {
       assert.strictEqual(elm.dataset.tabId, "1", "id");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
-      assert.isFalse(elm.hasAttribute("draggable"), "draggable");
+      assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.isFalse(pinned.classList.contains(CLASS_TAB_GROUP), "group");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
     });
 
     it("should create element", async () => {
@@ -3079,10 +1811,8 @@ describe("main", () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined,
       ], "result");
-      browser.i18n.getMessage.flush();
-      browser.contextualIdentities.get.flush();
     });
   });
 
@@ -3102,7 +1832,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -3245,7 +1975,7 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined,
       ], "result");
     });
   });
@@ -3301,6 +2031,10 @@ describe("main", () => {
     const func = mjs.handleHighlightedTab;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
     });
 
     it("should throw", async () => {
@@ -3358,7 +2092,6 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), "class");
       assert.isFalse(elm2.classList.contains(HIGHLIGHTED), "remove class");
       assert.deepEqual(res, [[undefined, undefined]], "result");
-      browser.tabs.get.flush();
     });
 
     it("should call function", async () => {
@@ -3402,7 +2135,6 @@ describe("main", () => {
         [undefined, undefined],
         [[undefined, undefined]],
       ], "result");
-      browser.tabs.get.flush();
     });
 
     it("should not call function", async () => {
@@ -3452,6 +2184,18 @@ describe("main", () => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.tabsWaitingToMove = null;
       mjs.sidebar.pinnedTabsWaitingToMove = null;
+      browser.tabs.get.flush();
+      browser.windows.getCurrent.flush();
+      browser.sessions.getWindowValue.flush();
+      browser.sessions.setWindowValue.flush();
+    });
+    afterEach(() => {
+      mjs.sidebar.tabsWaitingToMove = null;
+      mjs.sidebar.pinnedTabsWaitingToMove = null;
+      browser.tabs.get.flush();
+      browser.windows.getCurrent.flush();
+      browser.sessions.getWindowValue.flush();
+      browser.sessions.setWindowValue.flush();
     });
 
     it("should throw", async () => {
@@ -3499,10 +2243,14 @@ describe("main", () => {
     });
 
     it("should get null if window ID does not match", async () => {
+      let windowId = browser.windows.WINDOW_ID_CURRENT + 1;
+      if (windowId === browser.windows.WINDOW_ID_NONE) {
+        windowId++;
+      }
       const res = await func(1, {
+        windowId,
         fromIndex: 0,
         toIndex: 1,
-        windowId: 1,
       });
       assert.isNull(res, "result");
     });
@@ -3516,21 +2264,18 @@ describe("main", () => {
       assert.isNull(res, "result");
     });
 
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
+    it("should remove value", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
       const parent = document.createElement("section");
       const elm = document.createElement("div");
       const body = document.querySelector("body");
       parent.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
+      elm.dataset.restore = "1";
       elm.dataset.tab = JSON.stringify({
         url: "https://example.com",
       });
-      elm.dataset.restore = "1";
       parent.appendChild(elm);
       body.appendChild(parent);
       browser.tabs.get.withArgs(1).resolves({
@@ -3541,31 +2286,18 @@ describe("main", () => {
         id: browser.windows.WINDOW_ID_CURRENT,
         incognito: false,
       });
-      browser.sessions.getWindowValue.resolves(undefined);
       const res = await func(1, {
         fromIndex: 1,
         toIndex: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
       assert.strictEqual(elm.dataset.restore, "", "restore");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
       assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
 
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
+    it("should remove value", async () => {
       const parent = document.createElement("section");
       const elm = document.createElement("div");
       const body = document.querySelector("body");
@@ -3586,228 +2318,410 @@ describe("main", () => {
         id: browser.windows.WINDOW_ID_CURRENT,
         incognito: false,
       });
-      browser.sessions.getWindowValue.resolves(undefined);
       const res = await func(1, {
         fromIndex: 1,
         toIndex: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
-      assert.strictEqual(elm.dataset.group, "", "group");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
+      assert.strictEqual(elm.dataset.group, "", "restore");
       assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
 
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
+    it("should not move", async () => {
       const parent = document.createElement("section");
       const parent2 = document.createElement("section");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
       const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
       parent2.appendChild(elm2);
-      parent2.appendChild(elm3);
       body.appendChild(parent);
       body.appendChild(parent2);
       browser.tabs.get.withArgs(1).resolves({
-        index: 2,
+        index: 0,
         pinned: false,
       });
       browser.windows.getCurrent.resolves({
         id: browser.windows.WINDOW_ID_CURRENT,
         incognito: false,
       });
-      browser.sessions.getWindowValue.resolves(undefined);
       const res = await func(1, {
-        fromIndex: 0,
-        toIndex: 2,
+        fromIndex: 1,
+        toIndex: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["1", "2"], "not move");
       assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
 
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
+    it("should set value", async () => {
       const parent = document.createElement("section");
       const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
       const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
       parent2.appendChild(elm2);
-      parent2.appendChild(elm3);
+      parent3.appendChild(elm3);
       body.appendChild(parent);
       body.appendChild(parent2);
-      mjs.sidebar.tabsWaitingToMove = [{tabId: 2}];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 2,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(1, {
-        fromIndex: 0,
-        toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.strictEqual(parent2.childElementCount, 3, "child");
-      assert.isTrue(parent2.firstElementChild === elm3, "first child");
-      assert.isTrue(parent2.lastElementChild === elm, "last child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(PINNED);
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
+      body.appendChild(parent3);
       browser.tabs.get.withArgs(1).resolves({
         index: 1,
         pinned: false,
       });
       browser.windows.getCurrent.resolves({
         id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
       });
-      browser.sessions.getWindowValue.resolves(undefined);
+      const res = await func(1, {
+        fromIndex: 0,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(mjs.sidebar.tabsWaitingToMove, [undefined, {
+        index: 1,
+        tabId: 1,
+        toIndex: 2,
+      }], "wait");
+      assert.deepEqual(items, ["1", "2", "3"], "not move");
+      assert.isNull(res, "result");
+    });
+
+    it("should set value", async () => {
+      const parent = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      parent.id = PINNED;
+      parent.classList.add(PINNED, CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB, PINNED);
+      elm3.dataset.tabId = "3";
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 1,
+        pinned: true,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(1, {
+        fromIndex: 0,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(mjs.sidebar.pinnedTabsWaitingToMove, [undefined, {
+        index: 1,
+        tabId: 1,
+        toIndex: 2,
+      }], "wait");
+      assert.deepEqual(items, ["1", "2", "3"], "not move");
+      assert.isNull(res, "result");
+    });
+
+    // pinned
+    it("should move", async () => {
+      const parent = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      parent.id = PINNED;
+      parent.classList.add(PINNED, CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB, PINNED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      browser.tabs.get.withArgs(3).resolves({
+        index: 1,
+        pinned: true,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(3, {
+        fromIndex: 2,
+        toIndex: 1,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["1", "3", "2"], "move");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const parent = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      parent.id = PINNED;
+      parent.classList.add(PINNED, CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB, PINNED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      browser.tabs.get.withArgs(2).resolves({
+        index: 2,
+        pinned: true,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(2, {
+        fromIndex: 1,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["1", "3", "2"], "move");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const parent = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      parent.id = PINNED;
+      parent.classList.add(PINNED, CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB, PINNED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      browser.tabs.get.withArgs(2).resolves({
+        index: 2,
+        pinned: true,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      mjs.sidebar.pinnedTabsWaitingToMove = [undefined, {
+        index: 1,
+        tabId: 1,
+        toIndex: 2,
+      }];
+      const res = await func(2, {
+        fromIndex: 1,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["3", "1", "2"], "move");
+      assert.isNull(mjs.sidebar.tabsWaitingToMove, "wait");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    // group
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      elm3.dataset.group = "1";
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent3.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      browser.tabs.get.withArgs(3).resolves({
+        index: 1,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(3, {
+        fromIndex: 2,
+        toIndex: 1,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["1", "3", "2"], "move");
+      assert.isTrue(elm.parentNode === elm3.parentNode, "group");
+      assert.strictEqual(elm3.dataset.group, "", "value");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm.dataset.group = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent3.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 1,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 1,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
-      assert.strictEqual(parent.childElementCount, 1, "child");
-      assert.isTrue(parent.nextElementSibling.firstElementChild === elm,
-                    "unpin");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["2", "1", "3"], "move");
+      assert.isTrue(elm.parentNode === elm2.parentNode, "group");
+      assert.strictEqual(elm.dataset.group, "", "value");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
     });
 
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
       const parent = document.createElement("section");
       const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
+      const parent4 = document.createElement("section");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
       const elm4 = document.createElement("div");
       const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
+      parent4.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -3816,1300 +2730,435 @@ describe("main", () => {
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
+        url: "https://example.com/foo",
       });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
+        url: "https://example.com/bar",
       });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = "4";
       elm4.dataset.tab = JSON.stringify({
-        url: "http://example.com",
+        url: "https://example.com/baz",
       });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm3);
-      parent2.appendChild(elm4);
+      elm4.dataset.group = "2";
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent3.appendChild(elm3);
+      parent4.appendChild(elm4);
       body.appendChild(parent);
       body.appendChild(parent2);
+      body.appendChild(parent3);
+      body.appendChild(parent4);
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      mjs.sidebar.tabsWaitingToMove = [undefined, {
+        index: 1,
+        tabId: 1,
+        toIndex: 2,
+      }];
+      const res = await func(4, {
+        fromIndex: 3,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["2", "1", "4", "3"], "move");
+      assert.isTrue(elm.parentNode === elm2.parentNode, "group");
+      assert.isTrue(elm4.parentNode === elm2.parentNode, "group");
+      assert.strictEqual(elm4.dataset.group, "", "value");
+      assert.isNull(mjs.sidebar.tabsWaitingToMove, "wait");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    // grouped tab
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.get.withArgs(3).resolves({
+        index: 1,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(3, {
+        fromIndex: 2,
+        toIndex: 1,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["1", "3", "2"], "move");
+      assert.isTrue(elm.parentNode === elm3.parentNode, "parent");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 1,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(1, {
+        fromIndex: 0,
+        toIndex: 1,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["2", "1", "3"], "move");
+      assert.isTrue(elm.parentNode === elm2.parentNode, "parent");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        url: "https://example.com/baz",
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent3.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      mjs.sidebar.tabsWaitingToMove = [undefined, {
+        index: 1,
+        tabId: 1,
+        toIndex: 2,
+      }];
+      const res = await func(4, {
+        fromIndex: 3,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["2", "1", "4", "3"], "move");
+      assert.isTrue(elm.parentNode === elm2.parentNode, "parent");
+      assert.isTrue(elm4.parentNode === elm2.parentNode, "parent");
+      assert.isNull(mjs.sidebar.tabsWaitingToMove, "wait");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
+      const parent4 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        url: "https://example.com/baz",
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent3.appendChild(elm3);
+      parent4.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      body.appendChild(parent4);
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(4, {
+        fromIndex: 3,
+        toIndex: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["1", "2", "4", "3"], "move");
+      assert.isTrue(elm4.parentNode !== elm2.parentNode, "parent");
+      assert.isTrue(elm4.parentNode !== elm3.parentNode, "parent");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const parent3 = document.createElement("section");
+      const parent4 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        url: "https://example.com/baz",
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent3.appendChild(elm3);
+      parent4.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      body.appendChild(parent4);
       browser.tabs.get.withArgs(1).resolves({
         index: 2,
         pinned: false,
       });
       browser.windows.getCurrent.resolves({
         id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
       });
-      browser.sessions.getWindowValue.resolves(undefined);
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 2,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
-      assert.strictEqual(parent.childElementCount, 1, "child");
-      assert.isTrue(parent.nextElementSibling.firstElementChild === elm,
-                    "detach");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 1,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(1, {
-        fromIndex: 0,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(parent2.nextElementSibling.firstElementChild === elm,
-                    "moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.tabsWaitingToMove = [{tabId: 3}];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 1,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(1, {
-        fromIndex: 0,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(parent2.nextElementSibling.firstElementChild === elm3,
-                    "moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["2", "3", "1", "4"], "move");
+      assert.isTrue(elm.parentNode !== elm3.parentNode, "parent");
+      assert.isTrue(elm.parentNode !== elm4.parentNode, "parent");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
       assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
 
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
+    it("should move", async () => {
+      const i = browser.sessions.setWindowValue.callCount;
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("section");
       const parent = document.createElement("section");
       const parent2 = document.createElement("section");
       const parent3 = document.createElement("section");
+      const parent4 = document.createElement("section");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
       const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 0,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(parent.previousElementSibling.firstElementChild === elm3,
-                    "moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.tabsWaitingToMove = [{tabId: 2}];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 0,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(parent.previousElementSibling.firstElementChild === elm2,
-                    "moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.group = "2";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 1,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(1, {
-        fromIndex: 0,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm.parentNode === parent2, "moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.group = "2";
       elm.dataset.tab = JSON.stringify({
         url: "https://example.com",
       });
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
+        url: "https://example.com/foo",
       });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
+        url: "https://example.com/bar",
       });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 1,
-        pinned: false,
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        url: "https://example.com/baz",
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(1, {
-        fromIndex: 0,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm.parentNode === parent, "not moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const pinned = document.createElement("selection");
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      pinned.id = PINNED;
-      pinned.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.group = "2";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
       parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
       parent3.appendChild(elm3);
-      body.appendChild(pinned);
+      parent4.appendChild(elm4);
       body.appendChild(parent);
       body.appendChild(parent2);
       body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 0,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === pinned, "moved");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const pinned = document.createElement("selection");
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      pinned.id = PINNED;
-      pinned.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.group = "2";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(pinned);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.pinnedTabsWaitingToMove = [{tabId: 2}];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 0,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === pinned, "moved");
-      assert.isTrue(elm2.parentNode === pinned, "moved");
-      assert.isTrue(pinned.firstElementChild === elm3, "child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.group = "2";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 0,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent, "moved");
-      assert.isTrue(parent.firstElementChild === elm3, "child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.group = "2";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.pinnedTabsWaitingToMove = [{tabId: 2}];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 0,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent, "moved");
-      assert.isTrue(parent.firstElementChild === elm3, "first child");
-      assert.strictEqual(parent.childElementCount, 3, "child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent, "moved");
-      assert.isTrue(parent.firstElementChild === elm, "child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.pinnedTabsWaitingToMove = [{tabId: 2}];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent, "moved");
-      assert.strictEqual(parent.childElementCount, 3, "child count");
-      assert.isTrue(parent.firstElementChild === elm, "first child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      elm1.classList.add(TAB);
-      elm1.dataset.tabId = "4";
-      elm1.dataset.tab = JSON.stringify({
-        url: "https://foo.example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      parent.appendChild(elm1);
-      elm2.classList.add(TAB);
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 3,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent, "moved");
-      assert.strictEqual(parent.childElementCount, 3, "child count");
-      assert.isTrue(parent.firstElementChild === elm, "child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      elm1.classList.add(TAB);
-      elm1.dataset.tabId = "4";
-      elm1.dataset.tab = JSON.stringify({
-        url: "https://foo.example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      parent.appendChild(elm1);
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.pinnedTabsWaitingToMove = [{tabId: 2}];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 3,
-        toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent, "moved");
-      assert.strictEqual(parent.childElementCount, 4, "child count");
-      assert.isTrue(parent.firstElementChild === elm, "first child");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-                         "called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-                         "called sessions set");
-      assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent3, "not moved");
-      assert.deepEqual(mjs.sidebar.tabsWaitingToMove, [, {
-        tabId: 3,
-        toIndex: 0,
-        index: 1,
-      }], "array");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.tabsWaitingToMove = [,, {
-        tabId: 2,
+      body.appendChild(parent4);
+      browser.tabs.get.withArgs(4).resolves({
         index: 2,
-        toIndex: 0,
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+      });
+      mjs.sidebar.tabsWaitingToMove = [undefined, {
+        index: 1,
+        tabId: 1,
+        toIndex: 2,
       }];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: false,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
+      const res = await func(4, {
+        fromIndex: 3,
+        toIndex: 2,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
-      assert.isTrue(elm3.parentNode === parent3, "not moved");
-      assert.deepEqual(mjs.sidebar.tabsWaitingToMove, [, {
-        tabId: 3,
-        toIndex: 0,
-        index: 1,
-      }, {
-        tabId: 2,
-        toIndex: 0,
-        index: 2,
-      }], "array");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent3, "not moved");
-      assert.deepEqual(mjs.sidebar.pinnedTabsWaitingToMove, [, {
-        tabId: 3,
-        toIndex: 0,
-        index: 1,
-      }], "array");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-    });
-
-    it("should not call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const parent = document.createElement("section");
-      const parent2 = document.createElement("section");
-      const parent3 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        url: "https://example.com",
-      });
-      parent.id = PINNED;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      elm2.classList.add(TAB);
-      elm2.dataset.tab = JSON.stringify({
-        url: "https://www.example.com",
-      });
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      parent2.appendChild(elm2);
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        url: "http://www.example.com",
-      });
-      parent3.classList.add(CLASS_TAB_CONTAINER);
-      parent3.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      body.appendChild(parent3);
-      mjs.sidebar.pinnedTabsWaitingToMove = [,, {
-        tabId: 2,
-        index: 2,
-        toIndex: 0,
-      }];
-      browser.tabs.get.withArgs(3).resolves({
-        index: 1,
-        pinned: true,
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false,
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
-      const res = await func(3, {
-        fromIndex: 2,
-        toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      assert.isTrue(elm3.parentNode === parent3, "not moved");
-      assert.deepEqual(mjs.sidebar.pinnedTabsWaitingToMove, [, {
-        tabId: 3,
-        toIndex: 0,
-        index: 1,
-      }, {
-        tabId: 2,
-        toIndex: 0,
-        index: 2,
-      }], "array");
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-                         "not called windows get");
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k,
-                         "not called sessions get");
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l,
-                         "not called sessions set");
-      assert.isNull(res, "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
+      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+        .map(obj => obj.dataset.tabId);
+      assert.deepEqual(items, ["2", "1", "4", "3"], "move");
+      assert.isTrue(elm.parentNode !== elm2.parentNode, "parent");
+      assert.isTrue(elm.parentNode !== elm4.parentNode, "parent");
+      assert.isTrue(elm4.parentNode !== elm3.parentNode, "parent");
+      assert.isNull(mjs.sidebar.tabsWaitingToMove, "wait");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
+                         "called");
+      assert.isUndefined(res, "result");
     });
   });
 
@@ -5256,6 +3305,14 @@ describe("main", () => {
       const body = document.querySelector("body");
       body.appendChild(sect);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      browser.sessions.getWindowValue.flush();
+      browser.tabs.query.flush();
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.tabs.query.flush();
+      browser.windows.getCurrent.flush();
     });
 
     it("should throw", async () => {
@@ -5357,7 +3414,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [undefined], "result");
-      browser.windows.getCurrent.flush();
     });
 
     it("should not update, not call function", async () => {
@@ -5383,7 +3439,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.query.callCount, i, "not called");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
-      browser.tabs.query.flush();
     });
 
     it("should update, call function", async () => {
@@ -5409,7 +3464,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.query.callCount, i + 1, "called");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.query.flush();
     });
 
     it("should update, call function", async () => {
@@ -5440,7 +3494,6 @@ describe("main", () => {
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isTrue(elm.classList.contains(PINNED), "class");
-      assert.isFalse(elm.hasAttribute("draggable"), "not draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 2,
                          "called windows get");
@@ -5482,7 +3535,6 @@ describe("main", () => {
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isFalse(elm.classList.contains(PINNED), "class");
-      assert.isTrue(elm.hasAttribute("draggable"), "draggable");
       assert.isTrue(elm.parentNode === pinned.nextElementSibling, "parent");
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 2,
                          "called windows get");
@@ -5490,7 +3542,7 @@ describe("main", () => {
                          "called sessions get");
       assert.strictEqual(browser.sessions.setWindowValue.callCount, k + 1,
                          "called sessions set");
-      assert.deepEqual(res, [undefined, undefined], "result");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should update", async () => {
@@ -5550,6 +3602,33 @@ describe("main", () => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.contextualIds = null;
       mjs.sidebar.context = null;
+      browser.bookmarks.create.flush();
+      browser.sessions.getWindowValue.flush();
+      browser.sessions.setWindowValue.flush();
+      browser.sessions.restore.flush();
+      browser.tabs.get.flush();
+      browser.tabs.highlight.flush();
+      browser.tabs.move.flush();
+      browser.tabs.query.flush();
+      browser.tabs.reload.flush();
+      browser.tabs.remove.flush();
+      browser.tabs.update.flush();
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.bookmarks.create.flush();
+      browser.sessions.getWindowValue.flush();
+      browser.sessions.setWindowValue.flush();
+      browser.sessions.restore.flush();
+      browser.tabs.create.flush();
+      browser.tabs.get.flush();
+      browser.tabs.highlight.flush();
+      browser.tabs.move.flush();
+      browser.tabs.query.flush();
+      browser.tabs.reload.flush();
+      browser.tabs.remove.flush();
+      browser.tabs.update.flush();
+      browser.windows.getCurrent.flush();
     });
 
     it("should not call function", async () => {
@@ -5599,7 +3678,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.create.callCount, j, "called create");
       assert.deepEqual(res, [], "result");
-      browser.tabs.get.flush();
     });
 
     it("should call function", async () => {
@@ -5623,7 +3701,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 2, "called get");
       assert.strictEqual(browser.tabs.create.callCount, j + 1, "called create");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
     });
 
     it("should call function", async () => {
@@ -5653,7 +3730,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 3, "called get");
       assert.strictEqual(browser.tabs.create.callCount, j + 2, "called create");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
     });
 
     it("should call function", async () => {
@@ -5676,7 +3752,6 @@ describe("main", () => {
       assert.deepEqual(res, [{
         id: "foo",
       }], "result");
-      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
@@ -5759,8 +3834,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -5793,8 +3866,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -5826,8 +3897,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -5859,8 +3928,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -5895,8 +3962,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -5931,8 +3996,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -5966,8 +4029,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -6001,8 +4062,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -6038,9 +4097,6 @@ describe("main", () => {
                          "called create");
       assert.strictEqual(browser.tabs.move.callCount, k + 1, "called move");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.windows.create.flush();
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -6076,9 +4132,6 @@ describe("main", () => {
                          "called create");
       assert.strictEqual(browser.tabs.move.callCount, k, "not called move");
       assert.deepEqual(res, [null], "result");
-      browser.tabs.get.flush();
-      browser.windows.create.flush();
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -6111,8 +4164,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.move.callCount, j + 1, "called move");
       assert.deepEqual(res, [[[{}, {}]]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -6145,8 +4196,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.move.callCount, j + 1, "called move");
       assert.deepEqual(res, [[[{}]]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -6182,8 +4231,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.move.callCount, j + 1, "called move");
       assert.deepEqual(res, [[[{}, {}]]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -6219,8 +4266,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.move.callCount, j + 1, "called move");
       assert.deepEqual(res, [[[{}]]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -6258,8 +4303,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.create.callCount, j + 2,
                          "called create");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
@@ -6297,8 +4340,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.create.callCount, j + 1,
                          "called create");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
@@ -6340,8 +4381,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.remove.callCount, j + 1, "called remove");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.tabs.remove.flush();
     });
 
     it("should call function", async () => {
@@ -6383,8 +4422,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.remove.callCount, j + 1, "called remove");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.tabs.remove.flush();
     });
 
     it("should call function", async () => {
@@ -6426,8 +4463,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.remove.callCount, j + 1, "called remove");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.tabs.remove.flush();
     });
 
     it("should call function", async () => {
@@ -6469,8 +4504,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.remove.callCount, j + 1, "called remove");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.tabs.remove.flush();
     });
 
     it("should call function", async () => {
@@ -6512,8 +4545,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.remove.callCount, j + 1, "called remove");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.tabs.remove.flush();
     });
 
     it("should call function", async () => {
@@ -6564,8 +4595,6 @@ describe("main", () => {
       assert.strictEqual(browser.bookmarks.create.callCount, j + 2,
                          "called create");
       assert.deepEqual(res, [[{}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.bookmarks.create.flush();
     });
 
     it("should call function", async () => {
@@ -6616,8 +4645,6 @@ describe("main", () => {
       assert.strictEqual(browser.bookmarks.create.callCount, j + 1,
                          "called create");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.get.flush();
-      browser.bookmarks.create.flush();
     });
 
     it("should call function", async () => {
@@ -6632,7 +4659,6 @@ describe("main", () => {
       const res = await func(info);
       assert.strictEqual(browser.sessions.restore.callCount, i + 1, "called");
       assert.deepEqual(res, [{}], "result");
-      browser.sessions.restore.flush();
     });
 
     it("should call function", async () => {
@@ -6701,8 +4727,6 @@ describe("main", () => {
       assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
                          "called sessions set");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -6775,8 +4799,6 @@ describe("main", () => {
                          "called sessions set");
       assert.strictEqual(browser.tabs.move.callCount, m + 2, "called move");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -6849,8 +4871,6 @@ describe("main", () => {
                          "called sessions set");
       assert.strictEqual(browser.tabs.move.callCount, m + 1, "called move");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -6923,8 +4943,6 @@ describe("main", () => {
                          "called sessions set");
       assert.strictEqual(browser.tabs.move.callCount, m + 1, "called move");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -7002,8 +5020,6 @@ describe("main", () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
                          "called get message");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -7051,9 +5067,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.highlight.callCount, k + 1,
                          "called highlight");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.get.flush();
-      browser.tabs.query.flush();
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -7101,9 +5114,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.highlight.callCount, k + 1,
                          "called highlight");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.get.flush();
-      browser.tabs.query.flush();
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -7141,8 +5151,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.reload.callCount, j + 3, "called reload");
       assert.deepEqual(res, [[undefined, undefined, undefined]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.reload.flush();
     });
 
     it("should call function", async () => {
@@ -7180,8 +5188,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
       assert.strictEqual(browser.tabs.reload.callCount, j + 3, "called reload");
       assert.deepEqual(res, [[undefined, undefined, undefined]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.reload.flush();
     });
 
     it("should call function", async () => {
@@ -7232,8 +5238,6 @@ describe("main", () => {
       assert.strictEqual(browser.bookmarks.create.callCount, j + 3,
                          "called create");
       assert.deepEqual(res, [[{}, {}, {}]], "result");
-      browser.tabs.get.flush();
-      browser.tabs.reload.flush();
     });
   });
 
@@ -7249,6 +5253,16 @@ describe("main", () => {
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.contextualIds = null;
+      browser.menus.update.flush();
+      browser.tabs.get.flush();
+      browser.tabs.highlight.flush();
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.menus.update.flush();
+      browser.tabs.get.flush();
+      browser.tabs.highlight.flush();
+      browser.tabs.query.flush();
     });
 
     it("should not call function", async () => {
@@ -7264,7 +5278,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j,
                          "not called update");
       assert.deepEqual(res, [], "result");
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7345,9 +5358,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.highlight.callCount, k + 1,
                          "called highlight");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.get.flush();
-      browser.tabs.query.flush();
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -7429,9 +5439,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.highlight.callCount, k + 1,
                          "called highlight");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.get.flush();
-      browser.tabs.query.flush();
-      browser.tabs.highlight.flush();
     });
 
     it("should call function", async () => {
@@ -7503,8 +5510,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 29,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7576,8 +5581,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 29,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7650,8 +5653,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 29,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7723,8 +5724,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 38,
                          "called update");
       assert.strictEqual(res.length, 38, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7796,8 +5795,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 38,
                          "called update");
       assert.strictEqual(res.length, 38, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7869,8 +5866,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 38,
                          "called update");
       assert.strictEqual(res.length, 38, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -7942,8 +5937,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 38,
                          "called update");
       assert.strictEqual(res.length, 38, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8016,8 +6009,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8090,8 +6081,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8164,8 +6153,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8238,8 +6225,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8314,8 +6299,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8390,8 +6373,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8466,8 +6447,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8542,8 +6521,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8619,8 +6596,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 41, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8693,8 +6668,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 38,
                          "called update");
       assert.strictEqual(res.length, 38, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8727,8 +6700,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 29,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
 
     it("should call function", async () => {
@@ -8762,8 +6733,6 @@ describe("main", () => {
       assert.strictEqual(browser.menus.update.callCount, j + 30,
                          "called update");
       assert.strictEqual(res.length, 30, "result");
-      browser.tabs.get.flush();
-      browser.menus.update.flush();
     });
   });
 
@@ -8811,6 +6780,18 @@ describe("main", () => {
 
   describe("handle runtime message", () => {
     const func = mjs.handleMsg;
+    beforeEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.sessions.setWindowValue.flush();
+      browser.tabs.get.flush();
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.sessions.setWindowValue.flush();
+      browser.tabs.get.flush();
+      browser.windows.getCurrent.flush();
+    });
 
     it("should not call function", async () => {
       const res = await func({});
@@ -8942,8 +6923,6 @@ describe("main", () => {
       assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
                          "called sessions set");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -8961,16 +6940,17 @@ describe("main", () => {
       const res = await func(msg);
       assert.deepEqual(res, [null], "result");
     });
-
   });
 
   describe("requestSidebarStateUpdate", () => {
     const func = mjs.requestSidebarStateUpdate;
     beforeEach(() => {
       mjs.sidebar.windowId = null;
+      browser.windows.getCurrent.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
+      browser.windows.getCurrent.flush();
     });
 
     it("should not call function", async () => {
@@ -8985,7 +6965,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j,
                          "not called");
       assert.isNull(res, "result");
-      browser.windows.getCurrent.flush();
     });
 
     it("should not call function", async () => {
@@ -9003,7 +6982,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
       assert.isNull(res, "result");
-      browser.windows.getCurrent.flush();
     });
 
     it("should not call function", async () => {
@@ -9021,7 +6999,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
       assert.isNull(res, "result");
-      browser.windows.getCurrent.flush();
     });
 
     it("should not call function", async () => {
@@ -9039,7 +7016,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
       assert.isNull(res, "result");
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -9058,7 +7034,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
       assert.isTrue(res, "result");
-      browser.windows.getCurrent.flush();
       browser.runtime.sendMessage.flush();
     });
   });
@@ -9325,6 +7300,12 @@ describe("main", () => {
       newTab.classList.add(CLASS_TAB_CONTAINER);
       body.appendChild(pinned);
       body.appendChild(newTab);
+      browser.sessions.getWindowValue.flush();
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.windows.getCurrent.flush();
     });
 
     it("should not restore if session is undefined", async () => {
@@ -11057,7 +9038,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -11220,7 +9201,7 @@ describe("main", () => {
       tmpl2.id = "tab-template";
       const div = document.createElement("div");
       div.classList.add("tab");
-      div.setAttribute("draggable", "true");
+      div.draggable = true;
       div.dataset.tabId = "";
       div.dataset.tab = "";
       const span = document.createElement("span");
@@ -11289,6 +9270,10 @@ describe("main", () => {
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
     });
 
     it("should create tab", async () => {
@@ -11319,7 +9304,6 @@ describe("main", () => {
       assert.strictEqual(browser.tabs.query.callCount, i + 1, "called");
       assert.strictEqual(items.length, 1, "created");
       assert.strictEqual(items[0].textContent, "foo", "title");
-      browser.tabs.query.flush();
     });
   });
 
@@ -11328,18 +9312,18 @@ describe("main", () => {
 
     it("should add listener", async () => {
       const main = document.createElement("main");
+      const pinned = document.createElement("section");
       const newTab = document.createElement("section");
       const body = document.querySelector("body");
       main.id = SIDEBAR_MAIN;
+      pinned.id = PINNED;
       newTab.id = NEW_TAB;
+      main.appendChild(pinned);
       main.appendChild(newTab);
       body.appendChild(main);
-      const spy = sinon.spy(main, "addEventListener");
-      const spy2 = sinon.spy(newTab, "addEventListener");
+      const spy = sinon.spy(newTab, "addEventListener");
       await func();
       assert.isTrue(spy.called);
-      assert.isTrue(spy2.called);
-      main.addEventListener.restore();
       newTab.addEventListener.restore();
     });
   });

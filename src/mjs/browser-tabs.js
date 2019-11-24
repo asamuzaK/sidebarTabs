@@ -117,7 +117,7 @@ export const closeTabsToEnd = async elm => {
   return func || null;
 };
 
-/* contextual IDs */
+/* create */
 /**
  * create tabs in order
  * @param {Array} arr - array of option
@@ -138,6 +138,7 @@ export const createTabsInOrder = async arr => {
   return func;
 };
 
+/* contextual IDs */
 /**
  * reopen tabs in container
  * @param {Array} nodes - array of node
