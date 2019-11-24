@@ -3,25 +3,29 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, logErr, throwErr,
+  getType, isObjectNotEmpty, isString, throwErr,
 } from "./common.js";
 import {
-  clearStorage, createTab, getActiveTab, getAllContextualIdentities,
+  clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
   getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, sendMessage, setSessionWindowValue, updateTab,
+  restoreSession, sendMessage, setSessionWindowValue,
 } from "./browser.js";
 import {
   bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
-  moveTabsInOrder, moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
+  moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
 } from "./browser-tabs.js";
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
-  getSidebarTabIndex, getSidebarTabContainer, getTabsInRange, getTemplate,
+  getSidebarTabIndex, getTabsInRange, getTemplate,
   isNewTab, scrollTabIntoView, setSessionTabList,
 } from "./util.js";
+import {
+  handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
+  handleDragStart, handleDrop,
+} from "./tab-dnd.js";
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
   addTabIconErrorListener, removeHighlight,
@@ -43,7 +47,7 @@ import menuItems from "./menu-items.js";
 
 /* api */
 const {
-  i18n, tabs, windows,
+  i18n, tabs,
 } = browser;
 
 /* constants */
@@ -59,9 +63,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  EXT_INIT, HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB,
-  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR_STATE_UPDATE,
+  EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
+  SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -74,7 +77,6 @@ import {
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
-const {WINDOW_ID_NONE} = windows;
 const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
@@ -205,324 +207,28 @@ export const undoCloseTab = async () => {
 
 /* DnD */
 /**
- * extract dropped tabs
- * @param {Object} dropTarget - target element
- * @param {Object} data - dragged data
- * @param {Object} opt - key options
- * @returns {Promise.<Array>} - results of each handler
- */
-export const extractDroppedTabs = async (dropTarget, data = {}, opt = {}) => {
-  const {windowId} = sidebar;
-  const {tabIds, windowId: dragWindowId} = data;
-  const dropTargetId = getSidebarTabId(dropTarget);
-  const dropTargetIndex = getSidebarTabIndex(dropTarget);
-  const func = [];
-  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
-      Number.isInteger(dropTargetId) && Array.isArray(tabIds) &&
-      tabIds.length && !tabIds.includes(dropTargetId) &&
-      Number.isInteger(dropTargetIndex) &&
-      Number.isInteger(dragWindowId) && dragWindowId !== WINDOW_ID_NONE) {
-    if (dragWindowId === windowId) {
-      const {shiftKey} = opt;
-      const {parentNode: dropParent} = dropTarget;
-      if (dropParent.classList.contains(PINNED)) {
-        for (const itemId of tabIds) {
-          const item = document.querySelector(`[data-tab-id="${itemId}"]`);
-          item && !item.classList.contains(PINNED) &&
-            func.push(updateTab(itemId, {pinned: true}));
-        }
-      } else if (dropParent.classList.contains(CLASS_TAB_GROUP) || shiftKey) {
-        const moveDownArr = [];
-        const moveUpArr = [];
-        const l = tabIds.length;
-        let restore, i = 0, j = dropTargetIndex + 1;
-        while (i < l) {
-          const itemId = tabIds[i];
-          const item = document.querySelector(`[data-tab-id="${itemId}"]`);
-          if (item) {
-            const itemIndex = getSidebarTabIndex(item);
-            if (itemIndex === j) {
-              dropParent.appendChild(item);
-              restore = true;
-            } else if (itemIndex < dropTargetIndex) {
-              moveDownArr.push([itemId, item]);
-            } else {
-              moveUpArr.push([itemId, item]);
-            }
-            if (i === l - 1) {
-              item.dataset.restore = dropTargetId;
-            }
-          }
-          i++;
-          j++;
-        }
-        if (moveUpArr.length) {
-          const revArr = moveUpArr.reverse();
-          const arr = [];
-          for (const [itemId, item] of revArr) {
-            dropParent.insertBefore(item, dropTarget.nextElementSibling);
-            arr.push({
-              index: getSidebarTabIndex(item),
-              tabId: itemId,
-            });
-          }
-          await moveTabsInOrder(arr, windowId);
-        }
-        if (moveDownArr.length) {
-          const revArr = moveDownArr.reverse();
-          const arr = [];
-          for (const [itemId, item] of revArr) {
-            dropParent.insertBefore(item, dropTarget.nextElementSibling);
-            arr.push({
-              index: getSidebarTabIndex(item),
-              tabId: itemId,
-            });
-          }
-          await moveTabsInOrder(arr, windowId);
-        }
-        restore && func.push(restoreTabContainers().then(setSessionTabList));
-      } else {
-        const moveDownArr = [];
-        const moveUpArr = [];
-        const l = tabIds.length;
-        let i = 0;
-        while (i < l) {
-          const itemId = tabIds[i];
-          const item = document.querySelector(`[data-tab-id="${itemId}"]`);
-          if (item) {
-            const itemIndex = getSidebarTabIndex(item);
-            if (itemIndex < dropTargetIndex) {
-              moveDownArr.push([itemId, item]);
-            } else {
-              moveUpArr.push([itemId, item]);
-            }
-            if (i === l - 1) {
-              item.dataset.restore = dropTargetId;
-            }
-          }
-          i++;
-        }
-        if (moveUpArr.length) {
-          const revArr = moveUpArr.reverse();
-          const arr = [];
-          for (const [itemId, item] of revArr) {
-            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-            container.appendChild(item);
-            container.removeAttribute("hidden");
-            dropParent.parentNode.insertBefore(container,
-                                               dropParent.nextElementSibling);
-            arr.push({
-              index: getSidebarTabIndex(item),
-              tabId: itemId,
-            });
-          }
-          await moveTabsInOrder(arr, windowId);
-        }
-        if (moveDownArr.length) {
-          const revArr = moveDownArr.reverse();
-          const arr = [];
-          for (const [itemId, item] of revArr) {
-            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-            container.appendChild(item);
-            container.removeAttribute("hidden");
-            dropParent.parentNode.insertBefore(container,
-                                               dropParent.nextElementSibling);
-            arr.push({
-              index: getSidebarTabIndex(item),
-              tabId: itemId,
-            });
-          }
-          await moveTabsInOrder(arr, windowId);
-        }
-      }
-    // dragged from other window
-    } else {
-      const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
-      let index;
-      if (dropTargetIndex === lastTabIndex) {
-        index = -1;
-      } else {
-        index = dropTargetIndex + 1;
-      }
-      func.push(moveTab(tabIds, {index, windowId}));
-    }
-  }
-  return Promise.all(func);
-};
-
-/**
- * handle drop
+ * create DnD data
  * @param {!Object} evt - event
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {?Function} - handleDragStart()
  */
-export const handleDrop = evt => {
-  const {ctrlKey, dataTransfer, metaKey, shiftKey, target} = evt;
-  const {windowId} = sidebar;
-  const url = dataTransfer.getData(MIME_URI);
-  const data = dataTransfer.getData(MIME_PLAIN);
-  const dropTarget = getSidebarTab(target);
-  const dropTargetId = getSidebarTabId(target);
-  const func = [];
-  if (url) {
-    const opt = {
-      url,
-      active: true,
-    };
-    if (Number.isInteger(dropTargetId)) {
-      func.push(updateTab(dropTargetId, opt));
-    } else {
-      opt.windowId = windowId;
-      func.push(createTab(opt));
-    }
-  } else if (dropTarget && data) {
-    let item;
-    try {
-      item = JSON.parse(data);
-    } catch (e) {
-      logErr(e);
-    }
-    if (isObjectNotEmpty(item)) {
-      const opt = {
-        ctrlKey, metaKey, shiftKey,
-      };
-      func.push(extractDroppedTabs(dropTarget, item, opt));
-    }
-  }
-  evt.preventDefault();
-  return Promise.all(func).catch(throwErr);
-};
-
-/**
- * handle dragend
- * @returns {void}
- */
-export const handleDragEnd = () => {
-  const items = document.querySelectorAll(`.${DROP_TARGET}`);
-  for (const item of items) {
-    item.classList.remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
-  }
-};
-
-/**
- * handle dragleave
- * @param {!Object} evt - event
- * @returns {void}
- */
-export const handleDragLeave = evt => {
+export const createDnDData = evt => {
   const {currentTarget} = evt;
-  const dropTarget = getSidebarTab(currentTarget);
-  dropTarget && dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-                                            DROP_TARGET_BEFORE);
-};
-
-/**
- * handle dragover
- * @param {!Object} evt - event
- * @returns {void}
- */
-export const handleDragOver = evt => {
-  const {clientY, currentTarget, dataTransfer} = evt;
-  const data = dataTransfer.getData(MIME_PLAIN);
-  const dropTarget = getSidebarTab(currentTarget);
-  if (data && dropTarget) {
-    let pinned;
-    try {
-      const item = JSON.parse(data);
-      pinned = !!item.pinned;
-    } catch (e) {
-      pinned = false;
-    }
-    const isPinned = dropTarget.classList.contains(PINNED);
-    if (isPinned && pinned || !(isPinned || pinned)) {
-      const {bottom, top} = dropTarget.getBoundingClientRect();
-      if (clientY > (bottom - top) / 2 + top) {
-        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
-        dropTarget.classList.remove(DROP_TARGET_BEFORE);
-      } else {
-        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
-        dropTarget.classList.remove(DROP_TARGET_AFTER);
-      }
-      dataTransfer.dropEffect = "move";
-    } else {
-      dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-                                  DROP_TARGET_BEFORE);
-      dataTransfer.dropEffect = "none";
-    }
-    evt.preventDefault();
-  }
-};
-
-/**
- * handle dragenter
- * @param {!Object} evt - event
- * @returns {void}
- */
-export const handleDragEnter = evt => {
-  const {currentTarget, dataTransfer} = evt;
-  const data = dataTransfer.getData(MIME_PLAIN);
-  const dropTarget = getSidebarTab(currentTarget);
-  if (data && dropTarget) {
-    let pinned;
-    try {
-      const item = JSON.parse(data);
-      pinned = !!item.pinned;
-    } catch (e) {
-      pinned = false;
-    }
-    const isPinned = dropTarget.classList.contains(PINNED);
-    if (isPinned && pinned || !(isPinned || pinned)) {
-      dropTarget.classList.add(DROP_TARGET);
-    }
-  }
-};
-
-/**
- * handle dragstart
- * @param {!Object} evt - event
- * @returns {void}
- */
-export const handleDragStart = evt => {
-  const {ctrlKey, currentTarget, dataTransfer, metaKey} = evt;
-  const {classList} = currentTarget;
   const {isMac, windowId} = sidebar;
-  const container = getSidebarTabContainer(currentTarget);
-  const data = {
-    windowId,
-    pinned: classList.contains(PINNED),
-  };
-  let items;
-  if (classList.contains(HIGHLIGHTED)) {
-    items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-  } else if (container && container.classList.contains(CLASS_TAB_GROUP) &&
-             (isMac && metaKey || !isMac && ctrlKey)) {
-    items = container.querySelectorAll(TAB_QUERY);
-    for (const item of items) {
-      item.classList.add(HIGHLIGHTED);
-    }
+  let func;
+  if (currentTarget.draggable) {
+    func = handleDragStart(evt, {isMac, windowId});
   }
-  if (items && items.length) {
-    const arr = [];
-    for (const item of items) {
-      const tabId = getSidebarTabId(item);
-      arr.push(tabId);
-    }
-    data.tabIds = arr;
-  } else {
-    const tabId = getSidebarTabId(currentTarget);
-    data.tabIds = [tabId];
-  }
-  dataTransfer.effectAllowed = "move";
-  dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
+  return func || null;
 };
 
 /**
  * add DnD event listener
- * @param {Object} elm - draggable element
+ * @param {Object} elm - element
  * @returns {void}
  */
 export const addDnDEventListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.draggable && elm.addEventListener("dragstart", handleDragStart);
+    elm.draggable && elm.addEventListener("dragstart", createDnDData);
     elm.addEventListener("dragenter", handleDragEnter);
     elm.addEventListener("dragover", handleDragOver);
     elm.addEventListener("dragleave", handleDragLeave);
@@ -901,9 +607,9 @@ export const handleMovedTab = async (tabId, info) => {
     const tabsTab = await getTab(tabId);
     const {index, pinned} = tabsTab;
     const {group, restore} = tab.dataset;
+    let setSession;
     if (tabIndex !== index) {
       const {pinnedTabsWaitingToMove, tabsWaitingToMove} = sidebar;
-      const allTabs = document.querySelectorAll(TAB_QUERY);
       if (toIndex !== index) {
         const obj = {
           index, tabId, toIndex,
@@ -919,90 +625,69 @@ export const handleMovedTab = async (tabId, info) => {
         }
       } else if (pinned) {
         const container = document.getElementById(PINNED);
-        if (toIndex === 0) {
-          const {firstElementChild} = container;
-          container.insertBefore(tab, firstElementChild);
-          if (Array.isArray(pinnedTabsWaitingToMove)) {
-            const arr = pinnedTabsWaitingToMove.filter(i => i);
-            for (const item of arr) {
-              const {tabId: itemTabId} = item;
-              const itemTab =
-                document.querySelector(`[data-tab-id="${itemTabId}"]`);
-              container.insertBefore(itemTab, firstElementChild);
-            }
-            await setPinnedTabsWaitingToMove(null);
-            func = restoreTabContainers().then(setSessionTabList);
-          }
+        const pinnedTabs = container.querySelectorAll(`.${PINNED}`);
+        const target = pinnedTabs[toIndex];
+        if (fromIndex > toIndex) {
+          container.insertBefore(tab, target);
         } else {
-          const target = allTabs[toIndex];
-          if (target.parentNode === container) {
-            container.insertBefore(tab, target);
-          } else {
-            container.appendChild(tab);
-          }
-          if (Array.isArray(pinnedTabsWaitingToMove)) {
-            const arr = pinnedTabsWaitingToMove.filter(i => i);
-            for (const item of arr) {
-              const {tabId: itemTabId} = item;
-              const itemTab =
-                document.querySelector(`[data-tab-id="${itemTabId}"]`);
-              if (target.parentNode === container) {
-                container.insertBefore(itemTab, target);
-              } else {
-                container.appendChild(itemTab);
-              }
-            }
-            await setPinnedTabsWaitingToMove(null);
-            func = restoreTabContainers().then(setSessionTabList);
-          }
+          container.insertBefore(tab, target.nextElementSibling);
         }
+        if (Array.isArray(pinnedTabsWaitingToMove)) {
+          const arr = pinnedTabsWaitingToMove.filter(i => i);
+          for (const item of arr) {
+            const {tabId: itemTabId} = item;
+            const itemTab =
+              document.querySelector(`[data-tab-id="${itemTabId}"]`);
+            container.insertBefore(itemTab, tab);
+          }
+          await setPinnedTabsWaitingToMove(null);
+        }
+        setSession = true;
       } else if (group) {
-        const openerTab = document.querySelector(`[data-tab-id="${group}"]`);
-        openerTab && openerTab.parentNode !== tab.parentNode &&
-          openerTab.parentNode.appendChild(tab);
-      } else if (toIndex === 0) {
-        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        const [target] = allTabs;
-        const {parentNode} = target;
-        container.appendChild(tab);
-        container.removeAttribute("hidden");
-        parentNode.parentNode.insertBefore(container, parentNode);
+        const target = document.querySelector(`[data-tab-id="${group}"]`);
+        const container = target.parentNode;
+        container.insertBefore(tab, target.nextElementSibling);
         if (Array.isArray(tabsWaitingToMove)) {
           const arr = tabsWaitingToMove.filter(i => i);
           for (const item of arr) {
             const {tabId: itemTabId} = item;
             const itemTab =
               document.querySelector(`[data-tab-id="${itemTabId}"]`);
-            const itemContainer = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-            itemContainer.appendChild(itemTab);
-            itemContainer.removeAttribute("hidden");
-            parentNode.parentNode.insertBefore(itemContainer, parentNode);
+            container.insertBefore(itemTab, tab);
           }
           await setTabsWaitingToMove(null);
-          func = restoreTabContainers().then(setSessionTabList);
         }
+        setSession = true;
       } else {
+        const allTabs = document.querySelectorAll(TAB_QUERY);
         const target = allTabs[toIndex];
-        const {parentNode: targetParent} = target;
-        const unPinned =
-          toIndex > fromIndex &&
-          allTabs[fromIndex].parentNode.classList.contains(PINNED) &&
-          targetParent.classList.contains(PINNED) &&
-          target === targetParent.lastElementChild;
-        const detached =
-          toIndex > fromIndex &&
-          allTabs[fromIndex].parentNode.classList.contains(CLASS_TAB_GROUP) &&
-          allTabs[fromIndex].parentNode.nextElementSibling === targetParent &&
-          target === targetParent.firstElementChild;
-        if (unPinned || detached || target === targetParent.firstElementChild) {
+        const targetParent = target.parentNode;
+        if (targetParent.classList.contains(CLASS_TAB_GROUP)) {
+          const container = target.parentNode;
+          if (fromIndex > toIndex) {
+            container.insertBefore(tab, target);
+          } else {
+            container.insertBefore(tab, target.nextElementSibling);
+          }
+          if (Array.isArray(tabsWaitingToMove)) {
+            const arr = tabsWaitingToMove.filter(i => i);
+            for (const item of arr) {
+              const {tabId: itemTabId} = item;
+              const itemTab =
+                document.querySelector(`[data-tab-id="${itemTabId}"]`);
+              container.insertBefore(itemTab, tab);
+            }
+            await setTabsWaitingToMove(null);
+          }
+        } else {
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
           container.appendChild(tab);
           container.removeAttribute("hidden");
-          if (unPinned || toIndex > fromIndex && !detached) {
+          if (fromIndex > toIndex) {
+            targetParent.parentNode.insertBefore(container, targetParent);
+          } else {
             targetParent.parentNode
               .insertBefore(container, targetParent.nextElementSibling);
-          } else {
-            targetParent.parentNode.insertBefore(container, targetParent);
           }
           if (Array.isArray(tabsWaitingToMove)) {
             const arr = tabsWaitingToMove.filter(i => i);
@@ -1016,22 +701,9 @@ export const handleMovedTab = async (tabId, info) => {
               container.parentNode.insertBefore(itemContainer, container);
             }
             await setTabsWaitingToMove(null);
-            func = restoreTabContainers().then(setSessionTabList);
-          }
-        } else {
-          targetParent.insertBefore(tab, target.nextElementSibling);
-          if (Array.isArray(tabsWaitingToMove)) {
-            const arr = tabsWaitingToMove.filter(i => i);
-            for (const item of arr) {
-              const {tabId: itemTabId} = item;
-              const itemTab =
-                document.querySelector(`[data-tab-id="${itemTabId}"]`);
-              targetParent.insertBefore(itemTab, tab);
-            }
-            await setTabsWaitingToMove(null);
-            func = restoreTabContainers().then(setSessionTabList);
           }
         }
+        setSession = true;
       }
     }
     if (group) {
@@ -1039,6 +711,9 @@ export const handleMovedTab = async (tabId, info) => {
     }
     if (restore) {
       tab.dataset.restore = "";
+      setSession = true;
+    }
+    if (setSession) {
       func = restoreTabContainers().then(setSessionTabList);
     }
   }
@@ -1709,14 +1384,11 @@ export const handleEvt = async evt => {
  */
 export const handleContextmenuEvt = async evt => {
   const {target} = evt;
-  const tab = getSidebarTab(target);
+  const tabId = getSidebarTabId(target);
   const opt = {};
-  if (tab) {
-    const tabId = getSidebarTabId(tab);
-    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
-      opt.tabId = tabId;
-      opt.context = "tab";
-    }
+  if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
+    opt.tabId = tabId;
+    opt.context = "tab";
   }
   return overrideContextMenu(opt);
 };
@@ -1845,11 +1517,9 @@ export const restoreHighlightedTabs = async () => {
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const items = await getHighlightedTab(windowId);
   const tabIds = new Set();
-  if (Array.isArray(items)) {
-    for (const item of items) {
-      const {id} = item;
-      tabIds.add(id);
-    }
+  for (const item of items) {
+    const {id} = item;
+    tabIds.add(id);
   }
   for (const tab of allTabs) {
     const tabId = getSidebarTabId(tab);
@@ -1895,8 +1565,7 @@ export const restoreTabGroups = async () => {
         } else {
           const container = containers[containerIndex];
           if (item.parentNode !== container) {
-            // NOTE: `tabList[i - 1]` is for backward compat.
-            const prevList = recent && recent[i - 1] || tabList[i - 1];
+            const prevList = recent[i - 1];
             const {url: prevUrl} = prevList;
             const prevItem = items[i - 1];
             const {dataset: {tab: prevItemTab}} = prevItem;
