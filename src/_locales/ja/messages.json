@@ -197,6 +197,18 @@
   "expandTabGroup_tooltip": {
     "message": "グループのタブを展開します"
   },
+  "groupSameDomainTabs": {
+    "message": "同じドメインのタブをグループ化"
+  },
+  "groupSameDomainTabs_title": {
+    "message": "同じドメインのタブをグループ化$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
   "groupSelectedTabs": {
     "message": "選択したタブをグループ化"
   },
