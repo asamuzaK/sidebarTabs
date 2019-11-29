@@ -894,6 +894,33 @@ describe("browser", () => {
     });
   });
 
+  describe("query tabs", async () => {
+    const func = mjs.queryTabs;
+    beforeEach(() => {
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
+    });
+
+    it("should get null", async () => {
+      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
+      const res = await func({});
+      assert.isNull(res, "result");
+      stubApi.restore();
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.query.withArgs({}).callCount;
+      browser.tabs.query.resolves([{}]);
+      browser.tabs.query.withArgs({}).resolves([{}, {}]);
+      const res = await func({});
+      assert.strictEqual(browser.tabs.query.withArgs({}).callCount, i + 1,
+                         "called");
+      assert.deepEqual(res, [{}, {}], "result");
+    });
+  });
+
   describe("execute content script to existing tab", () => {
     const func = mjs.execScriptToTab;
 
