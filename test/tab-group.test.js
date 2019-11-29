@@ -7,6 +7,7 @@ import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
+import psl from "psl";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/tab-group.js";
 import {
@@ -32,6 +33,7 @@ describe("tab-group", () => {
   beforeEach(() => {
     const dom = createJsdom();
     window = dom && dom.window;
+    window.psl = psl;
     document = window && window.document;
     global.browser = browser;
     global.window = window;
@@ -574,6 +576,163 @@ describe("tab-group", () => {
       const res = await func();
       assert.strictEqual(elm.childElementCount, 2, "child");
       assert.strictEqual(elm2.childElementCount, 1, "child");
+      assert.isNull(res, "result");
+    });
+  });
+
+  describe("group same domain tabs", () => {
+    const func = mjs.groupSameDomainTabs;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+      browser.tabs.move.flush();
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+      browser.tabs.move.flush();
+      browser.tabs.query.flush();
+    });
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Expected Number but got Undefined.");
+      });
+    });
+
+    it("should not group", async () => {
+      const arg = {
+        pinned: false,
+        url: "*://*.example.com/*",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      const i = browser.tabs.query.withArgs(arg).callCount;
+      const j = browser.tabs.move.callCount;
+      browser.tabs.get.resolves({
+        url: "https://www.example.com/foo",
+      });
+      browser.tabs.query.withArgs(arg).resolves([
+        {
+          id: 1,
+          url: "https://www.example.com/foo",
+        },
+      ]);
+      const res = await func(1);
+      assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i + 1,
+                         "query");
+      assert.strictEqual(browser.tabs.move.callCount, j, "not moved");
+      assert.isNull(res, "result");
+    });
+
+    it("should group tabs", async () => {
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("div");
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      cnt.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const arg = {
+        pinned: false,
+        url: "*://*.example.com/*",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      const i = browser.tabs.query.withArgs(arg).callCount;
+      const j = browser.tabs.move.callCount;
+      browser.tabs.get.resolves({
+        url: "https://www.example.com/foo",
+      });
+      browser.tabs.query.withArgs(arg).resolves([
+        {
+          id: 1,
+          url: "https://www.example.com/foo",
+        },
+        {
+          id: 3,
+          url: "https://example.com/bar",
+        },
+      ]);
+      const res = await func(1, browser.windows.WINDOW_ID_CURRENT);
+      assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i + 1,
+                         "query");
+      assert.strictEqual(browser.tabs.move.callCount, j + 2, "move");
+      assert.strictEqual(body.childElementCount, 4, "parent");
+      assert.strictEqual(parent.childElementCount, 1, "child");
+      assert.strictEqual(parent.nextElementSibling.childElementCount, 2,
+                         "child");
+      assert.strictEqual(parent2.childElementCount, 0, "child");
+      assert.isNull(res, "result");
+    });
+
+    it("should group tabs", async () => {
+      const tmpl = document.createElement("template");
+      const cnt = document.createElement("div");
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      cnt.setAttribute("hidden", "hidden");
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const arg = {
+        pinned: false,
+        url: "*://*.example.com/*",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      const i = browser.tabs.query.withArgs(arg).callCount;
+      const j = browser.tabs.move.callCount;
+      browser.tabs.get.resolves({
+        url: "https://example.com/bar",
+      });
+      browser.tabs.query.withArgs(arg).resolves([
+        {
+          id: 1,
+          url: "https://www.example.com/foo",
+        },
+        {
+          id: 3,
+          url: "https://example.com/bar",
+        },
+      ]);
+      const res = await func(3, browser.windows.WINDOW_ID_CURRENT);
+      assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i + 1,
+                         "query");
+      assert.strictEqual(browser.tabs.move.callCount, j + 1, "move");
+      assert.strictEqual(body.childElementCount, 3, "parent");
+      assert.strictEqual(parent.childElementCount, 1, "child");
+      assert.strictEqual(parent2.childElementCount, 2, "child");
       assert.isNull(res, "result");
     });
   });
