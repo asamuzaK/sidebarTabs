@@ -33,8 +33,9 @@ import {
   setTabIcon, toggleHighlight,
 } from "./tab-content.js";
 import {
-  addTabContextClickListener, detachTabsFromGroup, groupSelectedTabs,
-  restoreTabContainers, toggleTabGroupCollapsedState, ungroupTabs,
+  addTabContextClickListener, detachTabsFromGroup, groupSameDomainTabs,
+  groupSelectedTabs, restoreTabContainers, toggleTabGroupCollapsedState,
+  ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -68,7 +69,8 @@ import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP, TAB_LIST,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED,
+  TAB_GROUP_UNGROUP, TAB_LIST,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK, TABS_CLOSE,
   TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END, TABS_MOVE_START,
@@ -881,6 +883,12 @@ export const handleClickedMenu = async info => {
           .then(restoreTabContainers).then(setSessionTabList),
       );
       break;
+    case TAB_GROUP_DOMAIN:
+      func.push(
+        groupSameDomainTabs(tabId, windowId).then(restoreTabContainers)
+          .then(setSessionTabList),
+      );
+      break;
     case TAB_GROUP_SELECTED:
       func.push(
         groupSelectedTabs(windowId).then(restoreTabContainers)
@@ -1035,7 +1043,8 @@ export const handleEvt = async evt => {
       const {index, mutedInfo: {muted}, pinned} = tabsTab;
       const tabGroupKeys = [
         TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-        TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP, "sepTabGroup-1",
+        TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+        "sepTabGroup-1",
       ];
       for (const itemKey of tabKeys) {
         const item = menuItems[itemKey];
@@ -1203,24 +1212,6 @@ export const handleEvt = async evt => {
           }
         }
       }
-      if (parentClass.contains(CLASS_TAB_GROUP) ||
-          tabClass.contains(HIGHLIGHTED)) {
-        func.push(
-          updateContextMenu(tabGroupMenu.id, {
-            enabled: true,
-            title: tabGroupMenu.title,
-            visible: true,
-          }),
-        );
-      } else {
-        func.push(
-          updateContextMenu(tabGroupMenu.id, {
-            enabled: false,
-            title: tabGroupMenu.title,
-            visible: true,
-          }),
-        );
-      }
       for (const itemKey of tabGroupKeys) {
         const item = tabGroupMenu.subItems[itemKey];
         const {id, title, toggleTitle} = item;
@@ -1265,6 +1256,11 @@ export const handleEvt = async evt => {
               data.visible = false;
             }
             break;
+          case TAB_GROUP_DOMAIN:
+            data.enabled = !pinned;
+            data.title = title;
+            data.visible = true;
+            break;
           case TAB_GROUP_SELECTED:
             data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
             data.title = title;
@@ -1288,9 +1284,16 @@ export const handleEvt = async evt => {
         }));
       }
       await setContext(tab);
-      func.push(updateContextMenu(bookmarkMenu.id, {
-        visible: false,
-      }));
+      func.push(
+        updateContextMenu(tabGroupMenu.id, {
+          enabled: true,
+          title: tabGroupMenu.title,
+          visible: true,
+        }),
+        updateContextMenu(bookmarkMenu.id, {
+          visible: false,
+        }),
+      );
     } else {
       for (const itemKey of tabKeys) {
         const item = menuItems[itemKey];
