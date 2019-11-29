@@ -6,11 +6,14 @@ import {
   getType, throwErr,
 } from "./common.js";
 import {
+  getTab, queryTabs,
+} from "./browser.js";
+import {
   moveTabsInOrder,
 } from "./browser-tabs.js";
 import {
-  activateTab, getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex,
-  getTemplate, setSessionTabList,
+  activateTab, createUrlMatchString, getSidebarTabContainer, getSidebarTabId,
+  getSidebarTabIndex, getTemplate, setSessionTabList,
 } from "./util.js";
 
 /* api */
@@ -196,6 +199,64 @@ export const groupSelectedTabs = async windowId => {
     }
     if (!Number.isInteger(windowId)) {
       windowId = windows.WINDOW_ID_CURRENT;
+    }
+    func = moveTabsInOrder(arr, windowId);
+  }
+  return func || null;
+};
+
+/**
+ * group same domain tabs
+ * @param {number} tabId - tab ID
+ * @param {number} windowId - window ID
+ * @returns {?AsyncFunction} - moveTabsInOrder()
+ */
+export const groupSameDomainTabs = async (tabId, windowId) => {
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+  }
+  const tabsTab = await getTab(tabId);
+  const {url: tabUrl} = tabsTab;
+  const url = createUrlMatchString(tabUrl);
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
+  const items = await queryTabs({
+    url, windowId,
+    pinned: false,
+  });
+  let func;
+  if (Array.isArray(items) && items.length > 1) {
+    const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+    const tabParent = tab.parentNode;
+    const domainTabs = [];
+    const arr = [];
+    let container;
+    if (tabParent.classList.contains(CLASS_TAB_GROUP)) {
+      container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+      container.appendChild(tab);
+      container.removeAttribute("hidden");
+      tabParent.parentNode.insertBefore(container,
+                                        tabParent.nextElementSibling);
+      domainTabs.push([tab, tabId]);
+    } else {
+      container = tabParent;
+    }
+    for (const item of items) {
+      const {id: itemId} = item;
+      if (itemId !== tabId) {
+        const itemTab = document.querySelector(`[data-tab-id="${itemId}"]`);
+        itemTab.dataset.group = tabId;
+        container.appendChild(itemTab);
+        domainTabs.push([itemTab, itemId]);
+      }
+    }
+    for (const [itemTab, itemId] of domainTabs) {
+      const itemIndex = getSidebarTabIndex(itemTab);
+      arr.push({
+        index: itemIndex,
+        tabId: itemId,
+      });
     }
     func = moveTabsInOrder(arr, windowId);
   }

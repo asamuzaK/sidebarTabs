@@ -11,6 +11,7 @@ import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
 import os from "os";
+import psl from "psl";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
@@ -29,7 +30,8 @@ import {
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED,
+  TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
@@ -56,6 +58,7 @@ describe("main", () => {
   beforeEach(() => {
     const dom = createJsdom();
     window = dom && dom.window;
+    window.psl = psl;
     document = window && window.document;
     global.browser = browser;
     global.window = window;
@@ -4753,6 +4756,92 @@ describe("main", () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://www.example.com/foo",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.net/",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://example.com/bar",
+      });
+      parent2.appendChild(elm3);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(pinned);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(newTab);
+      mjs.sidebar.context = elm;
+      const arg = {
+        pinned: false,
+        url: "*://*.example.com/*",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      browser.tabs.get.resolves({
+        url: "https://www.example.com/foo",
+      });
+      browser.tabs.query.withArgs(arg).resolves([
+        {
+          id: 1,
+          url: "https://www.example.com/foo",
+        },
+        {
+          id: 3,
+          url: "https://example.com/bar",
+        },
+      ]);
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+        incognito: false,
+      });
+      const info = {
+        menuItemId: TAB_GROUP_DOMAIN,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 2, "called tabs get");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
+                         "called windows get current");
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
+                         "called sessions get");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
+                         "called sessions set");
+      assert.strictEqual(browser.tabs.move.callCount, m + 2, "called move");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const k = browser.sessions.getWindowValue.callCount;
+      const l = browser.sessions.setWindowValue.callCount;
+      const m = browser.tabs.move.callCount;
+      const tmpl = document.createElement("template");
+      const sect = document.createElement("section");
+      const pinned = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const newTab = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      tmpl.content.appendChild(sect);
+      pinned.id = PINNED;
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
       elm.classList.add(HIGHLIGHTED);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -5721,9 +5810,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 38,
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
                          "called update");
-      assert.strictEqual(res.length, 38, "result");
+      assert.strictEqual(res.length, 39, "result");
     });
 
     it("should call function", async () => {
@@ -5792,9 +5881,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 38,
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
                          "called update");
-      assert.strictEqual(res.length, 38, "result");
+      assert.strictEqual(res.length, 39, "result");
     });
 
     it("should call function", async () => {
@@ -5863,9 +5952,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 38,
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
                          "called update");
-      assert.strictEqual(res.length, 38, "result");
+      assert.strictEqual(res.length, 39, "result");
     });
 
     it("should call function", async () => {
@@ -5934,9 +6023,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 38,
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
                          "called update");
-      assert.strictEqual(res.length, 38, "result");
+      assert.strictEqual(res.length, 39, "result");
     });
 
     it("should call function", async () => {
@@ -6006,9 +6095,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6078,9 +6167,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6150,9 +6239,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6222,9 +6311,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6296,9 +6385,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6370,9 +6459,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6444,9 +6533,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6518,9 +6607,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6593,9 +6682,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(res.length, 42, "result");
     });
 
     it("should call function", async () => {
@@ -6665,9 +6754,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 38,
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
                          "called update");
-      assert.strictEqual(res.length, 38, "result");
+      assert.strictEqual(res.length, 39, "result");
     });
 
     it("should call function", async () => {

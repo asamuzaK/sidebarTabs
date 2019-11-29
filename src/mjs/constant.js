@@ -88,6 +88,7 @@ export const TAB_GROUP = "tabGroup";
 export const TAB_GROUP_COLLAPSE = "collapseTabGroup";
 export const TAB_GROUP_DETACH = "detachTabFromGroup";
 export const TAB_GROUP_DETACH_TABS = "detachTabsFromGroup";
+export const TAB_GROUP_DOMAIN = "groupSameDomainTabs";
 export const TAB_GROUP_EXPAND = "expandTabGroup";
 export const TAB_GROUP_SELECTED = "groupSelectedTabs";
 export const TAB_GROUP_NEW_TAB_AT_END = "tabGroupPutNewTabAtTheEnd";

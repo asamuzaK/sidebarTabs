@@ -49,9 +49,9 @@ export const updateCommand = async (id, value = "") => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const {commands} = browser;
   let func;
-  if (commands && isCommandCustomizable()) {
+  if (isCommandCustomizable()) {
+    const {commands} = browser;
     const shortcut =
       value.trim().replace(/\+([a-z])$/, (m, c) => `+${c.toUpperCase()}`);
     if (shortcut === "") {
@@ -460,14 +460,27 @@ export const execScriptToTab = async (tabId, opt = {}) => {
 };
 
 /**
+ * query tabs
+ * @param {Object} opt - options
+ * @returns {?Array} - result
+ */
+export const queryTabs = async opt => {
+  const {tabs} = browser;
+  let res;
+  if (tabs) {
+    res = await tabs.query(opt);
+  }
+  return res || null;
+};
+
+/**
  * execute content script to existing tabs
  * @param {Object} opt - options
  * @returns {Promise.<Array>} - results of each handler
  */
 export const execScriptToTabs = async (opt = {}) => {
-  const {tabs} = browser;
   const func = [];
-  const tabList = tabs && await tabs.query({
+  const tabList = await queryTabs({
     url: ["<all_urls>"],
     windowType: "normal",
   });
@@ -492,8 +505,7 @@ export const getActiveTab = async windowId => {
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const {tabs} = browser;
-  const arr = tabs && await tabs.query({
+  const arr = await queryTabs({
     windowId,
     active: true,
     windowType: "normal",
@@ -514,8 +526,7 @@ export const getActiveTabId = async windowId => {
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const {tabs} = browser;
-  const tab = tabs && await getActiveTab(windowId);
+  const tab = await getActiveTab(windowId);
   const tabId = tab && tab.id;
   return Number.isInteger(tabId) ?
     tabId :
@@ -531,8 +542,7 @@ export const getAllTabsInWindow = async windowId => {
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const {tabs} = browser;
-  const arr = tabs && await tabs.query({
+  const arr = await queryTabs({
     windowId,
     windowType: "normal",
   });
@@ -548,8 +558,7 @@ export const getHighlightedTab = async windowId => {
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const {tabs} = browser;
-  const arr = tabs && await tabs.query({
+  const arr = await queryTabs({
     windowId,
     highlighted: true,
     windowType: "normal",

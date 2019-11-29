@@ -7,6 +7,7 @@ import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import sinon from "sinon";
+import psl from "psl";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/util.js";
 import {
@@ -31,6 +32,7 @@ describe("util", () => {
   beforeEach(() => {
     const dom = createJsdom();
     window = dom && dom.window;
+    window.psl = psl;
     document = window && window.document;
     global.browser = browser;
     global.window = window;
@@ -972,6 +974,71 @@ describe("util", () => {
       assert.isTrue(stubNewTab.called, "called");
       assert.isTrue(stubElm.called, "called");
       assert.isTrue(stubFunc.called, "not called");
+    });
+  });
+
+  describe("create URL match string", () => {
+    const func = mjs.createUrlMatchString;
+
+    it("should throw", () => {
+      assert.throws(() => func(), "Expected String but got Undefined.",
+                    "throw");
+    });
+
+    it("should throw", () => {
+      assert.throws(() => func(""));
+    });
+
+    it("should throw", () => {
+      assert.throws(() => func("foo"));
+    });
+
+    it("should get result", () => {
+      const url = "file:///C:\\Program Files";
+      const res = func(url);
+      assert.strictEqual(res, "file:///*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "http://www.example.com/foo";
+      const res = func(url);
+      assert.strictEqual(res, "*://*.example.com/*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "https://example.com/foo";
+      const res = func(url);
+      assert.strictEqual(res, "*://*.example.com/*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "http://93.184.216.34/foo";
+      const res = func(url);
+      assert.strictEqual(res, "*://93.184.216.34/*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "https://93.184.216.34/foo";
+      const res = func(url);
+      assert.strictEqual(res, "*://93.184.216.34/*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "https://[::1]/foo";
+      const res = func(url);
+      assert.strictEqual(res, "*://[::1]/*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "wss://example.com/foo";
+      const res = func(url);
+      assert.strictEqual(res, "wss://*.example.com/*", "result");
+    });
+
+    it("should get result", () => {
+      const url = "wss://93.184.216.34/foo";
+      const res = func(url);
+      assert.strictEqual(res, "wss://93.184.216.34/*", "result");
     });
   });
 });
