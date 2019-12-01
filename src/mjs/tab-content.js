@@ -94,7 +94,7 @@ export const addTabIconErrorListener = async elm => {
  * @param {Object} info - tab info
  * @returns {void}
  */
-export const setTabIcon = (elm, info) => {
+export const setTabIcon = async (elm, info) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
       isObjectNotEmpty(info)) {
     const {favIconUrl, status, title, url} = info;
@@ -146,8 +146,8 @@ export const setTabContent = async (tab, tabsTab) => {
     const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
     tabContent.title = title;
     tabTitle.textContent = title;
-    setTabIcon(tabIcon, {favIconUrl, status, title, url});
-    setElementDataset(tab, "tab", JSON.stringify(tabsTab));
+    await setTabIcon(tabIcon, {favIconUrl, status, title, url});
+    await setElementDataset(tab, "tab", JSON.stringify(tabsTab));
   }
 };
 

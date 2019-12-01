@@ -761,7 +761,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
   if (windowId === sidebar.windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     if (tab) {
-      setTabContent(tab, tabsTab);
+      await setTabContent(tab, tabsTab);
       if (info.hasOwnProperty("audible") || info.hasOwnProperty("mutedInfo")) {
         const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
         const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
