@@ -227,7 +227,7 @@ export const parseHsl = async value => {
   }
   const arr = [];
   const [, val] = value.match(reg);
-  if (isString(val)) {
+  if (val) {
     let [h, s, l, a] = val.replace(/[,/]/g, " ").split(/\s+/);
     h = await convertAngleToDeg(h);
     if (s.startsWith(".")) {
@@ -317,7 +317,7 @@ export const parseRgb = async value => {
   }
   const arr = [];
   const [, val] = value.match(reg);
-  if (isString(val)) {
+  if (val) {
     let [r, g, b, a] = val.replace(/[,/]/g, " ").split(/\s+/);
     if (r.startsWith(".")) {
       r = `0${r}`;
