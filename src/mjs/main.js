@@ -65,7 +65,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
-  SIDEBAR_STATE_UPDATE,
+  SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
@@ -79,6 +79,7 @@ import {
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
+const MOUSE_BUTTON_MIDDLE = 1;
 const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
@@ -241,12 +242,21 @@ export const addDnDEventListener = async elm => {
 
 /* sidebar tab event handlers */
 /**
- * handle clicked new tab
- * @returns {AsyncFunction} - createNewTab()
+ * handle create new tab
+ * @param {Object} evt - event
+ * @returns {?AsyncFunction} - createNewTab()
  */
-export const handleClickedNewTab = () => {
+export const handleCreateNewTab = evt => {
+  const {button, currentTarget, target} = evt;
   const {windowId} = sidebar;
-  return createNewTab(windowId).catch(throwErr);
+  const main = document.getElementById(SIDEBAR_MAIN);
+  const newTab = document.getElementById(NEW_TAB);
+  let func;
+  if (currentTarget === newTab || target === newTab ||
+      button === MOUSE_BUTTON_MIDDLE && target === main) {
+    func = createNewTab(windowId).catch(throwErr);
+  }
+  return func || null;
 };
 
 /**
@@ -255,11 +265,13 @@ export const handleClickedNewTab = () => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleClickedTab = async evt => {
-  const {ctrlKey, metaKey, shiftKey, target} = evt;
+  const {button, ctrlKey, metaKey, shiftKey, target} = evt;
   const {firstSelectedTab, isMac, windowId} = sidebar;
   const tab = getSidebarTab(target);
   const func = [];
-  if (shiftKey) {
+  if (button === MOUSE_BUTTON_MIDDLE) {
+    tab && func.push(closeTabs([tab]));
+  } else if (shiftKey) {
     if (tab && firstSelectedTab) {
       const items = await getTabsInRange(tab, firstSelectedTab);
       func.push(highlightTabs(items, windowId));
@@ -1621,6 +1633,8 @@ export const emulateTabs = async () => {
  * @returns {void} - result of each handler
  */
 export const setMain = async () => {
+  const main = document.getElementById(SIDEBAR_MAIN);
   const newTab = document.getElementById(NEW_TAB);
-  newTab.addEventListener("click", handleClickedNewTab);
+  main.addEventListener("click", handleCreateNewTab);
+  newTab.addEventListener("click", handleCreateNewTab);
 };

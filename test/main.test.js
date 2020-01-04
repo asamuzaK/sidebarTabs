@@ -469,15 +469,122 @@ describe("main", () => {
     });
   });
 
-  describe("handle clicked new tab", () => {
-    const func = mjs.handleClickedNewTab;
+  describe("handle create new tab", () => {
+    const func = mjs.handleCreateNewTab;
+    beforeEach(() => {
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      browser.tabs.create.flush();
+    });
+    afterEach(() => {
+      browser.tabs.create.flush();
+    });
+
+    it("should not call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
+        button: 1,
+        target: body,
+      };
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i, "not called create");
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
+        button: 0,
+        target: main,
+      };
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i, "not called create");
+      assert.isNull(res, "result");
+    });
 
     it("should call function", async () => {
       const {create} = browser.tabs;
       const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
+        button: 1,
+        target: main,
+      };
       create.resolves({});
-      const res = await func();
-      assert.strictEqual(create.callCount, i + 1, "called");
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i + 1, "called create");
+      assert.deepEqual(res, {}, "result");
+    });
+
+    it("should call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
+        button: 0,
+        target: elm,
+      };
+      create.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i + 1, "called create");
+      assert.deepEqual(res, {}, "result");
+    });
+
+    it("should call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
+        button: 0,
+        currentTarget: elm,
+        target: span,
+      };
+      create.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i + 1, "called create");
       assert.deepEqual(res, {}, "result");
     });
   });
@@ -490,11 +597,13 @@ describe("main", () => {
       mjs.sidebar.isMac = false;
       browser.tabs.highlight.flush();
       browser.tabs.query.flush();
+      browser.tabs.remove.flush();
       browser.tabs.update.flush();
     });
     afterEach(() => {
       browser.tabs.highlight.flush();
       browser.tabs.query.flush();
+      browser.tabs.remove.flush();
       browser.tabs.update.flush();
     });
 
@@ -552,6 +661,23 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(highlight.callCount, i, "not called highlight");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const {remove} = browser.tabs;
+      const i = remove.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const evt = {
+        button: 1,
+        target: body,
+      };
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i, "not called remove");
       assert.deepEqual(res, [], "result");
     });
 
@@ -781,6 +907,23 @@ describe("main", () => {
       assert.strictEqual(query.callCount, j, "not called query");
       assert.strictEqual(update.callCount, k, "not called update");
       assert.deepEqual(res, [[{}, {}]], "result");
+    });
+
+    it("should not call function", async () => {
+      const {remove} = browser.tabs;
+      const i = remove.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const evt = {
+        button: 1,
+        target: elm,
+      };
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i + 1, "called remove");
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 
@@ -9411,9 +9554,12 @@ describe("main", () => {
       main.appendChild(newTab);
       body.appendChild(main);
       const spy = sinon.spy(newTab, "addEventListener");
+      const spy2 = sinon.spy(main, "addEventListener");
       await func();
       assert.isTrue(spy.called);
+      assert.isTrue(spy2.called);
       newTab.addEventListener.restore();
+      main.addEventListener.restore();
     });
   });
 });
