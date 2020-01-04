@@ -579,6 +579,7 @@ describe("main", () => {
       body.appendChild(main);
       const evt = {
         button: 0,
+        currentTarget: elm,
         target: span,
       };
       create.resolves({});

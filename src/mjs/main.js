@@ -247,12 +247,13 @@ export const addDnDEventListener = async elm => {
  * @returns {?AsyncFunction} - createNewTab()
  */
 export const handleCreateNewTab = evt => {
-  const {button, target} = evt;
+  const {button, currentTarget, target} = evt;
   const {windowId} = sidebar;
+  const main = document.getElementById(SIDEBAR_MAIN);
+  const newTab = document.getElementById(NEW_TAB);
   let func;
-  if (isNewTab(target) ||
-      button === MOUSE_BUTTON_MIDDLE &&
-      target === document.getElementById(SIDEBAR_MAIN)) {
+  if (currentTarget === newTab || target === newTab ||
+      button === MOUSE_BUTTON_MIDDLE && target === main) {
     func = createNewTab(windowId).catch(throwErr);
   }
   return func || null;
