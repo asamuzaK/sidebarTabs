@@ -515,6 +515,29 @@ describe("main", () => {
       const evt = {
         button: 0,
         target: main,
+        type: "click",
+      };
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i, "not called create");
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
+        button: 1,
+        target: main,
+        type: "dblclick",
       };
       const res = await func(evt);
       assert.strictEqual(create.callCount, i, "not called create");
@@ -536,6 +559,7 @@ describe("main", () => {
       const evt = {
         button: 1,
         target: main,
+        type: "click",
       };
       create.resolves({});
       const res = await func(evt);
@@ -557,6 +581,28 @@ describe("main", () => {
       body.appendChild(main);
       const evt = {
         button: 0,
+        target: main,
+        type: "dblclick",
+      };
+      create.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i + 1, "called create");
+      assert.deepEqual(res, {}, "result");
+    });
+
+    it("should call function", async () => {
+      const {create} = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement("main");
+      const elm = document.createElement("p");
+      const span = document.createElement("span");
+      const body = document.querySelector("body");
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      const evt = {
         target: elm,
       };
       create.resolves({});
@@ -578,7 +624,6 @@ describe("main", () => {
       main.appendChild(elm);
       body.appendChild(main);
       const evt = {
-        button: 0,
         currentTarget: elm,
         target: span,
       };
@@ -9556,8 +9601,8 @@ describe("main", () => {
       const spy = sinon.spy(newTab, "addEventListener");
       const spy2 = sinon.spy(main, "addEventListener");
       await func();
-      assert.isTrue(spy.called);
-      assert.isTrue(spy2.called);
+      assert.isTrue(spy.calledOnce);
+      assert.isTrue(spy2.calledTwice);
       newTab.addEventListener.restore();
       main.addEventListener.restore();
     });

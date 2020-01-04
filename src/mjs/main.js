@@ -79,6 +79,7 @@ import {
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
 const {TAB_ID_NONE} = tabs;
+const MOUSE_BUTTON_LEFT = 0;
 const MOUSE_BUTTON_MIDDLE = 1;
 const MOUSE_BUTTON_RIGHT = 2;
 
@@ -247,13 +248,14 @@ export const addDnDEventListener = async elm => {
  * @returns {?AsyncFunction} - createNewTab()
  */
 export const handleCreateNewTab = evt => {
-  const {button, currentTarget, target} = evt;
-  const {windowId} = sidebar;
+  const {button, currentTarget, target, type} = evt;
   const main = document.getElementById(SIDEBAR_MAIN);
   const newTab = document.getElementById(NEW_TAB);
   let func;
   if (currentTarget === newTab || target === newTab ||
-      button === MOUSE_BUTTON_MIDDLE && target === main) {
+      (button === MOUSE_BUTTON_LEFT && type === "dblclick" ||
+       button === MOUSE_BUTTON_MIDDLE && type === "click") && target === main) {
+    const {windowId} = sidebar;
     func = createNewTab(windowId).catch(throwErr);
   }
   return func || null;
@@ -1636,5 +1638,6 @@ export const setMain = async () => {
   const main = document.getElementById(SIDEBAR_MAIN);
   const newTab = document.getElementById(NEW_TAB);
   main.addEventListener("click", handleCreateNewTab);
+  main.addEventListener("dblclick", handleCreateNewTab);
   newTab.addEventListener("click", handleCreateNewTab);
 };
