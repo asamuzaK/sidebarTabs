@@ -395,6 +395,12 @@
   "optionsTabGroup": {
     "message": "Tab Group"
   },
+  "optionsTabGroupCollapseOther": {
+    "message": "Always collapse other groups when expanding a tab group"
+  },
+  "optionsTabGroupCollapseOtherDetail": {
+    "message": "Expanding a tab group collapses other previously expanded tab groups."
+  },
   "optionsTabGroupPutNewTabAtTheEnd": {
     "message": "Always put the newly opened tab at the end of the group"
   },

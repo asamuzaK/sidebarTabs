@@ -395,6 +395,12 @@
   "optionsTabGroup": {
     "message": "タブグループ"
   },
+  "optionsTabGroupCollapseOther": {
+    "message": "タブグループを展開したときは常に他のグループを折りたたむ"
+  },
+  "optionsTabGroupCollapseOtherDetail": {
+    "message": "タブグループを展開すると、それまで展開していた他のタブグループは折りたたまれます。"
+  },
   "optionsTabGroupPutNewTabAtTheEnd": {
     "message": "グループ内で新たに開いたタブは常にグループの末尾に置く"
   },
