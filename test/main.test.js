@@ -1617,7 +1617,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, null,
+        undefined, undefined, [undefined, null],
       ], "result");
     });
 
@@ -1724,7 +1724,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, null, undefined,
+        undefined, undefined, [undefined, null], undefined,
       ], "result");
     });
 
@@ -1780,7 +1780,7 @@ describe("main", () => {
                      "collapse");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, null, undefined,
+        undefined, undefined, [undefined, null], undefined,
       ], "result");
     });
 

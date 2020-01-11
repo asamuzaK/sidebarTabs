@@ -91,12 +91,117 @@ describe("tab-group", () => {
     });
   });
 
+  describe("collapse tab group", () => {
+    const func = mjs.collapseTabGroup;
+    beforeEach(() => {
+      browser.i18n.getMessage.flush();
+    });
+    afterEach(() => {
+      browser.i18n.getMessage.flush();
+    });
+
+    it("should not call function", async () => {
+      await func();
+      assert.isFalse(browser.i18n.getMessage.called, "result");
+    });
+
+    it("should not call function", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      await func(elm);
+      assert.isFalse(browser.i18n.getMessage.called, "result");
+    });
+
+    it("should set value", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns("bar");
+      const i = browser.i18n.getMessage.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm3.appendChild(elm4);
+      elm2.appendChild(elm3);
+      elm.appendChild(elm2);
+      body.appendChild(elm);
+      await func(elm);
+      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
+      assert.strictEqual(elm3.title, "foo", "title");
+      assert.strictEqual(elm4.alt, "bar", "alt");
+    });
+  });
+
+  describe("expand tab group", () => {
+    const func = mjs.expandTabGroup;
+    beforeEach(() => {
+      browser.i18n.getMessage.flush();
+    });
+    afterEach(() => {
+      browser.i18n.getMessage.flush();
+    });
+
+    it("should not call function", async () => {
+      await func();
+      assert.isFalse(browser.i18n.getMessage.called, "result");
+    });
+
+    it("should not call function", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      await func(elm);
+      assert.isFalse(browser.i18n.getMessage.called, "result");
+    });
+
+    it("should set value", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns("bar");
+      const i = browser.i18n.getMessage.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm3.appendChild(elm4);
+      elm2.appendChild(elm3);
+      elm.appendChild(elm2);
+      body.appendChild(elm);
+      await func(elm);
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
+      assert.strictEqual(elm3.title, "foo", "title");
+      assert.strictEqual(elm4.alt, "bar", "alt");
+    });
+  });
+
   describe("toggle tab group collapsed state", () => {
     const func = mjs.toggleTabGroupCollapsedState;
+    beforeEach(() => {
+      browser.i18n.getMessage.flush();
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.i18n.getMessage.flush();
+      browser.tabs.update.flush();
+    });
 
     it("should do nothing if argument is empty", async () => {
       const res = await func();
-      assert.isUndefined(res, "result");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should add class and call function", async () => {
@@ -128,16 +233,87 @@ describe("tab-group", () => {
       elm.appendChild(elm2);
       elm.appendChild(elm3);
       body.appendChild(elm);
-      const res = await func({
-        target: elm,
-      });
+      const res = await func(elm, true);
       assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
       assert.strictEqual(elm4.title, "foo", "title");
       assert.strictEqual(elm6.alt, "bar", "alt");
       assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
-      assert.isNull(res, "result");
-      browser.i18n.getMessage.flush();
-      browser.tabs.update.flush();
+      assert.deepEqual(res, [undefined, null], "result");
+    });
+
+    it("should add class and not call function", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns("bar");
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
+        .returns("baz");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns("qux");
+      const i = browser.tabs.update.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("span");
+      const elm5 = document.createElement("span");
+      const elm6 = document.createElement("img");
+      const elm7 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm4.appendChild(elm6);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm2.appendChild(elm4);
+      elm5.appendChild(elm7);
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "2";
+      elm3.appendChild(elm5);
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      body.appendChild(elm);
+      const res = await func(elm, false);
+      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(elm4.title, "foo", "title");
+      assert.strictEqual(elm6.alt, "bar", "alt");
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should remove class and call function", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns("bar");
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
+        .returns("baz");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns("qux");
+      const i = browser.tabs.update.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("span");
+      const elm5 = document.createElement("span");
+      const elm6 = document.createElement("img");
+      const elm7 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elm4.appendChild(elm6);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm2.appendChild(elm4);
+      elm5.appendChild(elm7);
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "2";
+      elm3.appendChild(elm5);
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      body.appendChild(elm);
+      const res = await func(elm, true);
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(elm4.title, "baz", "title");
+      assert.strictEqual(elm6.alt, "qux", "alt");
+      assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [undefined, null], "result");
     });
 
     it("should remove class and not call function", async () => {
@@ -170,57 +346,237 @@ describe("tab-group", () => {
       elm.appendChild(elm2);
       elm.appendChild(elm3);
       body.appendChild(elm);
-      const res = await func({
-        target: elm,
-      });
+      const res = await func(elm, false);
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
       assert.strictEqual(elm4.title, "baz", "title");
       assert.strictEqual(elm6.alt, "qux", "alt");
       assert.strictEqual(browser.tabs.update.callCount, i, "not called");
-      assert.isUndefined(res, "result");
-      browser.i18n.getMessage.flush();
-      browser.tabs.update.flush();
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 
-  describe("handle tab context on click", () => {
-    const func = mjs.tabContextOnClick;
+  describe("handle individual tab group collapsed state", () => {
+    const func = mjs.handleTabGroupCollapsedState;
+    beforeEach(() => {
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.windows.getCurrent.flush();
+    });
 
-    it("should call function", async () => {
+    it("should throw", () => {
+      assert.throws(() => func());
+    });
+
+    it("should not call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       browser.windows.getCurrent.resolves({
         id: 1,
         incognito: true,
       });
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const evt = {
+        target: elm,
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
       const i = browser.windows.getCurrent.callCount;
-      const res = await func();
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const evt = {
+        target: elm,
+      };
+      const res = await func(evt);
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.isUndefined(res, "result");
+    });
+  });
+
+  describe("handle multiple tab groups collapsed state", () => {
+    const func = mjs.handleTabGroupsCollapsedState;
+    beforeEach(() => {
+      browser.tabs.update.flush();
       browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.tabs.update.flush();
+      browser.windows.getCurrent.flush();
+    });
+
+    it("should throw", () => {
+      assert.throws(() => func());
+    });
+
+    it("should not call update function", async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const evt = {
+        target: elm,
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, "called");
+      assert.isUndefined(res, "result");
+    });
+
+    it("should call update function", async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("span");
+      const elm5 = document.createElement("span");
+      const elm6 = document.createElement("img");
+      const elm7 = document.createElement("img");
+      const elmB = document.createElement("div");
+      const elmB2 = document.createElement("p");
+      const elmB3 = document.createElement("p");
+      const elmB4 = document.createElement("span");
+      const elmB5 = document.createElement("span");
+      const elmB6 = document.createElement("img");
+      const elmB7 = document.createElement("img");
+      const elmC = document.createElement("div");
+      const elmC2 = document.createElement("p");
+      const elmC3 = document.createElement("p");
+      const elmC4 = document.createElement("span");
+      const elmC5 = document.createElement("span");
+      const elmC6 = document.createElement("img");
+      const elmC7 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elm4.appendChild(elm6);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm2.appendChild(elm4);
+      elm5.appendChild(elm7);
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "2";
+      elm3.appendChild(elm5);
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      elmB.classList.add(CLASS_TAB_CONTAINER);
+      elmB.classList.add(CLASS_TAB_GROUP);
+      elmB4.appendChild(elmB6);
+      elmB2.classList.add(TAB);
+      elmB2.dataset.tabId = "3";
+      elmB2.appendChild(elmB4);
+      elmB5.appendChild(elmB7);
+      elmB3.classList.add(TAB);
+      elmB3.dataset.tabId = "4";
+      elmB3.appendChild(elmB5);
+      elmB.appendChild(elmB2);
+      elmB.appendChild(elmB3);
+      elmC.classList.add(CLASS_TAB_CONTAINER);
+      elmC.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elmC4.appendChild(elmC6);
+      elmC2.classList.add(TAB);
+      elmC2.dataset.tabId = "5";
+      elmC2.appendChild(elmC4);
+      elmC5.appendChild(elmC7);
+      elmC3.classList.add(TAB);
+      elmC3.dataset.tabId = "6";
+      elmC3.appendChild(elmC5);
+      elmC.appendChild(elmC2);
+      elmC.appendChild(elmC3);
+      body.appendChild(elm);
+      body.appendChild(elmB);
+      body.appendChild(elmC);
+      const evt = {
+        target: elm4,
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, "called");
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isTrue(elmC.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isUndefined(res, "result");
     });
   });
 
   describe("add tab context click listener", () => {
     const func = mjs.addTabContextClickListener;
 
-    it("should add listener", async () => {
+    it("should not add listener", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");
-      elm.classList.add(CLASS_TAB_CONTEXT);
+      const spy2 = sinon.spy(elm, "removeEventListener");
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledOnce, "called");
+      assert.isFalse(spy.calledOnce, "called");
+      assert.isFalse(spy2.calledOnce, "called");
       elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
+
+    it("should not add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      body.appendChild(elm);
+      await func(elm, true);
+      assert.isFalse(spy.calledOnce, "called");
+      assert.isFalse(spy2.calledOnce, "called");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
     });
 
     it("should add listener", async () => {
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      elm.classList.add(CLASS_TAB_CONTEXT);
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.calledOnce, "called");
+      assert.isTrue(spy.calledOnce, "called");
+      assert.isTrue(spy2.calledOnce, "called");
       elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      elm.classList.add(CLASS_TAB_CONTEXT);
+      body.appendChild(elm);
+      await func(elm, true);
+      assert.isTrue(spy.calledOnce, "called");
+      assert.isTrue(spy2.calledOnce, "called");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
     });
   });
 
@@ -237,6 +593,8 @@ describe("tab-group", () => {
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm2.classList.add(ACTIVE);
@@ -254,6 +612,8 @@ describe("tab-group", () => {
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
       parent.classList.add(CLASS_TAB_COLLAPSED);
       elm.classList.add(ACTIVE);
       elm.classList.add(TAB);
@@ -271,18 +631,28 @@ describe("tab-group", () => {
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("span");
+      const elm5 = document.createElement("img");
+      const elm6 = document.createElement("img");
       const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
       parent.classList.add(CLASS_TAB_COLLAPSED);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm2.classList.add(ACTIVE);
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
+      elm3.appendChild(elm5);
+      elm4.appendChild(elm6);
+      elm.appendChild(elm3);
+      elm2.appendChild(elm4);
       parent.appendChild(elm);
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func();
-      assert.isUndefined(res, "result");
+      assert.deepEqual(res, [undefined, null], "result");
     });
   });
 
@@ -739,6 +1109,13 @@ describe("tab-group", () => {
 
   describe("ungroup tabs", () => {
     const func = mjs.ungroupTabs;
+
+    it("should do nothing if argument is not element", async () => {
+      const spy = sinon.spy(document, "getElementById");
+      await func();
+      assert.isFalse(spy.called, "not called");
+      document.getElementById.restore();
+    });
 
     it("should do nothing if element is not tab group container", async () => {
       const tmpl = document.createElement("template");

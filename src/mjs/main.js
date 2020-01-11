@@ -477,7 +477,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
         container.appendChild(tab);
       }
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState(tab));
+        func.push(toggleTabGroupCollapsedState(tab, true));
     } else if (list.length !== index && listedTab && listedTab.parentNode &&
                listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                listedTabPrev && listedTabPrev.parentNode &&
@@ -486,7 +486,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       container = listedTab.parentNode;
       container.insertBefore(tab, listedTab);
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState(tab));
+        func.push(toggleTabGroupCollapsedState(tab, true));
     } else {
       let target;
       if (list.length !== index && listedTab && listedTab.parentNode) {
@@ -889,7 +889,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE:
       tab && func.push(
-        toggleTabGroupCollapsedState(tab).then(setSessionTabList),
+        toggleTabGroupCollapsedState(tab, true).then(setSessionTabList),
       );
       break;
     case TAB_GROUP_DETACH:
