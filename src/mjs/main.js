@@ -68,13 +68,14 @@ import {
   SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
-  TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP, TAB_LIST,
-  TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
-  TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK, TABS_CLOSE,
-  TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END, TABS_MOVE_START,
-  TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
+  TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
+  TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
+  TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
+  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
+  TABS_REOPEN_CONTAINER,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
@@ -92,6 +93,7 @@ export const sidebar = {
   isMac: false,
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
+  tabGroupCollapseOther: false,
   tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
   windowId: null,
@@ -254,7 +256,8 @@ export const handleCreateNewTab = evt => {
   let func;
   if (currentTarget === newTab || target === newTab ||
       (button === MOUSE_BUTTON_LEFT && type === "dblclick" ||
-       button === MOUSE_BUTTON_MIDDLE && type === "click") && target === main) {
+       button === MOUSE_BUTTON_MIDDLE && type === "mousedown") &&
+      target === main) {
     const {windowId} = sidebar;
     func = createNewTab(windowId).catch(throwErr);
   }
@@ -267,43 +270,45 @@ export const handleCreateNewTab = evt => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleClickedTab = async evt => {
-  const {button, ctrlKey, metaKey, shiftKey, target} = evt;
+  const {button, ctrlKey, metaKey, shiftKey, target, type} = evt;
   const {firstSelectedTab, isMac, windowId} = sidebar;
   const tab = getSidebarTab(target);
   const func = [];
-  if (button === MOUSE_BUTTON_MIDDLE) {
+  if (button === MOUSE_BUTTON_MIDDLE && type === "mousedown") {
     tab && func.push(closeTabs([tab]));
-  } else if (shiftKey) {
-    if (tab && firstSelectedTab) {
-      const items = await getTabsInRange(tab, firstSelectedTab);
-      func.push(highlightTabs(items, windowId));
-    }
-  } else if (isMac && metaKey || !isMac && ctrlKey) {
-    const firstTabIndex = getSidebarTabIndex(firstSelectedTab);
-    const tabIndex = getSidebarTabIndex(tab);
-    if (Number.isInteger(firstTabIndex) && Number.isInteger(tabIndex)) {
-      const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-      const index = [firstTabIndex];
-      tabIndex !== firstTabIndex && index.push(tabIndex);
-      for (const item of items) {
-        const itemIndex = getSidebarTabIndex(item);
-        if (itemIndex === firstTabIndex && itemIndex === tabIndex) {
-          index.splice(0, 1);
-        } else if (itemIndex === tabIndex) {
-          const tabIndexIndex = index.findIndex(i => i === tabIndex);
-          index.splice(tabIndexIndex, 1);
-        } else if (!index.includes(itemIndex)) {
-          index.push(itemIndex);
+  } else if (type === "click") {
+    if (shiftKey) {
+      if (tab && firstSelectedTab) {
+        const items = await getTabsInRange(tab, firstSelectedTab);
+        func.push(highlightTabs(items, windowId));
+      }
+    } else if (isMac && metaKey || !isMac && ctrlKey) {
+      const firstTabIndex = getSidebarTabIndex(firstSelectedTab);
+      const tabIndex = getSidebarTabIndex(tab);
+      if (Number.isInteger(firstTabIndex) && Number.isInteger(tabIndex)) {
+        const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+        const index = [firstTabIndex];
+        tabIndex !== firstTabIndex && index.push(tabIndex);
+        for (const item of items) {
+          const itemIndex = getSidebarTabIndex(item);
+          if (itemIndex === firstTabIndex && itemIndex === tabIndex) {
+            index.splice(0, 1);
+          } else if (itemIndex === tabIndex) {
+            const tabIndexIndex = index.findIndex(i => i === tabIndex);
+            index.splice(tabIndexIndex, 1);
+          } else if (!index.includes(itemIndex)) {
+            index.push(itemIndex);
+          }
+        }
+        if (index.length && (index.length > 1 || !index.includes(tabIndex))) {
+          func.push(highlightTab(index, windowId));
+        } else {
+          func.push(toggleHighlight(firstSelectedTab));
         }
       }
-      if (index.length && (index.length > 1 || !index.includes(tabIndex))) {
-        func.push(highlightTab(index, windowId));
-      } else {
-        func.push(toggleHighlight(firstSelectedTab));
-      }
+    } else if (tab) {
+      func.push(activateTab(tab));
     }
-  } else if (tab) {
-    func.push(activateTab(tab));
   }
   return Promise.all(func).catch(throwErr);
 };
@@ -314,9 +319,11 @@ export const handleClickedTab = async evt => {
  * @returns {void}
  */
 export const addTabClickListener = async elm => {
-  elm && elm.nodeType === Node.ELEMENT_NODE &&
-  elm.classList.contains(CLASS_TAB_CONTENT) &&
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_CONTENT)) {
     elm.addEventListener("click", handleClickedTab);
+    elm.addEventListener("mousedown", handleClickedTab);
+  }
 };
 
 /* tab handlers */
@@ -470,7 +477,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
         container.appendChild(tab);
       }
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState({target: tab}));
+        func.push(toggleTabGroupCollapsedState(tab));
     } else if (list.length !== index && listedTab && listedTab.parentNode &&
                listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
                listedTabPrev && listedTabPrev.parentNode &&
@@ -479,7 +486,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       container = listedTab.parentNode;
       container.insertBefore(tab, listedTab);
       container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState({target: tab}));
+        func.push(toggleTabGroupCollapsedState(tab));
     } else {
       let target;
       if (list.length !== index && listedTab && listedTab.parentNode) {
@@ -882,7 +889,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE:
       tab && func.push(
-        toggleTabGroupCollapsedState({target: tab}).then(setSessionTabList),
+        toggleTabGroupCollapsedState(tab).then(setSessionTabList),
       );
       break;
     case TAB_GROUP_DETACH:
@@ -1488,6 +1495,12 @@ export const setVar = async (item, obj, changed = false) => {
           updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value),
         );
         break;
+      /*
+      case TAB_GROUP_COLLAPSE_OTHER:
+        sidebar[item] = !!checked;
+        changed && func.push(addTabContextClickListener(foo, !!checked));
+        break;
+      */
       case TAB_GROUP_NEW_TAB_AT_END:
         sidebar[item] = !!checked;
         break;
@@ -1637,7 +1650,7 @@ export const emulateTabs = async () => {
 export const setMain = async () => {
   const main = document.getElementById(SIDEBAR_MAIN);
   const newTab = document.getElementById(NEW_TAB);
-  main.addEventListener("click", handleCreateNewTab);
+  main.addEventListener("mousedown", handleCreateNewTab);
   main.addEventListener("dblclick", handleCreateNewTab);
   newTab.addEventListener("click", handleCreateNewTab);
 };

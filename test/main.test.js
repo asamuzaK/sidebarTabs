@@ -29,9 +29,9 @@ import {
   EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
-  TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
@@ -559,7 +559,7 @@ describe("main", () => {
       const evt = {
         button: 1,
         target: main,
-        type: "click",
+        type: "mousedown",
       };
       create.resolves({});
       const res = await func(evt);
@@ -665,6 +665,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: body,
+        type: "click",
       };
       const res = await func(evt);
       assert.strictEqual(update.callCount, i, "not called update");
@@ -684,6 +685,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: true,
         target: body,
+        type: "click",
       };
       const res = await func(evt);
       assert.strictEqual(highlight.callCount, i, "not called highlight");
@@ -703,6 +705,27 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: body,
+        type: "click",
+      };
+      const res = await func(evt);
+      assert.strictEqual(highlight.callCount, i, "not called highlight");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const {highlight} = browser.tabs;
+      const i = highlight.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const evt = {
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+        target: elm,
+        type: "mousedown",
       };
       const res = await func(evt);
       assert.strictEqual(highlight.callCount, i, "not called highlight");
@@ -720,6 +743,25 @@ describe("main", () => {
       const evt = {
         button: 1,
         target: body,
+        type: "mousedown",
+      };
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i, "not called remove");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const {remove} = browser.tabs;
+      const i = remove.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const evt = {
+        button: 0,
+        target: elm,
+        type: "mousedown",
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, "not called remove");
@@ -739,6 +781,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: elm,
+        type: "click",
       };
       update.resolves({});
       const res = await func(evt);
@@ -767,6 +810,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: true,
         target: elm,
+        type: "click",
       };
       highlight.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
@@ -803,6 +847,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: elm,
+        type: "click",
       };
       highlight.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
@@ -837,6 +882,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: elm,
+        type: "click",
       };
       highlight.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
@@ -871,6 +917,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: activeElm,
+        type: "click",
       };
       highlight.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
@@ -911,6 +958,7 @@ describe("main", () => {
         metaKey: false,
         shiftKey: false,
         target: activeElm,
+        type: "click",
       };
       const res = await func(evt);
       assert.strictEqual(highlight.callCount, i, "not called highlight");
@@ -942,6 +990,7 @@ describe("main", () => {
         metaKey: true,
         shiftKey: false,
         target: elm,
+        type: "click",
       };
       highlight.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
@@ -954,7 +1003,7 @@ describe("main", () => {
       assert.deepEqual(res, [[{}, {}]], "result");
     });
 
-    it("should not call function", async () => {
+    it("should call function", async () => {
       const {remove} = browser.tabs;
       const i = remove.callCount;
       const elm = document.createElement("p");
@@ -965,6 +1014,7 @@ describe("main", () => {
       const evt = {
         button: 1,
         target: elm,
+        type: "mousedown",
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, "called remove");
@@ -1567,7 +1617,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
+        undefined, undefined, null,
       ], "result");
     });
 
@@ -1674,7 +1724,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, null, undefined,
       ], "result");
     });
 
@@ -1730,7 +1780,7 @@ describe("main", () => {
                      "collapse");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
+        undefined, undefined, null, undefined,
       ], "result");
     });
 
