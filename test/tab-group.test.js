@@ -355,6 +355,127 @@ describe("tab-group", () => {
     });
   });
 
+  describe("toggle multiple tab groups collapsed state", () => {
+    const func = mjs.toggleTabGroupsCollapsedState;
+    beforeEach(() => {
+      browser.i18n.getMessage.flush();
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.i18n.getMessage.flush();
+      browser.tabs.update.flush();
+    });
+
+    it("should do nothing if argument is empty", async () => {
+      const res = await func();
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call functions", async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const j = browser.tabs.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(browser.i18n.getMessage.callCount, i, "not called");
+      assert.strictEqual(browser.tabs.update.callCount, j, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call functions", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns("bar");
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
+        .returns("baz");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns("qux");
+      const i = browser.i18n.getMessage.callCount;
+      const j = browser.tabs.update.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("span");
+      const elm5 = document.createElement("span");
+      const elm6 = document.createElement("img");
+      const elm7 = document.createElement("img");
+      const elmB = document.createElement("div");
+      const elmB2 = document.createElement("p");
+      const elmB3 = document.createElement("p");
+      const elmB4 = document.createElement("span");
+      const elmB5 = document.createElement("span");
+      const elmB6 = document.createElement("img");
+      const elmB7 = document.createElement("img");
+      const elmC = document.createElement("div");
+      const elmC2 = document.createElement("p");
+      const elmC3 = document.createElement("p");
+      const elmC4 = document.createElement("span");
+      const elmC5 = document.createElement("span");
+      const elmC6 = document.createElement("img");
+      const elmC7 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elm4.appendChild(elm6);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm2.appendChild(elm4);
+      elm5.appendChild(elm7);
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "2";
+      elm3.appendChild(elm5);
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      elmB.classList.add(CLASS_TAB_CONTAINER);
+      elmB.classList.add(CLASS_TAB_GROUP);
+      elmB4.appendChild(elmB6);
+      elmB2.classList.add(TAB);
+      elmB2.dataset.tabId = "3";
+      elmB2.appendChild(elmB4);
+      elmB5.appendChild(elmB7);
+      elmB3.classList.add(TAB);
+      elmB3.dataset.tabId = "4";
+      elmB3.appendChild(elmB5);
+      elmB.appendChild(elmB2);
+      elmB.appendChild(elmB3);
+      elmC.classList.add(CLASS_TAB_CONTAINER);
+      elmC.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elmC4.appendChild(elmC6);
+      elmC2.classList.add(TAB);
+      elmC2.dataset.tabId = "5";
+      elmC2.appendChild(elmC4);
+      elmC5.appendChild(elmC7);
+      elmC3.classList.add(TAB);
+      elmC3.dataset.tabId = "6";
+      elmC3.appendChild(elmC5);
+      elmC.appendChild(elmC2);
+      elmC.appendChild(elmC3);
+      body.appendChild(elm);
+      body.appendChild(elmB);
+      body.appendChild(elmC);
+      const res = await func(elm);
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, "called");
+      assert.strictEqual(browser.tabs.update.callCount, j + 1, "called");
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isTrue(elmC.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(elm4.title, "baz", "title");
+      assert.strictEqual(elm6.alt, "qux", "alt");
+      assert.strictEqual(elmB4.title, "foo", "title");
+      assert.strictEqual(elmB6.alt, "bar", "alt");
+      assert.strictEqual(elmC4.title, "foo", "title");
+      assert.strictEqual(elmC6.alt, "bar", "alt");
+      assert.deepEqual(res, [
+        [undefined, null],
+        [undefined],
+        [undefined],
+      ], "result");
+    });
+  });
+
   describe("handle individual tab group collapsed state", () => {
     const func = mjs.handleTabGroupCollapsedState;
     beforeEach(() => {
@@ -420,7 +541,7 @@ describe("tab-group", () => {
       assert.throws(() => func());
     });
 
-    it("should not call update function", async () => {
+    it("should not call functions", async () => {
       const i = browser.tabs.update.callCount;
       const j = browser.windows.getCurrent.callCount;
       browser.windows.getCurrent.resolves({
@@ -435,11 +556,11 @@ describe("tab-group", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.update.callCount, i, "not called");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, "called");
-      assert.isUndefined(res, "result");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j, "not called");
+      assert.isNull(res, "result");
     });
 
-    it("should call update function", async () => {
+    it("should call functions", async () => {
       const i = browser.tabs.update.callCount;
       const j = browser.windows.getCurrent.callCount;
       browser.windows.getCurrent.resolves({

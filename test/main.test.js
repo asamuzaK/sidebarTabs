@@ -3921,10 +3921,12 @@ describe("main", () => {
   describe("handle clicked menu", () => {
     const func = mjs.handleClickedMenu;
     beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.contextualIds = null;
       mjs.sidebar.context = null;
+      mjs.sidebar.tabGroupCollapseOther = false;
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       browser.bookmarks.create.flush();
+      browser.i18n.getMessage.flush();
       browser.sessions.getWindowValue.flush();
       browser.sessions.setWindowValue.flush();
       browser.sessions.restore.flush();
@@ -3938,7 +3940,12 @@ describe("main", () => {
       browser.windows.getCurrent.flush();
     });
     afterEach(() => {
+      mjs.sidebar.contextualIds = null;
+      mjs.sidebar.context = null;
+      mjs.sidebar.tabGroupCollapseOther = false;
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       browser.bookmarks.create.flush();
+      browser.i18n.getMessage.flush();
       browser.sessions.getWindowValue.flush();
       browser.sessions.setWindowValue.flush();
       browser.sessions.restore.flush();
@@ -5407,6 +5414,84 @@ describe("main", () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      browser.tabs.get.resolves({
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+        incognito: false,
+      });
+      const info = {
+        menuItemId: TAB_GROUP_COLLAPSE,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called tabs get");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
+                         "called windows get current");
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
+                         "called sessions get");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
+                         "called sessions set");
+      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+                         "called get message");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const k = browser.sessions.getWindowValue.callCount;
+      const l = browser.sessions.setWindowValue.callCount;
+      const m = browser.i18n.getMessage.callCount;
+      const tmpl = document.createElement("template");
+      const sect = document.createElement("section");
+      const pinned = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const newTab = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const cnt = document.createElement("span");
+      const icon = document.createElement("img");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      tmpl.content.appendChild(sect);
+      pinned.id = PINNED;
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      cnt.appendChild(icon);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://foo.com",
+      });
+      elm.appendChild(cnt);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://bar.com",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://baz.com",
+      });
+      parent2.appendChild(elm3);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(pinned);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(newTab);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.tabGroupCollapseOther = true;
       browser.tabs.get.resolves({
         pinned: false,
       });

@@ -35,7 +35,7 @@ import {
 import {
   addTabContextClickListener, detachTabsFromGroup, groupSameDomainTabs,
   groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
-  toggleTabGroupCollapsedState, ungroupTabs,
+  toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -855,7 +855,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
  */
 export const handleClickedMenu = async info => {
   const {menuItemId} = info;
-  const {context, contextualIds, windowId} = sidebar;
+  const {context, contextualIds, tabGroupCollapseOther, windowId} = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
@@ -894,11 +894,20 @@ export const handleClickedMenu = async info => {
     case TAB_DUPE:
       func.push(dupeTabs([tab], windowId));
       break;
-    case TAB_GROUP_COLLAPSE:
-      tab && func.push(
-        toggleTabGroupCollapsedState(tab, true).then(setSessionTabList),
-      );
+    case TAB_GROUP_COLLAPSE: {
+      if (tab) {
+        if (tabGroupCollapseOther) {
+          func.push(
+            toggleTabGroupsCollapsedState(tab).then(setSessionTabList),
+          );
+        } else {
+          func.push(
+            toggleTabGroupCollapsedState(tab, true).then(setSessionTabList),
+          );
+        }
+      }
       break;
+    }
     case TAB_GROUP_DETACH:
       tab && func.push(
         detachTabsFromGroup([tab], windowId).then(restoreTabContainers)

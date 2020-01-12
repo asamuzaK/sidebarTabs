@@ -86,7 +86,7 @@ export const expandTabGroup = async elm => {
  * toggle tab group collapsed state
  * @param {Object} elm - element
  * @param {boolean} activate - activate tab
- * @returns {?AsyncFunction} - activateTab()
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const toggleTabGroupCollapsedState = async (elm, activate) => {
   const func = [];
@@ -101,6 +101,31 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
       if (activate) {
         const {firstElementChild: tab} = container;
         func.push(activateTab(tab));
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * toggle multiple tab groups collapsed state
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const toggleTabGroupsCollapsedState = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const container = getSidebarTabContainer(elm);
+    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+      const items =
+        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
+      for (const item of items) {
+        if (item === container) {
+          func.push(toggleTabGroupCollapsedState(item, true));
+        } else {
+          !item.classList.contains(CLASS_TAB_COLLAPSED) &&
+            func.push(toggleTabGroupCollapsedState(item, false));
+        }
       }
     }
   }
@@ -127,25 +152,18 @@ export const handleTabGroupCollapsedState = evt => {
 /**
  * handle multiple tab groups collapsed state
  * @param {!Object} evt - Event
- * @returns {AsyncFunction} - promise chain
+ * @returns {?AsyncFunction} - promise chain
  */
 export const handleTabGroupsCollapsedState = evt => {
   const {target} = evt;
   const container = getSidebarTabContainer(target);
-  const func = [];
+  let func;
   if (container) {
-    const items =
-      document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
-    for (const item of items) {
-      if (item === container) {
-        func.push(toggleTabGroupCollapsedState(item, true));
-      } else {
-        !item.classList.contains(CLASS_TAB_COLLAPSED) &&
-          func.push(toggleTabGroupCollapsedState(item, false));
-      }
-    }
+    func =
+      toggleTabGroupsCollapsedState(container).then(setSessionTabList)
+        .catch(throwErr);
   }
-  return Promise.all(func).then(setSessionTabList).catch(throwErr);
+  return func || null;
 };
 
 /**
