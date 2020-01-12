@@ -33,9 +33,10 @@ import {
   setTabIcon, toggleHighlight,
 } from "./tab-content.js";
 import {
-  addTabContextClickListener, detachTabsFromGroup, groupSameDomainTabs,
-  groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
-  toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState, ungroupTabs,
+  addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
+  groupSameDomainTabs, groupSelectedTabs, replaceTabContextClickListener,
+  restoreTabContainers, toggleTabGroupCollapsedState,
+  toggleTabGroupsCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -902,7 +903,7 @@ export const handleClickedMenu = async info => {
     case TAB_DUPE:
       func.push(dupeTabs([tab], windowId));
       break;
-    case TAB_GROUP_COLLAPSE: {
+    case TAB_GROUP_COLLAPSE:
       if (tab) {
         if (tabGroupOnExpandCollapseOther) {
           func.push(
@@ -915,7 +916,12 @@ export const handleClickedMenu = async info => {
         }
       }
       break;
-    }
+    case TAB_GROUP_COLLAPSE_OTHER:
+      tab && func.push(Promise.all([
+        activateTab(tab),
+        collapseTabGroups(tab),
+      ]).then(setSessionTabList));
+      break;
     case TAB_GROUP_DETACH:
       tab && func.push(
         detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
@@ -1063,6 +1069,7 @@ export const handleEvt = async evt => {
     const pageKeys = [TAB_CLOSE_UNDO, TAB_ALL_RELOAD, TAB_ALL_SELECT];
     const sepKeys = ["sep-1", "sep-2", "sep-3"];
     const allTabs = document.querySelectorAll(TAB_QUERY);
+    const tabGroups = document.querySelectorAll(`.${CLASS_TAB_GROUP}`);
     const selectedTabs =
       document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     const pinnedContainer = document.getElementById(PINNED);
@@ -1087,7 +1094,8 @@ export const handleEvt = async evt => {
       const tabsTab = await getTab(tabId);
       const {index, mutedInfo: {muted}, pinned} = tabsTab;
       const tabGroupKeys = [
-        TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
+        TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
         TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
         "sepTabGroup-1",
       ];
@@ -1271,6 +1279,14 @@ export const handleEvt = async evt => {
               data.enabled = false;
             }
             data.visible = true;
+            break;
+          case TAB_GROUP_COLLAPSE_OTHER:
+            if (parentClass.contains(CLASS_TAB_GROUP) && tabGroups.length > 1) {
+              data.enabled = true;
+              data.visible = true;
+            } else {
+              data.visible = false;
+            }
             break;
           case TAB_GROUP_DETACH:
             if (multiTabsSelected) {

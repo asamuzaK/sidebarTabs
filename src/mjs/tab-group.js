@@ -133,6 +133,27 @@ export const toggleTabGroupsCollapsedState = async elm => {
 };
 
 /**
+ * collapse multiple tab groups
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const collapseTabGroups = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const container = getSidebarTabContainer(elm);
+    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+      const items =
+        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
+      for (const item of items) {
+        item !== container && !item.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabGroupCollapsedState(item, false));
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
  * handle individual tab group collapsed state
  * @param {!Object} evt - Event
  * @returns {?AsyncFunction} - promise chain
