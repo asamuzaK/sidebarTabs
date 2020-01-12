@@ -113,6 +113,18 @@
       }
     }
   },
+  "collapseOtherTabGroups": {
+    "message": "Collapse Other Tab Groups"
+  },
+  "collapseOtherTabGroups_title": {
+    "message": "Collapse &Other Tab Groups",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
   "collapseTabGroup": {
     "message": "Collapse Tab Group"
   },
@@ -138,11 +150,11 @@
     "message": "Detach Tab From Group"
   },
   "detachTabFromGroup_title": {
-    "message": "&Detach Tab From Group",
+    "message": "Detach &Tab From Group",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&T)"
       }
     }
   },
@@ -150,11 +162,11 @@
     "message": "Detach Tabs From Group"
   },
   "detachTabsFromGroup_title": {
-    "message": "&Detach Tabs From Group",
+    "message": "Detach &Tabs From Group",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&T)"
       }
     }
   },
@@ -201,11 +213,11 @@
     "message": "Group Same Domain Tabs"
   },
   "groupSameDomainTabs_title": {
-    "message": "Group Same D&omain Tabs",
+    "message": "Group Same &Domain Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&O)"
+        "example": "(&D)"
       }
     }
   },
@@ -213,11 +225,11 @@
     "message": "Group Selected Tabs"
   },
   "groupSelectedTabs_title": {
-    "message": "&Group Selected Tabs",
+    "message": "Group &Selected Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&G)"
+        "example": "(&S)"
       }
     }
   },
@@ -395,10 +407,10 @@
   "optionsTabGroup": {
     "message": "Tab Group"
   },
-  "optionsTabGroupCollapseOther": {
+  "optionsTabGroupOnExpandCollapseOther": {
     "message": "Always collapse other groups when expanding a tab group"
   },
-  "optionsTabGroupCollapseOtherDetail": {
+  "optionsTabGroupOnExpandCollapseOtherDetail": {
     "message": "Expanding a tab group collapses other previously expanded tab groups."
   },
   "optionsTabGroupPutNewTabAtTheEnd": {

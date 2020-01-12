@@ -30,8 +30,9 @@ import {
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END,
-  TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
@@ -66,6 +67,7 @@ describe("main", () => {
     for (const key of globalKeys) {
       global[key] = window[key];
     }
+    mjs.sidebar.tabGroupOnExpandCollapseOther = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
@@ -85,6 +87,7 @@ describe("main", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    mjs.sidebar.tabGroupOnExpandCollapseOther = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
@@ -119,7 +122,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -133,7 +136,7 @@ describe("main", () => {
         incognito: true,
       });
       getStorage.resolves({
-        tabGroupCollapseOther: {
+        tabGroupOnExpandCollapseOther: {
           checked: true,
         },
         tabGroupPutNewTabAtTheEnd: {
@@ -144,7 +147,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isTrue(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
+                    "tabGroupCollapseOther");
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
                     "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -158,7 +162,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -172,7 +176,7 @@ describe("main", () => {
         incognito: true,
       });
       getStorage.resolves({
-        tabGroupCollapseOther: {
+        tabGroupOnExpandCollapseOther: {
           checked: true,
         },
       });
@@ -180,7 +184,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isTrue(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
+                    "tabGroupCollapseOther");
       assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
                      "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -194,7 +199,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -216,7 +221,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isFalse(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+                     "tabGroupCollapseOther");
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
                     "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -230,7 +236,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -248,7 +254,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isFalse(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+                     "tabGroupCollapseOther");
       assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
                      "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -3921,9 +3928,6 @@ describe("main", () => {
   describe("handle clicked menu", () => {
     const func = mjs.handleClickedMenu;
     beforeEach(() => {
-      mjs.sidebar.contextualIds = null;
-      mjs.sidebar.context = null;
-      mjs.sidebar.tabGroupCollapseOther = false;
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       browser.bookmarks.create.flush();
       browser.i18n.getMessage.flush();
@@ -3940,10 +3944,6 @@ describe("main", () => {
       browser.windows.getCurrent.flush();
     });
     afterEach(() => {
-      mjs.sidebar.contextualIds = null;
-      mjs.sidebar.context = null;
-      mjs.sidebar.tabGroupCollapseOther = false;
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       browser.bookmarks.create.flush();
       browser.i18n.getMessage.flush();
       browser.sessions.getWindowValue.flush();
@@ -3972,7 +3972,8 @@ describe("main", () => {
       const i = browser.tabs.get.callCount;
       const items = [
         TAB_MUTE, TABS_MUTE, TAB_PIN, TABS_PIN,
-        TAB_GROUP_COLLAPSE, TAB_GROUP_DETACH, TAB_GROUP_UNGROUP,
+        TAB_GROUP_COLLAPSE,
+        TAB_GROUP_DETACH, TAB_GROUP_UNGROUP,
       ];
       const body = document.querySelector("body");
       mjs.sidebar.context = body;
@@ -5491,7 +5492,7 @@ describe("main", () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
-      mjs.sidebar.tabGroupCollapseOther = true;
+      mjs.sidebar.tabGroupOnExpandCollapseOther = true;
       browser.tabs.get.resolves({
         pinned: false,
       });
@@ -5501,6 +5502,92 @@ describe("main", () => {
       });
       const info = {
         menuItemId: TAB_GROUP_COLLAPSE,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called tabs get");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
+                         "called windows get current");
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
+                         "called sessions get");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
+                         "called sessions set");
+      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+                         "called get message");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const k = browser.sessions.getWindowValue.callCount;
+      const l = browser.sessions.setWindowValue.callCount;
+      const m = browser.i18n.getMessage.callCount;
+      const tmpl = document.createElement("template");
+      const sect = document.createElement("section");
+      const pinned = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const newTab = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const cnt = document.createElement("span");
+      const icon = document.createElement("img");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      tmpl.content.appendChild(sect);
+      pinned.id = PINNED;
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      cnt.appendChild(icon);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://foo.com",
+      });
+      elm.appendChild(cnt);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://bar.com",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://baz.com",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        url: "https://qux.com",
+      });
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(pinned);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(newTab);
+      mjs.sidebar.context = elm3;
+      browser.tabs.get.resolves({
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+        incognito: false,
+      });
+      const info = {
+        menuItemId: TAB_GROUP_COLLAPSE_OTHER,
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called tabs get");
@@ -6214,9 +6301,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 39, "result");
+      assert.strictEqual(res.length, 40, "result");
     });
 
     it("should call function", async () => {
@@ -6285,9 +6372,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 39, "result");
+      assert.strictEqual(res.length, 40, "result");
     });
 
     it("should call function", async () => {
@@ -6356,9 +6443,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 39, "result");
+      assert.strictEqual(res.length, 40, "result");
     });
 
     it("should call function", async () => {
@@ -6427,9 +6514,85 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 39, "result");
+      assert.strictEqual(res.length, 40, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      sect2.classList.add(CLASS_TAB_GROUP);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "5";
+      sect2.appendChild(elm3);
+      sect2.appendChild(elm4);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const evt = {
+        button: 2,
+        target: elm3,
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
+                         "called update");
+      assert.strictEqual(res.length, 40, "result");
     });
 
     it("should call function", async () => {
@@ -6499,9 +6662,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -6571,9 +6734,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -6643,9 +6806,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -6715,9 +6878,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -6789,9 +6952,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -6863,9 +7026,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -6937,9 +7100,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -7011,9 +7174,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -7086,9 +7249,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
                          "called update");
-      assert.strictEqual(res.length, 42, "result");
+      assert.strictEqual(res.length, 43, "result");
     });
 
     it("should call function", async () => {
@@ -7158,9 +7321,9 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 39, "result");
+      assert.strictEqual(res.length, 40, "result");
     });
 
     it("should call function", async () => {
@@ -7533,14 +7696,6 @@ describe("main", () => {
 
   describe("set variable", () => {
     const func = mjs.setVar;
-    beforeEach(() => {
-      mjs.sidebar.tabGroupCollapseOther = false;
-      mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
-    });
-    afterEach(() => {
-      mjs.sidebar.tabGroupCollapseOther = false;
-      mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
-    });
 
     it("should not set variable", async () => {
       const res = await func();
@@ -7722,21 +7877,22 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: true});
-      assert.isTrue(mjs.sidebar.tabGroupCollapseOther, "set");
+      const res = await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, {checked: true});
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, "set");
       assert.deepEqual(res, [], "result");
     });
 
     it("should set variable", async () => {
       mjs.sidebar.tabGroupCollapseOther = true;
-      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: false});
-      assert.isFalse(mjs.sidebar.tabGroupCollapseOther, "set");
+      const res = await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, {checked: false});
+      assert.isFalse(mjs.sidebar.tabGroupOnExpandCollapseOther, "set");
       assert.deepEqual(res, [], "result");
     });
 
     it("should set variable", async () => {
-      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: true}, true);
-      assert.isTrue(mjs.sidebar.tabGroupCollapseOther, "set");
+      const res =
+        await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, {checked: true}, true);
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, "set");
       assert.deepEqual(res, [[]], "result");
     });
 
