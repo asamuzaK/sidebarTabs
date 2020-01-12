@@ -532,8 +532,8 @@ describe("tab-group", () => {
       const spy2 = sinon.spy(elm, "removeEventListener");
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.calledOnce, "called");
-      assert.isFalse(spy2.calledOnce, "called");
+      assert.isFalse(spy.called, "not called");
+      assert.isFalse(spy2.called, "not called");
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -545,8 +545,8 @@ describe("tab-group", () => {
       const spy2 = sinon.spy(elm, "removeEventListener");
       body.appendChild(elm);
       await func(elm, true);
-      assert.isFalse(spy.calledOnce, "called");
-      assert.isFalse(spy2.calledOnce, "called");
+      assert.isFalse(spy.called, "not called");
+      assert.isFalse(spy2.called, "not called");
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -577,6 +577,66 @@ describe("tab-group", () => {
       assert.isTrue(spy2.calledOnce, "called");
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
+    });
+  });
+
+  describe("replace tab context click listener", () => {
+    const func = mjs.replaceTabContextClickListener;
+
+    it("should not add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      body.appendChild(elm);
+      const res = await func(false);
+      assert.isFalse(spy.called, "not called");
+      assert.isFalse(spy2.called, "not called");
+      assert.deepEqual(res, [], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
+
+    it("should not add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      body.appendChild(elm);
+      const res = await func(true);
+      assert.isFalse(spy.called, "not called");
+      assert.isFalse(spy2.called, "not called");
+      assert.deepEqual(res, [], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      elm.classList.add(CLASS_TAB_CONTEXT);
+      elm2.classList.add(CLASS_TAB_CONTEXT);
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func(false);
+      assert.strictEqual(spy.callCount, i + 1, "called");
+      assert.strictEqual(spy2.callCount, j + 1, "called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.deepEqual(res, [undefined, undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
     });
   });
 

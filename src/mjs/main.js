@@ -34,8 +34,8 @@ import {
 } from "./tab-content.js";
 import {
   addTabContextClickListener, detachTabsFromGroup, groupSameDomainTabs,
-  groupSelectedTabs, restoreTabContainers, toggleTabGroupCollapsedState,
-  ungroupTabs,
+  groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
+  toggleTabGroupCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -108,13 +108,19 @@ export const setSidebar = async () => {
     populate: true,
   });
   const {id, incognito} = win;
-  const store = await getStorage(TAB_GROUP_NEW_TAB_AT_END);
+  const store = await getStorage([
+    TAB_GROUP_COLLAPSE_OTHER,
+    TAB_GROUP_NEW_TAB_AT_END,
+  ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
-    const {tabGroupPutNewTabAtTheEnd} = store;
-    const {checked} = tabGroupPutNewTabAtTheEnd;
-    sidebar.tabGroupPutNewTabAtTheEnd = !!checked;
+    const {tabGroupCollapseOther, tabGroupPutNewTabAtTheEnd} = store;
+    sidebar.tabGroupCollapseOther =
+      tabGroupCollapseOther && !!tabGroupCollapseOther.checked || false;
+    sidebar.tabGroupPutNewTabAtTheEnd =
+      tabGroupPutNewTabAtTheEnd && !!tabGroupPutNewTabAtTheEnd.checked || false;
   } else {
+    sidebar.tabGroupCollapseOther = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
   }
   sidebar.incognito = incognito;
@@ -371,7 +377,7 @@ export const handleActivatedTab = async info => {
 export const handleCreatedTab = async (tabsTab, emulate = false) => {
   const {
     active, audible, cookieStoreId, favIconUrl, hidden, id, index, openerTabId,
-    pinned, status, title, url, windowId,
+    pinned, status, title, url, windowId: tabWindowId,
     mutedInfo: {
       muted,
     },
@@ -380,10 +386,11 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
   if (!Number.isInteger(id)) {
     throw new TypeError(`Expected Number but got ${getType(id)}.`);
   }
-  if (!Number.isInteger(windowId)) {
-    throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
+  if (!Number.isInteger(tabWindowId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
-  if (windowId === sidebar.windowId && id !== TAB_ID_NONE) {
+  const {tabGroupCollapseOther, tabGroupPutNewTabAtTheEnd, windowId} = sidebar;
+  if (tabWindowId === windowId && id !== TAB_ID_NONE) {
     const tab = getTemplate(CLASS_TAB_TMPL);
     const tabItems = [
       `.${CLASS_TAB_CONTEXT}`, `.${CLASS_TAB_TOGGLE_ICON}`,
@@ -400,7 +407,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       const {classList} = item;
       if (classList.contains(CLASS_TAB_CONTEXT)) {
         item.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-        func.push(addTabContextClickListener(item));
+        func.push(addTabContextClickListener(item, !!tabGroupCollapseOther));
       } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
         item.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
@@ -459,15 +466,15 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     } else if (openerTab && !openerTab.classList.contains(PINNED) &&
                openerTabsTab) {
       container = openerTab.parentNode;
-      if (sidebar.tabGroupPutNewTabAtTheEnd) {
+      if (tabGroupPutNewTabAtTheEnd) {
         const {lastElementChild: lastChildTab} = container;
         const lastChildTabId = getSidebarTabId(lastChildTab);
         const lastChildTabsTab = await getTab(lastChildTabId);
         const {index: lastChildTabIndex} = lastChildTabsTab;
         if (index < lastChildTabIndex) {
           await moveTab(id, {
+            windowId,
             index: lastChildTabIndex,
-            windowId: sidebar.windowId,
           });
         }
         container.appendChild(tab);
@@ -511,7 +518,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       }
     }
   }
-  active && func.push(handleActivatedTab({tabId: id, windowId}));
+  active && func.push(handleActivatedTab({tabId: id, windowId: tabWindowId}));
   return Promise.all(func);
 };
 
@@ -1495,12 +1502,10 @@ export const setVar = async (item, obj, changed = false) => {
           updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value),
         );
         break;
-      /*
       case TAB_GROUP_COLLAPSE_OTHER:
         sidebar[item] = !!checked;
-        changed && func.push(addTabContextClickListener(foo, !!checked));
+        changed && func.push(replaceTabContextClickListener(!!checked));
         break;
-      */
       case TAB_GROUP_NEW_TAB_AT_END:
         sidebar[item] = !!checked;
         break;

@@ -118,8 +118,85 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get
-        .withArgs(TAB_GROUP_NEW_TAB_AT_END);
+      const getStorage = browser.storage.local.get.withArgs([
+        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_NEW_TAB_AT_END,
+      ]);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: "mac",
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      getStorage.resolves({
+        tabGroupCollapseOther: {
+          checked: true,
+        },
+        tabGroupPutNewTabAtTheEnd: {
+          checked: true,
+        },
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
+      assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
+      assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isTrue(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
+                    "tabGroupPutNewTabAtTheEnd");
+      assert.isTrue(sidebar.incognito, "incognito");
+      assert.isTrue(sidebar.isMac, "isMac");
+      assert.strictEqual(sidebar.windowId, 1, "windowId");
+    });
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true,
+      });
+      const getStorage = browser.storage.local.get.withArgs([
+        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_NEW_TAB_AT_END,
+      ]);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: "mac",
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      getStorage.resolves({
+        tabGroupCollapseOther: {
+          checked: true,
+        },
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
+      assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
+      assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isTrue(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+                     "tabGroupPutNewTabAtTheEnd");
+      assert.isTrue(sidebar.incognito, "incognito");
+      assert.isTrue(sidebar.isMac, "isMac");
+      assert.strictEqual(sidebar.windowId, 1, "windowId");
+    });
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true,
+      });
+      const getStorage = browser.storage.local.get.withArgs([
+        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_NEW_TAB_AT_END,
+      ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -139,6 +216,7 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isFalse(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
                     "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -151,8 +229,10 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get
-        .withArgs(TAB_GROUP_NEW_TAB_AT_END);
+      const getStorage = browser.storage.local.get.withArgs([
+        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_NEW_TAB_AT_END,
+      ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -168,6 +248,7 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isFalse(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
       assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
                      "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -7368,6 +7449,11 @@ describe("main", () => {
   describe("set variable", () => {
     const func = mjs.setVar;
     beforeEach(() => {
+      mjs.sidebar.tabGroupCollapseOther = false;
+      mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
+    });
+    afterEach(() => {
+      mjs.sidebar.tabGroupCollapseOther = false;
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     });
 
@@ -7551,8 +7637,34 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      const res = await func(TAB_GROUP_NEW_TAB_AT_END, {checked: true}, true);
+      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: true});
+      assert.isTrue(mjs.sidebar.tabGroupCollapseOther, "set");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      mjs.sidebar.tabGroupCollapseOther = true;
+      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: false});
+      assert.isFalse(mjs.sidebar.tabGroupCollapseOther, "set");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: true}, true);
+      assert.isTrue(mjs.sidebar.tabGroupCollapseOther, "set");
+      assert.deepEqual(res, [[]], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(TAB_GROUP_NEW_TAB_AT_END, {checked: true});
       assert.isTrue(mjs.sidebar.tabGroupPutNewTabAtTheEnd, "set");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      const res = await func(TAB_GROUP_NEW_TAB_AT_END, {checked: false});
+      assert.isFalse(mjs.sidebar.tabGroupPutNewTabAtTheEnd, "set");
       assert.deepEqual(res, [], "result");
     });
   });

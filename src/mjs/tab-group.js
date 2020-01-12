@@ -168,6 +168,20 @@ export const addTabContextClickListener = async (elm, multi) => {
 };
 
 /**
+ * replace tab context click listener
+ * @param {boolean} multi - handle multiple tab groups
+ * @returns {Promise.<Array>} - result of each handler
+ */
+export const replaceTabContextClickListener = async multi => {
+  const items = document.querySelectorAll(`.${CLASS_TAB_CONTEXT}`);
+  const func = [];
+  for (const item of items) {
+    func.push(addTabContextClickListener(item, !!multi));
+  }
+  return Promise.all(func);
+};
+
+/**
  * expand activated collapsed tab
  * @returns {?AsyncFunction} - toggleTabGroupCollapsedState()
  */
