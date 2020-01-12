@@ -86,6 +86,7 @@ export const TAB_CLOSE_UNDO = "undoCloseTab";
 export const TAB_DUPE = "dupeTab";
 export const TAB_GROUP = "tabGroup";
 export const TAB_GROUP_COLLAPSE = "collapseTabGroup";
+export const TAB_GROUP_COLLAPSE_OTHER = "tabGroupCollapseOther";
 export const TAB_GROUP_DETACH = "detachTabFromGroup";
 export const TAB_GROUP_DETACH_TABS = "detachTabsFromGroup";
 export const TAB_GROUP_DOMAIN = "groupSameDomainTabs";

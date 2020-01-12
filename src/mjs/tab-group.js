@@ -12,8 +12,8 @@ import {
   moveTabsInOrder,
 } from "./browser-tabs.js";
 import {
-  activateTab, createUrlMatchString, getSidebarTabContainer, getSidebarTabId,
-  getSidebarTabIndex, getTemplate, setSessionTabList,
+  activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
+  getSidebarTabId, getSidebarTabIndex, getTemplate, setSessionTabList,
 } from "./util.js";
 
 /* api */
@@ -49,49 +49,154 @@ export const restoreTabContainers = async () => {
 };
 
 /**
- * toggle tab group collapsed state
- * @param {Object} evt - event
- * @returns {?AsyncFunction} - activateTab()
+ * collapse tab group
+ * @param {Object} elm - element
+ * @returns {void}
  */
-export const toggleTabGroupCollapsedState = async (evt = {}) => {
-  const {target} = evt;
-  const container = getSidebarTabContainer(target);
-  let func;
-  if (container && container.classList.contains(CLASS_TAB_GROUP)) {
-    const {firstElementChild: tab} = container;
+export const collapseTabGroup = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_GROUP)) {
+    const {firstElementChild: tab} = elm;
     const {firstElementChild: tabContext} = tab;
     const {firstElementChild: toggleIcon} = tabContext;
-    container.classList.toggle(CLASS_TAB_COLLAPSED);
-    if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
-      tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(TAB_GROUP_EXPAND);
-      func = activateTab(tab);
-    } else {
-      tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-      toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
-    }
+    elm.classList.add(CLASS_TAB_COLLAPSED);
+    tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
+    toggleIcon.alt = i18n.getMessage(TAB_GROUP_EXPAND);
   }
-  return func;
 };
 
 /**
- * handle tab context on click
- * @param {Object} evt - Event
- * @returns {AsyncFunction} - promise chain
+ * expand tab group
+ * @param {Object} elm - element
+ * @returns {void}
  */
-export const tabContextOnClick = evt =>
-  toggleTabGroupCollapsedState(evt).then(setSessionTabList).catch(throwErr);
+export const expandTabGroup = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_GROUP)) {
+    const {firstElementChild: tab} = elm;
+    const {firstElementChild: tabContext} = tab;
+    const {firstElementChild: toggleIcon} = tabContext;
+    elm.classList.remove(CLASS_TAB_COLLAPSED);
+    tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
+    toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
+  }
+};
+
+/**
+ * toggle tab group collapsed state
+ * @param {Object} elm - element
+ * @param {boolean} activate - activate tab
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const toggleTabGroupCollapsedState = async (elm, activate) => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const container = getSidebarTabContainer(elm);
+    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+      if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
+        func.push(expandTabGroup(container));
+      } else {
+        func.push(collapseTabGroup(container));
+      }
+      if (activate) {
+        const {firstElementChild: tab} = container;
+        func.push(activateTab(tab));
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * toggle multiple tab groups collapsed state
+ * @param {Object} elm - element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const toggleTabGroupsCollapsedState = async elm => {
+  const func = [];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const container = getSidebarTabContainer(elm);
+    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+      const items =
+        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
+      for (const item of items) {
+        if (item === container) {
+          func.push(toggleTabGroupCollapsedState(item, true));
+        } else {
+          !item.classList.contains(CLASS_TAB_COLLAPSED) &&
+            func.push(toggleTabGroupCollapsedState(item, false));
+        }
+      }
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * handle individual tab group collapsed state
+ * @param {!Object} evt - Event
+ * @returns {?AsyncFunction} - promise chain
+ */
+export const handleTabGroupCollapsedState = evt => {
+  const {target} = evt;
+  const tab = getSidebarTab(target);
+  let func;
+  if (tab) {
+    func =
+      toggleTabGroupCollapsedState(tab, true).then(setSessionTabList)
+        .catch(throwErr);
+  }
+  return func || null;
+};
+
+/**
+ * handle multiple tab groups collapsed state
+ * @param {!Object} evt - Event
+ * @returns {?AsyncFunction} - promise chain
+ */
+export const handleTabGroupsCollapsedState = evt => {
+  const {target} = evt;
+  const container = getSidebarTabContainer(target);
+  let func;
+  if (container) {
+    func =
+      toggleTabGroupsCollapsedState(container).then(setSessionTabList)
+        .catch(throwErr);
+  }
+  return func || null;
+};
 
 /**
  * add tab context click listener
  * @param {Object} elm - element
+ * @param {boolean} multi - handle multiple tab groups
  * @returns {void}
  */
-export const addTabContextClickListener = async elm => {
+export const addTabContextClickListener = async (elm, multi) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_CONTEXT)) {
-    elm.addEventListener("click", tabContextOnClick);
+    if (multi) {
+      elm.addEventListener("click", handleTabGroupsCollapsedState);
+      elm.removeEventListener("click", handleTabGroupCollapsedState);
+    } else {
+      elm.addEventListener("click", handleTabGroupCollapsedState);
+      elm.removeEventListener("click", handleTabGroupsCollapsedState);
+    }
   }
+};
+
+/**
+ * replace tab context click listener
+ * @param {boolean} multi - handle multiple tab groups
+ * @returns {Promise.<Array>} - result of each handler
+ */
+export const replaceTabContextClickListener = async multi => {
+  const items = document.querySelectorAll(`.${CLASS_TAB_CONTEXT}`);
+  const func = [];
+  for (const item of items) {
+    func.push(addTabContextClickListener(item, !!multi));
+  }
+  return Promise.all(func);
 };
 
 /**
@@ -105,7 +210,7 @@ export const expandActivatedCollapsedTab = async () => {
     const {parentNode} = tab;
     if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
         parentNode.firstElementChild !== tab) {
-      func = toggleTabGroupCollapsedState({target: tab});
+      func = toggleTabGroupCollapsedState(tab, true);
     }
   }
   return func || null;
@@ -139,16 +244,14 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
         } = parentNode;
         const move = item !== parentLastChild;
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+        const itemIndex = getSidebarTabIndex(item);
         container.appendChild(item);
         container.removeAttribute("hidden");
         parentNode.parentNode.insertBefore(container, parentNextSibling);
-        if (move) {
-          const itemIndex = getSidebarTabIndex(item);
-          arr.push({
-            index: itemIndex,
-            tabId: itemId,
-          });
-        }
+        move && arr.push({
+          index: itemIndex,
+          tabId: itemId,
+        });
       }
     }
   }
