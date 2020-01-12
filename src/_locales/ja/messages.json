@@ -113,6 +113,18 @@
       }
     }
   },
+  "collapseOtherTabGroups": {
+    "message": "他のタブグループをすべて折りたたむ"
+  },
+  "collapseOtherTabGroups_title": {
+    "message": "他のタブグループをすべて折りたたむ$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
   "collapseTabGroup": {
     "message": "タブグループを折りたたむ"
   },
@@ -142,7 +154,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&T)"
       }
     }
   },
@@ -154,7 +166,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&T)"
       }
     }
   },
@@ -205,7 +217,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&O)"
+        "example": "(&D)"
       }
     }
   },
@@ -217,7 +229,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&G)"
+        "example": "(&S)"
       }
     }
   },
@@ -395,10 +407,10 @@
   "optionsTabGroup": {
     "message": "タブグループ"
   },
-  "optionsTabGroupCollapseOther": {
+  "optionsTabGroupOnExpandCollapseOther": {
     "message": "タブグループを展開したときは常に他のグループを折りたたむ"
   },
-  "optionsTabGroupCollapseOtherDetail": {
+  "optionsTabGroupOnExpandCollapseOtherDetail": {
     "message": "タブグループを展開すると、それまで展開していた他のタブグループは折りたたまれます。"
   },
   "optionsTabGroupPutNewTabAtTheEnd": {

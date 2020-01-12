@@ -69,8 +69,9 @@ import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END,
-  TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
   TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
@@ -93,7 +94,7 @@ export const sidebar = {
   isMac: false,
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
-  tabGroupCollapseOther: false,
+  tabGroupOnExpandCollapseOther: false,
   tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
   windowId: null,
@@ -109,18 +110,19 @@ export const setSidebar = async () => {
   });
   const {id, incognito} = win;
   const store = await getStorage([
-    TAB_GROUP_COLLAPSE_OTHER,
+    TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_NEW_TAB_AT_END,
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
-    const {tabGroupCollapseOther, tabGroupPutNewTabAtTheEnd} = store;
-    sidebar.tabGroupCollapseOther =
-      tabGroupCollapseOther && !!tabGroupCollapseOther.checked || false;
+    const {tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd} = store;
+    sidebar.tabGroupOnExpandCollapseOther =
+      tabGroupOnExpandCollapseOther &&
+      !!tabGroupOnExpandCollapseOther.checked || false;
     sidebar.tabGroupPutNewTabAtTheEnd =
       tabGroupPutNewTabAtTheEnd && !!tabGroupPutNewTabAtTheEnd.checked || false;
   } else {
-    sidebar.tabGroupCollapseOther = false;
+    sidebar.tabGroupOnExpandCollapseOther = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
   }
   sidebar.incognito = incognito;
@@ -389,7 +391,9 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
   if (!Number.isInteger(tabWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
-  const {tabGroupCollapseOther, tabGroupPutNewTabAtTheEnd, windowId} = sidebar;
+  const {
+    tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd, windowId,
+  } = sidebar;
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
     const tab = getTemplate(CLASS_TAB_TMPL);
     const tabItems = [
@@ -407,7 +411,9 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       const {classList} = item;
       if (classList.contains(CLASS_TAB_CONTEXT)) {
         item.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-        func.push(addTabContextClickListener(item, !!tabGroupCollapseOther));
+        func.push(
+          addTabContextClickListener(item, !!tabGroupOnExpandCollapseOther),
+        );
       } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
         item.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
@@ -855,7 +861,9 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
  */
 export const handleClickedMenu = async info => {
   const {menuItemId} = info;
-  const {context, contextualIds, tabGroupCollapseOther, windowId} = sidebar;
+  const {
+    context, contextualIds, tabGroupOnExpandCollapseOther, windowId,
+  } = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
@@ -896,7 +904,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE: {
       if (tab) {
-        if (tabGroupCollapseOther) {
+        if (tabGroupOnExpandCollapseOther) {
           func.push(
             toggleTabGroupsCollapsedState(tab).then(setSessionTabList),
           );
@@ -1511,7 +1519,7 @@ export const setVar = async (item, obj, changed = false) => {
           updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value),
         );
         break;
-      case TAB_GROUP_COLLAPSE_OTHER:
+      case TAB_GROUP_EXPAND_COLLAPSE_OTHER:
         sidebar[item] = !!checked;
         changed && func.push(replaceTabContextClickListener(!!checked));
         break;

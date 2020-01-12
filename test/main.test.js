@@ -30,8 +30,9 @@ import {
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_NEW_TAB_AT_END,
-  TAB_GROUP_DOMAIN, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
@@ -66,6 +67,7 @@ describe("main", () => {
     for (const key of globalKeys) {
       global[key] = window[key];
     }
+    mjs.sidebar.tabGroupOnExpandCollapseOther = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
@@ -85,6 +87,7 @@ describe("main", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    mjs.sidebar.tabGroupOnExpandCollapseOther = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
@@ -119,7 +122,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -133,7 +136,7 @@ describe("main", () => {
         incognito: true,
       });
       getStorage.resolves({
-        tabGroupCollapseOther: {
+        tabGroupOnExpandCollapseOther: {
           checked: true,
         },
         tabGroupPutNewTabAtTheEnd: {
@@ -144,7 +147,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isTrue(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
+                    "tabGroupCollapseOther");
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
                     "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -158,7 +162,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -172,7 +176,7 @@ describe("main", () => {
         incognito: true,
       });
       getStorage.resolves({
-        tabGroupCollapseOther: {
+        tabGroupOnExpandCollapseOther: {
           checked: true,
         },
       });
@@ -180,7 +184,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isTrue(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
+                    "tabGroupCollapseOther");
       assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
                      "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -194,7 +199,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -216,7 +221,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isFalse(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+                     "tabGroupCollapseOther");
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
                     "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -230,7 +236,7 @@ describe("main", () => {
         populate: true,
       });
       const getStorage = browser.storage.local.get.withArgs([
-        TAB_GROUP_COLLAPSE_OTHER,
+        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
       const getOs = browser.runtime.getPlatformInfo.resolves({
@@ -248,7 +254,8 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
-      assert.isFalse(sidebar.tabGroupCollapseOther, "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+                     "tabGroupCollapseOther");
       assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
                      "tabGroupPutNewTabAtTheEnd");
       assert.isTrue(sidebar.incognito, "incognito");
@@ -3921,9 +3928,6 @@ describe("main", () => {
   describe("handle clicked menu", () => {
     const func = mjs.handleClickedMenu;
     beforeEach(() => {
-      mjs.sidebar.contextualIds = null;
-      mjs.sidebar.context = null;
-      mjs.sidebar.tabGroupCollapseOther = false;
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       browser.bookmarks.create.flush();
       browser.i18n.getMessage.flush();
@@ -3940,10 +3944,6 @@ describe("main", () => {
       browser.windows.getCurrent.flush();
     });
     afterEach(() => {
-      mjs.sidebar.contextualIds = null;
-      mjs.sidebar.context = null;
-      mjs.sidebar.tabGroupCollapseOther = false;
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       browser.bookmarks.create.flush();
       browser.i18n.getMessage.flush();
       browser.sessions.getWindowValue.flush();
@@ -5491,7 +5491,7 @@ describe("main", () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
-      mjs.sidebar.tabGroupCollapseOther = true;
+      mjs.sidebar.tabGroupOnExpandCollapseOther = true;
       browser.tabs.get.resolves({
         pinned: false,
       });
@@ -7533,14 +7533,6 @@ describe("main", () => {
 
   describe("set variable", () => {
     const func = mjs.setVar;
-    beforeEach(() => {
-      mjs.sidebar.tabGroupCollapseOther = false;
-      mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
-    });
-    afterEach(() => {
-      mjs.sidebar.tabGroupCollapseOther = false;
-      mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
-    });
 
     it("should not set variable", async () => {
       const res = await func();
@@ -7722,21 +7714,22 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: true});
-      assert.isTrue(mjs.sidebar.tabGroupCollapseOther, "set");
+      const res = await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, {checked: true});
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, "set");
       assert.deepEqual(res, [], "result");
     });
 
     it("should set variable", async () => {
       mjs.sidebar.tabGroupCollapseOther = true;
-      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: false});
-      assert.isFalse(mjs.sidebar.tabGroupCollapseOther, "set");
+      const res = await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, {checked: false});
+      assert.isFalse(mjs.sidebar.tabGroupOnExpandCollapseOther, "set");
       assert.deepEqual(res, [], "result");
     });
 
     it("should set variable", async () => {
-      const res = await func(TAB_GROUP_COLLAPSE_OTHER, {checked: true}, true);
-      assert.isTrue(mjs.sidebar.tabGroupCollapseOther, "set");
+      const res =
+        await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, {checked: true}, true);
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, "set");
       assert.deepEqual(res, [[]], "result");
     });
 
