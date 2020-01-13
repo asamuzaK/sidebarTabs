@@ -456,9 +456,13 @@ describe("theme", () => {
   describe("get base value", () => {
     const func = mjs.getBaseValues;
     beforeEach(() => {
+      browser.management.getAll.flush();
+      browser.theme.getCurrent.flush();
       mjs.currentThemeColors.clear();
     });
     afterEach(() => {
+      browser.management.getAll.flush();
+      browser.theme.getCurrent.flush();
       mjs.currentThemeColors.clear();
     });
 
@@ -467,8 +471,6 @@ describe("theme", () => {
       browser.management.getAll.resolves(null);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
 
     it("should get fallback values", async () => {
@@ -482,8 +484,6 @@ describe("theme", () => {
       ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
 
     it("should get values", async () => {
@@ -497,8 +497,6 @@ describe("theme", () => {
       ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], "result");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
 
     it("should get values", async () => {
@@ -512,8 +510,6 @@ describe("theme", () => {
       ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
 
     it("should get fallback values", async () => {
@@ -523,8 +519,6 @@ describe("theme", () => {
       browser.management.getAll.resolves(null);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
 
     it("should get fallback values", async () => {
@@ -534,8 +528,6 @@ describe("theme", () => {
       browser.management.getAll.resolves(null);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
 
     it("should get values", async () => {
@@ -549,17 +541,17 @@ describe("theme", () => {
       const res = await func();
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], "result");
       assert.strictEqual(res[CUSTOM_BG], "#ff0000", "color");
-      browser.theme.getCurrent.flush();
-      browser.management.getAll.flush();
     });
   });
 
   describe("set current theme value", () => {
     const func = mjs.setCurrentThemeValue;
     beforeEach(() => {
+      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
     });
     afterEach(() => {
+      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
     });
 
@@ -568,7 +560,6 @@ describe("theme", () => {
       await func();
       assert.strictEqual(mjs.currentTheme.size, 1, "size");
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), "key");
-      browser.storage.local.get.flush();
     });
 
     it("should set theme", async () => {
@@ -580,16 +571,17 @@ describe("theme", () => {
       await func();
       assert.strictEqual(mjs.currentTheme.size, 1, "size");
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), "key");
-      browser.storage.local.get.flush();
     });
   });
 
   describe("send current theme values", () => {
     const func = mjs.sendCurrentTheme;
     beforeEach(() => {
+      browser.runtime.sendMessage.flush();
       mjs.currentTheme.clear();
     });
     afterEach(() => {
+      browser.runtime.sendMessage.flush();
       mjs.currentTheme.clear();
     });
 
@@ -613,7 +605,6 @@ describe("theme", () => {
         },
         null,
       ], "result");
-      browser.runtime.sendMessage.flush();
     });
   });
 
@@ -804,10 +795,14 @@ describe("theme", () => {
   describe("init custom theme", () => {
     const func = mjs.initCustomTheme;
     beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
       mjs.currentThemeColors.clear();
     });
     afterEach(() => {
+      browser.runtime.sendMessage.flush();
+      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
       mjs.currentThemeColors.clear();
     });
@@ -819,7 +814,6 @@ describe("theme", () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
                          "not called");
       assert.isNull(res, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should not call function", async () => {
@@ -836,7 +830,6 @@ describe("theme", () => {
       assert.strictEqual(browser.storage.local.remove.callCount, j,
                          "not called");
       assert.isNull(res, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should not call function", async () => {
@@ -853,7 +846,6 @@ describe("theme", () => {
       assert.strictEqual(browser.storage.local.remove.callCount, j,
                          "not called");
       assert.isNull(res, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should not call function", async () => {
@@ -868,7 +860,6 @@ describe("theme", () => {
       assert.strictEqual(browser.storage.local.remove.callCount, j,
                          "not called");
       assert.isNull(res, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should call function", async () => {
@@ -894,8 +885,6 @@ describe("theme", () => {
         },
         null,
       ], "result");
-      browser.runtime.sendMessage.flush();
-      browser.storage.local.get.flush();
     });
 
     it("should call function", async () => {
@@ -921,13 +910,19 @@ describe("theme", () => {
         },
         null,
       ], "result");
-      browser.runtime.sendMessage.flush();
-      browser.storage.local.get.flush();
     });
   });
 
   describe("get theme", () => {
     const func = mjs.getTheme;
+    beforeEach(() => {
+      browser.management.getAll.flush();
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.management.getAll.flush();
+      browser.storage.local.get.flush();
+    });
 
     it("should get light theme", async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
@@ -937,7 +932,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.deepEqual(res, [THEME_LIGHT], "result");
-      browser.storage.local.get.flush();
     });
 
     it("should get stored theme", async () => {
@@ -948,7 +942,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.deepEqual(res, ["foo"], "result");
-      browser.storage.local.get.flush();
     });
 
     it("should get light theme", async () => {
@@ -966,7 +959,6 @@ describe("theme", () => {
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(browser.management.getAll.callCount, j + 1, "called");
       assert.deepEqual(res, [THEME_LIGHT], "result");
-      browser.management.getAll.flush();
     });
 
     it("should get dark theme", async () => {
@@ -984,7 +976,6 @@ describe("theme", () => {
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(browser.management.getAll.callCount, j + 1, "called");
       assert.deepEqual(res, [THEME_DARK], "result");
-      browser.management.getAll.flush();
     });
 
     it("should get light theme", async () => {
@@ -1002,7 +993,6 @@ describe("theme", () => {
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.strictEqual(browser.management.getAll.callCount, j + 1, "called");
       assert.deepEqual(res, [THEME_LIGHT], "result");
-      browser.management.getAll.flush();
     });
   });
 
@@ -1074,6 +1064,12 @@ describe("theme", () => {
 
   describe("get tab height", () => {
     const func = mjs.getTabHeight;
+    beforeEach(() => {
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.get.flush();
+    });
 
     it("should get result", async () => {
       browser.storage.local.get.withArgs(THEME_TAB_COMPACT).resolves(undefined);
@@ -1081,7 +1077,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.isFalse(res, "result");
-      browser.storage.local.get.flush();
     });
 
     it("should get result", async () => {
@@ -1094,7 +1089,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.isTrue(res, "result");
-      browser.storage.local.get.flush();
     });
 
     it("should get result", async () => {
@@ -1107,7 +1101,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.isFalse(res, "result");
-      browser.storage.local.get.flush();
     });
   });
 
@@ -1131,6 +1124,12 @@ describe("theme", () => {
 
   describe("get scrollbar width", () => {
     const func = mjs.getScrollbarWidth;
+    beforeEach(() => {
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.get.flush();
+    });
 
     it("should get result", async () => {
       browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW)
@@ -1139,7 +1138,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.isFalse(res, "result");
-      browser.storage.local.get.flush();
     });
 
     it("should get result", async () => {
@@ -1152,7 +1150,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.isTrue(res, "result");
-      browser.storage.local.get.flush();
     });
 
     it("should get result", async () => {
@@ -1165,7 +1162,6 @@ describe("theme", () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
       assert.isFalse(res, "result");
-      browser.storage.local.get.flush();
     });
   });
 
@@ -1202,12 +1198,17 @@ describe("theme", () => {
 
   describe("set sidebar theme", () => {
     const func = mjs.setSidebarTheme;
+    beforeEach(() => {
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.get.flush();
+    });
 
     it("should call functions", async () => {
       browser.storage.local.get.resolves({});
       const res = await func();
       assert.isUndefined(res, "result");
-      browser.storage.local.get.flush();
     });
   });
 });
