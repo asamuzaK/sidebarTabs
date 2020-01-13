@@ -4,15 +4,18 @@
   font: menu;
   --background-color: #ededf0;
   --background-active-color: #f9f9fa;
+  --background-discarded-color: #ededf0;
   --background-hover-color: #d7d7db;
   --background-hover-shadow: #0c0c0d1a;
   --background-selection-color: #0a84ff;
   --background-selection-hover-color: #0060df;
   --border-color: #ccc;
   --border-active-color: #999;
+  --border-discarded-color: #ccc;
   --border-drop-color: #00feff;
   --foreground-color: #0c0c0d;
   --foreground-active-color: #0c0c0d;
+  --foreground-discarded-color: #0c0c0d;
   --foreground-hover-color: #0c0c0d;
   --foreground-highlight-color: #0a84ff;
   --foreground-selection-color: #f9f9fa;
@@ -35,15 +38,18 @@
 .dark-theme {
   --background-color: #0c0c0d;
   --background-active-color: #38383d;
+  --background-discarded-color: #0c0c0d;
   --background-hover-color: #2a2a2e;
   --background-hover-shadow: #f9f9fa1a;
   --background-selection-color: #003eaa;
   --background-selection-hover-color: #0060df;
   --border-color: #666;
   --border-active-color: #999;
+  --border-discarded-color: #666;
   --border-drop-color: #00feff;
   --foreground-color: #f9f9fa;
   --foreground-active-color: #f9f9fa;
+  --foreground-discarded-color: #f9f9fa;
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #f9f9fa;
   --foreground-selection-hover-color: #f9f9fa;
@@ -119,8 +125,17 @@ main {
   stroke: var(--foreground-highlight-color);
   z-index: 3;
 }
+.tab.discarded {
+  background: var(--background-discarded-color);
+  border-color: var(--border-discarded-color);
+  color: var(--foreground-discarded-color);
+  fill: var(--foreground-discarded-color);
+  stroke: var(--foreground-highlight-color);
+  z-index: 3;
+}
 .tab:hover,
-.tab.active:hover {
+.tab.active:hover,
+.tab.discarded:hover {
   background: var(--background-hover-color);
   border-color: var(--border-active-color);
   color: var(--foreground-hover-color);
@@ -177,8 +192,13 @@ main {
   fill: var(--foreground-active-color);
   stroke: var(--foreground-highlight-color);
 }
+.tab.discarded .tab-icon {
+  fill: var(--foreground-discarded-color);
+  stroke: var(--foreground-highlight-color);
+}
 .tab:hover .tab-icon,
-.tab.active:hover .tab-icon {
+.tab.active:hover .tab-icon,
+.tab.discarded:hover .tab-icon {
   fill: var(--foreground-hover-color);
   stroke: var(--foreground-highlight-color);
 }
@@ -223,8 +243,14 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
+.tab.discarded .tab-audio.audible {
+  fill: var(--foreground-discarded-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
 .tab:hover .tab-audio.audible,
-.tab.active:hover .tab-audio.audible {
+.tab.active:hover .tab-audio.audible,
+.tab.discarded:hover .tab-audio.audible {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
@@ -282,8 +308,14 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
+.tab.discarded > .tab-close {
+  fill: var(--foreground-discarded-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
 .tab:hover > .tab-close,
-.tab.active:hover > .tab-close {
+.tab.active:hover > .tab-close,
+.tab.discarded:hover > .tab-close {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
@@ -336,8 +368,14 @@ main {
   fill-opacity: 0.7;
   stroke: var(--foreground-highlight-color);
 }
+.tab-container.pinned > .tab.discarded > .tab-pinned {
+  fill: var(--foreground-discarded-color);
+  fill-opacity: 0.7;
+  stroke: var(--foreground-highlight-color);
+}
 .tab-container.pinned > .tab:hover > .tab-pinned,
-.tab-container.pinned > .tab.active:hover > .tab-pinned {
+.tab-container.pinned > .tab.active:hover > .tab-pinned,
+.tab-container.pinned > .tab.discarded:hover > .tab-pinned {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.7;
   stroke: var(--foreground-highlight-color);

@@ -17,17 +17,18 @@ import {
 import {
   CLASS_COMPACT, CLASS_NARROW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
-  CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE,
+  CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED,
   CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
-  CSS_VAR_BORDER, CSS_VAR_BORDER_ACTIVE,
-  CSS_VAR_COLOR, CSS_VAR_COLOR_ACTIVE, CSS_VAR_COLOR_HOVER,
-  CSS_VAR_COLOR_SELECT, CSS_VAR_COLOR_SELECT_HOVER,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
+  CSS_VAR_BORDER, CSS_VAR_BORDER_ACTIVE, CSS_VAR_BORDER_DISCARDED,
+  CSS_VAR_COLOR, CSS_VAR_COLOR_ACTIVE, CSS_VAR_COLOR_DISCARDED,
+  CSS_VAR_COLOR_HOVER, CSS_VAR_COLOR_SELECT, CSS_VAR_COLOR_SELECT_HOVER,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED,
+  CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
   CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
-  CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
-  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
-  CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_BORDER_DISCARDED,
+  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_DISCARDED,
+  CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
@@ -38,14 +39,17 @@ export const themeMap = {
   [CSS_ID]: {
     [CUSTOM_BG]: CSS_VAR_BG,
     [CUSTOM_BG_ACTIVE]: CSS_VAR_BG_ACTIVE,
+    [CUSTOM_BG_DISCARDED]: CSS_VAR_BG_DISCARDED,
     [CUSTOM_BG_HOVER]: CSS_VAR_BG_HOVER,
     [CUSTOM_BG_HOVER_SHADOW]: CSS_VAR_BG_HOVER_SHADOW,
     [CUSTOM_BG_SELECT]: CSS_VAR_BG_SELECT,
     [CUSTOM_BG_SELECT_HOVER]: CSS_VAR_BG_SELECT_HOVER,
     [CUSTOM_BORDER]: CSS_VAR_BORDER,
     [CUSTOM_BORDER_ACTIVE]: CSS_VAR_BORDER_ACTIVE,
+    [CUSTOM_BORDER_DISCARDED]: CSS_VAR_BORDER_DISCARDED,
     [CUSTOM_COLOR]: CSS_VAR_COLOR,
     [CUSTOM_COLOR_ACTIVE]: CSS_VAR_COLOR_ACTIVE,
+    [CUSTOM_COLOR_DISCARDED]: CSS_VAR_COLOR_DISCARDED,
     [CUSTOM_COLOR_HOVER]: CSS_VAR_COLOR_HOVER,
     [CUSTOM_COLOR_SELECT]: CSS_VAR_COLOR_SELECT,
     [CUSTOM_COLOR_SELECT_HOVER]: CSS_VAR_COLOR_SELECT_HOVER,
@@ -53,14 +57,17 @@ export const themeMap = {
   [THEME_LIGHT]: {
     [CUSTOM_BG]: "#ededf0",
     [CUSTOM_BG_ACTIVE]: "#f9f9fa",
+    [CUSTOM_BG_DISCARDED]: "#ededf0",
     [CUSTOM_BG_HOVER]: "#d7d7db",
     [CUSTOM_BG_HOVER_SHADOW]: "#0c0c0d1a",
     [CUSTOM_BG_SELECT]: "#0a84ff",
     [CUSTOM_BG_SELECT_HOVER]: "#0a78e6",
     [CUSTOM_BORDER]: "#cccccc",
     [CUSTOM_BORDER_ACTIVE]: "#999999",
+    [CUSTOM_BORDER_DISCARDED]: "#cccccc",
     [CUSTOM_COLOR]: "#0c0c0d",
     [CUSTOM_COLOR_ACTIVE]: "#0c0c0d",
+    [CUSTOM_COLOR_DISCARDED]: "#0c0c0d",
     [CUSTOM_COLOR_HOVER]: "#0c0c0d",
     [CUSTOM_COLOR_SELECT]: "#f9f9fa",
     [CUSTOM_COLOR_SELECT_HOVER]: "#f9f9fa",
@@ -68,14 +75,17 @@ export const themeMap = {
   [THEME_DARK]: {
     [CUSTOM_BG]: "#0c0c0d",
     [CUSTOM_BG_ACTIVE]: "#38383d",
+    [CUSTOM_BG_DISCARDED]: "#0c0c0d",
     [CUSTOM_BG_HOVER]: "#2a2a2e",
     [CUSTOM_BG_HOVER_SHADOW]: "#f9f9fa1a",
     [CUSTOM_BG_SELECT]: "#0a84ff",
     [CUSTOM_BG_SELECT_HOVER]: "#0a78e6",
     [CUSTOM_BORDER]: "#666666",
     [CUSTOM_BORDER_ACTIVE]: "#999999",
+    [CUSTOM_BORDER_DISCARDED]: "#666666",
     [CUSTOM_COLOR]: "#f9f9fa",
     [CUSTOM_COLOR_ACTIVE]: "#f9f9fa",
+    [CUSTOM_COLOR_DISCARDED]: "#f9f9fa",
     [CUSTOM_COLOR_HOVER]: "#f9f9fa",
     [CUSTOM_COLOR_SELECT]: "#f9f9fa",
     [CUSTOM_COLOR_SELECT_HOVER]: "#f9f9fa",
@@ -115,7 +125,8 @@ export const getCurrentThemeBaseValues = async () => {
   const items = Object.keys(baseValues);
   for (const key of items) {
     switch (key) {
-      case CUSTOM_BG: {
+      case CUSTOM_BG:
+      case CUSTOM_BG_DISCARDED: {
         const valueA = currentThemeColors.get("sidebar");
         const valueB = currentThemeColors.get("frame");
         const valueC = currentThemeColors.get("accentcolor");
@@ -146,7 +157,8 @@ export const getCurrentThemeBaseValues = async () => {
         values[key] = valueA || baseValues[key];
         break;
       }
-      case CUSTOM_BORDER: {
+      case CUSTOM_BORDER:
+      case CUSTOM_BORDER_DISCARDED: {
         const valueA = currentThemeColors.get("sidebar_border");
         const valueB = currentThemeColors.get("tab_background_separator");
         values[key] = valueA || valueB || baseValues[key];
@@ -160,7 +172,8 @@ export const getCurrentThemeBaseValues = async () => {
         values[key] = valueA || valueB || valueC || valueD || baseValues[key];
         break;
       }
-      case CUSTOM_COLOR: {
+      case CUSTOM_COLOR:
+      case CUSTOM_COLOR_DISCARDED: {
         const valueA = currentThemeColors.get("sidebar_text");
         const valueB = currentThemeColors.get("tab_background_text");
         const valueC = currentThemeColors.get("textcolor");
