@@ -26,7 +26,7 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
@@ -3677,6 +3677,10 @@ describe("main", () => {
     it("should update, not call function", async () => {
       const info = {};
       const tabsTab = {
+        discarded: false,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
@@ -3684,6 +3688,7 @@ describe("main", () => {
       };
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
+      assert.isFalse(elm.classList.contains(DISCARDED), "class");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
     });
@@ -3694,6 +3699,10 @@ describe("main", () => {
         hidden: true,
       };
       const tabsTab = {
+        discarded: true,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
@@ -3701,6 +3710,7 @@ describe("main", () => {
       };
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.hasAttribute("hidden"), "hidden");
+      assert.isTrue(elm.classList.contains(DISCARDED), "class");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
     });
@@ -3711,6 +3721,10 @@ describe("main", () => {
         hidden: false,
       };
       const tabsTab = {
+        discarded: false,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
@@ -3719,6 +3733,7 @@ describe("main", () => {
       elm.setAttribute("hidden", "hidden");
       const res = await func(1, info, tabsTab);
       assert.isFalse(elm.hasAttribute("hidden"), "hidden");
+      assert.isFalse(elm.classList.contains(DISCARDED), "class");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [], "result");
     });
@@ -3729,17 +3744,50 @@ describe("main", () => {
         discarded: true,
       };
       const tabsTab = {
+        discarded: true,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
         windowId: browser.windows.WINDOW_ID_CURRENT,
       };
+      const elm = document.querySelector("[data-tab-id=\"1\"]");
       browser.windows.getCurrent.resolves({
         incognito: true,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       });
       const res = await func(1, info, tabsTab);
+      assert.isTrue(elm.classList.contains(DISCARDED), "class");
+      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should update, call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
+      const info = {
+        discarded: false,
+      };
+      const tabsTab = {
+        discarded: false,
+        mutedInfo: {
+          muted: false,
+        },
+        status: "complete",
+        title: "foo",
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
       const elm = document.querySelector("[data-tab-id=\"1\"]");
+      elm.classList.add(DISCARDED);
+      browser.windows.getCurrent.resolves({
+        incognito: true,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      const res = await func(1, info, tabsTab);
+      assert.isFalse(elm.classList.contains(DISCARDED), "class");
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tabsTab");
       assert.deepEqual(res, [undefined], "result");
@@ -3751,7 +3799,11 @@ describe("main", () => {
         status: "loading",
       };
       const tabsTab = {
+        discarded: false,
         id: 1,
+        mutedInfo: {
+          muted: false,
+        },
         status: "loading",
         title: "foo",
         url: "https://example.com",
@@ -3776,7 +3828,11 @@ describe("main", () => {
         status: "complete",
       };
       const tabsTab = {
+        discarded: false,
         id: 1,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
@@ -3809,7 +3865,11 @@ describe("main", () => {
         pinned: true,
       };
       const tabsTab = {
+        discarded: false,
         id: 1,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
@@ -3850,7 +3910,11 @@ describe("main", () => {
         pinned: false,
       };
       const tabsTab = {
+        discarded: false,
         id: 1,
+        mutedInfo: {
+          muted: false,
+        },
         status: "complete",
         title: "foo",
         url: "https://example.com",
@@ -3882,6 +3946,7 @@ describe("main", () => {
         },
       };
       const tabsTab = {
+        discarded: false,
         id: 1,
         status: "complete",
         title: "foo",
@@ -3907,6 +3972,7 @@ describe("main", () => {
         },
       };
       const tabsTab = {
+        discarded: false,
         id: 1,
         status: "complete",
         title: "foo",
