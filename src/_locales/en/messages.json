@@ -440,6 +440,9 @@
   "optionsThemeCustomTabActive": {
     "message": "Active Tab"
   },
+  "optionsThemeCustomTabDiscarded": {
+    "message": "Discarded Tab"
+  },
   "optionsThemeCustomTabHover": {
     "message": "Hovering Over Tab"
   },

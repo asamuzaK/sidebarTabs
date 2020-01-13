@@ -65,7 +65,7 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
+  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
   SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -796,11 +796,11 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
   if (windowId === sidebar.windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     if (tab) {
+      const {audible, discarded, mutedInfo: {muted}} = tabsTab;
       await setTabContent(tab, tabsTab);
       if (info.hasOwnProperty("audible") || info.hasOwnProperty("mutedInfo")) {
         const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
         const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
-        const {audible, mutedInfo: {muted}} = tabsTab;
         const opt = {audible, muted};
         if (audible || muted) {
           tabAudio.classList.add(AUDIBLE);
@@ -830,17 +830,26 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           func.push(restoreTabContainers().then(setSessionTabList));
         }
       }
-      if (info.hasOwnProperty("status")) {
-        if (info.status === "complete") {
-          const activeTabsTab = await getActiveTab(windowId);
-          const {id: activeTabId} = activeTabsTab;
-          func.push(handleActivatedTab({
-            windowId,
-            tabId: activeTabId,
-          }));
-        }
+      if (info.hasOwnProperty("status") && info.status === "complete") {
+        const activeTabsTab = await getActiveTab(windowId);
+        const {id: activeTabId} = activeTabsTab;
+        func.push(handleActivatedTab({
+          windowId,
+          tabId: activeTabId,
+        }));
       }
-      info.hasOwnProperty("discarded") && func.push(setSessionTabList());
+      if (info.hasOwnProperty("discarded")) {
+        if (info.discarded) {
+          tab.classList.add(DISCARDED);
+        } else {
+          tab.classList.remove(DISCARDED);
+        }
+        func.push(setSessionTabList());
+      } else if (discarded) {
+        tab.classList.add(DISCARDED);
+      } else {
+        tab.classList.remove(DISCARDED);
+      }
       if (info.hasOwnProperty("hidden")) {
         if (info.hidden) {
           tab.setAttribute("hidden", "hidden");

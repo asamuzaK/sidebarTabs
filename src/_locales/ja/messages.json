@@ -440,6 +440,9 @@
   "optionsThemeCustomTabActive": {
     "message": "アクティブタブ"
   },
+  "optionsThemeCustomTabDiscarded": {
+    "message": "休止中のタブ"
+  },
   "optionsThemeCustomTabHover": {
     "message": "ホバー状態のタブ"
   },
