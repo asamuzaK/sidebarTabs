@@ -495,6 +495,14 @@ describe("tab-content", () => {
 
   describe("handle clicked audio button", () => {
     const func = mjs.handleClickedTabAudio;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+      browser.tabs.update.flush();
+    });
 
     it("should get undefined", async () => {
       const elm = document.createElement("button");
@@ -541,8 +549,6 @@ describe("tab-content", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 1, "called update");
       assert.isTrue(res, "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
 
     it("should get result", async () => {
@@ -576,8 +582,6 @@ describe("tab-content", () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
       assert.strictEqual(browser.tabs.update.callCount, j + 2, "called update");
       assert.deepEqual(res, [true, true], "result");
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
     });
   });
 
@@ -719,6 +723,12 @@ describe("tab-content", () => {
 
   describe("set tab audio icon", () => {
     const func = mjs.setTabAudioIcon;
+    beforeEach(() => {
+      browser.i18n.getMessage.flush();
+    });
+    afterEach(() => {
+      browser.i18n.getMessage.flush();
+    });
 
     it("should not set icon if element is not img", async () => {
       const elm = document.createElement("p");
@@ -754,7 +764,6 @@ describe("tab-content", () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 1, "called");
       assert.strictEqual(elm.alt, "foo", "alt");
       assert.strictEqual(elm.src, URL_AUDIO_MUTED, "src");
-      browser.i18n.getMessage.flush();
     });
 
     it("should set icon", async () => {
@@ -769,7 +778,6 @@ describe("tab-content", () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 1, "called");
       assert.strictEqual(elm.alt, "foo", "alt");
       assert.strictEqual(elm.src, URL_AUDIO_PLAYING, "src");
-      browser.i18n.getMessage.flush();
     });
 
     it("should not set icon", async () => {
@@ -828,6 +836,12 @@ describe("tab-content", () => {
 
   describe("handle clicked close button", () => {
     const func = mjs.handleClickedCloseButton;
+    beforeEach(() => {
+      browser.tabs.remove.flush();
+    });
+    afterEach(() => {
+      browser.tabs.remove.flush();
+    });
 
     it("should get null", async () => {
       const elm = document.createElement("button");
@@ -853,7 +867,6 @@ describe("tab-content", () => {
       });
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, "called");
       assert.isUndefined(res, "result");
-      browser.tabs.remove.flush();
     });
 
     it("should get result", async () => {
@@ -873,12 +886,17 @@ describe("tab-content", () => {
       });
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, "called");
       assert.isUndefined(res, "result");
-      browser.tabs.remove.flush();
     });
   });
 
   describe("handle tab close button click", () => {
     const func = mjs.tabCloseOnClick;
+    beforeEach(() => {
+      browser.tabs.remove.flush();
+    });
+    afterEach(() => {
+      browser.tabs.remove.flush();
+    });
 
     it("should call function", async () => {
       browser.tabs.remove.withArgs([1]).resolves(undefined);
@@ -894,7 +912,6 @@ describe("tab-content", () => {
       });
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, "called");
       assert.isUndefined(res, "result");
-      browser.tabs.remove.flush();
     });
   });
 
@@ -1060,6 +1077,12 @@ describe("tab-content", () => {
 
   describe("add hightlight class to tab", () => {
     const func = mjs.addHighlight;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+    });
 
     it("should not add class if argument not given", async () => {
       const res = await func();
@@ -1100,12 +1123,17 @@ describe("tab-content", () => {
                          "called");
       assert.isTrue(elm.classList.contains(HIGHLIGHTED));
       assert.deepEqual(res, [undefined, undefined], "result");
-      browser.tabs.get.flush();
     });
   });
 
   describe("add highlight class to tabs", () => {
     const func = mjs.addHighlightToTabs;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1152,12 +1180,17 @@ describe("tab-content", () => {
                          "called");
       assert.isTrue(elm.classList.contains(HIGHLIGHTED));
       assert.deepEqual(res, [[undefined, undefined]], "result");
-      browser.tabs.get.flush();
     });
   });
 
   describe("remove hightlight class from tab", () => {
     const func = mjs.removeHighlight;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+    });
 
     it("should not remove class if argument not given", async () => {
       const res = await func();
@@ -1199,7 +1232,6 @@ describe("tab-content", () => {
                          "called");
       assert.isFalse(elm.classList.contains(HIGHLIGHTED));
       assert.deepEqual(res, [undefined, undefined], "result");
-      browser.tabs.get.flush();
     });
   });
 

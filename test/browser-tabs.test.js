@@ -54,6 +54,12 @@ describe("browser-tabs", () => {
 
   describe("bookmark tabs", () => {
     const func = mjs.bookmarkTabs;
+    beforeEach(() => {
+      browser.bookmarks.create.flush();
+    });
+    afterEach(() => {
+      browser.bookmarks.create.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -145,7 +151,6 @@ describe("browser-tabs", () => {
         url: "https://www.example.com",
       }).callCount, j + 1, "called");
       assert.deepEqual(res, ["foo", "bar"], "result");
-      browser.bookmarks.create.flush();
     });
   });
 
@@ -336,6 +341,12 @@ describe("browser-tabs", () => {
 
   describe("reopen tabs in container", () => {
     const func = mjs.reopenTabsInContainer;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -420,7 +431,6 @@ describe("browser-tabs", () => {
         index: 1,
       }).callCount, l + 1, "called");
       assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
     });
 
     it("should call function", async () => {
@@ -471,12 +481,19 @@ describe("browser-tabs", () => {
         index: 1,
       }).callCount, l + 1, "called");
       assert.isUndefined(res, "result");
-      browser.tabs.get.flush();
     });
   });
 
   describe("duplicate tab", () => {
     const func = mjs.dupeTab;
+    beforeEach(() => {
+      browser.tabs.create.flush();
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.create.flush();
+      browser.tabs.get.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -520,8 +537,6 @@ describe("browser-tabs", () => {
         openerTabId: 1,
       }).callCount, j + 1, "called create");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.get.flush();
-      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
@@ -552,8 +567,6 @@ describe("browser-tabs", () => {
         openerTabId: 1,
       }).callCount, j + 1, "called create");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.get.flush();
-      browser.tabs.create.flush();
     });
   });
 
@@ -621,6 +634,14 @@ describe("browser-tabs", () => {
 
   describe("highlight tabs", () => {
     const func = mjs.highlightTabs;
+    beforeEach(() => {
+      browser.tabs.highlight.flush();
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.highlight.flush();
+      browser.tabs.query.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -673,7 +694,6 @@ describe("browser-tabs", () => {
         tabs: [0],
       }).callCount, j + 1, "called");
       assert.isObject(res, "result");
-      browser.tabs.query.flush();
     });
 
     it("should call function", async () => {
@@ -724,7 +744,6 @@ describe("browser-tabs", () => {
         tabs: [0, 2],
       }).callCount, j + 1, "called");
       assert.isObject(res, "result");
-      browser.tabs.query.flush();
     });
 
     it("should call function", async () => {
@@ -775,12 +794,17 @@ describe("browser-tabs", () => {
         tabs: [0, 2],
       }).callCount, j + 1, "called");
       assert.isObject(res, "result");
-      browser.tabs.query.flush();
     });
   });
 
   describe("move tabs in order", () => {
     const func = mjs.moveTabsInOrder;
+    beforeEach(() => {
+      browser.tabs.move.flush();
+    });
+    afterEach(() => {
+      browser.tabs.move.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -840,7 +864,6 @@ describe("browser-tabs", () => {
         index: 0,
         windowId: 1,
       }).callCount, i + 1, "called");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -853,7 +876,6 @@ describe("browser-tabs", () => {
         index: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       }).callCount, i + 1, "called");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -874,12 +896,17 @@ describe("browser-tabs", () => {
         index: 1,
         windowId: 1,
       }).callCount, j + 1, "called");
-      browser.tabs.move.flush();
     });
   });
 
   describe("move tabs to end", () => {
     const func = mjs.moveTabsToEnd;
+    beforeEach(() => {
+      browser.tabs.move.flush();
+    });
+    afterEach(() => {
+      browser.tabs.move.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -1006,7 +1033,6 @@ describe("browser-tabs", () => {
         index: 1,
       }).callCount, i + 1, "called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1056,7 +1082,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1118,7 +1143,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1180,7 +1204,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1248,7 +1271,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1315,7 +1337,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1377,7 +1398,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1439,12 +1459,17 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j, "not called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
   });
 
   describe("move tabs to start", () => {
     const func = mjs.moveTabsToStart;
+    beforeEach(() => {
+      browser.tabs.move.flush();
+    });
+    afterEach(() => {
+      browser.tabs.move.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -1571,7 +1596,6 @@ describe("browser-tabs", () => {
         index: 0,
       }).callCount, i + 1, "called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1621,7 +1645,6 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1683,7 +1706,6 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1745,7 +1767,6 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1813,7 +1834,6 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1880,7 +1900,6 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}], [{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -1942,7 +1961,6 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
 
     it("should call function", async () => {
@@ -2004,12 +2022,19 @@ describe("browser-tabs", () => {
         index: 2,
       }).callCount, j, "not called");
       assert.deepEqual(res, [[{}]], "result");
-      browser.tabs.move.flush();
     });
   });
 
   describe("move tabs to new window", () => {
     const func = mjs.moveTabsToNewWindow;
+    beforeEach(() => {
+      browser.tabs.move.flush();
+      browser.windows.create.flush();
+    });
+    afterEach(() => {
+      browser.tabs.move.flush();
+      browser.windows.create.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2073,7 +2098,6 @@ describe("browser-tabs", () => {
       }).callCount, i + 1, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
       assert.isNull(res, "result");
-      browser.windows.create.flush();
     });
 
     it("should create window and call move", async () => {
@@ -2114,8 +2138,6 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j + 1, "called");
       assert.deepEqual(res, [{}], "result");
-      browser.windows.create.flush();
-      browser.tabs.move.flush();
     });
 
     it("should create window but not call move", async () => {
@@ -2154,13 +2176,17 @@ describe("browser-tabs", () => {
         index: -1,
       }).callCount, j, "not called");
       assert.isNull(res, "result");
-      browser.windows.create.flush();
-      browser.tabs.move.flush();
     });
   });
 
   describe("mute tabs", () => {
     const func = mjs.muteTabs;
+    beforeEach(() => {
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.tabs.update.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2217,7 +2243,6 @@ describe("browser-tabs", () => {
         muted: false,
       }).callCount, i + 1, "called");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -2237,12 +2262,17 @@ describe("browser-tabs", () => {
         muted: true,
       }).callCount, i + 1, "called");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.update.flush();
     });
   });
 
   describe("create new tab", () => {
     const func = mjs.createNewTab;
+    beforeEach(() => {
+      browser.tabs.create.flush();
+    });
+    afterEach(() => {
+      browser.tabs.create.flush();
+    });
 
     it("should call function", async () => {
       const create = browser.tabs.create.withArgs({
@@ -2254,7 +2284,6 @@ describe("browser-tabs", () => {
       const res = await func();
       assert.strictEqual(create.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
@@ -2267,12 +2296,17 @@ describe("browser-tabs", () => {
       const res = await func(1);
       assert.strictEqual(create.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
   });
 
   describe("create new tab in container", () => {
     const func = mjs.createNewTabInContainer;
+    beforeEach(() => {
+      browser.tabs.create.flush();
+    });
+    afterEach(() => {
+      browser.tabs.create.flush();
+    });
 
     it("should throw", async () => {
       await func().catch(e => {
@@ -2292,7 +2326,6 @@ describe("browser-tabs", () => {
       const res = await func("foo");
       assert.strictEqual(create.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
 
     it("should call function", async () => {
@@ -2306,12 +2339,17 @@ describe("browser-tabs", () => {
       const res = await func("foo", 1);
       assert.strictEqual(create.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
   });
 
   describe("pin tabs", () => {
     const func = mjs.pinTabs;
+    beforeEach(() => {
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.tabs.update.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2368,7 +2406,6 @@ describe("browser-tabs", () => {
         pinned: false,
       }).callCount, i + 1, "called");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.update.flush();
     });
 
     it("should call function", async () => {
@@ -2388,12 +2425,17 @@ describe("browser-tabs", () => {
         pinned: true,
       }).callCount, i + 1, "called");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.update.flush();
     });
   });
 
   describe("reload tabs", () => {
     const func = mjs.reloadTabs;
+    beforeEach(() => {
+      browser.tabs.reload.flush();
+    });
+    afterEach(() => {
+      browser.tabs.reload.flush();
+    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2445,7 +2487,6 @@ describe("browser-tabs", () => {
       assert.strictEqual(browser.tabs.reload.withArgs(1).callCount, i + 1,
                          "called");
       assert.deepEqual(res, [undefined], "result");
-      browser.tabs.reload.flush();
     });
   });
 });

@@ -48,6 +48,14 @@ describe("browser", () => {
 
   describe("update command", () => {
     const func = mjs.updateCommand;
+    beforeEach(() => {
+      browser.commands.reset.flush();
+      browser.commands.update.flush();
+    });
+    afterEach(() => {
+      browser.commands.reset.flush();
+      browser.commands.update.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -74,8 +82,6 @@ describe("browser", () => {
       assert.isFalse(browser.commands.reset.calledOnce, "called");
       assert.isFalse(browser.commands.update.calledOnce, "not called");
       assert.isNull(res, "result");
-      browser.commands.reset.flush();
-      browser.commands.update.flush();
     });
 
     it("should call function", async () => {
@@ -85,8 +91,6 @@ describe("browser", () => {
       assert.isTrue(browser.commands.reset.calledOnce, "called");
       assert.isFalse(browser.commands.update.calledOnce, "not called");
       assert.isUndefined(res, "result");
-      browser.commands.reset.flush();
-      browser.commands.update.flush();
     });
 
     it("should call function", async () => {
@@ -143,8 +147,6 @@ describe("browser", () => {
         assert.isFalse(browser.commands.reset.calledOnce, "not called");
         assert.isUndefined(res, "result");
       }
-      browser.commands.reset.flush();
-      browser.commands.update.flush();
     });
 
     it("should call function", async () => {
@@ -154,13 +156,17 @@ describe("browser", () => {
       assert.isTrue(browser.commands.update.calledOnce, "called");
       assert.isFalse(browser.commands.reset.calledOnce, "not called");
       assert.isUndefined(res, "result");
-      browser.commands.reset.flush();
-      browser.commands.update.flush();
     });
   });
 
   describe("get all contextual identities", () => {
     const func = mjs.getAllContextualIdentities;
+    beforeEach(() => {
+      browser.contextualIdentities.query.flush();
+    });
+    afterEach(() => {
+      browser.contextualIdentities.query.flush();
+    });
 
     it("should get null", async () => {
       const stubApi =
@@ -182,7 +188,6 @@ describe("browser", () => {
       const res = await func();
       assert.isArray(res, "array");
       assert.deepEqual(res, [{foo: "bar"}, {baz: "qux"}], "result");
-      browser.contextualIdentities.query.flush();
     });
 
     it("should log error message", async () => {
@@ -196,12 +201,17 @@ describe("browser", () => {
       stub.restore();
       assert.strictEqual(msg, "error", "log");
       assert.isNull(res, "result");
-      browser.contextualIdentities.query.flush();
     });
   });
 
   describe("get contextual identities", () => {
     const func = mjs.getContextualId;
+    beforeEach(() => {
+      browser.contextualIdentities.query.flush();
+    });
+    afterEach(() => {
+      browser.contextualIdentities.query.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -227,7 +237,6 @@ describe("browser", () => {
       browser.contextualIdentities.get.withArgs("foo").resolves({});
       const res = await func("foo");
       assert.deepEqual(res, {}, "result");
-      browser.contextualIdentities.get.flush();
     });
 
     it("should log error message", async () => {
@@ -241,12 +250,17 @@ describe("browser", () => {
       stub.restore();
       assert.strictEqual(msg, "error", "log");
       assert.isNull(res, "result");
-      browser.contextualIdentities.get.flush();
     });
   });
 
   describe("get enabled theme", () => {
     const func = mjs.getEnabledTheme;
+    beforeEach(() => {
+      browser.management.getAll.flush();
+    });
+    afterEach(() => {
+      browser.management.getAll.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "management").returns(undefined);
@@ -287,12 +301,17 @@ describe("browser", () => {
           type: "theme",
         },
       ], "result");
-      browser.management.getAll.flush();
     });
   });
 
   describe("get extension info", () => {
     const func = mjs.getExtensionInfo;
+    beforeEach(() => {
+      browser.management.get.flush();
+    });
+    afterEach(() => {
+      browser.management.get.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -318,7 +337,6 @@ describe("browser", () => {
       await func("foo").catch(e => {
         assert.strictEqual(e.message, "error");
       });
-      browser.management.get.flush();
     });
 
     it("should get object", async () => {
@@ -330,6 +348,12 @@ describe("browser", () => {
 
   describe("get external extensions", () => {
     const func = mjs.getExternalExtensions;
+    beforeEach(() => {
+      browser.management.getAll.flush();
+    });
+    afterEach(() => {
+      browser.management.getAll.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "management").returns(undefined);
@@ -368,12 +392,17 @@ describe("browser", () => {
           type: "extension",
         },
       ], "result");
-      browser.management.getAll.flush();
     });
   });
 
   describe("clear notification", () => {
     const func = mjs.clearNotification;
+    beforeEach(() => {
+      browser.notifications.clear.flush();
+    });
+    afterEach(() => {
+      browser.notifications.clear.flush();
+    });
 
     it("should throw if no argument given", () => {
       assert.throws(() => func(), "Expected String but got Undefined.");
@@ -394,12 +423,17 @@ describe("browser", () => {
       browser.notifications.clear.withArgs("foo").resolves(true);
       const res = await func("foo");
       assert.isTrue(res, "result");
-      browser.notifications.clear.flush();
     });
   });
 
   describe("create notification", () => {
     const func = mjs.createNotification;
+    beforeEach(() => {
+      browser.notifications.create.flush();
+    });
+    afterEach(() => {
+      browser.notifications.create.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -424,12 +458,17 @@ describe("browser", () => {
       browser.notifications.create.withArgs("foo", {}).resolves("bar");
       const res = await func("foo", {});
       assert.strictEqual(res, "bar", "result");
-      browser.notifications.create.flush();
     });
   });
 
   describe("remove permission", () => {
     const func = mjs.removePermission;
+    beforeEach(() => {
+      browser.permissions.remove.flush();
+    });
+    afterEach(() => {
+      browser.permissions.remove.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -450,7 +489,6 @@ describe("browser", () => {
         .resolves(true);
       const res = await func("foo");
       assert.isTrue(res, "result");
-      browser.permissions.remove.flush();
     });
 
     it("should get result", async () => {
@@ -458,7 +496,6 @@ describe("browser", () => {
         .resolves(false);
       const res = await func("foo");
       assert.isFalse(res, "result");
-      browser.permissions.remove.flush();
     });
 
     it("should get result", async () => {
@@ -466,12 +503,17 @@ describe("browser", () => {
         .resolves(true);
       const res = await func(["foo"]);
       assert.isTrue(res, "result");
-      browser.permissions.remove.flush();
     });
   });
 
   describe("request permission", () => {
     const func = mjs.requestPermission;
+    beforeEach(() => {
+      browser.permissions.request.flush();
+    });
+    afterEach(() => {
+      browser.permissions.request.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -492,7 +534,6 @@ describe("browser", () => {
         .resolves(true);
       const res = await func("foo");
       assert.isTrue(res, "result");
-      browser.permissions.request.flush();
     });
 
     it("should get result", async () => {
@@ -500,7 +541,6 @@ describe("browser", () => {
         .resolves(false);
       const res = await func("foo");
       assert.isFalse(res, "result");
-      browser.permissions.request.flush();
     });
 
     it("should get result", async () => {
@@ -508,23 +548,33 @@ describe("browser", () => {
         .resolves(true);
       const res = await func(["foo"]);
       assert.isTrue(res, "result");
-      browser.permissions.request.flush();
     });
   });
 
   describe("get manifest icons", () => {
     const func = mjs.getManifestIcons;
+    beforeEach(() => {
+      browser.runtime.getManifest.flush();
+    });
+    afterEach(() => {
+      browser.runtime.getManifest.flush();
+    });
 
     it("should get object", () => {
       browser.runtime.getManifest.returns({icons: {foo: "bar"}});
       const res = func();
       assert.deepEqual(res, {foo: "bar"}, "result");
-      browser.runtime.getManifest.flush();
     });
   });
 
   describe("get OS", () => {
     const func = mjs.getOs;
+    beforeEach(() => {
+      browser.runtime.getPlatformInfo.flush();
+    });
+    afterEach(() => {
+      browser.runtime.getPlatformInfo.flush();
+    });
 
     it("should get string", async () => {
       browser.runtime.getPlatformInfo.resolves({os: "foo"});
@@ -535,45 +585,52 @@ describe("browser", () => {
 
   describe("make a connection", () => {
     const func = mjs.makeConnection;
+    beforeEach(() => {
+      browser.runtime.connect.flush();
+    });
+    afterEach(() => {
+      browser.runtime.connect.flush();
+    });
 
     it("should get object", async () => {
       browser.runtime.connect.withArgs("foo").resolves({bar: "baz"});
       const res = await func("foo");
       assert.deepEqual(res, {bar: "baz"}, "result");
-      browser.runtime.connect.flush();
     });
 
     it("should get object", async () => {
       browser.runtime.connect.withArgs("foo", {bar: "baz"}).resolves({});
       const res = await func("foo", {bar: "baz"});
       assert.deepEqual(res, {}, "result");
-      browser.runtime.connect.flush();
     });
 
     it("should get object", async () => {
       browser.runtime.connect.withArgs({foo: "bar"}).resolves({});
       const res = await func({foo: "bar"});
       assert.deepEqual(res, {}, "result");
-      browser.runtime.connect.flush();
     });
 
     it("should get object", async () => {
       browser.runtime.connect.withArgs({foo: "bar"}).resolves({});
       const res = await func(null, {foo: "bar"});
       assert.deepEqual(res, {}, "result");
-      browser.runtime.connect.flush();
     });
 
     it("should get object", async () => {
       browser.runtime.connect.withArgs().resolves({});
       const res = await func();
       assert.deepEqual(res, {}, "result");
-      browser.runtime.connect.flush();
     });
   });
 
   describe("send message", () => {
     const func = mjs.sendMessage;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should not call function", async () => {
       const i = browser.tabs.sendMessage.callCount;
@@ -592,7 +649,6 @@ describe("browser", () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
       assert.deepEqual(res, {}, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should call function", async () => {
@@ -603,7 +659,6 @@ describe("browser", () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
       assert.deepEqual(res, {}, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should call function", async () => {
@@ -613,7 +668,6 @@ describe("browser", () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
       assert.deepEqual(res, {}, "result");
-      browser.runtime.sendMessage.flush();
     });
 
     it("should call function", async () => {
@@ -622,7 +676,6 @@ describe("browser", () => {
       const res = await func(1, "foo");
       assert.strictEqual(browser.tabs.sendMessage.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.tabs.sendMessage.flush();
     });
 
     it("should not call function", async () => {
@@ -638,33 +691,35 @@ describe("browser", () => {
 
   describe("get recently closed tab", () => {
     const func = mjs.getRecentlyClosedTab;
+    beforeEach(() => {
+      browser.sessions.getRecentlyClosed.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getRecentlyClosed.flush();
+    });
 
     it("should get null", async () => {
       browser.sessions.getRecentlyClosed.resolves([]);
       const res = await func();
       assert.isNull(res, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
 
     it("should get null", async () => {
       browser.sessions.getRecentlyClosed.resolves([]);
       const res = await func(1);
       assert.isNull(res, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
 
     it("should get null", async () => {
       browser.sessions.getRecentlyClosed.resolves([{}]);
       const res = await func();
       assert.isNull(res, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
 
     it("should get null", async () => {
       browser.sessions.getRecentlyClosed.resolves([{tab: {windowId: 2}}]);
       const res = await func(1);
       assert.isNull(res, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
 
     it("should get object", async () => {
@@ -672,7 +727,6 @@ describe("browser", () => {
       browser.sessions.getRecentlyClosed.resolves([{tab}]);
       const res = await func(1);
       assert.deepEqual(res, tab, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
 
     it("should get object", async () => {
@@ -683,12 +737,17 @@ describe("browser", () => {
       ]);
       const res = await func(1);
       assert.deepEqual(res, tab, "result");
-      browser.sessions.getRecentlyClosed.flush();
     });
   });
 
   describe("get session window value", () => {
     const func = mjs.getSessionWindowValue;
+    beforeEach(() => {
+      browser.sessions.getWindowValue.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getWindowValue.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -713,7 +772,6 @@ describe("browser", () => {
       browser.sessions.getWindowValue.withArgs(1, "foo").resolves("bar");
       const res = await func("foo", 1);
       assert.strictEqual(res, "bar", "result");
-      browser.sessions.getWindowValue.flush();
     });
 
     it("should get object", async () => {
@@ -721,12 +779,17 @@ describe("browser", () => {
         .withArgs(browser.windows.WINDOW_ID_CURRENT, "foo").resolves("bar");
       const res = await func("foo");
       assert.strictEqual(res, "bar", "result");
-      browser.sessions.getWindowValue.flush();
     });
   });
 
   describe("restore session", () => {
     const func = mjs.restoreSession;
+    beforeEach(() => {
+      browser.sessions.restore.flush();
+    });
+    afterEach(() => {
+      browser.sessions.restore.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -751,12 +814,17 @@ describe("browser", () => {
       browser.sessions.restore.withArgs("foo").resolves({});
       const res = await func("foo");
       assert.deepEqual(res, {}, "result");
-      browser.sessions.restore.flush();
     });
   });
 
   describe("set session window value", () => {
     const func = mjs.setSessionWindowValue;
+    beforeEach(() => {
+      browser.sessions.setWindowValue.flush();
+    });
+    afterEach(() => {
+      browser.sessions.setWindowValue.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -787,6 +855,12 @@ describe("browser", () => {
 
   describe("clear storage", () => {
     const func = mjs.clearStorage;
+    beforeEach(() => {
+      browser.storage.local.clear.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.clear.flush();
+    });
 
     it("should get object", async () => {
       const i = browser.storage.local.clear.callCount;
@@ -798,6 +872,12 @@ describe("browser", () => {
 
   describe("get all storage", () => {
     const func = mjs.getAllStorage;
+    beforeEach(() => {
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.get.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "storage").returns(undefined);
@@ -810,12 +890,17 @@ describe("browser", () => {
       browser.storage.local.get.resolves({foo: "bar"});
       const res = await func();
       assert.deepEqual(res, {foo: "bar"}, "result");
-      browser.storage.local.get.flush();
     });
   });
 
   describe("get storage", () => {
     const func = mjs.getStorage;
+    beforeEach(() => {
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.get.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "storage").returns(undefined);
@@ -828,12 +913,17 @@ describe("browser", () => {
       browser.storage.local.get.withArgs("foo").resolves({foo: "bar"});
       const res = await func("foo");
       assert.deepEqual(res, {foo: "bar"}, "result");
-      browser.storage.local.get.flush();
     });
   });
 
   describe("remove storage", () => {
     const func = mjs.removeStorage;
+    beforeEach(() => {
+      browser.storage.local.remove.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.remove.flush();
+    });
 
     it("should call function", async () => {
       const i = browser.storage.local.remove.callCount;
@@ -845,6 +935,12 @@ describe("browser", () => {
 
   describe("set storage", () => {
     const func = mjs.setStorage;
+    beforeEach(() => {
+      browser.storage.local.set.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.set.flush();
+    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.storage.local.set.callCount;
@@ -861,6 +957,12 @@ describe("browser", () => {
 
   describe("create tab", () => {
     const func = mjs.createTab;
+    beforeEach(() => {
+      browser.tabs.create.flush();
+    });
+    afterEach(() => {
+      browser.tabs.create.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "tabs").returns(undefined);
@@ -873,14 +975,12 @@ describe("browser", () => {
       browser.tabs.create.withArgs(null).resolves({});
       const res = await func();
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
 
     it("should get object", async () => {
       browser.tabs.create.withArgs(null).resolves({});
       const res = await func({});
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
 
     it("should get object", async () => {
@@ -890,7 +990,6 @@ describe("browser", () => {
       browser.tabs.create.withArgs(opt).resolves({});
       const res = await func(opt);
       assert.deepEqual(res, {}, "result");
-      browser.tabs.create.flush();
     });
   });
 
@@ -923,6 +1022,12 @@ describe("browser", () => {
 
   describe("execute content script to existing tab", () => {
     const func = mjs.execScriptToTab;
+    beforeEach(() => {
+      browser.tabs.executeScript.flush();
+    });
+    afterEach(() => {
+      browser.tabs.executeScript.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -954,7 +1059,6 @@ describe("browser", () => {
       }).callCount, i + 1, "called");
       assert.isFalse(errCalled, "error not called");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.executeScript.flush();
     });
 
     it("should call function", async () => {
@@ -980,7 +1084,6 @@ describe("browser", () => {
       }).callCount, i + 1, "called");
       assert.isFalse(errCalled, "error not called");
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.executeScript.flush();
     });
 
     it("should log error", async () => {
@@ -1000,12 +1103,20 @@ describe("browser", () => {
       }).callCount, i + 1, "called");
       assert.isTrue(errCalled, "error called");
       assert.isFalse(res, "result");
-      browser.tabs.executeScript.flush();
     });
   });
 
   describe("execute content script to existing tabs", () => {
     const func = mjs.execScriptToTabs;
+    beforeEach(() => {
+      browser.tabs.executeScript.flush();
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.executeScript.flush();
+      browser.tabs.query.flush();
+    });
+
 
     it("should not call function", async () => {
       const stubApi = sinon.stub(browser, "tabs").returns(undefined);
@@ -1054,8 +1165,6 @@ describe("browser", () => {
       }).callCount, j + 1, "called");
       assert.isTrue(errCalled, "error called");
       assert.deepEqual(res, [[{}], false], "result");
-      browser.tabs.query.flush();
-      browser.tabs.executeScript.flush();
     });
 
     it("should get call function", async () => {
@@ -1107,13 +1216,17 @@ describe("browser", () => {
       }).callCount, j + 1, "called");
       assert.isTrue(errCalled, "error called");
       assert.deepEqual(res, [[{}, {}], false], "result");
-      browser.tabs.query.flush();
-      browser.tabs.executeScript.flush();
     });
   });
 
   describe("get active tab", () => {
     const func = mjs.getActiveTab;
+    beforeEach(() => {
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "tabs").returns(undefined);
@@ -1126,19 +1239,23 @@ describe("browser", () => {
       browser.tabs.query.resolves([{}]);
       const res = await func(1);
       assert.deepEqual(res, {}, "result");
-      browser.tabs.query.flush();
     });
 
     it("should get number", async () => {
       browser.tabs.query.resolves([{}]);
       const res = await func();
       assert.deepEqual(res, {}, "result");
-      browser.tabs.query.flush();
     });
   });
 
   describe("get active tab ID", () => {
     const func = mjs.getActiveTabId;
+    beforeEach(() => {
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "tabs").returns(undefined);
@@ -1155,7 +1272,6 @@ describe("browser", () => {
       ]);
       const res = await func(1);
       assert.deepEqual(res, 1, "result");
-      browser.tabs.query.flush();
     });
 
     it("should get number", async () => {
@@ -1166,12 +1282,17 @@ describe("browser", () => {
       ]);
       const res = await func();
       assert.deepEqual(res, 1, "result");
-      browser.tabs.query.flush();
     });
   });
 
   describe("get all tabs in window", () => {
     const func = mjs.getAllTabsInWindow;
+    beforeEach(() => {
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "tabs").returns(undefined);
@@ -1184,19 +1305,23 @@ describe("browser", () => {
       browser.tabs.query.resolves([{}]);
       const res = await func(1);
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.query.flush();
     });
 
     it("should get array", async () => {
       browser.tabs.query.resolves([{}]);
       const res = await func();
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.query.flush();
     });
   });
 
   describe("get highlighted tab", () => {
     const func = mjs.getHighlightedTab;
+    beforeEach(() => {
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "tabs").returns(undefined);
@@ -1209,19 +1334,23 @@ describe("browser", () => {
       browser.tabs.query.resolves([{}]);
       const res = await func(1);
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.query.flush();
     });
 
     it("should get array", async () => {
       browser.tabs.query.resolves([{}]);
       const res = await func();
       assert.deepEqual(res, [{}], "result");
-      browser.tabs.query.flush();
     });
   });
 
   describe("get tab", () => {
     const func = mjs.getTab;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1246,12 +1375,17 @@ describe("browser", () => {
       browser.tabs.get.withArgs(1).resolves({});
       const res = await func(1);
       assert.deepEqual(res, {}, "result");
-      browser.tabs.get.flush();
     });
   });
 
   describe("highlight tab", () => {
     const func = mjs.highlightTab;
+    beforeEach(() => {
+      browser.tabs.highlight.flush();
+    });
+    afterEach(() => {
+      browser.tabs.highlight.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1278,19 +1412,23 @@ describe("browser", () => {
       browser.tabs.highlight.resolves({});
       const res = await func(1);
       assert.deepEqual(res, {}, "result");
-      browser.tabs.highlight.flush();
     });
 
     it("should get object", async () => {
       browser.tabs.highlight.resolves({});
       const res = await func(1, 2);
       assert.deepEqual(res, {}, "result");
-      browser.tabs.highlight.flush();
     });
   });
 
   describe("move tab", () => {
     const func = mjs.moveTab;
+    beforeEach(() => {
+      browser.tabs.move.flush();
+    });
+    afterEach(() => {
+      browser.tabs.move.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1317,33 +1455,35 @@ describe("browser", () => {
       browser.tabs.move.withArgs(1).resolves({});
       const res = await func(1);
       assert.deepEqual(res, [{}], "res");
-      browser.tabs.move.flush();
     });
 
     it("should get array", async () => {
       browser.tabs.move.withArgs(1, {foo: "bar"}).resolves({});
       const res = await func(1, {foo: "bar"});
       assert.deepEqual(res, [{}], "res");
-      browser.tabs.move.flush();
     });
 
     it("should get array", async () => {
       browser.tabs.move.withArgs([1, 2]).resolves([{}, {}]);
       const res = await func([1, 2]);
       assert.deepEqual(res, [{}, {}], "res");
-      browser.tabs.move.flush();
     });
 
     it("should get array", async () => {
       browser.tabs.move.withArgs([1, 2]).resolves([]);
       const res = await func([1, 2]);
       assert.deepEqual(res, [], "res");
-      browser.tabs.move.flush();
     });
   });
 
   describe("reload tab", () => {
     const func = mjs.reloadTab;
+    beforeEach(() => {
+      browser.tabs.reload.flush();
+    });
+    afterEach(() => {
+      browser.tabs.reload.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1376,6 +1516,12 @@ describe("browser", () => {
 
   describe("remove tab", () => {
     const func = mjs.removeTab;
+    beforeEach(() => {
+      browser.tabs.remove.flush();
+    });
+    afterEach(() => {
+      browser.tabs.remove.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1404,6 +1550,12 @@ describe("browser", () => {
 
   describe("update tab", () => {
     const func = mjs.updateTab;
+    beforeEach(() => {
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.tabs.update.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1429,7 +1581,6 @@ describe("browser", () => {
       await func(1).catch(e => {
         assert.strictEqual(e.message, "error");
       });
-      browser.tabs.update.flush();
     });
 
     it("should get object", async () => {
@@ -1439,7 +1590,6 @@ describe("browser", () => {
       assert.strictEqual(browser.tabs.update.withArgs(1).callCount, i + 1,
                          "called");
       assert.isObject(res, "res");
-      browser.tabs.update.flush();
     });
 
     it("should get object", async () => {
@@ -1452,12 +1602,17 @@ describe("browser", () => {
         "called",
       );
       assert.isObject(res, "res");
-      browser.tabs.update.flush();
     });
   });
 
   describe("is tab", () => {
     const func = mjs.isTab;
+    beforeEach(() => {
+      browser.tabs.get.flush();
+    });
+    afterEach(() => {
+      browser.tabs.get.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1488,19 +1643,23 @@ describe("browser", () => {
       browser.tabs.get.withArgs(1).rejects(e);
       const res = await func(1);
       assert.isFalse(res, "res");
-      browser.tabs.get.flush();
     });
 
     it("should get result", async () => {
       browser.tabs.get.withArgs(1).resolves({});
       const res = await func(1);
       assert.isTrue(res, "res");
-      browser.tabs.get.flush();
     });
   });
 
   describe("getCurrentTheme", () => {
     const func = mjs.getCurrentTheme;
+    beforeEach(() => {
+      browser.theme.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.theme.getCurrent.flush();
+    });
 
     it("should get null", async () => {
       const stubApi = sinon.stub(browser, "theme").returns(undefined);
@@ -1515,19 +1674,15 @@ describe("browser", () => {
       const res = await func();
       assert.strictEqual(browser.theme.getCurrent.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.theme.getCurrent.flush();
     });
   });
 
   describe("create new window", () => {
     const func = mjs.createNewWindow;
-
-    it("should get function called and get result", async () => {
-      browser.windows.create.withArgs(null).resolves(null);
-      const i = browser.windows.create.callCount;
-      const res = await func();
-      assert.strictEqual(browser.windows.create.callCount, i + 1, "called");
-      assert.isNull(res, "result");
+    beforeEach(() => {
+      browser.windows.create.flush();
+    });
+    afterEach(() => {
       browser.windows.create.flush();
     });
 
@@ -1537,7 +1692,14 @@ describe("browser", () => {
       const res = await func();
       assert.strictEqual(browser.windows.create.callCount, i + 1, "called");
       assert.isNull(res, "result");
-      browser.windows.create.flush();
+    });
+
+    it("should get function called and get result", async () => {
+      browser.windows.create.withArgs(null).resolves(null);
+      const i = browser.windows.create.callCount;
+      const res = await func();
+      assert.strictEqual(browser.windows.create.callCount, i + 1, "called");
+      assert.isNull(res, "result");
     });
 
     it("should get function called and get result", async () => {
@@ -1549,12 +1711,17 @@ describe("browser", () => {
       const res = await func(opt);
       assert.strictEqual(browser.windows.create.callCount, i + 1, "called");
       assert.deepEqual(res, opt, "result");
-      browser.windows.create.flush();
     });
   });
 
   describe("get all normal windows", () => {
     const func = mjs.getAllNormalWindows;
+    beforeEach(() => {
+      browser.windows.getAll.flush();
+    });
+    afterEach(() => {
+      browser.windows.getAll.flush();
+    });
 
     it("should get function called and get result", async () => {
       browser.windows.getAll.withArgs({
@@ -1568,7 +1735,6 @@ describe("browser", () => {
       const res = await func();
       assert.strictEqual(browser.windows.getAll.callCount, i + 1, "called");
       assert.isArray(res, "result");
-      browser.windows.getAll.flush();
     });
 
     it("should get function called and get result", async () => {
@@ -1583,19 +1749,15 @@ describe("browser", () => {
       const res = await func(true);
       assert.strictEqual(browser.windows.getAll.callCount, i + 1, "called");
       assert.isArray(res, "result");
-      browser.windows.getAll.flush();
     });
   });
 
   describe("get current window", () => {
     const func = mjs.getCurrentWindow;
-
-    it("should get function called and get result", async () => {
-      browser.windows.getCurrent.withArgs(null).resolves(null);
-      const i = browser.windows.getCurrent.callCount;
-      const res = await func();
-      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
-      assert.isNull(res, "result");
+    beforeEach(() => {
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
       browser.windows.getCurrent.flush();
     });
 
@@ -1605,7 +1767,14 @@ describe("browser", () => {
       const res = await func();
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.isNull(res, "result");
-      browser.windows.getCurrent.flush();
+    });
+
+    it("should get function called and get result", async () => {
+      browser.windows.getCurrent.withArgs(null).resolves(null);
+      const i = browser.windows.getCurrent.callCount;
+      const res = await func();
+      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
+      assert.isNull(res, "result");
     });
 
     it("should get function called and get result", async () => {
@@ -1617,12 +1786,17 @@ describe("browser", () => {
       const res = await func(opt);
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.windows.getCurrent.flush();
     });
   });
 
   describe("get window", () => {
     const func = mjs.getWindow;
+    beforeEach(() => {
+      browser.windows.get.flush();
+    });
+    afterEach(() => {
+      browser.windows.get.flush();
+    });
 
     it("should throw", async () => {
       await func().catch(e => {
@@ -1637,7 +1811,6 @@ describe("browser", () => {
       const res = await func(1);
       assert.strictEqual(browser.windows.get.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.windows.get.flush();
     });
 
     it("should get result", async () => {
@@ -1650,18 +1823,22 @@ describe("browser", () => {
       });
       assert.strictEqual(browser.windows.get.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.windows.get.flush();
     });
   });
 
   describe("check whether incognito window exists", () => {
     const func = mjs.checkIncognitoWindowExists;
+    beforeEach(() => {
+      browser.windows.getAll.flush();
+    });
+    afterEach(() => {
+      browser.windows.getAll.flush();
+    });
 
     it("should get result", async () => {
       browser.windows.getAll.resolves([]);
       const res = await func();
       assert.isFalse(res, "result");
-      browser.windows.getAll.flush();
     });
 
     it("should get result", async () => {
@@ -1675,7 +1852,6 @@ describe("browser", () => {
       ]);
       const res = await func();
       assert.isFalse(res, "result");
-      browser.windows.getAll.flush();
     });
 
     it("should get result", async () => {
@@ -1689,7 +1865,6 @@ describe("browser", () => {
       ]);
       const res = await func();
       assert.isTrue(res, "result");
-      browser.windows.getAll.flush();
     });
   });
 });

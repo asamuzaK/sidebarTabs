@@ -146,6 +146,12 @@ describe("menu", () => {
 
   describe("create context menu item", () => {
     const func = mjs.createMenuItem;
+    beforeEach(() => {
+      browser.menus.create.flush();
+    });
+    afterEach(() => {
+      browser.menus.create.flush();
+    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.menus.create.callCount;
@@ -187,7 +193,6 @@ describe("menu", () => {
       });
       assert.strictEqual(browser.menus.create.callCount, i + 1, "called");
       assert.strictEqual(res, "foo", "result");
-      browser.menus.create.flush();
     });
   });
 

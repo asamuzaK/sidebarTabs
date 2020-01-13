@@ -71,10 +71,14 @@ describe("background-main", () => {
     beforeEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
+      browser.sidebarAction.close.flush();
+      browser.sidebarAction.open.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
+      browser.sidebarAction.close.flush();
+      browser.sidebarAction.open.flush();
     });
 
     it("should not call function", async () => {
@@ -90,8 +94,6 @@ describe("background-main", () => {
       assert.strictEqual(browser.sidebarAction.open.callCount, j,
                          "not called");
       assert.isUndefined(res, "result");
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.open.flush();
     });
 
     it("should call function", async () => {
@@ -107,8 +109,6 @@ describe("background-main", () => {
       assert.strictEqual(browser.sidebarAction.open.callCount, j,
                          "not called");
       assert.isTrue(res, "result");
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.open.flush();
     });
 
     it("should call function", async () => {
@@ -124,8 +124,6 @@ describe("background-main", () => {
       assert.strictEqual(browser.sidebarAction.open.callCount, j + 1,
                          "called");
       assert.isTrue(res, "result");
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.open.flush();
     });
   });
 
@@ -134,10 +132,12 @@ describe("background-main", () => {
     beforeEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
+      browser.sidebarAction.isOpen.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
+      browser.sidebarAction.isOpen.flush();
     });
 
     it("should not call function", async () => {
@@ -175,10 +175,16 @@ describe("background-main", () => {
     beforeEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
+      browser.sidebarAction.close.flush();
+      browser.sidebarAction.isOpen.flush();
+      browser.sidebarAction.open.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
+      browser.sidebarAction.close.flush();
+      browser.sidebarAction.isOpen.flush();
+      browser.sidebarAction.open.flush();
     });
 
     it("should throw", async () => {
@@ -212,8 +218,6 @@ describe("background-main", () => {
                          "called");
       assert.isFalse(mjs.sidebar.isOpen, "isOpen");
       assert.isUndefined(res, "result");
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.open.flush();
     });
   });
 });

@@ -467,6 +467,14 @@ describe("util", () => {
 
   describe("get tab list from sessions", () => {
     const func = mjs.getSessionTabList;
+    beforeEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.windows.getCurrent.flush();
+    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -495,8 +503,6 @@ describe("util", () => {
       assert.strictEqual(browser.sessions.getWindowValue.callCount, j + 1,
                          "called sessions");
       assert.isNull(res, "result");
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
 
     it("should get null", async () => {
@@ -515,13 +521,19 @@ describe("util", () => {
       assert.deepEqual(res, {
         bar: "baz",
       }, "result");
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
   });
 
   describe("set tab list to sessions", () => {
     const func = mjs.setSessionTabList;
+    beforeEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.windows.getCurrent.flush();
+    });
+    afterEach(() => {
+      browser.sessions.getWindowValue.flush();
+      browser.windows.getCurrent.flush();
+    });
 
     it("should not call function if incognito", async () => {
       browser.windows.getCurrent.resolves({
@@ -531,7 +543,6 @@ describe("util", () => {
       await func();
       assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
                          "not called");
-      browser.windows.getCurrent.flush();
     });
 
     it("should not call function if tab not found", async () => {
@@ -542,7 +553,6 @@ describe("util", () => {
       await func();
       assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
                          "not called");
-      browser.windows.getCurrent.flush();
     });
 
     it("should call function", async () => {
@@ -607,8 +617,6 @@ describe("util", () => {
         browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
         i + 1, "called set",
       );
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
 
     it("should call function", async () => {
@@ -681,13 +689,17 @@ describe("util", () => {
         browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
         i + 1, "called set",
       );
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
     });
   });
 
   describe("activate tab", () => {
     const func = mjs.activateTab;
+    beforeEach(() => {
+      browser.tabs.update.flush();
+    });
+    afterEach(() => {
+      browser.tabs.update.flush();
+    });
 
     it("should get null if no argument given", async () => {
       const res = await func();
@@ -716,7 +728,6 @@ describe("util", () => {
       const res = await func(elm);
       assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
       assert.isTrue(res, "result");
-      browser.tabs.update.flush();
     });
   });
 

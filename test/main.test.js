@@ -431,6 +431,12 @@ describe("main", () => {
 
   describe("undo close tab", () => {
     const func = mjs.undoCloseTab;
+    beforeEach(() => {
+      browser.sessions.restore.flush();
+    });
+    afterEach(() => {
+      browser.sessions.restore.flush();
+    });
 
     it("should not call function if lastClosedTab is not set", async () => {
       const {restore} = browser.sessions;
@@ -451,7 +457,6 @@ describe("main", () => {
       const res = await func();
       assert.strictEqual(restore.callCount, i + 1, "called");
       assert.deepEqual(res, {}, "result");
-      browser.sessions.restore.flush();
     });
   });
 
@@ -7667,11 +7672,11 @@ describe("main", () => {
   describe("requestSidebarStateUpdate", () => {
     const func = mjs.requestSidebarStateUpdate;
     beforeEach(() => {
-      mjs.sidebar.windowId = null;
+      browser.runtime.sendMessage.flush();
       browser.windows.getCurrent.flush();
     });
     afterEach(() => {
-      mjs.sidebar.windowId = null;
+      browser.runtime.sendMessage.flush();
       browser.windows.getCurrent.flush();
     });
 
@@ -7756,7 +7761,6 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called");
       assert.isTrue(res, "result");
-      browser.runtime.sendMessage.flush();
     });
   });
 
@@ -8000,6 +8004,12 @@ describe("main", () => {
 
   describe("restore highlighted tabs", () => {
     const func = mjs.restoreHighlightedTabs;
+    beforeEach(() => {
+      browser.tabs.query.flush();
+    });
+    afterEach(() => {
+      browser.tabs.query.flush();
+    });
 
     it("should restore", async () => {
       const i = browser.tabs.query.callCount;
@@ -8030,7 +8040,6 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), "class");
       assert.isTrue(elm2.classList.contains(HIGHLIGHTED), "class");
       assert.isFalse(elm3.classList.contains(HIGHLIGHTED), "class");
-      browser.tabs.query.flush();
     });
   });
 

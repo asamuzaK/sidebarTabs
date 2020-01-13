@@ -999,6 +999,9 @@ describe("dnd", () => {
 
   describe("extract dropped tabs data", () => {
     const func = mjs.extractDroppedTabs;
+    beforeEach(() => {
+      browser.tabs.move.flush();
+    });
     afterEach(() => {
       browser.tabs.move.flush();
     });

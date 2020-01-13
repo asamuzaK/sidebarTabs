@@ -365,6 +365,12 @@ describe("options-main", () => {
 
   describe("handle init custom theme click", () => {
     const func = mjs.handleInitCustomThemeClick;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should get undefined", async () => {
       browser.runtime.sendMessage.resolves(undefined);
@@ -382,12 +388,17 @@ describe("options-main", () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
       assert.isUndefined(res, "result");
-      browser.runtime.sendMessage.flush();
     });
   });
 
   describe("handle init extension click", () => {
     const func = mjs.handleInitExtClick;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should get undefined", async () => {
       browser.runtime.sendMessage.resolves(undefined);
@@ -405,7 +416,6 @@ describe("options-main", () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
                          "called");
       assert.isUndefined(res, "result");
-      browser.runtime.sendMessage.flush();
     });
   });
 

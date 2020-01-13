@@ -49,11 +49,13 @@ describe("localize", () => {
       for (const key of globalKeys) {
         global[key] = window[key];
       }
+      browser.i18n.getMessage.flush();
     });
     afterEach(() => {
       for (const key of globalKeys) {
         delete global[key];
       }
+      browser.i18n.getMessage.flush();
     });
 
     it("should not call function if no argument given", async () => {
@@ -91,7 +93,6 @@ describe("localize", () => {
       for (const [key, value] of items) {
         assert.strictEqual(p.getAttribute(value), `${id}_${key}`, `${value}`);
       }
-      browser.i18n.getMessage.flush();
     });
 
     it("should not set attribute", async () => {
@@ -115,7 +116,6 @@ describe("localize", () => {
       for (const value of items) {
         assert.strictEqual(p.getAttribute(value), "bar", `${value}`);
       }
-      browser.i18n.getMessage.flush();
     });
   });
 
@@ -126,11 +126,13 @@ describe("localize", () => {
       for (const key of globalKeys) {
         global[key] = window[key];
       }
+      browser.i18n.getMessage.flush();
     });
     afterEach(() => {
       for (const key of globalKeys) {
         delete global[key];
       }
+      browser.i18n.getMessage.flush();
     });
 
     it("should not set value", async () => {
@@ -138,7 +140,6 @@ describe("localize", () => {
       await func();
       const root = document.documentElement;
       assert.isNull(root.getAttribute("lang"), "lang");
-      browser.i18n.getMessage.flush();
     });
 
     it("should set value", async () => {
@@ -146,7 +147,6 @@ describe("localize", () => {
       await func();
       const root = document.documentElement;
       assert.strictEqual(root.lang, "en", "lang");
-      browser.i18n.getMessage.flush();
     });
 
     it("should set value", async () => {
@@ -160,7 +160,6 @@ describe("localize", () => {
       const root = document.documentElement;
       assert.strictEqual(root.lang, "en", "lang");
       assert.strictEqual(p.textContent, "baz", "content");
-      browser.i18n.getMessage.flush();
     });
 
     it("should set value", async () => {
@@ -175,7 +174,6 @@ describe("localize", () => {
       const root = document.documentElement;
       assert.strictEqual(root.lang, "en", "lang");
       assert.strictEqual(p.textContent, "baz", "content");
-      browser.i18n.getMessage.flush();
     });
   });
 });
