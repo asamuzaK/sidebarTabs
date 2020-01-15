@@ -9,7 +9,8 @@ import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/options-main.js";
 import {
-  EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO,
+  BROWSER_SETTINGS_ALLOW, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_SETTING, THEME_RADIO,
 } from "../src/mjs/constant.js";
 
 describe("options-main", () => {
@@ -47,6 +48,12 @@ describe("options-main", () => {
 
   describe("send message", () => {
     const func = mjs.sendMsg;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -72,6 +79,12 @@ describe("options-main", () => {
 
   describe("init extension", () => {
     const func = mjs.initExt;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -92,6 +105,12 @@ describe("options-main", () => {
 
   describe("init custom theme", () => {
     const func = mjs.initCustomTheme;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -112,6 +131,12 @@ describe("options-main", () => {
 
   describe("request custom theme", () => {
     const func = mjs.requestCustomTheme;
+    beforeEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
+    afterEach(() => {
+      browser.runtime.sendMessage.flush();
+    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -155,6 +180,16 @@ describe("options-main", () => {
 
   describe("store pref", () => {
     const func = mjs.storePref;
+    beforeEach(() => {
+      browser.permissions.remove.flush();
+      browser.permissions.request.flush();
+      browser.storage.local.set.flush();
+    });
+    afterEach(() => {
+      browser.permissions.remove.flush();
+      browser.permissions.request.flush();
+      browser.storage.local.set.flush();
+    });
 
     it("should call function", async () => {
       const i = browser.storage.local.set.callCount;
@@ -194,6 +229,35 @@ describe("options-main", () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 2, "called");
       assert.strictEqual(res.length, 2, "array length");
       assert.deepEqual(res, [undefined, undefined], "result");
+    });
+
+    it("should get array", async () => {
+      const i = browser.permissions.request.callCount;
+      const evt = {
+        target: {
+          id: BROWSER_SETTINGS_ALLOW,
+          checked: true,
+        },
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.permissions.request.callCount, i + 1,
+                         "called");
+      assert.strictEqual(res.length, 1, "length");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should get array", async () => {
+      const i = browser.permissions.remove.callCount;
+      const evt = {
+        target: {
+          id: BROWSER_SETTINGS_ALLOW,
+          checked: false,
+        },
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.permissions.remove.callCount, i + 1, "called");
+      assert.strictEqual(res.length, 1, "length");
+      assert.deepEqual(res, [undefined], "result");
     });
   });
 
@@ -446,6 +510,12 @@ describe("options-main", () => {
 
   describe("handle input change", () => {
     const func = mjs.handleInputChange;
+    beforeEach(() => {
+      browser.storage.local.set.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.set.flush();
+    });
 
     it("should call function", async () => {
       const i = browser.storage.local.set.callCount;
@@ -635,6 +705,12 @@ describe("options-main", () => {
 
   describe("set html input values from storage", () => {
     const func = mjs.setValuesFromStorage;
+    beforeEach(() => {
+      browser.storage.local.get.flush();
+    });
+    afterEach(() => {
+      browser.storage.local.get.flush();
+    });
 
     it("should get empty array", async () => {
       const i = browser.storage.local.get.callCount;

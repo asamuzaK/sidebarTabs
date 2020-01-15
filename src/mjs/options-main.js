@@ -6,13 +6,13 @@ import {
   isObjectNotEmpty, isString, throwErr,
 } from "./common.js";
 import {
-  getAllStorage, sendMessage, setStorage,
+  getAllStorage, removePermission, requestPermission, sendMessage, setStorage,
 } from "./browser.js";
 
 /* constant */
 import {
-  EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_CUSTOM_SETTING, THEME_RADIO,
+  BROWSER_SETTINGS_ALLOW, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO,
 } from "./constant.js";
 
 /**
@@ -95,7 +95,7 @@ export const createPref = async (elm = {}) => {
  */
 export const storePref = async evt => {
   const {target} = evt;
-  const {name, type} = target;
+  const {checked, id, name, type} = target;
   const func = [];
   if (type === "radio") {
     const nodes = document.querySelectorAll(`[name=${name}]`);
@@ -103,7 +103,18 @@ export const storePref = async evt => {
       func.push(createPref(node).then(setStorage));
     }
   } else {
-    func.push(createPref(target).then(setStorage));
+    switch (id) {
+      case BROWSER_SETTINGS_ALLOW:
+        if (checked) {
+          target.checked = await requestPermission(["browserSettings"]);
+        } else {
+          await removePermission(["browserSettings"]);
+        }
+        func.push(createPref(target).then(setStorage));
+        break;
+      default:
+        func.push(createPref(target).then(setStorage));
+    }
   }
   return Promise.all(func);
 };

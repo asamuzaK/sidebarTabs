@@ -246,6 +246,32 @@
           </div>
         </fieldset>
       </form>
+      <form id="optionalSettings">
+        <fieldset>
+          <legend data-i18n="optionsOptionalSettings">
+            Optional Settings
+          </legend>
+          <div>
+            <p>
+              <span>
+                <input type="checkbox" id="allowReadBrowserSettings" />
+                <label for="allowReadBrowserSettings" class="checkboxLabel"
+                       data-i18n="optionsAllowReadBrowserSettings"
+                       aria-details="allowReadBrowserSettingsDetail">
+                  Allow extension to read browser settings
+                </label>
+              </span>
+            </p>
+            <details id="initSidebarDetail">
+              <div>
+                <p data-i18n="optionsAllowReadBrowserSettingsDetail, &quot;browser.tabs.closeTabByDblclick&quot;">
+                  Add permissions that allow the extension to read certain values from browser settings.
+                </p>
+              </div>
+            </details>
+          </div>
+        </fieldset>
+      </form>
       <form id="extentionForm">
         <fieldset>
           <legend data-i18n="optionsInitSidebar">
