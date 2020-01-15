@@ -11,7 +11,7 @@ import {
 
 /* constant */
 import {
-  BROWSER_SETTINGS_ALLOW, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
+  BROWSER_SETTINGS_READ, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
   THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO,
 } from "./constant.js";
 
@@ -104,7 +104,7 @@ export const storePref = async evt => {
     }
   } else {
     switch (id) {
-      case BROWSER_SETTINGS_ALLOW:
+      case BROWSER_SETTINGS_READ:
         if (checked) {
           target.checked = await requestPermission(["browserSettings"]);
         } else {

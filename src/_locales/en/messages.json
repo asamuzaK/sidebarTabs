@@ -383,18 +383,6 @@
       }
     }
   },
-  "optionsAllowReadBrowserSettings": {
-    "message": "Allow extension to read browser settings"
-  },
-  "optionsAllowReadBrowserSettingsDetail": {
-    "message": "Add permissions that allow the extension to read certain values from browser settings. It currently reads the value of $KEY$, but may read more in the future if necessary.",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "\"browser.tabs.closeTabByDblclick\""
-      }
-    }
-  },
   "optionsCompactTab": {
     "message": "Reduce tab height"
   },
@@ -418,6 +406,18 @@
   },
   "optionsOptionalSettings": {
     "message": "Optional Settings"
+  },
+  "optionsReadBrowserSettings": {
+    "message": "Allow extension to read browser settings"
+  },
+  "optionsReadBrowserSettingsDetail": {
+    "message": "Add permissions that allow the extension to read certain values from browser settings. It currently reads the value of $KEY$, but may read more in the future if necessary.",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "\"browser.tabs.closeTabByDblclick\""
+      }
+    }
   },
   "optionsTabGroup": {
     "message": "Tab Group"

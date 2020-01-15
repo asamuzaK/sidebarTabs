@@ -54,7 +54,7 @@ const {
 
 /* constants */
 import {
-  ACTIVE, AUDIBLE,
+  ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
@@ -68,7 +68,7 @@ import {
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
   SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
@@ -88,6 +88,7 @@ const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
 export const sidebar = {
+  closeTabsByDoubleClick: false,
   context: null,
   contextualIds: null,
   firstSelectedTab: null,
@@ -95,6 +96,7 @@ export const sidebar = {
   isMac: false,
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
+  readBrowserSettings: false,
   tabGroupOnExpandCollapseOther: false,
   tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
@@ -111,18 +113,31 @@ export const setSidebar = async () => {
   });
   const {id, incognito} = win;
   const store = await getStorage([
+    BROWSER_SETTINGS_READ,
+    TAB_CLOSE_DBLCLICK,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_NEW_TAB_AT_END,
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
-    const {tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd} = store;
+    const {
+      closeTabsByDoubleClick, readBrowserSettings,
+      tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd,
+    } = store;
+    sidebar.closeTabsByDoubleClick =
+      closeTabsByDoubleClick &&
+      !!closeTabsByDoubleClick.checked || false;
+    sidebar.readBrowserSettings =
+      readBrowserSettings &&
+      !!readBrowserSettings.checked || false;
     sidebar.tabGroupOnExpandCollapseOther =
       tabGroupOnExpandCollapseOther &&
       !!tabGroupOnExpandCollapseOther.checked || false;
     sidebar.tabGroupPutNewTabAtTheEnd =
       tabGroupPutNewTabAtTheEnd && !!tabGroupPutNewTabAtTheEnd.checked || false;
   } else {
+    sidebar.closeTabsByDoubleClick = false;
+    sidebar.readBrowserSettings = false;
     sidebar.tabGroupOnExpandCollapseOther = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
   }
@@ -278,17 +293,19 @@ export const handleCreateNewTab = evt => {
  * @param {!Object} evt - event
  * @returns {Promise.<Array>} - results of each handler
  */
-export const handleClickedTab = async evt => {
+export const handleClickedTab = evt => {
   const {button, ctrlKey, metaKey, shiftKey, target, type} = evt;
-  const {firstSelectedTab, isMac, windowId} = sidebar;
+  const {closeTabsByDoubleClick, firstSelectedTab, isMac, windowId} = sidebar;
   const tab = getSidebarTab(target);
   const func = [];
-  if (button === MOUSE_BUTTON_MIDDLE && type === "mousedown") {
+  if (button === MOUSE_BUTTON_MIDDLE && type === "mousedown" ||
+      button === MOUSE_BUTTON_LEFT && type === "dblclick" &&
+      closeTabsByDoubleClick) {
     tab && func.push(closeTabs([tab]));
   } else if (type === "click") {
     if (shiftKey) {
       if (tab && firstSelectedTab) {
-        const items = await getTabsInRange(tab, firstSelectedTab);
+        const items = getTabsInRange(tab, firstSelectedTab);
         func.push(highlightTabs(items, windowId));
       }
     } else if (isMac && metaKey || !isMac && ctrlKey) {
@@ -315,8 +332,8 @@ export const handleClickedTab = async evt => {
           func.push(toggleHighlight(firstSelectedTab));
         }
       }
-    } else if (tab) {
-      func.push(activateTab(tab));
+    } else {
+      tab && func.push(activateTab(tab));
     }
   }
   return Promise.all(func).catch(throwErr);
@@ -333,6 +350,38 @@ export const addTabClickListener = async elm => {
     elm.addEventListener("click", handleClickedTab);
     elm.addEventListener("mousedown", handleClickedTab);
   }
+};
+
+/**
+ * toggle tab dblclick listener
+ * @param {Object} elm - element
+ * @param {boolean} bool - add or remove
+ * @returns {void}
+ */
+export const toggleTabDblClickListener = async (elm, bool) => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+      elm.classList.contains(CLASS_TAB_CONTENT)) {
+    if (bool) {
+      elm.addEventListener("dblclick", handleClickedTab);
+    } else {
+      elm.removeEventListener("dblclick", handleClickedTab);
+    }
+  }
+};
+
+/**
+ * replace tab dblclick listeners
+ * @param {boolean} bool - add or remove
+ * @returns {Promise.<Array>} - result of each handler
+ */
+export const replaceTabDblClickListeners = async (bool = false) => {
+  const items = document.querySelectorAll(TAB_QUERY);
+  const func = [];
+  for (const item of items) {
+    const tabContent = item.querySelector(`.${CLASS_TAB_CONTENT}`);
+    tabContent && func.push(toggleTabDblClickListener(tabContent, !!bool));
+  }
+  return Promise.all(func);
 };
 
 /* tab handlers */
@@ -393,7 +442,8 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
   const {
-    tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd, windowId,
+    closeTabsByDoubleClick, tabGroupOnExpandCollapseOther,
+    tabGroupPutNewTabAtTheEnd, windowId,
   } = sidebar;
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
     const tab = getTemplate(CLASS_TAB_TMPL);
@@ -419,7 +469,10 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
         item.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
         item.title = title;
-        func.push(addTabClickListener(item));
+        func.push(
+          addTabClickListener(item),
+          toggleTabDblClickListener(item, !!closeTabsByDoubleClick),
+        );
       } else if (classList.contains(CLASS_TAB_ICON)) {
         func.push(
           setTabIcon(item, {favIconUrl, status, title, url}),
@@ -1544,6 +1597,20 @@ export const setVar = async (item, obj, changed = false) => {
         changed && func.push(
           updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value),
         );
+        break;
+      /*
+      case BROWSER_SETTINGS_READ:
+        sidebar[item] = !!checked;
+        // FIXME:
+        changed && func.push(
+          getTabsCloseByDoubleClickValue(!!checked)
+            .then(replaceTabDblClickListeners),
+        );
+        break;
+      */
+      case TAB_CLOSE_DBLCLICK:
+        sidebar[item] = !!checked;
+        changed && func.push(replaceTabDblClickListeners(!!checked));
         break;
       case TAB_GROUP_EXPAND_COLLAPSE_OTHER:
         sidebar[item] = !!checked;

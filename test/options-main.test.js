@@ -9,7 +9,7 @@ import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/options-main.js";
 import {
-  BROWSER_SETTINGS_ALLOW, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
+  BROWSER_SETTINGS_READ, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
   THEME_CUSTOM_SETTING, THEME_RADIO,
 } from "../src/mjs/constant.js";
 
@@ -235,7 +235,7 @@ describe("options-main", () => {
       const i = browser.permissions.request.callCount;
       const evt = {
         target: {
-          id: BROWSER_SETTINGS_ALLOW,
+          id: BROWSER_SETTINGS_READ,
           checked: true,
         },
       };
@@ -250,7 +250,7 @@ describe("options-main", () => {
       const i = browser.permissions.remove.callCount;
       const evt = {
         target: {
-          id: BROWSER_SETTINGS_ALLOW,
+          id: BROWSER_SETTINGS_READ,
           checked: false,
         },
       };

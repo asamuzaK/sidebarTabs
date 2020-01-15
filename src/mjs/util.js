@@ -157,7 +157,7 @@ export const getSidebarTabIndex = node => {
  * @param {Object} tabB - tab B
  * @returns {Array} - array of tabs
  */
-export const getTabsInRange = async (tabA, tabB) => {
+export const getTabsInRange = (tabA, tabB) => {
   const tabAIndex = getSidebarTabIndex(tabA);
   const tabBIndex = getSidebarTabIndex(tabB);
   const arr = [];

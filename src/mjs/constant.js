@@ -4,7 +4,7 @@
 
 export const ACTIVE = "active";
 export const AUDIBLE = "audible";
-export const BROWSER_SETTINGS_ALLOW = "allowReadBrowserSettings";
+export const BROWSER_SETTINGS_READ = "readBrowserSettings";
 export const CLASS_COMPACT = "compact";
 export const CLASS_NARROW = "narrow";
 export const CLASS_TAB_AUDIO = "tab-audio";
@@ -87,6 +87,7 @@ export const TAB_ALL_RELOAD = "reloadAllTabs";
 export const TAB_ALL_SELECT = "selectAllTabs";
 export const TAB_BOOKMARK = "bookmarkTab";
 export const TAB_CLOSE = "closeTab";
+export const TAB_CLOSE_DBLCLICK = "closeTabsByDoubleClick";
 export const TAB_CLOSE_DUPE = "closeDupeTabs";
 export const TAB_CLOSE_END = "closeTabsToTheEnd";
 export const TAB_CLOSE_OTHER = "closeOtherTabs_tab";
