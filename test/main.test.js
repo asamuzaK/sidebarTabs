@@ -8259,6 +8259,30 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
+      // FIXME: not implemented
+      if (!browser.browserSettings) {
+        browser.browserSettings = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick) {
+        browser.browserSettings.closeTabsByDoubleClick = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
+        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
+      }
+      const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
+      const j = browser.storage.local.set.callCount;
+      browser.browserSettings.closeTabsByDoubleClick.get.returns({});
+      const res = await func(BROWSER_SETTINGS_READ, {checked: true}, true);
+      assert.isTrue(mjs.sidebar.readBrowserSettings, "set");
+      assert.strictEqual(
+        browser.browserSettings.closeTabsByDoubleClick.get.callCount,
+        i + 1, "called"
+      );
+      assert.strictEqual(browser.storage.local.set.callCount, j + 1, "called");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
       const res =
         await func(TAB_CLOSE_DBLCLICK, {checked: true}, true);
       assert.isTrue(mjs.sidebar.closeTabsByDoubleClick, "set");

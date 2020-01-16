@@ -24,6 +24,21 @@ export const createBookmark = async opt => {
   return node || null;
 };
 
+/* browserSettings */
+/**
+ * get closeTabsByDoubleClick user value
+ * @returns {Object} - user value;
+ */
+export const getCloseTabsByDoubleClickValue = async () => {
+  const {browserSettings} = browser;
+  let userValue;
+  if (browserSettings) {
+    const {closeTabsByDoubleClick} = browserSettings;
+    userValue = await closeTabsByDoubleClick.get({});
+  }
+  return userValue || null;
+};
+
 /* commands */
 /**
  * is command customizable

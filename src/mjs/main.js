@@ -19,8 +19,8 @@ import {
 } from "./browser-tabs.js";
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
-  getSidebarTabIndex, getTabsInRange, getTemplate,
-  isNewTab, scrollTabIntoView, setSessionTabList,
+  getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab, scrollTabIntoView,
+  setSessionTabList, storeCloseTabsByDoubleClickValue,
 } from "./util.js";
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -1598,16 +1598,10 @@ export const setVar = async (item, obj, changed = false) => {
           updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value),
         );
         break;
-      /*
       case BROWSER_SETTINGS_READ:
         sidebar[item] = !!checked;
-        // FIXME:
-        changed && func.push(
-          getTabsCloseByDoubleClickValue(!!checked)
-            .then(replaceTabDblClickListeners),
-        );
+        changed && func.push(storeCloseTabsByDoubleClickValue(!!checked));
         break;
-      */
       case TAB_CLOSE_DBLCLICK:
         sidebar[item] = !!checked;
         changed && func.push(replaceTabDblClickListeners(!!checked));
