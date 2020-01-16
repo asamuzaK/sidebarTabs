@@ -8276,7 +8276,7 @@ describe("main", () => {
       assert.isTrue(mjs.sidebar.readBrowserSettings, "set");
       assert.strictEqual(
         browser.browserSettings.closeTabsByDoubleClick.get.callCount,
-        i + 1, "called"
+        i + 1, "called",
       );
       assert.strictEqual(browser.storage.local.set.callCount, j + 1, "called");
       assert.deepEqual(res, [undefined], "result");
