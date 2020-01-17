@@ -8246,15 +8246,50 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      const res = await func(TAB_CLOSE_DBLCLICK, {checked: true});
-      assert.isTrue(mjs.sidebar.closeTabsByDoubleClick, "set");
+      // FIXME: not implemented
+      if (!browser.browserSettings) {
+        browser.browserSettings = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick) {
+        browser.browserSettings.closeTabsByDoubleClick = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
+        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
+      }
+      const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
+      const j = browser.storage.local.set.callCount;
+      browser.browserSettings.closeTabsByDoubleClick.get.returns({});
+      const res = await func(BROWSER_SETTINGS_READ, {checked: false});
+      assert.isFalse(mjs.sidebar.readBrowserSettings, "set");
+      assert.strictEqual(
+        browser.browserSettings.closeTabsByDoubleClick.get.callCount,
+        i, "not called",
+      );
+      assert.strictEqual(browser.storage.local.set.callCount, j, "not called");
       assert.deepEqual(res, [], "result");
     });
 
     it("should set variable", async () => {
-      mjs.sidebar.tabGroupCollapseOther = true;
-      const res = await func(TAB_CLOSE_DBLCLICK, {checked: false});
-      assert.isFalse(mjs.sidebar.closeTabsByDoubleClick, "set");
+      // FIXME: not implemented
+      if (!browser.browserSettings) {
+        browser.browserSettings = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick) {
+        browser.browserSettings.closeTabsByDoubleClick = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
+        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
+      }
+      const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
+      const j = browser.storage.local.set.callCount;
+      browser.browserSettings.closeTabsByDoubleClick.get.returns({});
+      const res = await func(BROWSER_SETTINGS_READ, {checked: true});
+      assert.isTrue(mjs.sidebar.readBrowserSettings, "set");
+      assert.strictEqual(
+        browser.browserSettings.closeTabsByDoubleClick.get.callCount,
+        i, "not called",
+      );
+      assert.strictEqual(browser.storage.local.set.callCount, j, "not called");
       assert.deepEqual(res, [], "result");
     });
 
@@ -8280,6 +8315,19 @@ describe("main", () => {
       );
       assert.strictEqual(browser.storage.local.set.callCount, j + 1, "called");
       assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(TAB_CLOSE_DBLCLICK, {checked: true});
+      assert.isTrue(mjs.sidebar.closeTabsByDoubleClick, "set");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      mjs.sidebar.tabGroupCollapseOther = true;
+      const res = await func(TAB_CLOSE_DBLCLICK, {checked: false});
+      assert.isFalse(mjs.sidebar.closeTabsByDoubleClick, "set");
+      assert.deepEqual(res, [], "result");
     });
 
     it("should set variable", async () => {
