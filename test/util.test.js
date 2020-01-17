@@ -1052,4 +1052,56 @@ describe("util", () => {
       assert.strictEqual(res, "wss://93.184.216.34/*", "result");
     });
   });
+
+  describe("store closeTabsByDoubleClick user value", async () => {
+    const func = mjs.storeCloseTabsByDoubleClickValue;
+    beforeEach(() => {
+      browser.storage.local.set.flush();
+      // FIXME: not implemented
+      if (!browser.browserSettings) {
+        browser.browserSettings = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick) {
+        browser.browserSettings.closeTabsByDoubleClick = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
+        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
+      }
+    });
+    afterEach(() => {
+      browser.storage.local.set.flush();
+    });
+
+    it("should store value", async () => {
+      const obj = {
+        closeTabsByDoubleClick: {
+          id: "closeTabsByDoubleClick",
+          checked: false,
+          value: "",
+        },
+      };
+      const i = browser.storage.local.set.withArgs(obj).callCount;
+      await func(false);
+      assert.strictEqual(browser.storage.local.set.withArgs(obj).callCount,
+                         i + 1, "called");
+    });
+
+    it("should store value", async () => {
+      const obj = {
+        closeTabsByDoubleClick: {
+          id: "closeTabsByDoubleClick",
+          checked: true,
+          value: "foo",
+        },
+      };
+      const i = browser.storage.local.set.withArgs(obj).callCount;
+      browser.browserSettings.closeTabsByDoubleClick.get.withArgs({}).returns({
+        value: true,
+        levelOfControl: "foo",
+      });
+      await func(true);
+      assert.strictEqual(browser.storage.local.set.withArgs(obj).callCount,
+                         i + 1, "called");
+    });
+  });
 });

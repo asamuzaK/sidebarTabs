@@ -6,7 +6,8 @@ import {
   getType, isObjectNotEmpty, isString,
 } from "./common.js";
 import {
-  getCurrentWindow, getSessionWindowValue, setSessionWindowValue, updateTab,
+  getCloseTabsByDoubleClickValue, getCurrentWindow, getSessionWindowValue,
+  setSessionWindowValue, setStorage, updateTab,
 } from "./browser.js";
 
 /* constants */
@@ -157,7 +158,7 @@ export const getSidebarTabIndex = node => {
  * @param {Object} tabB - tab B
  * @returns {Array} - array of tabs
  */
-export const getTabsInRange = async (tabA, tabB) => {
+export const getTabsInRange = (tabA, tabB) => {
   const tabAIndex = getSidebarTabIndex(tabA);
   const tabBIndex = getSidebarTabIndex(tabB);
   const arr = [];
@@ -328,4 +329,29 @@ export const createUrlMatchString = url => {
     str = `${protocol}//${hostname}/*`;
   }
   return str;
+};
+
+/**
+ * store closeTabsByDoubleClick user value
+ * @param {boolean} bool - browserSettings enabled
+ * @returns {void}
+ */
+export const storeCloseTabsByDoubleClickValue = async bool => {
+  let checked, value;
+  if (bool) {
+    const {
+      levelOfControl, value: userValue,
+    } = await getCloseTabsByDoubleClickValue();
+    checked = !!userValue;
+    value = levelOfControl;
+  } else {
+    checked = false;
+    value = "";
+  }
+  return setStorage({
+    closeTabsByDoubleClick: {
+      id: "closeTabsByDoubleClick",
+      checked, value,
+    },
+  });
 };

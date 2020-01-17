@@ -46,6 +46,32 @@ describe("browser", () => {
     });
   });
 
+  describe("get closeTabsByDoubleClick user value", () => {
+    const func = mjs.getCloseTabsByDoubleClickValue;
+
+    it("should get null", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
+
+    // FIXME: browserSettings.closeTabsByDoubleClick.get not implemented
+    it("should get object", async () => {
+      if (!browser.browserSettings) {
+        browser.browserSettings = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick) {
+        browser.browserSettings.closeTabsByDoubleClick = {};
+      }
+      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
+        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
+      }
+      browser.browserSettings.closeTabsByDoubleClick.get.withArgs({})
+        .resolves({});
+      const res = await func();
+      assert.deepEqual(res, {}, "result");
+    });
+  });
+
   describe("update command", () => {
     const func = mjs.updateCommand;
     beforeEach(() => {
