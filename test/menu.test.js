@@ -26,6 +26,9 @@ describe("menu", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -36,6 +39,7 @@ describe("menu", () => {
     delete global.browser;
     delete global.window;
     delete global.document;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -146,12 +150,6 @@ describe("menu", () => {
 
   describe("create context menu item", () => {
     const func = mjs.createMenuItem;
-    beforeEach(() => {
-      browser.menus.create.flush();
-    });
-    afterEach(() => {
-      browser.menus.create.flush();
-    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.menus.create.callCount;

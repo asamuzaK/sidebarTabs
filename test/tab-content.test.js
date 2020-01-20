@@ -37,6 +37,9 @@ describe("tab-content", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -53,6 +56,7 @@ describe("tab-content", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -495,14 +499,6 @@ describe("tab-content", () => {
 
   describe("handle clicked audio button", () => {
     const func = mjs.handleClickedTabAudio;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-      browser.tabs.update.flush();
-    });
 
     it("should get undefined", async () => {
       const elm = document.createElement("button");
@@ -631,9 +627,6 @@ describe("tab-content", () => {
       browser.i18n.getMessage.withArgs(`${TABS_MUTE}_tooltip`).returns("baz");
       browser.i18n.getMessage.withArgs(`${TAB_MUTE}_tooltip`).returns("qux");
     });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-    });
 
     it("should not set title if 2nd argument is empty object", async () => {
       const i = browser.i18n.getMessage.callCount;
@@ -723,12 +716,6 @@ describe("tab-content", () => {
 
   describe("set tab audio icon", () => {
     const func = mjs.setTabAudioIcon;
-    beforeEach(() => {
-      browser.i18n.getMessage.flush();
-    });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-    });
 
     it("should not set icon if element is not img", async () => {
       const elm = document.createElement("p");
@@ -803,9 +790,6 @@ describe("tab-content", () => {
       browser.i18n.getMessage.withArgs(`${TABS_CLOSE}_tooltip`).returns("foo");
       browser.i18n.getMessage.withArgs(`${TAB_CLOSE}_tooltip`).returns("bar");
     });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-    });
 
     it("should not set tooltip", async () => {
       const elm = document.createElement("p");
@@ -836,12 +820,6 @@ describe("tab-content", () => {
 
   describe("handle clicked close button", () => {
     const func = mjs.handleClickedCloseButton;
-    beforeEach(() => {
-      browser.tabs.remove.flush();
-    });
-    afterEach(() => {
-      browser.tabs.remove.flush();
-    });
 
     it("should get null", async () => {
       const elm = document.createElement("button");
@@ -891,12 +869,6 @@ describe("tab-content", () => {
 
   describe("handle tab close button click", () => {
     const func = mjs.tabCloseOnClick;
-    beforeEach(() => {
-      browser.tabs.remove.flush();
-    });
-    afterEach(() => {
-      browser.tabs.remove.flush();
-    });
 
     it("should call function", async () => {
       browser.tabs.remove.withArgs([1]).resolves(undefined);
@@ -1077,12 +1049,6 @@ describe("tab-content", () => {
 
   describe("add hightlight class to tab", () => {
     const func = mjs.addHighlight;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-    });
 
     it("should not add class if argument not given", async () => {
       const res = await func();
@@ -1128,12 +1094,6 @@ describe("tab-content", () => {
 
   describe("add highlight class to tabs", () => {
     const func = mjs.addHighlightToTabs;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1185,12 +1145,6 @@ describe("tab-content", () => {
 
   describe("remove hightlight class from tab", () => {
     const func = mjs.removeHighlight;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-    });
 
     it("should not remove class if argument not given", async () => {
       const res = await func();

@@ -33,6 +33,9 @@ describe("dnd", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -49,6 +52,7 @@ describe("dnd", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -57,12 +61,6 @@ describe("dnd", () => {
 
   describe("move dropped tabs", () => {
     const func = mjs.moveDroppedTabs;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
 
     it("should not call function", async () => {
       const i = browser.tabs.move.callCount;
@@ -999,12 +997,6 @@ describe("dnd", () => {
 
   describe("extract dropped tabs data", () => {
     const func = mjs.extractDroppedTabs;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
-    afterEach(() => {
-      browser.tabs.move.flush();
-    });
 
     it("should not call function if no arguemnt given", async () => {
       const i = browser.tabs.move.callCount;
@@ -1373,14 +1365,6 @@ describe("dnd", () => {
 
   describe("handle drop", () => {
     const func = mjs.handleDrop;
-    beforeEach(() => {
-      browser.tabs.create.flush();
-      browser.tabs.move.flush();
-    });
-    afterEach(() => {
-      browser.tabs.create.flush();
-      browser.tabs.move.flush();
-    });
 
     it("should not call function", async () => {
       const i = browser.tabs.create.callCount;

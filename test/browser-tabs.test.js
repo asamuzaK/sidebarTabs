@@ -30,6 +30,9 @@ describe("browser-tabs", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -46,6 +49,7 @@ describe("browser-tabs", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -54,12 +58,6 @@ describe("browser-tabs", () => {
 
   describe("bookmark tabs", () => {
     const func = mjs.bookmarkTabs;
-    beforeEach(() => {
-      browser.bookmarks.create.flush();
-    });
-    afterEach(() => {
-      browser.bookmarks.create.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -341,12 +339,6 @@ describe("browser-tabs", () => {
 
   describe("reopen tabs in container", () => {
     const func = mjs.reopenTabsInContainer;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -486,14 +478,6 @@ describe("browser-tabs", () => {
 
   describe("duplicate tab", () => {
     const func = mjs.dupeTab;
-    beforeEach(() => {
-      browser.tabs.create.flush();
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.create.flush();
-      browser.tabs.get.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -634,14 +618,6 @@ describe("browser-tabs", () => {
 
   describe("highlight tabs", () => {
     const func = mjs.highlightTabs;
-    beforeEach(() => {
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -799,12 +775,6 @@ describe("browser-tabs", () => {
 
   describe("move tabs in order", () => {
     const func = mjs.moveTabsInOrder;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
-    afterEach(() => {
-      browser.tabs.move.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -901,12 +871,6 @@ describe("browser-tabs", () => {
 
   describe("move tabs to end", () => {
     const func = mjs.moveTabsToEnd;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
-    afterEach(() => {
-      browser.tabs.move.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -1464,12 +1428,6 @@ describe("browser-tabs", () => {
 
   describe("move tabs to start", () => {
     const func = mjs.moveTabsToStart;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
-    afterEach(() => {
-      browser.tabs.move.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2027,14 +1985,6 @@ describe("browser-tabs", () => {
 
   describe("move tabs to new window", () => {
     const func = mjs.moveTabsToNewWindow;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-      browser.windows.create.flush();
-    });
-    afterEach(() => {
-      browser.tabs.move.flush();
-      browser.windows.create.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2181,12 +2131,6 @@ describe("browser-tabs", () => {
 
   describe("mute tabs", () => {
     const func = mjs.muteTabs;
-    beforeEach(() => {
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.tabs.update.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2267,12 +2211,6 @@ describe("browser-tabs", () => {
 
   describe("create new tab", () => {
     const func = mjs.createNewTab;
-    beforeEach(() => {
-      browser.tabs.create.flush();
-    });
-    afterEach(() => {
-      browser.tabs.create.flush();
-    });
 
     it("should call function", async () => {
       const create = browser.tabs.create.withArgs({
@@ -2301,12 +2239,6 @@ describe("browser-tabs", () => {
 
   describe("create new tab in container", () => {
     const func = mjs.createNewTabInContainer;
-    beforeEach(() => {
-      browser.tabs.create.flush();
-    });
-    afterEach(() => {
-      browser.tabs.create.flush();
-    });
 
     it("should throw", async () => {
       await func().catch(e => {
@@ -2344,12 +2276,6 @@ describe("browser-tabs", () => {
 
   describe("pin tabs", () => {
     const func = mjs.pinTabs;
-    beforeEach(() => {
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.tabs.update.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {
@@ -2430,12 +2356,6 @@ describe("browser-tabs", () => {
 
   describe("reload tabs", () => {
     const func = mjs.reloadTabs;
-    beforeEach(() => {
-      browser.tabs.reload.flush();
-    });
-    afterEach(() => {
-      browser.tabs.reload.flush();
-    });
 
     it("should throw if argument not given", async () => {
       await func().catch(e => {

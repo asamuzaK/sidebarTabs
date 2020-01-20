@@ -35,6 +35,9 @@ describe("tab-group", () => {
     window = dom && dom.window;
     window.psl = psl;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -51,6 +54,7 @@ describe("tab-group", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -93,12 +97,6 @@ describe("tab-group", () => {
 
   describe("collapse tab group", () => {
     const func = mjs.collapseTabGroup;
-    beforeEach(() => {
-      browser.i18n.getMessage.flush();
-    });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-    });
 
     it("should not call function", async () => {
       await func();
@@ -141,12 +139,6 @@ describe("tab-group", () => {
 
   describe("expand tab group", () => {
     const func = mjs.expandTabGroup;
-    beforeEach(() => {
-      browser.i18n.getMessage.flush();
-    });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-    });
 
     it("should not call function", async () => {
       await func();
@@ -190,14 +182,6 @@ describe("tab-group", () => {
 
   describe("toggle tab group collapsed state", () => {
     const func = mjs.toggleTabGroupCollapsedState;
-    beforeEach(() => {
-      browser.i18n.getMessage.flush();
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-      browser.tabs.update.flush();
-    });
 
     it("should do nothing if argument is empty", async () => {
       const res = await func();
@@ -238,7 +222,7 @@ describe("tab-group", () => {
       assert.strictEqual(elm4.title, "foo", "title");
       assert.strictEqual(elm6.alt, "bar", "alt");
       assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
-      assert.deepEqual(res, [undefined, null], "result");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
 
     it("should add class and not call function", async () => {
@@ -313,7 +297,7 @@ describe("tab-group", () => {
       assert.strictEqual(elm4.title, "baz", "title");
       assert.strictEqual(elm6.alt, "qux", "alt");
       assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
-      assert.deepEqual(res, [undefined, null], "result");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
 
     it("should remove class and not call function", async () => {
@@ -357,14 +341,6 @@ describe("tab-group", () => {
 
   describe("toggle multiple tab groups collapsed state", () => {
     const func = mjs.toggleTabGroupsCollapsedState;
-    beforeEach(() => {
-      browser.i18n.getMessage.flush();
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-      browser.tabs.update.flush();
-    });
 
     it("should do nothing if argument is empty", async () => {
       const res = await func();
@@ -471,7 +447,7 @@ describe("tab-group", () => {
       assert.strictEqual(elmC4.title, "quux", "title");
       assert.strictEqual(elmC6.alt, "corge", "alt");
       assert.deepEqual(res, [
-        [undefined, null],
+        [undefined, undefined],
         [undefined],
       ], "result");
     });
@@ -479,12 +455,6 @@ describe("tab-group", () => {
 
   describe("collapse multiple tab groups", () => {
     const func = mjs.collapseTabGroups;
-    beforeEach(() => {
-      browser.i18n.getMessage.flush();
-    });
-    afterEach(() => {
-      browser.i18n.getMessage.flush();
-    });
 
     it("should do nothing if argument is empty", async () => {
       const res = await func();
@@ -588,12 +558,6 @@ describe("tab-group", () => {
 
   describe("handle individual tab group collapsed state", () => {
     const func = mjs.handleTabGroupCollapsedState;
-    beforeEach(() => {
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.windows.getCurrent.flush();
-    });
 
     it("should throw", () => {
       assert.throws(() => func());
@@ -638,14 +602,6 @@ describe("tab-group", () => {
 
   describe("handle multiple tab groups collapsed state", () => {
     const func = mjs.handleTabGroupsCollapsedState;
-    beforeEach(() => {
-      browser.tabs.update.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.tabs.update.flush();
-      browser.windows.getCurrent.flush();
-    });
 
     it("should throw", () => {
       assert.throws(() => func());
@@ -943,7 +899,7 @@ describe("tab-group", () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func();
-      assert.deepEqual(res, [undefined, null], "result");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
   });
 
@@ -1243,16 +1199,6 @@ describe("tab-group", () => {
 
   describe("group same domain tabs", () => {
     const func = mjs.groupSameDomainTabs;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-      browser.tabs.move.flush();
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-      browser.tabs.move.flush();
-      browser.tabs.query.flush();
-    });
 
     it("should throw", async () => {
       await func().catch(e => {

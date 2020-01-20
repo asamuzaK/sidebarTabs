@@ -34,6 +34,9 @@ describe("util", () => {
     window = dom && dom.window;
     window.psl = psl;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -50,6 +53,7 @@ describe("util", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -467,14 +471,6 @@ describe("util", () => {
 
   describe("get tab list from sessions", () => {
     const func = mjs.getSessionTabList;
-    beforeEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.windows.getCurrent.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -526,14 +522,6 @@ describe("util", () => {
 
   describe("set tab list to sessions", () => {
     const func = mjs.setSessionTabList;
-    beforeEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.windows.getCurrent.flush();
-    });
 
     it("should not call function if incognito", async () => {
       browser.windows.getCurrent.resolves({
@@ -694,12 +682,6 @@ describe("util", () => {
 
   describe("activate tab", () => {
     const func = mjs.activateTab;
-    beforeEach(() => {
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.tabs.update.flush();
-    });
 
     it("should get null if no argument given", async () => {
       const res = await func();
@@ -1055,22 +1037,6 @@ describe("util", () => {
 
   describe("store closeTabsByDoubleClick user value", async () => {
     const func = mjs.storeCloseTabsByDoubleClickValue;
-    beforeEach(() => {
-      browser.storage.local.set.flush();
-      // FIXME: not implemented
-      if (!browser.browserSettings) {
-        browser.browserSettings = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick) {
-        browser.browserSettings.closeTabsByDoubleClick = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
-        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
-      }
-    });
-    afterEach(() => {
-      browser.storage.local.set.flush();
-    });
 
     it("should store value", async () => {
       const obj = {

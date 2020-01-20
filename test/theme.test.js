@@ -36,6 +36,9 @@ describe("theme", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -46,6 +49,7 @@ describe("theme", () => {
     delete global.browser;
     delete global.window;
     delete global.document;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -456,13 +460,9 @@ describe("theme", () => {
   describe("get base value", () => {
     const func = mjs.getBaseValues;
     beforeEach(() => {
-      browser.management.getAll.flush();
-      browser.theme.getCurrent.flush();
       mjs.currentThemeColors.clear();
     });
     afterEach(() => {
-      browser.management.getAll.flush();
-      browser.theme.getCurrent.flush();
       mjs.currentThemeColors.clear();
     });
 
@@ -547,11 +547,9 @@ describe("theme", () => {
   describe("set current theme value", () => {
     const func = mjs.setCurrentThemeValue;
     beforeEach(() => {
-      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
     });
     afterEach(() => {
-      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
     });
 
@@ -577,11 +575,9 @@ describe("theme", () => {
   describe("send current theme values", () => {
     const func = mjs.sendCurrentTheme;
     beforeEach(() => {
-      browser.runtime.sendMessage.flush();
       mjs.currentTheme.clear();
     });
     afterEach(() => {
-      browser.runtime.sendMessage.flush();
       mjs.currentTheme.clear();
     });
 
@@ -795,14 +791,10 @@ describe("theme", () => {
   describe("init custom theme", () => {
     const func = mjs.initCustomTheme;
     beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
       mjs.currentThemeColors.clear();
     });
     afterEach(() => {
-      browser.runtime.sendMessage.flush();
-      browser.storage.local.get.flush();
       mjs.currentTheme.clear();
       mjs.currentThemeColors.clear();
     });
@@ -915,14 +907,6 @@ describe("theme", () => {
 
   describe("get theme", () => {
     const func = mjs.getTheme;
-    beforeEach(() => {
-      browser.management.getAll.flush();
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.management.getAll.flush();
-      browser.storage.local.get.flush();
-    });
 
     it("should get light theme", async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
@@ -1064,12 +1048,6 @@ describe("theme", () => {
 
   describe("get tab height", () => {
     const func = mjs.getTabHeight;
-    beforeEach(() => {
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.get.flush();
-    });
 
     it("should get result", async () => {
       browser.storage.local.get.withArgs(THEME_TAB_COMPACT).resolves(undefined);
@@ -1124,12 +1102,6 @@ describe("theme", () => {
 
   describe("get scrollbar width", () => {
     const func = mjs.getScrollbarWidth;
-    beforeEach(() => {
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.get.flush();
-    });
 
     it("should get result", async () => {
       browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW)
@@ -1198,12 +1170,6 @@ describe("theme", () => {
 
   describe("set sidebar theme", () => {
     const func = mjs.setSidebarTheme;
-    beforeEach(() => {
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.get.flush();
-    });
 
     it("should call functions", async () => {
       browser.storage.local.get.resolves({});

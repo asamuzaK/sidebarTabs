@@ -11,10 +11,14 @@ import {SIDEBAR_STATE_UPDATE, TOGGLE_STATE} from "../src/mjs/constant.js";
 
 describe("background-main", () => {
   beforeEach(() => {
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
   });
   afterEach(() => {
     delete global.browser;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -71,14 +75,10 @@ describe("background-main", () => {
     beforeEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.open.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.open.flush();
     });
 
     it("should not call function", async () => {
@@ -132,12 +132,10 @@ describe("background-main", () => {
     beforeEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      browser.sidebarAction.isOpen.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      browser.sidebarAction.isOpen.flush();
     });
 
     it("should not call function", async () => {
@@ -175,16 +173,10 @@ describe("background-main", () => {
     beforeEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.isOpen.flush();
-      browser.sidebarAction.open.flush();
     });
     afterEach(() => {
       mjs.sidebar.windowId = null;
       mjs.sidebar.isOpen = false;
-      browser.sidebarAction.close.flush();
-      browser.sidebarAction.isOpen.flush();
-      browser.sidebarAction.open.flush();
     });
 
     it("should throw", async () => {

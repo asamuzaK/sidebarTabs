@@ -11,18 +11,98 @@ import * as mjs from "../src/mjs/browser.js";
 
 describe("browser", () => {
   beforeEach(() => {
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
   });
   afterEach(() => {
     delete global.browser;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
     assert.isObject(browser, "browser");
   });
 
+  describe("check if permission is granted", () => {
+    const func = mjs.isPermissionGranted;
+    beforeEach(() => {
+      browser.permissions.contains.callsFake(obj => {
+        const {permissions} = obj;
+        let res;
+        if (Array.isArray(permissions)) {
+          const [...perms] = permissions;
+          const grantedPerms = ["tabs", "browserSettings"];
+          for (const perm of perms) {
+            res = grantedPerms.includes(perm);
+            if (res === false) {
+              break;
+            }
+          }
+        }
+        return !!res;
+      });
+    });
+
+    it("should get result", async () => {
+      const res = await func();
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func({
+        foo: ["bar"],
+      });
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func({
+        permissions: ["alarms"],
+      });
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func({
+        permissions: ["tabs"],
+      });
+      assert.isTrue(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func({
+        permissions: ["tabs", "bookmarks"],
+      });
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func({
+        permissions: ["tabs", "browserSettings"],
+      });
+      assert.isTrue(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func({
+        permissions: ["tabs", "browserSettings", "commands"],
+      });
+      assert.isFalse(res, "result");
+    });
+  });
+
   describe("create bookmark", () => {
     const func = mjs.createBookmark;
+
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.bookmarks.create.callCount;
+      const res = await func({foo: "bar"});
+      assert.strictEqual(browser.bookmarks.create.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
 
     it("should get null if no argument given", async () => {
       const res = await func();
@@ -49,22 +129,23 @@ describe("browser", () => {
   describe("get closeTabsByDoubleClick user value", () => {
     const func = mjs.getCloseTabsByDoubleClickValue;
 
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
+      const res = await func({foo: "bar"});
+      assert.strictEqual(
+        browser.browserSettings.closeTabsByDoubleClick.get.callCount, i,
+        "not called",
+      );
+      assert.isNull(res, "result");
+    });
+
     it("should get null", async () => {
       const res = await func();
       assert.isNull(res, "result");
     });
 
-    // FIXME: browserSettings.closeTabsByDoubleClick.get not implemented
     it("should get object", async () => {
-      if (!browser.browserSettings) {
-        browser.browserSettings = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick) {
-        browser.browserSettings.closeTabsByDoubleClick = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
-        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
-      }
       browser.browserSettings.closeTabsByDoubleClick.get.withArgs({})
         .resolves({});
       const res = await func();
@@ -72,16 +153,23 @@ describe("browser", () => {
     });
   });
 
+  describe("is command customizable", () => {
+    const func = mjs.isCommandCustomizable;
+
+    it("should get false if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const res = await func();
+      assert.isFalse(res, "result");
+    });
+
+    it("should get true", async () => {
+      const res = await func();
+      assert.isTrue(res, "result");
+    });
+  });
+
   describe("update command", () => {
     const func = mjs.updateCommand;
-    beforeEach(() => {
-      browser.commands.reset.flush();
-      browser.commands.update.flush();
-    });
-    afterEach(() => {
-      browser.commands.reset.flush();
-      browser.commands.update.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -102,8 +190,14 @@ describe("browser", () => {
     });
 
     it("should get null", async () => {
-      browser.commands.reset.rejects();
-      browser.commands.update.resolves(undefined);
+      browser.permissions.contains.resolves(false);
+      const res = await func("foo", "");
+      assert.isFalse(browser.commands.reset.calledOnce, "called");
+      assert.isFalse(browser.commands.update.calledOnce, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", async () => {
       const res = await func("foo", "a");
       assert.isFalse(browser.commands.reset.calledOnce, "called");
       assert.isFalse(browser.commands.update.calledOnce, "not called");
@@ -187,19 +281,14 @@ describe("browser", () => {
 
   describe("get all contextual identities", () => {
     const func = mjs.getAllContextualIdentities;
-    beforeEach(() => {
-      browser.contextualIdentities.query.flush();
-    });
-    afterEach(() => {
-      browser.contextualIdentities.query.flush();
-    });
 
-    it("should get null", async () => {
-      const stubApi =
-        sinon.stub(browser, "contextualIdentities").returns(undefined);
-      const res = await func("foo");
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.contextualIdentities.query.callCount;
+      const res = await func();
+      assert.strictEqual(browser.contextualIdentities.query.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get result", async () => {
@@ -232,12 +321,6 @@ describe("browser", () => {
 
   describe("get contextual identities", () => {
     const func = mjs.getContextualId;
-    beforeEach(() => {
-      browser.contextualIdentities.query.flush();
-    });
-    afterEach(() => {
-      browser.contextualIdentities.query.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -251,12 +334,13 @@ describe("browser", () => {
       });
     });
 
-    it("should get null", async () => {
-      const stubApi =
-        sinon.stub(browser, "contextualIdentities").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.contextualIdentities.get.callCount;
       const res = await func("foo");
+      assert.strictEqual(browser.contextualIdentities.get.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get result", async () => {
@@ -281,18 +365,13 @@ describe("browser", () => {
 
   describe("get enabled theme", () => {
     const func = mjs.getEnabledTheme;
-    beforeEach(() => {
-      browser.management.getAll.flush();
-    });
-    afterEach(() => {
-      browser.management.getAll.flush();
-    });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "management").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.management.getAll.callCount;
       const res = await func();
+      assert.strictEqual(browser.management.getAll.callCount, i, "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get null", async () => {
@@ -332,12 +411,6 @@ describe("browser", () => {
 
   describe("get extension info", () => {
     const func = mjs.getExtensionInfo;
-    beforeEach(() => {
-      browser.management.get.flush();
-    });
-    afterEach(() => {
-      browser.management.get.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -351,11 +424,12 @@ describe("browser", () => {
       });
     });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "management").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.management.get.callCount;
       const res = await func("foo");
+      assert.strictEqual(browser.management.get.callCount, i, "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should reject if given id is not found", async () => {
@@ -374,18 +448,13 @@ describe("browser", () => {
 
   describe("get external extensions", () => {
     const func = mjs.getExternalExtensions;
-    beforeEach(() => {
-      browser.management.getAll.flush();
-    });
-    afterEach(() => {
-      browser.management.getAll.flush();
-    });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "management").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.management.getAll.callCount;
       const res = await func();
+      assert.strictEqual(browser.management.getAll.callCount, i, "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get null", async () => {
@@ -423,26 +492,26 @@ describe("browser", () => {
 
   describe("clear notification", () => {
     const func = mjs.clearNotification;
-    beforeEach(() => {
-      browser.notifications.clear.flush();
-    });
-    afterEach(() => {
-      browser.notifications.clear.flush();
+
+    it("should throw if no argument given", async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Undefined.");
+      });
     });
 
-    it("should throw if no argument given", () => {
-      assert.throws(() => func(), "Expected String but got Undefined.");
+    it("should throw if no argument given", async () => {
+      await func(1).catch(e => {
+        assert.strictEqual(e.message, "Expected String but got Number.");
+      });
     });
 
-    it("should throw if argument is not string", () => {
-      assert.throws(() => func(1), "Expected String but got Number.");
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "notifications").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.notifications.clear.callCount;
       const res = await func("foo");
+      assert.strictEqual(browser.notifications.clear.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get result", async () => {
@@ -454,12 +523,6 @@ describe("browser", () => {
 
   describe("create notification", () => {
     const func = mjs.createNotification;
-    beforeEach(() => {
-      browser.notifications.create.flush();
-    });
-    afterEach(() => {
-      browser.notifications.create.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -473,11 +536,13 @@ describe("browser", () => {
       });
     });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "notifications").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.notifications.create.callCount;
       const res = await func("foo");
+      assert.strictEqual(browser.notifications.create.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get message", async () => {
@@ -485,16 +550,30 @@ describe("browser", () => {
       const res = await func("foo", {});
       assert.strictEqual(res, "bar", "result");
     });
+
+    it("should get message", async () => {
+      browser.notifications.onClosed.hasListener.returns(false);
+      browser.notifications.create.withArgs("foo", {}).resolves("bar");
+      const i = browser.notifications.onClosed.addListener.callCount;
+      const res = await func("foo", {});
+      assert.strictEqual(browser.notifications.onClosed.addListener.callCount,
+                         i + 1, "called");
+      assert.strictEqual(res, "bar", "result");
+    });
+
+    it("should get message", async () => {
+      browser.notifications.onClosed.hasListener.returns(true);
+      browser.notifications.create.withArgs("foo", {}).resolves("bar");
+      const i = browser.notifications.onClosed.addListener.callCount;
+      const res = await func("foo", {});
+      assert.strictEqual(browser.notifications.onClosed.addListener.callCount,
+                         i, "not called");
+      assert.strictEqual(res, "bar", "result");
+    });
   });
 
   describe("remove permission", () => {
     const func = mjs.removePermission;
-    beforeEach(() => {
-      browser.permissions.remove.flush();
-    });
-    afterEach(() => {
-      browser.permissions.remove.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -534,12 +613,6 @@ describe("browser", () => {
 
   describe("request permission", () => {
     const func = mjs.requestPermission;
-    beforeEach(() => {
-      browser.permissions.request.flush();
-    });
-    afterEach(() => {
-      browser.permissions.request.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -579,12 +652,6 @@ describe("browser", () => {
 
   describe("get manifest icons", () => {
     const func = mjs.getManifestIcons;
-    beforeEach(() => {
-      browser.runtime.getManifest.flush();
-    });
-    afterEach(() => {
-      browser.runtime.getManifest.flush();
-    });
 
     it("should get object", () => {
       browser.runtime.getManifest.returns({icons: {foo: "bar"}});
@@ -595,12 +662,6 @@ describe("browser", () => {
 
   describe("get OS", () => {
     const func = mjs.getOs;
-    beforeEach(() => {
-      browser.runtime.getPlatformInfo.flush();
-    });
-    afterEach(() => {
-      browser.runtime.getPlatformInfo.flush();
-    });
 
     it("should get string", async () => {
       browser.runtime.getPlatformInfo.resolves({os: "foo"});
@@ -611,12 +672,6 @@ describe("browser", () => {
 
   describe("make a connection", () => {
     const func = mjs.makeConnection;
-    beforeEach(() => {
-      browser.runtime.connect.flush();
-    });
-    afterEach(() => {
-      browser.runtime.connect.flush();
-    });
 
     it("should get object", async () => {
       browser.runtime.connect.withArgs("foo").resolves({bar: "baz"});
@@ -651,12 +706,6 @@ describe("browser", () => {
 
   describe("send message", () => {
     const func = mjs.sendMessage;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should not call function", async () => {
       const i = browser.tabs.sendMessage.callCount;
@@ -717,11 +766,14 @@ describe("browser", () => {
 
   describe("get recently closed tab", () => {
     const func = mjs.getRecentlyClosedTab;
-    beforeEach(() => {
-      browser.sessions.getRecentlyClosed.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getRecentlyClosed.flush();
+
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.sessions.getRecentlyClosed.callCount;
+      const res = await func();
+      assert.strictEqual(browser.sessions.getRecentlyClosed.callCount, i,
+                         "not called");
+      assert.isNull(res, "result");
     });
 
     it("should get null", async () => {
@@ -768,12 +820,6 @@ describe("browser", () => {
 
   describe("get session window value", () => {
     const func = mjs.getSessionWindowValue;
-    beforeEach(() => {
-      browser.sessions.getWindowValue.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getWindowValue.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -787,11 +833,13 @@ describe("browser", () => {
       });
     });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "sessions").returns(undefined);
-      const res = await func("foo");
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.sessions.getWindowValue.callCount;
+      const res = await func("foo", 1);
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get object", async () => {
@@ -810,12 +858,6 @@ describe("browser", () => {
 
   describe("restore session", () => {
     const func = mjs.restoreSession;
-    beforeEach(() => {
-      browser.sessions.restore.flush();
-    });
-    afterEach(() => {
-      browser.sessions.restore.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -829,11 +871,13 @@ describe("browser", () => {
       });
     });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "sessions").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.sessions.getWindowValue.callCount;
       const res = await func("foo");
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get object", async () => {
@@ -845,12 +889,6 @@ describe("browser", () => {
 
   describe("set session window value", () => {
     const func = mjs.setSessionWindowValue;
-    beforeEach(() => {
-      browser.sessions.setWindowValue.flush();
-    });
-    afterEach(() => {
-      browser.sessions.setWindowValue.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -862,6 +900,14 @@ describe("browser", () => {
       await func(1).catch(e => {
         assert.strictEqual(e.message, "Expected String but got Number.");
       });
+    });
+
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.sessions.setWindowValue.callCount;
+      await func("foo");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
+                         "not called");
     });
 
     it("should call function", async () => {
@@ -881,11 +927,13 @@ describe("browser", () => {
 
   describe("clear storage", () => {
     const func = mjs.clearStorage;
-    beforeEach(() => {
-      browser.storage.local.clear.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.clear.flush();
+
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.storage.local.clear.callCount;
+      await func("foo");
+      assert.strictEqual(browser.storage.local.clear.callCount, i,
+                         "not called");
     });
 
     it("should get object", async () => {
@@ -898,18 +946,14 @@ describe("browser", () => {
 
   describe("get all storage", () => {
     const func = mjs.getAllStorage;
-    beforeEach(() => {
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.get.flush();
-    });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "storage").returns(undefined);
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.storage.local.get.callCount;
       const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get object", async () => {
@@ -921,18 +965,14 @@ describe("browser", () => {
 
   describe("get storage", () => {
     const func = mjs.getStorage;
-    beforeEach(() => {
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.get.flush();
-    });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "storage").returns(undefined);
-      const res = await func();
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.storage.local.get.callCount;
+      const res = await func("foo");
+      assert.strictEqual(browser.storage.local.get.callCount, i,
+                         "not called");
       assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get object", async () => {
@@ -944,16 +984,18 @@ describe("browser", () => {
 
   describe("remove storage", () => {
     const func = mjs.removeStorage;
-    beforeEach(() => {
-      browser.storage.local.remove.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.remove.flush();
+
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.storage.local.remove.callCount;
+      await func("foo");
+      assert.strictEqual(browser.storage.local.remove.callCount, i,
+                         "not called");
     });
 
     it("should call function", async () => {
       const i = browser.storage.local.remove.callCount;
-      await func();
+      await func("foo");
       assert.strictEqual(browser.storage.local.remove.callCount, i + 1,
                          "called");
     });
@@ -961,12 +1003,6 @@ describe("browser", () => {
 
   describe("set storage", () => {
     const func = mjs.setStorage;
-    beforeEach(() => {
-      browser.storage.local.set.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.set.flush();
-    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.storage.local.set.callCount;
@@ -983,19 +1019,6 @@ describe("browser", () => {
 
   describe("create tab", () => {
     const func = mjs.createTab;
-    beforeEach(() => {
-      browser.tabs.create.flush();
-    });
-    afterEach(() => {
-      browser.tabs.create.flush();
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
 
     it("should get object", async () => {
       browser.tabs.create.withArgs(null).resolves({});
@@ -1021,19 +1044,6 @@ describe("browser", () => {
 
   describe("query tabs", async () => {
     const func = mjs.queryTabs;
-    beforeEach(() => {
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func({});
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
 
     it("should call function", async () => {
       const i = browser.tabs.query.withArgs({}).callCount;
@@ -1048,24 +1058,11 @@ describe("browser", () => {
 
   describe("execute content script to existing tab", () => {
     const func = mjs.execScriptToTab;
-    beforeEach(() => {
-      browser.tabs.executeScript.flush();
-    });
-    afterEach(() => {
-      browser.tabs.executeScript.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
         assert.strictEqual(e.message, "Expected Number but got Undefined.");
       });
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should call function", async () => {
@@ -1134,32 +1131,11 @@ describe("browser", () => {
 
   describe("execute content script to existing tabs", () => {
     const func = mjs.execScriptToTabs;
-    beforeEach(() => {
-      browser.tabs.executeScript.flush();
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.executeScript.flush();
-      browser.tabs.query.flush();
-    });
-
-
-    it("should not call function", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func();
-      assert.deepEqual(res, [], "result");
-      stubApi.restore();
-    });
 
     it("should call function", async () => {
       const stubErr = sinon.stub(console, "error");
-      const file = "/foo/bar";
-      const i = browser.tabs.executeScript.withArgs(1, {
-        file,
-      }).callCount;
-      const j = browser.tabs.executeScript.withArgs(2, {
-        file,
-      }).callCount;
+      const i = browser.tabs.executeScript.withArgs(1, {}).callCount;
+      const j = browser.tabs.executeScript.withArgs(2, {}).callCount;
       browser.tabs.query.resolves([
         {
           id: 1,
@@ -1174,21 +1150,15 @@ describe("browser", () => {
           url: "about:blank",
         },
       ]);
-      browser.tabs.executeScript.withArgs(1, {
-        file,
-      }).resolves([{}]);
-      browser.tabs.executeScript.withArgs(2, {
-        file,
-      }).rejects(new Error("error"));
-      const res = await func({file});
+      browser.tabs.executeScript.withArgs(1, {}).resolves([{}]);
+      browser.tabs.executeScript.withArgs(2, {}).rejects(new Error("error"));
+      const res = await func();
       const {calledOnce: errCalled} = stubErr;
       stubErr.restore();
-      assert.strictEqual(browser.tabs.executeScript.withArgs(1, {
-        file,
-      }).callCount, i + 1, "called");
-      assert.strictEqual(browser.tabs.executeScript.withArgs(2, {
-        file,
-      }).callCount, j + 1, "called");
+      assert.strictEqual(browser.tabs.executeScript.withArgs(1, {}).callCount,
+                         i + 1, "called");
+      assert.strictEqual(browser.tabs.executeScript.withArgs(2, {}).callCount,
+                         j + 1, "called");
       assert.isTrue(errCalled, "error called");
       assert.deepEqual(res, [[{}], false], "result");
     });
@@ -1247,19 +1217,6 @@ describe("browser", () => {
 
   describe("get active tab", () => {
     const func = mjs.getActiveTab;
-    beforeEach(() => {
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
 
     it("should get number", async () => {
       browser.tabs.query.resolves([{}]);
@@ -1276,19 +1233,6 @@ describe("browser", () => {
 
   describe("get active tab ID", () => {
     const func = mjs.getActiveTabId;
-    beforeEach(() => {
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
 
     it("should get number", async () => {
       browser.tabs.query.resolves([
@@ -1313,19 +1257,6 @@ describe("browser", () => {
 
   describe("get all tabs in window", () => {
     const func = mjs.getAllTabsInWindow;
-    beforeEach(() => {
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
 
     it("should get array", async () => {
       browser.tabs.query.resolves([{}]);
@@ -1342,19 +1273,6 @@ describe("browser", () => {
 
   describe("get highlighted tab", () => {
     const func = mjs.getHighlightedTab;
-    beforeEach(() => {
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
 
     it("should get array", async () => {
       browser.tabs.query.resolves([{}]);
@@ -1371,12 +1289,6 @@ describe("browser", () => {
 
   describe("get tab", () => {
     const func = mjs.getTab;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1390,13 +1302,6 @@ describe("browser", () => {
       });
     });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
-    });
-
     it("should get object", async () => {
       browser.tabs.get.withArgs(1).resolves({});
       const res = await func(1);
@@ -1406,12 +1311,6 @@ describe("browser", () => {
 
   describe("highlight tab", () => {
     const func = mjs.highlightTab;
-    beforeEach(() => {
-      browser.tabs.highlight.flush();
-    });
-    afterEach(() => {
-      browser.tabs.highlight.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1425,13 +1324,6 @@ describe("browser", () => {
         assert.strictEqual(e.message,
                            "Expected Number or Array but got String.");
       });
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get object", async () => {
@@ -1449,12 +1341,6 @@ describe("browser", () => {
 
   describe("move tab", () => {
     const func = mjs.moveTab;
-    beforeEach(() => {
-      browser.tabs.move.flush();
-    });
-    afterEach(() => {
-      browser.tabs.move.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1468,13 +1354,6 @@ describe("browser", () => {
         assert.strictEqual(e.message,
                            "Expected Number or Array but got String.");
       });
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should get array", async () => {
@@ -1504,12 +1383,6 @@ describe("browser", () => {
 
   describe("reload tab", () => {
     const func = mjs.reloadTab;
-    beforeEach(() => {
-      browser.tabs.reload.flush();
-    });
-    afterEach(() => {
-      browser.tabs.reload.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1542,12 +1415,6 @@ describe("browser", () => {
 
   describe("remove tab", () => {
     const func = mjs.removeTab;
-    beforeEach(() => {
-      browser.tabs.remove.flush();
-    });
-    afterEach(() => {
-      browser.tabs.remove.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1576,12 +1443,6 @@ describe("browser", () => {
 
   describe("update tab", () => {
     const func = mjs.updateTab;
-    beforeEach(() => {
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.tabs.update.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1593,13 +1454,6 @@ describe("browser", () => {
       await func("").catch(e => {
         assert.strictEqual(e.message, "Expected Number but got String.");
       });
-    });
-
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isNull(res, "result");
-      stubApi.restore();
     });
 
     it("should throw if tab does not exist", async () => {
@@ -1633,12 +1487,6 @@ describe("browser", () => {
 
   describe("is tab", () => {
     const func = mjs.isTab;
-    beforeEach(() => {
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-    });
 
     it("should throw if no argument given", async () => {
       await func().catch(e => {
@@ -1650,13 +1498,6 @@ describe("browser", () => {
       await func("").catch(e => {
         assert.strictEqual(e.message, "Expected Number but got String.");
       });
-    });
-
-    it("should get false", async () => {
-      const stubApi = sinon.stub(browser, "tabs").returns(undefined);
-      const res = await func(1);
-      assert.isFalse(res, "result");
-      stubApi.restore();
     });
 
     it("should get result", async () => {
@@ -1680,18 +1521,13 @@ describe("browser", () => {
 
   describe("getCurrentTheme", () => {
     const func = mjs.getCurrentTheme;
-    beforeEach(() => {
-      browser.theme.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.theme.getCurrent.flush();
-    });
 
-    it("should get null", async () => {
-      const stubApi = sinon.stub(browser, "theme").returns(undefined);
-      const res = await func();
-      assert.isNull(res, "result");
-      stubApi.restore();
+    it("should not call function if permission is not granted", async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.theme.getCurrent.callCount;
+      await func("foo");
+      assert.strictEqual(browser.theme.getCurrent.callCount, i,
+                         "not called");
     });
 
     it("should get function called and get result", async () => {
@@ -1705,12 +1541,6 @@ describe("browser", () => {
 
   describe("create new window", () => {
     const func = mjs.createNewWindow;
-    beforeEach(() => {
-      browser.windows.create.flush();
-    });
-    afterEach(() => {
-      browser.windows.create.flush();
-    });
 
     it("should get function called and get result", async () => {
       browser.windows.create.withArgs(null).resolves(null);
@@ -1742,12 +1572,6 @@ describe("browser", () => {
 
   describe("get all normal windows", () => {
     const func = mjs.getAllNormalWindows;
-    beforeEach(() => {
-      browser.windows.getAll.flush();
-    });
-    afterEach(() => {
-      browser.windows.getAll.flush();
-    });
 
     it("should get function called and get result", async () => {
       browser.windows.getAll.withArgs({
@@ -1780,12 +1604,6 @@ describe("browser", () => {
 
   describe("get current window", () => {
     const func = mjs.getCurrentWindow;
-    beforeEach(() => {
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.windows.getCurrent.flush();
-    });
 
     it("should get function called and get result", async () => {
       browser.windows.getCurrent.withArgs(null).resolves(null);
@@ -1817,12 +1635,6 @@ describe("browser", () => {
 
   describe("get window", () => {
     const func = mjs.getWindow;
-    beforeEach(() => {
-      browser.windows.get.flush();
-    });
-    afterEach(() => {
-      browser.windows.get.flush();
-    });
 
     it("should throw", async () => {
       await func().catch(e => {
@@ -1854,12 +1666,6 @@ describe("browser", () => {
 
   describe("check whether incognito window exists", () => {
     const func = mjs.checkIncognitoWindowExists;
-    beforeEach(() => {
-      browser.windows.getAll.flush();
-    });
-    afterEach(() => {
-      browser.windows.getAll.flush();
-    });
 
     it("should get result", async () => {
       browser.windows.getAll.resolves([]);

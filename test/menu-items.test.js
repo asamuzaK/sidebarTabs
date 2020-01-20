@@ -23,10 +23,14 @@ import {
 
 describe("menu items", () => {
   beforeEach(() => {
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
   });
   afterEach(() => {
     delete global.browser;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {

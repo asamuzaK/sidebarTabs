@@ -30,6 +30,9 @@ describe("options-main", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -40,6 +43,7 @@ describe("options-main", () => {
     delete global.browser;
     delete global.window;
     delete global.document;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -48,12 +52,6 @@ describe("options-main", () => {
 
   describe("send message", () => {
     const func = mjs.sendMsg;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -79,12 +77,6 @@ describe("options-main", () => {
 
   describe("init extension", () => {
     const func = mjs.initExt;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -105,12 +97,6 @@ describe("options-main", () => {
 
   describe("init custom theme", () => {
     const func = mjs.initCustomTheme;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -131,12 +117,6 @@ describe("options-main", () => {
 
   describe("request custom theme", () => {
     const func = mjs.requestCustomTheme;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should not call function if no argument given", async () => {
       const i = browser.runtime.sendMessage.callCount;
@@ -180,16 +160,6 @@ describe("options-main", () => {
 
   describe("store pref", () => {
     const func = mjs.storePref;
-    beforeEach(() => {
-      browser.permissions.remove.flush();
-      browser.permissions.request.flush();
-      browser.storage.local.set.flush();
-    });
-    afterEach(() => {
-      browser.permissions.remove.flush();
-      browser.permissions.request.flush();
-      browser.storage.local.set.flush();
-    });
 
     it("should call function", async () => {
       const i = browser.storage.local.set.callCount;
@@ -429,12 +399,6 @@ describe("options-main", () => {
 
   describe("handle init custom theme click", () => {
     const func = mjs.handleInitCustomThemeClick;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should get undefined", async () => {
       browser.runtime.sendMessage.resolves(undefined);
@@ -457,12 +421,6 @@ describe("options-main", () => {
 
   describe("handle init extension click", () => {
     const func = mjs.handleInitExtClick;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-    });
 
     it("should get undefined", async () => {
       browser.runtime.sendMessage.resolves(undefined);
@@ -510,12 +468,6 @@ describe("options-main", () => {
 
   describe("handle input change", () => {
     const func = mjs.handleInputChange;
-    beforeEach(() => {
-      browser.storage.local.set.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.set.flush();
-    });
 
     it("should call function", async () => {
       const i = browser.storage.local.set.callCount;
@@ -705,12 +657,6 @@ describe("options-main", () => {
 
   describe("set html input values from storage", () => {
     const func = mjs.setValuesFromStorage;
-    beforeEach(() => {
-      browser.storage.local.get.flush();
-    });
-    afterEach(() => {
-      browser.storage.local.get.flush();
-    });
 
     it("should get empty array", async () => {
       const i = browser.storage.local.get.callCount;

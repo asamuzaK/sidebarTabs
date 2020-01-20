@@ -26,6 +26,9 @@ describe("localize", () => {
     const dom = createJsdom();
     window = dom && dom.window;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -36,6 +39,7 @@ describe("localize", () => {
     delete global.browser;
     delete global.window;
     delete global.document;
+    browser._sandbox.reset();
   });
 
   it("should get browser object", () => {
@@ -49,13 +53,11 @@ describe("localize", () => {
       for (const key of globalKeys) {
         global[key] = window[key];
       }
-      browser.i18n.getMessage.flush();
     });
     afterEach(() => {
       for (const key of globalKeys) {
         delete global[key];
       }
-      browser.i18n.getMessage.flush();
     });
 
     it("should not call function if no argument given", async () => {
@@ -126,13 +128,11 @@ describe("localize", () => {
       for (const key of globalKeys) {
         global[key] = window[key];
       }
-      browser.i18n.getMessage.flush();
     });
     afterEach(() => {
       for (const key of globalKeys) {
         delete global[key];
       }
-      browser.i18n.getMessage.flush();
     });
 
     it("should not set value", async () => {

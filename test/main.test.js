@@ -62,6 +62,9 @@ describe("main", () => {
     window = dom && dom.window;
     window.psl = psl;
     document = window && window.document;
+    browser._sandbox.reset();
+    browser.i18n.getMessage.callsFake((...args) => args.toString());
+    browser.permissions.contains.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -90,6 +93,7 @@ describe("main", () => {
     for (const key of globalKeys) {
       delete global[key];
     }
+    browser._sandbox.reset();
     mjs.sidebar.closeTabsByDoubleClick = false;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
@@ -110,16 +114,6 @@ describe("main", () => {
 
   describe("set sidebar", () => {
     const func = mjs.setSidebar;
-    beforeEach(() => {
-      browser.windows.getCurrent.flush();
-      browser.storage.local.get.flush();
-      browser.runtime.getPlatformInfo.flush();
-    });
-    afterEach(() => {
-      browser.windows.getCurrent.flush();
-      browser.storage.local.get.flush();
-      browser.runtime.getPlatformInfo.flush();
-    });
 
     it("should set value", async () => {
       const {sidebar} = mjs;
@@ -393,12 +387,6 @@ describe("main", () => {
 
   describe("set contextual identities cookieStoreIds", () => {
     const func = mjs.setContextualIds;
-    beforeEach(() => {
-      browser.contextualIdentities.query.flush();
-    });
-    afterEach(() => {
-      browser.contextualIdentities.query.flush();
-    });
 
     it("should set value", async () => {
       const {sidebar} = mjs;
@@ -505,12 +493,6 @@ describe("main", () => {
 
   describe("get last closed tab", () => {
     const func = mjs.getLastClosedTab;
-    beforeEach(() => {
-      browser.sessions.getRecentlyClosed.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getRecentlyClosed.flush();
-    });
 
     it("should call function", async () => {
       const {getRecentlyClosed} = browser.sessions;
@@ -539,12 +521,6 @@ describe("main", () => {
 
   describe("undo close tab", () => {
     const func = mjs.undoCloseTab;
-    beforeEach(() => {
-      browser.sessions.restore.flush();
-    });
-    afterEach(() => {
-      browser.sessions.restore.flush();
-    });
 
     it("should not call function if lastClosedTab is not set", async () => {
       const {restore} = browser.sessions;
@@ -674,10 +650,6 @@ describe("main", () => {
     const func = mjs.handleCreateNewTab;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.tabs.create.flush();
-    });
-    afterEach(() => {
-      browser.tabs.create.flush();
     });
 
     it("should not call function", async () => {
@@ -839,16 +811,6 @@ describe("main", () => {
     const func = mjs.handleClickedTab;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
-      browser.tabs.remove.flush();
-      browser.tabs.update.flush();
-    });
-    afterEach(() => {
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
-      browser.tabs.remove.flush();
-      browser.tabs.update.flush();
     });
 
     it("should not call function", async () => {
@@ -1638,14 +1600,6 @@ describe("main", () => {
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.contextualIdentities.get.flush();
-      browser.i18n.getMessage.flush();
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.contextualIdentities.get.flush();
-      browser.i18n.getMessage.flush();
-      browser.tabs.get.flush();
     });
 
     it("should throw", async () => {
@@ -1691,7 +1645,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.strictEqual(browser.i18n.getMessage.callCount, i, "not called");
@@ -1717,7 +1670,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       const tabItems = [
@@ -1781,7 +1733,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       const tabItems = [
@@ -1844,7 +1795,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -1875,7 +1825,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -1913,7 +1862,6 @@ describe("main", () => {
       child.dataset.tabId = "2";
       parent.appendChild(child);
       body.insertBefore(parent, newTab);
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -1952,7 +1900,6 @@ describe("main", () => {
       child.dataset.tabId = "2";
       parent.appendChild(child);
       body.insertBefore(parent, newTab);
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab, true);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -2002,7 +1949,6 @@ describe("main", () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -2014,7 +1960,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, null],
+        undefined, undefined, undefined, [undefined, undefined],
       ], "result");
     });
 
@@ -2053,7 +1999,6 @@ describe("main", () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -2106,7 +2051,6 @@ describe("main", () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
-      browser.i18n.getMessage.callsFake(arg => arg);
       browser.tabs.get.withArgs(2).resolves({
         index: 0,
       });
@@ -2121,7 +2065,7 @@ describe("main", () => {
                      "not collapsed");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, null], undefined,
+        undefined, undefined, undefined, [undefined, undefined], undefined,
       ], "result");
     });
 
@@ -2162,7 +2106,6 @@ describe("main", () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
-      browser.i18n.getMessage.callsFake(arg => arg);
       browser.tabs.get.withArgs(3).resolves({
         index: 1,
       });
@@ -2177,7 +2120,7 @@ describe("main", () => {
                      "collapse");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, null], undefined,
+        undefined, undefined, undefined, [undefined, undefined], undefined,
       ], "result");
     });
 
@@ -2219,7 +2162,6 @@ describe("main", () => {
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
-      browser.i18n.getMessage.callsFake(arg => arg);
       browser.tabs.get.withArgs(2).resolves({
         index: 0,
       });
@@ -2278,7 +2220,6 @@ describe("main", () => {
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
-      browser.i18n.getMessage.callsFake(arg => arg);
       browser.tabs.get.withArgs(2).resolves({
         index: 0,
       });
@@ -2327,7 +2268,6 @@ describe("main", () => {
       child2.dataset.tabId = "3";
       pinned.appendChild(child);
       pinned.appendChild(child2);
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -2366,7 +2306,6 @@ describe("main", () => {
       child.classList.add(TAB);
       child.dataset.tabId = "2";
       pinned.appendChild(child);
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       assert.isOk(elm, "created");
@@ -2400,7 +2339,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       const res = await func(tabsTab);
       const elm = document.querySelector("[data-tab-id=\"1\"]");
       const pinned = document.getElementById(PINNED);
@@ -2435,7 +2373,6 @@ describe("main", () => {
           muted: false,
         },
       };
-      browser.i18n.getMessage.callsFake(arg => arg);
       browser.contextualIdentities.get.withArgs("foo").resolves({
         color: "red",
         icon: "fingerprint",
@@ -2669,10 +2606,6 @@ describe("main", () => {
     const func = mjs.handleHighlightedTab;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.tabs.get.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
     });
 
     it("should throw", async () => {
@@ -2820,16 +2753,6 @@ describe("main", () => {
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-      browser.sessions.setWindowValue.flush();
-    });
-    afterEach(() => {
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-      browser.sessions.getWindowValue.flush();
-      browser.sessions.setWindowValue.flush();
     });
 
     it("should throw", async () => {
@@ -3939,14 +3862,6 @@ describe("main", () => {
       const body = document.querySelector("body");
       body.appendChild(sect);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.sessions.getWindowValue.flush();
-      browser.tabs.query.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.tabs.query.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should throw", async () => {
@@ -4300,35 +4215,6 @@ describe("main", () => {
     const func = mjs.handleClickedMenu;
     beforeEach(() => {
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.bookmarks.create.flush();
-      browser.i18n.getMessage.flush();
-      browser.sessions.getWindowValue.flush();
-      browser.sessions.setWindowValue.flush();
-      browser.sessions.restore.flush();
-      browser.tabs.get.flush();
-      browser.tabs.highlight.flush();
-      browser.tabs.move.flush();
-      browser.tabs.query.flush();
-      browser.tabs.reload.flush();
-      browser.tabs.remove.flush();
-      browser.tabs.update.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.bookmarks.create.flush();
-      browser.i18n.getMessage.flush();
-      browser.sessions.getWindowValue.flush();
-      browser.sessions.setWindowValue.flush();
-      browser.sessions.restore.flush();
-      browser.tabs.create.flush();
-      browser.tabs.get.flush();
-      browser.tabs.highlight.flush();
-      browser.tabs.move.flush();
-      browser.tabs.query.flush();
-      browser.tabs.reload.flush();
-      browser.tabs.remove.flush();
-      browser.tabs.update.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should not call function", async () => {
@@ -6203,16 +6089,6 @@ describe("main", () => {
       body.appendChild(pinned);
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.menus.update.flush();
-      browser.tabs.get.flush();
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.menus.update.flush();
-      browser.tabs.get.flush();
-      browser.tabs.highlight.flush();
-      browser.tabs.query.flush();
     });
 
     it("should not call function", async () => {
@@ -7806,18 +7682,6 @@ describe("main", () => {
 
   describe("handle runtime message", () => {
     const func = mjs.handleMsg;
-    beforeEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.sessions.setWindowValue.flush();
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.sessions.setWindowValue.flush();
-      browser.tabs.get.flush();
-      browser.windows.getCurrent.flush();
-    });
 
     it("should not call function", async () => {
       const res = await func({});
@@ -7970,14 +7834,6 @@ describe("main", () => {
 
   describe("requestSidebarStateUpdate", () => {
     const func = mjs.requestSidebarStateUpdate;
-    beforeEach(() => {
-      browser.runtime.sendMessage.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.runtime.sendMessage.flush();
-      browser.windows.getCurrent.flush();
-    });
 
     it("should not call function", async () => {
       browser.windows.getCurrent.resolves({
@@ -8392,12 +8248,6 @@ describe("main", () => {
 
   describe("restore highlighted tabs", () => {
     const func = mjs.restoreHighlightedTabs;
-    beforeEach(() => {
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
-    });
 
     it("should restore", async () => {
       const i = browser.tabs.query.callCount;
@@ -8443,12 +8293,6 @@ describe("main", () => {
       newTab.classList.add(CLASS_TAB_CONTAINER);
       body.appendChild(pinned);
       body.appendChild(newTab);
-      browser.sessions.getWindowValue.flush();
-      browser.windows.getCurrent.flush();
-    });
-    afterEach(() => {
-      browser.sessions.getWindowValue.flush();
-      browser.windows.getCurrent.flush();
     });
 
     it("should not restore if session is undefined", async () => {
@@ -10413,10 +10257,6 @@ describe("main", () => {
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
       mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-      browser.tabs.query.flush();
-    });
-    afterEach(() => {
-      browser.tabs.query.flush();
     });
 
     it("should create tab", async () => {
