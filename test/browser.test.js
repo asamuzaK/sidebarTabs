@@ -28,7 +28,7 @@ describe("browser", () => {
   describe("check if permission is granted", () => {
     const func = mjs.isPermissionGranted;
     beforeEach(() => {
-      browser.permissions.contains.callsFake(obj => {
+      browser.permissions.contains.callsFake((obj = {}) => {
         const {permissions} = obj;
         let res;
         if (Array.isArray(permissions)) {
@@ -47,6 +47,16 @@ describe("browser", () => {
 
     it("should get result", async () => {
       const res = await func();
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func("foo");
+      assert.isFalse(res, "result");
+    });
+
+    it("should get result", async () => {
+      const res = await func([]);
       assert.isFalse(res, "result");
     });
 

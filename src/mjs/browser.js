@@ -15,10 +15,7 @@ const {permissions, runtime, tabs, windows} = browser;
  * @returns {boolean} - result
  */
 export const isPermissionGranted = async perm => {
-  let bool;
-  if (isObjectNotEmpty(perm)) {
-    bool = await permissions.contains(perm);
-  }
+  const bool = await permissions.contains(perm);
   return !!bool;
 };
 
