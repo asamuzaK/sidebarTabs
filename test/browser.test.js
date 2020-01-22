@@ -1366,6 +1366,11 @@ describe("browser", () => {
       });
     });
 
+    it("should get null", async () => {
+      const res = await func(1);
+      assert.isNull(res, "res");
+    });
+
     it("should get array", async () => {
       browser.tabs.move.withArgs(1).resolves({});
       const res = await func(1);
