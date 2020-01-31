@@ -209,6 +209,18 @@
   "expandTabGroup_tooltip": {
     "message": "Expand Grouped Tabs"
   },
+  "groupSameContainerTabs": {
+    "message": "Group Same Container Tabs"
+  },
+  "groupSameContainerTabs_title": {
+    "message": "Group Same &Container Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
   "groupSameDomainTabs": {
     "message": "Group Same Domain Tabs"
   },

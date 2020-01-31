@@ -96,6 +96,7 @@ export const TAB_DUPE = "dupeTab";
 export const TAB_GROUP = "tabGroup";
 export const TAB_GROUP_COLLAPSE = "collapseTabGroup";
 export const TAB_GROUP_COLLAPSE_OTHER = "collapseOtherTabGroups";
+export const TAB_GROUP_CONTAINER = "groupSameContainerTabs";
 export const TAB_GROUP_DETACH = "detachTabFromGroup";
 export const TAB_GROUP_DETACH_TABS = "detachTabsFromGroup";
 export const TAB_GROUP_DOMAIN = "groupSameDomainTabs";

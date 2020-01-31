@@ -330,6 +330,63 @@ export const groupSelectedTabs = async windowId => {
 };
 
 /**
+ * group same container tabs
+ * @param {number} tabId - tab ID
+ * @param {number} windowId - window ID
+ * @returns {?AsyncFunction} - moveTabsInOrder()
+ */
+export const groupSameContainerTabs = async (tabId, windowId) => {
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+  }
+  const tabsTab = await getTab(tabId);
+  const {cookieStoreId} = tabsTab;
+  if (!Number.isInteger(windowId)) {
+    windowId = windows.WINDOW_ID_CURRENT;
+  }
+  const items = await queryTabs({
+    cookieStoreId, windowId,
+    pinned: false,
+  });
+  let func;
+  if (Array.isArray(items) && items.length > 1) {
+    const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+    const tabParent = tab.parentNode;
+    const containerTabs = [];
+    const arr = [];
+    let container;
+    if (tabParent.classList.contains(CLASS_TAB_GROUP)) {
+      container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+      container.appendChild(tab);
+      container.removeAttribute("hidden");
+      tabParent.parentNode.insertBefore(container,
+                                        tabParent.nextElementSibling);
+      containerTabs.push([tab, tabId]);
+    } else {
+      container = tabParent;
+    }
+    for (const item of items) {
+      const {id: itemId} = item;
+      if (itemId !== tabId) {
+        const itemTab = document.querySelector(`[data-tab-id="${itemId}"]`);
+        itemTab.dataset.group = tabId;
+        container.appendChild(itemTab);
+        containerTabs.push([itemTab, itemId]);
+      }
+    }
+    for (const [itemTab, itemId] of containerTabs) {
+      const itemIndex = getSidebarTabIndex(itemTab);
+      arr.push({
+        index: itemIndex,
+        tabId: itemId,
+      });
+    }
+    func = moveTabsInOrder(arr, windowId);
+  }
+  return func || null;
+};
+
+/**
  * group same domain tabs
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID

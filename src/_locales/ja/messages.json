@@ -209,6 +209,18 @@
   "expandTabGroup_tooltip": {
     "message": "グループのタブを展開します"
   },
+  "groupSameContainerTabs": {
+    "message": "同じコンテナーのタブをグループ化"
+  },
+  "groupSameContainerTabs_title": {
+    "message": "同じコンテナーのタブをグループ化$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
   "groupSameDomainTabs": {
     "message": "同じドメインのタブをグループ化"
   },
