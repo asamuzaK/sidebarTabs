@@ -1685,53 +1685,65 @@ export const restoreTabGroups = async () => {
   const tabList = await getSessionTabList(TAB_LIST);
   if (tabList) {
     const {recent} = tabList;
-    const containers =
-      document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-    const items = document.querySelectorAll(TAB_QUERY);
-    const l = items.length;
-    let i = 0;
-    while (i < l) {
-      // NOTE: `tabList[j]` is for backward compat. Remove it in the future.
-      const list = recent && recent[i] || tabList[i];
-      if (list) {
-        const {collapsed, containerIndex, url} = list;
+    if (recent) {
+      const listItems = Object.entries(recent);
+      const listItemIndexes = new Map();
+      for (const [index, listItem] of listItems) {
+        const {url} = listItem;
+        if (listItemIndexes.has(url)) {
+          const indexes = listItemIndexes.get(url);
+          indexes.push(index * 1);
+          listItemIndexes.set(url, indexes);
+        } else {
+          listItemIndexes.set(url, [index * 1]);
+        }
+      }
+      const items = document.querySelectorAll(TAB_QUERY);
+      const l = items.length;
+      let i = 0;
+      while (i < l) {
         const item = items[i];
         const {dataset: {tab: itemTab}} = item;
         const {pinned, url: itemUrl} = JSON.parse(itemTab);
         if (pinned) {
+          const listItem = recent[i];
+          const {collapsed} = listItem;
           const container = document.getElementById(PINNED);
-          const containerChildTabs = container.children;
-          const containerChildTab = containerChildTabs[i];
-          item !== containerChildTab && container.appendChild(item);
+          container.appendChild(item);
           if (collapsed) {
             container.classList.add(CLASS_TAB_COLLAPSED);
           } else {
             container.classList.remove(CLASS_TAB_COLLAPSED);
           }
-        } else {
-          const container = containers[containerIndex];
-          if (item.parentNode !== container) {
-            const prevList = recent[i - 1];
-            const {url: prevUrl} = prevList;
-            const prevItem = items[i - 1];
-            const {dataset: {tab: prevItemTab}} = prevItem;
-            const {url: prevItemUrl} = JSON.parse(prevItemTab);
-            if (itemUrl === url || prevItemUrl === prevUrl) {
+        } else if (i && listItemIndexes.has(itemUrl)) {
+          const prevItem = items[i - 1];
+          const {dataset: {tab: prevItemTab}} = prevItem;
+          const {url: prevItemUrl} = JSON.parse(prevItemTab);
+          const indexes = listItemIndexes.get(itemUrl);
+          for (const index of indexes) {
+            const listItem = recent[index];
+            const prevListItem = index > 0 && recent[index - 1] || {};
+            const {
+              collapsed, containerIndex: listContainerIndex,
+            } = listItem;
+            const {
+              containerIndex: prevListContainerIndex, url: prevListUrl,
+            } = prevListItem;
+            if (listContainerIndex === prevListContainerIndex &&
+                prevItemUrl === prevListUrl) {
+              const container = prevItem.parentNode;
               container.appendChild(item);
-            } else {
+              if (collapsed) {
+                container.classList.add(CLASS_TAB_COLLAPSED);
+              } else {
+                container.classList.remove(CLASS_TAB_COLLAPSED);
+              }
               break;
             }
           }
-          if (collapsed) {
-            container.classList.add(CLASS_TAB_COLLAPSED);
-          } else {
-            container.classList.remove(CLASS_TAB_COLLAPSED);
-          }
         }
-      } else {
-        break;
+        i++;
       }
-      i++;
     }
   }
 };

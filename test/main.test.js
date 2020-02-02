@@ -8382,11 +8382,295 @@ describe("main", () => {
     });
 
     it("should not restore if session is undefined", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
       const j = browser.windows.getCurrent.callCount;
-      browser.sessions.getWindowValue.withArgs(TAB_LIST).resolves(undefined);
+      const sect1 = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const sect3 = document.createElement("section");
+      const sect4 = document.createElement("section");
+      const sect5 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const elm5 = document.createElement("div");
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      sect1.id = "sect1";
+      sect1.classList.add(CLASS_TAB_CONTAINER);
+      sect2.id = "sect2";
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      sect3.id = "sect3";
+      sect3.classList.add(CLASS_TAB_CONTAINER);
+      sect4.id = "sect4";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      sect5.id = "sect5";
+      sect4.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        id: 1,
+        pinned: false,
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        id: 2,
+        pinned: false,
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        id: 3,
+        pinned: false,
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        id: 4,
+        pinned: false,
+        url: "https://example.com/baz",
+      });
+      elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
+      elm5.dataset.tab = JSON.stringify({
+        id: 5,
+        pinned: false,
+        url: "https://example.com/qux",
+      });
+      sect1.appendChild(elm);
+      sect2.appendChild(elm2);
+      sect3.appendChild(elm3);
+      sect4.appendChild(elm4);
+      sect5.appendChild(elm5);
+      body.insertBefore(sect1, newTab);
+      body.insertBefore(sect2, newTab);
+      body.insertBefore(sect3, newTab);
+      body.insertBefore(sect4, newTab);
+      body.insertBefore(sect5, newTab);
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
+        .resolves(undefined);
       browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
+        id: winId,
+      });
+      await func();
+      const items = document.querySelectorAll(
+        `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`,
+      );
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called windows get current");
+      for (const item of items) {
+        assert.strictEqual(item.childElementCount, 1, "child");
+      }
+    });
+
+    it("should not restore if recent tab list is undefined", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const sect1 = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const sect3 = document.createElement("section");
+      const sect4 = document.createElement("section");
+      const sect5 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const elm5 = document.createElement("div");
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      sect1.id = "sect1";
+      sect1.classList.add(CLASS_TAB_CONTAINER);
+      sect2.id = "sect2";
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      sect3.id = "sect3";
+      sect3.classList.add(CLASS_TAB_CONTAINER);
+      sect4.id = "sect4";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      sect5.id = "sect5";
+      sect4.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        id: 1,
+        pinned: false,
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        id: 2,
+        pinned: false,
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        id: 3,
+        pinned: false,
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        id: 4,
+        pinned: false,
+        url: "https://example.com/baz",
+      });
+      elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
+      elm5.dataset.tab = JSON.stringify({
+        id: 5,
+        pinned: false,
+        url: "https://example.com/qux",
+      });
+      sect1.appendChild(elm);
+      sect2.appendChild(elm2);
+      sect3.appendChild(elm3);
+      sect4.appendChild(elm4);
+      sect5.appendChild(elm5);
+      body.insertBefore(sect1, newTab);
+      body.insertBefore(sect2, newTab);
+      body.insertBefore(sect3, newTab);
+      body.insertBefore(sect4, newTab);
+      body.insertBefore(sect5, newTab);
+      browser.sessions.getWindowValue
+        .withArgs(winId, TAB_LIST).resolves(JSON.stringify({}));
+      browser.windows.getCurrent.resolves({
+        id: winId,
+      });
+      await func();
+      const items = document.querySelectorAll(
+        `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`,
+      );
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called windows get current");
+      for (const item of items) {
+        assert.strictEqual(item.childElementCount, 1, "child");
+      }
+    });
+
+    it("should not restore if not grouped", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const sect1 = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const sect3 = document.createElement("section");
+      const sect4 = document.createElement("section");
+      const sect5 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const elm5 = document.createElement("div");
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      sect1.id = "sect1";
+      sect1.classList.add(CLASS_TAB_CONTAINER);
+      sect2.id = "sect2";
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      sect3.id = "sect3";
+      sect3.classList.add(CLASS_TAB_CONTAINER);
+      sect4.id = "sect4";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      sect5.id = "sect5";
+      sect4.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        id: 1,
+        pinned: false,
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        id: 2,
+        pinned: false,
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        id: 3,
+        pinned: false,
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        id: 4,
+        pinned: false,
+        url: "https://example.com/baz",
+      });
+      elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
+      elm5.dataset.tab = JSON.stringify({
+        id: 5,
+        pinned: false,
+        url: "https://example.com/qux",
+      });
+      sect1.appendChild(elm);
+      sect2.appendChild(elm2);
+      sect3.appendChild(elm3);
+      sect4.appendChild(elm4);
+      sect5.appendChild(elm5);
+      body.insertBefore(sect1, newTab);
+      body.insertBefore(sect2, newTab);
+      body.insertBefore(sect3, newTab);
+      body.insertBefore(sect4, newTab);
+      body.insertBefore(sect5, newTab);
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            0: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com",
+            },
+            1: {
+              collapsed: false,
+              containerIndex: 1,
+              url: "https://example.com/foo",
+            },
+            2: {
+              collapsed: false,
+              containerIndex: 2,
+              url: "https://example.com/bar",
+            },
+            3: {
+              collapsed: false,
+              containerIndex: 3,
+              url: "https://example.com/baz",
+            },
+            4: {
+              collapsed: false,
+              containerIndex: 4,
+              url: "https://example.com/qux",
+            },
+          },
+        }));
+      browser.windows.getCurrent.resolves({
+        id: winId,
       });
       await func();
       const items =
@@ -8402,8 +8686,10 @@ describe("main", () => {
       }
     });
 
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
+    it("should restore pinned tabs", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
       const j = browser.windows.getCurrent.callCount;
       const pinned = document.getElementById(PINNED);
       const sect1 = document.createElement("section");
@@ -8431,364 +8717,35 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 4,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 5,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 1, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 1, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 1, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
+        id: 1,
         pinned: true,
         url: "https://example.com",
       });
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 0,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 4,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 1, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 1, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 1, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: true,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      pinned.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 0,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 4,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 1, "child pinned");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 1, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 1, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: true,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
+        id: 2,
         pinned: true,
         url: "https://example.com/foo",
       });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
-        pinned: false,
+        id: 3,
+        pinned: true,
         url: "https://example.com/bar",
       });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = "4";
       elm4.dataset.tab = JSON.stringify({
+        id: 4,
         pinned: false,
         url: "https://example.com/baz",
       });
       elm5.classList.add(TAB);
       elm5.dataset.tabId = "5";
       elm5.dataset.tab = JSON.stringify({
+        id: 5,
         pinned: false,
         url: "https://example.com/qux",
       });
@@ -8802,55 +8759,60 @@ describe("main", () => {
       body.insertBefore(sect3, newTab);
       body.insertBefore(sect4, newTab);
       body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
         .resolves(JSON.stringify({
-          recent: [
-            {
+          recent: {
+            0: {
               collapsed: false,
               containerIndex: 0,
               url: "https://example.com",
             },
-            {
+            1: {
               collapsed: false,
               containerIndex: 0,
               url: "https://example.com/foo",
             },
-            {
+            2: {
               collapsed: false,
-              containerIndex: 1,
+              containerIndex: 0,
               url: "https://example.com/bar",
             },
-            {
+            3: {
               collapsed: false,
-              containerIndex: 2,
+              containerIndex: 1,
               url: "https://example.com/baz",
             },
-            {
+            4: {
               collapsed: false,
-              containerIndex: 3,
+              containerIndex: 2,
               url: "https://example.com/qux",
             },
-          ],
+          },
         }));
       browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
+        id: winId,
       });
       await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 2, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 1, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
+      assert.strictEqual(pinned.childElementCount, 3, "pinned");
+      assert.isFalse(pinned.classList.contains(CLASS_TAB_COLLAPSED), "false");
+      assert.strictEqual(sect1.childElementCount, 0, "empty section");
+      assert.strictEqual(sect2.childElementCount, 0, "empty section");
+      assert.strictEqual(sect3.childElementCount, 0, "empty section");
+      assert.strictEqual(sect4.childElementCount, 1, "section");
+      assert.strictEqual(sect5.childElementCount, 1, "section");
     });
 
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
+    it("should restore pinned tabs", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
       const j = browser.windows.getCurrent.callCount;
       const pinned = document.getElementById(PINNED);
       const sect1 = document.createElement("section");
@@ -8878,144 +8840,35 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
+        id: 1,
         pinned: true,
         url: "https://example.com",
       });
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
+        id: 2,
         pinned: true,
         url: "https://example.com/foo",
       });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: true,
-              containerIndex: 0,
-              url: "https://example.com",
-            },
-            {
-              collapsed: true,
-              containerIndex: 0,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 2, "child pinned");
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect1.childElementCount, 1, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
+        id: 3,
         pinned: true,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: true,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
         url: "https://example.com/bar",
       });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = "4";
       elm4.dataset.tab = JSON.stringify({
+        id: 4,
         pinned: false,
         url: "https://example.com/baz",
       });
       elm5.classList.add(TAB);
       elm5.dataset.tabId = "5";
       elm5.dataset.tab = JSON.stringify({
+        id: 5,
         pinned: false,
         url: "https://example.com/qux",
       });
@@ -9029,58 +8882,61 @@ describe("main", () => {
       body.insertBefore(sect3, newTab);
       body.insertBefore(sect4, newTab);
       body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
         .resolves(JSON.stringify({
-          recent: [
-            {
+          recent: {
+            0: {
               collapsed: true,
               containerIndex: 0,
               url: "https://example.com",
             },
-            {
+            1: {
               collapsed: true,
               containerIndex: 0,
               url: "https://example.com/foo",
             },
-            {
-              collapsed: false,
-              containerIndex: 1,
+            2: {
+              collapsed: true,
+              containerIndex: 0,
               url: "https://example.com/bar",
             },
-            {
+            3: {
               collapsed: false,
               containerIndex: 1,
               url: "https://example.com/baz",
             },
-            {
+            4: {
               collapsed: false,
               containerIndex: 2,
               url: "https://example.com/qux",
             },
-          ],
+          },
         }));
       browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
+        id: winId,
       });
       await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 2, "child pinned");
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 0, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
+      assert.strictEqual(pinned.childElementCount, 3, "pinned");
+      assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect1.childElementCount, 0, "empty section");
+      assert.strictEqual(sect2.childElementCount, 0, "empty section");
+      assert.strictEqual(sect3.childElementCount, 0, "empty section");
+      assert.strictEqual(sect4.childElementCount, 1, "section");
+      assert.strictEqual(sect5.childElementCount, 1, "section");
     });
 
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
+    it("should restore group", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
       const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
       const sect1 = document.createElement("section");
       const sect2 = document.createElement("section");
       const sect3 = document.createElement("section");
@@ -9106,32 +8962,37 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
-        pinned: true,
+        id: 1,
+        pinned: false,
         url: "https://example.com",
       });
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
-        pinned: true,
+        id: 2,
+        pinned: false,
         url: "https://example.com/foo",
       });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
+        id: 3,
         pinned: false,
         url: "https://example.com/bar",
       });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = "4";
       elm4.dataset.tab = JSON.stringify({
+        id: 4,
         pinned: false,
         url: "https://example.com/baz",
       });
       elm5.classList.add(TAB);
       elm5.dataset.tabId = "5";
       elm5.dataset.tab = JSON.stringify({
+        id: 5,
         pinned: false,
-        url: "https://example.com/qux",
+        url: "https://example.com/bar",
       });
       sect1.appendChild(elm);
       sect2.appendChild(elm2);
@@ -9143,59 +9004,61 @@ describe("main", () => {
       body.insertBefore(sect3, newTab);
       body.insertBefore(sect4, newTab);
       body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
         .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: true,
+          recent: {
+            0: {
+              collapsed: false,
               containerIndex: 0,
               url: "https://example.com",
             },
-            {
-              collapsed: true,
+            1: {
+              collapsed: false,
               containerIndex: 0,
               url: "https://example.com/foo",
             },
-            {
-              collapsed: true,
-              containerIndex: 1,
+            2: {
+              collapsed: false,
+              containerIndex: 0,
               url: "https://example.com/bar",
             },
-            {
+            3: {
               collapsed: true,
               containerIndex: 1,
               url: "https://example.com/baz",
             },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/qux",
+            4: {
+              collapsed: true,
+              containerIndex: 1,
+              url: "https://example.com/bar",
             },
-          ],
+          },
         }));
       browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
+        id: winId,
       });
       await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 2, "child pinned");
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.isTrue(sect1.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 0, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
+      assert.strictEqual(sect1.childElementCount, 3, "section");
+      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect2.childElementCount, 0, "empty section");
+      assert.strictEqual(sect3.childElementCount, 0, "empty section");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect5.childElementCount, 0, "empty section");
     });
 
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
+    it("should restore group, case: tab added", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
       const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
       const sect1 = document.createElement("section");
       const sect2 = document.createElement("section");
       const sect3 = document.createElement("section");
@@ -9221,32 +9084,37 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
-        pinned: true,
+        id: 1,
+        pinned: false,
         url: "https://example.com",
       });
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
-        pinned: true,
+        id: 2,
+        pinned: false,
         url: "https://example.com/foo",
       });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
+        id: 3,
         pinned: false,
         url: "https://example.com/bar",
       });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = "4";
       elm4.dataset.tab = JSON.stringify({
+        id: 4,
         pinned: false,
         url: "https://example.com/baz",
       });
       elm5.classList.add(TAB);
       elm5.dataset.tabId = "5";
       elm5.dataset.tab = JSON.stringify({
+        id: 5,
         pinned: false,
-        url: "https://example.com/qux",
+        url: "https://example.com/bar",
       });
       sect1.appendChild(elm);
       sect2.appendChild(elm2);
@@ -9258,733 +9126,164 @@ describe("main", () => {
       body.insertBefore(sect3, newTab);
       body.insertBefore(sect4, newTab);
       body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
         .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: true,
+          recent: {
+            0: {
+              collapsed: false,
               containerIndex: 0,
               url: "https://example.com",
             },
-            {
-              collapsed: true,
+            1: {
+              collapsed: false,
               containerIndex: 0,
               url: "https://example.com/foo",
             },
-            {
-              collapsed: true,
-              containerIndex: 1,
-              url: "https://example.com/bar",
-            },
-            {
+            2: {
               collapsed: true,
               containerIndex: 1,
               url: "https://example.com/baz",
             },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 2, "child pinned");
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.isTrue(sect1.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect2.childElementCount, 0, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 0, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 1, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/quux",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 2, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/quux",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 2, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/quux",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 2, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/quux",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 3, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 0, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/quux",
-            },
-            {
-              collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/foo",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/bar",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
-            },
-          ],
-        }));
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-      });
-      await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-                         "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 2, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
-    });
-
-    it("should restore", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
-      const sect1 = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const sect3 = document.createElement("section");
-      const sect4 = document.createElement("section");
-      const sect5 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const elm5 = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      sect1.id = "sect1";
-      sect1.classList.add(CLASS_TAB_CONTAINER);
-      sect2.id = "sect2";
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect3.id = "sect3";
-      sect3.classList.add(CLASS_TAB_CONTAINER);
-      sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
-      sect4.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      elm.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com",
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "2";
-      elm2.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/foo",
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      elm3.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/bar",
-      });
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "4";
-      elm4.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/baz",
-      });
-      elm5.classList.add(TAB);
-      elm5.dataset.tabId = "5";
-      elm5.dataset.tab = JSON.stringify({
-        pinned: false,
-        url: "https://example.com/qux",
-      });
-      sect1.appendChild(elm);
-      sect2.appendChild(elm2);
-      sect3.appendChild(elm3);
-      sect4.appendChild(elm4);
-      sect5.appendChild(elm5);
-      body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
-      body.insertBefore(sect3, newTab);
-      body.insertBefore(sect4, newTab);
-      body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
-        .resolves(JSON.stringify({
-          recent: [
-            {
+            3: {
               collapsed: true,
               containerIndex: 1,
-              url: "https://example.com",
-            },
-            {
-              collapsed: true,
-              containerIndex: 1,
-              url: "https://example.com/quux",
-            },
-            {
-              collapsed: false,
-              containerIndex: 2,
               url: "https://example.com/bar",
             },
-            {
-              collapsed: false,
-              containerIndex: 2,
-              url: "https://example.com/baz",
-            },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
-            },
-          ],
+          },
         }));
       browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
+        id: winId,
       });
       await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 2, "child sect 1");
-      assert.isTrue(sect1.classList.contains(CLASS_TAB_COLLAPSED));
-      assert.strictEqual(sect2.childElementCount, 2, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 0, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 0, "child sect 5");
+      assert.strictEqual(sect1.childElementCount, 2, "section");
+      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect2.childElementCount, 0, "empty section");
+      assert.strictEqual(sect3.childElementCount, 1, "empty section");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect5.childElementCount, 0, "empty section");
     });
 
-    it("should break", async () => {
-      const i = browser.sessions.getWindowValue.callCount;
+    it("should restore group, case: tab removed", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
       const j = browser.windows.getCurrent.callCount;
-      const pinned = document.getElementById(PINNED);
+      const sect1 = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const sect4 = document.createElement("section");
+      const sect5 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const elm5 = document.createElement("div");
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      sect1.id = "sect1";
+      sect1.classList.add(CLASS_TAB_CONTAINER);
+      sect2.id = "sect2";
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      sect4.id = "sect4";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      sect5.id = "sect5";
+      sect4.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        id: 1,
+        pinned: false,
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        id: 2,
+        pinned: false,
+        url: "https://example.com/foo",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        id: 4,
+        pinned: false,
+        url: "https://example.com/baz",
+      });
+      elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
+      elm5.dataset.tab = JSON.stringify({
+        id: 5,
+        pinned: false,
+        url: "https://example.com/bar",
+      });
+      sect1.appendChild(elm);
+      sect2.appendChild(elm2);
+      sect4.appendChild(elm4);
+      sect5.appendChild(elm5);
+      body.insertBefore(sect1, newTab);
+      body.insertBefore(sect2, newTab);
+      body.insertBefore(sect4, newTab);
+      body.insertBefore(sect5, newTab);
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            0: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com",
+            },
+            1: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com/foo",
+            },
+            2: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com/bar",
+            },
+            3: {
+              collapsed: true,
+              containerIndex: 1,
+              url: "https://example.com/baz",
+            },
+            4: {
+              collapsed: true,
+              containerIndex: 1,
+              url: "https://example.com/bar",
+            },
+          },
+        }));
+      browser.windows.getCurrent.resolves({
+        id: winId,
+      });
+      await func();
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called windows get current");
+      assert.strictEqual(sect1.childElementCount, 2, "section");
+      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect2.childElementCount, 0, "empty section");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect5.childElementCount, 0, "empty section");
+    });
+
+    it("should restore group, case: tab moved", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
+      const j = browser.windows.getCurrent.callCount;
       const sect1 = document.createElement("section");
       const sect2 = document.createElement("section");
       const sect3 = document.createElement("section");
@@ -10010,32 +9309,37 @@ describe("main", () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
+        id: 1,
         pinned: false,
         url: "https://example.com",
       });
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "2";
       elm2.dataset.tab = JSON.stringify({
+        id: 2,
         pinned: false,
         url: "https://example.com/foo",
       });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = "3";
       elm3.dataset.tab = JSON.stringify({
+        id: 3,
         pinned: false,
         url: "https://example.com/bar",
       });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = "4";
       elm4.dataset.tab = JSON.stringify({
+        id: 4,
         pinned: false,
         url: "https://example.com/baz",
       });
       elm5.classList.add(TAB);
       elm5.dataset.tabId = "5";
       elm5.dataset.tab = JSON.stringify({
+        id: 5,
         pinned: false,
-        url: "https://example.com/qux",
+        url: "https://example.com/bar",
       });
       sect1.appendChild(elm);
       sect2.appendChild(elm2);
@@ -10043,55 +9347,179 @@ describe("main", () => {
       sect4.appendChild(elm4);
       sect5.appendChild(elm5);
       body.insertBefore(sect1, newTab);
-      body.insertBefore(sect2, newTab);
       body.insertBefore(sect3, newTab);
       body.insertBefore(sect4, newTab);
       body.insertBefore(sect5, newTab);
-      browser.sessions.getWindowValue
-        .withArgs(browser.windows.WINDOW_ID_CURRENT, TAB_LIST)
+      body.insertBefore(sect2, newTab);
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
         .resolves(JSON.stringify({
-          recent: [
-            {
+          recent: {
+            0: {
               collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/quux",
+              containerIndex: 0,
+              url: "https://example.com",
             },
-            {
+            1: {
               collapsed: false,
-              containerIndex: 1,
-              url: "https://example.com/corge",
+              containerIndex: 0,
+              url: "https://example.com/foo",
             },
-            {
+            2: {
               collapsed: false,
-              containerIndex: 2,
+              containerIndex: 0,
               url: "https://example.com/bar",
             },
-            {
-              collapsed: false,
-              containerIndex: 2,
+            3: {
+              collapsed: true,
+              containerIndex: 1,
               url: "https://example.com/baz",
             },
-            {
-              collapsed: false,
-              containerIndex: 3,
-              url: "https://example.com/qux",
+            4: {
+              collapsed: true,
+              containerIndex: 1,
+              url: "https://example.com/bar",
             },
-          ],
+          },
         }));
       browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
+        id: winId,
       });
       await func();
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, i + 1,
-                         "called sessions get");
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 0, "child pinned");
-      assert.strictEqual(sect1.childElementCount, 1, "child sect 1");
-      assert.strictEqual(sect2.childElementCount, 1, "child sect 2");
-      assert.strictEqual(sect3.childElementCount, 1, "child sect 3");
-      assert.strictEqual(sect4.childElementCount, 1, "child sect 4");
-      assert.strictEqual(sect5.childElementCount, 1, "child sect 5");
+      assert.strictEqual(sect1.childElementCount, 1, "section");
+      assert.strictEqual(sect3.childElementCount, 1, "section");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect5.childElementCount, 0, "empty section");
+      assert.strictEqual(sect2.childElementCount, 1, "section");
+    });
+
+    it("should restore group, case: grouped tabs moved ", async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const sect1 = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const sect3 = document.createElement("section");
+      const sect4 = document.createElement("section");
+      const sect5 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const elm4 = document.createElement("div");
+      const elm5 = document.createElement("div");
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      sect1.id = "sect1";
+      sect1.classList.add(CLASS_TAB_CONTAINER);
+      sect2.id = "sect2";
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      sect3.id = "sect3";
+      sect3.classList.add(CLASS_TAB_CONTAINER);
+      sect4.id = "sect4";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      sect5.id = "sect5";
+      sect4.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        id: 1,
+        pinned: false,
+        url: "https://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        id: 2,
+        pinned: false,
+        url: "https://example.com/foo",
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        id: 3,
+        pinned: false,
+        url: "https://example.com/bar",
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = "4";
+      elm4.dataset.tab = JSON.stringify({
+        id: 4,
+        pinned: false,
+        url: "https://example.com/baz",
+      });
+      elm5.classList.add(TAB);
+      elm5.dataset.tabId = "5";
+      elm5.dataset.tab = JSON.stringify({
+        id: 5,
+        pinned: false,
+        url: "https://example.com/bar",
+      });
+      sect1.appendChild(elm);
+      sect2.appendChild(elm2);
+      sect3.appendChild(elm3);
+      sect4.appendChild(elm4);
+      sect5.appendChild(elm5);
+      body.insertBefore(sect4, newTab);
+      body.insertBefore(sect5, newTab);
+      body.insertBefore(sect1, newTab);
+      body.insertBefore(sect2, newTab);
+      body.insertBefore(sect3, newTab);
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            0: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com",
+            },
+            1: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com/foo",
+            },
+            2: {
+              collapsed: false,
+              containerIndex: 0,
+              url: "https://example.com/bar",
+            },
+            3: {
+              collapsed: true,
+              containerIndex: 1,
+              url: "https://example.com/baz",
+            },
+            4: {
+              collapsed: true,
+              containerIndex: 1,
+              url: "https://example.com/bar",
+            },
+          },
+        }));
+      browser.windows.getCurrent.resolves({
+        id: winId,
+      });
+      await func();
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        "called sessions get",
+      );
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+                         "called windows get current");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect5.childElementCount, 0, "empty section");
+      assert.strictEqual(sect1.childElementCount, 3, "section");
+      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(sect2.childElementCount, 0, "empty section");
+      assert.strictEqual(sect3.childElementCount, 0, "empty section");
     });
   });
 
