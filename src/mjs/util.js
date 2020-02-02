@@ -249,7 +249,7 @@ export const setSessionTabList = async () => {
       i++;
     }
     if (isObjectNotEmpty(prevList) && prevList.hasOwnProperty("recent")) {
-      tabList.prev = prevList.recent;
+      tabList.prev = Object.assign({}, prevList.recent);
     }
     await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
   }

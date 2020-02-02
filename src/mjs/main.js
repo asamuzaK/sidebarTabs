@@ -1730,7 +1730,7 @@ export const restoreTabGroups = async () => {
               containerIndex: prevListContainerIndex, url: prevListUrl,
             } = prevListItem;
             if (listContainerIndex === prevListContainerIndex &&
-                prevItemUrl === prevListUrl) {
+                (index === i || prevItemUrl === prevListUrl)) {
               const container = prevItem.parentNode;
               container.appendChild(item);
               if (collapsed) {
