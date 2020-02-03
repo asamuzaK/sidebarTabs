@@ -1719,6 +1719,7 @@ export const restoreTabGroups = async () => {
           const prevItem = items[i - 1];
           const {dataset: {tab: prevItemTab}} = prevItem;
           const {url: prevItemUrl} = JSON.parse(prevItemTab);
+          const container = prevItem.parentNode;
           const indexes = listItemIndexes.get(itemUrl);
           for (const index of indexes) {
             const listItem = recent[index];
@@ -1731,7 +1732,6 @@ export const restoreTabGroups = async () => {
             } = prevListItem;
             if (listContainerIndex === prevListContainerIndex &&
                 (index === i || prevItemUrl === prevListUrl)) {
-              const container = prevItem.parentNode;
               container.appendChild(item);
               if (collapsed) {
                 container.classList.add(CLASS_TAB_COLLAPSED);
