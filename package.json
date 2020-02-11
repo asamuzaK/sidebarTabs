@@ -34,7 +34,7 @@
     "nyc": "^15.0.0",
     "psl": "^1.7.0",
     "sinon": "^8.1.1",
-    "webext-schema": "^1.2.0"
+    "webext-schema": "^1.2.2"
   },
   "version": "2.0.1"
 }
