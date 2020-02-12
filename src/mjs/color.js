@@ -227,77 +227,75 @@ export const parseHsl = async value => {
   }
   const arr = [];
   const [, val] = value.match(reg);
-  if (val) {
-    let [h, s, l, a] = val.replace(/[,/]/g, " ").split(/\s+/);
-    h = await convertAngleToDeg(h);
-    if (s.startsWith(".")) {
-      s = `0${s}`;
+  let [h, s, l, a] = val.replace(/[,/]/g, " ").split(/\s+/);
+  h = await convertAngleToDeg(h);
+  if (s.startsWith(".")) {
+    s = `0${s}`;
+  }
+  s = Math.min(PCT_MAX, Math.max(parseFloat(s), 0));
+  if (l.startsWith(".")) {
+    l = `0${l}`;
+  }
+  l = Math.min(PCT_MAX, Math.max(parseFloat(l), 0));
+  if (isString(a)) {
+    if (a.startsWith(".")) {
+      a = `0${a}`;
     }
-    s = Math.min(PCT_MAX, Math.max(parseFloat(s), 0));
-    if (l.startsWith(".")) {
-      l = `0${l}`;
-    }
-    l = Math.min(PCT_MAX, Math.max(parseFloat(l), 0));
-    if (isString(a)) {
-      if (a.startsWith(".")) {
-        a = `0${a}`;
-      }
-      if (a.endsWith("%")) {
-        a = parseFloat(a) / PCT_MAX;
-      } else {
-        a = parseFloat(a);
-      }
+    if (a.endsWith("%")) {
+      a = parseFloat(a) / PCT_MAX;
     } else {
-      a = 1;
+      a = parseFloat(a);
     }
-    if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(s)) ||
-          Number.isNaN(Number(l)) || Number.isNaN(Number(a)))) {
-      let max, min, r, g, b;
-      if (l < PCT_MAX / 2) {
-        max = NUM_MAX / PCT_MAX * (l + l * (s / PCT_MAX));
-        min = NUM_MAX / PCT_MAX * (l - l * (s / PCT_MAX));
-      } else {
-        max = NUM_MAX / PCT_MAX * (l + (PCT_MAX - l) * (s / PCT_MAX));
-        min = NUM_MAX / PCT_MAX * (l - (PCT_MAX - l) * (s / PCT_MAX));
-      }
-      // < 60
-      if (h >= 0 && h < INTERVAL) {
-        r = max;
-        g = h / INTERVAL * (max - min) + min;
-        b = min;
-      // < 120
-      } else if (h < 2 * INTERVAL) {
-        r = (2 * INTERVAL - h) / INTERVAL * (max - min) + min;
-        g = max;
-        b = min;
-      // < 180
-      } else if (h < DEG / 2) {
-        r = min;
-        g = max;
-        b = (h - 2 * INTERVAL) / INTERVAL * (max - min) + min;
-      // < 240
-      } else if (h < DEG / 2 + INTERVAL) {
-        r = min;
-        g = (DEG / 2 + INTERVAL - h) / INTERVAL * (max - min) + min;
-        b = max;
-      // < 300
-      } else if (h < DEG - INTERVAL) {
-        r = (h - INTERVAL - DEG / 2) / INTERVAL * (max - min) + min;
-        g = min;
-        b = max;
-      // < 360
-      } else if (h < DEG) {
-        r = max;
-        g = min;
-        b = (DEG - h) / INTERVAL * (max - min) + min;
-      }
-      arr.push(
-        Math.min(NUM_MAX, Math.max(r, 0)),
-        Math.min(NUM_MAX, Math.max(g, 0)),
-        Math.min(NUM_MAX, Math.max(b, 0)),
-        Math.min(1, Math.max(a, 0)),
-      );
+  } else {
+    a = 1;
+  }
+  if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(s)) ||
+        Number.isNaN(Number(l)) || Number.isNaN(Number(a)))) {
+    let max, min, r, g, b;
+    if (l < PCT_MAX / 2) {
+      max = NUM_MAX / PCT_MAX * (l + l * (s / PCT_MAX));
+      min = NUM_MAX / PCT_MAX * (l - l * (s / PCT_MAX));
+    } else {
+      max = NUM_MAX / PCT_MAX * (l + (PCT_MAX - l) * (s / PCT_MAX));
+      min = NUM_MAX / PCT_MAX * (l - (PCT_MAX - l) * (s / PCT_MAX));
     }
+    // < 60
+    if (h >= 0 && h < INTERVAL) {
+      r = max;
+      g = h / INTERVAL * (max - min) + min;
+      b = min;
+    // < 120
+    } else if (h < 2 * INTERVAL) {
+      r = (2 * INTERVAL - h) / INTERVAL * (max - min) + min;
+      g = max;
+      b = min;
+    // < 180
+    } else if (h < DEG / 2) {
+      r = min;
+      g = max;
+      b = (h - 2 * INTERVAL) / INTERVAL * (max - min) + min;
+    // < 240
+    } else if (h < DEG / 2 + INTERVAL) {
+      r = min;
+      g = (DEG / 2 + INTERVAL - h) / INTERVAL * (max - min) + min;
+      b = max;
+    // < 300
+    } else if (h < DEG - INTERVAL) {
+      r = (h - INTERVAL - DEG / 2) / INTERVAL * (max - min) + min;
+      g = min;
+      b = max;
+    // < 360
+    } else if (h < DEG) {
+      r = max;
+      g = min;
+      b = (DEG - h) / INTERVAL * (max - min) + min;
+    }
+    arr.push(
+      Math.min(NUM_MAX, Math.max(r, 0)),
+      Math.min(NUM_MAX, Math.max(g, 0)),
+      Math.min(NUM_MAX, Math.max(b, 0)),
+      Math.min(1, Math.max(a, 0)),
+    );
   }
   return arr;
 };
@@ -317,51 +315,49 @@ export const parseRgb = async value => {
   }
   const arr = [];
   const [, val] = value.match(reg);
-  if (val) {
-    let [r, g, b, a] = val.replace(/[,/]/g, " ").split(/\s+/);
-    if (r.startsWith(".")) {
-      r = `0${r}`;
-    }
-    if (r.endsWith("%")) {
-      r = parseFloat(r) * NUM_MAX / PCT_MAX;
-    } else {
-      r = parseFloat(r);
-    }
-    if (g.startsWith(".")) {
-      g = `0${g}`;
-    }
-    if (g.endsWith("%")) {
-      g = parseFloat(g) * NUM_MAX / PCT_MAX;
-    } else {
-      g = parseFloat(g);
-    }
-    if (b.startsWith(".")) {
-      b = `0${b}`;
-    }
-    if (b.endsWith("%")) {
-      b = parseFloat(b) * NUM_MAX / PCT_MAX;
-    } else {
-      b = parseFloat(b);
-    }
-    if (isString(a)) {
-      if (a.startsWith(".")) {
-        a = `0${a}`;
-      }
-      if (a.endsWith("%")) {
-        a = parseFloat(a) / PCT_MAX;
-      } else {
-        a = parseFloat(a);
-      }
-    } else {
-      a = 1;
-    }
-    arr.push(
-      Math.min(NUM_MAX, Math.max(r, 0)),
-      Math.min(NUM_MAX, Math.max(g, 0)),
-      Math.min(NUM_MAX, Math.max(b, 0)),
-      Math.min(1, Math.max(a, 0)),
-    );
+  let [r, g, b, a] = val.replace(/[,/]/g, " ").split(/\s+/);
+  if (r.startsWith(".")) {
+    r = `0${r}`;
   }
+  if (r.endsWith("%")) {
+    r = parseFloat(r) * NUM_MAX / PCT_MAX;
+  } else {
+    r = parseFloat(r);
+  }
+  if (g.startsWith(".")) {
+    g = `0${g}`;
+  }
+  if (g.endsWith("%")) {
+    g = parseFloat(g) * NUM_MAX / PCT_MAX;
+  } else {
+    g = parseFloat(g);
+  }
+  if (b.startsWith(".")) {
+    b = `0${b}`;
+  }
+  if (b.endsWith("%")) {
+    b = parseFloat(b) * NUM_MAX / PCT_MAX;
+  } else {
+    b = parseFloat(b);
+  }
+  if (isString(a)) {
+    if (a.startsWith(".")) {
+      a = `0${a}`;
+    }
+    if (a.endsWith("%")) {
+      a = parseFloat(a) / PCT_MAX;
+    } else {
+      a = parseFloat(a);
+    }
+  } else {
+    a = 1;
+  }
+  arr.push(
+    Math.min(NUM_MAX, Math.max(r, 0)),
+    Math.min(NUM_MAX, Math.max(g, 0)),
+    Math.min(NUM_MAX, Math.max(b, 0)),
+    Math.min(1, Math.max(a, 0)),
+  );
   return arr;
 };
 
