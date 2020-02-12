@@ -1497,13 +1497,11 @@ export const handleEvt = async evt => {
           data.enabled = allTabs.length > 1 && !allTabsSelected;
           data.visible = true;
           break;
-        case TAB_CLOSE_UNDO: {
+        default: {
           const {lastClosedTab} = sidebar;
           data.enabled = !!lastClosedTab;
           data.visible = true;
-          break;
         }
-        default:
       }
       func.push(updateContextMenu(id, data));
     }

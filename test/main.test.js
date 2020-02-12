@@ -615,6 +615,30 @@ describe("main", () => {
       body.appendChild(elm);
       const spy = sinon.spy(elm, "addEventListener");
       const i = spy.callCount;
+      await func();
+      assert.strictEqual(spy.callCount, i, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should not add listner", async () => {
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
+      await func(elm2);
+      assert.strictEqual(spy.callCount, i, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should not add dragstart listner", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
       await func(elm);
       assert.strictEqual(spy.callCount, i + 5, "not called");
       elm.addEventListener.restore();
@@ -1431,6 +1455,33 @@ describe("main", () => {
         assert.strictEqual(e.message, "Expected Number but got String.",
                            "throw");
       });
+    });
+
+    it("should not set class", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const info = {
+        tabId: browser.tabs.TAB_ID_NONE,
+        windowId: browser.windows.WINDOW_ID_CURRENT + 1,
+      };
+      parent2.classList.add(ACTIVE);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(ACTIVE);
+      elm2.dataset.tabId = "2";
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      await func(info);
+      assert.isFalse(parent.classList.contains(ACTIVE), "add class");
+      assert.isFalse(elm.classList.contains(ACTIVE), "add class");
+      assert.isTrue(parent2.classList.contains(ACTIVE), "remove class");
+      assert.isTrue(elm2.classList.contains(ACTIVE), "remove class");
     });
 
     it("should not set class", async () => {
