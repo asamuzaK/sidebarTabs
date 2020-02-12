@@ -123,6 +123,15 @@ describe("theme", () => {
       mjs.currentThemeColors.clear();
     });
 
+    it("should throw", async () => {
+      mjs.currentThemeColors.set("tab_line", "foo");
+      const res = await func().catch(e => {
+        assert.instanceOf(e, TypeError, "error");
+        assert.strictEqual(e.message, "Expected String but got Null.",
+                           "message");
+      });
+    });
+
     it("should get values", async () => {
       const res = await func();
       assert.deepEqual(res, themeMap[THEME_LIGHT], "result");

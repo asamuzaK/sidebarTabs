@@ -200,9 +200,7 @@ export const getCurrentThemeBaseValues = async () => {
     const base = currentThemeColors.get("tab_line");
     const blend = values[CUSTOM_BG_HOVER_SHADOW];
     const value = await blendColors(blend, base).then(convertColorToHex);
-    if (value) {
-      values[CUSTOM_BG_SELECT_HOVER] = value;
-    }
+    values[CUSTOM_BG_SELECT_HOVER] = value;
   }
   return values;
 };
