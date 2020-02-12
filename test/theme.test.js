@@ -125,7 +125,7 @@ describe("theme", () => {
 
     it("should throw", async () => {
       mjs.currentThemeColors.set("tab_line", "foo");
-      const res = await func().catch(e => {
+      await func().catch(e => {
         assert.instanceOf(e, TypeError, "error");
         assert.strictEqual(e.message, "Expected String but got Null.",
                            "message");
