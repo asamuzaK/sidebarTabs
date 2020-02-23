@@ -3,10 +3,10 @@
  */
 
 import {
-  getType, throwErr,
+  getType, isObjectNotEmpty, throwErr,
 } from "./common.js";
 import {
-  getTab, queryTabs,
+  getStorage, getTab, queryTabs,
 } from "./browser.js";
 import {
   moveTabsInOrder,
@@ -22,8 +22,8 @@ const {i18n, windows} = browser;
 /* constants */
 import {
   ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
-  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED,
-  TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND, TAB_QUERY,
+  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP, HIGHLIGHTED, NEW_TAB,
+  PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND, TAB_QUERY,
 } from "./constant.js";
 
 /**
@@ -54,8 +54,10 @@ export const restoreTabContainers = async () => {
  * @returns {void}
  */
 export const collapseTabGroup = async elm => {
+  const body = document.querySelector("body");
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_GROUP)) {
+      elm.classList.contains(CLASS_TAB_GROUP) &&
+      !body.classList.contains(CLASS_UNGROUP)) {
     const {firstElementChild: tab} = elm;
     const {firstElementChild: tabContext} = tab;
     const {firstElementChild: toggleIcon} = tabContext;
@@ -79,6 +81,34 @@ export const expandTabGroup = async elm => {
     elm.classList.remove(CLASS_TAB_COLLAPSED);
     tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
     toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
+  }
+};
+
+/**
+ * toggle enable / disable tab grouping
+ * @returns {void}
+ */
+export const toggleTabGrouping = async () => {
+  const body = document.querySelector("body");
+  const store = await getStorage([TAB_GROUP_ENABLE]);
+  let enable;
+  if (isObjectNotEmpty(store)) {
+    const {enableTabGroup} = store;
+    enable = !!enableTabGroup.checked;
+  } else {
+    enable = true;
+  }
+  if (enable) {
+    body.classList.remove(CLASS_UNGROUP);
+  } else {
+    const items =
+      document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+    const func = [];
+    for (const item of items) {
+      func.push(expandTabGroup(item));
+    }
+    await Promise.all(func);
+    body.classList.add(CLASS_UNGROUP);
   }
 };
 

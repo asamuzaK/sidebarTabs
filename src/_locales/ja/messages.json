@@ -401,6 +401,12 @@
   "optionsCompactTabDetail": {
     "message": "タブの高さを縮めてより多くのタブを表示できるようにします。"
   },
+  "optionsEnableTabGroup": {
+    "message": "タブグループを有効化"
+  },
+  "optionsEnableTabGroupDetail": {
+    "message": "タブのグループ化機能を有効にします。"
+  },
   "optionsInit": {
     "message": "初期化"
   },
