@@ -442,6 +442,9 @@ main {
   flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
 }
+.ungroup .tab-group > .tab > .tab-context {
+  display: none;
+}
 .compact .tab-group > .tab > .tab-context {
   height: var(--tab-height-compact);
 }
