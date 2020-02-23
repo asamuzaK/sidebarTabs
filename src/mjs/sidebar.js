@@ -9,7 +9,7 @@ import {
   setSessionTabList,
 } from "./util.js";
 import {
-  expandActivatedCollapsedTab, restoreTabContainers,
+  expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping,
 } from "./tab-group.js";
 import {
   localizeHtml,
@@ -104,6 +104,6 @@ document.addEventListener("DOMContentLoaded", () => Promise.all([
   setSidebar().then(setMain).then(requestSidebarStateUpdate),
   setSidebarTheme(),
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
-  .then(restoreHighlightedTabs).then(setSessionTabList).then(getLastClosedTab)
-  .catch(throwErr),
+  .then(toggleTabGrouping).then(restoreHighlightedTabs).then(setSessionTabList)
+  .then(getLastClosedTab).catch(throwErr),
 );

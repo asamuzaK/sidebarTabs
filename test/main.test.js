@@ -31,7 +31,7 @@ import {
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
   TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
@@ -74,6 +74,7 @@ describe("main", () => {
     mjs.sidebar.closeTabsByDoubleClick = false;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
+    mjs.sidebar.enableTabGroup = true;
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
@@ -97,6 +98,7 @@ describe("main", () => {
     mjs.sidebar.closeTabsByDoubleClick = false;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
+    mjs.sidebar.enableTabGroup = true;
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
@@ -123,6 +125,7 @@ describe("main", () => {
       const getStorage = browser.storage.local.get.withArgs([
         BROWSER_SETTINGS_READ,
         TAB_CLOSE_DBLCLICK,
+        TAB_GROUP_ENABLE,
         TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
@@ -143,6 +146,9 @@ describe("main", () => {
         readBrowserSettings: {
           checked: true,
         },
+        enableTabGroup: {
+          checked: false,
+        },
         tabGroupOnExpandCollapseOther: {
           checked: true,
         },
@@ -155,6 +161,7 @@ describe("main", () => {
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
       assert.isTrue(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isFalse(sidebar.enableTabGroup, "enableTabGroup");
       assert.isTrue(sidebar.readBrowserSettings, "readBrowserSettings");
       assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
                     "tabGroupCollapseOther");
@@ -173,6 +180,7 @@ describe("main", () => {
       const getStorage = browser.storage.local.get.withArgs([
         BROWSER_SETTINGS_READ,
         TAB_CLOSE_DBLCLICK,
+        TAB_GROUP_ENABLE,
         TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
@@ -196,6 +204,7 @@ describe("main", () => {
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
       assert.isFalse(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
       assert.isFalse(sidebar.readBrowserSettings, "readBrowserSettings");
       assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
                     "tabGroupCollapseOther");
@@ -214,6 +223,7 @@ describe("main", () => {
       const getStorage = browser.storage.local.get.withArgs([
         BROWSER_SETTINGS_READ,
         TAB_CLOSE_DBLCLICK,
+        TAB_GROUP_ENABLE,
         TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
@@ -228,6 +238,9 @@ describe("main", () => {
         incognito: true,
       });
       getStorage.resolves({
+        enableTabGroup: {
+          checked: true,
+        },
         tabGroupPutNewTabAtTheEnd: {
           checked: true,
         },
@@ -237,6 +250,7 @@ describe("main", () => {
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
       assert.isFalse(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
       assert.isFalse(sidebar.readBrowserSettings, "readBrowserSettings");
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
                      "tabGroupCollapseOther");
@@ -255,6 +269,7 @@ describe("main", () => {
       const getStorage = browser.storage.local.get.withArgs([
         BROWSER_SETTINGS_READ,
         TAB_CLOSE_DBLCLICK,
+        TAB_GROUP_ENABLE,
         TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
@@ -278,6 +293,7 @@ describe("main", () => {
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
       assert.isFalse(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
       assert.isTrue(sidebar.readBrowserSettings, "readBrowserSettings");
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
                      "tabGroupCollapseOther");
@@ -296,6 +312,7 @@ describe("main", () => {
       const getStorage = browser.storage.local.get.withArgs([
         BROWSER_SETTINGS_READ,
         TAB_CLOSE_DBLCLICK,
+        TAB_GROUP_ENABLE,
         TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
@@ -319,6 +336,7 @@ describe("main", () => {
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
       assert.isTrue(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
       assert.isFalse(sidebar.readBrowserSettings, "readBrowserSettings");
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
                      "tabGroupCollapseOther");
@@ -337,6 +355,7 @@ describe("main", () => {
       const getStorage = browser.storage.local.get.withArgs([
         BROWSER_SETTINGS_READ,
         TAB_CLOSE_DBLCLICK,
+        TAB_GROUP_ENABLE,
         TAB_GROUP_EXPAND_COLLAPSE_OTHER,
         TAB_GROUP_NEW_TAB_AT_END,
       ]);
@@ -355,6 +374,7 @@ describe("main", () => {
       assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
       assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
       assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
       assert.isFalse(sidebar.readBrowserSettings, "readBrowserSettings");
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
                      "tabGroupCollapseOther");
@@ -2328,6 +2348,47 @@ describe("main", () => {
       assert.isTrue(elm.classList.contains(PINNED), "pinned");
       assert.isTrue(elm.draggable, "draggable");
       assert.isTrue(elm.parentNode === pinned, "parent");
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined,
+      ], "result");
+    });
+
+    it("should create element", async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 1,
+        pinned: true,
+        status: "complete",
+        title: "foo",
+        url: "https://example.com",
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false,
+        },
+      };
+      const pinned = document.getElementById(PINNED);
+      const child = document.createElement("div");
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      child.classList.add(TAB);
+      child.dataset.tabId = "2";
+      pinned.appendChild(child);
+      mjs.sidebar.enableTabGroup = false;
+      mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      const res = await func(tabsTab);
+      const elm = document.querySelector("[data-tab-id=\"1\"]");
+      assert.isOk(elm, "created");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, "called");
+      assert.strictEqual(elm.dataset.tabId, "1", "id");
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, "tab");
+      assert.isTrue(elm.classList.contains(PINNED), "pinned");
+      assert.isTrue(elm.draggable, "draggable");
+      assert.isTrue(elm.parentNode === pinned, "parent");
+      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), "group");
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined,
@@ -5925,6 +5986,85 @@ describe("main", () => {
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
+      const cnt = document.createElement("span");
+      const icon = document.createElement("img");
+      const body = document.querySelector("body");
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      tmpl.content.appendChild(sect);
+      pinned.id = PINNED;
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      cnt.appendChild(icon);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "https://foo.com",
+      });
+      elm.appendChild(cnt);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://bar.com",
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://baz.com",
+      });
+      parent2.appendChild(elm3);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(pinned);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(newTab);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.enableTabGroup = false;
+      mjs.sidebar.tabGroupOnExpandCollapseOther = true;
+      browser.tabs.get.resolves({
+        pinned: false,
+      });
+      browser.windows.getCurrent.resolves({
+        id: browser.windows.WINDOW_ID_CURRENT,
+        incognito: false,
+      });
+      const info = {
+        menuItemId: TAB_GROUP_COLLAPSE,
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called tabs get");
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
+                         "called windows get current");
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
+                         "called sessions get");
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
+                         "called sessions set");
+      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+                         "called get message");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const k = browser.sessions.getWindowValue.callCount;
+      const l = browser.sessions.setWindowValue.callCount;
+      const m = browser.i18n.getMessage.callCount;
+      const tmpl = document.createElement("template");
+      const sect = document.createElement("section");
+      const pinned = document.createElement("section");
+      const parent = document.createElement("section");
+      const parent2 = document.createElement("section");
+      const newTab = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
       const elm4 = document.createElement("div");
       const cnt = document.createElement("span");
       const icon = document.createElement("img");
@@ -8239,16 +8379,6 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      // FIXME: not implemented
-      if (!browser.browserSettings) {
-        browser.browserSettings = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick) {
-        browser.browserSettings.closeTabsByDoubleClick = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
-        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
-      }
       const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
@@ -8263,16 +8393,6 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      // FIXME: not implemented
-      if (!browser.browserSettings) {
-        browser.browserSettings = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick) {
-        browser.browserSettings.closeTabsByDoubleClick = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
-        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
-      }
       const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
@@ -8287,16 +8407,6 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      // FIXME: not implemented
-      if (!browser.browserSettings) {
-        browser.browserSettings = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick) {
-        browser.browserSettings.closeTabsByDoubleClick = {};
-      }
-      if (!browser.browserSettings.closeTabsByDoubleClick.get) {
-        browser.browserSettings.closeTabsByDoubleClick.get = sinon.stub();
-      }
       const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
@@ -8324,10 +8434,28 @@ describe("main", () => {
     });
 
     it("should set variable", async () => {
-      const res =
-        await func(TAB_CLOSE_DBLCLICK, {checked: true}, true);
+      const res = await func(TAB_CLOSE_DBLCLICK, {checked: true}, true);
       assert.isTrue(mjs.sidebar.closeTabsByDoubleClick, "set");
       assert.deepEqual(res, [[]], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(TAB_GROUP_ENABLE, {checked: true});
+      assert.isTrue(mjs.sidebar.enableTabGroup, "set");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      const res = await func(TAB_GROUP_ENABLE, {checked: false});
+      assert.isFalse(mjs.sidebar.enableTabGroup, "set");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should set variable", async () => {
+      const res =
+        await func(TAB_GROUP_ENABLE, {checked: true}, true);
+      assert.isTrue(mjs.sidebar.enableTabGroup, "set");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should set variable", async () => {

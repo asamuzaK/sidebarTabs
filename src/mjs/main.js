@@ -35,7 +35,7 @@ import {
 import {
   addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
   groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
-  replaceTabContextClickListener, restoreTabContainers,
+  replaceTabContextClickListener, restoreTabContainers, toggleTabGrouping,
   toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
@@ -70,7 +70,7 @@ import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
@@ -91,6 +91,7 @@ export const sidebar = {
   closeTabsByDoubleClick: false,
   context: null,
   contextualIds: null,
+  enableTabGroup: true,
   firstSelectedTab: null,
   incognito: false,
   isMac: false,
@@ -115,13 +116,14 @@ export const setSidebar = async () => {
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
     TAB_CLOSE_DBLCLICK,
+    TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_NEW_TAB_AT_END,
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
     const {
-      closeTabsByDoubleClick, readBrowserSettings,
+      closeTabsByDoubleClick, enableTabGroup, readBrowserSettings,
       tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd,
     } = store;
     sidebar.closeTabsByDoubleClick =
@@ -135,8 +137,14 @@ export const setSidebar = async () => {
       !!tabGroupOnExpandCollapseOther.checked || false;
     sidebar.tabGroupPutNewTabAtTheEnd =
       tabGroupPutNewTabAtTheEnd && !!tabGroupPutNewTabAtTheEnd.checked || false;
+    if (enableTabGroup) {
+      sidebar.enableTabGroup = !!enableTabGroup.checked;
+    } else {
+      sidebar.enableTabGroup = true;
+    }
   } else {
     sidebar.closeTabsByDoubleClick = false;
+    sidebar.enableTabGroup = true;
     sidebar.readBrowserSettings = false;
     sidebar.tabGroupOnExpandCollapseOther = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
@@ -442,7 +450,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
   const {
-    closeTabsByDoubleClick, tabGroupOnExpandCollapseOther,
+    closeTabsByDoubleClick, enableTabGroup, tabGroupOnExpandCollapseOther,
     tabGroupPutNewTabAtTheEnd, windowId,
   } = sidebar;
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
@@ -526,7 +534,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     } else if (openerTab && !openerTab.classList.contains(PINNED) &&
                openerTabsTab) {
       container = openerTab.parentNode;
-      if (tabGroupPutNewTabAtTheEnd) {
+      if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
         const {lastElementChild: lastChildTab} = container;
         const lastChildTabId = getSidebarTabId(lastChildTab);
         const lastChildTabsTab = await getTab(lastChildTabId);
@@ -925,7 +933,8 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
 export const handleClickedMenu = async info => {
   const {menuItemId} = info;
   const {
-    context, contextualIds, tabGroupOnExpandCollapseOther, windowId,
+    context, contextualIds, enableTabGroup, tabGroupOnExpandCollapseOther,
+    windowId,
   } = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
@@ -967,7 +976,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE:
       if (tab) {
-        if (tabGroupOnExpandCollapseOther) {
+        if (enableTabGroup && tabGroupOnExpandCollapseOther) {
           func.push(
             toggleTabGroupsCollapsedState(tab).then(setSessionTabList),
           );
@@ -1611,12 +1620,13 @@ export const setVar = async (item, obj, changed = false) => {
         sidebar[item] = !!checked;
         changed && func.push(replaceTabDblClickListeners(!!checked));
         break;
+      case TAB_GROUP_ENABLE:
+        sidebar[item] = !!checked;
+        changed && func.push(toggleTabGrouping());
+        break;
       case TAB_GROUP_EXPAND_COLLAPSE_OTHER:
         sidebar[item] = !!checked;
         changed && func.push(replaceTabContextClickListener(!!checked));
-        break;
-      case TAB_GROUP_NEW_TAB_AT_END:
-        sidebar[item] = !!checked;
         break;
       case THEME_CUSTOM:
       case THEME_DARK:
@@ -1630,6 +1640,9 @@ export const setVar = async (item, obj, changed = false) => {
         changed && func.push(setTabHeight(!!checked));
         break;
       default:
+        if (sidebar.hasOwnProperty(item)) {
+          sidebar[item] = !!checked;
+        }
     }
   }
   return Promise.all(func);
