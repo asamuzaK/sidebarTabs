@@ -401,6 +401,12 @@
   "optionsCompactTabDetail": {
     "message": "Reduce the height of the tab to display more tabs."
   },
+  "optionsEnableTabGroup": {
+    "message": "Enable tab group"
+  },
+  "optionsEnableTabGroupDetail": {
+    "message": "Enable grouping tabs functionality."
+  },
   "optionsInit": {
     "message": "Init"
   },

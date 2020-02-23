@@ -12,8 +12,8 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/tab-group.js";
 import {
   ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, HIGHLIGHTED, PINNED, TAB,
-  TAB_GROUP_COLLAPSE, TAB_GROUP_EXPAND,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP, HIGHLIGHTED, PINNED,
+  TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND,
 } from "../src/mjs/constant.js";
 
 describe("tab-group", () => {
@@ -135,6 +135,27 @@ describe("tab-group", () => {
       assert.strictEqual(elm3.title, "foo", "title");
       assert.strictEqual(elm4.alt, "bar", "alt");
     });
+
+    it("should not call function", async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm3.appendChild(elm4);
+      elm2.appendChild(elm3);
+      elm.appendChild(elm2);
+      body.appendChild(elm);
+      body.classList.add(CLASS_UNGROUP);
+      await func(elm);
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i, "not called");
+    });
   });
 
   describe("expand tab group", () => {
@@ -177,6 +198,60 @@ describe("tab-group", () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
       assert.strictEqual(elm3.title, "foo", "title");
       assert.strictEqual(elm4.alt, "bar", "alt");
+    });
+  });
+
+  describe("toggle enable / disable tab grouping", () => {
+    const func = mjs.toggleTabGrouping;
+
+    it("should not add class", async () => {
+      const i = browser.storage.local.get.callCount;
+      const body = document.querySelector("body");
+      browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({});
+      body.classList.add(CLASS_UNGROUP);
+      await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.isFalse(body.classList.contains(CLASS_UNGROUP), "class");
+    });
+
+    it("should not add class", async () => {
+      const i = browser.storage.local.get.callCount;
+      const body = document.querySelector("body");
+      browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({
+        enableTabGroup: {
+          checked: true,
+        },
+      });
+      body.classList.add(CLASS_UNGROUP);
+      await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.isFalse(body.classList.contains(CLASS_UNGROUP), "class");
+    });
+
+    it("should add class", async () => {
+      const i = browser.storage.local.get.callCount;
+      const elm = document.createElement("div");
+      const p = document.createElement("p");
+      const span = document.createElement("span");
+      const img = document.createElement("img");
+      const body = document.querySelector("body");
+      browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({
+        enableTabGroup: {
+          checked: false,
+        },
+      });
+      span.appendChild(img);
+      p.appendChild(span);
+      elm.appendChild(p);
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      body.appendChild(elm);
+      body.classList.remove(CLASS_UNGROUP);
+      await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, "called");
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isTrue(body.classList.contains(CLASS_UNGROUP), "class");
     });
   });
 

@@ -35,7 +35,7 @@ import {
 import {
   addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
   groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
-  replaceTabContextClickListener, restoreTabContainers,
+  replaceTabContextClickListener, restoreTabContainers, toggleTabGrouping,
   toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState, ungroupTabs,
 } from "./tab-group.js";
 import {
@@ -70,7 +70,7 @@ import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
@@ -91,6 +91,7 @@ export const sidebar = {
   closeTabsByDoubleClick: false,
   context: null,
   contextualIds: null,
+  enableTabGroup: true,
   firstSelectedTab: null,
   incognito: false,
   isMac: false,
@@ -115,13 +116,14 @@ export const setSidebar = async () => {
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
     TAB_CLOSE_DBLCLICK,
+    TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_NEW_TAB_AT_END,
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
     const {
-      closeTabsByDoubleClick, readBrowserSettings,
+      closeTabsByDoubleClick, enableTabGroup, readBrowserSettings,
       tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd,
     } = store;
     sidebar.closeTabsByDoubleClick =
@@ -135,8 +137,14 @@ export const setSidebar = async () => {
       !!tabGroupOnExpandCollapseOther.checked || false;
     sidebar.tabGroupPutNewTabAtTheEnd =
       tabGroupPutNewTabAtTheEnd && !!tabGroupPutNewTabAtTheEnd.checked || false;
+    if (enableTabGroup) {
+      sidebar.enableTabGroup = !!enableTabGroup.checked;
+    } else {
+      sidebar.enableTabGroup = true;
+    }
   } else {
     sidebar.closeTabsByDoubleClick = false;
+    sidebar.enableTabGroup = true;
     sidebar.readBrowserSettings = false;
     sidebar.tabGroupOnExpandCollapseOther = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
@@ -442,7 +450,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
   const {
-    closeTabsByDoubleClick, tabGroupOnExpandCollapseOther,
+    closeTabsByDoubleClick, enableTabGroup, tabGroupOnExpandCollapseOther,
     tabGroupPutNewTabAtTheEnd, windowId,
   } = sidebar;
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
@@ -526,7 +534,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     } else if (openerTab && !openerTab.classList.contains(PINNED) &&
                openerTabsTab) {
       container = openerTab.parentNode;
-      if (tabGroupPutNewTabAtTheEnd) {
+      if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
         const {lastElementChild: lastChildTab} = container;
         const lastChildTabId = getSidebarTabId(lastChildTab);
         const lastChildTabsTab = await getTab(lastChildTabId);
@@ -925,7 +933,8 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
 export const handleClickedMenu = async info => {
   const {menuItemId} = info;
   const {
-    context, contextualIds, tabGroupOnExpandCollapseOther, windowId,
+    context, contextualIds, enableTabGroup, tabGroupOnExpandCollapseOther,
+    windowId,
   } = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
@@ -967,7 +976,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE:
       if (tab) {
-        if (tabGroupOnExpandCollapseOther) {
+        if (enableTabGroup && tabGroupOnExpandCollapseOther) {
           func.push(
             toggleTabGroupsCollapsedState(tab).then(setSessionTabList),
           );
@@ -1112,7 +1121,7 @@ export const handleClickedMenu = async info => {
  */
 export const handleEvt = async evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
-  const {contextualIds, isMac, windowId} = sidebar;
+  const {contextualIds, enableTabGroup, isMac, windowId} = sidebar;
   const func = [];
   // select all tabs
   if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
@@ -1334,52 +1343,46 @@ export const handleEvt = async evt => {
           }
         }
       }
-      for (const itemKey of tabGroupKeys) {
-        const item = tabGroupMenu.subItems[itemKey];
-        const {id, title, toggleTitle} = item;
-        const data = {};
-        switch (itemKey) {
-          case TAB_GROUP_COLLAPSE:
-            if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
-              data.enabled = true;
-              data.title = parentClass.contains(CLASS_TAB_COLLAPSED) &&
-                           toggleTitle || title;
-            } else {
-              data.enabled = false;
-            }
-            data.visible = true;
-            break;
-          case TAB_GROUP_COLLAPSE_OTHER:
-            if (parentClass.contains(CLASS_TAB_GROUP) && tabGroups.length > 1) {
-              data.enabled = true;
+      if (enableTabGroup) {
+        func.push(updateContextMenu(tabGroupMenu.id, {
+          enabled: true,
+          title: tabGroupMenu.title,
+          visible: true,
+        }));
+        for (const itemKey of tabGroupKeys) {
+          const item = tabGroupMenu.subItems[itemKey];
+          const {id, title, toggleTitle} = item;
+          const data = {};
+          switch (itemKey) {
+            case TAB_GROUP_COLLAPSE:
+              if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
+                data.enabled = true;
+                data.title = parentClass.contains(CLASS_TAB_COLLAPSED) &&
+                             toggleTitle || title;
+              } else {
+                data.enabled = false;
+              }
               data.visible = true;
-            } else {
-              data.visible = false;
-            }
-            break;
-          case TAB_GROUP_CONTAINER:
-          case TAB_GROUP_DOMAIN:
-            data.enabled = !(pinned || multiTabsSelected);
-            data.title = title;
-            data.visible = true;
-            break;
-          case TAB_GROUP_DETACH:
-            if (multiTabsSelected) {
-              data.visible = false;
-            } else if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
-              data.enabled = true;
+              break;
+            case TAB_GROUP_COLLAPSE_OTHER:
+              if (parentClass.contains(CLASS_TAB_GROUP) &&
+                  tabGroups.length > 1) {
+                data.enabled = true;
+                data.visible = true;
+              } else {
+                data.visible = false;
+              }
+              break;
+            case TAB_GROUP_CONTAINER:
+            case TAB_GROUP_DOMAIN:
+              data.enabled = !(pinned || multiTabsSelected);
               data.title = title;
               data.visible = true;
-            } else {
-              data.enabled = false;
-              data.title = title;
-              data.visible = true;
-            }
-            break;
-          case TAB_GROUP_DETACH_TABS:
-            if (multiTabsSelected) {
-              if (!pinned && parentClass.contains(CLASS_TAB_GROUP) &&
-                  tabClass.contains(HIGHLIGHTED)) {
+              break;
+            case TAB_GROUP_DETACH:
+              if (multiTabsSelected) {
+                data.visible = false;
+              } else if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
                 data.enabled = true;
                 data.title = title;
                 data.visible = true;
@@ -1388,43 +1391,60 @@ export const handleEvt = async evt => {
                 data.title = title;
                 data.visible = true;
               }
-            } else {
-              data.visible = false;
-            }
-            break;
-          case TAB_GROUP_SELECTED:
-            data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
-            data.title = title;
-            data.visible = true;
-            break;
-          case TAB_GROUP_UNGROUP:
-            data.enabled = !pinned && parentClass.contains(CLASS_TAB_GROUP);
-            data.title = title;
-            data.visible = true;
-            break;
-          default:
-            data.enabled = parentClass.contains(CLASS_TAB_GROUP);
-            data.title = title;
-            data.visible = true;
+              break;
+            case TAB_GROUP_DETACH_TABS:
+              if (multiTabsSelected) {
+                if (!pinned && parentClass.contains(CLASS_TAB_GROUP) &&
+                    tabClass.contains(HIGHLIGHTED)) {
+                  data.enabled = true;
+                  data.title = title;
+                  data.visible = true;
+                } else {
+                  data.enabled = false;
+                  data.title = title;
+                  data.visible = true;
+                }
+              } else {
+                data.visible = false;
+              }
+              break;
+            case TAB_GROUP_SELECTED:
+              data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
+              data.title = title;
+              data.visible = true;
+              break;
+            case TAB_GROUP_UNGROUP:
+              data.enabled = !pinned && parentClass.contains(CLASS_TAB_GROUP);
+              data.title = title;
+              data.visible = true;
+              break;
+            default:
+              data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+              data.title = title;
+              data.visible = true;
+          }
+          func.push(updateContextMenu(id, data));
         }
-        func.push(updateContextMenu(id, data));
-      }
-      for (const sep of sepKeys) {
-        func.push(updateContextMenu(sep, {
-          visible: true,
+      } else {
+        func.push(updateContextMenu(tabGroupMenu.id, {
+          visible: false,
         }));
       }
+      for (const sep of sepKeys) {
+        if (sep === "sep-3" && !enableTabGroup) {
+          func.push(updateContextMenu(sep, {
+            visible: false,
+          }));
+        } else {
+          func.push(updateContextMenu(sep, {
+            visible: true,
+          }));
+        }
+      }
       await setContext(tab);
-      func.push(
-        updateContextMenu(tabGroupMenu.id, {
-          enabled: true,
-          title: tabGroupMenu.title,
-          visible: true,
-        }),
-        updateContextMenu(bookmarkMenu.id, {
-          visible: false,
-        }),
-      );
+      func.push(updateContextMenu(bookmarkMenu.id, {
+        visible: false,
+      }));
     } else {
       for (const itemKey of tabKeys) {
         const item = menuItems[itemKey];
@@ -1611,12 +1631,13 @@ export const setVar = async (item, obj, changed = false) => {
         sidebar[item] = !!checked;
         changed && func.push(replaceTabDblClickListeners(!!checked));
         break;
+      case TAB_GROUP_ENABLE:
+        sidebar[item] = !!checked;
+        changed && func.push(toggleTabGrouping());
+        break;
       case TAB_GROUP_EXPAND_COLLAPSE_OTHER:
         sidebar[item] = !!checked;
         changed && func.push(replaceTabContextClickListener(!!checked));
-        break;
-      case TAB_GROUP_NEW_TAB_AT_END:
-        sidebar[item] = !!checked;
         break;
       case THEME_CUSTOM:
       case THEME_DARK:
@@ -1630,6 +1651,9 @@ export const setVar = async (item, obj, changed = false) => {
         changed && func.push(setTabHeight(!!checked));
         break;
       default:
+        if (sidebar.hasOwnProperty(item)) {
+          sidebar[item] = !!checked;
+        }
     }
   }
   return Promise.all(func);
