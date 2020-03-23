@@ -75,16 +75,18 @@ export const closeOtherTabs = async nodes => {
   }
   let func;
   const tabIds = getSidebarTabIds(nodes);
-  const items = document.querySelectorAll(TAB_QUERY);
-  const arr = [];
-  for (const item of items) {
-    const itemId = getSidebarTabId(item);
-    if (Number.isInteger(itemId) && !tabIds.includes(itemId)) {
-      arr.push(itemId);
+  if (tabIds.length) {
+    const items = document.querySelectorAll(TAB_QUERY);
+    const arr = [];
+    for (const item of items) {
+      const itemId = getSidebarTabId(item);
+      if (Number.isInteger(itemId) && !tabIds.includes(itemId)) {
+        arr.push(itemId);
+      }
     }
-  }
-  if (arr.length) {
-    func = removeTab(arr);
+    if (arr.length) {
+      func = removeTab(arr);
+    }
   }
   return func || null;
 };

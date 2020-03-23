@@ -229,6 +229,19 @@ describe("browser-tabs", () => {
       assert.isNull(res, "result");
     });
 
+    it("should not call function", async () => {
+      const i = browser.tabs.remove.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      body.appendChild(elm);
+      const res = await func([elm]);
+      assert.strictEqual(browser.tabs.remove.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
     it("should call function", async () => {
       const i = browser.tabs.remove.withArgs([3, 4]).callCount;
       const elm = document.createElement("p");
