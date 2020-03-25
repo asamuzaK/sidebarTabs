@@ -435,7 +435,7 @@
     "message": "Show context menu on mouseup"
   },
   "optionsShowMenuOnMouseupDetail": {
-    "message": "Show context menu on mouseup event instead of mousedown. For macOS and Linux. It has no effect on Windows."
+    "message": "Show context menu on mouseup event instead of mousedown. For Mac and Linux. It has no effect on Windows."
   },
   "optionsTabGroup": {
     "message": "Tab Group"

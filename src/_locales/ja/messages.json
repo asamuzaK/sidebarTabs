@@ -435,7 +435,7 @@
     "message": "マウスアップでコンテキストメニューを表示"
   },
   "optionsShowMenuOnMouseupDetail": {
-    "message": "ブラウザのコンテキストメニューをマウスダウンではなくマウスアップのイベントで表示します。macOS と Linux 用の設定です。Windows では何も効果がありません。"
+    "message": "ブラウザのコンテキストメニューをマウスダウンではなくマウスアップのイベントで表示します。Mac と Linux 用の設定です。Windows では何も効果がありません。"
   },
   "optionsTabGroup": {
     "message": "タブグループ"
