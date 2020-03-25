@@ -426,16 +426,16 @@
     "message": "Optional Settings"
   },
   "optionsReadBrowserSettings": {
-    "message": "Allow extension to read browser settings"
+    "message": "Allow extension to read and modify browser settings"
   },
   "optionsReadBrowserSettingsDetail": {
-    "message": "Add permissions that allow the extension to read certain values from browser settings. It currently reads the value of $KEY$, and may read more values in the future if necessary.",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "\"browser.tabs.closeTabByDblclick\""
-      }
-    }
+    "message": "Add permissions that allow the extension to read and modify certain values from browser settings."
+  },
+  "optionsShowMenuOnMouseup": {
+    "message": "Show context menu on mouseup"
+  },
+  "optionsShowMenuOnMouseupDetail": {
+    "message": "Show context menu on mouseup event instead of mousedown. For Mac and Linux. It has no effect on Windows."
   },
   "optionsTabGroup": {
     "message": "Tab Group"
