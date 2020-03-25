@@ -75,6 +75,7 @@ export const EXT_LOCALE = "extensionLocale";
 export const EXT_NAME = "extensionName";
 export const HIGHLIGHTED = "highlighted";
 export const IDENTIFIED = "identified";
+export const MENU_SHOW_MOUSEUP = "showMenuOnMouseup";
 export const MIME_PLAIN = "text/plain";
 export const MIME_URI = "text/uri-list";
 export const NEW_TAB = "newtab";

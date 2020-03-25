@@ -277,14 +277,31 @@
                 <label for="readBrowserSettings" class="checkboxLabel"
                        data-i18n="optionsReadBrowserSettings"
                        aria-details="readBrowserSettingsDetail">
-                  Allow extension to read browser settings
+                  Allow extension to read and modify browser settings
                 </label>
               </span>
             </p>
             <details id="readBrowserSettingsDetail">
               <div>
-                <p data-i18n="optionsReadBrowserSettingsDetail, &quot;browser.tabs.closeTabByDblclick&quot;">
+                <p data-i18n="optionsReadBrowserSettingsDetail">
                   Add permissions that allow the extension to read certain values from browser settings.
+                </p>
+              </div>
+            </details>
+            <p>
+              <span class="subItem">
+                <input type="checkbox" id="showMenuOnMouseup" />
+                <label for="showMenuOnMouseup" class="checkboxLabel"
+                       data-i18n="optionsShowMenuOnMouseup"
+                       aria-details="showMenuOnMouseupDetail">
+                  Show context menu on mouseup
+                </label>
+              </span>
+            </p>
+            <details id="showMenuOnMouseupDetail">
+              <div>
+                <p data-i18n="optionsShowMenuOnMouseupDetail">
+                  Show context menu on mouseup event instead of mousedown. For macOS and Linux. It has no effect on Windows.
                 </p>
               </div>
             </details>

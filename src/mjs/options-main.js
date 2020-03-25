@@ -6,13 +6,14 @@ import {
   isObjectNotEmpty, isString, throwErr,
 } from "./common.js";
 import {
-  getAllStorage, removePermission, requestPermission, sendMessage, setStorage,
+  getAllStorage, clearContextMenuOnMouseup, removePermission,
+  requestPermission, sendMessage, setContextMenuOnMouseup, setStorage,
 } from "./browser.js";
 
 /* constant */
 import {
-  BROWSER_SETTINGS_READ, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
-  THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO,
+  BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP, THEME_CUSTOM,
+  THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO,
 } from "./constant.js";
 
 /**
@@ -112,6 +113,17 @@ export const storePref = async evt => {
         }
         func.push(createPref(target).then(setStorage));
         break;
+      case MENU_SHOW_MOUSEUP: {
+        if (checked) {
+          const res = await setContextMenuOnMouseup();
+          !res && window.alert("Failed to modify value.");
+          target.checked = res;
+        } else {
+          await clearContextMenuOnMouseup();
+        }
+        func.push(createPref(target).then(setStorage));
+        break;
+      }
       default:
         func.push(createPref(target).then(setStorage));
     }

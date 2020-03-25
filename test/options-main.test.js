@@ -9,8 +9,8 @@ import sinon from "sinon";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/options-main.js";
 import {
-  BROWSER_SETTINGS_READ, EXT_INIT, THEME_CUSTOM, THEME_CUSTOM_INIT,
-  THEME_CUSTOM_SETTING, THEME_RADIO,
+  BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO,
 } from "../src/mjs/constant.js";
 
 describe("options-main", () => {
@@ -22,6 +22,9 @@ describe("options-main", () => {
     const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
     const opt = {
       runScripts: "dangerously",
+      beforeParse(window) {
+        window.alert = sinon.stub().callsFake((...args) => args.toString());
+      },
     };
     return new JSDOM(domstr, opt);
   };
@@ -226,6 +229,85 @@ describe("options-main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.permissions.remove.callCount, i + 1, "called");
+      assert.strictEqual(res.length, 1, "length");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should get array", async () => {
+      const i = browser.browserSettings.contextMenuShowEvent.get.callCount;
+      const j = browser.browserSettings.contextMenuShowEvent.set.callCount;
+      const k = window.alert.callCount;
+      const evt = {
+        target: {
+          id: MENU_SHOW_MOUSEUP,
+          checked: true,
+        },
+      };
+      browser.permissions.contains.resolves(true);
+      browser.browserSettings.contextMenuShowEvent.get.resolves({
+        value: "mousedown",
+        levelOfControl: "controllable_by_this_extension",
+      });
+      browser.browserSettings.contextMenuShowEvent.set.resolves(true);
+      const res = await func(evt);
+      assert.strictEqual(
+        browser.browserSettings.contextMenuShowEvent.get.callCount, i + 1,
+        "called",
+      );
+      assert.strictEqual(
+        browser.browserSettings.contextMenuShowEvent.set.callCount, j + 1,
+        "called",
+      );
+      assert.strictEqual(window.alert.callCount, k, "not called");
+      assert.strictEqual(res.length, 1, "length");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should get array", async () => {
+      const i = browser.browserSettings.contextMenuShowEvent.get.callCount;
+      const j = browser.browserSettings.contextMenuShowEvent.set.callCount;
+      const k = window.alert.callCount;
+      const evt = {
+        target: {
+          id: MENU_SHOW_MOUSEUP,
+          checked: true,
+        },
+      };
+      browser.permissions.contains.resolves(true);
+      browser.browserSettings.contextMenuShowEvent.get.resolves({
+        value: "mousedown",
+        levelOfControl: "controllable_by_this_extension",
+      });
+      browser.browserSettings.contextMenuShowEvent.set.resolves(false);
+      const res = await func(evt);
+      assert.strictEqual(
+        browser.browserSettings.contextMenuShowEvent.get.callCount, i + 1,
+        "called",
+      );
+      assert.strictEqual(
+        browser.browserSettings.contextMenuShowEvent.set.callCount, j + 1,
+        "called",
+      );
+      assert.strictEqual(window.alert.callCount, k + 1, "called");
+      assert.strictEqual(res.length, 1, "length");
+      assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should get array", async () => {
+      const i = browser.browserSettings.contextMenuShowEvent.clear.callCount;
+      const evt = {
+        target: {
+          id: MENU_SHOW_MOUSEUP,
+          checked: false,
+        },
+      };
+      browser.permissions.contains.resolves(true);
+      browser.browserSettings.contextMenuShowEvent.clear.resolves(true);
+      const res = await func(evt);
+      assert.strictEqual(
+        browser.browserSettings.contextMenuShowEvent.clear.callCount, i + 1,
+        "called",
+      );
       assert.strictEqual(res.length, 1, "length");
       assert.deepEqual(res, [undefined], "result");
     });
