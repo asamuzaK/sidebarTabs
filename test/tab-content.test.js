@@ -83,6 +83,7 @@ describe("tab-content", () => {
         "chrome://browser/skin/customize.svg",
         "chrome://browser/skin/settings.svg",
         "chrome://mozapps/skin/extensions/extensionGeneric-16.svg",
+        "chrome://mozapps/skin/extensions/extension.svg",
       ];
       assert.strictEqual(favicon.size, itemKeys.length, "size");
       favicon.forEach((value, key) => {
