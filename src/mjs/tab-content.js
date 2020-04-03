@@ -48,6 +48,10 @@ export const favicon = new Map([
     "chrome://mozapps/skin/extensions/extensionGeneric-16.svg",
     "../img/addons-favicon.svg",
   ],
+  [
+    "chrome://mozapps/skin/extensions/extension.svg",
+    "../img/addons-favicon.svg",
+  ],
 ]);
 
 /* contextual identities icon name */
