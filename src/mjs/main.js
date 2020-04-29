@@ -1214,7 +1214,7 @@ export const handleEvt = async evt => {
               data.enabled =
                 !!(Array.isArray(contextualIds) && contextualIds.length);
               data.title = title;
-              data.visible = !!incognito;
+              data.visible = !incognito;
               break;
             default:
               data.enabled = true;
@@ -1249,7 +1249,7 @@ export const handleEvt = async evt => {
                 data.enabled =
                   !!(Array.isArray(contextualIds) && contextualIds.length);
                 data.title = title;
-                data.visible = !!incognito;
+                data.visible = !incognito;
                 break;
               default:
                 data.enabled = true;
@@ -1380,7 +1380,7 @@ export const handleEvt = async evt => {
             case TAB_GROUP_CONTAINER:
               data.enabled = !(pinned || multiTabsSelected);
               data.title = title;
-              data.visible = !!incognito;
+              data.visible = !incognito;
               break;
             case TAB_GROUP_DOMAIN:
               data.enabled = !(pinned || multiTabsSelected);
@@ -1487,10 +1487,10 @@ export const handleEvt = async evt => {
       func.push(
         updateContextMenu(NEW_TAB_OPEN_CONTAINER, {
           enabled: !!(Array.isArray(contextualIds) && contextualIds.length),
-          visible: !!incognito,
+          visible: !incognito,
         }),
         updateContextMenu("sep-0", {
-          visible: !!incognito,
+          visible: !incognito,
         }),
       );
       if (Array.isArray(contextualIds)) {
