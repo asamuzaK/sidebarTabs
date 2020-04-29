@@ -450,8 +450,8 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
   const {
-    closeTabsByDoubleClick, enableTabGroup, tabGroupOnExpandCollapseOther,
-    tabGroupPutNewTabAtTheEnd, windowId,
+    closeTabsByDoubleClick, enableTabGroup, incognito,
+    tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd, windowId,
   } = sidebar;
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
     const tab = getTemplate(CLASS_TAB_TMPL);
@@ -510,7 +510,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     tab.dataset.tabId = id;
     tab.dataset.tab = JSON.stringify(tabsTab);
     await addDnDEventListener(tab);
-    if (cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
+    if (!incognito && cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
       const ident = await getContextualId(cookieStoreId);
       const {color, icon, name} = ident;
       const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
@@ -1121,7 +1121,7 @@ export const handleClickedMenu = async info => {
  */
 export const handleEvt = async evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
-  const {contextualIds, enableTabGroup, isMac, windowId} = sidebar;
+  const {contextualIds, enableTabGroup, incognito, isMac, windowId} = sidebar;
   const func = [];
   // select all tabs
   if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
@@ -1188,6 +1188,7 @@ export const handleEvt = async evt => {
             case TAB_CLOSE_END:
               data.enabled = index < allTabs.length - 1;
               data.title = title;
+              data.visible = true;
               break;
             case TAB_CLOSE_OTHER: {
               const obj =
@@ -1196,26 +1197,30 @@ export const handleEvt = async evt => {
                 );
               data.enabled = !!(obj && obj.length);
               data.title = title;
+              data.visible = true;
               break;
             }
             case TAB_MUTE:
               data.enabled = true;
               data.title = muted && toggleTitle || title;
+              data.visible = true;
               break;
             case TAB_PIN:
               data.enabled = true;
               data.title = pinned && toggleTitle || title;
+              data.visible = true;
               break;
             case TAB_REOPEN_CONTAINER:
               data.enabled =
                 !!(Array.isArray(contextualIds) && contextualIds.length);
               data.title = title;
+              data.visible = !!incognito;
               break;
             default:
               data.enabled = true;
               data.title = title;
+              data.visible = true;
           }
-          data.visible = true;
         }
         func.push(updateContextMenu(id, data));
       }
@@ -1225,33 +1230,32 @@ export const handleEvt = async evt => {
         const data = {};
         if (multiTabsSelected) {
           if (itemKey === TABS_CLOSE_OTHER) {
-            if (allTabsSelected) {
-              data.visible = false;
-            } else {
-              data.visible = true;
-              data.enabled = true;
-              data.title = title;
-            }
+            data.enabled = true;
+            data.title = title;
+            data.visible = !!allTabsSelected;
           } else {
             switch (itemKey) {
               case TABS_MUTE:
                 data.enabled = true;
                 data.title = muted && toggleTitle || title;
+                data.visible = true;
                 break;
               case TABS_PIN:
                 data.enabled = true;
                 data.title = pinned && toggleTitle || title;
+                data.visible = true;
                 break;
               case TABS_REOPEN_CONTAINER:
                 data.enabled =
                   !!(Array.isArray(contextualIds) && contextualIds.length);
                 data.title = title;
+                data.visible = !!incognito;
                 break;
               default:
                 data.enabled = true;
                 data.title = title;
+                data.visible = true;
             }
-            data.visible = true;
           }
         } else {
           data.visible = false;
@@ -1374,6 +1378,10 @@ export const handleEvt = async evt => {
               }
               break;
             case TAB_GROUP_CONTAINER:
+              data.enabled = !(pinned || multiTabsSelected);
+              data.title = title;
+              data.visible = !!incognito;
+              break;
             case TAB_GROUP_DOMAIN:
               data.enabled = !(pinned || multiTabsSelected);
               data.title = title;
@@ -1479,10 +1487,10 @@ export const handleEvt = async evt => {
       func.push(
         updateContextMenu(NEW_TAB_OPEN_CONTAINER, {
           enabled: !!(Array.isArray(contextualIds) && contextualIds.length),
-          visible: true,
+          visible: !!incognito,
         }),
         updateContextMenu("sep-0", {
-          visible: true,
+          visible: !!incognito,
         }),
       );
       if (Array.isArray(contextualIds)) {
