@@ -31,6 +31,9 @@
   <symbol id="activetab">
     <path d="M 25,46 H 47 V 62 H 25 Z"/>
   </symbol>
+  <symbol id="background">
+    <path d="M 26,26 H 102 V 102 H 26 Z"/>
+  </symbol>
   <g id="context" fill="context-fill" fill-opacity="context-fill-opacity">
     <use href="#sidetab"/>
   </g>
@@ -44,6 +47,7 @@
     <use href="#sidetab"/>
   </g>
   <g id="color">
+    <use href="#background" fill="#FFF"/>
     <use href="#activetab" fill="#E66000"/>
     <use href="#sidetab" fill="#002147"/>
   </g>
