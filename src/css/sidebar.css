@@ -423,6 +423,9 @@ main {
   padding: 0;
   height: 100%;
 }
+.tab.newtab > .newtab > .newtab-icon {
+  pointer-events: none;
+}
 
 /* tab group */
 .tab-group.tab-collapsed > .tab:not(:first-child) {
