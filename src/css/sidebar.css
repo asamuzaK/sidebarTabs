@@ -462,6 +462,7 @@ main {
   width: var(--icon-x-small-size);
   height: var(--icon-x-small-size);
   transition: transform 0.1s;
+  pointer-events: none;
 }
 
 .tab-group:nth-child(7n + 1) > .tab > .tab-context {
@@ -487,4 +488,13 @@ main {
 }
 .tab-group.pinned > .tab > .tab-context {
   background-color: var(--tab-group-pinned);
+}
+
+@media(prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
+  .tab-group > .tab > .tab-context > .tab-toggle-icon {
+    transition: none;
+  }
 }

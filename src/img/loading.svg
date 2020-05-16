@@ -38,6 +38,11 @@
         fill: context-fill;
         fill-opacity: 0.8;
       }
+      @media(prefers-reduced-motion: reduce) {
+        circle {
+          animation: none;
+        }
+      }
     </style>
   </defs>
   <circle cx="50%" cy="50%" r="2"/>
