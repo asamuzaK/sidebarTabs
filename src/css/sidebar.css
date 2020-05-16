@@ -491,9 +491,7 @@ main {
 }
 
 @media(prefers-reduced-motion: reduce) {
-  .tab {
-    transition: none;
-  }
+  .tab,
   .tab-group > .tab > .tab-context > .tab-toggle-icon {
     transition: none;
   }
