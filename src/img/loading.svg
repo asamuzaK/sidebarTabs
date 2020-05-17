@@ -38,11 +38,11 @@
         fill: context-fill;
         fill-opacity: 0.8;
       }
+      /* TODO: refactor later
+               see https://bugzilla.mozilla.org/show_bug.cgi?id=1431237 */
       @media(prefers-reduced-motion: reduce) {
         circle {
           animation: none;
-          /* TODO: refactor later
-                   see https://bugzilla.mozilla.org/show_bug.cgi?id=1431237 */
           transform: scale(4, 4);
           fill-opacity: 0.5;
         }
