@@ -68,7 +68,8 @@ export const contextualIdentitiesIconColor = new Set([
 
 /**
  * tab icon fallback
- * @param {Object} evt - event
+ *
+ * @param {object} evt - event
  * @returns {boolean} - false
  */
 export const tabIconFallback = evt => {
@@ -83,7 +84,8 @@ export const tabIconFallback = evt => {
 
 /**
  * add tab icon error listener
- * @param {Object} elm - img element
+ *
+ * @param {object} elm - img element
  * @returns {void}
  */
 export const addTabIconErrorListener = async elm => {
@@ -94,8 +96,9 @@ export const addTabIconErrorListener = async elm => {
 
 /**
  * set tab icon
- * @param {Object} elm - img element
- * @param {Object} info - tab info
+ *
+ * @param {object} elm - img element
+ * @param {object} info - tab info
  * @returns {void}
  */
 export const setTabIcon = async (elm, info) => {
@@ -138,8 +141,9 @@ export const setTabIcon = async (elm, info) => {
 /* tab content */
 /**
  * set tab content
- * @param {Object} tab - tab element
- * @param {Object} tabsTab - tabs.Tab
+ *
+ * @param {object} tab - tab element
+ * @param {object} tabsTab - tabs.Tab
  * @returns {void}
  */
 export const setTabContent = async (tab, tabsTab) => {
@@ -158,8 +162,9 @@ export const setTabContent = async (tab, tabsTab) => {
 /* audio */
 /**
  * handle clicked audio button
- * @param {!Object} evt - event
- * @returns {?AsyncFunction} - muteTabs / updateTab()
+ *
+ * @param {!object} evt - event
+ * @returns {?Function} - muteTabs() / updateTab()
  */
 export const handleClickedTabAudio = async evt => {
   const {target} = evt;
@@ -182,15 +187,17 @@ export const handleClickedTabAudio = async evt => {
 
 /**
  * handle tab audio onclick
- * @param {!Object} evt - Event
- * @returns {AsyncFunction} - handleClickedTabAudio()
+ *
+ * @param {!object} evt - Event
+ * @returns {Function} - handleClickedTabAudio()
  */
 export const tabAudioOnClick = evt =>
   handleClickedTabAudio(evt).catch(throwErr);
 
 /**
  * add tab audio click event listener
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const addTabAudioClickListener = async elm => {
@@ -202,8 +209,9 @@ export const addTabAudioClickListener = async elm => {
 
 /**
  * set tab audio
- * @param {Object} elm - element
- * @param {Object} info - audio info
+ *
+ * @param {object} elm - element
+ * @param {object} info - audio info
  * @returns {void}
  */
 export const setTabAudio = async (elm, info) => {
@@ -229,8 +237,9 @@ export const setTabAudio = async (elm, info) => {
 
 /**
  * set tab audio icon
- * @param {Object} elm - element
- * @param {Object} info - audio info
+ *
+ * @param {object} elm - element
+ * @param {object} info - audio info
  * @returns {void}
  */
 export const setTabAudioIcon = async (elm, info) => {
@@ -253,7 +262,8 @@ export const setTabAudioIcon = async (elm, info) => {
 /* close button */
 /**
  * set close tab button tooltip
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @param {boolean} highlighted - highlighted
  * @returns {void}
  */
@@ -270,8 +280,9 @@ export const setCloseTab = async (elm, highlighted) => {
 
 /**
  * handle clicked close button
- * @param {Object} evt - event
- * @returns {?AsyncFunction} - closeTabs()
+ *
+ * @param {object} evt - event
+ * @returns {?Function} - closeTabs()
  */
 export const handleClickedCloseButton = async evt => {
   const {target} = evt;
@@ -291,15 +302,17 @@ export const handleClickedCloseButton = async evt => {
 
 /**
  * handle tab close button click
- * @param {!Object} evt - Event
- * @returns {AsyncFunction} - handleClickedCloseButton()
+ *
+ * @param {!object} evt - Event
+ * @returns {Function} - handleClickedCloseButton()
  */
 export const tabCloseOnClick = evt =>
   handleClickedCloseButton(evt).catch(throwErr);
 
 /**
  * add tab close click listener
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const addTabCloseClickListener = async elm => {
@@ -312,8 +325,9 @@ export const addTabCloseClickListener = async elm => {
 /* contextual identities */
 /**
  * set contextual identities icon
- * @param {Object} elm - element
- * @param {Object} info - contextual identities info
+ *
+ * @param {object} elm - element
+ * @param {object} info - contextual identities info
  * @returns {void}
  */
 export const setContextualIdentitiesIcon = async (elm, info) => {
@@ -333,7 +347,8 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
 /* highlight */
 /**
  * add hightlight class to tab
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {Promise.<Array>} - results of each handler
  */
 export const addHighlight = async elm => {
@@ -358,6 +373,7 @@ export const addHighlight = async elm => {
 
 /**
  * add highlight class to tabs
+ *
  * @param {Array} tabIds - array of tab ID
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -377,7 +393,8 @@ export const addHighlightToTabs = async tabIds => {
 
 /**
  * remove hightlight class from tab
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {Promise.<Array>} - results of each handler
  */
 export const removeHighlight = async elm => {
@@ -402,8 +419,9 @@ export const removeHighlight = async elm => {
 
 /**
  * toggle highlight class of tab
- * @param {Object} elm - element
- * @returns {AsyncFunction} - addHighlight() / removeHightlight()
+ *
+ * @param {object} elm - element
+ * @returns {Function} - addHighlight() / removeHightlight()
  */
 export const toggleHighlight = async elm => {
   let func;

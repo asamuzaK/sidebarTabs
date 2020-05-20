@@ -18,6 +18,7 @@ import {
 
 /**
  * send message
+ *
  * @param {*} msg - message
  * @returns {void}
  */
@@ -29,8 +30,9 @@ export const sendMsg = async msg => {
 
 /**
  * init extension
+ *
  * @param {boolean} init - init
- * @returns {?AsyncFunction} - sendMessage()
+ * @returns {?Function} - sendMessage()
  */
 export const initExt = async (init = false) => {
   let func;
@@ -44,8 +46,9 @@ export const initExt = async (init = false) => {
 
 /**
  * init custom theme
+ *
  * @param {boolean} init - init
- * @returns {?AsyncFunction} - sendMessage()
+ * @returns {?Function} - sendMessage()
  */
 export const initCustomTheme = async (init = false) => {
   let func;
@@ -59,8 +62,9 @@ export const initCustomTheme = async (init = false) => {
 
 /**
  * request custom theme
+ *
  * @param {boolean} bool - bool
- * @returns {?AsyncFunction} - sendMessage()
+ * @returns {?Function} - sendMessage()
  */
 export const requestCustomTheme = async (bool = false) => {
   let func;
@@ -74,8 +78,9 @@ export const requestCustomTheme = async (bool = false) => {
 
 /**
  * create pref
- * @param {Object} elm - element
- * @returns {Object} - pref data
+ *
+ * @param {object} elm - element
+ * @returns {object} - pref data
  */
 export const createPref = async (elm = {}) => {
   const {dataset, id} = elm;
@@ -91,7 +96,8 @@ export const createPref = async (elm = {}) => {
 
 /**
  * store pref
- * @param {!Object} evt - Event
+ *
+ * @param {!object} evt - Event
  * @returns {Promise.<Array>} - results of each handler
  */
 export const storePref = async evt => {
@@ -134,7 +140,8 @@ export const storePref = async evt => {
 /* custom theme */
 /**
  * toggle custom theme settings
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {void}
  */
 export const toggleCustomThemeSettings = evt => {
@@ -152,6 +159,7 @@ export const toggleCustomThemeSettings = evt => {
 
 /**
  * add event listener to custom theme radio button
+ *
  * @returns {void}
  */
 export const addCustomThemeListener = async () => {
@@ -163,7 +171,8 @@ export const addCustomThemeListener = async () => {
 
 /**
  * set custom theme value
- * @param {Object} obj - values
+ *
+ * @param {object} obj - values
  * @returns {void}
  */
 export const setCustomThemeValue = async (obj = {}) => {
@@ -184,7 +193,8 @@ export const setCustomThemeValue = async (obj = {}) => {
 
 /**
  * handle init custom theme click
- * @param {Object} evt - Event
+ *
+ * @param {object} evt - Event
  * @returns {Promise.<Array>} - result of each handler
  */
 export const handleInitCustomThemeClick = evt => {
@@ -196,6 +206,7 @@ export const handleInitCustomThemeClick = evt => {
 
 /**
  * add event listener to init custom theme button
+ *
  * @returns {void}
  */
 export const addInitCustomThemeListener = async () => {
@@ -208,8 +219,9 @@ export const addInitCustomThemeListener = async () => {
 /* html */
 /**
  * handle init extension click
- * @param {!Object} evt - event
- * @returns {AsyncFunction} - initExt()
+ *
+ * @param {!object} evt - event
+ * @returns {Function} - initExt()
  */
 export const handleInitExtClick = evt => {
   const {currentTarget, target} = evt;
@@ -220,6 +232,7 @@ export const handleInitExtClick = evt => {
 
 /**
  * add event listener to init button
+ *
  * @returns {void}
  */
 export const addInitExtensionListener = async () => {
@@ -231,13 +244,15 @@ export const addInitExtensionListener = async () => {
 
 /**
  * handle input change
- * @param {!Object} evt - Event
- * @returns {AsyncFunction} - storePref()
+ *
+ * @param {!object} evt - Event
+ * @returns {Function} - storePref()
  */
 export const handleInputChange = evt => storePref(evt).catch(throwErr);
 
 /**
  * add event listener to input elements
+ *
  * @returns {void}
  */
 export const addInputChangeListener = async () => {
@@ -249,7 +264,8 @@ export const addInputChangeListener = async () => {
 
 /**
  * set html input value
- * @param {Object} data - storage data
+ *
+ * @param {object} data - storage data
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setHtmlInputValue = async (data = {}) => {
@@ -283,6 +299,7 @@ export const setHtmlInputValue = async (data = {}) => {
 
 /**
  * set html input values from storage
+ *
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setValuesFromStorage = async () => {
@@ -302,8 +319,8 @@ export const setValuesFromStorage = async () => {
 /* runtime message */
 /**
  * handle runtime message
- * @param {!Object} msg - message
- * @param {!Object} sender - sender
+ *
+ * @param {!object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {

@@ -28,6 +28,7 @@ import {
 
 /**
  * restore sidebar tab containers
+ *
  * @returns {void}
  */
 export const restoreTabContainers = async () => {
@@ -50,7 +51,8 @@ export const restoreTabContainers = async () => {
 
 /**
  * collapse tab group
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const collapseTabGroup = async elm => {
@@ -69,7 +71,8 @@ export const collapseTabGroup = async elm => {
 
 /**
  * expand tab group
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const expandTabGroup = async elm => {
@@ -86,6 +89,7 @@ export const expandTabGroup = async elm => {
 
 /**
  * toggle enable / disable tab grouping
+ *
  * @returns {void}
  */
 export const toggleTabGrouping = async () => {
@@ -114,7 +118,8 @@ export const toggleTabGrouping = async () => {
 
 /**
  * toggle tab group collapsed state
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @param {boolean} activate - activate tab
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -139,7 +144,8 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
 
 /**
  * toggle multiple tab groups collapsed state
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {Promise.<Array>} - results of each handler
  */
 export const toggleTabGroupsCollapsedState = async elm => {
@@ -164,7 +170,8 @@ export const toggleTabGroupsCollapsedState = async elm => {
 
 /**
  * collapse multiple tab groups
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {Promise.<Array>} - results of each handler
  */
 export const collapseTabGroups = async elm => {
@@ -185,8 +192,9 @@ export const collapseTabGroups = async elm => {
 
 /**
  * handle individual tab group collapsed state
- * @param {!Object} evt - Event
- * @returns {?AsyncFunction} - promise chain
+ *
+ * @param {!object} evt - Event
+ * @returns {?Function} - promise chain
  */
 export const handleTabGroupCollapsedState = evt => {
   const {target} = evt;
@@ -202,8 +210,9 @@ export const handleTabGroupCollapsedState = evt => {
 
 /**
  * handle multiple tab groups collapsed state
- * @param {!Object} evt - Event
- * @returns {?AsyncFunction} - promise chain
+ *
+ * @param {!object} evt - Event
+ * @returns {?Function} - promise chain
  */
 export const handleTabGroupsCollapsedState = evt => {
   const {target} = evt;
@@ -219,7 +228,8 @@ export const handleTabGroupsCollapsedState = evt => {
 
 /**
  * add tab context click listener
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @param {boolean} multi - handle multiple tab groups
  * @returns {void}
  */
@@ -238,6 +248,7 @@ export const addTabContextClickListener = async (elm, multi) => {
 
 /**
  * replace tab context click listener
+ *
  * @param {boolean} multi - handle multiple tab groups
  * @returns {Promise.<Array>} - result of each handler
  */
@@ -252,7 +263,8 @@ export const replaceTabContextClickListener = async multi => {
 
 /**
  * expand activated collapsed tab
- * @returns {?AsyncFunction} - toggleTabGroupCollapsedState()
+ *
+ * @returns {?Function} - toggleTabGroupCollapsedState()
  */
 export const expandActivatedCollapsedTab = async () => {
   const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
@@ -269,9 +281,10 @@ export const expandActivatedCollapsedTab = async () => {
 
 /**
  * detach tabs from tab group
+ *
  * @param {Array} nodes - array of node
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - moveTabsInOrder()
+ * @returns {?Function} - moveTabsInOrder()
  */
 export const detachTabsFromGroup = async (nodes, windowId) => {
   if (!Array.isArray(nodes)) {
@@ -314,8 +327,9 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
 
 /**
  * group selected tabs
+ *
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - moveTabsInOrder()
+ * @returns {?Function} - moveTabsInOrder()
  */
 export const groupSelectedTabs = async windowId => {
   const selectedTabs =
@@ -361,9 +375,10 @@ export const groupSelectedTabs = async windowId => {
 
 /**
  * group same container tabs
+ *
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - moveTabsInOrder()
+ * @returns {?Function} - moveTabsInOrder()
  */
 export const groupSameContainerTabs = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
@@ -418,9 +433,10 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
 
 /**
  * group same domain tabs
+ *
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - moveTabsInOrder()
+ * @returns {?Function} - moveTabsInOrder()
  */
 export const groupSameDomainTabs = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
@@ -476,7 +492,8 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
 
 /**
  * ungroup tabs
- * @param {Object} node - tab group container
+ *
+ * @param {object} node - tab group container
  * @returns {void}
  */
 export const ungroupTabs = async node => {

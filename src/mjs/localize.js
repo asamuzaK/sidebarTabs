@@ -10,7 +10,8 @@ import {DATA_I18N, EXT_LOCALE} from "./constant.js";
 
 /**
  * localize attribute value
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const localizeAttr = async elm => {
@@ -38,6 +39,7 @@ export const localizeAttr = async elm => {
 
 /**
  * localize html
+ *
  * @returns {void}
  */
 export const localizeHtml = async () => {

@@ -25,6 +25,7 @@ import {
 /* bookmark */
 /**
  * bookmark tabs
+ *
  * @param {Array} nodes - array of node
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -49,8 +50,9 @@ export const bookmarkTabs = async nodes => {
 /* close */
 /**
  * close tabs
+ *
  * @param {Array} nodes - array of node
- * @returns {?AsyncFunction} - removeTab()
+ * @returns {?Function} - removeTab()
  */
 export const closeTabs = async nodes => {
   if (!Array.isArray(nodes)) {
@@ -66,8 +68,9 @@ export const closeTabs = async nodes => {
 
 /**
  * close other tabs
+ *
  * @param {Array} nodes - array of node
- * @returns {?AsyncFunction} - removeTab()
+ * @returns {?Function} - removeTab()
  */
 export const closeOtherTabs = async nodes => {
   if (!Array.isArray(nodes)) {
@@ -93,8 +96,9 @@ export const closeOtherTabs = async nodes => {
 
 /**
  * close tabs to the end
- * @param {Object} elm - element
- * @returns {?AsyncFunction} - removeTab()
+ *
+ * @param {object} elm - element
+ * @returns {?Function} - removeTab()
  */
 export const closeTabsToEnd = async elm => {
   let func;
@@ -122,8 +126,9 @@ export const closeTabsToEnd = async elm => {
 /* create */
 /**
  * create tabs in order
+ *
  * @param {Array} arr - array of option
- * @returns {?AsyncFunction} - recurse createTabsInOrder()
+ * @returns {?Function} - recurse createTabsInOrder()
  */
 export const createTabsInOrder = async arr => {
   if (!Array.isArray(arr)) {
@@ -143,10 +148,11 @@ export const createTabsInOrder = async arr => {
 /* contextual IDs */
 /**
  * reopen tabs in container
+ *
  * @param {Array} nodes - array of node
  * @param {string} cookieId - cookie store ID
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - createTabsInOrder()
+ * @returns {?Function} - createTabsInOrder()
  */
 export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
   if (!Array.isArray(nodes)) {
@@ -184,9 +190,10 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
 /* dupe */
 /**
  * duplicate tab
- * @param {Object} tabId - tab ID
+ *
+ * @param {object} tabId - tab ID
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - createTab()
+ * @returns {?Function} - createTab()
  */
 export const dupeTab = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
@@ -210,6 +217,7 @@ export const dupeTab = async (tabId, windowId) => {
 
 /**
  * duplicate tabs
+ *
  * @param {Array} nodes - array of node
  * @param {number} windowId - window ID
  * @returns {Promise.<Array>} - results of each handler
@@ -231,9 +239,10 @@ export const dupeTabs = async (nodes, windowId) => {
 /* highlight */
 /**
  * highlight tabs
+ *
  * @param {Array} nodes - array of node
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - highlightTab()
+ * @returns {?Function} - highlightTab()
  */
 export const highlightTabs = async (nodes, windowId) => {
   if (!Array.isArray(nodes)) {
@@ -257,9 +266,10 @@ export const highlightTabs = async (nodes, windowId) => {
 /* move */
 /**
  * move tabs in order
+ *
  * @param {Array} arr - array of tab info
  * @param {number} windowId - window ID
- * @returns {?AsyncFunction} - recurse moveTabsInOrder()
+ * @returns {?Function} - recurse moveTabsInOrder()
  */
 export const moveTabsInOrder = async (arr, windowId) => {
   if (!Array.isArray(arr)) {
@@ -288,6 +298,7 @@ export const moveTabsInOrder = async (arr, windowId) => {
 
 /**
  * move tabs to end
+ *
  * @param {Array} nodes - array of node
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
@@ -361,6 +372,7 @@ export const moveTabsToEnd = async (nodes, tabId, windowId) => {
 
 /**
  * move tabs to start
+ *
  * @param {Array} nodes - array of node
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
@@ -437,8 +449,9 @@ export const moveTabsToStart = async (nodes, tabId, windowId) => {
 
 /**
  * move tabs to new window
+ *
  * @param {Array} nodes - array of node
- * @returns {?AsyncFunc} - moveTab()
+ * @returns {?Function} - moveTab()
  */
 export const moveTabsToNewWindow = async nodes => {
   if (!Array.isArray(nodes)) {
@@ -473,6 +486,7 @@ export const moveTabsToNewWindow = async nodes => {
 /* mute */
 /**
  * mute tabs
+ *
  * @param {Array} nodes - array of node
  * @param {boolean} muted - muted
  * @returns {Promise.<Array>} - results of each handler
@@ -494,8 +508,9 @@ export const muteTabs = async (nodes, muted) => {
 /* new tab */
 /**
  * create new tab
+ *
  * @param {number} windowId - window ID
- * @returns {AsyncFunction} - createTab()
+ * @returns {Function} - createTab()
  */
 export const createNewTab = async windowId => {
   if (!Number.isInteger(windowId)) {
@@ -509,9 +524,10 @@ export const createNewTab = async windowId => {
 
 /**
  * create new tab in container
+ *
  * @param {string} cookieId - cookie store ID
  * @param {number} windowId - window ID
- * @returns {AsyncFunction} - createTab()
+ * @returns {Function} - createTab()
  */
 export const createNewTabInContainer = async (cookieId, windowId) => {
   if (!isString(cookieId)) {
@@ -530,7 +546,8 @@ export const createNewTabInContainer = async (cookieId, windowId) => {
 /* pin */
 /**
  * pin tabs
- * @param {Object} nodes - array of node
+ *
+ * @param {object} nodes - array of node
  * @param {boolean} pinned - pinned
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -551,6 +568,7 @@ export const pinTabs = async (nodes, pinned) => {
 /* reload */
 /**
  * reload tabs
+ *
  * @param {Array} nodes - array of node
  * @returns {Promise.<Array>} - results of each handler
  */

@@ -28,12 +28,13 @@ import {
   HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, TAB_QUERY,
 } from "./constant.js";
 const {WINDOW_ID_NONE} = windows;
-
+const HALF = 0.5;
 /**
  * move dropped tabs
- * @param {Object} dropTarget - drop target
+ *
+ * @param {object} dropTarget - drop target
  * @param {Array} draggedIds - Array of dragged tab ID
- * @param {Object} opt - options
+ * @param {object} opt - options
  * @returns {Promise.<Array>} - result of each handler
  */
 export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
@@ -106,8 +107,9 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
 
 /**
  * get target for dragged tabs
- * @param {Object} dropTarget - drop target
- * @param {Object} opt - options
+ *
+ * @param {object} dropTarget - drop target
+ * @param {object} opt - options
  * @returns {number} - index;
  */
 export const getTargetForDraggedTabs = (dropTarget, opt) => {
@@ -139,8 +141,9 @@ export const getTargetForDraggedTabs = (dropTarget, opt) => {
 
 /**
  * get drop target index for dragged tabs
- * @param {Object} dropTarget - drop target
- * @param {Object} opt - options
+ *
+ * @param {object} dropTarget - drop target
+ * @param {object} opt - options
  * @returns {number} - index;
  */
 export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
@@ -180,9 +183,10 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
 
 /**
  * extract dropped tabs data
- * @param {Object} dropTarget - target element
- * @param {Object} data - dragged data
- * @param {Object} keyOpt - key options
+ *
+ * @param {object} dropTarget - target element
+ * @param {object} data - dragged data
+ * @param {object} keyOpt - key options
  * @returns {Promise.<Array>} - results of each handler
  */
 export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
@@ -265,7 +269,8 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
 
 /**
  * handle drop
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleDrop = evt => {
@@ -326,7 +331,8 @@ export const handleDrop = evt => {
 
 /**
  * handle dragend
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {void}
  */
 export const handleDragEnd = evt => {
@@ -342,7 +348,8 @@ export const handleDragEnd = evt => {
 
 /**
  * handle dragleave
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {void}
  */
 export const handleDragLeave = evt => {
@@ -357,7 +364,8 @@ export const handleDragLeave = evt => {
 
 /**
  * handle dragover
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {void}
  */
 export const handleDragOver = evt => {
@@ -378,7 +386,7 @@ export const handleDragOver = evt => {
     const isPinned = dropTarget.classList.contains(PINNED);
     if (isPinned && pinned || !(isPinned || pinned)) {
       const {bottom, top} = dropTarget.getBoundingClientRect();
-      if (clientY > (bottom - top) / 2 + top) {
+      if (clientY > (bottom - top) * HALF + top) {
         dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
         dropTarget.classList.remove(DROP_TARGET_BEFORE);
       } else {
@@ -397,7 +405,8 @@ export const handleDragOver = evt => {
 
 /**
  * handle dragenter
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {void}
  */
 export const handleDragEnter = evt => {
@@ -424,8 +433,9 @@ export const handleDragEnter = evt => {
 
 /**
  * handle dragstart
- * @param {!Object} evt - event
- * @param {Object} opt - options
+ *
+ * @param {!object} evt - event
+ * @param {object} opt - options
  * @returns {void}
  */
 export const handleDragStart = (evt, opt = {}) => {

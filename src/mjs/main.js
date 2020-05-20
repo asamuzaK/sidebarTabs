@@ -106,6 +106,7 @@ export const sidebar = {
 
 /**
  * set sidebar
+ *
  * @returns {void}
  */
 export const setSidebar = async () => {
@@ -156,7 +157,8 @@ export const setSidebar = async () => {
 
 /**
  * set context
- * @param {Object} elm - Element
+ *
+ * @param {object} elm - Element
  * @returns {void}
  */
 export const setContext = async elm => {
@@ -165,6 +167,7 @@ export const setContext = async elm => {
 
 /**
  * set contextual identities cookieStoreIds
+ *
  * @returns {void}
  */
 export const setContextualIds = async () => {
@@ -181,7 +184,8 @@ export const setContextualIds = async () => {
 
 /**
  * set last closed tab
- * @param {Object} tab - tabs.Tab
+ *
+ * @param {object} tab - tabs.Tab
  * @returns {void}
  */
 export const setLastClosedTab = async tab => {
@@ -190,6 +194,7 @@ export const setLastClosedTab = async tab => {
 
 /**
  * set pinned tabs waiting to move
+ *
  * @param {?Array} arr - array of tabs
  * @returns {void}
  */
@@ -199,6 +204,7 @@ export const setPinnedTabsWaitingToMove = async arr => {
 
 /**
  * set tabs waiting to move
+ *
  * @param {?Array} arr - array of tabs
  * @returns {void}
  */
@@ -208,6 +214,7 @@ export const setTabsWaitingToMove = async arr => {
 
 /**
  * init sidebar
+ *
  * @param {boolean} bool - bypass cache
  * @returns {void}
  */
@@ -220,7 +227,8 @@ export const initSidebar = async (bool = false) => {
 
 /**
  * get last closed tab
- * @returns {Object} - tabs.Tab
+ *
+ * @returns {object} - tabs.Tab
  */
 export const getLastClosedTab = async () => {
   const {windowId} = sidebar;
@@ -231,7 +239,8 @@ export const getLastClosedTab = async () => {
 
 /**
  * undo close tab
- * @returns {?AsyncFunction} - restoreSession()
+ *
+ * @returns {?Function} - restoreSession()
  */
 export const undoCloseTab = async () => {
   const {lastClosedTab} = sidebar;
@@ -246,7 +255,8 @@ export const undoCloseTab = async () => {
 /* DnD */
 /**
  * create DnD data
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {?Function} - handleDragStart()
  */
 export const createDnDData = evt => {
@@ -261,7 +271,8 @@ export const createDnDData = evt => {
 
 /**
  * add DnD event listener
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const addDnDEventListener = async elm => {
@@ -278,8 +289,9 @@ export const addDnDEventListener = async elm => {
 /* sidebar tab event handlers */
 /**
  * handle create new tab
- * @param {Object} evt - event
- * @returns {?AsyncFunction} - createNewTab()
+ *
+ * @param {object} evt - event
+ * @returns {?Function} - createNewTab()
  */
 export const handleCreateNewTab = evt => {
   const {button, currentTarget, target, type} = evt;
@@ -298,7 +310,8 @@ export const handleCreateNewTab = evt => {
 
 /**
  * handle clicked tab
- * @param {!Object} evt - event
+ *
+ * @param {!object} evt - event
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleClickedTab = evt => {
@@ -349,7 +362,8 @@ export const handleClickedTab = evt => {
 
 /**
  * add sidebar tab click listener
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @returns {void}
  */
 export const addTabClickListener = async elm => {
@@ -362,7 +376,8 @@ export const addTabClickListener = async elm => {
 
 /**
  * toggle tab dblclick listener
- * @param {Object} elm - element
+ *
+ * @param {object} elm - element
  * @param {boolean} bool - add or remove
  * @returns {void}
  */
@@ -379,6 +394,7 @@ export const toggleTabDblClickListener = async (elm, bool) => {
 
 /**
  * replace tab dblclick listeners
+ *
  * @param {boolean} bool - add or remove
  * @returns {Promise.<Array>} - result of each handler
  */
@@ -395,7 +411,8 @@ export const replaceTabDblClickListeners = async (bool = false) => {
 /* tab handlers */
 /**
  * handle activated tab
- * @param {!Object} info - activated info
+ *
+ * @param {!object} info - activated info
  * @returns {void}
  */
 export const handleActivatedTab = async info => {
@@ -430,7 +447,8 @@ export const handleActivatedTab = async info => {
 
 /**
  * handle created tab
- * @param {!Object} tabsTab - tabs.Tab
+ *
+ * @param {!object} tabsTab - tabs.Tab
  * @param {boolean} emulate - emulate tab
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -592,9 +610,10 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
 
 /**
  * handle attached tab
+ *
  * @param {!number} tabId - tab ID
- * @param {!Object} info - attached tab info
- * @returns {?AsyncFunction} - tabs.Tab
+ * @param {!object} info - attached tab info
+ * @returns {?Function} - tabs.Tab
  */
 export const handleAttachedTab = async (tabId, info) => {
   const {newPosition, newWindowId} = info;
@@ -619,8 +638,9 @@ export const handleAttachedTab = async (tabId, info) => {
 
 /**
  * handle detached tab
+ *
  * @param {!number} tabId - tab ID
- * @param {!Object} info - detached tab info
+ * @param {!object} info - detached tab info
  * @returns {void}
  */
 export const handleDetachedTab = async (tabId, info) => {
@@ -640,7 +660,8 @@ export const handleDetachedTab = async (tabId, info) => {
 
 /**
  * handle highlighted tab
- * @param {!Object} info - info
+ *
+ * @param {!object} info - info
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleHighlightedTab = async info => {
@@ -680,9 +701,10 @@ export const handleHighlightedTab = async info => {
 
 /**
  * handle moved tab
+ *
  * @param {!number} tabId - tab ID
- * @param {!Object} info - moved info
- * @returns {?AsyncFunction} - promise
+ * @param {!object} info - moved info
+ * @returns {?Function} - promise
  */
 export const handleMovedTab = async (tabId, info) => {
   const {fromIndex, toIndex, windowId} = info;
@@ -820,8 +842,9 @@ export const handleMovedTab = async (tabId, info) => {
 
 /**
  * handle removed tab
+ *
  * @param {!number} tabId - tab ID
- * @param {!Object} info - removed tab info
+ * @param {!object} info - removed tab info
  * @returns {void}
  */
 export const handleRemovedTab = async (tabId, info) => {
@@ -840,9 +863,10 @@ export const handleRemovedTab = async (tabId, info) => {
 
 /**
  * handle updated tab
+ *
  * @param {!number} tabId - tab ID
- * @param {!Object} info - updated tab info
- * @param {!Object} tabsTab - tabs.Tab
+ * @param {!object} info - updated tab info
+ * @param {!object} tabsTab - tabs.Tab
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleUpdatedTab = async (tabId, info, tabsTab) => {
@@ -927,8 +951,9 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
 /* context menu */
 /**
  * handle clicked menu
- * @param {!Object} info - clicked menu info
- * @returns {AsyncFunction} - clicked menu handler
+ *
+ * @param {!object} info - clicked menu info
+ * @returns {Function} - clicked menu handler
  */
 export const handleClickedMenu = async info => {
   const {menuItemId} = info;
@@ -1116,8 +1141,9 @@ export const handleClickedMenu = async info => {
 /* events */
 /**
  * handle event
- * @param {!Object} evt - event
- * @returns {Promse.<Array>} - results of each handler
+ *
+ * @param {!object} evt - event
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const handleEvt = async evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
@@ -1539,8 +1565,9 @@ export const handleEvt = async evt => {
 
 /**
  * handle contextmenu event
- * @param {!Object} evt - event
- * @returns {AsyncFunction} - overrideContextMenu()
+ *
+ * @param {!object} evt - event
+ * @returns {Function} - overrideContextMenu()
  */
 export const handleContextmenuEvt = async evt => {
   const {target} = evt;
@@ -1556,8 +1583,8 @@ export const handleContextmenuEvt = async evt => {
 /* runtime message */
 /**
  * handle runtime message
- * @param {!Object} msg - message
- * @param {!Object} sender - sender
+ *
+ * @param {!object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {
@@ -1582,7 +1609,8 @@ export const handleMsg = async msg => {
 
 /**
  * request sidebar state update
- * @returns {?AsyncFunction} - sendMessage()
+ *
+ * @returns {?Function} - sendMessage()
  */
 export const requestSidebarStateUpdate = async () => {
   const {windowId} = sidebar;
@@ -1605,8 +1633,9 @@ export const requestSidebarStateUpdate = async () => {
 /* storage */
 /**
  * set variable
+ *
  * @param {string} item - item
- * @param {Object} obj - value object
+ * @param {object} obj - value object
  * @param {boolean} changed - changed
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -1669,7 +1698,8 @@ export const setVar = async (item, obj, changed = false) => {
 
 /**
  * set variables
- * @param {Object} data - data
+ *
+ * @param {object} data - data
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setVars = async (data = {}) => {
@@ -1686,6 +1716,7 @@ export const setVars = async (data = {}) => {
 /* restore tabs */
 /**
  * restore highlighted tabs
+ *
  * @returns {void}
  */
 export const restoreHighlightedTabs = async () => {
@@ -1709,6 +1740,7 @@ export const restoreHighlightedTabs = async () => {
 
 /**
  * restore tab groups
+ *
  * @returns {void}
  */
 export const restoreTabGroups = async () => {
@@ -1780,6 +1812,7 @@ export const restoreTabGroups = async () => {
 
 /**
  * emulate tabs in order
+ *
  * @param {Array} arr - array of tabs.Tab
  * @returns {void}
  */
@@ -1794,7 +1827,8 @@ export const emulateTabsInOrder = async arr => {
 
 /**
  * emulate tabs in sidebar
- * @returns {AsyncFunction} - emulateTabsInOrder()
+ *
+ * @returns {Function} - emulateTabsInOrder()
  */
 export const emulateTabs = async () => {
   const allTabs = await getAllTabsInWindow();
@@ -1803,6 +1837,7 @@ export const emulateTabs = async () => {
 
 /**
  * set main
+ *
  * @returns {void} - result of each handler
  */
 export const setMain = async () => {

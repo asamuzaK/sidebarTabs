@@ -9,7 +9,9 @@ import {
 
 /* constants */
 const DEG = 360;
+const DOUBLE = 2;
 const GRAD = 400;
+const HALF = 0.5;
 const HEX = 16;
 const INTERVAL = 60;
 const NUM_MAX = 255;
@@ -175,6 +177,7 @@ export const colorname = {
 
 /**
  * convert angle to deg
+ *
  * @param {string} angle - angle
  * @returns {number} - deg
  */
@@ -192,7 +195,7 @@ export const convertAngleToDeg = async angle => {
         deg = parseFloat(value) * DEG / GRAD;
         break;
       case "rad":
-        deg = parseFloat(value) * DEG / (2 * Math.PI);
+        deg = parseFloat(value) * DEG / (Math.PI * DOUBLE);
         break;
       case "turn":
         deg = parseFloat(value) * DEG;
@@ -214,6 +217,7 @@ export const convertAngleToDeg = async angle => {
 
 /**
  * parse hsl()
+ *
  * @param {string} value - value
  * @returns {Array} - [r, g, b, a]
  */
@@ -252,7 +256,7 @@ export const parseHsl = async value => {
   if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(s)) ||
         Number.isNaN(Number(l)) || Number.isNaN(Number(a)))) {
     let max, min, r, g, b;
-    if (l < PCT_MAX / 2) {
+    if (l < PCT_MAX * HALF) {
       max = NUM_MAX / PCT_MAX * (l + l * (s / PCT_MAX));
       min = NUM_MAX / PCT_MAX * (l - l * (s / PCT_MAX));
     } else {
@@ -265,23 +269,23 @@ export const parseHsl = async value => {
       g = h / INTERVAL * (max - min) + min;
       b = min;
     // < 120
-    } else if (h < 2 * INTERVAL) {
-      r = (2 * INTERVAL - h) / INTERVAL * (max - min) + min;
+    } else if (h < INTERVAL * DOUBLE) {
+      r = (INTERVAL * DOUBLE - h) / INTERVAL * (max - min) + min;
       g = max;
       b = min;
     // < 180
-    } else if (h < DEG / 2) {
+    } else if (h < DEG * HALF) {
       r = min;
       g = max;
-      b = (h - 2 * INTERVAL) / INTERVAL * (max - min) + min;
+      b = (h - INTERVAL * DOUBLE) / INTERVAL * (max - min) + min;
     // < 240
-    } else if (h < DEG / 2 + INTERVAL) {
+    } else if (h < DEG * HALF + INTERVAL) {
       r = min;
-      g = (DEG / 2 + INTERVAL - h) / INTERVAL * (max - min) + min;
+      g = (DEG * HALF + INTERVAL - h) / INTERVAL * (max - min) + min;
       b = max;
     // < 300
     } else if (h < DEG - INTERVAL) {
-      r = (h - INTERVAL - DEG / 2) / INTERVAL * (max - min) + min;
+      r = (h - INTERVAL - DEG * HALF) / INTERVAL * (max - min) + min;
       g = min;
       b = max;
     // < 360
@@ -302,6 +306,7 @@ export const parseHsl = async value => {
 
 /**
  * parse rgb()
+ *
  * @param {string} value - value
  * @returns {Array} - [r, g, b, a]
  */
@@ -363,6 +368,7 @@ export const parseRgb = async value => {
 
 /**
  * parse hex-color
+ *
  * @param {string} value - value
  * @returns {Array} - [r, g, b, a]
  */
@@ -415,6 +421,7 @@ export const parseHex = async value => {
 
 /**
  * number to hex string
+ *
  * @param {number} value - value
  * @returns {string} - hex
  */
@@ -434,6 +441,7 @@ export const numberToHexString = async value => {
 
 /**
  * convert color to hex
+ *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
  * @returns {?string} - hex
@@ -504,6 +512,7 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * blend two colors
+ *
  * @param {string} blend - color to blend
  * @param {string} base - base color
  * @returns {?string} - hex

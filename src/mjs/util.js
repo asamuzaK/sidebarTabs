@@ -18,8 +18,9 @@ import {
 
 /**
  * get template
+ *
  * @param {string} id - template ID
- * @returns {Object} - document fragment
+ * @returns {object} - document fragment
  */
 export const getTemplate = id => {
   if (!isString(id)) {
@@ -36,8 +37,9 @@ export const getTemplate = id => {
 
 /**
  * get sidebar tab container from parent node
- * @param {Object} node - node
- * @returns {Object} - sidebar tab container
+ *
+ * @param {object} node - node
+ * @returns {object} - sidebar tab container
  */
 export const getSidebarTabContainer = node => {
   let container;
@@ -54,7 +56,8 @@ export const getSidebarTabContainer = node => {
 
 /**
  * restore sidebar tab container
- * @param {Object} container - tab container
+ *
+ * @param {object} container - tab container
  * @returns {void}
  */
 export const restoreTabContainer = container => {
@@ -74,8 +77,9 @@ export const restoreTabContainer = container => {
 
 /**
  * get sidebar tab from parent node
- * @param {Object} node - node
- * @returns {Object} - sidebar tab
+ *
+ * @param {object} node - node
+ * @returns {object} - sidebar tab
  */
 export const getSidebarTab = node => {
   let tab;
@@ -92,7 +96,8 @@ export const getSidebarTab = node => {
 
 /**
  * get sidebar tab ID
- * @param {Object} node - node
+ *
+ * @param {object} node - node
  * @returns {?number} - tab ID
  */
 export const getSidebarTabId = node => {
@@ -110,6 +115,7 @@ export const getSidebarTabId = node => {
 
 /**
  * get sidebar tab IDs
+ *
  * @param {Array} nodes - array of node
  * @returns {Array} - array of tab IDs
  */
@@ -129,7 +135,8 @@ export const getSidebarTabIds = nodes => {
 
 /**
  * get sidebar tab index
- * @param {Object} node - node
+ *
+ * @param {object} node - node
  * @returns {?number} - index
  */
 export const getSidebarTabIndex = node => {
@@ -154,8 +161,9 @@ export const getSidebarTabIndex = node => {
 
 /**
  * get tabs in range
- * @param {Object} tabA - tab A
- * @param {Object} tabB - tab B
+ *
+ * @param {object} tabA - tab A
+ * @param {object} tabB - tab B
  * @returns {Array} - array of tabs
  */
 export const getTabsInRange = (tabA, tabB) => {
@@ -181,7 +189,8 @@ export const getTabsInRange = (tabA, tabB) => {
 
 /**
  * is newtab
- * @param {Object} node - node
+ *
+ * @param {object} node - node
  * @returns {boolean} - result
  */
 export const isNewTab = node => {
@@ -199,8 +208,9 @@ export const isNewTab = node => {
 
 /**
  * get tab list from sessions
+ *
  * @param {string} key - key
- * @returns {Object} - tab list
+ * @returns {object} - tab list
  */
 export const getSessionTabList = async key => {
   if (!isString(key)) {
@@ -218,6 +228,7 @@ export const getSessionTabList = async key => {
 
 /**
  * set tab list to sessions
+ *
  * @returns {void}
  */
 export const setSessionTabList = async () => {
@@ -257,8 +268,9 @@ export const setSessionTabList = async () => {
 
 /**
  * activate tab
- * @param {Object} elm - element
- * @returns {?AsyncFunction} - updateTab()
+ *
+ * @param {object} elm - element
+ * @returns {?Function} - updateTab()
  */
 export const activateTab = async elm => {
   const tabId = getSidebarTabId(elm);
@@ -273,7 +285,8 @@ export const activateTab = async elm => {
 
 /**
  * scroll tab into view
- * @param {Object} elm - Element
+ *
+ * @param {object} elm - Element
  * @returns {void}
  */
 export const scrollTabIntoView = async elm => {
@@ -302,6 +315,7 @@ export const scrollTabIntoView = async elm => {
 
 /**
  * create URL match string
+ *
  * @param {string} url - url
  * @returns {string} - match string
  */
@@ -333,6 +347,7 @@ export const createUrlMatchString = url => {
 
 /**
  * store closeTabsByDoubleClick user value
+ *
  * @param {boolean} bool - browserSettings enabled
  * @returns {void}
  */

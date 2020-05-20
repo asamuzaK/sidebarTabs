@@ -100,6 +100,7 @@ export const currentTheme = new Map();
 
 /**
  * set current theme colors map
+ *
  * @param {string} key - key
  * @param {string} value - value
  * @returns {void}
@@ -117,7 +118,8 @@ export const setCurrentThemeColors = async (key, value) => {
 
 /**
  * get current theme base values
- * @returns {Object} - values
+ *
+ * @returns {object} - values
  */
 export const getCurrentThemeBaseValues = async () => {
   const values = {};
@@ -207,7 +209,8 @@ export const getCurrentThemeBaseValues = async () => {
 
 /**
  * get base value
- * @returns {Object} - values
+ *
+ * @returns {object} - values
  */
 export const getBaseValues = async () => {
   const appliedTheme = await getCurrentTheme();
@@ -251,6 +254,7 @@ export const getBaseValues = async () => {
 
 /**
  * set current theme value
+ *
  * @returns {void}
  */
 export const setCurrentThemeValue = async () => {
@@ -271,7 +275,8 @@ export const setCurrentThemeValue = async () => {
 
 /**
  * send current theme values
- * @returns {?AsyncFunction} - sendMessage()
+ *
+ * @returns {?Function} - sendMessage()
  */
 export const sendCurrentTheme = async () => {
   let func;
@@ -287,6 +292,7 @@ export const sendCurrentTheme = async () => {
 
 /**
  * update custom theme CSS
+ *
  * @param {string} sel - selector
  * @param {string} prop - property
  * @param {string} value - value
@@ -334,6 +340,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
 
 /**
  * delete custom theme CSS rule
+ *
  * @param {string} sel - selector
  * @returns {void}
  */
@@ -360,8 +367,9 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
 
 /**
  * init custom theme
+ *
  * @param {boolean} rem - remove storage
- * @returns {?AsyncFunction} - sendCurrentTheme()
+ * @returns {?Function} - sendCurrentTheme()
  */
 export const initCustomTheme = async (rem = false) => {
   const elm = document.getElementById(CSS_ID);
@@ -388,6 +396,7 @@ export const initCustomTheme = async (rem = false) => {
 
 /**
  * get theme
+ *
  * @returns {Array} - theme class list
  */
 export const getTheme = async () => {
@@ -425,6 +434,7 @@ export const getTheme = async () => {
 
 /**
  * set theme
+ *
  * @param {Array} themes - array of theme
  * @returns {void}
  */
@@ -464,6 +474,7 @@ export const setTheme = async themes => {
 /* tab height */
 /**
  * get tab height
+ *
  * @returns {boolean} - result
  */
 export const getTabHeight = async () => {
@@ -478,6 +489,7 @@ export const getTabHeight = async () => {
 
 /**
  * set tab height
+ *
  * @param {boolean} compact - compact
  * @returns {void}
  */
@@ -494,6 +506,7 @@ export const setTabHeight = async compact => {
 /* scrollbar */
 /**
  * get scrollbar width
+ *
  * @returns {boolean} - result
  */
 export const getScrollbarWidth = async () => {
@@ -508,6 +521,7 @@ export const getScrollbarWidth = async () => {
 
 /**
  * set scrollbar width
+ *
  * @param {boolean} narrow - narrow
  * @returns {void}
  */
@@ -523,6 +537,7 @@ export const setScrollbarWidth = async narrow => {
 
 /**
  * apply CSS
+ *
  * @returns {void}
  */
 export const applyCss = async () => {
@@ -534,6 +549,7 @@ export const applyCss = async () => {
 
 /**
  * set sidebar theme
+ *
  * @returns {void}
  */
 export const setSidebarTheme = async () => Promise.all([

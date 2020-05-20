@@ -21,6 +21,7 @@ export const sidebar = {
 
 /**
  * set sidebar state
+ *
  * @param {number} windowId - window ID
  * @returns {void}
  */
@@ -40,7 +41,8 @@ export const setSidebarState = async windowId => {
 
 /**
  * toggle sidebar
- * @returns {?AsyncFunction} - sidebarAction.close() / sidebarAction.open()
+ *
+ * @returns {?Function} - sidebarAction.close() / sidebarAction.open()
  */
 export const toggleSidebar = async () => {
   const {isOpen, windowId} = sidebar;
@@ -57,7 +59,8 @@ export const toggleSidebar = async () => {
 
 /**
  * handle runtime message
- * @param {!Object} msg - message
+ *
+ * @param {!object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {
@@ -78,8 +81,9 @@ export const handleMsg = async msg => {
 
 /**
  * handle command
+ *
  * @param {!string} cmd - command
- * @returns {?AsyncFunction} - command handler function
+ * @returns {?Function} - promise chain
  */
 export const handleCmd = async cmd => {
   if (!isString(cmd)) {
