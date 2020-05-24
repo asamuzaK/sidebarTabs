@@ -1609,7 +1609,7 @@ export const prepareTabMenuItems = async elm => {
  * handle event
  *
  * @param {!object} evt - event
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {Function} - promise chain
  */
 export const handleEvt = evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
@@ -1636,7 +1636,7 @@ export const handleEvt = evt => {
  * handle contextmenu event
  *
  * @param {!object} evt - event
- * @returns {Function} - overrideContextMenu()
+ * @returns {Function} - promise chain
  */
 export const handleContextmenuEvt = evt => {
   const {target} = evt;
