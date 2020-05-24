@@ -91,11 +91,9 @@ theme.onUpdated.addListener(info =>
   setSidebarTheme(info).then(initCustomTheme).catch(throwErr),
 );
 
-window.addEventListener("keydown", evt => handleEvt(evt).catch(throwErr), true);
-window.addEventListener("mousedown",
-                        evt => handleEvt(evt).catch(throwErr), true);
-window.addEventListener("contextmenu",
-                        evt => handleContextmenuEvt(evt).catch(throwErr));
+window.addEventListener("keydown", handleEvt, true);
+window.addEventListener("mousedown", handleEvt, true);
+window.addEventListener("contextmenu", handleContextmenuEvt);
 
 /* start up */
 document.addEventListener("DOMContentLoaded", () => Promise.all([

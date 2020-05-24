@@ -161,7 +161,7 @@ export const setSidebar = async () => {
  * @param {object} elm - Element
  * @returns {void}
  */
-export const setContext = async elm => {
+export const setContext = elm => {
   sidebar.context = elm && elm.nodeType === Node.ELEMENT_NODE && elm || null;
 };
 
@@ -1138,105 +1138,329 @@ export const handleClickedMenu = async info => {
   return Promise.all(func);
 };
 
-/* events */
 /**
- * handle event
+ * prepare contexual IDs menu items
  *
- * @param {!object} evt - event
+ * @param {string} parentId - parent ID
  * @returns {Promise.<Array>} - results of each handler
  */
-export const handleEvt = async evt => {
-  const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
-  const {contextualIds, enableTabGroup, incognito, isMac, windowId} = sidebar;
+export const prepareContexualIdsMenuItems = async parentId => {
+  if (!isString(parentId)) {
+    throw new TypeError(`Expected String but got ${getType(parentId)}.`);
+  }
   const func = [];
-  // select all tabs
-  if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
-    const allTabs = document.querySelectorAll(TAB_QUERY);
-    func.push(highlightTabs(Array.from(allTabs), windowId));
-    evt.stopPropagation();
-    evt.preventDefault();
-  // context menu
-  } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
-             button === MOUSE_BUTTON_RIGHT) {
-    const tab = getSidebarTab(target);
-    const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
-    const tabGroupMenu = menuItems[TAB_GROUP];
-    const tabKeys = [
-      TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
-      TAB_MOVE, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-    ];
-    const tabsKeys = [
-      TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
-      TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-    ];
-    const pageKeys = [TAB_CLOSE_UNDO, TAB_ALL_RELOAD, TAB_ALL_SELECT];
-    const sepKeys = ["sep-1", "sep-2", "sep-3"];
-    const allTabs = document.querySelectorAll(TAB_QUERY);
+  const {contextualIds} = sidebar;
+  if (Array.isArray(contextualIds)) {
+    const itemKeys = contextualIds.filter(k => isString(k) && k);
+    for (const itemKey of itemKeys) {
+      func.push(updateContextMenu(`${itemKey}Reopen`, {
+        parentId,
+      }));
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * prepare new tab menu items
+ *
+ * @param {object} elm - target element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const prepareNewTabMenuItems = async elm => {
+  const func = [];
+  if (isNewTab(elm)) {
+    const {contextualIds, incognito} = sidebar;
+    func.push(
+      updateContextMenu(NEW_TAB_OPEN_CONTAINER, {
+        enabled: !!(Array.isArray(contextualIds) && contextualIds.length),
+        visible: !incognito,
+      }),
+      updateContextMenu("sep-0", {
+        visible: !incognito,
+      }),
+      prepareContexualIdsMenuItems(NEW_TAB_OPEN_CONTAINER),
+    );
+  } else {
+    const data = {
+      visible: false,
+    };
+    func.push(
+      updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
+      updateContextMenu("sep-0", data),
+    );
+  }
+  return Promise.all(func);
+};
+
+/**
+ * prepare page menu items
+ *
+ * @param {object} opt - options
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const preparePageMenuItems = async opt => {
+  const func = [];
+  if (isObjectNotEmpty(opt)) {
+    const {allTabsLength, allTabsSelected, isTab} = opt;
+    const {lastClosedTab} = sidebar;
+    const pageKeys = [TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_CLOSE_UNDO];
+    for (const itemKey of pageKeys) {
+      const item = menuItems[itemKey];
+      const {id, title} = item;
+      const data = {
+        title,
+      };
+      switch (itemKey) {
+        case TAB_ALL_RELOAD:
+          data.enabled = true;
+          data.visible = !isTab || allTabsLength > 1 && !allTabsSelected;
+          break;
+        case TAB_ALL_SELECT:
+          data.enabled = allTabsLength > 1 && !allTabsSelected;
+          data.visible = true;
+          break;
+        case TAB_CLOSE_UNDO:
+          data.enabled = !!lastClosedTab;
+          data.visible = true;
+          break;
+        default:
+      }
+      func.push(updateContextMenu(id, data));
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * prepare tab group menu items
+ *
+ * @param {object} elm - element
+ * @param {object} opt - options
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const prepareTabGroupMenuItems = async (elm, opt) => {
+  const func = [];
+  const {enableTabGroup, incognito} = sidebar;
+  const tabGroupMenu = menuItems[TAB_GROUP];
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(opt) &&
+      enableTabGroup) {
+    const {classList: tabClass, parentNode} = elm;
+    const {classList: parentClass} = parentNode;
+    const {multiTabsSelected, pinned} = opt;
     const tabGroups =
-        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
-    const selectedTabs =
-      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-    const pinnedContainer = document.getElementById(PINNED);
-    const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
-    const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
-    const multiTabsSelected = !!(
-      tab && tab.classList.contains(HIGHLIGHTED) &&
-      selectedTabs && selectedTabs.length > 1
-    );
-    const allTabsSelected = !!(
-      selectedTabs && selectedTabs.length > 1 &&
-      allTabs && selectedTabs.length === allTabs.length
-    );
-    if (tab) {
-      const {classList: tabClass, parentNode} = tab;
-      const {
-        classList: parentClass,
-        firstElementChild: parentFirstChild,
-        lastElementChild: parentLastChild,
-      } = parentNode;
-      const tabId = getSidebarTabId(tab);
-      const tabsTab = await getTab(tabId);
-      const {index, mutedInfo: {muted}, pinned} = tabsTab;
-      const tabGroupKeys = [
-        TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-        TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
-        TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
-        "sepTabGroup-1",
-      ];
-      for (const itemKey of tabKeys) {
-        const item = menuItems[itemKey];
-        const {id, title, toggleTitle} = item;
-        const data = {};
-        if (multiTabsSelected) {
-          data.visible = false;
+      document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
+    const tabGroupKeys = [
+      TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
+      TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
+      TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+      "sepTabGroup-1",
+    ];
+    func.push(updateContextMenu(tabGroupMenu.id, {
+      enabled: true,
+      title: tabGroupMenu.title,
+      visible: true,
+    }));
+    for (const itemKey of tabGroupKeys) {
+      const item = tabGroupMenu.subItems[itemKey];
+      const {id, title, toggleTitle} = item;
+      const data = {};
+      switch (itemKey) {
+        case TAB_GROUP_COLLAPSE:
+          if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
+            data.enabled = true;
+            data.title =
+              parentClass.contains(CLASS_TAB_COLLAPSED) && toggleTitle || title;
+          } else {
+            data.enabled = false;
+          }
+          data.visible = true;
+          break;
+        case TAB_GROUP_COLLAPSE_OTHER:
+          if (parentClass.contains(CLASS_TAB_GROUP) && tabGroups.length > 1) {
+            data.enabled = true;
+            data.visible = true;
+          } else {
+            data.visible = false;
+          }
+          break;
+        case TAB_GROUP_CONTAINER:
+          data.enabled = !(pinned || multiTabsSelected);
+          data.title = title;
+          data.visible = !incognito;
+          break;
+        case TAB_GROUP_DOMAIN:
+          data.enabled = !(pinned || multiTabsSelected);
+          data.title = title;
+          data.visible = true;
+          break;
+        case TAB_GROUP_DETACH:
+          if (multiTabsSelected) {
+            data.visible = false;
+          } else if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
+            data.enabled = true;
+            data.title = title;
+            data.visible = true;
+          } else {
+            data.enabled = false;
+            data.title = title;
+            data.visible = true;
+          }
+          break;
+        case TAB_GROUP_DETACH_TABS:
+          if (multiTabsSelected) {
+            if (!pinned && parentClass.contains(CLASS_TAB_GROUP) &&
+                tabClass.contains(HIGHLIGHTED)) {
+              data.enabled = true;
+              data.title = title;
+              data.visible = true;
+            } else {
+              data.enabled = false;
+              data.title = title;
+              data.visible = true;
+            }
+          } else {
+            data.visible = false;
+          }
+          break;
+        case TAB_GROUP_SELECTED:
+          data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
+          data.title = title;
+          data.visible = true;
+          break;
+        case TAB_GROUP_UNGROUP:
+          data.enabled = !pinned && parentClass.contains(CLASS_TAB_GROUP);
+          data.title = title;
+          data.visible = true;
+          break;
+        default:
+          data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+          data.title = title;
+          data.visible = true;
+      }
+      func.push(updateContextMenu(id, data));
+    }
+  } else {
+    func.push(updateContextMenu(tabGroupMenu.id, {
+      visible: false,
+    }));
+  }
+  return Promise.all(func);
+};
+
+/**
+ * prepare tab menu items
+ *
+ * @param {object} elm - target element
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const prepareTabMenuItems = async elm => {
+  const func = [];
+  const {contextualIds, enableTabGroup, incognito} = sidebar;
+  const tab = getSidebarTab(elm);
+  const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
+  const tabGroupMenu = menuItems[TAB_GROUP];
+  const tabKeys = [
+    TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
+    TAB_MOVE, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+  ];
+  const tabsKeys = [
+    TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
+    TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
+  ];
+  const sepKeys = ["sep-1", "sep-2", "sep-3"];
+  const allTabs = document.querySelectorAll(TAB_QUERY);
+  const selectedTabs =
+    document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+  const pinnedContainer = document.getElementById(PINNED);
+  const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
+  const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
+  const multiTabsSelected = !!(
+    tab && tab.classList.contains(HIGHLIGHTED) &&
+    selectedTabs && selectedTabs.length > 1
+  );
+  const allTabsSelected = !!(
+    selectedTabs && selectedTabs.length > 1 &&
+    allTabs && selectedTabs.length === allTabs.length
+  );
+  if (tab) {
+    const {parentNode} = tab;
+    const {
+      firstElementChild: parentFirstChild,
+      lastElementChild: parentLastChild,
+    } = parentNode;
+    const tabId = getSidebarTabId(tab);
+    const tabsTab = await getTab(tabId);
+    const {index, mutedInfo: {muted}, pinned} = tabsTab;
+    for (const itemKey of tabKeys) {
+      const item = menuItems[itemKey];
+      const {id, title, toggleTitle} = item;
+      const data = {};
+      if (multiTabsSelected) {
+        data.visible = false;
+      } else {
+        switch (itemKey) {
+          case TAB_CLOSE_END:
+            data.enabled = index < allTabs.length - 1;
+            data.title = title;
+            data.visible = true;
+            break;
+          case TAB_CLOSE_OTHER: {
+            const obj =
+              Number.isInteger(tabId) && document.querySelectorAll(
+                `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`,
+              );
+            data.enabled = !!(obj && obj.length);
+            data.title = title;
+            data.visible = true;
+            break;
+          }
+          case TAB_MUTE:
+            data.enabled = true;
+            data.title = muted && toggleTitle || title;
+            data.visible = true;
+            break;
+          case TAB_PIN:
+            data.enabled = true;
+            data.title = pinned && toggleTitle || title;
+            data.visible = true;
+            break;
+          case TAB_REOPEN_CONTAINER:
+            data.enabled =
+              !!(Array.isArray(contextualIds) && contextualIds.length);
+            data.title = title;
+            data.visible = !incognito;
+            break;
+          default:
+            data.enabled = true;
+            data.title = title;
+            data.visible = true;
+        }
+      }
+      func.push(updateContextMenu(id, data));
+    }
+    for (const itemKey of tabsKeys) {
+      const item = menuItems[itemKey];
+      const {id, title, toggleTitle} = item;
+      const data = {};
+      if (multiTabsSelected) {
+        if (itemKey === TABS_CLOSE_OTHER) {
+          data.enabled = true;
+          data.title = title;
+          data.visible = !!allTabsSelected;
         } else {
           switch (itemKey) {
-            case TAB_CLOSE_END:
-              data.enabled = index < allTabs.length - 1;
-              data.title = title;
-              data.visible = true;
-              break;
-            case TAB_CLOSE_OTHER: {
-              const obj =
-                Number.isInteger(tabId) && document.querySelectorAll(
-                  `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`,
-                );
-              data.enabled = !!(obj && obj.length);
-              data.title = title;
-              data.visible = true;
-              break;
-            }
-            case TAB_MUTE:
+            case TABS_MUTE:
               data.enabled = true;
               data.title = muted && toggleTitle || title;
               data.visible = true;
               break;
-            case TAB_PIN:
+            case TABS_PIN:
               data.enabled = true;
               data.title = pinned && toggleTitle || title;
               data.visible = true;
               break;
-            case TAB_REOPEN_CONTAINER:
+            case TABS_REOPEN_CONTAINER:
               data.enabled =
                 !!(Array.isArray(contextualIds) && contextualIds.length);
               data.title = title;
@@ -1248,319 +1472,164 @@ export const handleEvt = async evt => {
               data.visible = true;
           }
         }
-        func.push(updateContextMenu(id, data));
-      }
-      for (const itemKey of tabsKeys) {
-        const item = menuItems[itemKey];
-        const {id, title, toggleTitle} = item;
-        const data = {};
-        if (multiTabsSelected) {
-          if (itemKey === TABS_CLOSE_OTHER) {
-            data.enabled = true;
-            data.title = title;
-            data.visible = !!allTabsSelected;
-          } else {
-            switch (itemKey) {
-              case TABS_MUTE:
-                data.enabled = true;
-                data.title = muted && toggleTitle || title;
-                data.visible = true;
-                break;
-              case TABS_PIN:
-                data.enabled = true;
-                data.title = pinned && toggleTitle || title;
-                data.visible = true;
-                break;
-              case TABS_REOPEN_CONTAINER:
-                data.enabled =
-                  !!(Array.isArray(contextualIds) && contextualIds.length);
-                data.title = title;
-                data.visible = !incognito;
-                break;
-              default:
-                data.enabled = true;
-                data.title = title;
-                data.visible = true;
-            }
-          }
-        } else {
-          data.visible = false;
-        }
-        func.push(updateContextMenu(id, data));
-      }
-      if (multiTabsSelected) {
-        const tabsMoveMenu = menuItems[TABS_MOVE];
-        const tabsMoveKeys = [TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN];
-        for (const itemKey of tabsMoveKeys) {
-          const item = tabsMoveMenu.subItems[itemKey];
-          const {id, title} = item;
-          const data = {
-            visible: true,
-          };
-          switch (itemKey) {
-            case TABS_MOVE_END:
-              if (allTabsSelected) {
-                data.enabled = false;
-              } else if (pinned) {
-                data.enabled = tab !== parentLastChild;
-              } else {
-                data.enabled = index !== allTabs.length - 1;
-              }
-              data.title = title;
-              break;
-            case TABS_MOVE_START:
-              if (allTabsSelected) {
-                data.enabled = false;
-              } else if (pinned) {
-                data.enabled = tab !== parentFirstChild;
-              } else {
-                data.enabled = tab !== firstUnpinnedTab;
-              }
-              data.title = title;
-              break;
-            default:
-              data.enabled = true;
-              data.title = title;
-          }
-          func.push(updateContextMenu(id, data));
-        }
-        if (Array.isArray(contextualIds)) {
-          const itemKeys = contextualIds.filter(k => isString(k) && k);
-          for (const itemKey of itemKeys) {
-            func.push(updateContextMenu(`${itemKey}Reopen`, {
-              parentId: TABS_REOPEN_CONTAINER,
-            }));
-          }
-        }
       } else {
-        const tabMoveMenu = menuItems[TAB_MOVE];
-        const tabMoveKeys = [TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN];
-        for (const itemKey of tabMoveKeys) {
-          const item = tabMoveMenu.subItems[itemKey];
-          const {id, title} = item;
-          const data = {
-            visible: true,
-          };
-          switch (itemKey) {
-            case TAB_MOVE_END:
-              if (pinned) {
-                data.enabled = tab !== parentLastChild;
-              } else {
-                data.enabled = index !== allTabs.length - 1;
-              }
-              data.title = title;
-              break;
-            case TAB_MOVE_START:
-              if (pinned) {
-                data.enabled = tab !== parentFirstChild;
-              } else {
-                data.enabled = tab !== firstUnpinnedTab;
-              }
-              data.title = title;
-              break;
-            default:
-              data.enabled = true;
-              data.title = title;
-          }
-          func.push(updateContextMenu(id, data));
-        }
-        if (Array.isArray(contextualIds)) {
-          const itemKeys = contextualIds.filter(k => isString(k) && k);
-          for (const itemKey of itemKeys) {
-            func.push(updateContextMenu(`${itemKey}Reopen`, {
-              parentId: TAB_REOPEN_CONTAINER,
-            }));
-          }
-        }
-      }
-      if (enableTabGroup) {
-        func.push(updateContextMenu(tabGroupMenu.id, {
-          enabled: true,
-          title: tabGroupMenu.title,
-          visible: true,
-        }));
-        for (const itemKey of tabGroupKeys) {
-          const item = tabGroupMenu.subItems[itemKey];
-          const {id, title, toggleTitle} = item;
-          const data = {};
-          switch (itemKey) {
-            case TAB_GROUP_COLLAPSE:
-              if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
-                data.enabled = true;
-                data.title = parentClass.contains(CLASS_TAB_COLLAPSED) &&
-                             toggleTitle || title;
-              } else {
-                data.enabled = false;
-              }
-              data.visible = true;
-              break;
-            case TAB_GROUP_COLLAPSE_OTHER:
-              if (parentClass.contains(CLASS_TAB_GROUP) &&
-                  tabGroups.length > 1) {
-                data.enabled = true;
-                data.visible = true;
-              } else {
-                data.visible = false;
-              }
-              break;
-            case TAB_GROUP_CONTAINER:
-              data.enabled = !(pinned || multiTabsSelected);
-              data.title = title;
-              data.visible = !incognito;
-              break;
-            case TAB_GROUP_DOMAIN:
-              data.enabled = !(pinned || multiTabsSelected);
-              data.title = title;
-              data.visible = true;
-              break;
-            case TAB_GROUP_DETACH:
-              if (multiTabsSelected) {
-                data.visible = false;
-              } else if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
-                data.enabled = true;
-                data.title = title;
-                data.visible = true;
-              } else {
-                data.enabled = false;
-                data.title = title;
-                data.visible = true;
-              }
-              break;
-            case TAB_GROUP_DETACH_TABS:
-              if (multiTabsSelected) {
-                if (!pinned && parentClass.contains(CLASS_TAB_GROUP) &&
-                    tabClass.contains(HIGHLIGHTED)) {
-                  data.enabled = true;
-                  data.title = title;
-                  data.visible = true;
-                } else {
-                  data.enabled = false;
-                  data.title = title;
-                  data.visible = true;
-                }
-              } else {
-                data.visible = false;
-              }
-              break;
-            case TAB_GROUP_SELECTED:
-              data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
-              data.title = title;
-              data.visible = true;
-              break;
-            case TAB_GROUP_UNGROUP:
-              data.enabled = !pinned && parentClass.contains(CLASS_TAB_GROUP);
-              data.title = title;
-              data.visible = true;
-              break;
-            default:
-              data.enabled = parentClass.contains(CLASS_TAB_GROUP);
-              data.title = title;
-              data.visible = true;
-          }
-          func.push(updateContextMenu(id, data));
-        }
-      } else {
-        func.push(updateContextMenu(tabGroupMenu.id, {
-          visible: false,
-        }));
-      }
-      for (const sep of sepKeys) {
-        if (sep === "sep-3" && !enableTabGroup) {
-          func.push(updateContextMenu(sep, {
-            visible: false,
-          }));
-        } else {
-          func.push(updateContextMenu(sep, {
-            visible: true,
-          }));
-        }
-      }
-      await setContext(tab);
-      func.push(updateContextMenu(bookmarkMenu.id, {
-        visible: false,
-      }));
-    } else {
-      for (const itemKey of tabKeys) {
-        const item = menuItems[itemKey];
-        func.push(updateContextMenu(item.id, {
-          visible: false,
-        }));
-      }
-      for (const itemKey of tabsKeys) {
-        const item = menuItems[itemKey];
-        func.push(updateContextMenu(item.id, {
-          visible: false,
-        }));
-      }
-      for (const sep of sepKeys) {
-        func.push(updateContextMenu(sep, {
-          visible: false,
-        }));
-      }
-      await setContext(target);
-      func.push(
-        updateContextMenu(tabGroupMenu.id, {
-          visible: false,
-        }),
-        updateContextMenu(bookmarkMenu.id, {
-          enabled: true,
-          title: bookmarkMenu.title,
-          visible: true,
-        }),
-      );
-    }
-    if (isNewTab(target)) {
-      func.push(
-        updateContextMenu(NEW_TAB_OPEN_CONTAINER, {
-          enabled: !!(Array.isArray(contextualIds) && contextualIds.length),
-          visible: !incognito,
-        }),
-        updateContextMenu("sep-0", {
-          visible: !incognito,
-        }),
-      );
-      if (Array.isArray(contextualIds)) {
-        const itemKeys = contextualIds.filter(k => isString(k) && k);
-        for (const itemKey of itemKeys) {
-          func.push(updateContextMenu(`${itemKey}NewTab`, {
-            parentId: NEW_TAB_OPEN_CONTAINER,
-          }));
-        }
-      }
-    } else {
-      const data = {
-        visible: false,
-      };
-      func.push(
-        updateContextMenu(NEW_TAB_OPEN_CONTAINER, data),
-        updateContextMenu("sep-0", data),
-      );
-    }
-    for (const itemKey of pageKeys) {
-      const item = menuItems[itemKey];
-      const {id, title} = item;
-      const data = {
-        title,
-      };
-      switch (itemKey) {
-        case TAB_ALL_RELOAD:
-          data.enabled = true;
-          data.visible = tab && allTabs.length > 1 && !allTabsSelected || !tab;
-          break;
-        case TAB_ALL_SELECT:
-          data.enabled = allTabs.length > 1 && !allTabsSelected;
-          data.visible = true;
-          break;
-        default: {
-          const {lastClosedTab} = sidebar;
-          data.enabled = !!lastClosedTab;
-          data.visible = true;
-        }
+        data.visible = false;
       }
       func.push(updateContextMenu(id, data));
     }
+    if (multiTabsSelected) {
+      const tabsMoveMenu = menuItems[TABS_MOVE];
+      const tabsMoveKeys = [TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN];
+      for (const itemKey of tabsMoveKeys) {
+        const item = tabsMoveMenu.subItems[itemKey];
+        const {id, title} = item;
+        const data = {
+          visible: true,
+        };
+        switch (itemKey) {
+          case TABS_MOVE_END:
+            if (allTabsSelected) {
+              data.enabled = false;
+            } else if (pinned) {
+              data.enabled = tab !== parentLastChild;
+            } else {
+              data.enabled = index !== allTabs.length - 1;
+            }
+            data.title = title;
+            break;
+          case TABS_MOVE_START:
+            if (allTabsSelected) {
+              data.enabled = false;
+            } else if (pinned) {
+              data.enabled = tab !== parentFirstChild;
+            } else {
+              data.enabled = tab !== firstUnpinnedTab;
+            }
+            data.title = title;
+            break;
+          default:
+            data.enabled = true;
+            data.title = title;
+        }
+        func.push(updateContextMenu(id, data));
+      }
+      func.push(prepareContexualIdsMenuItems(TABS_REOPEN_CONTAINER));
+    } else {
+      const tabMoveMenu = menuItems[TAB_MOVE];
+      const tabMoveKeys = [TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN];
+      for (const itemKey of tabMoveKeys) {
+        const item = tabMoveMenu.subItems[itemKey];
+        const {id, title} = item;
+        const data = {
+          visible: true,
+        };
+        switch (itemKey) {
+          case TAB_MOVE_END:
+            if (pinned) {
+              data.enabled = tab !== parentLastChild;
+            } else {
+              data.enabled = index !== allTabs.length - 1;
+            }
+            data.title = title;
+            break;
+          case TAB_MOVE_START:
+            if (pinned) {
+              data.enabled = tab !== parentFirstChild;
+            } else {
+              data.enabled = tab !== firstUnpinnedTab;
+            }
+            data.title = title;
+            break;
+          default:
+            data.enabled = true;
+            data.title = title;
+        }
+        func.push(updateContextMenu(id, data));
+      }
+      func.push(prepareContexualIdsMenuItems(TAB_REOPEN_CONTAINER));
+    }
+    func.push(prepareTabGroupMenuItems(tab, {
+      multiTabsSelected, pinned,
+    }));
+    for (const sep of sepKeys) {
+      if (sep === "sep-3" && !enableTabGroup) {
+        func.push(updateContextMenu(sep, {
+          visible: false,
+        }));
+      } else {
+        func.push(updateContextMenu(sep, {
+          visible: true,
+        }));
+      }
+    }
+    setContext(tab);
+    func.push(updateContextMenu(bookmarkMenu.id, {
+      visible: false,
+    }));
+  } else {
+    for (const itemKey of tabKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false,
+      }));
+    }
+    for (const itemKey of tabsKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false,
+      }));
+    }
+    for (const sep of sepKeys) {
+      func.push(updateContextMenu(sep, {
+        visible: false,
+      }));
+    }
+    setContext(elm);
+    func.push(
+      updateContextMenu(tabGroupMenu.id, {
+        visible: false,
+      }),
+      updateContextMenu(bookmarkMenu.id, {
+        enabled: true,
+        title: bookmarkMenu.title,
+        visible: true,
+      }),
+    );
   }
+  func.push(preparePageMenuItems({
+    allTabsSelected,
+    allTabsLength: allTabs.length,
+    isTab: !!tab,
+  }));
   return Promise.all(func);
+};
+
+/* events */
+/**
+ * handle event
+ *
+ * @param {!object} evt - event
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const handleEvt = evt => {
+  const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
+  const {isMac, windowId} = sidebar;
+  const func = [];
+  // select all tabs
+  if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
+    const allTabs = document.querySelectorAll(TAB_QUERY);
+    func.push(highlightTabs(Array.from(allTabs), windowId));
+    evt.stopPropagation();
+    evt.preventDefault();
+  // context menu
+  } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
+             button === MOUSE_BUTTON_RIGHT) {
+    func.push(
+      prepareTabMenuItems(target),
+      prepareNewTabMenuItems(target),
+    );
+  }
+  return Promise.all(func).catch(throwErr);
 };
 
 /**
@@ -1569,7 +1638,7 @@ export const handleEvt = async evt => {
  * @param {!object} evt - event
  * @returns {Function} - overrideContextMenu()
  */
-export const handleContextmenuEvt = async evt => {
+export const handleContextmenuEvt = evt => {
   const {target} = evt;
   const tabId = getSidebarTabId(target);
   const opt = {};
@@ -1577,7 +1646,7 @@ export const handleContextmenuEvt = async evt => {
     opt.tabId = tabId;
     opt.context = "tab";
   }
-  return overrideContextMenu(opt);
+  return overrideContextMenu(opt).catch(throwErr);
 };
 
 /* runtime message */
@@ -1745,67 +1814,65 @@ export const restoreHighlightedTabs = async () => {
  */
 export const restoreTabGroups = async () => {
   const tabList = await getSessionTabList(TAB_LIST);
-  if (tabList) {
+  if (isObjectNotEmpty(tabList)) {
     const {recent} = tabList;
-    if (recent) {
-      const listItems = Object.entries(recent);
-      const listItemIndexes = new Map();
-      for (const [index, listItem] of listItems) {
-        const {url} = listItem;
-        if (listItemIndexes.has(url)) {
-          const indexes = listItemIndexes.get(url);
-          indexes.push(index * 1);
-          listItemIndexes.set(url, indexes);
+    const listItems = Object.entries(recent);
+    const listItemIndexes = new Map();
+    for (const [index, listItem] of listItems) {
+      const {url} = listItem;
+      if (listItemIndexes.has(url)) {
+        const indexes = listItemIndexes.get(url);
+        indexes.push(index * 1);
+        listItemIndexes.set(url, indexes);
+      } else {
+        listItemIndexes.set(url, [index * 1]);
+      }
+    }
+    const items = document.querySelectorAll(TAB_QUERY);
+    const l = items.length;
+    let i = 0;
+    while (i < l) {
+      const item = items[i];
+      const {dataset: {tab: itemTab}} = item;
+      const {pinned, url: itemUrl} = JSON.parse(itemTab);
+      if (pinned) {
+        const listItem = recent[i];
+        const {collapsed} = listItem;
+        const container = document.getElementById(PINNED);
+        container.appendChild(item);
+        if (collapsed) {
+          container.classList.add(CLASS_TAB_COLLAPSED);
         } else {
-          listItemIndexes.set(url, [index * 1]);
+          container.classList.remove(CLASS_TAB_COLLAPSED);
         }
-      }
-      const items = document.querySelectorAll(TAB_QUERY);
-      const l = items.length;
-      let i = 0;
-      while (i < l) {
-        const item = items[i];
-        const {dataset: {tab: itemTab}} = item;
-        const {pinned, url: itemUrl} = JSON.parse(itemTab);
-        if (pinned) {
-          const listItem = recent[i];
-          const {collapsed} = listItem;
-          const container = document.getElementById(PINNED);
-          container.appendChild(item);
-          if (collapsed) {
-            container.classList.add(CLASS_TAB_COLLAPSED);
-          } else {
-            container.classList.remove(CLASS_TAB_COLLAPSED);
-          }
-        } else if (i && listItemIndexes.has(itemUrl)) {
-          const prevItem = items[i - 1];
-          const {dataset: {tab: prevItemTab}} = prevItem;
-          const {url: prevItemUrl} = JSON.parse(prevItemTab);
-          const container = prevItem.parentNode;
-          const indexes = listItemIndexes.get(itemUrl);
-          for (const index of indexes) {
-            const listItem = recent[index];
-            const prevListItem = index > 0 && recent[index - 1] || {};
-            const {
-              collapsed, containerIndex: listContainerIndex,
-            } = listItem;
-            const {
-              containerIndex: prevListContainerIndex, url: prevListUrl,
-            } = prevListItem;
-            if (listContainerIndex === prevListContainerIndex &&
-                (index === i || prevItemUrl === prevListUrl)) {
-              container.appendChild(item);
-              if (collapsed) {
-                container.classList.add(CLASS_TAB_COLLAPSED);
-              } else {
-                container.classList.remove(CLASS_TAB_COLLAPSED);
-              }
-              break;
+      } else if (i && listItemIndexes.has(itemUrl)) {
+        const prevItem = items[i - 1];
+        const {dataset: {tab: prevItemTab}} = prevItem;
+        const {url: prevItemUrl} = JSON.parse(prevItemTab);
+        const container = prevItem.parentNode;
+        const indexes = listItemIndexes.get(itemUrl);
+        for (const index of indexes) {
+          const listItem = recent[index];
+          const prevListItem = index > 0 && recent[index - 1] || {};
+          const {
+            collapsed, containerIndex: listContainerIndex,
+          } = listItem;
+          const {
+            containerIndex: prevListContainerIndex, url: prevListUrl,
+          } = prevListItem;
+          if (listContainerIndex === prevListContainerIndex &&
+              (index === i || prevItemUrl === prevListUrl)) {
+            container.appendChild(item);
+            if (collapsed) {
+              container.classList.add(CLASS_TAB_COLLAPSED);
+            } else {
+              container.classList.remove(CLASS_TAB_COLLAPSED);
             }
+            break;
           }
         }
-        i++;
       }
+      i++;
     }
   }
 };

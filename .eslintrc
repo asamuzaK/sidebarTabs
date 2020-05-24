@@ -46,7 +46,7 @@
       }
     ],
     "comma-style": ["error", "last"],
-    "complexity": ["error", 105],
+    "complexity": ["error", 60],
     "computed-property-spacing": [2, "never"],
     "consistent-return": "error",
     "consistent-this": ["error", "that"],
@@ -107,7 +107,7 @@
     ],
     "keyword-spacing": "error",
     "linebreak-style": ["error", "unix"],
-    "max-depth": ["warn", 7],
+    "max-depth": ["warn", 6],
     "max-len": [
       "error",
       {
