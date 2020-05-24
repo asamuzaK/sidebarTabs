@@ -194,7 +194,7 @@ export const collapseTabGroups = async elm => {
  * handle individual tab group collapsed state
  *
  * @param {!object} evt - Event
- * @returns {?Function} - promise chain
+ * @returns {?(Function|Error)} - promise chain
  */
 export const handleTabGroupCollapsedState = evt => {
   const {target} = evt;
@@ -212,7 +212,7 @@ export const handleTabGroupCollapsedState = evt => {
  * handle multiple tab groups collapsed state
  *
  * @param {!object} evt - Event
- * @returns {?Function} - promise chain
+ * @returns {?(Function|Error)} - promise chain
  */
 export const handleTabGroupsCollapsedState = evt => {
   const {target} = evt;

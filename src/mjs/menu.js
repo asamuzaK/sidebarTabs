@@ -38,7 +38,7 @@ export const updateContextMenu = async (menuItemId, data) => {
 /**
  * handle create menu item callback
  *
- * @returns {Promise} - promise chain
+ * @returns {Promise.<Array|Error>} - promise chain
  */
 export const createMenuItemCallback = () => {
   const func = [];

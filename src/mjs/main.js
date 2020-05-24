@@ -312,7 +312,7 @@ export const handleCreateNewTab = evt => {
  * handle clicked tab
  *
  * @param {!object} evt - event
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {Promise.<Array|Error>} - promise chain
  */
 export const handleClickedTab = evt => {
   const {button, ctrlKey, metaKey, shiftKey, target, type} = evt;
@@ -953,7 +953,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
  * handle clicked menu
  *
  * @param {!object} info - clicked menu info
- * @returns {Function} - clicked menu handler
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const handleClickedMenu = async info => {
   const {menuItemId} = info;
@@ -1609,7 +1609,7 @@ export const prepareTabMenuItems = async elm => {
  * handle event
  *
  * @param {!object} evt - event
- * @returns {Function} - promise chain
+ * @returns {Promise.<Array|Error>} - promise chain
  */
 export const handleEvt = evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
@@ -1636,7 +1636,7 @@ export const handleEvt = evt => {
  * handle contextmenu event
  *
  * @param {!object} evt - event
- * @returns {Function} - promise chain
+ * @returns {(Function|Error)} - promise chain
  */
 export const handleContextmenuEvt = evt => {
   const {target} = evt;
