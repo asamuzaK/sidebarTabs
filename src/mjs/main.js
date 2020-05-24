@@ -1611,8 +1611,7 @@ export const prepareTabMenuItems = async elm => {
  * @param {!object} evt - event
  * @returns {Promise.<Array>} - results of each handler
  */
-// TODO: sync?
-export const handleEvt = async evt => {
+export const handleEvt = evt => {
   const {button, ctrlKey, key, metaKey, shiftKey, target} = evt;
   const {isMac, windowId} = sidebar;
   const func = [];
@@ -1620,6 +1619,8 @@ export const handleEvt = async evt => {
   if ((isMac && metaKey || !isMac && ctrlKey) && key === "a") {
     const allTabs = document.querySelectorAll(TAB_QUERY);
     func.push(highlightTabs(Array.from(allTabs), windowId));
+    evt.stopPropagation();
+    evt.preventDefault();
   // context menu
   } else if (shiftKey && key === "F10" || key === "ContextMenu" ||
              button === MOUSE_BUTTON_RIGHT) {
@@ -1628,7 +1629,7 @@ export const handleEvt = async evt => {
       prepareNewTabMenuItems(target),
     );
   }
-  return Promise.all(func);
+  return Promise.all(func).catch(throwErr);
 };
 
 /**
@@ -1637,7 +1638,7 @@ export const handleEvt = async evt => {
  * @param {!object} evt - event
  * @returns {Function} - overrideContextMenu()
  */
-export const handleContextmenuEvt = async evt => {
+export const handleContextmenuEvt = evt => {
   const {target} = evt;
   const tabId = getSidebarTabId(target);
   const opt = {};
@@ -1645,7 +1646,7 @@ export const handleContextmenuEvt = async evt => {
     opt.tabId = tabId;
     opt.context = "tab";
   }
-  return overrideContextMenu(opt);
+  return overrideContextMenu(opt).catch(throwErr);
 };
 
 /* runtime message */

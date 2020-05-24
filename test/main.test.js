@@ -7460,6 +7460,10 @@ describe("main", () => {
       mjs.sidebar.incognito = false;
     });
 
+    it("should throw", () => {
+      assert.throws(() => func());
+    });
+
     it("should not call function", async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
@@ -7475,7 +7479,7 @@ describe("main", () => {
       assert.deepEqual(res, [], "result");
     });
 
-    it("should call function", async () => {
+    it("should not call function", async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.query.callCount;
       const k = browser.tabs.highlight.callCount;
@@ -7560,6 +7564,8 @@ describe("main", () => {
         ctrlKey: true,
         key: "a",
         target: body,
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
@@ -7609,6 +7615,8 @@ describe("main", () => {
         ctrlKey: true,
         key: "a",
         target: elm,
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
@@ -7659,6 +7667,8 @@ describe("main", () => {
         metaKey: true,
         key: "a",
         target: body,
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
@@ -7881,6 +7891,10 @@ describe("main", () => {
       if (typeof browser.menus.overrideContext !== "function") {
         browser.menus.overrideContext = sinon.stub();
       }
+    });
+
+    it("should throw", () => {
+      assert.throws(() => func());
     });
 
     it("should call function", async () => {
