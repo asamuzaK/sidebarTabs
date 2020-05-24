@@ -107,7 +107,7 @@
     ],
     "keyword-spacing": "error",
     "linebreak-style": ["error", "unix"],
-    "max-depth": ["warn", 7],
+    "max-depth": ["warn", 6],
     "max-len": [
       "error",
       {
