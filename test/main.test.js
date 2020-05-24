@@ -6396,6 +6396,1052 @@ describe("main", () => {
     });
   });
 
+  describe("prepare contexual IDs menu items", () => {
+    const func = mjs.prepareContexualIdsMenuItems;
+
+    it("should throw", async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, "instance");
+        assert.strictEqual(e.message, "Expected String but got Undefined.",
+                           "message");
+      });
+    });
+
+    it("should not call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func("foo");
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not call function", async () => {
+      const i = browser.menus.update.callCount;
+      mjs.sidebar.contextualIds = [];
+      const res = await func("foo");
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      mjs.sidebar.contextualIds = ["bar", "baz"];
+      const res = await func("foo");
+      assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
+      assert.deepEqual(res, [[undefined], [undefined]], "result");
+    });
+  });
+
+  describe("prepare new tab menu items", () => {
+    const func = mjs.prepareNewTabMenuItems;
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func();
+      assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
+      assert.deepEqual(res, [[undefined], [undefined]], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const body = document.querySelector("body");
+      const res = await func(body);
+      assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
+      assert.deepEqual(res, [[undefined], [undefined]], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.id = NEW_TAB;
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(browser.menus.update.callCount, i + 2, "called");
+      assert.deepEqual(res, [[undefined], [undefined], []], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.id = NEW_TAB;
+      body.appendChild(elm);
+      mjs.sidebar.contextualIds = ["foo"];
+      const res = await func(elm);
+      assert.strictEqual(browser.menus.update.callCount, i + 3, "called");
+      assert.deepEqual(res, [[undefined], [undefined], [[undefined]]],
+                       "result");
+    });
+  });
+
+  describe("prepare page menu items", () => {
+    const func = mjs.preparePageMenuItems;
+
+    it("should not call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func();
+      assert.strictEqual(browser.menus.update.callCount, i, "not called");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func({
+        allTabsLength: 2,
+        allTabsSelected: false,
+        isTab: true,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 3, "called");
+      assert.deepEqual(res, [[undefined], [undefined], [undefined]], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      mjs.sidebar.lastClosedTab = {};
+      const res = await func({
+        allTabsLength: 2,
+        allTabsSelected: false,
+        isTab: true,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 3, "called");
+      assert.deepEqual(res, [[undefined], [undefined], [undefined]], "result");
+    });
+  });
+
+  describe("prepare tab group menu items", () => {
+    const func = mjs.prepareTabGroupMenuItems;
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const res = await func();
+      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [[undefined]], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [[undefined]], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      mjs.sidebar.enableTabGroup = false;
+      const res = await func(elm, {
+        multiTabsSelected: false,
+        pinned: false,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 1, "called");
+      assert.deepEqual(res, [[undefined]], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm, {
+        multiTabsSelected: false,
+        pinned: false,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
+      assert.deepEqual(res.length, 10, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm, {
+        multiTabsSelected: false,
+        pinned: false,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
+      assert.deepEqual(res.length, 10, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const elm4 = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(elm, {
+        multiTabsSelected: false,
+        pinned: false,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
+      assert.deepEqual(res.length, 10, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(HIGHLIGHTED);
+      elm2.classList.add(HIGHLIGHTED);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm, {
+        multiTabsSelected: true,
+        pinned: false,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
+      assert.deepEqual(res.length, 10, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(HIGHLIGHTED);
+      elm2.classList.add(HIGHLIGHTED);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm, {
+        multiTabsSelected: true,
+        pinned: true,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
+      assert.deepEqual(res.length, 10, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(HIGHLIGHTED);
+      elm2.classList.add(HIGHLIGHTED);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_COLLAPSED);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm, {
+        multiTabsSelected: true,
+        pinned: true,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
+      assert.deepEqual(res.length, 10, "result");
+    });
+  });
+
+  describe("prepare tab menu items", () => {
+    const func = mjs.prepareTabMenuItems;
+    beforeEach(() => {
+      const pinned = document.createElement("section");
+      const newTab = document.createElement("section");
+      const body = document.querySelector("body");
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(newTab);
+      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
+      mjs.sidebar.incognito = false;
+    });
+    afterEach(() => {
+      mjs.sidebar.windowId = null;
+      mjs.sidebar.incognito = false;
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const res = await func();
+      assert.strictEqual(browser.tabs.get.callCount, i, "not called");
+      assert.strictEqual(browser.menus.update.callCount, j + 27, "called");
+      assert.deepEqual(res.length, 25, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(body);
+      assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 27,
+                         "called update");
+      assert.strictEqual(res.length, 25, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm1);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm2);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm3);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      elm2.classList.add(HIGHLIGHTED);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm3);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      mjs.sidebar.enableTabGroup = false;
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 30,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      mjs.sidebar.contextualIds = ["foo"];
+      const res = await func(elm3);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      mjs.sidebar.contextualIds = ["foo"];
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(HIGHLIGHTED);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 39,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+  });
+
   describe("handle event", () => {
     const func = mjs.handleEvt;
     beforeEach(() => {
@@ -6449,7 +7495,6 @@ describe("main", () => {
       sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
       elm1.classList.add(ACTIVE);
-      elm1.classList.add(HIGHLIGHTED);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -6462,34 +7507,51 @@ describe("main", () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
+      const evt = {
+        ctrlKey: true,
+        key: "c",
+        target: body,
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
+      assert.strictEqual(browser.tabs.query.callCount, j, "not called query");
+      assert.strictEqual(browser.tabs.highlight.callCount, k,
+                         "not called highlight");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.query.callCount;
+      const k = browser.tabs.highlight.callCount;
+      const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(ACTIVE);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      body.insertBefore(sect2, newTab);
       browser.tabs.query.resolves([{
         index: 1,
       }]);
@@ -6498,8 +7560,6 @@ describe("main", () => {
         ctrlKey: true,
         key: "a",
         target: body,
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
@@ -6529,7 +7589,6 @@ describe("main", () => {
       sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
       elm1.classList.add(ACTIVE);
-      elm1.classList.add(HIGHLIGHTED);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -6542,45 +7601,14 @@ describe("main", () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
       browser.tabs.query.resolves([{
         index: 1,
       }]);
       browser.tabs.highlight.resolves({});
-      mjs.sidebar.isMac = true;
       const evt = {
-        metaKey: true,
+        ctrlKey: true,
         key: "a",
-        target: body,
-        stopPropagation: sinon.stub(),
-        preventDefault: sinon.stub(),
+        target: elm,
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
@@ -6592,7 +7620,8 @@ describe("main", () => {
 
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
+      const j = browser.tabs.query.callCount;
+      const k = browser.tabs.highlight.callCount;
       const sect = document.createElement("section");
       const sect2 = document.createElement("section");
       const elm = document.createElement("div");
@@ -6608,7 +7637,7 @@ describe("main", () => {
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
+      elm1.classList.add(ACTIVE);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -6621,49 +7650,28 @@ describe("main", () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
+      browser.tabs.query.resolves([{
         index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
+      }]);
+      browser.tabs.highlight.resolves({});
+      mjs.sidebar.isMac = true;
       const evt = {
-        button: 2,
+        metaKey: true,
+        key: "a",
         target: body,
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 29,
-                         "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(browser.tabs.query.callCount, j + 1, "called query");
+      assert.strictEqual(browser.tabs.highlight.callCount, k + 1,
+                         "called highlight");
+      assert.deepEqual(res, [{}], "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
+      const j = browser.tabs.query.callCount;
+      const k = browser.tabs.highlight.callCount;
       const sect = document.createElement("section");
       const sect2 = document.createElement("section");
       const elm = document.createElement("div");
@@ -6679,7 +7687,7 @@ describe("main", () => {
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
+      elm1.classList.add(ACTIVE);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -6692,106 +7700,6 @@ describe("main", () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        key: "ContextMenu",
-        target: body,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 29,
-                         "called update");
-      assert.strictEqual(res.length, 29, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
       const evt = {
         shiftKey: true,
         key: "F10",
@@ -6799,14 +7707,16 @@ describe("main", () => {
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 29,
-                         "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(browser.tabs.query.callCount, j, "not called query");
+      assert.strictEqual(browser.tabs.highlight.callCount, k,
+                         "not called highlight");
+      assert.deepEqual(res.length, 2, "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
+      const j = browser.tabs.query.callCount;
+      const k = browser.tabs.highlight.callCount;
       const sect = document.createElement("section");
       const sect2 = document.createElement("section");
       const elm = document.createElement("div");
@@ -6822,7 +7732,7 @@ describe("main", () => {
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
+      elm1.classList.add(ACTIVE);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -6863,21 +7773,23 @@ describe("main", () => {
         },
         pinned: false,
       });
-      browser.menus.update.resolves(undefined);
       const evt = {
-        button: 2,
+        shiftKey: true,
+        key: "F10",
         target: elm,
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
+      assert.strictEqual(browser.tabs.query.callCount, j, "not called query");
+      assert.strictEqual(browser.tabs.highlight.callCount, k,
+                         "not called highlight");
+      assert.deepEqual(res.length, 2, "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
+      const j = browser.tabs.query.callCount;
+      const k = browser.tabs.highlight.callCount;
       const sect = document.createElement("section");
       const sect2 = document.createElement("section");
       const elm = document.createElement("div");
@@ -6893,7 +7805,7 @@ describe("main", () => {
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
+      elm1.classList.add(ACTIVE);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -6906,1307 +7818,60 @@ describe("main", () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      mjs.sidebar.incognito = true;
       const evt = {
-        button: 2,
-        target: elm,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm1,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      mjs.sidebar.enableTabGroup = false;
-      const evt = {
-        button: 2,
-        target: elm1,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 32,
-                         "called update");
-      assert.strictEqual(res.length, 32, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      mjs.sidebar.incognito = true;
-      const evt = {
-        button: 2,
-        target: elm1,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm2,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm3,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const elm4 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      sect2.classList.add(CLASS_TAB_GROUP);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      elm4.classList.add(TAB);
-      elm4.dataset.tabId = "5";
-      sect2.appendChild(elm3);
-      sect2.appendChild(elm4);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm3,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm1,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm2,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm3,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm1,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm2,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm3,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      sect.classList.add(CLASS_TAB_COLLAPSED);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      mjs.sidebar.contextualIds = ["foo", "bar", "baz"];
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm1,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 44,
-                         "called update");
-      assert.strictEqual(res.length, 44, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const sect2 = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm1 = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const pinned = document.getElementById(PINNED);
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
-      elm1.classList.add(TAB);
-      elm1.classList.add(HIGHLIGHTED);
-      elm1.dataset.tabId = "2";
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = "3";
-      sect.appendChild(elm1);
-      sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = "4";
-      sect2.appendChild(elm3);
-      body.insertBefore(sect, newTab);
-      body.insertBefore(sect2, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.tabs.get.withArgs(2).resolves({
-        index: 1,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(3).resolves({
-        index: 2,
-        mutedInfo: {
-          muted: true,
-        },
-        pinned: false,
-      });
-      browser.tabs.get.withArgs(4).resolves({
-        index: 3,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: false,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: elm,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
-                         "called update");
-      assert.strictEqual(res.length, 41, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const elm = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.appendChild(elm);
-      body.insertBefore(sect, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.menus.update.resolves(undefined);
-      const evt = {
-        button: 2,
-        target: newTab,
+        key: "ContextMenu",
+        target: body,
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 29,
-                         "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(browser.tabs.query.callCount, j, "not called query");
+      assert.strictEqual(browser.tabs.highlight.callCount, k,
+                         "not called highlight");
+      assert.deepEqual(res.length, 2, "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
+      const j = browser.tabs.query.callCount;
+      const k = browser.tabs.highlight.callCount;
       const sect = document.createElement("section");
+      const sect2 = document.createElement("section");
       const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
       const newTab = document.getElementById(NEW_TAB);
       const body = document.querySelector("body");
       elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
       elm.dataset.tabId = "1";
+      pinned.appendChild(elm);
       sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.appendChild(elm);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm1.classList.add(TAB);
+      elm1.classList.add(ACTIVE);
+      elm1.dataset.tabId = "2";
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.menus.update.resolves(undefined);
-      mjs.sidebar.incognito = true;
+      body.insertBefore(sect2, newTab);
       const evt = {
         button: 2,
-        target: newTab,
+        target: body,
       };
       const res = await func(evt);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 29,
-                         "called update");
-      assert.strictEqual(res.length, 29, "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.menus.update.callCount;
-      const sect = document.createElement("section");
-      const elm = document.createElement("div");
-      const newTab = document.getElementById(NEW_TAB);
-      const body = document.querySelector("body");
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.appendChild(elm);
-      body.insertBefore(sect, newTab);
-      browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        mutedInfo: {
-          muted: false,
-        },
-        pinned: true,
-      });
-      browser.menus.update.resolves(undefined);
-      mjs.sidebar.contextualIds = ["foo"];
-      const evt = {
-        button: 2,
-        target: newTab,
-      };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 30,
-                         "called update");
-      assert.strictEqual(res.length, 30, "result");
+      assert.strictEqual(browser.tabs.query.callCount, j, "not called query");
+      assert.strictEqual(browser.tabs.highlight.callCount, k,
+                         "not called highlight");
+      assert.deepEqual(res.length, 2, "result");
     });
   });
 
