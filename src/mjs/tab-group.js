@@ -128,14 +128,20 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const container = getSidebarTabContainer(elm);
     if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+      const {firstElementChild: firstTab} = container;
       if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
         func.push(expandTabGroup(container));
+        if (activate) {
+          const tab = getSidebarTab(elm);
+          if (tab) {
+            func.push(activateTab(tab));
+          } else {
+            func.push(activateTab(firstTab));
+          }
+        }
       } else {
         func.push(collapseTabGroup(container));
-      }
-      if (activate) {
-        const {firstElementChild: tab} = container;
-        func.push(activateTab(tab));
+        activate && func.push(activateTab(firstTab));
       }
     }
   }
