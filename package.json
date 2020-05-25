@@ -37,5 +37,5 @@
     "sinon": "^9.0.2",
     "webext-schema": "^1.2.15"
   },
-  "version": "3.2.3"
+  "version": "3.3.0"
 }
