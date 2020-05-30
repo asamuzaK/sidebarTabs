@@ -428,7 +428,7 @@ main {
 }
 
 /* tab group */
-.tab-group.tab-collapsed > .tab:not(:first-child) {
+.tab-group.tab-collapsed > :not([hidden]) ~ .tab {
   margin-top: 0;
   height: 0;
   border-top-width: 0;
@@ -438,31 +438,31 @@ main {
 .tab-context {
   display: none;
 }
-.tab-group > .tab > .tab-context {
+.tab-group > :not([hidden]) > .tab-context {
   display: flex;
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
 }
-.ungroup .tab-group > .tab > .tab-context {
+.ungroup .tab-group .tab-context {
   display: none;
 }
-.compact .tab-group > .tab > .tab-context {
+.compact .tab-group > :not([hidden]) > .tab-context {
   height: var(--tab-height-compact);
 }
-.tab-group.tab-collapsed > .tab > .tab-context > .tab-toggle-icon {
+.tab-group.tab-collapsed > [hidden] + .tab > .tab-context > .tab-toggle-icon {
   transform: rotate(-90deg);
 }
-.tab-group > .tab:not(:first-child) > .tab-context > .tab-toggle-icon {
-  display: none;
-}
-.tab-group > .tab > .tab-context > .tab-toggle-icon {
+.tab-group > [hidden] + .tab > .tab-context > .tab-toggle-icon {
   margin: 0;
   width: var(--icon-x-small-size);
   height: var(--icon-x-small-size);
   transition: transform 0.1s;
   pointer-events: none;
+}
+.tab-group > :not([hidden]) ~ .tab > .tab-context > .tab-toggle-icon {
+  display: none;
 }
 
 .tab-group:nth-child(7n + 1) > .tab > .tab-context {
