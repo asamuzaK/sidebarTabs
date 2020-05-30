@@ -123,7 +123,7 @@ export const getTargetForDraggedTabs = (dropTarget, opt) => {
       lastElementChild: lastPinnedTab,
       nextElementSibling: firstUnpinnedContainer,
     } = pinnedContainer;
-    const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
+    const firstUnpinnedTab = firstUnpinnedContainer.querySelector(TAB_QUERY);
     if (isPinnedTabIds) {
       if (dropParent.classList.contains(PINNED)) {
         target = dropTarget;
@@ -155,7 +155,7 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
     const dropParent = dropTarget.parentNode;
     const pinnedContainer = document.getElementById(PINNED);
     const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
-    const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
+    const firstUnpinnedTab = firstUnpinnedContainer.querySelector(TAB_QUERY);
     const firstUnpinnedTabIndex = getSidebarTabIndex(firstUnpinnedTab);
     const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
     if (isPinnedTabIds) {

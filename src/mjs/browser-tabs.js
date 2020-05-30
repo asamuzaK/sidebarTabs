@@ -387,10 +387,10 @@ export const moveTabsToStart = async (nodes, tabId, windowId) => {
   }
   const pinnedContainer = document.getElementById(PINNED);
   const {
-    firstElementChild: firstPinnedTab,
     nextElementSibling: firstUnpinnedContainer,
   } = pinnedContainer;
-  const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
+  const firstPinnedTab = pinnedContainer.querySelector(TAB_QUERY);
+  const firstUnpinnedTab = firstUnpinnedContainer.querySelector(TAB_QUERY);
   const firstUnpinnedTabIndex = getSidebarTabIndex(firstUnpinnedTab);
   const pinArr = [];
   const tabArr = [];

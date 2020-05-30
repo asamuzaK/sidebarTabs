@@ -1374,7 +1374,7 @@ export const prepareTabMenuItems = async elm => {
     document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
   const pinnedContainer = document.getElementById(PINNED);
   const {nextElementSibling: firstUnpinnedContainer} = pinnedContainer;
-  const {firstElementChild: firstUnpinnedTab} = firstUnpinnedContainer;
+  const firstUnpinnedTab = firstUnpinnedContainer.querySelector(TAB_QUERY);
   const multiTabsSelected = !!(
     tab && tab.classList.contains(HIGHLIGHTED) &&
     selectedTabs && selectedTabs.length > 1
@@ -1386,9 +1386,9 @@ export const prepareTabMenuItems = async elm => {
   if (tab) {
     const {parentNode} = tab;
     const {
-      firstElementChild: parentFirstChild,
       lastElementChild: parentLastChild,
     } = parentNode;
+    const parentFirstChild = parentNode.querySelector(TAB_QUERY);
     const tabId = getSidebarTabId(tab);
     const tabsTab = await getTab(tabId);
     const {index, mutedInfo: {muted}, pinned} = tabsTab;
