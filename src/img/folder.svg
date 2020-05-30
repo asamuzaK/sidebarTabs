@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:dcterms="http://purl.org/dc/terms/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     width="16" height="16" viewBox="0 0 16 16">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dcterms:format>image/svg+xml</dcterms:format>
+        <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dcterms:title>Folder Icon</dcterms:title>
+        <dcterms:license rdf:resource="https://www.mozilla.org/en-US/MPL/2.0/"/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path fill="context-fill" fill-opacity="context-fill-opacity"
+        d="M14 3H8.151L6.584 1.538A2 2 0 0 0 5.219 1H2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM5.219 3l1.072 1H2V3zM14 13H2V5h6v-.014c.05 0 .1.014.151.014H14z"/>
+</svg>
