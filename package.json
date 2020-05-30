@@ -21,8 +21,8 @@
     "test": "nyc --reporter=text mocha test/*.test.js --require test/mocha/setup.js --require @babel/register --exit"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.1",
-    "@babel/preset-env": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
     "@babel/register": "^7.10.1",
     "addons-linter": "^1.24.0",
     "chai": "^4.2.0",
