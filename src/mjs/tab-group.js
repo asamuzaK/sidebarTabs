@@ -60,11 +60,11 @@ export const collapseTabGroup = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_GROUP) &&
       !body.classList.contains(CLASS_UNGROUP)) {
-    const {firstElementChild: tab} = elm;
-    const {firstElementChild: tabContext} = tab;
-    const {firstElementChild: toggleIcon} = tabContext;
+    const controller = elm.querySelector(":not([hidden])");
+    const {firstElementChild: context} = controller;
+    const {firstElementChild: toggleIcon} = context;
     elm.classList.add(CLASS_TAB_COLLAPSED);
-    tabContext.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
+    context.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
     toggleIcon.alt = i18n.getMessage(TAB_GROUP_EXPAND);
   }
 };
@@ -78,11 +78,11 @@ export const collapseTabGroup = async elm => {
 export const expandTabGroup = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_GROUP)) {
-    const {firstElementChild: tab} = elm;
-    const {firstElementChild: tabContext} = tab;
-    const {firstElementChild: toggleIcon} = tabContext;
+    const controller = elm.querySelector(":not([hidden])");
+    const {firstElementChild: context} = controller;
+    const {firstElementChild: toggleIcon} = context;
     elm.classList.remove(CLASS_TAB_COLLAPSED);
-    tabContext.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
+    context.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
     toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
   }
 };
