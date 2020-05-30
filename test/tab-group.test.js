@@ -80,6 +80,9 @@ describe("tab-group", () => {
       elm3.classList.add(CLASS_TAB_CONTAINER);
       elm3.classList.add(CLASS_TAB_GROUP);
       elm4.classList.add(CLASS_TAB_CONTAINER);
+      child.classList.add(TAB);
+      child2.classList.add(TAB);
+      child3.classList.add(TAB);
       elm3.appendChild(child);
       elm4.appendChild(child2);
       elm4.appendChild(child3);

@@ -35,8 +35,9 @@ export const restoreTabContainers = async () => {
   const items =
     document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
   for (const item of items) {
-    const {childElementCount, classList, id, parentNode} = item;
-    switch (childElementCount) {
+    const {classList, id, parentNode} = item;
+    const tabLength = item.querySelectorAll(TAB_QUERY).length;
+    switch (tabLength) {
       case 0:
         id !== PINNED && parentNode.removeChild(item);
         break;
