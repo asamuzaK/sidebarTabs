@@ -23,6 +23,22 @@ describe("common", () => {
     return new JSDOM(domstr, opt);
   };
   let window, document;
+  // NOTE: not implemented in jsdom https://github.com/jsdom/jsdom/issues/1670
+  const isContentEditable = elm => {
+    let bool;
+    if (elm.hasAttribute("contenteditable")) {
+      const attr = elm.getAttribute("contenteditable");
+      if (attr === "true" || attr === "") {
+        bool = true;
+      } else if (attr === "false") {
+        bool = false;
+      }
+    }
+    if (document && document.designMode === "on") {
+      bool = true;
+    }
+    return !!bool;
+  };
   beforeEach(() => {
     const dom = createJsdom();
     window = dom && dom.window;
@@ -744,6 +760,105 @@ describe("common", () => {
       assert.isObject(res);
       assert.deepEqual(res, target);
       assert.strictEqual(fake.callCount, 1);
+    });
+  });
+
+  describe("add contenteditable attribute to element", () => {
+    const func = mjs.addElementContentEditable;
+    const globalKeys = ["Node"];
+    beforeEach(() => {
+      for (const key of globalKeys) {
+        global[key] = window[key];
+      }
+    });
+    afterEach(() => {
+      for (const key of globalKeys) {
+        delete global[key];
+      }
+    });
+
+    it("should get null", () => {
+      const res = func();
+      assert.isNull(res, "result");
+    });
+
+    it("should set contenteditable and get element", () => {
+      const p = document.createElement("p");
+      const body = document.querySelector("body");
+      p.id = "foo";
+      body.appendChild(p);
+      const res = func(p);
+      if (typeof p.isContentEditable !== "boolean") {
+        p.isContentEditable = isContentEditable(p);
+      }
+      assert.isTrue(res.hasAttribute("contenteditable"), "attr");
+      assert.isTrue(res.isContentEditable, "editable");
+      assert.strictEqual(res.id, "foo", "result");
+    });
+
+    it("should set contenteditable and get element", () => {
+      const p = document.createElement("p");
+      const body = document.querySelector("body");
+      p.id = "foo";
+      body.appendChild(p);
+      const res = func(p);
+      if (typeof p.isContentEditable !== "boolean") {
+        p.isContentEditable = isContentEditable(p);
+      }
+      assert.isTrue(res.hasAttribute("contenteditable"), "attr");
+      assert.isTrue(res.isContentEditable, "editable");
+      assert.strictEqual(res.id, "foo", "result");
+    });
+
+    it("should set contenteditable, call function and get element", () => {
+      const p = document.createElement("p");
+      const body = document.querySelector("body");
+      p.id = "foo";
+      const spy = sinon.spy(p, "focus");
+      body.appendChild(p);
+      const res = func(p, true);
+      if (typeof p.isContentEditable !== "boolean") {
+        p.isContentEditable = isContentEditable(p);
+      }
+      assert.isTrue(res.hasAttribute("contenteditable"), "attr");
+      assert.isTrue(res.isContentEditable, "editable");
+      assert.isTrue(spy.calledOnce, "called");
+      assert.strictEqual(res.id, "foo", "result");
+    });
+  });
+
+  describe("remove contenteditable attribute from element", () => {
+    const func = mjs.removeElementContentEditable;
+    const globalKeys = ["Node"];
+    beforeEach(() => {
+      for (const key of globalKeys) {
+        global[key] = window[key];
+      }
+    });
+    afterEach(() => {
+      for (const key of globalKeys) {
+        delete global[key];
+      }
+    });
+
+    it("should get null", () => {
+      const res = func();
+      assert.isNull(res, "result");
+    });
+
+    it("should remove contenteditable and get element", () => {
+      const p = document.createElement("p");
+      const body = document.querySelector("body");
+      p.id = "foo";
+      p.setAttribute("contenteditable", "true");
+      body.appendChild(p);
+      const res = func(p);
+      if (typeof p.isContentEditable !== "boolean") {
+        p.isContentEditable = isContentEditable(p);
+      }
+      assert.isFalse(res.hasAttribute("contenteditable"), "attr");
+      assert.isFalse(res.isContentEditable, "editable");
+      assert.strictEqual(res.id, "foo", "result");
     });
   });
 
