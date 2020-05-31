@@ -12,7 +12,7 @@ import {
 
 /* constants */
 import {
-  CLASS_FOLDER, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
   NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
 } from "./constant.js";
 
@@ -73,21 +73,6 @@ export const restoreTabContainer = container => {
       default:
     }
   }
-};
-
-/**
- * get tab group folder
- *
- * @param {object} node - node
- * @returns {object} - folder element
- */
-export const getTabGroupFolder = node => {
-  let folder;
-  const container = getSidebarTabContainer(node);
-  if (container) {
-    folder = container.querySelector(`.${CLASS_FOLDER}`);
-  }
-  return folder || null;
 };
 
 /**

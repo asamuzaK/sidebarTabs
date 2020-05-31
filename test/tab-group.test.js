@@ -11,9 +11,10 @@ import psl from "psl";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/tab-group.js";
 import {
-  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP, HIGHLIGHTED, PINNED,
-  TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND,
+  ACTIVE, CLASS_FOLDER, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
+  HIGHLIGHTED, PINNED, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
+  TAB_GROUP_EXPAND,
 } from "../src/mjs/constant.js";
 
 describe("tab-group", () => {
@@ -1129,6 +1130,129 @@ describe("tab-group", () => {
       body.appendChild(parent);
       const res = await func();
       assert.deepEqual(res, [undefined, undefined], "result");
+    });
+  });
+
+  describe("get tab group folder", () => {
+    const func = mjs.getTabGroupFolder;
+
+    it("should get null if no argument given", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isNull(res, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_FOLDER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isTrue(res === elm, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_FOLDER);
+      elm2.classList.add(TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm2);
+      assert.isTrue(res === elm, "result");
+    });
+  });
+
+  describe("get tab group folder", () => {
+    const func = mjs.toggleTabGroupFolderState;
+
+    it("should get null if no argument given", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isNull(res, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_FOLDER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isTrue(elm.hasAttribute("hidden"), "hidden");
+      assert.isTrue(res === elm, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_FOLDER);
+      elm.setAttribute("hidden", "hidden");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm);
+      assert.isFalse(elm.hasAttribute("hidden"), "hidden");
+      assert.isTrue(res === elm, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_FOLDER);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm2);
+      assert.isTrue(elm.hasAttribute("hidden"), "hidden");
+      assert.isTrue(res === elm, "result");
+    });
+
+    it("should get result", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_FOLDER);
+      elm.setAttribute("hidden", "hidden");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm2);
+      assert.isFalse(elm.hasAttribute("hidden"), "hidden");
+      assert.isTrue(res === elm, "result");
     });
   });
 

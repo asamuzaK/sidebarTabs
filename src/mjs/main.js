@@ -19,9 +19,8 @@ import {
 } from "./browser-tabs.js";
 import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTabGroupFolder, getTabsInRange,
-  getTemplate, isNewTab, scrollTabIntoView, setSessionTabList,
-  storeCloseTabsByDoubleClickValue,
+  getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab,
+  scrollTabIntoView, setSessionTabList, storeCloseTabsByDoubleClickValue,
 } from "./util.js";
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -35,9 +34,10 @@ import {
 } from "./tab-content.js";
 import {
   addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
-  groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
-  replaceTabContextClickListener, restoreTabContainers, toggleTabGrouping,
-  toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState, ungroupTabs,
+  getTabGroupFolder, groupSameContainerTabs, groupSameDomainTabs,
+  groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
+  toggleTabGrouping, toggleTabGroupCollapsedState,
+  toggleTabGroupsCollapsedState, toggleTabGroupFolderState, ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -966,6 +966,7 @@ export const handleClickedMenu = async info => {
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const tabId = getSidebarTabId(tab);
+  const folder = getTabGroupFolder(context);
   const func = [];
   let tabsTab;
   if (Number.isInteger(tabId)) {
@@ -1041,6 +1042,12 @@ export const handleClickedMenu = async info => {
       func.push(
         groupSameDomainTabs(tabId, windowId).then(restoreTabContainers)
           .then(setSessionTabList),
+      );
+      break;
+    case TAB_GROUP_LABEL_SHOW:
+      func.push(
+        toggleTabGroupFolderState(folder),
+        // TODO: synthetic click folder-label-edit button
       );
       break;
     case TAB_GROUP_SELECTED:

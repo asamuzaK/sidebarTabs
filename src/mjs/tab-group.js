@@ -21,9 +21,10 @@ const {i18n, windows} = browser;
 
 /* constants */
 import {
-  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
-  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP, HIGHLIGHTED, NEW_TAB,
-  PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND, TAB_QUERY,
+  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_FOLDER,
+  CLASS_TAB_CONTEXT, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
+  HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
+  TAB_GROUP_EXPAND, TAB_QUERY,
 } from "./constant.js";
 
 /**
@@ -285,6 +286,39 @@ export const expandActivatedCollapsedTab = async () => {
     }
   }
   return func || null;
+};
+
+/**
+ * get tab group folder
+ *
+ * @param {object} node - node
+ * @returns {object} - folder element
+ */
+export const getTabGroupFolder = node => {
+  let folder;
+  const container = getSidebarTabContainer(node);
+  if (container) {
+    folder = container.querySelector(`.${CLASS_FOLDER}`);
+  }
+  return folder || null;
+};
+
+/**
+ * toggle tab group folder state
+ *
+ * @param {object} node - node
+ * @returns {object} - folder element
+ */
+export const toggleTabGroupFolderState = async node => {
+  const folder = getTabGroupFolder(node);
+  if (folder) {
+    if (folder.hidden) {
+      folder.hidden = false;
+    } else {
+      folder.hidden = true;
+    }
+  }
+  return folder || null;
 };
 
 /**
