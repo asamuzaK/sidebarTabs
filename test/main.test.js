@@ -32,7 +32,8 @@ import {
   TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
+  TAB_GROUP_NEW_TAB_AT_END,
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
@@ -5855,6 +5856,58 @@ describe("main", () => {
                          "called sessions set");
       assert.strictEqual(browser.tabs.move.callCount, m + 1, "called move");
       assert.deepEqual(res, [undefined], "result");
+    });
+
+    it("should get result", async () => {
+      const sect = document.createElement("section");
+      const folder = document.createElement("div");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      folder.classList.add(CLASS_FOLDER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      sect.appendChild(folder);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      const info = {
+        menuItemId: TAB_GROUP_LABEL_SHOW,
+      };
+      const res = await func(info);
+      assert.isTrue(folder.hidden, "hidden");
+      assert.deepEqual(res, [folder], "result");
+    });
+
+    it("should get empty array", async () => {
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const body = document.querySelector("body");
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = "2";
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      const info = {
+        menuItemId: TAB_GROUP_LABEL_SHOW,
+      };
+      const res = await func(info);
+      assert.deepEqual(res, [], "result");
     });
 
     it("should call function", async () => {
