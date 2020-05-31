@@ -18,9 +18,10 @@ import {
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
 } from "./browser-tabs.js";
 import {
-  activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
-  getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab, scrollTabIntoView,
-  setSessionTabList, storeCloseTabsByDoubleClickValue,
+  activateTab, getSessionTabList, getSidebarTab, getSidebarTabContainer,
+  getSidebarTabId, getSidebarTabIndex, getTabGroupFolder, getTabsInRange,
+  getTemplate, isNewTab, scrollTabIntoView, setSessionTabList,
+  storeCloseTabsByDoubleClickValue,
 } from "./util.js";
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -71,8 +72,8 @@ import {
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
-  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
   TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
@@ -1247,14 +1248,15 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       enableTabGroup) {
     const {classList: tabClass, parentNode} = elm;
     const {classList: parentClass} = parentNode;
-    const {multiTabsSelected, pinned} = opt;
+    const {folderShown, multiTabsSelected, pinned} = opt;
+    const isTab = !!elm.dataset.tabId;
     const tabGroups =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
     const tabGroupKeys = [
       TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
       TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
-      TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
-      "sepTabGroup-1",
+      TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+      "sepTabGroup-1", "sepTabGroup-2",
     ];
     func.push(updateContextMenu(tabGroupMenu.id, {
       enabled: true,
@@ -1285,19 +1287,20 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           }
           break;
         case TAB_GROUP_CONTAINER:
-          data.enabled = !(pinned || multiTabsSelected);
+          data.enabled = isTab && !(pinned || multiTabsSelected);
           data.title = title;
           data.visible = !incognito;
           break;
         case TAB_GROUP_DOMAIN:
-          data.enabled = !(pinned || multiTabsSelected);
+          data.enabled = isTab && !(pinned || multiTabsSelected);
           data.title = title;
           data.visible = true;
           break;
         case TAB_GROUP_DETACH:
           if (multiTabsSelected) {
             data.visible = false;
-          } else if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
+          } else if (isTab && !pinned &&
+                     parentClass.contains(CLASS_TAB_GROUP)) {
             data.enabled = true;
             data.title = title;
             data.visible = true;
@@ -1323,6 +1326,11 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
             data.visible = false;
           }
           break;
+        case TAB_GROUP_LABEL_SHOW:
+          data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+          data.title = folderShown && toggleTitle || title;
+          data.visible = true;
+          break;
         case TAB_GROUP_SELECTED:
           data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
           data.title = title;
@@ -1334,7 +1342,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           data.visible = true;
           break;
         default:
-          data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+          data.enabled = isTab && parentClass.contains(CLASS_TAB_GROUP);
           data.title = title;
           data.visible = true;
       }
@@ -1358,6 +1366,7 @@ export const prepareTabMenuItems = async elm => {
   const func = [];
   const {contextualIds, enableTabGroup, incognito} = sidebar;
   const tab = getSidebarTab(elm);
+  const folder = getTabGroupFolder(elm);
   const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
   const tabGroupMenu = menuItems[TAB_GROUP];
   const tabKeys = [
@@ -1385,10 +1394,8 @@ export const prepareTabMenuItems = async elm => {
   );
   if (tab) {
     const {parentNode} = tab;
-    const {
-      lastElementChild: parentLastChild,
-    } = parentNode;
-    const parentFirstChild = parentNode.querySelector(TAB_QUERY);
+    const parentFirstTab = parentNode.querySelector(TAB_QUERY);
+    const parentLastTab = parentNode.lastElementChild;
     const tabId = getSidebarTabId(tab);
     const tabsTab = await getTab(tabId);
     const {index, mutedInfo: {muted}, pinned} = tabsTab;
@@ -1491,7 +1498,7 @@ export const prepareTabMenuItems = async elm => {
             if (allTabsSelected) {
               data.enabled = false;
             } else if (pinned) {
-              data.enabled = tab !== parentLastChild;
+              data.enabled = tab !== parentLastTab;
             } else {
               data.enabled = index !== allTabs.length - 1;
             }
@@ -1501,7 +1508,7 @@ export const prepareTabMenuItems = async elm => {
             if (allTabsSelected) {
               data.enabled = false;
             } else if (pinned) {
-              data.enabled = tab !== parentFirstChild;
+              data.enabled = tab !== parentFirstTab;
             } else {
               data.enabled = tab !== firstUnpinnedTab;
             }
@@ -1526,7 +1533,7 @@ export const prepareTabMenuItems = async elm => {
         switch (itemKey) {
           case TAB_MOVE_END:
             if (pinned) {
-              data.enabled = tab !== parentLastChild;
+              data.enabled = tab !== parentLastTab;
             } else {
               data.enabled = index !== allTabs.length - 1;
             }
@@ -1534,7 +1541,7 @@ export const prepareTabMenuItems = async elm => {
             break;
           case TAB_MOVE_START:
             if (pinned) {
-              data.enabled = tab !== parentFirstChild;
+              data.enabled = tab !== parentFirstTab;
             } else {
               data.enabled = tab !== firstUnpinnedTab;
             }
@@ -1550,6 +1557,7 @@ export const prepareTabMenuItems = async elm => {
     }
     func.push(prepareTabGroupMenuItems(tab, {
       multiTabsSelected, pinned,
+      folderShown: folder && !folder.hidden,
     }));
     for (const sep of sepKeys) {
       if (sep === "sep-3" && !enableTabGroup) {
@@ -1566,6 +1574,43 @@ export const prepareTabMenuItems = async elm => {
     func.push(updateContextMenu(bookmarkMenu.id, {
       visible: false,
     }));
+  } else if (folder) {
+    for (const itemKey of tabKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false,
+      }));
+    }
+    for (const itemKey of tabsKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false,
+      }));
+    }
+    setContext(folder);
+    for (const sep of sepKeys) {
+      if (sep === "sep-3") {
+        func.push(updateContextMenu(sep, {
+          visible: true,
+        }));
+      } else {
+        func.push(updateContextMenu(sep, {
+          visible: false,
+        }));
+      }
+    }
+    func.push(
+      prepareTabGroupMenuItems(folder, {
+        multiTabsSelected,
+        folderShown: !folder.hidden,
+        pinned: folder.parentNode === pinnedContainer,
+      }),
+      updateContextMenu(bookmarkMenu.id, {
+        enabled: true,
+        title: bookmarkMenu.title,
+        visible: true,
+      }),
+    );
   } else {
     for (const itemKey of tabKeys) {
       const item = menuItems[itemKey];
@@ -1640,7 +1685,9 @@ export const handleEvt = evt => {
  */
 export const handleContextmenuEvt = evt => {
   const {target} = evt;
-  const tabId = getSidebarTabId(target);
+  const container = getSidebarTabContainer(target);
+  const tabId =
+    container && getSidebarTabId(container.querySelector(TAB_QUERY));
   const opt = {};
   if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
     opt.tabId = tabId;

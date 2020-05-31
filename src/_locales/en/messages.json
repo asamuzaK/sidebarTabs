@@ -245,6 +245,18 @@
       }
     }
   },
+  "hideTabGroupLabel": {
+    "message": "Hide Group Label"
+  },
+  "hideTabGroupLabel_title": {
+    "message": "Hide Group &Label",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
   "lightTheme": {
     "message": "Light Theme"
   },
@@ -648,6 +660,18 @@
       "key": {
         "content": "$1",
         "example": "(&A)"
+      }
+    }
+  },
+  "showTabGroupLabel": {
+    "message": "Show Group Label"
+  },
+  "showTabGroupLabel_title": {
+    "message": "Show Group &Label",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
       }
     }
   },

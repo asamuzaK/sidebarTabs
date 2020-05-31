@@ -245,6 +245,18 @@
       }
     }
   },
+  "hideTabGroupLabel": {
+    "message": "グループのラベルを隠す"
+  },
+  "hideTabGroupLabel_title": {
+    "message": "グループのラベルを隠す$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
   "lightTheme": {
     "message": "明るいテーマ"
   },
@@ -285,7 +297,7 @@
     }
   },
   "moveTabToStart": {
-    "message": "先頭に異動"
+    "message": "先頭に移動"
   },
   "moveTabToStart_title": {
     "message": "先頭に移動$KEY$",
@@ -309,7 +321,7 @@
     }
   },
   "moveTabsToEnd": {
-    "message": "末尾に異動"
+    "message": "末尾に移動"
   },
   "moveTabsToEnd_title": {
     "message": "末尾に移動$KEY$",
@@ -333,7 +345,7 @@
     }
   },
   "moveTabsToStart": {
-    "message": "先頭に異動"
+    "message": "先頭に移動"
   },
   "moveTabsToStart_title": {
     "message": "先頭に移動$KEY$",
@@ -651,8 +663,17 @@
       }
     }
   },
-  "sidebarTabsOptions": {
-    "message": "サイドバー・タブ 設定"
+  "showTabGroupLabel": {
+    "message": "グループのラベルを表示する"
+  },
+  "showTabGroupLabel_title": {
+    "message": "グループのラベルを表示する$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
   },
   "tab": {
     "message": "タブ"
