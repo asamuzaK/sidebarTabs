@@ -524,6 +524,9 @@
       }
     }
   },
+  "pinnedTabsLabel": {
+    "message": "ピン留めされたタブ"
+  },
   "playTab": {
     "message": "タブのメディアを再生"
   },

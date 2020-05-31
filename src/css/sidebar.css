@@ -9,10 +9,13 @@
   --background-hover-shadow: #0c0c0d1a;
   --background-selection-color: #0a84ff;
   --background-selection-hover-color: #0060df;
+  --background-textbox-color: #fff;
   --border-color: #ccc;
   --border-active-color: #999;
   --border-discarded-color: #ccc;
   --border-drop-color: #00feff;
+  --border-textbox-color: rgba(12, 12, 13, 0.2);
+  --border-textbox-active-color: #0a84ff;
   --foreground-color: #0c0c0d;
   --foreground-active-color: #0c0c0d;
   --foreground-discarded-color: #0c0c0d;
@@ -20,6 +23,7 @@
   --foreground-highlight-color: #0a84ff;
   --foreground-selection-color: #f9f9fa;
   --foreground-selection-hover-color: #f9f9fa;
+  --foreground-textbox-color: #0c0c0d;
   --tab-group-pinned: #7d004f;
   --tab-group-1: #669;
   --tab-group-2: #c96;
@@ -43,6 +47,7 @@
   --background-hover-shadow: #f9f9fa1a;
   --background-selection-color: #003eaa;
   --background-selection-hover-color: #0060df;
+  --background-textbox-color: #4a4a4f;
   --border-color: #666;
   --border-active-color: #999;
   --border-discarded-color: #666;
@@ -53,6 +58,7 @@
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #f9f9fa;
   --foreground-selection-hover-color: #f9f9fa;
+  --foreground-textbox-color: #f9f9fa;
 }
 
 /* structure */
@@ -427,6 +433,104 @@ main {
   pointer-events: none;
 }
 
+/* tab group folder */
+.folder {
+  all: unset;
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  margin: 0;
+  border: 1px solid var(--border-color);
+  padding: 0;
+  width: auto;
+  height: var(--tab-height);
+  max-height: var(--tab-height);
+  transition: margin-top 0.1s, height 0.1s, border-top-width 0.1s,
+              border-bottom-width 0.1s;
+  -moz-user-select: none;
+  user-select: none;
+  z-index: 2;
+}
+.compact .folder {
+  height: var(--tab-height-compact);
+  max-height: var(--tab-height-compact);
+}
+.folder.active {
+  background: var(--background-active-color);
+  border-color: var(--border-active-color);
+  color: var(--foreground-active-color);
+  fill: var(--foreground-active-color);
+  stroke: var(--foreground-highlight-color);
+  z-index: 3;
+}
+.folder:hover,
+.folder.active:hover {
+  background: var(--background-hover-color);
+  border-color: var(--border-active-color);
+  color: var(--foreground-hover-color);
+  fill: var(--foreground-hover-color);
+  stroke: var(--foreground-highlight-color);
+  z-index: 5;
+}
+:not(.tab-group) > .folder,
+.folder[hidden] {
+  display: none;
+}
+
+/* folder label */
+.folder-label[contenteditable=""],
+.folder-label[contenteditable="true"] {
+  background: var(--background-textbox-color);
+  border: 1px solid var(--border-textbox-color);
+  border-radius: calc(var(--scale-size) / 2);
+  padding: calc(var(--scale-size) / 3);
+  color: var(--foreground-textbox-color);
+  width: 100%;
+  height: var(--icon-size);
+  -moz-user-select: text;
+  user-select: text;
+  mask-image: none;
+}
+.folder-label[contenteditable=""]:focus,
+.folder-label[contenteditable="true"]:focus {
+  border-color: var(--border-textbox-active-color);
+}
+
+/* folder label edit button */
+.folder-label-edit {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex: 0 0 var(--icon-size);
+  margin: var(--scale-size);
+  border-radius: calc(var(--scale-size) / 2);
+  padding: calc(var(--scale-size) / 3);
+  height: var(--icon-size);
+  fill: var(--foreground-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.folder.active > .folder-label-edit {
+  fill: var(--foreground-active-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.folder:hover > .folder-label-edit,
+.folder.active:hover > .folder-label-edit {
+  fill: var(--foreground-hover-color);
+  fill-opacity: 0.8;
+  stroke: var(--foreground-highlight-color);
+}
+.folder-label-edit:hover {
+  background-color: var(--background-hover-shadow);
+}
+.folder-label-edit-icon {
+  width: var(--icon-small-size);
+  height: var(--icon-small-size);
+}
+
 /* tab group */
 .tab-group.tab-collapsed > :not([hidden]) ~ .tab {
   margin-top: 0;
@@ -451,10 +555,10 @@ main {
 .compact .tab-group > :not([hidden]) > .tab-context {
   height: var(--tab-height-compact);
 }
-.tab-group.tab-collapsed > [hidden] + .tab > .tab-context > .tab-toggle-icon {
+.tab-group.tab-collapsed > :not([hidden]) > .tab-context > .tab-toggle-icon {
   transform: rotate(-90deg);
 }
-.tab-group > [hidden] + .tab > .tab-context > .tab-toggle-icon {
+.tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
   margin: 0;
   width: var(--icon-x-small-size);
   height: var(--icon-x-small-size);
@@ -465,34 +569,58 @@ main {
   display: none;
 }
 
-.tab-group:nth-child(7n + 1) > .tab > .tab-context {
+.tab-group:nth-child(7n + 1) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-1);
 }
-.tab-group:nth-child(7n + 2) > .tab > .tab-context {
+.tab-group:nth-child(7n + 1) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-1);
+}
+.tab-group:nth-child(7n + 2) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-2);
 }
-.tab-group:nth-child(7n + 3) > .tab > .tab-context {
+.tab-group:nth-child(7n + 2) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-2);
+}
+.tab-group:nth-child(7n + 3) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-3);
 }
-.tab-group:nth-child(7n + 4) > .tab > .tab-context {
+.tab-group:nth-child(7n + 3) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-3);
+}
+.tab-group:nth-child(7n + 4) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-4);
 }
-.tab-group:nth-child(7n + 5) > .tab > .tab-context {
+.tab-group:nth-child(7n + 4) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-4);
+}
+.tab-group:nth-child(7n + 5) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-5);
 }
-.tab-group:nth-child(7n + 6) > .tab > .tab-context {
+.tab-group:nth-child(7n + 5) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-5);
+}
+.tab-group:nth-child(7n + 6) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-6);
 }
-.tab-group:nth-child(7n) > .tab > .tab-context {
+.tab-group:nth-child(7n + 6) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-6);
+}
+.tab-group:nth-child(7n) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-7);
 }
-.tab-group.pinned > .tab > .tab-context {
+.tab-group:nth-child(7n) > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-7);
+}
+.tab-group.pinned > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-pinned);
+}
+.tab-group.pinned > .folder > .tab-content > .tab-icon {
+  fill: var(--tab-group-pinned);
 }
 
 @media(prefers-reduced-motion: reduce) {
   .tab,
-  .tab-group > .tab > .tab-context > .tab-toggle-icon {
+  .tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
     transition: none;
   }
 }

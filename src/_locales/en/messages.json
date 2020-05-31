@@ -524,6 +524,9 @@
       }
     }
   },
+  "pinnedTabsLabel": {
+    "message": "Pinned Tabs"
+  },
   "playAudio": {
     "message": "Play Audio"
   },
