@@ -3,7 +3,8 @@
  */
 
 import {
-  getType, isObjectNotEmpty, throwErr,
+  addElementContentEditable, getType, isObjectNotEmpty,
+  removeElementContentEditable, throwErr,
 } from "./common.js";
 import {
   getStorage, getTab, queryTabs,
@@ -21,8 +22,9 @@ const {i18n, windows} = browser;
 
 /* constants */
 import {
-  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_FOLDER,
-  CLASS_TAB_CONTEXT, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
+  ACTIVE, CLASS_FOLDER, CLASS_FOLDER_LABEL, CLASS_FOLDER_LABEL_EDIT,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
+  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND, TAB_QUERY,
 } from "./constant.js";
@@ -304,21 +306,99 @@ export const getTabGroupFolder = node => {
 };
 
 /**
+ * finish editing group label
+ *
+ * @param {!object} evt - event
+ * @returns {void}
+ */
+export const finishGroupLabelEdit = evt => {
+  const {isComposing, key, target, type} = evt;
+  if (type === "blur" ||
+      type === "keydown" && !isComposing && key === "Enter") {
+    const folder = getTabGroupFolder(target);
+    const label = folder && folder.querySelector(`.${CLASS_FOLDER_LABEL}`);
+    if (label) {
+      removeElementContentEditable(label);
+      label.removeEventListener("keydown", finishGroupLabelEdit);
+      label.removeEventListener("blur", finishGroupLabelEdit);
+      evt.preventDefault();
+    }
+  }
+};
+
+/**
+ * start editing group label
+ *
+ * @param {object} node - element
+ * @returns {object} - group label element
+ */
+export const startGroupLabelEdit = async node => {
+  const folder = getTabGroupFolder(node);
+  const label = folder && !folder.hidden && addElementContentEditable(
+    folder.querySelector(`.${CLASS_FOLDER_LABEL}`),
+  );
+  if (label) {
+    label.focus();
+    label.addEventListener("keydown", finishGroupLabelEdit);
+    label.addEventListener("blur", finishGroupLabelEdit);
+  }
+  return label || null;
+};
+
+/**
+ * enable editing group label
+ *
+ * @param {!object} evt - event
+ * @returns {(Function|Error)} - promise chain
+ */
+export const enableGroupLabelEdit = evt => {
+  const {target} = evt;
+  return startGroupLabelEdit(target).catch(throwErr);
+};
+
+/**
+ * add listener to edit label button
+ *
+ * @param {object} node - element
+ * @returns {object} - edit label button
+ */
+export const addListenerToEditLabelButton = async node => {
+  const folder = getTabGroupFolder(node);
+  const button = folder && !folder.hidden &&
+                   folder.querySelector(`.${CLASS_FOLDER_LABEL_EDIT}`);
+  button && button.addEventListener("click", enableGroupLabelEdit);
+  return button || null;
+};
+
+/**
  * toggle tab group folder state
  *
  * @param {object} node - node
- * @returns {object} - folder element
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const toggleTabGroupFolderState = async node => {
+  const func = [];
   const folder = getTabGroupFolder(node);
   if (folder) {
     if (folder.hidden) {
       folder.hidden = false;
+      func.push(
+        addListenerToEditLabelButton(folder),
+        startGroupLabelEdit(folder),
+      );
     } else {
+      const label = folder.querySelector(`.${CLASS_FOLDER_LABEL}`);
+      const button = folder.querySelector(`.${CLASS_FOLDER_LABEL_EDIT}`);
       folder.hidden = true;
+      if (label) {
+        removeElementContentEditable(label);
+        label.removeEventListener("keydown", finishGroupLabelEdit);
+        label.removeEventListener("blur", finishGroupLabelEdit);
+      }
+      button && button.removeEventListener("click", enableGroupLabelEdit);
     }
   }
-  return folder || null;
+  return Promise.all(func);
 };
 
 /**

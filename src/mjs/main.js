@@ -1045,10 +1045,7 @@ export const handleClickedMenu = async info => {
       );
       break;
     case TAB_GROUP_LABEL_SHOW:
-      folder && func.push(
-        toggleTabGroupFolderState(folder),
-        // TODO: synthetic click folder-label-edit button
-      );
+      folder && func.push(toggleTabGroupFolderState(folder));
       break;
     case TAB_GROUP_SELECTED:
       func.push(

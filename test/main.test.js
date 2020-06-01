@@ -16,11 +16,11 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_COMPACT, CLASS_FOLDER, CLASS_NARROW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE,
-  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_LIGHT, CLASS_THEME_DARK,
+  CLASS_COMPACT, CLASS_FOLDER, CLASS_FOLDER_LABEL, CLASS_FOLDER_LABEL_EDIT,
+  CLASS_NARROW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE,
+  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_LIGHT, CLASS_THEME_DARK,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
@@ -5861,53 +5861,50 @@ describe("main", () => {
     it("should get result", async () => {
       const sect = document.createElement("section");
       const folder = document.createElement("div");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
       const body = document.querySelector("body");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
+      folder.classList.add(CLASS_FOLDER);
+      folder.appendChild(child);
+      folder.appendChild(button);
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
-      folder.classList.add(CLASS_FOLDER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "2";
       sect.appendChild(folder);
-      sect.appendChild(elm);
-      sect.appendChild(elm2);
       body.appendChild(sect);
-      mjs.sidebar.context = elm;
+      mjs.sidebar.context = folder;
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW,
       };
       const res = await func(info);
       assert.isTrue(folder.hidden, "hidden");
-      assert.deepEqual(res, [folder], "result");
+      assert.deepEqual(res, [[]], "result");
     });
 
-    it("should get empty array", async () => {
+    it("should get result", async () => {
       const sect = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
+      const folder = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
       const body = document.querySelector("body");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
+      folder.classList.add(CLASS_FOLDER);
+      folder.hidden = true;
+      folder.appendChild(child);
+      folder.appendChild(button);
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "2";
-      sect.appendChild(elm);
-      sect.appendChild(elm2);
+      sect.appendChild(folder);
       body.appendChild(sect);
-      mjs.sidebar.context = elm;
+      mjs.sidebar.context = folder;
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW,
       };
       const res = await func(info);
-      assert.deepEqual(res, [], "result");
+      assert.isFalse(folder.hidden, "hidden");
+      assert.deepEqual(res, [[button, child]], "result");
     });
 
     it("should call function", async () => {

@@ -11,8 +11,9 @@ import psl from "psl";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/tab-group.js";
 import {
-  ACTIVE, CLASS_FOLDER, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
+  ACTIVE, CLASS_FOLDER, CLASS_FOLDER_LABEL, CLASS_FOLDER_LABEL_EDIT,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, PINNED, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND,
 } from "../src/mjs/constant.js";
@@ -1179,80 +1180,289 @@ describe("tab-group", () => {
     });
   });
 
-  describe("get tab group folder", () => {
-    const func = mjs.toggleTabGroupFolderState;
+  describe("finish editing group label", () => {
+    const func = mjs.finishGroupLabelEdit;
 
-    it("should get null if no argument given", async () => {
+    it("should throw", () => {
+      assert.throws(() => func());
+    });
+
+    it("should not call function", () => {
+      const stub = sinon.stub();
+      const evt = {
+        preventDefault: stub,
+      };
+      func(evt);
+      assert.isFalse(stub.called, "not called");
+    });
+
+    it("should not call function", () => {
+      const stub = sinon.stub();
+      const evt = {
+        preventDefault: stub,
+        type: "focus",
+      };
+      func(evt);
+      assert.isFalse(stub.called, "not called");
+    });
+
+    it("should not call function", () => {
+      const stub = sinon.stub();
+      const evt = {
+        preventDefault: stub,
+        type: "blur",
+      };
+      func(evt);
+      assert.isFalse(stub.called, "not called");
+    });
+
+    it("should not call function", () => {
+      const stub = sinon.stub();
+      const evt = {
+        isComposing: false,
+        key: "Enter",
+        preventDefault: stub,
+        type: "keydown",
+      };
+      func(evt);
+      assert.isFalse(stub.called, "not called");
+    });
+
+    it("should call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const body = document.querySelector("body");
+      const stub = sinon.stub();
+      const spy = sinon.spy(child, "removeEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      elm.classList.add(CLASS_FOLDER);
+      elm.hidden = false;
+      elm.appendChild(child);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const evt = {
+        preventDefault: stub,
+        target: elm,
+        type: "blur",
+      };
+      func(evt);
+      assert.isTrue(stub.calledOnce, "called preventDefault");
+      assert.isTrue(spy.calledTwice, "called removeEventListener");
+    });
+
+    it("should call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const body = document.querySelector("body");
+      const stub = sinon.stub();
+      const spy = sinon.spy(child, "removeEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      elm.classList.add(CLASS_FOLDER);
+      elm.hidden = false;
+      elm.appendChild(child);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const evt = {
+        isComposing: false,
+        key: "Enter",
+        preventDefault: stub,
+        target: elm,
+        type: "keydown",
+      };
+      func(evt);
+      assert.isTrue(stub.calledOnce, "called preventDefault");
+      assert.isTrue(spy.calledTwice, "called removeEventListener");
+    });
+  });
+
+  describe("start editing group label", () => {
+    const func = mjs.startGroupLabelEdit;
+
+    it("get null", async () => {
       const res = await func();
       assert.isNull(res, "result");
     });
 
     it("should get null", async () => {
-      const parent = document.createElement("div");
-      const elm = document.createElement("p");
+      const elm = document.createElement("div");
       const body = document.querySelector("body");
-      parent.appendChild(elm);
-      body.appendChild(parent);
+      body.appendChild(elm);
       const res = await func(elm);
       assert.isNull(res, "result");
     });
 
-    it("should get result", async () => {
+    it("should get null", async () => {
       const parent = document.createElement("div");
-      const elm = document.createElement("p");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
       const body = document.querySelector("body");
+      const spy = sinon.spy(child, "addEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
       elm.classList.add(CLASS_FOLDER);
+      elm.hidden = true;
+      elm.appendChild(child);
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isTrue(elm.hasAttribute("hidden"), "hidden");
-      assert.isTrue(res === elm, "result");
+      assert.isFalse(spy.called, "not called");
+      assert.isNull(res, "result");
     });
 
-    it("should get result", async () => {
+    it("should call function", async () => {
       const parent = document.createElement("div");
-      const elm = document.createElement("p");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
       const body = document.querySelector("body");
+      const spy = sinon.spy(child, "addEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
       elm.classList.add(CLASS_FOLDER);
-      elm.setAttribute("hidden", "hidden");
+      elm.hidden = false;
+      elm.appendChild(child);
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isFalse(elm.hasAttribute("hidden"), "hidden");
-      assert.isTrue(res === elm, "result");
+      assert.isTrue(spy.calledTwice, "called addEventListener");
+      assert.deepEqual(res, child, "result");
+    });
+  });
+
+  describe("enable editing group label", () => {
+    const func = mjs.enableGroupLabelEdit;
+
+    it("should throw", () => {
+      assert.throws(() => func());
     });
 
     it("should get result", async () => {
-      const parent = document.createElement("div");
       const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const evt = {
+        target: elm,
+      };
+      const res = await func(evt);
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(child, "addEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
+      elm.classList.add(CLASS_FOLDER);
+      elm.hidden = false;
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const evt = {
+        target: button,
+      };
+      const res = await func(evt);
+      assert.isTrue(spy.calledTwice, "called addEventListener");
+      assert.deepEqual(res, child, "result");
+    });
+  });
+
+  describe("add listener to edit label button", () => {
+    const func = mjs.addListenerToEditLabelButton;
+
+    it("should get null", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(button, "addEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
+      elm.classList.add(CLASS_FOLDER);
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(parent);
+      assert.isTrue(spy.calledOnce, "called");
+      assert.deepEqual(res, button, "result");
+    });
+  });
+
+  describe("toggle tab group folder", () => {
+    const func = mjs.toggleTabGroupFolderState;
+
+    it("should get empty array", async () => {
+      const res = await func();
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should get empty array", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
       const body = document.querySelector("body");
       elm.classList.add(CLASS_FOLDER);
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
-      parent.appendChild(elm2);
       body.appendChild(parent);
-      const res = await func(elm2);
-      assert.isTrue(elm.hasAttribute("hidden"), "hidden");
-      assert.isTrue(res === elm, "result");
+      const res = await func(parent);
+      assert.deepEqual(res, [], "result");
     });
 
-    it("should get result", async () => {
+    it("should call function", async () => {
       const parent = document.createElement("div");
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
       const body = document.querySelector("body");
+      const spy = sinon.spy(child, "removeEventListener");
+      const spy2 = sinon.spy(button, "removeEventListener");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
       elm.classList.add(CLASS_FOLDER);
-      elm.setAttribute("hidden", "hidden");
+      elm.appendChild(child);
+      elm.appendChild(button);
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
-      parent.appendChild(elm2);
       body.appendChild(parent);
-      const res = await func(elm2);
-      assert.isFalse(elm.hasAttribute("hidden"), "hidden");
-      assert.isTrue(res === elm, "result");
+      const res = await func(parent);
+      assert.isTrue(spy.calledTwice, "called child removeEventListener");
+      assert.isTrue(spy2.calledOnce, "called button removeEventListener");
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should get array", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      child.classList.add(CLASS_FOLDER_LABEL);
+      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
+      elm.classList.add(CLASS_FOLDER);
+      elm.hidden = true;
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(parent);
+      assert.deepEqual(res, [button, child], "result");
     });
   });
 
