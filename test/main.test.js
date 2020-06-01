@@ -16,7 +16,7 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_COMPACT, CLASS_FOLDER, CLASS_FOLDER_LABEL, CLASS_FOLDER_LABEL_EDIT,
+  CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
   CLASS_NARROW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE,
@@ -5860,50 +5860,50 @@ describe("main", () => {
 
     it("should get result", async () => {
       const sect = document.createElement("section");
-      const folder = document.createElement("div");
+      const heading = document.createElement("div");
       const child = document.createElement("div");
       const button = document.createElement("button");
       const body = document.querySelector("body");
-      child.classList.add(CLASS_FOLDER_LABEL);
-      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
-      folder.classList.add(CLASS_FOLDER);
-      folder.appendChild(child);
-      folder.appendChild(button);
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      heading.classList.add(CLASS_HEADING);
+      heading.appendChild(child);
+      heading.appendChild(button);
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
-      sect.appendChild(folder);
+      sect.appendChild(heading);
       body.appendChild(sect);
-      mjs.sidebar.context = folder;
+      mjs.sidebar.context = heading;
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW,
       };
       const res = await func(info);
-      assert.isTrue(folder.hidden, "hidden");
+      assert.isTrue(heading.hidden, "hidden");
       assert.deepEqual(res, [[]], "result");
     });
 
     it("should get result", async () => {
       const sect = document.createElement("section");
-      const folder = document.createElement("div");
+      const heading = document.createElement("div");
       const child = document.createElement("div");
       const button = document.createElement("button");
       const body = document.querySelector("body");
-      child.classList.add(CLASS_FOLDER_LABEL);
-      button.classList.add(CLASS_FOLDER_LABEL_EDIT);
-      folder.classList.add(CLASS_FOLDER);
-      folder.hidden = true;
-      folder.appendChild(child);
-      folder.appendChild(button);
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading.appendChild(child);
+      heading.appendChild(button);
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
-      sect.appendChild(folder);
+      sect.appendChild(heading);
       body.appendChild(sect);
-      mjs.sidebar.context = folder;
+      mjs.sidebar.context = heading;
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW,
       };
       const res = await func(info);
-      assert.isFalse(folder.hidden, "hidden");
+      assert.isFalse(heading.hidden, "hidden");
       assert.deepEqual(res, [[button, child]], "result");
     });
 
@@ -7536,7 +7536,7 @@ describe("main", () => {
       elm.dataset.tabId = "1";
       elm.classList.add(HIGHLIGHTED);
       pinned.appendChild(elm);
-      elm1.classList.add(CLASS_FOLDER);
+      elm1.classList.add(CLASS_HEADING);
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
       elm3.classList.add(TAB);
@@ -7592,7 +7592,7 @@ describe("main", () => {
       elm.dataset.tabId = "1";
       elm.classList.add(HIGHLIGHTED);
       pinned.appendChild(elm);
-      elm1.classList.add(CLASS_FOLDER);
+      elm1.classList.add(CLASS_HEADING);
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
       elm3.classList.add(TAB);
@@ -7648,7 +7648,7 @@ describe("main", () => {
       elm.dataset.tabId = "1";
       elm.classList.add(HIGHLIGHTED);
       pinned.appendChild(elm);
-      elm1.classList.add(CLASS_FOLDER);
+      elm1.classList.add(CLASS_HEADING);
       elm1.hidden = true;
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
@@ -8198,17 +8198,17 @@ describe("main", () => {
         context: "tab",
       }).callCount;
       const parent = document.createElement("div");
-      const folder = document.createElement("p");
+      const heading = document.createElement("p");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       elm.dataset.tabId = "1";
       elm.classList.add(TAB);
       parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(folder);
+      parent.appendChild(heading);
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func({
-        target: folder,
+        target: heading,
       });
       assert.strictEqual(browser.menus.overrideContext.withArgs({
         tabId: 1,

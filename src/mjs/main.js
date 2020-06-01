@@ -34,10 +34,10 @@ import {
 } from "./tab-content.js";
 import {
   addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
-  getTabGroupFolder, groupSameContainerTabs, groupSameDomainTabs,
+  getTabGroupHeading, groupSameContainerTabs, groupSameDomainTabs,
   groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
   toggleTabGrouping, toggleTabGroupCollapsedState,
-  toggleTabGroupsCollapsedState, toggleTabGroupFolderState, ungroupTabs,
+  toggleTabGroupsCollapsedState, toggleTabGroupHeadingState, ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -966,7 +966,7 @@ export const handleClickedMenu = async info => {
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const tabId = getSidebarTabId(tab);
-  const folder = getTabGroupFolder(context);
+  const heading = getTabGroupHeading(context);
   const func = [];
   let tabsTab;
   if (Number.isInteger(tabId)) {
@@ -1045,7 +1045,7 @@ export const handleClickedMenu = async info => {
       );
       break;
     case TAB_GROUP_LABEL_SHOW:
-      folder && func.push(toggleTabGroupFolderState(folder));
+      heading && func.push(toggleTabGroupHeadingState(heading));
       break;
     case TAB_GROUP_SELECTED:
       func.push(
@@ -1252,7 +1252,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       enableTabGroup) {
     const {classList: tabClass, parentNode} = elm;
     const {classList: parentClass} = parentNode;
-    const {folderShown, multiTabsSelected, pinned} = opt;
+    const {headingShown, multiTabsSelected, pinned} = opt;
     const isTab = !!elm.dataset.tabId;
     const tabGroups =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
@@ -1332,7 +1332,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           break;
         case TAB_GROUP_LABEL_SHOW:
           data.enabled = parentClass.contains(CLASS_TAB_GROUP);
-          data.title = folderShown && toggleTitle || title;
+          data.title = headingShown && toggleTitle || title;
           data.visible = true;
           break;
         case TAB_GROUP_SELECTED:
@@ -1370,7 +1370,7 @@ export const prepareTabMenuItems = async elm => {
   const func = [];
   const {contextualIds, enableTabGroup, incognito} = sidebar;
   const tab = getSidebarTab(elm);
-  const folder = getTabGroupFolder(elm);
+  const heading = getTabGroupHeading(elm);
   const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
   const tabGroupMenu = menuItems[TAB_GROUP];
   const tabKeys = [
@@ -1561,7 +1561,7 @@ export const prepareTabMenuItems = async elm => {
     }
     func.push(prepareTabGroupMenuItems(tab, {
       multiTabsSelected, pinned,
-      folderShown: folder && !folder.hidden,
+      headingShown: heading && !heading.hidden,
     }));
     for (const sep of sepKeys) {
       if (sep === "sep-3" && !enableTabGroup) {
@@ -1578,7 +1578,7 @@ export const prepareTabMenuItems = async elm => {
     func.push(updateContextMenu(bookmarkMenu.id, {
       visible: false,
     }));
-  } else if (folder) {
+  } else if (heading) {
     for (const itemKey of tabKeys) {
       const item = menuItems[itemKey];
       func.push(updateContextMenu(item.id, {
@@ -1591,7 +1591,7 @@ export const prepareTabMenuItems = async elm => {
         visible: false,
       }));
     }
-    setContext(folder);
+    setContext(heading);
     for (const sep of sepKeys) {
       if (sep === "sep-3") {
         func.push(updateContextMenu(sep, {
@@ -1604,10 +1604,10 @@ export const prepareTabMenuItems = async elm => {
       }
     }
     func.push(
-      prepareTabGroupMenuItems(folder, {
+      prepareTabGroupMenuItems(heading, {
         multiTabsSelected,
-        folderShown: !folder.hidden,
-        pinned: folder.parentNode === pinnedContainer,
+        headingShown: !heading.hidden,
+        pinned: heading.parentNode === pinnedContainer,
       }),
       updateContextMenu(bookmarkMenu.id, {
         enabled: true,
