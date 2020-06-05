@@ -1045,7 +1045,9 @@ export const handleClickedMenu = async info => {
       );
       break;
     case TAB_GROUP_LABEL_SHOW:
-      heading && func.push(toggleTabGroupHeadingState(heading));
+      heading && func.push(
+        toggleTabGroupHeadingState(heading, tabGroupOnExpandCollapseOther),
+      );
       break;
     case TAB_GROUP_SELECTED:
       func.push(

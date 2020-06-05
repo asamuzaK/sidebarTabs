@@ -142,6 +142,56 @@ describe("tab-group", () => {
       assert.strictEqual(elm4.alt, "bar", "alt");
     });
 
+    it("should set value", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns("bar");
+      const i = browser.i18n.getMessage.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm2.classList.add(CLASS_HEADING);
+      elm3.appendChild(elm4);
+      elm2.appendChild(elm3);
+      elm.appendChild(elm2);
+      body.appendChild(elm);
+      await func(elm, true);
+      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isTrue(elm2.classList.contains(ACTIVE), "active");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
+      assert.strictEqual(elm3.title, "foo", "title");
+      assert.strictEqual(elm4.alt, "bar", "alt");
+    });
+
+    it("should set value", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns("bar");
+      const i = browser.i18n.getMessage.callCount;
+      const elm = document.createElement("div");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm2.classList.add(CLASS_HEADING);
+      elm3.appendChild(elm4);
+      elm2.appendChild(elm3);
+      elm.appendChild(elm2);
+      body.appendChild(elm);
+      await func(elm, false);
+      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isFalse(elm2.classList.contains(ACTIVE), "active");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
+      assert.strictEqual(elm3.title, "foo", "title");
+      assert.strictEqual(elm4.alt, "bar", "alt");
+    });
+
     it("should not call function", async () => {
       const i = browser.i18n.getMessage.callCount;
       const elm = document.createElement("div");
@@ -186,6 +236,7 @@ describe("tab-group", () => {
       browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns("bar");
       const i = browser.i18n.getMessage.callCount;
       const elm = document.createElement("div");
+      const elm1 = document.createElement("p");
       const elm2 = document.createElement("p");
       const elm3 = document.createElement("span");
       const elm4 = document.createElement("img");
@@ -193,14 +244,49 @@ describe("tab-group", () => {
       elm.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(CLASS_TAB_COLLAPSED);
+      elm1.classList.add(CLASS_HEADING);
+      elm1.hidden = true;
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "1";
       elm3.appendChild(elm4);
       elm2.appendChild(elm3);
+      elm.appendChild(elm1);
       elm.appendChild(elm2);
       body.appendChild(elm);
       await func(elm);
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
+      assert.strictEqual(elm3.title, "foo", "title");
+      assert.strictEqual(elm4.alt, "bar", "alt");
+    });
+
+    it("should set value", async () => {
+      browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
+        .returns("foo");
+      browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns("bar");
+      const i = browser.i18n.getMessage.callCount;
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("span");
+      const elm4 = document.createElement("img");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      elm1.classList.add(CLASS_HEADING);
+      elm1.classList.add(ACTIVE);
+      elm1.hidden = false;
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm3.appendChild(elm4);
+      elm1.appendChild(elm3);
+      elm.appendChild(elm1);
+      elm.appendChild(elm2);
+      body.appendChild(elm);
+      await func(elm);
+      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), "class");
+      assert.isFalse(elm1.classList.contains(ACTIVE), "heading class");
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, "called");
       assert.strictEqual(elm3.title, "foo", "title");
       assert.strictEqual(elm4.alt, "bar", "alt");
@@ -248,6 +334,7 @@ describe("tab-group", () => {
       });
       span.appendChild(img);
       p.appendChild(span);
+      p.classList.add(TAB);
       elm.appendChild(p);
       elm.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(CLASS_TAB_GROUP);
@@ -829,6 +916,41 @@ describe("tab-group", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.isUndefined(res, "result");
     });
+
+    it("should call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const child = document.createElement("span");
+      const img = document.createElement("img");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = false;
+      child.appendChild(img);
+      elm.appendChild(child);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "1";
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = "1";
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      const evt = {
+        target: elm,
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
+      assert.isUndefined(res, "result");
+    });
   });
 
   describe("handle multiple tab groups collapsed state", () => {
@@ -996,6 +1118,34 @@ describe("tab-group", () => {
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
+
+    it("should add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      elm.classList.add(CLASS_HEADING_LABEL);
+      body.appendChild(elm);
+      await func(elm);
+      assert.isTrue(spy.calledOnce, "called");
+      assert.isTrue(spy2.calledOnce, "called");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      elm.classList.add(CLASS_HEADING_LABEL);
+      body.appendChild(elm);
+      await func(elm, true);
+      assert.isTrue(spy.calledOnce, "called");
+      assert.isTrue(spy2.calledOnce, "called");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
   });
 
   describe("replace tab context click listener", () => {
@@ -1030,6 +1180,8 @@ describe("tab-group", () => {
     });
 
     it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -1043,14 +1195,255 @@ describe("tab-group", () => {
       const l = spy4.callCount;
       elm.classList.add(CLASS_TAB_CONTEXT);
       elm2.classList.add(CLASS_TAB_CONTEXT);
-      body.appendChild(elm);
-      body.appendChild(elm2);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
       const res = await func(false);
       assert.strictEqual(spy.callCount, i + 1, "called");
       assert.strictEqual(spy2.callCount, j + 1, "called");
       assert.strictEqual(spy3.callCount, k + 1, "called");
       assert.strictEqual(spy4.callCount, l + 1, "called");
       assert.deepEqual(res, [undefined, undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      parent.hidden = true;
+      elm.classList.add(CLASS_TAB_CONTEXT);
+      elm2.classList.add(CLASS_TAB_CONTEXT);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(false);
+      assert.strictEqual(spy.callCount, i, "not called");
+      assert.strictEqual(spy2.callCount, j, "not called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.deepEqual(res, [undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      elm.classList.add(CLASS_TAB_CONTEXT);
+      elm2.classList.add(CLASS_TAB_CONTEXT);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(true);
+      assert.strictEqual(spy.callCount, i + 1, "called");
+      assert.strictEqual(spy2.callCount, j + 1, "called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.deepEqual(res, [undefined, undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      parent.hidden = true;
+      elm.classList.add(CLASS_TAB_CONTEXT);
+      elm2.classList.add(CLASS_TAB_CONTEXT);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(true);
+      assert.strictEqual(spy.callCount, i, "not called");
+      assert.strictEqual(spy2.callCount, j, "not called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.deepEqual(res, [undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      elm.classList.add(CLASS_HEADING_LABEL);
+      elm2.classList.add(CLASS_HEADING_LABEL);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(false);
+      assert.strictEqual(spy.callCount, i + 1, "called");
+      assert.strictEqual(spy2.callCount, j + 1, "called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.isFalse(parent.hasAttribute("data-multi"), "dataset");
+      assert.isFalse(parent2.hasAttribute("data-multi"), "dataset");
+      assert.deepEqual(res, [undefined, undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      parent.hidden = true;
+      elm.classList.add(CLASS_HEADING_LABEL);
+      elm2.classList.add(CLASS_HEADING_LABEL);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(false);
+      assert.strictEqual(spy.callCount, i, "not called");
+      assert.strictEqual(spy2.callCount, j, "not called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.isFalse(parent.hasAttribute("data-multi"), "dataset");
+      assert.isFalse(parent2.hasAttribute("data-multi"), "dataset");
+      assert.deepEqual(res, [undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      elm.classList.add(CLASS_HEADING_LABEL);
+      elm2.classList.add(CLASS_HEADING_LABEL);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(true);
+      assert.strictEqual(spy.callCount, i + 1, "called");
+      assert.strictEqual(spy2.callCount, j + 1, "called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.isTrue(parent.hasAttribute("data-multi"), "dataset");
+      assert.strictEqual(parent.dataset.multi, "true", "dataset value");
+      assert.isTrue(parent2.hasAttribute("data-multi"), "dataset");
+      assert.strictEqual(parent2.dataset.multi, "true", "dataset value");
+      assert.deepEqual(res, [undefined, undefined], "result");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+      elm2.addEventListener.restore();
+      elm2.removeEventListener.restore();
+    });
+
+    it("should add listener", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      const spy3 = sinon.spy(elm2, "addEventListener");
+      const spy4 = sinon.spy(elm2, "removeEventListener");
+      const i = spy.callCount;
+      const j = spy2.callCount;
+      const k = spy3.callCount;
+      const l = spy4.callCount;
+      parent.hidden = true;
+      elm.classList.add(CLASS_HEADING_LABEL);
+      elm2.classList.add(CLASS_HEADING_LABEL);
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(true);
+      assert.strictEqual(spy.callCount, i, "not called");
+      assert.strictEqual(spy2.callCount, j, "not called");
+      assert.strictEqual(spy3.callCount, k + 1, "called");
+      assert.strictEqual(spy4.callCount, l + 1, "called");
+      assert.isFalse(parent.hasAttribute("data-multi"), "dataset");
+      assert.isTrue(parent2.hasAttribute("data-multi"), "dataset");
+      assert.strictEqual(parent2.dataset.multi, "true", "dataset value");
+      assert.deepEqual(res, [undefined], "result");
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
       elm2.addEventListener.restore();
@@ -1235,6 +1628,7 @@ describe("tab-group", () => {
       const body = document.querySelector("body");
       const stub = sinon.stub();
       const spy = sinon.spy(child, "removeEventListener");
+      const spy2 = sinon.spy(child, "addEventListener");
       child.classList.add(CLASS_HEADING_LABEL);
       elm.classList.add(CLASS_HEADING);
       elm.hidden = false;
@@ -1249,7 +1643,8 @@ describe("tab-group", () => {
       };
       func(evt);
       assert.isTrue(stub.calledOnce, "called preventDefault");
-      assert.isTrue(spy.calledTwice, "called removeEventListener");
+      assert.isTrue(spy.calledThrice, "called removeEventListener");
+      assert.isTrue(spy2.calledOnce, "called addEventListener");
     });
 
     it("should call function", () => {
@@ -1259,6 +1654,7 @@ describe("tab-group", () => {
       const body = document.querySelector("body");
       const stub = sinon.stub();
       const spy = sinon.spy(child, "removeEventListener");
+      const spy2 = sinon.spy(child, "addEventListener");
       child.classList.add(CLASS_HEADING_LABEL);
       elm.classList.add(CLASS_HEADING);
       elm.hidden = false;
@@ -1275,7 +1671,37 @@ describe("tab-group", () => {
       };
       func(evt);
       assert.isTrue(stub.calledOnce, "called preventDefault");
-      assert.isTrue(spy.calledTwice, "called removeEventListener");
+      assert.isTrue(spy.calledThrice, "called removeEventListener");
+      assert.isTrue(spy2.calledOnce, "called addEventListener");
+    });
+
+    it("should call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const body = document.querySelector("body");
+      const stub = sinon.stub();
+      const spy = sinon.spy(child, "removeEventListener");
+      const spy2 = sinon.spy(child, "addEventListener");
+      child.classList.add(CLASS_HEADING_LABEL);
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = false;
+      elm.dataset.multi = true;
+      elm.appendChild(child);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const evt = {
+        isComposing: false,
+        key: "Enter",
+        preventDefault: stub,
+        target: elm,
+        type: "keydown",
+      };
+      func(evt);
+      assert.isTrue(stub.calledOnce, "called preventDefault");
+      assert.isTrue(spy.calledThrice, "called removeEventListener");
+      assert.isTrue(spy2.calledOnce, "called addEventListener");
     });
   });
 
@@ -1301,6 +1727,7 @@ describe("tab-group", () => {
       const child = document.createElement("div");
       const body = document.querySelector("body");
       const spy = sinon.spy(child, "addEventListener");
+      const spy2 = sinon.spy(child, "removeEventListener");
       child.classList.add(CLASS_HEADING_LABEL);
       elm.classList.add(CLASS_HEADING);
       elm.hidden = true;
@@ -1310,6 +1737,7 @@ describe("tab-group", () => {
       body.appendChild(parent);
       const res = await func(elm);
       assert.isFalse(spy.called, "not called");
+      assert.isFalse(spy2.called, "not called");
       assert.isNull(res, "result");
     });
 
@@ -1319,6 +1747,7 @@ describe("tab-group", () => {
       const child = document.createElement("div");
       const body = document.querySelector("body");
       const spy = sinon.spy(child, "addEventListener");
+      const spy2 = sinon.spy(child, "removeEventListener");
       child.classList.add(CLASS_HEADING_LABEL);
       elm.classList.add(CLASS_HEADING);
       elm.hidden = false;
@@ -1328,6 +1757,7 @@ describe("tab-group", () => {
       body.appendChild(parent);
       const res = await func(elm);
       assert.isTrue(spy.calledTwice, "called addEventListener");
+      assert.isTrue(spy2.calledTwice, "called removeEventListener");
       assert.deepEqual(res, child, "result");
     });
   });
@@ -1427,14 +1857,18 @@ describe("tab-group", () => {
     it("should call function", async () => {
       const parent = document.createElement("div");
       const elm = document.createElement("div");
+      const context = document.createElement("span");
       const child = document.createElement("div");
       const button = document.createElement("button");
       const body = document.querySelector("body");
       const spy = sinon.spy(child, "removeEventListener");
       const spy2 = sinon.spy(button, "removeEventListener");
+      const spy3 = sinon.spy(context, "removeEventListener");
+      context.classList.add(CLASS_TAB_CONTEXT);
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
       elm.classList.add(CLASS_HEADING);
+      elm.appendChild(context);
       elm.appendChild(child);
       elm.appendChild(button);
       parent.classList.add(CLASS_TAB_CONTAINER);
@@ -1443,6 +1877,7 @@ describe("tab-group", () => {
       const res = await func(parent);
       assert.isTrue(spy.calledTwice, "called child removeEventListener");
       assert.isTrue(spy2.calledOnce, "called button removeEventListener");
+      assert.isTrue(spy3.calledTwice, "called context removeEventListener");
       assert.deepEqual(res, [], "result");
     });
 
@@ -1462,7 +1897,29 @@ describe("tab-group", () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(parent);
-      assert.deepEqual(res, [button, child], "result");
+      assert.isFalse(elm.hasAttribute("data-multi"), "dataset");
+      assert.deepEqual(res, [button, child, undefined], "result");
+    });
+
+    it("should get array", async () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = true;
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(parent, true);
+      assert.isTrue(elm.hasAttribute("data-multi"), "dataset");
+      assert.strictEqual(elm.dataset.multi, "true", "dataset value");
+      assert.deepEqual(res, [button, child, undefined], "result");
     });
   });
 

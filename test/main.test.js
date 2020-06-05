@@ -5904,7 +5904,7 @@ describe("main", () => {
       };
       const res = await func(info);
       assert.isFalse(heading.hidden, "hidden");
-      assert.deepEqual(res, [[button, child]], "result");
+      assert.deepEqual(res, [[button, child, undefined]], "result");
     });
 
     it("should call function", async () => {
