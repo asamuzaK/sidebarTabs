@@ -482,23 +482,6 @@ main {
 .heading-label {
   font-weight: bold;
 }
-.heading-label[contenteditable=""],
-.heading-label[contenteditable="true"] {
-  background: var(--background-textbox-color);
-  border: 1px solid var(--border-textbox-color);
-  border-radius: calc(var(--scale-size) / 2);
-  padding: calc(var(--scale-size) / 3);
-  color: var(--foreground-textbox-color);
-  width: calc(100% - var(--scale-size) / 3 * 2);
-  height: var(--icon-size);
-  -moz-user-select: text;
-  user-select: text;
-  mask-image: none;
-}
-.heading-label[contenteditable=""]:focus,
-.heading-label[contenteditable="true"]:focus {
-  border-color: var(--border-textbox-active-color);
-}
 
 /* heading label edit button */
 .heading-label-edit {
@@ -578,7 +561,7 @@ main {
 .tab-group:nth-child(7n + 1) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-1);
 }
-.tab-group:nth-child(7n + 1) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n + 1) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-1);
 }
 .tab-group:nth-child(7n + 2) > :not([hidden]) > .tab-context {
@@ -587,7 +570,7 @@ main {
 .tab-group:nth-child(7n + 2) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-2);
 }
-.tab-group:nth-child(7n + 2) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n + 2) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-2);
 }
 .tab-group:nth-child(7n + 3) > :not([hidden]) > .tab-context {
@@ -596,7 +579,7 @@ main {
 .tab-group:nth-child(7n + 3) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-3);
 }
-.tab-group:nth-child(7n + 3) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n + 3) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-3);
 }
 .tab-group:nth-child(7n + 4) > :not([hidden]) > .tab-context {
@@ -605,7 +588,7 @@ main {
 .tab-group:nth-child(7n + 4) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-4);
 }
-.tab-group:nth-child(7n + 4) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n + 4) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-4);
 }
 .tab-group:nth-child(7n + 5) > :not([hidden]) > .tab-context {
@@ -614,7 +597,7 @@ main {
 .tab-group:nth-child(7n + 5) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-5);
 }
-.tab-group:nth-child(7n + 5) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n + 5) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-5);
 }
 .tab-group:nth-child(7n + 6) > :not([hidden]) > .tab-context {
@@ -623,7 +606,7 @@ main {
 .tab-group:nth-child(7n + 6) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-6);
 }
-.tab-group:nth-child(7n + 6) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n + 6) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-6);
 }
 .tab-group:nth-child(7n) > :not([hidden]) > .tab-context {
@@ -632,7 +615,7 @@ main {
 .tab-group:nth-child(7n) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-7);
 }
-.tab-group:nth-child(7n) > .heading > .tab-content > .heading-label {
+.tab-group:nth-child(7n) > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-7);
 }
 .tab-group.pinned > :not([hidden]) > .tab-context {
@@ -641,8 +624,28 @@ main {
 .tab-group.pinned > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-pinned);
 }
-.tab-group.pinned > .heading > .tab-content > .heading-label {
+.tab-group.pinned > .heading > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-pinned);
+}
+
+/* text box */
+[contenteditable=""],
+[contenteditable="true"] {
+  background: var(--background-textbox-color);
+  border: 1px solid var(--border-textbox-color);
+  border-radius: calc(var(--scale-size) / 2);
+  padding: calc(var(--scale-size) / 3);
+  color: var(--foreground-textbox-color);
+  font-weight: normal;
+  width: calc(100% - var(--scale-size) / 3 * 2);
+  height: var(--icon-size);
+  -moz-user-select: text;
+  user-select: text;
+  mask-image: none;
+}
+[contenteditable=""]:focus,
+[contenteditable="true"]:focus {
+  border-color: var(--border-textbox-active-color);
 }
 
 @media(prefers-reduced-motion: reduce) {
