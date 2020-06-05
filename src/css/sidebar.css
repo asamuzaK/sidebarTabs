@@ -479,6 +479,9 @@ main {
 }
 
 /* heading label */
+.heading-label {
+  font-weight: bold;
+}
 .heading-label[contenteditable=""],
 .heading-label[contenteditable="true"] {
   background: var(--background-textbox-color);
@@ -575,11 +578,17 @@ main {
 .tab-group:nth-child(7n + 1) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-1);
 }
+.tab-group:nth-child(7n + 1) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-1);
+}
 .tab-group:nth-child(7n + 2) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-2);
 }
 .tab-group:nth-child(7n + 2) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-2);
+}
+.tab-group:nth-child(7n + 2) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-2);
 }
 .tab-group:nth-child(7n + 3) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-3);
@@ -587,11 +596,17 @@ main {
 .tab-group:nth-child(7n + 3) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-3);
 }
+.tab-group:nth-child(7n + 3) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-3);
+}
 .tab-group:nth-child(7n + 4) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-4);
 }
 .tab-group:nth-child(7n + 4) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-4);
+}
+.tab-group:nth-child(7n + 4) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-4);
 }
 .tab-group:nth-child(7n + 5) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-5);
@@ -599,11 +614,17 @@ main {
 .tab-group:nth-child(7n + 5) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-5);
 }
+.tab-group:nth-child(7n + 5) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-5);
+}
 .tab-group:nth-child(7n + 6) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-6);
 }
 .tab-group:nth-child(7n + 6) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-6);
+}
+.tab-group:nth-child(7n + 6) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-6);
 }
 .tab-group:nth-child(7n) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-7);
@@ -611,11 +632,17 @@ main {
 .tab-group:nth-child(7n) > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-7);
 }
+.tab-group:nth-child(7n) > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-7);
+}
 .tab-group.pinned > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-pinned);
 }
 .tab-group.pinned > .heading > .tab-content > .tab-icon {
   fill: var(--tab-group-pinned);
+}
+.tab-group.pinned > .heading > .tab-content > .heading-label {
+  color: var(--tab-group-pinned);
 }
 
 @media(prefers-reduced-motion: reduce) {
