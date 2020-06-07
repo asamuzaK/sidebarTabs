@@ -12,8 +12,8 @@ import {
 
 /* constants */
 import {
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
-  NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
+  CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
+  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
 } from "./constant.js";
 
 /**
@@ -234,8 +234,7 @@ export const getSessionTabList = async key => {
 export const setSessionTabList = async () => {
   const win = await getCurrentWindow();
   const {id: windowId, incognito} = win;
-  const allTabs = document.querySelectorAll(TAB_QUERY);
-  if (!incognito && allTabs.length) {
+  if (!incognito) {
     const tabList = {
       recent: {},
     };
@@ -247,13 +246,17 @@ export const setSessionTabList = async () => {
     while (i < l) {
       const item = items[i];
       const collapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
+      const heading = item.querySelector(`.${CLASS_HEADING}`);
+      const headingShown = heading && !heading.hidden;
+      const headingLabel =
+        heading && heading.querySelector(`.${CLASS_HEADING_LABEL}`).textContent;
       const childTabs = item.querySelectorAll(TAB_QUERY);
       for (const tab of childTabs) {
         const tabsTab = tab.dataset.tab;
         const {url} = JSON.parse(tabsTab);
         const tabIndex = getSidebarTabIndex(tab);
         tabList.recent[tabIndex] = {
-          collapsed, url,
+          collapsed, headingLabel, headingShown, url,
           containerIndex: i,
         };
       }

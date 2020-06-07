@@ -13,8 +13,11 @@ import {
 } from "./browser-tabs.js";
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
-  getTemplate,
+  getTemplate, setSessionTabList,
 } from "./util.js";
+import {
+  restoreTabContainers,
+} from "./tab-group.js";
 
 /* api */
 const {
@@ -271,11 +274,11 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
  * handle drop
  *
  * @param {!object} evt - event
- * @returns {Promise.<Array>} - results of each handler
+ * @returns {?(Function|Error)} - promise chain
  */
 export const handleDrop = evt => {
   const {currentTarget, dataTransfer, shiftKey, type} = evt;
-  const func = [];
+  let func;
   if (type === "drop") {
     const dropTarget = getSidebarTab(currentTarget);
     if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
@@ -305,7 +308,8 @@ export const handleDrop = evt => {
           }
           opts.push(opt);
         }
-        func.push(createTabsInOrder(opts));
+        func = createTabsInOrder(opts).then(restoreTabContainers)
+          .then(setSessionTabList).catch(throwErr);
         evt.preventDefault();
       } else if (data) {
         try {
@@ -315,7 +319,9 @@ export const handleDrop = evt => {
               shiftKey,
             };
             item.dropWindowId = windowId;
-            func.push(extractDroppedTabs(dropTarget, item, keyOpt));
+            func = extractDroppedTabs(dropTarget, item, keyOpt)
+              .then(restoreTabContainers).then(setSessionTabList)
+              .catch(throwErr);
             evt.preventDefault();
           }
         } catch (e) {
@@ -326,7 +332,7 @@ export const handleDrop = evt => {
                                   DROP_TARGET_BEFORE);
     }
   }
-  return Promise.all(func).catch(throwErr);
+  return func || null;
 };
 
 /**

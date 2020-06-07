@@ -11,8 +11,8 @@ import psl from "psl";
 import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/util.js";
 import {
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
-  NEW_TAB, PINNED, TAB, TAB_LIST,
+  CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
+  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB, TAB_LIST,
 } from "../src/mjs/constant.js";
 
 describe("util", () => {
@@ -534,16 +534,6 @@ describe("util", () => {
                          "not called");
     });
 
-    it("should not call function if tab not found", async () => {
-      browser.windows.getCurrent.resolves({
-        incognito: false,
-      });
-      const i = browser.sessions.setWindowValue.callCount;
-      await func();
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
-                         "not called");
-    });
-
     it("should call function", async () => {
       browser.windows.getCurrent.resolves({
         incognito: false,
@@ -554,16 +544,22 @@ describe("util", () => {
         recent: {
           0: {
             collapsed: false,
+            headingLabel: null,
+            headingShown: null,
             url: "http://example.com",
             containerIndex: 0,
           },
           1: {
             collapsed: false,
+            headingLabel: null,
+            headingShown: null,
             url: "https://example.com",
             containerIndex: 1,
           },
           2: {
             collapsed: false,
+            headingLabel: null,
+            headingShown: null,
             url: "https://www.example.com",
             containerIndex: 1,
           },
@@ -623,16 +619,22 @@ describe("util", () => {
         recent: {
           0: {
             collapsed: false,
+            headingLabel: null,
+            headingShown: null,
             url: "http://example.com",
             containerIndex: 0,
           },
           1: {
             collapsed: false,
+            headingLabel: null,
+            headingShown: null,
             url: "https://example.com",
             containerIndex: 1,
           },
           2: {
             collapsed: false,
+            headingLabel: null,
+            headingShown: null,
             url: "https://www.example.com",
             containerIndex: 1,
           },
@@ -669,6 +671,98 @@ describe("util", () => {
         url: "https://www.example.com",
       });
       parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      await func();
+      assert.strictEqual(
+        browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
+        i + 1, "called set",
+      );
+    });
+
+    it("should call function", async () => {
+      browser.windows.getCurrent.resolves({
+        incognito: false,
+        id: 1,
+      });
+      browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            foo: "bar",
+          },
+        }));
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            headingLabel: "",
+            headingShown: false,
+            url: "http://example.com",
+            containerIndex: 0,
+          },
+          1: {
+            collapsed: false,
+            headingLabel: "foo",
+            headingShown: true,
+            url: "https://example.com",
+            containerIndex: 1,
+          },
+          2: {
+            collapsed: false,
+            headingLabel: "foo",
+            headingShown: true,
+            url: "https://www.example.com",
+            containerIndex: 1,
+          },
+        },
+        prev: {
+          foo: "bar",
+        },
+      });
+      const i = browser.sessions.setWindowValue.withArgs(1, "tabList", arg)
+        .callCount;
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const heading = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const label = document.createElement("span");
+      const label2 = document.createElement("span");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      label.classList.add(CLASS_HEADING_LABEL);
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading.appendChild(label);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      label2.textContent = "foo";
+      heading2.classList.add(CLASS_HEADING);
+      heading2.appendChild(label2);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "http://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm3.classList.add(TAB);
+      elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://www.example.com",
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent2.appendChild(heading2);
       parent2.appendChild(elm2);
       parent2.appendChild(elm3);
       body.appendChild(parent);

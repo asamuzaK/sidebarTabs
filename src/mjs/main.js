@@ -56,11 +56,11 @@ const {
 /* constants */
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
-  CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_CUSTOM,
+  CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON,
+  CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON,
+  CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
@@ -1890,25 +1890,34 @@ export const restoreTabGroups = async () => {
       const {pinned, url: itemUrl} = JSON.parse(itemTab);
       if (pinned) {
         const listItem = recent[i];
-        const {collapsed} = listItem;
+        const {
+          collapsed, headingLabel: headingLabelTextContent, headingShown,
+        } = listItem;
         const container = document.getElementById(PINNED);
+        const heading = container.querySelector(`.${CLASS_HEADING}`);
+        const headingLabel = container.querySelector(`.${CLASS_HEADING_LABEL}`);
         container.appendChild(item);
         if (collapsed) {
           container.classList.add(CLASS_TAB_COLLAPSED);
         } else {
           container.classList.remove(CLASS_TAB_COLLAPSED);
         }
+        headingLabel.textContent = headingLabelTextContent || "";
+        heading.hidden = !headingShown;
       } else if (i && listItemIndexes.has(itemUrl)) {
         const prevItem = items[i - 1];
         const {dataset: {tab: prevItemTab}} = prevItem;
         const {url: prevItemUrl} = JSON.parse(prevItemTab);
         const container = prevItem.parentNode;
         const indexes = listItemIndexes.get(itemUrl);
+        const heading = container.querySelector(`.${CLASS_HEADING}`);
+        const headingLabel = container.querySelector(`.${CLASS_HEADING_LABEL}`);
         for (const index of indexes) {
           const listItem = recent[index];
           const prevListItem = index > 0 && recent[index - 1] || {};
           const {
             collapsed, containerIndex: listContainerIndex,
+            headingLabel: headingLabelTextContent, headingShown,
           } = listItem;
           const {
             containerIndex: prevListContainerIndex, url: prevListUrl,
@@ -1921,6 +1930,8 @@ export const restoreTabGroups = async () => {
             } else {
               container.classList.remove(CLASS_TAB_COLLAPSED);
             }
+            headingLabel.textContent = headingLabelTextContent || "";
+            heading.hidden = !headingShown;
             break;
           }
         }
