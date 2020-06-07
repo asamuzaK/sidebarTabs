@@ -1366,10 +1366,29 @@ describe("dnd", () => {
 
   describe("handle drop", () => {
     const func = mjs.handleDrop;
+    beforeEach(() => {
+      browser.windows.getCurrent.resolves({
+        incognito: true,
+        id: 1,
+      });
+    });
+
+    it("should throw", () => {
+      assert.throws(() => func());
+    });
+
+    it("should get null", () => {
+      const evt = {
+        type: "click",
+      };
+      const res = func(evt);
+      assert.isNull(res, "result");
+    });
 
     it("should not call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       body.appendChild(elm);
@@ -1380,12 +1399,14 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
-      assert.deepEqual(res, [], "result");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k, "not called");
+      assert.isNull(res, "result");
     });
 
     it("should not call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       body.appendChild(elm);
@@ -1396,12 +1417,14 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
-      assert.deepEqual(res, [], "result");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k, "not called");
+      assert.isNull(res, "result");
     });
 
     it("should not call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1416,12 +1439,14 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
-      assert.deepEqual(res, [], "result");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k, "not called");
+      assert.isNull(res, "result");
     });
 
     it("should not call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1445,12 +1470,14 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
-      assert.deepEqual(res, [], "result");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k, "not called");
+      assert.isNull(res, "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1477,14 +1504,16 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 1, "called");
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
-      assert.deepEqual(res, [undefined], "result");
+      assert.isUndefined(res, "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1511,14 +1540,16 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 1, "called");
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
-      assert.deepEqual(res, [undefined], "result");
+      assert.isUndefined(res, "result");
     });
 
     it("should call function", async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
@@ -1549,15 +1580,17 @@ describe("dnd", () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, "called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 1, "called");
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
-      assert.deepEqual(res, [undefined], "result");
+      assert.isUndefined(res, "result");
     });
 
     it("should log error", async () => {
       const stubErr = sinon.stub(console, "error");
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1586,15 +1619,17 @@ describe("dnd", () => {
       assert.isTrue(errCalledOnce, "error");
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k, "not called");
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isFalse(preventDefault.called, "not called");
-      assert.deepEqual(res, [], "result");
+      assert.isNull(res, "result");
     });
 
     it("should not call function", async () => {
       const stubErr = sinon.stub(console, "error");
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1623,15 +1658,17 @@ describe("dnd", () => {
       assert.isFalse(errCalled, "error not called");
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k, "not called");
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isFalse(preventDefault.called, "not called");
-      assert.deepEqual(res, [], "result");
+      assert.isNull(res, "result");
     });
 
-    it("should not call function", async () => {
+    it("should call function", async () => {
       const stubErr = sinon.stub(console, "error");
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
@@ -1663,9 +1700,10 @@ describe("dnd", () => {
       assert.isFalse(errCalled, "error not called");
       assert.strictEqual(browser.tabs.create.callCount, i, "not called");
       assert.strictEqual(browser.tabs.move.callCount, j, "not called");
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 1, "called");
       assert.isFalse(elm.classList.contains(DROP_TARGET), "class");
       assert.isTrue(preventDefault.calledOnce, "called");
-      assert.deepEqual(res, [[]], "result");
+      assert.isUndefined(res, "result");
     });
   });
 

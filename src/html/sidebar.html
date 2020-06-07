@@ -14,7 +14,22 @@
       <!-- tab container template -->
       <template id="tab-container-template">
         <section class="tab-container" data-tab-controls="" hidden>
-          <h1 hidden></h1>
+          <h1 class="heading tab-container-label" tabindex="0" hidden>
+            <span class="tab-context" tabindex="0" title="">
+              <img class="tab-toggle-icon" src="../img/drop-arrow.svg"
+                   tabindex="-1" alt="" />
+            </span>
+            <span class="tab-content" tabindex="0" title="">
+              <img class="tab-icon" src="../img/folder.svg"
+                   tabindex="-1" width="16" height="16" alt="" />
+              <span class="heading-label tab-title" dir="auto" tabindex="0">
+              </span>
+            </span>
+            <button class="heading-label-edit" title="">
+              <img class="heading-label-edit-icon" src="../img/edit.svg"
+                   tabindex="-1" alt="" />
+            </button>
+          </h1>
         </section>
       </template>
       <!-- tab template -->
@@ -51,7 +66,22 @@
     <main id="sidebar-tabs-container">
       <!-- pinned tabs container -->
       <section id="pinned" class="tab-container pinned" hidden>
-        <h1 hidden></h1>
+        <h1 class="heading tab-container-label" tabindex="0" hidden>
+          <span class="tab-context" tabindex="0" title="">
+            <img class="tab-toggle-icon" src="../img/drop-arrow.svg"
+                 tabindex="-1" alt="" />
+          </span>
+          <span class="tab-content" tabindex="0" title="">
+            <img class="tab-icon" src="../img/folder.svg"
+                 tabindex="-1" width="16" height="16" alt="" />
+            <span class="heading-label tab-title" dir="auto" tabindex="0"
+                  data-i18n="pinnedTabsLabel">Pinned Tabs</span>
+          </span>
+          <button class="heading-label-edit" title="">
+            <img class="heading-label-edit-icon" src="../img/edit.svg"
+                 tabindex="-1" alt="" />
+          </button>
+        </h1>
       </section>
       <!-- new tab -->
       <section id="newtab" class="tab-container newtab" hidden>

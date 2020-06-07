@@ -16,11 +16,11 @@ import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/main.js";
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_COMPACT, CLASS_NARROW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE,
-  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_LIGHT, CLASS_THEME_DARK,
+  CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
+  CLASS_NARROW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_TITLE,
+  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_LIGHT, CLASS_THEME_DARK,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
@@ -32,7 +32,8 @@ import {
   TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
+  TAB_GROUP_NEW_TAB_AT_END,
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
@@ -5857,6 +5858,55 @@ describe("main", () => {
       assert.deepEqual(res, [undefined], "result");
     });
 
+    it("should get result", async () => {
+      const sect = document.createElement("section");
+      const heading = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      heading.classList.add(CLASS_HEADING);
+      heading.appendChild(child);
+      heading.appendChild(button);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(heading);
+      body.appendChild(sect);
+      mjs.sidebar.context = heading;
+      const info = {
+        menuItemId: TAB_GROUP_LABEL_SHOW,
+      };
+      const res = await func(info);
+      assert.isTrue(heading.hidden, "hidden");
+      assert.deepEqual(res, [[]], "result");
+    });
+
+    it("should get result", async () => {
+      const sect = document.createElement("section");
+      const heading = document.createElement("div");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading.appendChild(child);
+      heading.appendChild(button);
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(heading);
+      body.appendChild(sect);
+      mjs.sidebar.context = heading;
+      const info = {
+        menuItemId: TAB_GROUP_LABEL_SHOW,
+      };
+      const res = await func(info);
+      assert.isFalse(heading.hidden, "hidden");
+      assert.deepEqual(res, [[button, child, undefined]], "result");
+    });
+
     it("should call function", async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.windows.getCurrent.callCount;
@@ -6535,6 +6585,7 @@ describe("main", () => {
       body.appendChild(elm);
       mjs.sidebar.enableTabGroup = false;
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: false,
         pinned: false,
       });
@@ -6551,11 +6602,12 @@ describe("main", () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: false,
         pinned: false,
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
-      assert.deepEqual(res.length, 10, "result");
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
     });
 
     it("should call function", async () => {
@@ -6570,11 +6622,12 @@ describe("main", () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: false,
         pinned: false,
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
-      assert.deepEqual(res.length, 10, "result");
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
     });
 
     it("should call function", async () => {
@@ -6597,11 +6650,12 @@ describe("main", () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: false,
         pinned: false,
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
-      assert.deepEqual(res.length, 10, "result");
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
     });
 
     it("should call function", async () => {
@@ -6618,11 +6672,12 @@ describe("main", () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: true,
         pinned: false,
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
-      assert.deepEqual(res.length, 10, "result");
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
     });
 
     it("should call function", async () => {
@@ -6639,11 +6694,12 @@ describe("main", () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: true,
         pinned: true,
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
-      assert.deepEqual(res.length, 10, "result");
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
     });
 
     it("should call function", async () => {
@@ -6661,11 +6717,35 @@ describe("main", () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func(elm, {
+        labelHidden: true,
         multiTabsSelected: true,
         pinned: true,
       });
-      assert.strictEqual(browser.menus.update.callCount, i + 10, "called");
-      assert.deepEqual(res.length, 10, "result");
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.menus.update.callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.classList.add(HIGHLIGHTED);
+      elm2.classList.add(HIGHLIGHTED);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_COLLAPSED);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const res = await func(elm, {
+        labelHidden: false,
+        multiTabsSelected: true,
+        pinned: true,
+      });
+      assert.strictEqual(browser.menus.update.callCount, i + 12, "called");
+      assert.deepEqual(res.length, 12, "result");
     });
   });
 
@@ -6825,7 +6905,7 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -6892,7 +6972,7 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm1);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -6959,7 +7039,7 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7026,7 +7106,7 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7095,7 +7175,7 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7163,7 +7243,7 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7299,7 +7379,7 @@ describe("main", () => {
       mjs.sidebar.contextualIds = ["foo"];
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 40,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7368,7 +7448,7 @@ describe("main", () => {
       mjs.sidebar.contextualIds = ["foo"];
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 40,
+      assert.strictEqual(browser.menus.update.callCount, j + 42,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7389,19 +7469,19 @@ describe("main", () => {
       elm.dataset.tabId = "1";
       elm.classList.add(HIGHLIGHTED);
       pinned.appendChild(elm);
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      sect.classList.add(CLASS_TAB_GROUP);
       elm1.classList.add(TAB);
       elm1.classList.add(HIGHLIGHTED);
       elm1.dataset.tabId = "2";
       elm2.classList.add(TAB);
       elm2.dataset.tabId = "3";
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
       sect.appendChild(elm1);
       sect.appendChild(elm2);
-      sect2.classList.add(CLASS_TAB_CONTAINER);
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = "4";
+      sect2.classList.add(CLASS_TAB_CONTAINER);
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
@@ -7436,7 +7516,176 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 39,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      elm1.classList.add(CLASS_HEADING);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm1);
+      assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 38,
+                         "called update");
+      assert.strictEqual(res.length, 25, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      elm1.classList.add(CLASS_HEADING);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm2);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
+                         "called update");
+      assert.strictEqual(res.length, 29, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement("section");
+      const elm = document.createElement("div");
+      const elm1 = document.createElement("div");
+      const elm2 = document.createElement("div");
+      const elm3 = document.createElement("div");
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector("body");
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      elm1.classList.add(CLASS_HEADING);
+      elm1.hidden = true;
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = "3";
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = "4";
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.insertBefore(sect, newTab);
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: true,
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true,
+        },
+        pinned: false,
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false,
+        },
+        pinned: false,
+      });
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm2);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
       assert.strictEqual(res.length, 29, "result");
     });
@@ -7897,15 +8146,42 @@ describe("main", () => {
       assert.throws(() => func());
     });
 
+    it("should not call function", async () => {
+      const i = browser.menus.overrideContext.withArgs({
+        tabId: 1,
+        context: "tab",
+      }).callCount;
+      const parent = document.createElement("div");
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.dataset.tabId = browser.tabs.TAB_ID_NONE.toString();
+      elm.classList.add(TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func({
+        target: elm,
+      });
+      assert.strictEqual(browser.menus.overrideContext.withArgs({
+        tabId: 1,
+        context: "tab",
+      }).callCount, i, "not called");
+      assert.isUndefined(res, "result");
+    });
+
     it("should call function", async () => {
       const i = browser.menus.overrideContext.withArgs({
         tabId: 1,
         context: "tab",
       }).callCount;
+      const parent = document.createElement("div");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
       elm.dataset.tabId = "1";
-      body.appendChild(elm);
+      elm.classList.add(TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
       const res = await func({
         target: elm,
       });
@@ -7917,16 +8193,27 @@ describe("main", () => {
     });
 
     it("should call function", async () => {
-      const i = browser.menus.overrideContext.withArgs({}).callCount;
+      const i = browser.menus.overrideContext.withArgs({
+        tabId: 1,
+        context: "tab",
+      }).callCount;
+      const parent = document.createElement("div");
+      const heading = document.createElement("p");
       const elm = document.createElement("p");
       const body = document.querySelector("body");
-      elm.dataset.tabId = browser.tabs.TAB_ID_NONE;
-      body.appendChild(elm);
+      elm.dataset.tabId = "1";
+      elm.classList.add(TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      body.appendChild(parent);
       const res = await func({
-        target: elm,
+        target: heading,
       });
-      assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
-                         i + 1, "called");
+      assert.strictEqual(browser.menus.overrideContext.withArgs({
+        tabId: 1,
+        context: "tab",
+      }).callCount, i + 1, "called");
       assert.isUndefined(res, "result");
     });
   });
@@ -8524,10 +8811,17 @@ describe("main", () => {
     const func = mjs.restoreTabGroups;
     beforeEach(() => {
       const pinned = document.createElement("section");
+      const heading = document.createElement("h1");
+      const label = document.createElement("span");
       const newTab = document.createElement("section");
       const body = document.querySelector("body");
+      label.classList.add(CLASS_HEADING_LABEL);
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading.appendChild(label);
       pinned.id = PINNED;
       pinned.classList.add(CLASS_TAB_CONTAINER);
+      pinned.appendChild(heading);
       newTab.id = NEW_TAB;
       newTab.classList.add(CLASS_TAB_CONTAINER);
       body.appendChild(pinned);
@@ -8544,6 +8838,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -8553,14 +8857,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -8623,7 +8952,7 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
       for (const item of items) {
-        assert.strictEqual(item.childElementCount, 1, "child");
+        assert.strictEqual(item.childElementCount, 2, "child");
       }
     });
 
@@ -8637,6 +8966,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -8646,14 +8985,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -8716,7 +9080,7 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
       for (const item of items) {
-        assert.strictEqual(item.childElementCount, 1, "child");
+        assert.strictEqual(item.childElementCount, 2, "child");
       }
     });
 
@@ -8730,6 +9094,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -8739,14 +9113,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -8835,7 +9234,7 @@ describe("main", () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
       for (const item of items) {
-        assert.strictEqual(item.childElementCount, 1, "child");
+        assert.strictEqual(item.childElementCount, 2, "child");
       }
     });
 
@@ -8850,6 +9249,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -8859,14 +9268,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -8918,16 +9352,22 @@ describe("main", () => {
             0: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com",
             },
             1: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/bar",
             },
             3: {
@@ -8953,13 +9393,15 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 3, "pinned");
+      assert.strictEqual(pinned.childElementCount, 4, "pinned");
       assert.isFalse(pinned.classList.contains(CLASS_TAB_COLLAPSED), "false");
-      assert.strictEqual(sect1.childElementCount, 0, "empty section");
-      assert.strictEqual(sect2.childElementCount, 0, "empty section");
-      assert.strictEqual(sect3.childElementCount, 0, "empty section");
-      assert.strictEqual(sect4.childElementCount, 1, "section");
-      assert.strictEqual(sect5.childElementCount, 1, "section");
+      assert.isFalse(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect1.childElementCount, 1, "empty section");
+      assert.strictEqual(sect2.childElementCount, 1, "empty section");
+      assert.strictEqual(sect3.childElementCount, 1, "empty section");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.strictEqual(sect5.childElementCount, 2, "section");
     });
 
     it("should restore pinned tabs", async () => {
@@ -8973,6 +9415,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -8982,14 +9434,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -9041,16 +9518,22 @@ describe("main", () => {
             0: {
               collapsed: true,
               containerIndex: 0,
+              headingLabel: "",
+              headingShown: false,
               url: "https://example.com",
             },
             1: {
               collapsed: true,
               containerIndex: 0,
+              headingLabel: "",
+              headingShown: false,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: true,
               containerIndex: 0,
+              headingLabel: "",
+              headingShown: false,
               url: "https://example.com/bar",
             },
             3: {
@@ -9076,13 +9559,15 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(pinned.childElementCount, 3, "pinned");
+      assert.strictEqual(pinned.childElementCount, 4, "pinned");
       assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect1.childElementCount, 0, "empty section");
-      assert.strictEqual(sect2.childElementCount, 0, "empty section");
-      assert.strictEqual(sect3.childElementCount, 0, "empty section");
-      assert.strictEqual(sect4.childElementCount, 1, "section");
-      assert.strictEqual(sect5.childElementCount, 1, "section");
+      assert.isTrue(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
+                    "heading");
+      assert.strictEqual(sect1.childElementCount, 1, "empty section");
+      assert.strictEqual(sect2.childElementCount, 1, "empty section");
+      assert.strictEqual(sect3.childElementCount, 1, "empty section");
+      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.strictEqual(sect5.childElementCount, 2, "section");
     });
 
     it("should restore group", async () => {
@@ -9095,6 +9580,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -9104,14 +9599,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -9163,26 +9683,36 @@ describe("main", () => {
             0: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com",
             },
             1: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/bar",
             },
             3: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/baz",
             },
             4: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/bar",
             },
           },
@@ -9198,13 +9728,17 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(sect1.childElementCount, 3, "section");
+      assert.strictEqual(sect1.childElementCount, 4, "section");
       assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect2.childElementCount, 0, "empty section");
-      assert.strictEqual(sect3.childElementCount, 0, "empty section");
-      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect2.childElementCount, 1, "empty section");
+      assert.strictEqual(sect3.childElementCount, 1, "empty section");
+      assert.strictEqual(sect4.childElementCount, 3, "section");
       assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect5.childElementCount, 0, "empty section");
+      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect5.childElementCount, 1, "empty section");
     });
 
     it("should restore group, case: tab added", async () => {
@@ -9217,6 +9751,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -9226,14 +9770,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -9285,21 +9854,29 @@ describe("main", () => {
             0: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com",
             },
             1: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/baz",
             },
             3: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/bar",
             },
           },
@@ -9315,13 +9892,17 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(sect1.childElementCount, 2, "section");
+      assert.strictEqual(sect1.childElementCount, 3, "section");
       assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect2.childElementCount, 0, "empty section");
-      assert.strictEqual(sect3.childElementCount, 1, "empty section");
-      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect2.childElementCount, 1, "empty section");
+      assert.strictEqual(sect3.childElementCount, 2, "empty section");
+      assert.strictEqual(sect4.childElementCount, 3, "section");
       assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect5.childElementCount, 0, "empty section");
+      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect5.childElementCount, 1, "empty section");
     });
 
     it("should restore group, case: tab removed", async () => {
@@ -9333,6 +9914,14 @@ describe("main", () => {
       const sect2 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm4 = document.createElement("div");
@@ -9341,12 +9930,32 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -9389,26 +9998,36 @@ describe("main", () => {
             0: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com",
             },
             1: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/bar",
             },
             3: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/baz",
             },
             4: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/bar",
             },
           },
@@ -9424,12 +10043,16 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(sect1.childElementCount, 2, "section");
+      assert.strictEqual(sect1.childElementCount, 3, "section");
       assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect2.childElementCount, 0, "empty section");
-      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect2.childElementCount, 1, "empty section");
+      assert.strictEqual(sect4.childElementCount, 3, "section");
       assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect5.childElementCount, 0, "empty section");
+      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect5.childElementCount, 1, "empty section");
     });
 
     it("should restore group, case: tab moved", async () => {
@@ -9442,6 +10065,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -9451,14 +10084,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -9510,26 +10168,36 @@ describe("main", () => {
             0: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com",
             },
             1: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/bar",
             },
             3: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/baz",
             },
             4: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "bar",
+              headingShown: true,
               url: "https://example.com/bar",
             },
           },
@@ -9545,12 +10213,14 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(sect1.childElementCount, 1, "section");
-      assert.strictEqual(sect3.childElementCount, 1, "section");
-      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.strictEqual(sect1.childElementCount, 2, "section");
+      assert.strictEqual(sect3.childElementCount, 2, "section");
+      assert.strictEqual(sect4.childElementCount, 3, "section");
       assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect5.childElementCount, 0, "empty section");
-      assert.strictEqual(sect2.childElementCount, 1, "section");
+      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect5.childElementCount, 1, "empty section");
+      assert.strictEqual(sect2.childElementCount, 2, "section");
     });
 
     it("should restore group, case: grouped tabs moved ", async () => {
@@ -9563,6 +10233,16 @@ describe("main", () => {
       const sect3 = document.createElement("section");
       const sect4 = document.createElement("section");
       const sect5 = document.createElement("section");
+      const heading1 = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const heading3 = document.createElement("h1");
+      const heading4 = document.createElement("h1");
+      const heading5 = document.createElement("h1");
+      const label1 = document.createElement("span");
+      const label2 = document.createElement("span");
+      const label3 = document.createElement("span");
+      const label4 = document.createElement("span");
+      const label5 = document.createElement("span");
       const elm = document.createElement("div");
       const elm2 = document.createElement("div");
       const elm3 = document.createElement("div");
@@ -9572,14 +10252,39 @@ describe("main", () => {
       const body = document.querySelector("body");
       sect1.id = "sect1";
       sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
       sect2.id = "sect2";
       sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
       sect3.id = "sect3";
       sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
       sect4.id = "sect4";
-      sect5.classList.add(CLASS_TAB_CONTAINER);
-      sect5.id = "sect5";
       sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = "sect5";
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm.dataset.tab = JSON.stringify({
@@ -9631,26 +10336,36 @@ describe("main", () => {
             0: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com",
             },
             1: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/foo",
             },
             2: {
               collapsed: false,
               containerIndex: 0,
+              headingLabel: "foo",
+              headingShown: true,
               url: "https://example.com/bar",
             },
             3: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "",
+              headingShown: false,
               url: "https://example.com/baz",
             },
             4: {
               collapsed: true,
               containerIndex: 1,
+              headingLabel: "",
+              headingShown: false,
               url: "https://example.com/bar",
             },
           },
@@ -9666,13 +10381,17 @@ describe("main", () => {
       );
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
                          "called windows get current");
-      assert.strictEqual(sect4.childElementCount, 2, "section");
+      assert.strictEqual(sect4.childElementCount, 3, "section");
       assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect5.childElementCount, 0, "empty section");
-      assert.strictEqual(sect1.childElementCount, 3, "section");
+      assert.isTrue(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+                    "heading");
+      assert.strictEqual(sect5.childElementCount, 1, "empty section");
+      assert.strictEqual(sect1.childElementCount, 4, "section");
       assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), "class");
-      assert.strictEqual(sect2.childElementCount, 0, "empty section");
-      assert.strictEqual(sect3.childElementCount, 0, "empty section");
+      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+                     "heading");
+      assert.strictEqual(sect2.childElementCount, 1, "empty section");
+      assert.strictEqual(sect3.childElementCount, 1, "empty section");
     });
   });
 

@@ -3,7 +3,8 @@
  */
 
 import {
-  getType, isObjectNotEmpty, throwErr,
+  addElementContentEditable, getType, isObjectNotEmpty,
+  removeElementContentEditable, throwErr,
 } from "./common.js";
 import {
   getStorage, getTab, queryTabs,
@@ -21,9 +22,11 @@ const {i18n, windows} = browser;
 
 /* constants */
 import {
-  ACTIVE, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
-  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP, HIGHLIGHTED, NEW_TAB,
-  PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND, TAB_QUERY,
+  ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
+  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
+  HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
+  TAB_GROUP_EXPAND, TAB_QUERY,
 } from "./constant.js";
 
 /**
@@ -54,17 +57,26 @@ export const restoreTabContainers = async () => {
  * collapse tab group
  *
  * @param {object} elm - element
+ * @param {boolean} activate - activate element
  * @returns {void}
  */
-export const collapseTabGroup = async elm => {
+export const collapseTabGroup = async (elm, activate) => {
   const body = document.querySelector("body");
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_GROUP) &&
       !body.classList.contains(CLASS_UNGROUP)) {
-    const controller = elm.querySelector(":not([hidden])");
+    const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
+    const controller = heading || elm.querySelector(TAB_QUERY);
     const {firstElementChild: context} = controller;
     const {firstElementChild: toggleIcon} = context;
     elm.classList.add(CLASS_TAB_COLLAPSED);
+    if (heading) {
+      if (activate) {
+        heading.classList.add(ACTIVE);
+      } else {
+        heading.classList.remove(ACTIVE);
+      }
+    }
     context.title = i18n.getMessage(`${TAB_GROUP_EXPAND}_tooltip`);
     toggleIcon.alt = i18n.getMessage(TAB_GROUP_EXPAND);
   }
@@ -79,10 +91,12 @@ export const collapseTabGroup = async elm => {
 export const expandTabGroup = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_GROUP)) {
-    const controller = elm.querySelector(":not([hidden])");
+    const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
+    const controller = heading || elm.querySelector(TAB_QUERY);
     const {firstElementChild: context} = controller;
     const {firstElementChild: toggleIcon} = context;
     elm.classList.remove(CLASS_TAB_COLLAPSED);
+    heading && heading.classList.remove(ACTIVE);
     context.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
     toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
   }
@@ -141,7 +155,7 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
           }
         }
       } else {
-        func.push(collapseTabGroup(container));
+        func.push(collapseTabGroup(container, activate));
         activate && func.push(activateTab(firstTab));
       }
     }
@@ -198,6 +212,21 @@ export const collapseTabGroups = async elm => {
 };
 
 /**
+ * get tab group heading
+ *
+ * @param {object} node - node
+ * @returns {object} - heading element
+ */
+export const getTabGroupHeading = node => {
+  let heading;
+  const container = getSidebarTabContainer(node);
+  if (container) {
+    heading = container.querySelector(`.${CLASS_HEADING}`);
+  }
+  return heading || null;
+};
+
+/**
  * handle individual tab group collapsed state
  *
  * @param {!object} evt - Event
@@ -205,9 +234,14 @@ export const collapseTabGroups = async elm => {
  */
 export const handleTabGroupCollapsedState = evt => {
   const {target} = evt;
+  const heading = getTabGroupHeading(target);
   const tab = getSidebarTab(target);
   let func;
-  if (tab) {
+  if (heading && !heading.hidden) {
+    func =
+      toggleTabGroupCollapsedState(heading, true).then(setSessionTabList)
+        .catch(throwErr);
+  } else if (tab) {
     func =
       toggleTabGroupCollapsedState(tab, true).then(setSessionTabList)
         .catch(throwErr);
@@ -241,14 +275,25 @@ export const handleTabGroupsCollapsedState = evt => {
  * @returns {void}
  */
 export const addTabContextClickListener = async (elm, multi) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_CONTEXT)) {
-    if (multi) {
-      elm.addEventListener("click", handleTabGroupsCollapsedState);
-      elm.removeEventListener("click", handleTabGroupCollapsedState);
-    } else {
-      elm.addEventListener("click", handleTabGroupCollapsedState);
-      elm.removeEventListener("click", handleTabGroupsCollapsedState);
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    if (elm.classList.contains(CLASS_TAB_CONTEXT)) {
+      if (multi) {
+        elm.addEventListener("click", handleTabGroupsCollapsedState);
+        elm.removeEventListener("click", handleTabGroupCollapsedState);
+      } else {
+        elm.addEventListener("click", handleTabGroupCollapsedState);
+        elm.removeEventListener("click", handleTabGroupsCollapsedState);
+      }
+    } else if (elm.classList.contains(CLASS_HEADING_LABEL)) {
+      if (multi) {
+        elm.parentNode.dataset.multi = !!multi;
+        elm.addEventListener("click", handleTabGroupsCollapsedState);
+        elm.removeEventListener("click", handleTabGroupCollapsedState);
+      } else {
+        delete elm.parentNode.dataset.multi;
+        elm.addEventListener("click", handleTabGroupCollapsedState);
+        elm.removeEventListener("click", handleTabGroupsCollapsedState);
+      }
     }
   }
 };
@@ -260,7 +305,9 @@ export const addTabContextClickListener = async (elm, multi) => {
  * @returns {Promise.<Array>} - result of each handler
  */
 export const replaceTabContextClickListener = async multi => {
-  const items = document.querySelectorAll(`.${CLASS_TAB_CONTEXT}`);
+  const contexts = `:not([hidden]) > .${CLASS_TAB_CONTEXT}`;
+  const labels = `:not([hidden]) > .${CLASS_HEADING_LABEL}`;
+  const items = document.querySelectorAll(`${contexts}, ${labels}`);
   const func = [];
   for (const item of items) {
     func.push(addTabContextClickListener(item, !!multi));
@@ -285,6 +332,124 @@ export const expandActivatedCollapsedTab = async () => {
     }
   }
   return func || null;
+};
+
+/**
+ * finish editing group label
+ *
+ * @param {!object} evt - event
+ * @returns {void}
+ */
+export const finishGroupLabelEdit = evt => {
+  const {isComposing, key, target, type} = evt;
+  if (type === "blur" ||
+      type === "keydown" && !isComposing && key === "Enter") {
+    const heading = getTabGroupHeading(target);
+    const label = heading && heading.querySelector(`.${CLASS_HEADING_LABEL}`);
+    if (label) {
+      removeElementContentEditable(label);
+      label.removeEventListener("keydown", finishGroupLabelEdit);
+      label.removeEventListener("blur", finishGroupLabelEdit);
+      if (heading.dataset.multi) {
+        label.addEventListener("click", handleTabGroupsCollapsedState);
+        label.removeEventListener("click", handleTabGroupCollapsedState);
+      } else {
+        label.addEventListener("click", handleTabGroupCollapsedState);
+        label.removeEventListener("click", handleTabGroupsCollapsedState);
+      }
+      evt.preventDefault();
+    }
+  }
+};
+
+/**
+ * start editing group label
+ *
+ * @param {object} node - element
+ * @returns {object} - group label element
+ */
+export const startGroupLabelEdit = async node => {
+  const heading = getTabGroupHeading(node);
+  const label = heading && !heading.hidden && addElementContentEditable(
+    heading.querySelector(`.${CLASS_HEADING_LABEL}`),
+  );
+  if (label) {
+    label.focus();
+    label.removeEventListener("click", handleTabGroupsCollapsedState);
+    label.removeEventListener("click", handleTabGroupCollapsedState);
+    label.addEventListener("keydown", finishGroupLabelEdit);
+    label.addEventListener("blur", finishGroupLabelEdit);
+  }
+  return label || null;
+};
+
+/**
+ * enable editing group label
+ *
+ * @param {!object} evt - event
+ * @returns {(Function|Error)} - promise chain
+ */
+export const enableGroupLabelEdit = evt => {
+  const {target} = evt;
+  return startGroupLabelEdit(target).catch(throwErr);
+};
+
+/**
+ * add listener to edit label button
+ *
+ * @param {object} node - element
+ * @returns {object} - edit label button
+ */
+export const addListenerToEditLabelButton = async node => {
+  const heading = getTabGroupHeading(node);
+  const button = heading && !heading.hidden &&
+                   heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
+  button && button.addEventListener("click", enableGroupLabelEdit);
+  return button || null;
+};
+
+/**
+ * toggle tab group heading state
+ *
+ * @param {object} node - node
+ * @param {boolean} multi - handle multiple tab groups
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const toggleTabGroupHeadingState = async (node, multi) => {
+  const func = [];
+  const heading = getTabGroupHeading(node);
+  if (heading) {
+    const context = heading.querySelector(`.${CLASS_TAB_CONTEXT}`);
+    if (heading.hidden) {
+      heading.hidden = false;
+      if (multi) {
+        heading.dataset.multi = !!multi;
+      } else {
+        delete heading.dataset.multi;
+      }
+      func.push(
+        addListenerToEditLabelButton(heading),
+        startGroupLabelEdit(heading),
+        addTabContextClickListener(context, !!multi),
+      );
+    } else {
+      const label = heading.querySelector(`.${CLASS_HEADING_LABEL}`);
+      const button = heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
+      heading.hidden = true;
+      delete heading.dataset.multi;
+      if (label) {
+        removeElementContentEditable(label);
+        label.removeEventListener("keydown", finishGroupLabelEdit);
+        label.removeEventListener("blur", finishGroupLabelEdit);
+      }
+      if (context) {
+        context.removeEventListener("click", handleTabGroupsCollapsedState);
+        context.removeEventListener("click", handleTabGroupCollapsedState);
+      }
+      button && button.removeEventListener("click", enableGroupLabelEdit);
+    }
+  }
+  return Promise.all(func);
 };
 
 /**

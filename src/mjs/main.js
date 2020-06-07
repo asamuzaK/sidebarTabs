@@ -18,9 +18,9 @@ import {
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer,
 } from "./browser-tabs.js";
 import {
-  activateTab, getSessionTabList, getSidebarTab, getSidebarTabId,
-  getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab, scrollTabIntoView,
-  setSessionTabList, storeCloseTabsByDoubleClickValue,
+  activateTab, getSessionTabList, getSidebarTab, getSidebarTabContainer,
+  getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab,
+  scrollTabIntoView, setSessionTabList, storeCloseTabsByDoubleClickValue,
 } from "./util.js";
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -34,9 +34,10 @@ import {
 } from "./tab-content.js";
 import {
   addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
-  groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
-  replaceTabContextClickListener, restoreTabContainers, toggleTabGrouping,
-  toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState, ungroupTabs,
+  getTabGroupHeading, groupSameContainerTabs, groupSameDomainTabs,
+  groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
+  toggleTabGrouping, toggleTabGroupCollapsedState,
+  toggleTabGroupsCollapsedState, toggleTabGroupHeadingState, ungroupTabs,
 } from "./tab-group.js";
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
@@ -55,11 +56,11 @@ const {
 /* constants */
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
-  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON,
-  CLASS_TAB_IDENT_ICON, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_CUSTOM,
+  CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON,
+  CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON,
+  CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
@@ -71,8 +72,8 @@ import {
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_NEW_TAB_AT_END,
-  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
   TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
@@ -965,6 +966,7 @@ export const handleClickedMenu = async info => {
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const tabId = getSidebarTabId(tab);
+  const heading = getTabGroupHeading(context);
   const func = [];
   let tabsTab;
   if (Number.isInteger(tabId)) {
@@ -1040,6 +1042,11 @@ export const handleClickedMenu = async info => {
       func.push(
         groupSameDomainTabs(tabId, windowId).then(restoreTabContainers)
           .then(setSessionTabList),
+      );
+      break;
+    case TAB_GROUP_LABEL_SHOW:
+      heading && func.push(
+        toggleTabGroupHeadingState(heading, tabGroupOnExpandCollapseOther),
       );
       break;
     case TAB_GROUP_SELECTED:
@@ -1247,14 +1254,15 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       enableTabGroup) {
     const {classList: tabClass, parentNode} = elm;
     const {classList: parentClass} = parentNode;
-    const {multiTabsSelected, pinned} = opt;
+    const {headingShown, multiTabsSelected, pinned} = opt;
+    const isTab = !!elm.dataset.tabId;
     const tabGroups =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
     const tabGroupKeys = [
       TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
       TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
-      TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
-      "sepTabGroup-1",
+      TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+      "sepTabGroup-1", "sepTabGroup-2",
     ];
     func.push(updateContextMenu(tabGroupMenu.id, {
       enabled: true,
@@ -1285,19 +1293,20 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           }
           break;
         case TAB_GROUP_CONTAINER:
-          data.enabled = !(pinned || multiTabsSelected);
+          data.enabled = isTab && !(pinned || multiTabsSelected);
           data.title = title;
           data.visible = !incognito;
           break;
         case TAB_GROUP_DOMAIN:
-          data.enabled = !(pinned || multiTabsSelected);
+          data.enabled = isTab && !(pinned || multiTabsSelected);
           data.title = title;
           data.visible = true;
           break;
         case TAB_GROUP_DETACH:
           if (multiTabsSelected) {
             data.visible = false;
-          } else if (!pinned && parentClass.contains(CLASS_TAB_GROUP)) {
+          } else if (isTab && !pinned &&
+                     parentClass.contains(CLASS_TAB_GROUP)) {
             data.enabled = true;
             data.title = title;
             data.visible = true;
@@ -1323,6 +1332,11 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
             data.visible = false;
           }
           break;
+        case TAB_GROUP_LABEL_SHOW:
+          data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+          data.title = headingShown && toggleTitle || title;
+          data.visible = true;
+          break;
         case TAB_GROUP_SELECTED:
           data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
           data.title = title;
@@ -1334,7 +1348,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           data.visible = true;
           break;
         default:
-          data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+          data.enabled = isTab && parentClass.contains(CLASS_TAB_GROUP);
           data.title = title;
           data.visible = true;
       }
@@ -1358,6 +1372,7 @@ export const prepareTabMenuItems = async elm => {
   const func = [];
   const {contextualIds, enableTabGroup, incognito} = sidebar;
   const tab = getSidebarTab(elm);
+  const heading = getTabGroupHeading(elm);
   const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
   const tabGroupMenu = menuItems[TAB_GROUP];
   const tabKeys = [
@@ -1385,10 +1400,8 @@ export const prepareTabMenuItems = async elm => {
   );
   if (tab) {
     const {parentNode} = tab;
-    const {
-      lastElementChild: parentLastChild,
-    } = parentNode;
-    const parentFirstChild = parentNode.querySelector(TAB_QUERY);
+    const parentFirstTab = parentNode.querySelector(TAB_QUERY);
+    const parentLastTab = parentNode.lastElementChild;
     const tabId = getSidebarTabId(tab);
     const tabsTab = await getTab(tabId);
     const {index, mutedInfo: {muted}, pinned} = tabsTab;
@@ -1491,7 +1504,7 @@ export const prepareTabMenuItems = async elm => {
             if (allTabsSelected) {
               data.enabled = false;
             } else if (pinned) {
-              data.enabled = tab !== parentLastChild;
+              data.enabled = tab !== parentLastTab;
             } else {
               data.enabled = index !== allTabs.length - 1;
             }
@@ -1501,7 +1514,7 @@ export const prepareTabMenuItems = async elm => {
             if (allTabsSelected) {
               data.enabled = false;
             } else if (pinned) {
-              data.enabled = tab !== parentFirstChild;
+              data.enabled = tab !== parentFirstTab;
             } else {
               data.enabled = tab !== firstUnpinnedTab;
             }
@@ -1526,7 +1539,7 @@ export const prepareTabMenuItems = async elm => {
         switch (itemKey) {
           case TAB_MOVE_END:
             if (pinned) {
-              data.enabled = tab !== parentLastChild;
+              data.enabled = tab !== parentLastTab;
             } else {
               data.enabled = index !== allTabs.length - 1;
             }
@@ -1534,7 +1547,7 @@ export const prepareTabMenuItems = async elm => {
             break;
           case TAB_MOVE_START:
             if (pinned) {
-              data.enabled = tab !== parentFirstChild;
+              data.enabled = tab !== parentFirstTab;
             } else {
               data.enabled = tab !== firstUnpinnedTab;
             }
@@ -1550,6 +1563,7 @@ export const prepareTabMenuItems = async elm => {
     }
     func.push(prepareTabGroupMenuItems(tab, {
       multiTabsSelected, pinned,
+      headingShown: heading && !heading.hidden,
     }));
     for (const sep of sepKeys) {
       if (sep === "sep-3" && !enableTabGroup) {
@@ -1566,6 +1580,43 @@ export const prepareTabMenuItems = async elm => {
     func.push(updateContextMenu(bookmarkMenu.id, {
       visible: false,
     }));
+  } else if (heading) {
+    for (const itemKey of tabKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false,
+      }));
+    }
+    for (const itemKey of tabsKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false,
+      }));
+    }
+    setContext(heading);
+    for (const sep of sepKeys) {
+      if (sep === "sep-3") {
+        func.push(updateContextMenu(sep, {
+          visible: true,
+        }));
+      } else {
+        func.push(updateContextMenu(sep, {
+          visible: false,
+        }));
+      }
+    }
+    func.push(
+      prepareTabGroupMenuItems(heading, {
+        multiTabsSelected,
+        headingShown: !heading.hidden,
+        pinned: heading.parentNode === pinnedContainer,
+      }),
+      updateContextMenu(bookmarkMenu.id, {
+        enabled: true,
+        title: bookmarkMenu.title,
+        visible: true,
+      }),
+    );
   } else {
     for (const itemKey of tabKeys) {
       const item = menuItems[itemKey];
@@ -1640,7 +1691,9 @@ export const handleEvt = evt => {
  */
 export const handleContextmenuEvt = evt => {
   const {target} = evt;
-  const tabId = getSidebarTabId(target);
+  const container = getSidebarTabContainer(target);
+  const tabId =
+    container && getSidebarTabId(container.querySelector(TAB_QUERY));
   const opt = {};
   if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
     opt.tabId = tabId;
@@ -1837,25 +1890,34 @@ export const restoreTabGroups = async () => {
       const {pinned, url: itemUrl} = JSON.parse(itemTab);
       if (pinned) {
         const listItem = recent[i];
-        const {collapsed} = listItem;
+        const {
+          collapsed, headingLabel: headingLabelTextContent, headingShown,
+        } = listItem;
         const container = document.getElementById(PINNED);
+        const heading = container.querySelector(`.${CLASS_HEADING}`);
+        const headingLabel = container.querySelector(`.${CLASS_HEADING_LABEL}`);
         container.appendChild(item);
         if (collapsed) {
           container.classList.add(CLASS_TAB_COLLAPSED);
         } else {
           container.classList.remove(CLASS_TAB_COLLAPSED);
         }
+        headingLabel.textContent = headingLabelTextContent || "";
+        heading.hidden = !headingShown;
       } else if (i && listItemIndexes.has(itemUrl)) {
         const prevItem = items[i - 1];
         const {dataset: {tab: prevItemTab}} = prevItem;
         const {url: prevItemUrl} = JSON.parse(prevItemTab);
         const container = prevItem.parentNode;
         const indexes = listItemIndexes.get(itemUrl);
+        const heading = container.querySelector(`.${CLASS_HEADING}`);
+        const headingLabel = container.querySelector(`.${CLASS_HEADING_LABEL}`);
         for (const index of indexes) {
           const listItem = recent[index];
           const prevListItem = index > 0 && recent[index - 1] || {};
           const {
             collapsed, containerIndex: listContainerIndex,
+            headingLabel: headingLabelTextContent, headingShown,
           } = listItem;
           const {
             containerIndex: prevListContainerIndex, url: prevListUrl,
@@ -1868,6 +1930,8 @@ export const restoreTabGroups = async () => {
             } else {
               container.classList.remove(CLASS_TAB_COLLAPSED);
             }
+            headingLabel.textContent = headingLabelTextContent || "";
+            heading.hidden = !headingShown;
             break;
           }
         }

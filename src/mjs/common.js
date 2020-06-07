@@ -300,6 +300,34 @@ export const focusElement = evt => {
 };
 
 /**
+ * add contenteditable attribute to element
+ *
+ * @param {object} elm - Element
+ * @param {boolean} focus - focus Element
+ * @returns {object} elm - Element
+ */
+export const addElementContentEditable = (elm, focus) => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    elm.setAttribute("contenteditable", "true");
+    focus && elm.focus();
+  }
+  return elm || null;
+};
+
+/**
+ * remove contenteditable attribute from element
+ *
+ * @param {object} elm - Element
+ * @returns {object} elm - Element
+ */
+export const removeElementContentEditable = elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    elm.removeAttribute("contenteditable");
+  }
+  return elm || null;
+};
+
+/**
  * set element dataset
  *
  * @param {object} elm - Element
