@@ -1071,6 +1071,19 @@ describe("tab-group", () => {
       const spy = sinon.spy(elm, "addEventListener");
       const spy2 = sinon.spy(elm, "removeEventListener");
       body.appendChild(elm);
+      await func();
+      assert.isFalse(spy.called, "not called");
+      assert.isFalse(spy2.called, "not called");
+      elm.addEventListener.restore();
+      elm.removeEventListener.restore();
+    });
+
+    it("should not add listener", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(elm, "addEventListener");
+      const spy2 = sinon.spy(elm, "removeEventListener");
+      body.appendChild(elm);
       await func(elm);
       assert.isFalse(spy.called, "not called");
       assert.isFalse(spy2.called, "not called");
@@ -1575,41 +1588,57 @@ describe("tab-group", () => {
 
   describe("finish editing group label", () => {
     const func = mjs.finishGroupLabelEdit;
+    beforeEach(() => {
+      browser.windows.getCurrent.resolves({
+        incognito: true,
+        id: 1,
+      });
+    });
 
     it("should throw", () => {
       assert.throws(() => func());
     });
 
-    it("should not call function", () => {
+    it("should not call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const stub = sinon.stub();
       const evt = {
         preventDefault: stub,
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i, "not called");
       assert.isFalse(stub.called, "not called");
+      assert.isNull(res, "result");
     });
 
-    it("should not call function", () => {
+    it("should not call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const stub = sinon.stub();
       const evt = {
         preventDefault: stub,
         type: "focus",
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i, "not called");
       assert.isFalse(stub.called, "not called");
+      assert.isNull(res, "result");
     });
 
-    it("should not call function", () => {
+    it("should not call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const stub = sinon.stub();
       const evt = {
         preventDefault: stub,
         type: "blur",
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i, "not called");
       assert.isFalse(stub.called, "not called");
+      assert.isNull(res, "result");
     });
 
-    it("should not call function", () => {
+    it("should not call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const stub = sinon.stub();
       const evt = {
         isComposing: false,
@@ -1617,11 +1646,14 @@ describe("tab-group", () => {
         preventDefault: stub,
         type: "keydown",
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i, "not called");
       assert.isFalse(stub.called, "not called");
+      assert.isNull(res, "result");
     });
 
-    it("should call function", () => {
+    it("should call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("div");
       const child = document.createElement("div");
@@ -1641,13 +1673,16 @@ describe("tab-group", () => {
         target: elm,
         type: "blur",
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.isTrue(stub.calledOnce, "called preventDefault");
       assert.isTrue(spy.calledThrice, "called removeEventListener");
       assert.isTrue(spy2.calledOnce, "called addEventListener");
+      assert.isUndefined(res, "result");
     });
 
-    it("should call function", () => {
+    it("should call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("div");
       const child = document.createElement("div");
@@ -1669,13 +1704,16 @@ describe("tab-group", () => {
         target: elm,
         type: "keydown",
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.isTrue(stub.calledOnce, "called preventDefault");
       assert.isTrue(spy.calledThrice, "called removeEventListener");
       assert.isTrue(spy2.calledOnce, "called addEventListener");
+      assert.isUndefined(res, "result");
     });
 
-    it("should call function", () => {
+    it("should call function", async () => {
+      const i = browser.windows.getCurrent.callCount;
       const parent = document.createElement("div");
       const elm = document.createElement("div");
       const child = document.createElement("div");
@@ -1698,10 +1736,12 @@ describe("tab-group", () => {
         target: elm,
         type: "keydown",
       };
-      func(evt);
+      const res = await func(evt);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, "called");
       assert.isTrue(stub.calledOnce, "called preventDefault");
       assert.isTrue(spy.calledThrice, "called removeEventListener");
       assert.isTrue(spy2.calledOnce, "called addEventListener");
+      assert.isUndefined(res, "result");
     });
   });
 
@@ -1805,32 +1845,153 @@ describe("tab-group", () => {
     });
   });
 
-  describe("add listener to edit label button", () => {
-    const func = mjs.addListenerToEditLabelButton;
+  describe("add listeners to heading items", () => {
+    const func = mjs.addListenersToHeadingItems;
 
-    it("should get null", async () => {
-      const res = await func();
-      assert.isNull(res, "result");
-    });
-
-    it("should call function", async () => {
+    it("should not call function", () => {
       const parent = document.createElement("div");
       const elm = document.createElement("div");
+      const context = document.createElement("span");
       const child = document.createElement("div");
       const button = document.createElement("button");
       const body = document.querySelector("body");
-      const spy = sinon.spy(button, "addEventListener");
+      const spy = sinon.spy(child, "addEventListener");
+      const spy2 = sinon.spy(button, "addEventListener");
+      const spy3 = sinon.spy(context, "addEventListener");
+      context.classList.add(CLASS_TAB_CONTEXT);
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
       elm.classList.add(CLASS_HEADING);
+      elm.hidden = true;
+      elm.appendChild(context);
       elm.appendChild(child);
       elm.appendChild(button);
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
-      const res = await func(parent);
-      assert.isTrue(spy.calledOnce, "called");
-      assert.deepEqual(res, button, "result");
+      func(parent, true);
+      assert.isFalse(elm.hasAttribute("data-multi"), "dataset");
+      assert.isFalse(spy.called, "not called child addEventListener");
+      assert.isFalse(spy2.called, "not called button addEventListener");
+      assert.isFalse(spy3.called, "not called context addEventListener");
+    });
+
+    it("should call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const context = document.createElement("span");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(child, "addEventListener");
+      const spy2 = sinon.spy(button, "addEventListener");
+      const spy3 = sinon.spy(context, "addEventListener");
+      context.classList.add(CLASS_TAB_CONTEXT);
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = false;
+      elm.appendChild(context);
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func(parent, true);
+      assert.isTrue(elm.hasAttribute("data-multi"), "dataset");
+      assert.isTrue(spy.calledOnce, "called child addEventListener");
+      assert.isTrue(spy2.calledOnce, "called button addEventListener");
+      assert.isTrue(spy3.calledOnce, "called context addEventListener");
+    });
+
+    it("should call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const context = document.createElement("span");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(child, "addEventListener");
+      const spy2 = sinon.spy(button, "addEventListener");
+      const spy3 = sinon.spy(context, "addEventListener");
+      context.classList.add(CLASS_TAB_CONTEXT);
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = false;
+      elm.appendChild(context);
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func(parent, false);
+      assert.isFalse(elm.hasAttribute("data-multi"), "dataset");
+      assert.isTrue(spy.calledOnce, "called child addEventListener");
+      assert.isTrue(spy2.calledOnce, "called button addEventListener");
+      assert.isTrue(spy3.calledOnce, "called context addEventListener");
+    });
+  });
+
+  describe("remove listeners from heading items", () => {
+    const func = mjs.removeListenersFromHeadingItems;
+
+    it("should not call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const context = document.createElement("span");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(child, "removeEventListener");
+      const spy2 = sinon.spy(button, "removeEventListener");
+      const spy3 = sinon.spy(context, "removeEventListener");
+      context.classList.add(CLASS_TAB_CONTEXT);
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = false;
+      elm.dataset.multi = "foo";
+      elm.appendChild(context);
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func(parent);
+      assert.isTrue(elm.hasAttribute("data-multi"), "dataset");
+      assert.isFalse(spy.called, "not called child removeEventListener");
+      assert.isFalse(spy2.called, "not called button removeEventListener");
+      assert.isFalse(spy3.called, "not called context removeEventListener");
+    });
+
+    it("should call function", () => {
+      const parent = document.createElement("div");
+      const elm = document.createElement("div");
+      const context = document.createElement("span");
+      const child = document.createElement("div");
+      const button = document.createElement("button");
+      const body = document.querySelector("body");
+      const spy = sinon.spy(child, "removeEventListener");
+      const spy2 = sinon.spy(button, "removeEventListener");
+      const spy3 = sinon.spy(context, "removeEventListener");
+      context.classList.add(CLASS_TAB_CONTEXT);
+      child.classList.add(CLASS_HEADING_LABEL);
+      button.classList.add(CLASS_HEADING_LABEL_EDIT);
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = true;
+      elm.dataset.multi = "foo";
+      elm.appendChild(context);
+      elm.appendChild(child);
+      elm.appendChild(button);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func(parent);
+      assert.isFalse(elm.hasAttribute("data-multi"), "dataset");
+      assert.isTrue(spy.calledTwice, "called child removeEventListener");
+      assert.isTrue(spy2.calledOnce, "called button removeEventListener");
+      assert.isTrue(spy3.calledTwice, "called context removeEventListener");
     });
   });
 
@@ -1842,7 +2003,7 @@ describe("tab-group", () => {
       assert.deepEqual(res, [], "result");
     });
 
-    it("should get empty array", async () => {
+    it("should get array", async () => {
       const parent = document.createElement("div");
       const elm = document.createElement("div");
       const body = document.querySelector("body");
@@ -1851,7 +2012,7 @@ describe("tab-group", () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(parent);
-      assert.deepEqual(res, [], "result");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should call function", async () => {
@@ -1878,7 +2039,7 @@ describe("tab-group", () => {
       assert.isTrue(spy.calledTwice, "called child removeEventListener");
       assert.isTrue(spy2.calledOnce, "called button removeEventListener");
       assert.isTrue(spy3.calledTwice, "called context removeEventListener");
-      assert.deepEqual(res, [], "result");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should get array", async () => {
@@ -1898,7 +2059,7 @@ describe("tab-group", () => {
       body.appendChild(parent);
       const res = await func(parent);
       assert.isFalse(elm.hasAttribute("data-multi"), "dataset");
-      assert.deepEqual(res, [button, child, undefined], "result");
+      assert.deepEqual(res, [undefined, child], "result");
     });
 
     it("should get array", async () => {
@@ -1919,7 +2080,7 @@ describe("tab-group", () => {
       const res = await func(parent, true);
       assert.isTrue(elm.hasAttribute("data-multi"), "dataset");
       assert.strictEqual(elm.dataset.multi, "true", "dataset value");
-      assert.deepEqual(res, [button, child, undefined], "result");
+      assert.deepEqual(res, [undefined, child], "result");
     });
   });
 

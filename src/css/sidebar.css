@@ -480,6 +480,12 @@ main {
 
 /* heading label */
 .heading-label {
+  display: block;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  mask-image: linear-gradient(to left, transparent, black 2em);
   font-weight: bold;
 }
 

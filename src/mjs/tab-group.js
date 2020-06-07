@@ -274,7 +274,7 @@ export const handleTabGroupsCollapsedState = evt => {
  * @param {boolean} multi - handle multiple tab groups
  * @returns {void}
  */
-export const addTabContextClickListener = async (elm, multi) => {
+export const addTabContextClickListener = (elm, multi) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     if (elm.classList.contains(CLASS_TAB_CONTEXT)) {
       if (multi) {
@@ -338,10 +338,11 @@ export const expandActivatedCollapsedTab = async () => {
  * finish editing group label
  *
  * @param {!object} evt - event
- * @returns {void}
+ * @returns {?(Function|Error)} - promise chain
  */
 export const finishGroupLabelEdit = evt => {
   const {isComposing, key, target, type} = evt;
+  let func;
   if (type === "blur" ||
       type === "keydown" && !isComposing && key === "Enter") {
     const heading = getTabGroupHeading(target);
@@ -357,9 +358,11 @@ export const finishGroupLabelEdit = evt => {
         label.addEventListener("click", handleTabGroupCollapsedState);
         label.removeEventListener("click", handleTabGroupsCollapsedState);
       }
+      func = setSessionTabList().catch(throwErr);
       evt.preventDefault();
     }
   }
+  return func || null;
 };
 
 /**
@@ -395,17 +398,53 @@ export const enableGroupLabelEdit = evt => {
 };
 
 /**
- * add listener to edit label button
+ * add listeners to heading items
  *
- * @param {object} node - element
- * @returns {object} - edit label button
+ * @param {object} node - node;
+ * @param {boolean} multi - handle multiple tab groups
+ * @returns {void}
  */
-export const addListenerToEditLabelButton = async node => {
+export const addListenersToHeadingItems = async (node, multi) => {
   const heading = getTabGroupHeading(node);
-  const button = heading && !heading.hidden &&
-                   heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
-  button && button.addEventListener("click", enableGroupLabelEdit);
-  return button || null;
+  if (heading && !heading.hidden) {
+    const context = heading.querySelector(`.${CLASS_TAB_CONTEXT}`);
+    const label = heading.querySelector(`.${CLASS_HEADING_LABEL}`);
+    const button = heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
+    if (multi) {
+      heading.dataset.multi = !!multi;
+    } else {
+      delete heading.dataset.multi;
+    }
+    context && addTabContextClickListener(context, !!multi);
+    label && addTabContextClickListener(label, !!multi);
+    button && button.addEventListener("click", enableGroupLabelEdit);
+  }
+};
+
+/**
+ * remove listeners from heading items
+ *
+ * @param {object} node - node;
+ * @returns {void}
+ */
+export const removeListenersFromHeadingItems = async node => {
+  const heading = getTabGroupHeading(node);
+  if (heading && heading.hidden) {
+    const context = heading.querySelector(`.${CLASS_TAB_CONTEXT}`);
+    const label = heading.querySelector(`.${CLASS_HEADING_LABEL}`);
+    const button = heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
+    delete heading.dataset.multi;
+    if (label) {
+      removeElementContentEditable(label);
+      label.removeEventListener("keydown", finishGroupLabelEdit);
+      label.removeEventListener("blur", finishGroupLabelEdit);
+    }
+    if (context) {
+      context.removeEventListener("click", handleTabGroupsCollapsedState);
+      context.removeEventListener("click", handleTabGroupCollapsedState);
+    }
+    button && button.removeEventListener("click", enableGroupLabelEdit);
+  }
 };
 
 /**
@@ -419,34 +458,15 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
   const func = [];
   const heading = getTabGroupHeading(node);
   if (heading) {
-    const context = heading.querySelector(`.${CLASS_TAB_CONTEXT}`);
     if (heading.hidden) {
       heading.hidden = false;
-      if (multi) {
-        heading.dataset.multi = !!multi;
-      } else {
-        delete heading.dataset.multi;
-      }
       func.push(
-        addListenerToEditLabelButton(heading),
+        addListenersToHeadingItems(heading, !!multi),
         startGroupLabelEdit(heading),
-        addTabContextClickListener(context, !!multi),
       );
     } else {
-      const label = heading.querySelector(`.${CLASS_HEADING_LABEL}`);
-      const button = heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
       heading.hidden = true;
-      delete heading.dataset.multi;
-      if (label) {
-        removeElementContentEditable(label);
-        label.removeEventListener("keydown", finishGroupLabelEdit);
-        label.removeEventListener("blur", finishGroupLabelEdit);
-      }
-      if (context) {
-        context.removeEventListener("click", handleTabGroupsCollapsedState);
-        context.removeEventListener("click", handleTabGroupCollapsedState);
-      }
-      button && button.removeEventListener("click", enableGroupLabelEdit);
+      func.push(removeListenersFromHeadingItems(heading));
     }
   }
   return Promise.all(func);

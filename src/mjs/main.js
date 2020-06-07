@@ -33,10 +33,10 @@ import {
   setTabIcon, toggleHighlight,
 } from "./tab-content.js";
 import {
-  addTabContextClickListener, collapseTabGroups, detachTabsFromGroup,
-  getTabGroupHeading, groupSameContainerTabs, groupSameDomainTabs,
-  groupSelectedTabs, replaceTabContextClickListener, restoreTabContainers,
-  toggleTabGrouping, toggleTabGroupCollapsedState,
+  addListenersToHeadingItems, addTabContextClickListener, collapseTabGroups,
+  detachTabsFromGroup, getTabGroupHeading, groupSameContainerTabs,
+  groupSameDomainTabs, groupSelectedTabs, replaceTabContextClickListener,
+  restoreTabContainers, toggleTabGrouping, toggleTabGroupCollapsedState,
   toggleTabGroupsCollapsedState, toggleTabGroupHeadingState, ungroupTabs,
 } from "./tab-group.js";
 import {
@@ -1863,11 +1863,13 @@ export const restoreHighlightedTabs = async () => {
 /**
  * restore tab groups
  *
- * @returns {void}
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const restoreTabGroups = async () => {
   const tabList = await getSessionTabList(TAB_LIST);
+  const func = [];
   if (isObjectNotEmpty(tabList)) {
+    const {tabGroupOnExpandCollapseOther: multi} = sidebar;
     const {recent} = tabList;
     const listItems = Object.entries(recent);
     const listItemIndexes = new Map();
@@ -1904,6 +1906,7 @@ export const restoreTabGroups = async () => {
         }
         headingLabel.textContent = headingLabelTextContent || "";
         heading.hidden = !headingShown;
+        func.push(addListenersToHeadingItems(heading, multi));
       } else if (i && listItemIndexes.has(itemUrl)) {
         const prevItem = items[i - 1];
         const {dataset: {tab: prevItemTab}} = prevItem;
@@ -1932,6 +1935,7 @@ export const restoreTabGroups = async () => {
             }
             headingLabel.textContent = headingLabelTextContent || "";
             heading.hidden = !headingShown;
+            func.push(addListenersToHeadingItems(heading, multi));
             break;
           }
         }
@@ -1939,6 +1943,7 @@ export const restoreTabGroups = async () => {
       i++;
     }
   }
+  return Promise.all(func);
 };
 
 /**

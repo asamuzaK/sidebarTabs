@@ -5879,7 +5879,7 @@ describe("main", () => {
       };
       const res = await func(info);
       assert.isTrue(heading.hidden, "hidden");
-      assert.deepEqual(res, [[]], "result");
+      assert.deepEqual(res, [[undefined]], "result");
     });
 
     it("should get result", async () => {
@@ -5904,7 +5904,7 @@ describe("main", () => {
       };
       const res = await func(info);
       assert.isFalse(heading.hidden, "hidden");
-      assert.deepEqual(res, [[button, child, undefined]], "result");
+      assert.deepEqual(res, [[undefined, child]], "result");
     });
 
     it("should call function", async () => {
@@ -8940,7 +8940,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       const items = document.querySelectorAll(
         `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`,
       );
@@ -8954,6 +8954,7 @@ describe("main", () => {
       for (const item of items) {
         assert.strictEqual(item.childElementCount, 2, "child");
       }
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not restore if recent tab list is undefined", async () => {
@@ -9068,7 +9069,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       const items = document.querySelectorAll(
         `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`,
       );
@@ -9082,6 +9083,7 @@ describe("main", () => {
       for (const item of items) {
         assert.strictEqual(item.childElementCount, 2, "child");
       }
+      assert.deepEqual(res, [], "result");
     });
 
     it("should not restore if not grouped", async () => {
@@ -9224,7 +9226,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       const items =
         document.querySelectorAll(
           `.${CLASS_TAB_CONTAINER}:not(#${PINNED}):not(#${NEW_TAB})`,
@@ -9236,6 +9238,7 @@ describe("main", () => {
       for (const item of items) {
         assert.strictEqual(item.childElementCount, 2, "child");
       }
+      assert.deepEqual(res, [], "result");
     });
 
     it("should restore pinned tabs", async () => {
@@ -9385,7 +9388,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -9402,6 +9405,7 @@ describe("main", () => {
       assert.strictEqual(sect3.childElementCount, 1, "empty section");
       assert.strictEqual(sect4.childElementCount, 2, "section");
       assert.strictEqual(sect5.childElementCount, 2, "section");
+      assert.deepEqual(res, [undefined, undefined, undefined], "result");
     });
 
     it("should restore pinned tabs", async () => {
@@ -9551,7 +9555,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -9568,6 +9572,7 @@ describe("main", () => {
       assert.strictEqual(sect3.childElementCount, 1, "empty section");
       assert.strictEqual(sect4.childElementCount, 2, "section");
       assert.strictEqual(sect5.childElementCount, 2, "section");
+      assert.deepEqual(res, [undefined, undefined, undefined], "result");
     });
 
     it("should restore group", async () => {
@@ -9720,7 +9725,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -9739,6 +9744,7 @@ describe("main", () => {
       assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
                      "heading");
       assert.strictEqual(sect5.childElementCount, 1, "empty section");
+      assert.deepEqual(res, [undefined, undefined, undefined], "result");
     });
 
     it("should restore group, case: tab added", async () => {
@@ -9884,7 +9890,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -9903,6 +9909,7 @@ describe("main", () => {
       assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
                      "heading");
       assert.strictEqual(sect5.childElementCount, 1, "empty section");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
 
     it("should restore group, case: tab removed", async () => {
@@ -10035,7 +10042,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -10053,6 +10060,7 @@ describe("main", () => {
       assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
                      "heading");
       assert.strictEqual(sect5.childElementCount, 1, "empty section");
+      assert.deepEqual(res, [undefined, undefined], "result");
     });
 
     it("should restore group, case: tab moved", async () => {
@@ -10205,7 +10213,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -10221,6 +10229,7 @@ describe("main", () => {
                      "heading");
       assert.strictEqual(sect5.childElementCount, 1, "empty section");
       assert.strictEqual(sect2.childElementCount, 2, "section");
+      assert.deepEqual(res, [undefined], "result");
     });
 
     it("should restore group, case: grouped tabs moved ", async () => {
@@ -10373,7 +10382,7 @@ describe("main", () => {
       browser.windows.getCurrent.resolves({
         id: winId,
       });
-      await func();
+      const res = await func();
       assert.strictEqual(
         browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
         i + 1,
@@ -10392,6 +10401,7 @@ describe("main", () => {
                      "heading");
       assert.strictEqual(sect2.childElementCount, 1, "empty section");
       assert.strictEqual(sect3.childElementCount, 1, "empty section");
+      assert.deepEqual(res, [undefined, undefined, undefined], "result");
     });
   });
 
