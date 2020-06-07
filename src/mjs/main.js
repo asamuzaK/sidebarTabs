@@ -428,18 +428,22 @@ export const handleActivatedTab = async info => {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     if (tab) {
       const {classList: newClass, parentNode: newParent} = tab;
-      const {classList: newParentClass} = newParent;
+      const newHeading = newParent.querySelector(`.${CLASS_HEADING}`);
       const items = document.querySelectorAll(
         `${TAB_QUERY}:not([data-tab-id="${tabId}"])`,
       );
       for (const item of items) {
         const {
-          classList: oldClass, parentNode: {classList: oldParentClass},
+          classList: oldClass, parentNode: oldParent,
         } = item;
+        const oldHeading = oldParent.querySelector(`.${CLASS_HEADING}`);
         oldClass.remove(ACTIVE);
-        oldParentClass.remove(ACTIVE);
+        oldHeading.classList.remove(ACTIVE);
+        oldParent.classList.remove(ACTIVE);
       }
-      newParentClass.add(ACTIVE);
+      newParent.classList.add(ACTIVE);
+      !newHeading.hidden && newParent.classList.contains(CLASS_TAB_COLLAPSED) &&
+        newHeading.classList.add(ACTIVE);
       newClass.add(ACTIVE);
       sidebar.firstSelectedTab = tab;
     }

@@ -1482,6 +1482,8 @@ describe("main", () => {
     it("should not set class", async () => {
       const parent = document.createElement("div");
       const parent2 = document.createElement("div");
+      const heading = document.createElement("h1");
+      const heading2 = document.createElement("h1");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -1489,26 +1491,36 @@ describe("main", () => {
         tabId: browser.tabs.TAB_ID_NONE,
         windowId: browser.windows.WINDOW_ID_CURRENT + 1,
       };
-      parent2.classList.add(ACTIVE);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
       elm2.dataset.tabId = "2";
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      parent.appendChild(heading);
       parent.appendChild(elm);
+      parent2.classList.add(ACTIVE);
+      parent2.appendChild(heading2);
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
       await func(info);
       assert.isFalse(parent.classList.contains(ACTIVE), "add class");
+      assert.isFalse(heading.classList.contains(ACTIVE), "add class");
       assert.isFalse(elm.classList.contains(ACTIVE), "add class");
       assert.isTrue(parent2.classList.contains(ACTIVE), "remove class");
+      assert.isFalse(heading2.classList.contains(ACTIVE), "remove class");
       assert.isTrue(elm2.classList.contains(ACTIVE), "remove class");
     });
 
     it("should not set class", async () => {
       const parent = document.createElement("div");
       const parent2 = document.createElement("div");
+      const heading = document.createElement("h1");
+      const heading2 = document.createElement("h1");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -1516,26 +1528,36 @@ describe("main", () => {
         tabId: browser.tabs.TAB_ID_NONE,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       };
-      parent2.classList.add(ACTIVE);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
       elm2.dataset.tabId = "2";
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      parent.appendChild(heading);
       parent.appendChild(elm);
+      parent2.classList.add(ACTIVE);
+      parent2.appendChild(heading2);
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
       await func(info);
       assert.isFalse(parent.classList.contains(ACTIVE), "add class");
+      assert.isFalse(heading.classList.contains(ACTIVE), "add class");
       assert.isFalse(elm.classList.contains(ACTIVE), "add class");
       assert.isTrue(parent2.classList.contains(ACTIVE), "remove class");
+      assert.isFalse(heading2.classList.contains(ACTIVE), "remove class");
       assert.isTrue(elm2.classList.contains(ACTIVE), "remove class");
     });
 
     it("should not set class", async () => {
       const parent = document.createElement("div");
       const parent2 = document.createElement("div");
+      const heading = document.createElement("h1");
+      const heading2 = document.createElement("h1");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -1543,26 +1565,36 @@ describe("main", () => {
         tabId: 3,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       };
-      parent2.classList.add(ACTIVE);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
       elm2.dataset.tabId = "2";
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      parent.appendChild(heading);
       parent.appendChild(elm);
+      parent2.classList.add(ACTIVE);
+      parent2.appendChild(heading2);
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
       await func(info);
       assert.isFalse(parent.classList.contains(ACTIVE), "add class");
+      assert.isFalse(heading.classList.contains(ACTIVE), "add class");
       assert.isFalse(elm.classList.contains(ACTIVE), "add class");
       assert.isTrue(parent2.classList.contains(ACTIVE), "remove class");
+      assert.isFalse(heading2.classList.contains(ACTIVE), "remove class");
       assert.isTrue(elm2.classList.contains(ACTIVE), "remove class");
     });
 
     it("should set class", async () => {
       const parent = document.createElement("div");
       const parent2 = document.createElement("div");
+      const heading = document.createElement("h1");
+      const heading2 = document.createElement("h1");
       const elm = document.createElement("p");
       const elm2 = document.createElement("p");
       const body = document.querySelector("body");
@@ -1570,20 +1602,66 @@ describe("main", () => {
         tabId: 1,
         windowId: browser.windows.WINDOW_ID_CURRENT,
       };
-      parent2.classList.add(ACTIVE);
       elm.classList.add(TAB);
       elm.dataset.tabId = "1";
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
       elm2.dataset.tabId = "2";
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      parent.appendChild(heading);
       parent.appendChild(elm);
+      parent2.classList.add(ACTIVE);
+      parent2.appendChild(heading2);
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
       await func(info);
       assert.isTrue(parent.classList.contains(ACTIVE), "add class");
+      assert.isFalse(heading.classList.contains(ACTIVE), "add class");
       assert.isTrue(elm.classList.contains(ACTIVE), "add class");
       assert.isFalse(parent2.classList.contains(ACTIVE), "remove class");
+      assert.isFalse(heading2.classList.contains(ACTIVE), "remove class");
+      assert.isFalse(elm2.classList.contains(ACTIVE), "remove class");
+    });
+
+    it("should set class", async () => {
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const heading = document.createElement("h1");
+      const heading2 = document.createElement("h1");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      const info = {
+        tabId: 1,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      };
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm2.classList.add(TAB);
+      elm2.classList.add(ACTIVE);
+      elm2.dataset.tabId = "2";
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = false;
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = false;
+      parent.classList.add(CLASS_TAB_COLLAPSED);
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent2.classList.add(ACTIVE);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      await func(info);
+      assert.isTrue(parent.classList.contains(ACTIVE), "add class");
+      assert.isTrue(heading.classList.contains(ACTIVE), "add class");
+      assert.isTrue(elm.classList.contains(ACTIVE), "add class");
+      assert.isFalse(parent2.classList.contains(ACTIVE), "remove class");
+      assert.isFalse(heading2.classList.contains(ACTIVE), "remove class");
       assert.isFalse(elm2.classList.contains(ACTIVE), "remove class");
     });
   });
@@ -1598,6 +1676,10 @@ describe("main", () => {
       sect.classList.add("tab-container");
       sect.dataset.tabControls = "";
       sect.setAttribute("hidden", "hidden");
+      const h1 = document.createElement("h1");
+      h1.classList.add(CLASS_HEADING);
+      h1.setAttribute("hidden", "hidden");
+      sect.appendChild(h1);
       tmpl.content.appendChild(sect);
       body.appendChild(tmpl);
       const tmpl2 = document.createElement("template");
@@ -4012,6 +4094,12 @@ describe("main", () => {
       tab.appendChild(pinned);
       const sect = document.createElement("section");
       sect.classList.add("tab-container");
+      const h1 = document.createElement("h1");
+      const label = document.createElement("span");
+      h1.classList.add(CLASS_HEADING);
+      label.classList.add(CLASS_HEADING_LABEL);
+      h1.appendChild(label);
+      sect.appendChild(h1);
       sect.appendChild(tab);
       const body = document.querySelector("body");
       body.appendChild(sect);
