@@ -14,7 +14,7 @@
   --border-active-color: #999;
   --border-discarded-color: #ccc;
   --border-drop-color: #00feff;
-  --border-textbox-color: rgba(12, 12, 13, 0.2);
+  --border-textbox-color: #0c0c0d14;
   --border-textbox-active-color: #0a84ff;
   --foreground-color: #0c0c0d;
   --foreground-active-color: #0c0c0d;
@@ -26,13 +26,21 @@
   --foreground-stroke-color: #0c0c0d1a;
   --foreground-textbox-color: #0c0c0d;
   --tab-group-pinned: #7d004f;
+  --tab-group-pinned-text: #7d004f;
   --tab-group-1: #669;
+  --tab-group-1-text: #669;
   --tab-group-2: #c96;
+  --tab-group-2-text: #b87a3d;
   --tab-group-3: #366;
+  --tab-group-3-text: #366;
   --tab-group-4: #69c;
+  --tab-group-4-text: #538cc6;
   --tab-group-5: #663;
+  --tab-group-5-text: #663;
   --tab-group-6: #c9c;
+  --tab-group-6-text: #b66db6;
   --tab-group-7: #696;
+  --tab-group-7-text: #629362;
   --scale-size: calc(1rem / 3);
   --tab-height: calc(var(--scale-size) * 8);
   --tab-height-compact: calc(var(--scale-size) * 6);
@@ -61,6 +69,14 @@
   --foreground-selection-hover-color: #f9f9fa;
   --foreground-stroke-color: #f9f9fa1a;
   --foreground-textbox-color: #f9f9fa;
+  --tab-group-pinned-text: #b80074;
+  --tab-group-1-text: #669;
+  --tab-group-2-text: #c96;
+  --tab-group-3-text: #366;
+  --tab-group-4-text: #69c;
+  --tab-group-5-text: #663;
+  --tab-group-6-text: #c9c;
+  --tab-group-7-text: #696;
 }
 
 /* structure */
@@ -563,84 +579,77 @@ main {
   display: none;
 }
 
-/* group colors */
-.tab-group > .heading > .tab-content > .tab-icon {
-  stroke: var(--foreground-stroke-color);
-}
-.tab-group > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  -webkit-text-stroke: 1px var(--foreground-stroke-color);
-}
 .tab-group:nth-child(7n + 1) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-1);
 }
 .tab-group:nth-child(7n + 1) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-1);
+  fill: var(--tab-group-1-text);
 }
 .tab-group:nth-child(7n + 1) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-1);
+  color: var(--tab-group-1-text);
 }
 .tab-group:nth-child(7n + 2) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-2);
 }
 .tab-group:nth-child(7n + 2) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-2);
+  fill: var(--tab-group-2-text);
 }
 .tab-group:nth-child(7n + 2) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-2);
+  color: var(--tab-group-2-text);
 }
 .tab-group:nth-child(7n + 3) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-3);
 }
 .tab-group:nth-child(7n + 3) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-3);
+  fill: var(--tab-group-3-text);
 }
 .tab-group:nth-child(7n + 3) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-3);
+  color: var(--tab-group-3-text);
 }
 .tab-group:nth-child(7n + 4) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-4);
 }
 .tab-group:nth-child(7n + 4) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-4);
+  fill: var(--tab-group-4-text);
 }
 .tab-group:nth-child(7n + 4) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-4);
+  color: var(--tab-group-4-text);
 }
 .tab-group:nth-child(7n + 5) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-5);
 }
 .tab-group:nth-child(7n + 5) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-5);
+  fill: var(--tab-group-5-text);
 }
 .tab-group:nth-child(7n + 5) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-5);
+  color: var(--tab-group-5-text);
 }
 .tab-group:nth-child(7n + 6) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-6);
 }
 .tab-group:nth-child(7n + 6) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-6);
+  fill: var(--tab-group-6-text);
 }
 .tab-group:nth-child(7n + 6) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-6);
+  color: var(--tab-group-6-text);
 }
 .tab-group:nth-child(7n) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-7);
 }
 .tab-group:nth-child(7n) > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-7);
+  fill: var(--tab-group-7-text);
 }
 .tab-group:nth-child(7n) > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-7);
+  color: var(--tab-group-7-text);
 }
 .tab-group.pinned > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-pinned);
 }
 .tab-group.pinned > .heading > .tab-content > .tab-icon {
-  fill: var(--tab-group-pinned);
+  fill: var(--tab-group-pinned-text);
 }
 .tab-group.pinned > .heading > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-pinned);
+  color: var(--tab-group-pinned-text);
 }
 
 /* text box */
