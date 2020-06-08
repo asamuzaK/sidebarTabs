@@ -23,6 +23,7 @@
   --foreground-highlight-color: #0a84ff;
   --foreground-selection-color: #f9f9fa;
   --foreground-selection-hover-color: #f9f9fa;
+  --foreground-stroke-color: #0c0c0d1a;
   --foreground-textbox-color: #0c0c0d;
   --tab-group-pinned: #7d004f;
   --tab-group-1: #669;
@@ -58,6 +59,7 @@
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #f9f9fa;
   --foreground-selection-hover-color: #f9f9fa;
+  --foreground-stroke-color: #f9f9fa1a;
   --foreground-textbox-color: #f9f9fa;
 }
 
@@ -561,6 +563,13 @@ main {
   display: none;
 }
 
+/* group colors */
+.tab-group > .heading > .tab-content > .tab-icon {
+  stroke: var(--foreground-stroke-color);
+}
+.tab-group > .heading > .tab-content > .heading-label:not([contenteditable]) {
+  -webkit-text-stroke: 1px var(--foreground-stroke-color);
+}
 .tab-group:nth-child(7n + 1) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-1);
 }
