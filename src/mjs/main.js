@@ -875,79 +875,78 @@ export const handleRemovedTab = async (tabId, info) => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleUpdatedTab = async (tabId, info, tabsTab) => {
-  const {windowId} = tabsTab;
-  const func = [];
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
-  if (!Number.isInteger(windowId)) {
-    throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
-  }
-  if (windowId === sidebar.windowId) {
-    const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-    if (tab) {
-      const {audible, discarded, mutedInfo: {muted}} = tabsTab;
-      await setTabContent(tab, tabsTab);
-      if (info.hasOwnProperty("audible") || info.hasOwnProperty("mutedInfo")) {
-        const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
-        const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
-        const opt = {audible, muted};
-        if (audible || muted) {
-          tabAudio.classList.add(AUDIBLE);
-        } else {
-          tabAudio.classList.remove(AUDIBLE);
+  const func = [];
+  if (isObjectNotEmpty(info) && isObjectNotEmpty(tabsTab)) {
+    const {audible, discarded, mutedInfo: {muted}, windowId} = tabsTab;
+    if (windowId === sidebar.windowId) {
+      const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
+      if (tab) {
+        await setTabContent(tab, tabsTab);
+        if (info.hasOwnProperty("audible") ||
+            info.hasOwnProperty("mutedInfo")) {
+          const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
+          const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
+          const opt = {audible, muted};
+          if (audible || muted) {
+            tabAudio.classList.add(AUDIBLE);
+          } else {
+            tabAudio.classList.remove(AUDIBLE);
+          }
+          func.push(setTabAudio(tabAudio, opt));
+          func.push(setTabAudioIcon(tabAudioIcon, opt));
         }
-        func.push(setTabAudio(tabAudio, opt));
-        func.push(setTabAudioIcon(tabAudioIcon, opt));
-      }
-      if (info.hasOwnProperty("pinned")) {
-        const pinnedContainer = document.getElementById(PINNED);
-        if (info.pinned) {
-          const container = pinnedContainer;
-          tab.classList.add(PINNED);
-          container.appendChild(tab);
-          func.push(restoreTabContainers().then(setSessionTabList));
-        } else {
-          const {
-            nextElementSibling: pinnedNextSibling,
-            parentNode: pinnedParentNode,
-          } = pinnedContainer;
-          const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-          tab.classList.remove(PINNED);
-          container.appendChild(tab);
-          container.removeAttribute("hidden");
-          pinnedParentNode.insertBefore(container, pinnedNextSibling);
-          func.push(restoreTabContainers().then(setSessionTabList));
+        if (info.hasOwnProperty("pinned")) {
+          const pinnedContainer = document.getElementById(PINNED);
+          if (info.pinned) {
+            const container = pinnedContainer;
+            tab.classList.add(PINNED);
+            container.appendChild(tab);
+            func.push(restoreTabContainers().then(setSessionTabList));
+          } else {
+            const {
+              nextElementSibling: pinnedNextSibling,
+              parentNode: pinnedParentNode,
+            } = pinnedContainer;
+            const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+            tab.classList.remove(PINNED);
+            container.appendChild(tab);
+            container.removeAttribute("hidden");
+            pinnedParentNode.insertBefore(container, pinnedNextSibling);
+            func.push(restoreTabContainers().then(setSessionTabList));
+          }
         }
-      }
-      if (info.hasOwnProperty("status") && info.status === "complete") {
-        const activeTabsTab = await getActiveTab(windowId);
-        const {id: activeTabId} = activeTabsTab;
-        func.push(handleActivatedTab({
-          windowId,
-          tabId: activeTabId,
-        }));
-      }
-      if (info.hasOwnProperty("discarded")) {
-        if (info.discarded) {
+        if (info.hasOwnProperty("status") && info.status === "complete") {
+          const activeTabsTab = await getActiveTab(windowId);
+          const {id: activeTabId} = activeTabsTab;
+          func.push(handleActivatedTab({
+            windowId,
+            tabId: activeTabId,
+          }));
+        }
+        if (info.hasOwnProperty("discarded")) {
+          if (info.discarded) {
+            tab.classList.add(DISCARDED);
+          } else {
+            tab.classList.remove(DISCARDED);
+          }
+          func.push(setSessionTabList());
+        } else if (discarded) {
           tab.classList.add(DISCARDED);
         } else {
           tab.classList.remove(DISCARDED);
         }
-        func.push(setSessionTabList());
-      } else if (discarded) {
-        tab.classList.add(DISCARDED);
-      } else {
-        tab.classList.remove(DISCARDED);
-      }
-      if (info.hasOwnProperty("hidden")) {
-        if (info.hidden) {
-          tab.setAttribute("hidden", "hidden");
-        } else {
-          tab.removeAttribute("hidden");
+        if (info.hasOwnProperty("hidden")) {
+          if (info.hidden) {
+            tab.setAttribute("hidden", "hidden");
+          } else {
+            tab.removeAttribute("hidden");
+          }
         }
+        tab.dataset.tab = JSON.stringify(tabsTab);
       }
-      tab.dataset.tab = JSON.stringify(tabsTab);
     }
   }
   return Promise.all(func);

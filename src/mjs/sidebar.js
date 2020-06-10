@@ -27,11 +27,8 @@ import {
 
 /* api */
 const {
-  contextualIdentities, menus, runtime, storage, tabs, theme, windows,
+  contextualIdentities, menus, runtime, storage, tabs, theme,
 } = browser;
-
-/* constants */
-const {WINDOW_ID_CURRENT} = windows;
 
 /* listeners */
 contextualIdentities.onCreated.addListener(() =>
@@ -84,7 +81,6 @@ tabs.onUpdated.addListener(
       "audible", "discarded", "favIconUrl", "hidden", "mutedInfo", "pinned",
       "status", "title",
     ],
-    windowId: WINDOW_ID_CURRENT,
   },
 );
 theme.onUpdated.addListener(info =>

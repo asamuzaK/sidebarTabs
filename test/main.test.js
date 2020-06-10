@@ -4113,15 +4113,6 @@ describe("main", () => {
       });
     });
 
-    it("should throw", async () => {
-      await func(1, {}, {
-        windowId: "foo",
-      }).catch(e => {
-        assert.strictEqual(e.message, "Expected Number but got String.",
-                           "throw");
-      });
-    });
-
     it("should not update", async () => {
       const res = await func(1, {}, {
         windowId: 1,
@@ -4136,8 +4127,41 @@ describe("main", () => {
       assert.deepEqual(res, [], "result");
     });
 
+    it("should not update", async () => {
+      const res = await func(2, {
+        foo: "bar",
+      }, {});
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not update", async () => {
+      const res = await func(2, {
+        foo: "bar",
+      }, {
+        mutedInfo: {
+          muted: false,
+        },
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+      });
+      assert.deepEqual(res, [], "result");
+    });
+
+    it("should not update", async () => {
+      const res = await func(2, {
+        foo: "bar",
+      }, {
+        mutedInfo: {
+          muted: false,
+        },
+        windowId: browser.windows.WINDOW_ID_NONE,
+      });
+      assert.deepEqual(res, [], "result");
+    });
+
     it("should update, not call function", async () => {
-      const info = {};
+      const info = {
+        foo: "bar",
+      };
       const tabsTab = {
         discarded: false,
         mutedInfo: {
