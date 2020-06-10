@@ -523,11 +523,29 @@ describe("util", () => {
 
   describe("set tab list to sessions", () => {
     const func = mjs.setSessionTabList;
+    beforeEach(() => {
+      mjs.mutex.clear();
+    });
+    afterEach(() => {
+      mjs.mutex.clear();
+    });
 
     it("should not call function if incognito", async () => {
       browser.windows.getCurrent.resolves({
         incognito: true,
       });
+      const i = browser.sessions.setWindowValue.callCount;
+      await func();
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
+                         "not called");
+    });
+
+    it("should not call function if mutex has window ID", async () => {
+      browser.windows.getCurrent.resolves({
+        incognito: false,
+        id: 1,
+      });
+      mjs.mutex.add(1);
       const i = browser.sessions.setWindowValue.callCount;
       await func();
       assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
@@ -601,6 +619,162 @@ describe("util", () => {
       assert.strictEqual(
         browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
         i + 1, "called set",
+      );
+    });
+
+    it("should throw", async () => {
+      browser.windows.getCurrent.resolves({
+        incognito: false,
+        id: 1,
+      });
+      browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+        .rejects(new Error("error"));
+      await func().catch(e => {
+        assert.strictEqual(e.message, "error", "error");
+      });
+      assert.isFalse(mjs.mutex.has(1), "mutex");
+    });
+
+    it("should call function", async () => {
+      browser.windows.getCurrent.resolves({
+        incognito: false,
+        id: 1,
+      });
+      browser.sessions.getWindowValue.withArgs(1, TAB_LIST).resolves(undefined);
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: "http://example.com",
+            containerIndex: 0,
+          },
+          1: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: "https://example.com",
+            containerIndex: 1,
+          },
+          2: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: "https://www.example.com",
+            containerIndex: 1,
+          },
+        },
+      });
+      const i = browser.sessions.setWindowValue.withArgs(1, "tabList", arg)
+        .callCount;
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "http://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm3.classList.add(TAB);
+      elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://www.example.com",
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      await Promise.all([
+        func(),
+        func(),
+      ]);
+      assert.strictEqual(
+        browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
+        i + 1, "called set",
+      );
+    });
+
+    it("should call function", async () => {
+      browser.windows.getCurrent.resolves({
+        incognito: false,
+        id: 1,
+      });
+      browser.sessions.getWindowValue.withArgs(1, TAB_LIST).resolves(undefined);
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: "http://example.com",
+            containerIndex: 0,
+          },
+          1: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: "https://example.com",
+            containerIndex: 1,
+          },
+          2: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: "https://www.example.com",
+            containerIndex: 1,
+          },
+        },
+      });
+      const i = browser.sessions.setWindowValue.withArgs(1, "tabList", arg)
+        .callCount;
+      const parent = document.createElement("div");
+      const parent2 = document.createElement("div");
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const elm3 = document.createElement("p");
+      const body = document.querySelector("body");
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = "1";
+      elm.dataset.tab = JSON.stringify({
+        url: "http://example.com",
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = "2";
+      elm2.dataset.tab = JSON.stringify({
+        url: "https://example.com",
+      });
+      elm3.classList.add(TAB);
+      elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = "3";
+      elm3.dataset.tab = JSON.stringify({
+        url: "https://www.example.com",
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      await func().then(func);
+      assert.strictEqual(
+        browser.sessions.setWindowValue.withArgs(1, "tabList", arg).callCount,
+        i + 2, "called set",
       );
     });
 

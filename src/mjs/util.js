@@ -226,6 +226,9 @@ export const getSessionTabList = async key => {
   return tabList || null;
 };
 
+/* mutex */
+export const mutex = new Set();
+
 /**
  * set tab list to sessions
  *
@@ -234,38 +237,46 @@ export const getSessionTabList = async key => {
 export const setSessionTabList = async () => {
   const win = await getCurrentWindow();
   const {id: windowId, incognito} = win;
-  if (!incognito) {
-    const tabList = {
-      recent: {},
-    };
-    const items =
-      document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-    const prevList = await getSessionTabList(TAB_LIST);
-    const l = items.length;
-    let i = 0;
-    while (i < l) {
-      const item = items[i];
-      const collapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
-      const heading = item.querySelector(`.${CLASS_HEADING}`);
-      const headingShown = heading && !heading.hidden;
-      const headingLabel =
-        heading && heading.querySelector(`.${CLASS_HEADING_LABEL}`).textContent;
-      const childTabs = item.querySelectorAll(TAB_QUERY);
-      for (const tab of childTabs) {
-        const tabsTab = tab.dataset.tab;
-        const {url} = JSON.parse(tabsTab);
-        const tabIndex = getSidebarTabIndex(tab);
-        tabList.recent[tabIndex] = {
-          collapsed, headingLabel, headingShown, url,
-          containerIndex: i,
-        };
+  if (!incognito && !mutex.has(windowId)) {
+    mutex.add(windowId);
+    try {
+      const tabList = {
+        recent: {},
+      };
+      const items =
+        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+      const prevList = await getSessionTabList(TAB_LIST);
+      const l = items.length;
+      let i = 0;
+      while (i < l) {
+        const item = items[i];
+        const collapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
+        const heading = item.querySelector(`.${CLASS_HEADING}`);
+        const headingShown = heading && !heading.hidden;
+        const headingLabel =
+          heading &&
+          heading.querySelector(`.${CLASS_HEADING_LABEL}`).textContent;
+        const childTabs = item.querySelectorAll(TAB_QUERY);
+        for (const tab of childTabs) {
+          const tabsTab = tab.dataset.tab;
+          const {url} = JSON.parse(tabsTab);
+          const tabIndex = getSidebarTabIndex(tab);
+          tabList.recent[tabIndex] = {
+            collapsed, headingLabel, headingShown, url,
+            containerIndex: i,
+          };
+        }
+        i++;
       }
-      i++;
+      if (isObjectNotEmpty(prevList) && prevList.hasOwnProperty("recent")) {
+        tabList.prev = Object.assign({}, prevList.recent);
+      }
+      await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
+      mutex.delete(windowId);
+    } catch (e) {
+      mutex.delete(windowId);
+      throw e;
     }
-    if (isObjectNotEmpty(prevList) && prevList.hasOwnProperty("recent")) {
-      tabList.prev = Object.assign({}, prevList.recent);
-    }
-    await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
   }
 };
 
