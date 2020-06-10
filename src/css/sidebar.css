@@ -670,7 +670,7 @@ main {
   border-color: var(--border-textbox-active-color);
 }
 
-@media(prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .tab,
   .tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
     transition: none;
