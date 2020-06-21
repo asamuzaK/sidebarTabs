@@ -16,6 +16,7 @@ const createJsdom = () => {
   const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
   const opt = {
     runScripts: "dangerously",
+    url: "https://localhost",
     beforeParse(window) {
       window.alert = sinon.stub().callsFake((...args) => args.toString());
     },
