@@ -1,16 +1,15 @@
 /**
  * tab-content.test.js
  */
-/* eslint-disable no-magic-numbers */
+/* eslint-disable max-nested-callbacks, no-magic-numbers */
 
-import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
-import sinon from "sinon";
+import {browser, createJsdom} from "./mocha/setup.js";
 import fs from "fs";
 import path from "path";
 import process from "process";
-import {browser} from "./mocha/setup.js";
+import sinon from "sinon";
 import * as mjs from "../src/mjs/tab-content.js";
 import {
   CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
@@ -21,18 +20,6 @@ import {
 } from "../src/mjs/constant.js";
 
 describe("tab-content", () => {
-  /**
-   * create jsdom
-   *
-   * @returns {object} - jsdom instance
-   */
-  const createJsdom = () => {
-    const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
-    const opt = {
-      runScripts: "dangerously",
-    };
-    return new JSDOM(domstr, opt);
-  };
   const globalKeys = ["Node"];
   let window, document;
   beforeEach(() => {

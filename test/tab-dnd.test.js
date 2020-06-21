@@ -1,13 +1,12 @@
 /**
  * tab-dnd.test.js
  */
-/* eslint-disable no-magic-numbers */
+/* eslint-disable max-nested-callbacks, no-magic-numbers */
 
-import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
+import {browser, createJsdom} from "./mocha/setup.js";
 import sinon from "sinon";
-import {browser} from "./mocha/setup.js";
 import * as mjs from "../src/mjs/tab-dnd.js";
 import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
@@ -16,18 +15,6 @@ import {
 } from "../src/mjs/constant.js";
 
 describe("dnd", () => {
-  /**
-   * create jsdom
-   *
-   * @returns {object} - jsdom instance
-   */
-  const createJsdom = () => {
-    const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
-    const opt = {
-      runScripts: "dangerously",
-    };
-    return new JSDOM(domstr, opt);
-  };
   const globalKeys = ["Node"];
   let window, document;
   beforeEach(() => {

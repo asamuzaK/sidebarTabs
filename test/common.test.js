@@ -3,25 +3,13 @@
  */
 /* eslint-disable no-magic-numbers */
 
-import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
+import {createJsdom} from "./mocha/setup.js";
 import sinon from "sinon";
 import * as mjs from "../src/mjs/common.js";
 
 describe("common", () => {
-  /**
-   * create jsdom
-   *
-   * @returns {object} - jsdom instance
-   */
-  const createJsdom = () => {
-    const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
-    const opt = {
-      runScripts: "dangerously",
-    };
-    return new JSDOM(domstr, opt);
-  };
   let window, document;
   // NOTE: not implemented in jsdom https://github.com/jsdom/jsdom/issues/1670
   const isContentEditable = elm => {

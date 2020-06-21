@@ -1,14 +1,13 @@
 /**
  * tab-group.test.js
  */
-/* eslint-disable no-magic-numbers */
+/* eslint-disable max-nested-callbacks, no-magic-numbers */
 
-import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
-import sinon from "sinon";
+import {browser, createJsdom} from "./mocha/setup.js";
 import psl from "psl";
-import {browser} from "./mocha/setup.js";
+import sinon from "sinon";
 import * as mjs from "../src/mjs/tab-group.js";
 import {
   ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
@@ -19,18 +18,6 @@ import {
 } from "../src/mjs/constant.js";
 
 describe("tab-group", () => {
-  /**
-   * create jsdom
-   *
-   * @returns {object} - jsdom instance
-   */
-  const createJsdom = () => {
-    const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
-    const opt = {
-      runScripts: "dangerously",
-    };
-    return new JSDOM(domstr, opt);
-  };
   const globalKeys = ["Node"];
   let window, document;
   beforeEach(() => {

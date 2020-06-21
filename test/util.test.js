@@ -1,14 +1,13 @@
 /**
  * util.test.js
  */
-/* eslint-disable no-magic-numbers */
+/* eslint-disable max-nested-callbacks, no-magic-numbers */
 
-import {JSDOM} from "jsdom";
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
-import sinon from "sinon";
+import {browser, createJsdom} from "./mocha/setup.js";
 import psl from "psl";
-import {browser} from "./mocha/setup.js";
+import sinon from "sinon";
 import * as mjs from "../src/mjs/util.js";
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
@@ -16,18 +15,6 @@ import {
 } from "../src/mjs/constant.js";
 
 describe("util", () => {
-  /**
-   * create jsdom
-   *
-   * @returns {object} - jsdom instance
-   */
-  const createJsdom = () => {
-    const domstr = "<!DOCTYPE html><html><head></head><body></body></html>";
-    const opt = {
-      runScripts: "dangerously",
-    };
-    return new JSDOM(domstr, opt);
-  };
   const globalKeys = ["Node", "NodeList"];
   let window, document;
   beforeEach(() => {
