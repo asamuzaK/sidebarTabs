@@ -5,8 +5,8 @@
 import {assert} from "chai";
 import {afterEach, beforeEach, describe, it} from "mocha";
 import {browser, createJsdom} from "./mocha/setup.js";
-import {EXT_LOCALE} from "../src/mjs/constant.js";
 import * as mjs from "../src/mjs/localize.js";
+import {EXT_LOCALE} from "../src/mjs/constant.js";
 
 describe("localize", () => {
   let window, document;
