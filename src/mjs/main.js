@@ -9,7 +9,7 @@ import {
   clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
   getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, sendMessage, setSessionWindowValue,
+  restoreSession, sendMessage, setSessionWindowValue, warmupTab,
 } from "./browser.js";
 import {
   bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
@@ -270,23 +270,6 @@ export const createDnDData = evt => {
   return func || null;
 };
 
-/**
- * add DnD event listener
- *
- * @param {object} elm - element
- * @returns {void}
- */
-export const addDnDEventListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.draggable && elm.addEventListener("dragstart", createDnDData);
-    elm.addEventListener("dragenter", handleDragEnter);
-    elm.addEventListener("dragover", handleDragOver);
-    elm.addEventListener("dragleave", handleDragLeave);
-    elm.addEventListener("dragend", handleDragEnd);
-    elm.addEventListener("drop", handleDrop);
-  }
-};
-
 /* sidebar tab event handlers */
 /**
  * handle create new tab
@@ -407,6 +390,45 @@ export const replaceTabDblClickListeners = async (bool = false) => {
     tabContent && func.push(toggleTabDblClickListener(tabContent, !!bool));
   }
   return Promise.all(func);
+};
+
+/**
+ * trigger tab warmup
+ *
+ * @param {!object} evt - event
+ * @returns {?(Function|Error)} - promise chain
+ */
+export const triggerTabWarmup = evt => {
+  const {target} = evt;
+  const tab = getSidebarTab(target);
+  let func;
+  if (tab) {
+    const {classList} = tab;
+    const tabId = getSidebarTabId(tab);
+    if (!classList.contains(ACTIVE) &&
+        Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
+      func = warmupTab(tabId).catch(throwErr);
+    }
+  }
+  return func || null;
+};
+
+/**
+ * add tab event listeners
+ *
+ * @param {object} elm - element
+ * @returns {void}
+ */
+export const addTabEventListeners = async elm => {
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    elm.draggable && elm.addEventListener("dragstart", createDnDData);
+    elm.addEventListener("dragenter", handleDragEnter);
+    elm.addEventListener("dragover", handleDragOver);
+    elm.addEventListener("dragleave", handleDragLeave);
+    elm.addEventListener("dragend", handleDragEnd);
+    elm.addEventListener("drop", handleDrop);
+    elm.addEventListener("mouseover", triggerTabWarmup);
+  }
 };
 
 /* tab handlers */
@@ -532,7 +554,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     }
     tab.dataset.tabId = id;
     tab.dataset.tab = JSON.stringify(tabsTab);
-    await addDnDEventListener(tab);
+    await addTabEventListeners(tab);
     if (!incognito && cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
       const ident = await getContextualId(cookieStoreId);
       const {color, icon, name} = ident;

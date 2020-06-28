@@ -615,70 +615,6 @@ describe("main", () => {
     });
   });
 
-  describe("add DnD event listener", () => {
-    const func = mjs.addDnDEventListener;
-
-    it("should not add dragstart listner", async () => {
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      body.appendChild(elm);
-      const spy = sinon.spy(elm, "addEventListener");
-      const i = spy.callCount;
-      await func();
-      assert.strictEqual(spy.callCount, i, "not called");
-      elm.addEventListener.restore();
-    });
-
-    it("should not add listner", async () => {
-      const elm = document.createElement("p");
-      const elm2 = document.createElement("p");
-      const body = document.querySelector("body");
-      body.appendChild(elm);
-      body.appendChild(elm2);
-      const spy = sinon.spy(elm, "addEventListener");
-      const i = spy.callCount;
-      await func(elm2);
-      assert.strictEqual(spy.callCount, i, "not called");
-      elm.addEventListener.restore();
-    });
-
-    it("should not add dragstart listner", async () => {
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      body.appendChild(elm);
-      const spy = sinon.spy(elm, "addEventListener");
-      const i = spy.callCount;
-      await func(elm);
-      assert.strictEqual(spy.callCount, i + 5, "not called");
-      elm.addEventListener.restore();
-    });
-
-    it("should not add dragstart listner", async () => {
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      elm.draggable = false;
-      body.appendChild(elm);
-      const spy = sinon.spy(elm, "addEventListener");
-      await func(elm);
-      const i = spy.callCount;
-      await func(elm);
-      assert.strictEqual(spy.callCount, i + 5, "not called");
-      elm.addEventListener.restore();
-    });
-
-    it("should add all listners", async () => {
-      const elm = document.createElement("p");
-      const body = document.querySelector("body");
-      elm.draggable = true;
-      body.appendChild(elm);
-      const spy = sinon.spy(elm, "addEventListener");
-      const i = spy.callCount;
-      await func(elm);
-      assert.strictEqual(spy.callCount, i + 6, "called");
-      elm.addEventListener.restore();
-    });
-  });
-
   describe("handle create new tab", () => {
     const func = mjs.handleCreateNewTab;
     beforeEach(() => {
@@ -1437,6 +1373,128 @@ describe("main", () => {
       assert.deepEqual(res, [undefined, undefined], "result");
       span.removeEventListener.restore();
       span2.removeEventListener.restore();
+    });
+  });
+
+  describe("trigger tab warmup", () => {
+    const func = mjs.triggerTabWarmup;
+
+    it("should throw", () => {
+      assert.throws(() => func());
+    });
+
+    it("should not call function", async () => {
+      if (typeof browser.tabs.warmup === "function") {
+        const i = browser.tabs.warmup.callCount;
+        const elm = document.createElement("p");
+        const body = document.querySelector("body");
+        body.appendChild(elm);
+        const evt = {
+          target: elm,
+        };
+        const res = await func(evt);
+        assert.strictEqual(browser.tabs.warmup.callCount, i, "not called");
+        assert.isNull(res, "result");
+      }
+    });
+
+    it("should call function", async () => {
+      if (typeof browser.tabs.warmup === "function") {
+        const i = browser.tabs.warmup.callCount;
+        const elm = document.createElement("p");
+        const body = document.querySelector("body");
+        elm.classList.add(TAB);
+        elm.dataset.tabId = "1";
+        body.appendChild(elm);
+        const evt = {
+          target: elm,
+        };
+        const res = await func(evt);
+        assert.strictEqual(browser.tabs.warmup.callCount, i + 1, "called");
+        assert.isUndefined(res, "result");
+      }
+    });
+
+    it("should not call function", async () => {
+      if (typeof browser.tabs.warmup === "function") {
+        const i = browser.tabs.warmup.callCount;
+        const elm = document.createElement("p");
+        const body = document.querySelector("body");
+        elm.classList.add(TAB);
+        elm.classList.add(ACTIVE);
+        elm.dataset.tabId = "1";
+        body.appendChild(elm);
+        const evt = {
+          target: elm,
+        };
+        const res = await func(evt);
+        assert.strictEqual(browser.tabs.warmup.callCount, i, "not called");
+        assert.isNull(res, "result");
+      }
+    });
+  });
+
+  describe("add tab event listeners", () => {
+    const func = mjs.addTabEventListeners;
+
+    it("should not add dragstart listner", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
+      await func();
+      assert.strictEqual(spy.callCount, i, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should not add listner", async () => {
+      const elm = document.createElement("p");
+      const elm2 = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
+      await func(elm2);
+      assert.strictEqual(spy.callCount, i, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should not add dragstart listner", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      body.appendChild(elm);
+      const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
+      await func(elm);
+      assert.strictEqual(spy.callCount, i + 6, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should not add dragstart listner", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.draggable = false;
+      body.appendChild(elm);
+      const spy = sinon.spy(elm, "addEventListener");
+      await func(elm);
+      const i = spy.callCount;
+      await func(elm);
+      assert.strictEqual(spy.callCount, i + 6, "not called");
+      elm.addEventListener.restore();
+    });
+
+    it("should add all listners", async () => {
+      const elm = document.createElement("p");
+      const body = document.querySelector("body");
+      elm.draggable = true;
+      body.appendChild(elm);
+      const spy = sinon.spy(elm, "addEventListener");
+      const i = spy.callCount;
+      await func(elm);
+      assert.strictEqual(spy.callCount, i + 7, "called");
+      elm.addEventListener.restore();
     });
   });
 
