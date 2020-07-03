@@ -36,7 +36,7 @@ import {
   TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_QUERY, TAB_RELOAD,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE_END,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END,
   TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
   THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
@@ -5273,47 +5273,6 @@ describe("main", () => {
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
       const info = {
-        menuItemId: TABS_CLOSE_OTHER,
-      };
-      const res = await func(info);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.tabs.remove.callCount, j + 1, "called remove");
-      assert.deepEqual(res, [undefined], "result");
-    });
-
-    it("should call function", async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.tabs.remove.callCount;
-      const pinned = document.createElement("section");
-      const sect = document.createElement("section");
-      const newTab = document.createElement("section");
-      const elm = document.createElement("div");
-      const elm2 = document.createElement("div");
-      const elm3 = document.createElement("div");
-      const body = document.querySelector("body");
-      pinned.id = PINNED;
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = "1";
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = "2";
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = "3";
-      sect.appendChild(elm);
-      sect.appendChild(elm2);
-      sect.appendChild(elm3);
-      newTab.id = NEW_TAB;
-      body.appendChild(pinned);
-      body.appendChild(sect);
-      body.appendChild(newTab);
-      mjs.sidebar.context = elm;
-      browser.tabs.get.withArgs(1).resolves({});
-      browser.tabs.get.withArgs(2).resolves({});
-      browser.tabs.get.withArgs(3).resolves({});
-      browser.tabs.remove.resolves(undefined);
-      const info = {
         menuItemId: TAB_CLOSE_OTHER,
       };
       const res = await func(info);
@@ -6929,8 +6888,8 @@ describe("main", () => {
       const j = browser.menus.update.callCount;
       const res = await func();
       assert.strictEqual(browser.tabs.get.callCount, i, "not called");
-      assert.strictEqual(browser.menus.update.callCount, j + 27, "called");
-      assert.deepEqual(res.length, 25, "result");
+      assert.strictEqual(browser.menus.update.callCount, j + 25, "called");
+      assert.deepEqual(res.length, 23, "result");
     });
 
     it("should call function", async () => {
@@ -6995,9 +6954,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(body);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 27,
+      assert.strictEqual(browser.menus.update.callCount, j + 25,
                          "called update");
-      assert.strictEqual(res.length, 25, "result");
+      assert.strictEqual(res.length, 23, "result");
     });
 
     it("should call function", async () => {
@@ -7062,9 +7021,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7129,9 +7088,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm1);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7196,9 +7155,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7263,9 +7222,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7332,9 +7291,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7400,9 +7359,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7469,9 +7428,9 @@ describe("main", () => {
       mjs.sidebar.enableTabGroup = false;
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 30,
+      assert.strictEqual(browser.menus.update.callCount, j + 29,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7536,9 +7495,9 @@ describe("main", () => {
       mjs.sidebar.contextualIds = ["foo"];
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7605,9 +7564,9 @@ describe("main", () => {
       mjs.sidebar.contextualIds = ["foo"];
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 41,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7673,9 +7632,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7729,9 +7688,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm1);
       assert.strictEqual(browser.tabs.get.callCount, i, "not called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 38,
+      assert.strictEqual(browser.menus.update.callCount, j + 35,
                          "called update");
-      assert.strictEqual(res.length, 25, "result");
+      assert.strictEqual(res.length, 22, "result");
     });
 
     it("should call function", async () => {
@@ -7785,9 +7744,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
 
     it("should call function", async () => {
@@ -7842,9 +7801,9 @@ describe("main", () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, "called get");
-      assert.strictEqual(browser.menus.update.callCount, j + 41,
+      assert.strictEqual(browser.menus.update.callCount, j + 40,
                          "called update");
-      assert.strictEqual(res.length, 29, "result");
+      assert.strictEqual(res.length, 28, "result");
     });
   });
 

@@ -59,6 +59,18 @@
       }
     }
   },
+  "closeMultipleTabs": {
+    "message": "複数のタブを閉じる"
+  },
+  "closeMultipleTabs_title": {
+    "message": "複数のタブを閉じる$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
   "closeOtherTabs": {
     "message": "他のタブをすべて閉じる"
   },

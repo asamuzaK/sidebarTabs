@@ -76,7 +76,7 @@ import {
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
-  TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
+  TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
   TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
   TABS_REOPEN_CONTAINER,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
@@ -1116,9 +1116,6 @@ export const handleClickedMenu = async info => {
     case TABS_CLOSE:
       func.push(closeTabs(Array.from(selectedTabs)));
       break;
-    case TABS_CLOSE_OTHER:
-      func.push(closeOtherTabs(Array.from(selectedTabs)));
-      break;
     case TABS_DUPE:
       func.push(dupeTabs(Array.from(selectedTabs).reverse(), windowId));
       break;
@@ -1399,15 +1396,17 @@ export const prepareTabMenuItems = async elm => {
   const tab = getSidebarTab(elm);
   const heading = getTabGroupHeading(elm);
   const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
+  const closeMenu = menuItems[TABS_CLOSE_MULTIPLE];
   const tabGroupMenu = menuItems[TAB_GROUP];
   const tabKeys = [
-    TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_DUPE,
-    TAB_MOVE, TAB_MUTE, TAB_PIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+    TAB_BOOKMARK, TAB_CLOSE, TAB_DUPE, TAB_MOVE, TAB_MUTE, TAB_PIN,
+    TAB_RELOAD, TAB_REOPEN_CONTAINER,
   ];
   const tabsKeys = [
-    TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
-    TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
+    TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE, TABS_MUTE, TABS_PIN,
+    TABS_RELOAD, TABS_REOPEN_CONTAINER,
   ];
+  const closeKeys = [TAB_CLOSE_END, TAB_CLOSE_OTHER];
   const sepKeys = ["sep-1", "sep-2", "sep-3"];
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs =
@@ -1428,6 +1427,11 @@ export const prepareTabMenuItems = async elm => {
     const parentFirstTab = parentNode.querySelector(TAB_QUERY);
     const parentLastTab = parentNode.lastElementChild;
     const tabId = getSidebarTabId(tab);
+    const otherTabs = document.querySelectorAll(
+      `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`,
+    );
+    const lastSelectedTabIndex =
+      getSidebarTabIndex(selectedTabs[selectedTabs.length - 1]);
     const tabsTab = await getTab(tabId);
     const {index, mutedInfo: {muted}, pinned} = tabsTab;
     for (const itemKey of tabKeys) {
@@ -1438,21 +1442,6 @@ export const prepareTabMenuItems = async elm => {
         data.visible = false;
       } else {
         switch (itemKey) {
-          case TAB_CLOSE_END:
-            data.enabled = index < allTabs.length - 1;
-            data.title = title;
-            data.visible = true;
-            break;
-          case TAB_CLOSE_OTHER: {
-            const obj =
-              Number.isInteger(tabId) && document.querySelectorAll(
-                `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`,
-              );
-            data.enabled = !!(obj && obj.length);
-            data.title = title;
-            data.visible = true;
-            break;
-          }
           case TAB_MUTE:
             data.enabled = true;
             data.title = muted && toggleTitle || title;
@@ -1482,36 +1471,49 @@ export const prepareTabMenuItems = async elm => {
       const {id, title, toggleTitle} = item;
       const data = {};
       if (multiTabsSelected) {
-        if (itemKey === TABS_CLOSE_OTHER) {
-          data.enabled = true;
-          data.title = title;
-          data.visible = !!allTabsSelected;
-        } else {
-          switch (itemKey) {
-            case TABS_MUTE:
-              data.enabled = true;
-              data.title = muted && toggleTitle || title;
-              data.visible = true;
-              break;
-            case TABS_PIN:
-              data.enabled = true;
-              data.title = pinned && toggleTitle || title;
-              data.visible = true;
-              break;
-            case TABS_REOPEN_CONTAINER:
-              data.enabled =
-                !!(Array.isArray(contextualIds) && contextualIds.length);
-              data.title = title;
-              data.visible = !incognito;
-              break;
-            default:
-              data.enabled = true;
-              data.title = title;
-              data.visible = true;
-          }
+        switch (itemKey) {
+          case TABS_MUTE:
+            data.enabled = true;
+            data.title = muted && toggleTitle || title;
+            data.visible = true;
+            break;
+          case TABS_PIN:
+            data.enabled = true;
+            data.title = pinned && toggleTitle || title;
+            data.visible = true;
+            break;
+          case TABS_REOPEN_CONTAINER:
+            data.enabled =
+              !!(Array.isArray(contextualIds) && contextualIds.length);
+            data.title = title;
+            data.visible = !incognito;
+            break;
+          default:
+            data.enabled = true;
+            data.title = title;
+            data.visible = true;
         }
       } else {
         data.visible = false;
+      }
+      func.push(updateContextMenu(id, data));
+    }
+    for (const itemKey of closeKeys) {
+      const item = closeMenu.subItems[itemKey];
+      const {id, title} = item;
+      const data = {
+        title,
+        visible: true,
+      };
+      switch (itemKey) {
+        case TAB_CLOSE_END:
+          data.enabled = !allTabsSelected && index < allTabs.length - 1 &&
+                         lastSelectedTabIndex < allTabs.length - 1;
+          break;
+        case TAB_CLOSE_OTHER:
+          data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
+          break;
+        default:
       }
       func.push(updateContextMenu(id, data));
     }
@@ -1663,6 +1665,9 @@ export const prepareTabMenuItems = async elm => {
     setContext(elm);
     func.push(
       updateContextMenu(tabGroupMenu.id, {
+        visible: false,
+      }),
+      updateContextMenu(closeMenu.id, {
         visible: false,
       }),
       updateContextMenu(bookmarkMenu.id, {

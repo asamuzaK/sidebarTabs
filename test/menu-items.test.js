@@ -16,7 +16,7 @@ import {
   TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
   TAB_RELOAD, TAB_REOPEN_CONTAINER,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
 } from "../src/mjs/constant.js";
@@ -45,8 +45,7 @@ describe("menu items", () => {
       TAB_REOPEN_CONTAINER, TABS_REOPEN_CONTAINER, TAB_MOVE, TABS_MOVE, "sep-2",
       TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_ALL_BOOKMARK, "sep-3",
       TAB_GROUP, "sep-4",
-      TAB_CLOSE_END, TAB_CLOSE_OTHER, TABS_CLOSE_OTHER,
-      TAB_CLOSE_UNDO, TAB_CLOSE, TABS_CLOSE,
+      TABS_CLOSE_MULTIPLE, TAB_CLOSE_UNDO, TAB_CLOSE, TABS_CLOSE,
     ];
     const items = Object.entries(menuItems);
 
@@ -56,7 +55,7 @@ describe("menu items", () => {
 
     it("should get string and object", () => {
       for (const [key, value] of items) {
-        assert.isTrue(itemKeys.includes(key), "item");
+        assert.isTrue(itemKeys.includes(key), `includes ${key}`);
         assert.isString(key, "key");
         assert.isObject(value, "value");
       }
@@ -64,7 +63,11 @@ describe("menu items", () => {
   });
 
   describe("sub items", () => {
-    const parentItemKeys = [TAB_MOVE, TABS_MOVE, TAB_GROUP];
+    const parentItemKeys = [
+      TAB_MOVE, TABS_MOVE,
+      TAB_GROUP,
+      TABS_CLOSE_MULTIPLE,
+    ];
     const subItemKeys = [
       TAB_MOVE_START, TAB_MOVE_END, TAB_MOVE_WIN,
       TABS_MOVE_START, TABS_MOVE_END, TABS_MOVE_WIN,
@@ -72,6 +75,7 @@ describe("menu items", () => {
       TAB_GROUP_LABEL_SHOW, "sepTabGroup-2",
       TAB_GROUP_SELECTED, TAB_GROUP_CONTAINER, TAB_GROUP_DOMAIN,
       TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_UNGROUP,
+      TAB_CLOSE_END, TAB_CLOSE_OTHER,
     ];
 
     it("should get string and object of sub items", () => {

@@ -16,7 +16,7 @@ import {
   TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_OTHER, TABS_DUPE, TABS_MOVE,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
   TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
 } from "./constant.js";
@@ -408,23 +408,35 @@ export default {
     contexts: ["page", "tab"],
     viewTypes: ["sidebar"],
   },
-  [TAB_CLOSE_END]: {
-    id: TAB_CLOSE_END,
-    title: i18n.getMessage(`${TAB_CLOSE_END}_title`, "(&E)"),
+  /* close multiple tabs */
+  [TABS_CLOSE_MULTIPLE]: {
+    id: TABS_CLOSE_MULTIPLE,
+    title: i18n.getMessage(`${TABS_CLOSE_MULTIPLE}_title`, "(&M)"),
     type: "normal",
     contexts: ["tab"],
     viewTypes: ["sidebar"],
-    enabled: false,
+    enabled: true,
     visible: true,
-  },
-  [TAB_CLOSE_OTHER]: {
-    id: TAB_CLOSE_OTHER,
-    title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: true,
+    subItems: {
+      [TAB_CLOSE_END]: {
+        id: TAB_CLOSE_END,
+        title: i18n.getMessage(`${TAB_CLOSE_END}_title`, "(&E)"),
+        type: "normal",
+        contexts: ["tab"],
+        viewTypes: ["sidebar"],
+        enabled: false,
+        visible: true,
+      },
+      [TAB_CLOSE_OTHER]: {
+        id: TAB_CLOSE_OTHER,
+        title: i18n.getMessage(`${TAB_CLOSE_OTHER}_title`, "(&O)"),
+        type: "normal",
+        contexts: ["tab"],
+        viewTypes: ["sidebar"],
+        enabled: false,
+        visible: false,
+      },
+    },
   },
   // Not implemented yet in Firefox
   /*
@@ -438,15 +450,6 @@ export default {
     visible: true,
   },
   */
-  [TABS_CLOSE_OTHER]: {
-    id: TABS_CLOSE_OTHER,
-    title: i18n.getMessage(`${TABS_CLOSE_OTHER}_title`, "(&O)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
   [TAB_CLOSE_UNDO]: {
     id: TAB_CLOSE_UNDO,
     title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, "(&U)"),
