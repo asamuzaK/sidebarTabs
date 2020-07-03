@@ -59,6 +59,18 @@
       }
     }
   },
+  "closeMultipleTabs": {
+    "message": "Close Multiple Tabs"
+  },
+  "closeMultipleTabs_title": {
+    "message": "Close &Multiple Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
   "closeOtherTabs": {
     "message": "Close Other Tabs"
   },
