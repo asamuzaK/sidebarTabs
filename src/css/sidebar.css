@@ -675,4 +675,10 @@ main {
   .tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
     transition: none;
   }
+  .tab-icon {
+    stroke: var(--foreground-color);
+  }
+  .tab.active .tab-icon {
+    stroke: var(--foreground-active-color);
+  }
 }

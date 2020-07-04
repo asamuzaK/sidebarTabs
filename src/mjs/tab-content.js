@@ -108,9 +108,9 @@ export const setTabIcon = async (elm, info) => {
     if (status === "loading") {
       try {
         if (isString(title) && isString(url)) {
-          const {hostname} = new URL(url);
+          const {href} = new URL(url);
           const connecting =
-            title.endsWith("/") && hostname.endsWith(title.replace(/\/$/, ""));
+            href.replace(/\/$/, "").endsWith(title.replace(/\/$/, ""));
           if (connecting) {
             elm.dataset.connecting = url;
           } else if (elm.dataset.connecting) {
@@ -128,12 +128,12 @@ export const setTabIcon = async (elm, info) => {
       elm.src = URL_LOADING_THROBBER;
     } else {
       elm.dataset.connecting = "";
+      elm.style.fill = "";
       if (favIconUrl) {
         elm.src = favicon.get(favIconUrl) || favIconUrl;
       } else {
         elm.src = URL_FAVICON_DEFAULT;
       }
-      elm.style.fill = "";
     }
   }
 };
