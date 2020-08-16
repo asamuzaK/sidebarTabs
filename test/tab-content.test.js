@@ -886,7 +886,7 @@ describe("tab-content", () => {
       const spy = sinon.spy(elm, "addEventListener");
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.calledOnce, "called");
+      assert.isFalse(spy.called, "not called");
       elm.addEventListener.restore();
     });
 
@@ -897,7 +897,7 @@ describe("tab-content", () => {
       elm.classList.add(CLASS_TAB_CLOSE);
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledOnce, "called");
+      assert.isTrue(spy.calledTwice, "called");
       elm.addEventListener.restore();
     });
   });

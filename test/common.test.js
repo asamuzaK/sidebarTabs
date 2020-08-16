@@ -484,6 +484,19 @@ describe("common", () => {
     });
   });
 
+  describe("prevent default event behavior", () => {
+    const func = mjs.preventDefaultEvent;
+
+    it("should call function", () => {
+      const stub = sinon.stub();
+      const evt = {
+        preventDefault: stub,
+      };
+      func(evt);
+      assert.isTrue(stub.calledOnce);
+    });
+  });
+
   describe("dispatch keyboard event", () => {
     const func = mjs.dispatchKeyboardEvt;
     const globalKeys = ["KeyboardEvent", "Node"];

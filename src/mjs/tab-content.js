@@ -3,7 +3,8 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString, logErr, setElementDataset, throwErr,
+  getType, isObjectNotEmpty, isString, logErr, setElementDataset,
+  preventDefaultEvent, throwErr,
 } from "./common.js";
 import {
   getTab, updateTab,
@@ -318,6 +319,7 @@ export const tabCloseOnClick = evt =>
 export const addTabCloseClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_CLOSE)) {
+    elm.addEventListener("mousedown", preventDefaultEvent);
     elm.addEventListener("click", tabCloseOnClick);
   }
 };

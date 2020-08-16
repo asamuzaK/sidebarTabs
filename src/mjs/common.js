@@ -222,6 +222,16 @@ export const sleep = (msec = 0, doReject = false) => {
 };
 
 /**
+ * prevent default event behavior
+ *
+ * @param {object} evt - Event
+ * @returns {void}
+ */
+export const preventDefaultEvent = evt => {
+  evt && typeof evt.preventDefault === "function" && evt.preventDefault();
+};
+
+/**
  * dispatch keyboard event
  *
  * @param {object} elm - element
