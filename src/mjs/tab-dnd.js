@@ -32,6 +32,7 @@ import {
 } from "./constant.js";
 const {WINDOW_ID_NONE} = windows;
 const HALF = 0.5;
+
 /**
  * move dropped tabs
  *
@@ -44,9 +45,7 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
   const func = [];
   const target = getSidebarTab(dropTarget);
   if (target && Array.isArray(draggedIds) && isObjectNotEmpty(opt)) {
-    const {
-      dropAfter, dropBefore, isGrouped, isPinned, windowId,
-    } = opt;
+    const {dropAfter, dropBefore, isGrouped, isPinned, windowId} = opt;
     const targetParent = target.parentNode;
     const moveArr = dropAfter && draggedIds.reverse() || draggedIds;
     const arr = [];
@@ -196,9 +195,7 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
   const func = [];
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
       dropTarget.classList.contains(DROP_TARGET) && isObjectNotEmpty(data)) {
-    const {
-      dragWindowId, dropWindowId, pinnedTabIds, tabIds,
-    } = data;
+    const {dragWindowId, dropWindowId, pinnedTabIds, tabIds} = data;
     if (Number.isInteger(dragWindowId) && dragWindowId !== WINDOW_ID_NONE) {
       if (dragWindowId === dropWindowId) {
         const {shiftKey} = keyOpt;
