@@ -3,7 +3,7 @@
  */
 /*
   eslint-disable array-bracket-newline, camelcase, default-case,
-                 no-await-in-loop, no-magic-numbers
+                 no-await-in-loop, no-magic-numbers, object-shorthand
 */
 
 import {assert} from "chai";
@@ -48,6 +48,24 @@ describe("main", () => {
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
+    Object.defineProperty(dom.window.HTMLElement.prototype, "clientHeight", {
+      configurable: true,
+      get: function () {
+        return this._clientHeight || 0;
+      },
+      set(val) {
+        this._clientHeight = val;
+      },
+    });
+    Object.defineProperty(dom.window.HTMLElement.prototype, "scrollHeight", {
+      configurable: true,
+      get: function () {
+        return this._scrollHeight || 0;
+      },
+      set(val) {
+        this._scrollHeight = val;
+      },
+    });
     window = dom && dom.window;
     window.psl = psl;
     document = window && window.document;
@@ -69,6 +87,8 @@ describe("main", () => {
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
     mjs.sidebar.readBrowserSettings = false;
+    mjs.sidebar.skipCollapsed = false;
+    mjs.sidebar.switchTabByScrolling = false;
     mjs.sidebar.tabGroupOnExpandCollapseOther = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
@@ -93,6 +113,8 @@ describe("main", () => {
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
     mjs.sidebar.readBrowserSettings = false;
+    mjs.sidebar.skipCollapsed = false;
+    mjs.sidebar.switchTabByScrolling = false;
     mjs.sidebar.tabGroupOnExpandCollapseOther = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
@@ -8334,6 +8356,82 @@ describe("main", () => {
     });
   });
 
+  describe("handle wheel event", () => {
+    const func = mjs.handleWheelEvt;
+
+    it("should get null", () => {
+      const res = func();
+      assert.isNull(res, "result");
+    });
+
+    it("should not prevent default", () => {
+      const main = document.createElement("main");
+      const body = document.querySelector("body");
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 123;
+      main.clientHeight = 120;
+      const evt = {
+        deltaY: 3,
+        preventDefault: sinon.stub(),
+      };
+      const res = func(evt);
+      assert.isTrue(evt.preventDefault.notCalled, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should not prevent default", () => {
+      const main = document.createElement("main");
+      const body = document.querySelector("body");
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      const evt = {
+        deltaY: 3,
+        preventDefault: sinon.stub(),
+      };
+      const res = func(evt);
+      assert.isTrue(evt.preventDefault.notCalled, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should not prevent default", async () => {
+      const main = document.createElement("main");
+      const body = document.querySelector("body");
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      mjs.sidebar.switchTabByScrolling = true;
+      const evt = {
+        preventDefault: sinon.stub(),
+      };
+      const res = await func(evt);
+      assert.isTrue(evt.preventDefault.notCalled, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should prevent default and call function", async () => {
+      const main = document.createElement("main");
+      const body = document.querySelector("body");
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      mjs.sidebar.switchTabByScrolling = true;
+      browser.tabs.query.resolves([{id: 1}]);
+      const evt = {
+        deltaY: 3,
+        preventDefault: sinon.stub(),
+      };
+      const res = await func(evt);
+      assert.isTrue(evt.preventDefault.calledOnce, "called");
+      assert.isTrue(browser.tabs.query.calledOnce, "called");
+      assert.isNull(res, "result");
+    });
+  });
+
   describe("handle runtime message", () => {
     const func = mjs.handleMsg;
 
@@ -10819,8 +10917,8 @@ describe("main", () => {
       const spy = sinon.spy(newTab, "addEventListener");
       const spy2 = sinon.spy(main, "addEventListener");
       await func();
-      assert.isTrue(spy.calledOnce);
-      assert.isTrue(spy2.calledTwice);
+      assert.isTrue(spy.calledOnce, "called on new tab");
+      assert.strictEqual(spy2.callCount, 3, "called on main");
       newTab.addEventListener.restore();
       main.addEventListener.restore();
     });

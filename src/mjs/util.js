@@ -6,8 +6,8 @@ import {
   getType, isObjectNotEmpty, isString,
 } from "./common.js";
 import {
-  getCloseTabsByDoubleClickValue, getCurrentWindow, getSessionWindowValue,
-  setSessionWindowValue, setStorage, updateTab,
+  getActiveTabId, getCloseTabsByDoubleClickValue, getCurrentWindow,
+  getSessionWindowValue, setSessionWindowValue, setStorage, updateTab,
 } from "./browser.js";
 
 /* constants */
@@ -188,6 +188,63 @@ export const getTabsInRange = (tabA, tabB) => {
 };
 
 /**
+ * get next tab
+ *
+ * @param {object} elm - element
+ * @param {boolean} skipCollapsed - skip collapsed tab
+ * @returns {object} - tab
+ */
+export const getNextTab = (elm, skipCollapsed = false) => {
+  let tab;
+  const currentTab = getSidebarTab(elm);
+  if (currentTab) {
+    const {parentNode, nextElementSibling} = currentTab;
+    const {nextElementSibling: nextParent} = parentNode;
+    if (nextElementSibling) {
+      if (skipCollapsed && parentNode.classList.contains(CLASS_TAB_COLLAPSED)) {
+        if (nextParent && nextParent.id !== NEW_TAB) {
+          tab = nextParent.querySelector(TAB_QUERY);
+        }
+      } else {
+        tab = nextElementSibling;
+      }
+    } else if (nextParent && nextParent.id !== NEW_TAB) {
+      tab = nextParent.querySelector(TAB_QUERY);
+    }
+  }
+  return tab || null;
+};
+
+/**
+ * get previous tab
+ *
+ * @param {object} elm - element
+ * @param {boolean} skipCollapsed - skip collapsed tab
+ * @returns {object} - tab
+ */
+export const getPreviousTab = (elm, skipCollapsed = false) => {
+  let tab;
+  const currentTab = getSidebarTab(elm);
+  if (currentTab) {
+    const {parentNode, previousElementSibling} = currentTab;
+    const {previousElementSibling: previousParent} = parentNode;
+    const heading = parentNode.querySelector(`.${CLASS_HEADING}`);
+    if (previousElementSibling && previousElementSibling !== heading) {
+      tab = previousElementSibling;
+    } else if (previousParent) {
+      const items = previousParent.querySelectorAll(TAB_QUERY);
+      if (skipCollapsed &&
+          previousParent.classList.contains(CLASS_TAB_COLLAPSED)) {
+        [tab] = items;
+      } else {
+        tab = items[items.length - 1];
+      }
+    }
+  }
+  return tab || null;
+};
+
+/**
  * is newtab
  *
  * @param {object} node - node
@@ -325,6 +382,34 @@ export const scrollTabIntoView = async elm => {
       }
     }
   }
+};
+
+/**
+ *
+ * switch tab
+ *
+ * @param {object} opt - options
+ * @returns {?Function} - activateTab()
+ */
+export const switchTab = async opt => {
+  let func;
+  if (isObjectNotEmpty(opt)) {
+    const {deltaY, skipCollapsed, windowId} = opt;
+    const activeTabId = await getActiveTabId(windowId);
+    const activeTab = document.querySelector(`[data-tab-id="${activeTabId}"]`);
+    if (activeTab && Number.isInteger(deltaY)) {
+      let targetTab;
+      if (deltaY > 0) {
+        targetTab = getNextTab(activeTab, skipCollapsed);
+      } else {
+        targetTab = getPreviousTab(activeTab, skipCollapsed);
+      }
+      if (targetTab) {
+        func = activateTab(targetTab);
+      }
+    }
+  }
+  return func || null;
 };
 
 /**

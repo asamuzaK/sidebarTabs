@@ -21,6 +21,7 @@ import {
   activateTab, getSessionTabList, getSidebarTab, getSidebarTabContainer,
   getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab,
   scrollTabIntoView, setSessionTabList, storeCloseTabsByDoubleClickValue,
+  switchTab,
 } from "./util.js";
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -99,6 +100,8 @@ export const sidebar = {
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
   readBrowserSettings: false,
+  skipCollapsed: false,
+  switchTabByScrolling: false,
   tabGroupOnExpandCollapseOther: false,
   tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
@@ -1732,6 +1735,28 @@ export const handleContextmenuEvt = evt => {
   return overrideContextMenu(opt).catch(throwErr);
 };
 
+/**
+ * handle wheel event
+ *
+ * @param {!object} evt - event
+ * @returns {?(Function|Error)} - promise chain
+ */
+export const handleWheelEvt = evt => {
+  let func;
+  const {skipCollapsed, switchTabByScrolling, windowId} = sidebar;
+  const main = document.getElementById(SIDEBAR_MAIN);
+  if (main && main.scrollHeight === main.clientHeight && switchTabByScrolling) {
+    const {deltaY} = evt;
+    if (Number.isInteger(deltaY)) {
+      evt.preventDefault();
+      func = switchTab({
+        deltaY, skipCollapsed, windowId,
+      }).catch(throwErr);
+    }
+  }
+  return func || null;
+};
+
 /* runtime message */
 /**
  * handle runtime message
@@ -2011,5 +2036,6 @@ export const setMain = async () => {
   const newTab = document.getElementById(NEW_TAB);
   main.addEventListener("mousedown", handleCreateNewTab);
   main.addEventListener("dblclick", handleCreateNewTab);
+  main.addEventListener("wheel", handleWheelEvt);
   newTab.addEventListener("click", handleCreateNewTab);
 };
