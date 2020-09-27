@@ -427,6 +427,236 @@ describe("util", () => {
     });
   });
 
+  describe("get next tab", () => {
+    const func = mjs.getNextTab;
+
+    it("should get null", () => {
+      const res = func();
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", () => {
+      const div = document.createElement("div");
+      const body = document.querySelector("body");
+      body.appendChild(div);
+      const res = func(div);
+      assert.isNull(res, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const group2 = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      const newtab = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      group.appendChild(div);
+      group.appendChild(div2);
+      div3.dataset.tabId = "3";
+      div3.classList.add(TAB);
+      group2.appendChild(div3);
+      newtab.id = NEW_TAB;
+      body.appendChild(group);
+      body.appendChild(group2);
+      body.appendChild(newtab);
+      const res = func(div);
+      assert.deepEqual(res, div2, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const group2 = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      const newtab = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      group.appendChild(div);
+      group.appendChild(div2);
+      div3.dataset.tabId = "3";
+      div3.classList.add(TAB);
+      group2.appendChild(div3);
+      newtab.id = NEW_TAB;
+      body.appendChild(group);
+      body.appendChild(group2);
+      body.appendChild(newtab);
+      const res = func(div2);
+      assert.deepEqual(res, div3, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const group2 = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      const newtab = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      group.classList.add(CLASS_TAB_COLLAPSED);
+      group.appendChild(div);
+      group.appendChild(div2);
+      div3.dataset.tabId = "3";
+      div3.classList.add(TAB);
+      group2.appendChild(div3);
+      newtab.id = NEW_TAB;
+      body.appendChild(group);
+      body.appendChild(group2);
+      body.appendChild(newtab);
+      const res = func(div, true);
+      assert.deepEqual(res, div3, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const newtab = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      group.classList.add(CLASS_TAB_COLLAPSED);
+      group.appendChild(div);
+      group.appendChild(div2);
+      newtab.id = NEW_TAB;
+      body.appendChild(group);
+      body.appendChild(newtab);
+      const res = func(div, true);
+      assert.isNull(res, "result");
+    });
+  });
+
+  describe("get previous tab", () => {
+    const func = mjs.getPreviousTab;
+
+    it("should get null", () => {
+      const res = func();
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", () => {
+      const div = document.createElement("div");
+      const body = document.querySelector("body");
+      body.appendChild(div);
+      const res = func(div);
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", () => {
+      const group = document.createElement("div");
+      const div = document.createElement("div");
+      const heading = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      heading.classList.add(CLASS_HEADING);
+      group.appendChild(heading);
+      group.appendChild(div);
+      body.appendChild(group);
+      const res = func(div);
+      assert.isNull(res, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const group2 = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      const heading = document.createElement("div");
+      const heading2 = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      heading.classList.add(CLASS_HEADING);
+      group.appendChild(heading);
+      group.appendChild(div);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      div3.dataset.tabId = "3";
+      div3.classList.add(TAB);
+      heading2.classList.add(CLASS_HEADING);
+      group2.appendChild(heading2);
+      group2.appendChild(div2);
+      group2.appendChild(div3);
+      body.appendChild(group);
+      body.appendChild(group2);
+      const res = func(div3);
+      assert.deepEqual(res, div2, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const group2 = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      const heading = document.createElement("div");
+      const heading2 = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      heading.classList.add(CLASS_HEADING);
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      div3.dataset.tabId = "3";
+      div3.classList.add(TAB);
+      heading2.classList.add(CLASS_HEADING);
+      group2.appendChild(heading2);
+      group2.appendChild(div3);
+      body.appendChild(group);
+      body.appendChild(group2);
+      const res = func(div3);
+      assert.deepEqual(res, div2, "result");
+    });
+
+    it("should get result", () => {
+      const group = document.createElement("div");
+      const group2 = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      const heading = document.createElement("div");
+      const heading2 = document.createElement("div");
+      const body = document.querySelector("body");
+      div.dataset.tabId = "1";
+      div.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      div2.classList.add(TAB);
+      heading.classList.add(CLASS_HEADING);
+      group.classList.add(CLASS_TAB_COLLAPSED);
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      div3.dataset.tabId = "3";
+      div3.classList.add(TAB);
+      heading2.classList.add(CLASS_HEADING);
+      group2.appendChild(heading2);
+      group2.appendChild(div3);
+      body.appendChild(group);
+      body.appendChild(group2);
+      const res = func(div3, true);
+      assert.deepEqual(res, div, "result");
+    });
+  });
+
   describe("is newtab", () => {
     const func = mjs.isNewTab;
 
@@ -1223,6 +1453,140 @@ describe("util", () => {
       assert.isTrue(stubNewTab.called, "called");
       assert.isTrue(stubElm.called, "called");
       assert.isTrue(stubFunc.called, "not called");
+    });
+  });
+
+  describe("switch tab", () => {
+    const func = mjs.switchTab;
+
+    it("should get null", async () => {
+      const res = await func();
+      assert.isNull(res, "result");
+    });
+
+    it("should get null", async () => {
+      const res = await func({});
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function", async () => {
+      const i = browser.tabs.update.callCount;
+      const opt = {
+        deltaY: 3,
+        windowId: 1,
+      };
+      browser.tabs.query.resolves([{id: 1}]);
+      const res = await func(opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.update.callCount;
+      const group = document.createElement("div");
+      const heading = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const body = document.querySelector("body");
+      heading.classList.add(CLASS_HEADING);
+      div.classList.add(TAB);
+      div.dataset.tabId = "1";
+      div2.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      body.appendChild(group);
+      const opt = {
+        deltaY: 3,
+        windowId: 1,
+      };
+      browser.tabs.query.resolves([{id: 1}]);
+      browser.tabs.update.resolves({});
+      const res = await func(opt);
+      assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
+    });
+
+    it("should not call function", async () => {
+      const i = browser.tabs.update.callCount;
+      const group = document.createElement("div");
+      const heading = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const body = document.querySelector("body");
+      heading.classList.add(CLASS_HEADING);
+      div.classList.add(TAB);
+      div.dataset.tabId = "1";
+      div2.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      body.appendChild(group);
+      const opt = {
+        deltaY: 3,
+        windowId: 1,
+      };
+      browser.tabs.query.resolves([{id: 2}]);
+      browser.tabs.update.resolves({});
+      const res = await func(opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should not call function", async () => {
+      const i = browser.tabs.update.callCount;
+      const group = document.createElement("div");
+      const heading = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const body = document.querySelector("body");
+      heading.classList.add(CLASS_HEADING);
+      div.classList.add(TAB);
+      div.dataset.tabId = "1";
+      div2.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      body.appendChild(group);
+      const opt = {
+        deltaY: -3,
+        windowId: 1,
+      };
+      browser.tabs.query.resolves([{id: 1}]);
+      browser.tabs.update.resolves({});
+      const res = await func(opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
+    it("should call function", async () => {
+      const i = browser.tabs.update.callCount;
+      const group = document.createElement("div");
+      const heading = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const body = document.querySelector("body");
+      heading.classList.add(CLASS_HEADING);
+      div.classList.add(TAB);
+      div.dataset.tabId = "1";
+      div2.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      body.appendChild(group);
+      const opt = {
+        deltaY: -3,
+        windowId: 1,
+      };
+      browser.tabs.query.resolves([{id: 2}]);
+      browser.tabs.update.resolves({});
+      const res = await func(opt);
+      assert.strictEqual(browser.tabs.update.callCount, i + 1, "called");
+      assert.deepEqual(res, {}, "result");
     });
   });
 

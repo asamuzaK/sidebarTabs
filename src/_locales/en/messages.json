@@ -461,6 +461,18 @@
   "optionsShowMenuOnMouseupDetail": {
     "message": "Show context menu on mouseup event instead of mousedown. This option is for Mac and Linux. It has no effect on Windows."
   },
+  "optionsSkipCollapsed": {
+    "message": "Skip collapsed tabs"
+  },
+  "optionsSkipCollapsedDetail": {
+    "message": "Skip collapsed tabs when selecting next / previous tab."
+  },
+  "optionsSwitchTabByScrolling": {
+    "message": "Switch tab by scrolling mouse wheel"
+  },
+  "optionsSwitchTabByScrollingDetail": {
+    "message": "Switch to the next / previous tab by scrolling the mouse wheel."
+  },
   "optionsTabGroup": {
     "message": "Tab Group"
   },

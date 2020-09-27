@@ -461,6 +461,18 @@
   "optionsShowMenuOnMouseupDetail": {
     "message": "ブラウザのコンテキストメニューをマウスダウンではなくマウスアップのイベントで表示します。Mac と Linux 用の設定です。Windows では何も効果がありません。"
   },
+  "optionsSkipCollapsed": {
+    "message": "折りたたまれたタブをスキップする"
+  },
+  "optionsSkipCollapsedDetail": {
+    "message": "次/前のタブを選択するときに折りたたまれたタブをスキップします。"
+  },
+  "optionsSwitchTabByScrolling": {
+    "message": "マウスホイールをスクロールしてタブを切り替える"
+  },
+  "optionsSwitchTabByScrollingDetail": {
+    "message": "マウスホイールをスクロールして、次/前のタブに切り替えます。"
+  },
   "optionsTabGroup": {
     "message": "タブグループ"
   },
