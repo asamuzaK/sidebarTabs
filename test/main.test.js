@@ -8359,9 +8359,8 @@ describe("main", () => {
   describe("handle wheel event", () => {
     const func = mjs.handleWheelEvt;
 
-    it("should get null", () => {
-      const res = func();
-      assert.isNull(res, "result");
+    it("should throws", () => {
+      assert.throws(() => func());
     });
 
     it("should not prevent default", () => {

@@ -1743,16 +1743,15 @@ export const handleContextmenuEvt = evt => {
  */
 export const handleWheelEvt = evt => {
   let func;
+  const {deltaY} = evt;
   const {skipCollapsed, switchTabByScrolling, windowId} = sidebar;
   const main = document.getElementById(SIDEBAR_MAIN);
-  if (main && main.scrollHeight === main.clientHeight && switchTabByScrolling) {
-    const {deltaY} = evt;
-    if (Number.isInteger(deltaY)) {
-      evt.preventDefault();
-      func = switchTab({
-        deltaY, skipCollapsed, windowId,
-      }).catch(throwErr);
-    }
+  if (Number.isInteger(deltaY) && switchTabByScrolling &&
+      main && main.scrollHeight === main.clientHeight) {
+    evt.preventDefault();
+    func = switchTab({
+      deltaY, skipCollapsed, windowId,
+    }).catch(throwErr);
   }
   return func || null;
 };
