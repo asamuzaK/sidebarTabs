@@ -41,10 +41,10 @@ contextualIdentities.onUpdated.addListener(() =>
   setContextualIds().catch(throwErr),
 );
 menus.onClicked.addListener(info => handleClickedMenu(info).catch(throwErr));
-storage.onChanged.addListener(data => setVars(data).catch(throwErr));
 runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr),
 );
+storage.onChanged.addListener(data => setVars(data).catch(throwErr));
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab)
     .then(setSessionTabList).catch(throwErr),

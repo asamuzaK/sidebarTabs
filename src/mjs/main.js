@@ -68,7 +68,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
-  SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE, SKIP_COLLAPSED, SWITCH_TAB,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
@@ -120,6 +120,8 @@ export const setSidebar = async () => {
   const {id, incognito} = win;
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
+    SKIP_COLLAPSED,
+    SWITCH_TAB,
     TAB_CLOSE_DBLCLICK,
     TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
@@ -129,7 +131,8 @@ export const setSidebar = async () => {
   if (isObjectNotEmpty(store)) {
     const {
       closeTabsByDoubleClick, enableTabGroup, readBrowserSettings,
-      tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd,
+      skipCollapsed, switchTabByScrolling, tabGroupOnExpandCollapseOther,
+      tabGroupPutNewTabAtTheEnd,
     } = store;
     sidebar.closeTabsByDoubleClick =
       closeTabsByDoubleClick &&
@@ -137,6 +140,9 @@ export const setSidebar = async () => {
     sidebar.readBrowserSettings =
       readBrowserSettings &&
       !!readBrowserSettings.checked || false;
+    sidebar.skipCollapsed = skipCollapsed && !!skipCollapsed.checked || false;
+    sidebar.switchTabByScrolling =
+      switchTabByScrolling && !!switchTabByScrolling.checked || false;
     sidebar.tabGroupOnExpandCollapseOther =
       tabGroupOnExpandCollapseOther &&
       !!tabGroupOnExpandCollapseOther.checked || false;

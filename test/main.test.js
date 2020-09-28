@@ -26,6 +26,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  SKIP_COLLAPSED, SWITCH_TAB,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
   TAB_DUPE,
@@ -127,19 +128,22 @@ describe("main", () => {
 
   describe("set sidebar", () => {
     const func = mjs.setSidebar;
+    const args = [
+      BROWSER_SETTINGS_READ,
+      SKIP_COLLAPSED,
+      SWITCH_TAB,
+      TAB_CLOSE_DBLCLICK,
+      TAB_GROUP_ENABLE,
+      TAB_GROUP_EXPAND_COLLAPSE_OTHER,
+      TAB_GROUP_NEW_TAB_AT_END,
+    ];
 
     it("should set value", async () => {
       const {sidebar} = mjs;
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get.withArgs([
-        BROWSER_SETTINGS_READ,
-        TAB_CLOSE_DBLCLICK,
-        TAB_GROUP_ENABLE,
-        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-        TAB_GROUP_NEW_TAB_AT_END,
-      ]);
+      const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -155,6 +159,12 @@ describe("main", () => {
           checked: true,
         },
         readBrowserSettings: {
+          checked: true,
+        },
+        skipCollapsed: {
+          checked: true,
+        },
+        switchTabByScrolling: {
           checked: true,
         },
         enableTabGroup: {
@@ -174,6 +184,8 @@ describe("main", () => {
       assert.isTrue(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
       assert.isFalse(sidebar.enableTabGroup, "enableTabGroup");
       assert.isTrue(sidebar.readBrowserSettings, "readBrowserSettings");
+      assert.isTrue(sidebar.skipCollapsed, "skipCollapsed");
+      assert.isTrue(sidebar.switchTabByScrolling, "switchTab");
       assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
                     "tabGroupCollapseOther");
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
@@ -188,13 +200,7 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get.withArgs([
-        BROWSER_SETTINGS_READ,
-        TAB_CLOSE_DBLCLICK,
-        TAB_GROUP_ENABLE,
-        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-        TAB_GROUP_NEW_TAB_AT_END,
-      ]);
+      const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -231,13 +237,7 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get.withArgs([
-        BROWSER_SETTINGS_READ,
-        TAB_CLOSE_DBLCLICK,
-        TAB_GROUP_ENABLE,
-        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-        TAB_GROUP_NEW_TAB_AT_END,
-      ]);
+      const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -277,13 +277,7 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get.withArgs([
-        BROWSER_SETTINGS_READ,
-        TAB_CLOSE_DBLCLICK,
-        TAB_GROUP_ENABLE,
-        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-        TAB_GROUP_NEW_TAB_AT_END,
-      ]);
+      const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -320,13 +314,7 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get.withArgs([
-        BROWSER_SETTINGS_READ,
-        TAB_CLOSE_DBLCLICK,
-        TAB_GROUP_ENABLE,
-        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-        TAB_GROUP_NEW_TAB_AT_END,
-      ]);
+      const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
@@ -363,13 +351,84 @@ describe("main", () => {
       const getCurrent = browser.windows.getCurrent.withArgs({
         populate: true,
       });
-      const getStorage = browser.storage.local.get.withArgs([
-        BROWSER_SETTINGS_READ,
-        TAB_CLOSE_DBLCLICK,
-        TAB_GROUP_ENABLE,
-        TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-        TAB_GROUP_NEW_TAB_AT_END,
-      ]);
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: "mac",
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      getStorage.resolves({
+        skipCollapsed: {
+          checked: true,
+        },
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
+      assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
+      assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isFalse(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isTrue(sidebar.skipCollapsed, "skipCollapsed");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
+      assert.isFalse(sidebar.readBrowserSettings, "readBrowserSettings");
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+                     "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+                     "tabGroupPutNewTabAtTheEnd");
+      assert.isTrue(sidebar.incognito, "incognito");
+      assert.isTrue(sidebar.isMac, "isMac");
+      assert.strictEqual(sidebar.windowId, 1, "windowId");
+    });
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true,
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: "mac",
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true,
+      });
+      getStorage.resolves({
+        switchTabByScrolling: {
+          checked: true,
+        },
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, "getCurrent called");
+      assert.strictEqual(getStorage.callCount, j + 1, "getStorage called");
+      assert.strictEqual(getOs.callCount, k + 1, "getOs called");
+      assert.isFalse(sidebar.closeTabsByDoubleClick, "closeTabsByDoubleClick");
+      assert.isFalse(sidebar.skipCollapsed, "skipCollapsed");
+      assert.isTrue(sidebar.switchTabByScrolling, "switchTab");
+      assert.isTrue(sidebar.enableTabGroup, "enableTabGroup");
+      assert.isFalse(sidebar.readBrowserSettings, "readBrowserSettings");
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+                     "tabGroupCollapseOther");
+      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+                     "tabGroupPutNewTabAtTheEnd");
+      assert.isTrue(sidebar.incognito, "incognito");
+      assert.isTrue(sidebar.isMac, "isMac");
+      assert.strictEqual(sidebar.windowId, 1, "windowId");
+    });
+
+    it("should set value", async () => {
+      const {sidebar} = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true,
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
         os: "mac",
       });
