@@ -68,7 +68,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
-  SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE, SKIP_COLLAPSED, SWITCH_TAB,
+  SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
@@ -76,10 +76,11 @@ import {
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
-  TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_BOOKMARK,
-  TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE, TABS_MOVE_END,
-  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
-  TABS_REOPEN_CONTAINER,
+  TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TAB_SKIP_COLLAPSED,
+  TAB_SWITCH_SCROLL,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
+  TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
+  TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
 } from "./constant.js";
@@ -120,12 +121,12 @@ export const setSidebar = async () => {
   const {id, incognito} = win;
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
-    SKIP_COLLAPSED,
-    SWITCH_TAB,
     TAB_CLOSE_DBLCLICK,
     TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_NEW_TAB_AT_END,
+    TAB_SKIP_COLLAPSED,
+    TAB_SWITCH_SCROLL,
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
@@ -157,6 +158,8 @@ export const setSidebar = async () => {
     sidebar.closeTabsByDoubleClick = false;
     sidebar.enableTabGroup = true;
     sidebar.readBrowserSettings = false;
+    sidebar.skipCollapsed = false;
+    sidebar.switchTabByScrolling = false;
     sidebar.tabGroupOnExpandCollapseOther = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
   }
@@ -1748,10 +1751,10 @@ export const handleContextmenuEvt = evt => {
  * @returns {?(Function|Error)} - promise chain
  */
 export const handleWheelEvt = evt => {
-  let func;
   const {deltaY} = evt;
   const {skipCollapsed, switchTabByScrolling, windowId} = sidebar;
   const main = document.getElementById(SIDEBAR_MAIN);
+  let func;
   if (Number.isInteger(deltaY) && switchTabByScrolling &&
       main && main.scrollHeight === main.clientHeight) {
     evt.preventDefault();
