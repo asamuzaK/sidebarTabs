@@ -1481,6 +1481,33 @@ describe("util", () => {
       assert.isNull(res, "result");
     });
 
+    it("should not call function", async () => {
+      const i = browser.tabs.update.callCount;
+      const group = document.createElement("div");
+      const heading = document.createElement("div");
+      const div = document.createElement("div");
+      const div2 = document.createElement("div");
+      const body = document.querySelector("body");
+      heading.classList.add(CLASS_HEADING);
+      div.classList.add(TAB);
+      div.dataset.tabId = "1";
+      div2.classList.add(TAB);
+      div2.dataset.tabId = "2";
+      group.appendChild(heading);
+      group.appendChild(div);
+      group.appendChild(div2);
+      body.appendChild(group);
+      const opt = {
+        deltaY: 0,
+        windowId: 1,
+      };
+      browser.tabs.query.resolves([{id: 1}]);
+      browser.tabs.update.resolves({});
+      const res = await func(opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, "not called");
+      assert.isNull(res, "result");
+    });
+
     it("should call function", async () => {
       const i = browser.tabs.update.callCount;
       const group = document.createElement("div");

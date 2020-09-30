@@ -1755,7 +1755,7 @@ export const handleWheelEvt = evt => {
   const {skipCollapsed, switchTabByScrolling, windowId} = sidebar;
   const main = document.getElementById(SIDEBAR_MAIN);
   let func;
-  if (Number.isInteger(deltaY) && switchTabByScrolling &&
+  if (switchTabByScrolling && Number.isFinite(deltaY) && deltaY !== 0 &&
       main && main.scrollHeight === main.clientHeight) {
     evt.preventDefault();
     func = switchTab({

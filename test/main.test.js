@@ -8468,6 +8468,23 @@ describe("main", () => {
       assert.isNull(res, "result");
     });
 
+    it("should not prevent default", async () => {
+      const main = document.createElement("main");
+      const body = document.querySelector("body");
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      mjs.sidebar.switchTabByScrolling = true;
+      const evt = {
+        deltaY: 0,
+        preventDefault: sinon.stub(),
+      };
+      const res = await func(evt);
+      assert.isFalse(evt.preventDefault.called, "not called");
+      assert.isNull(res, "result");
+    });
+
     it("should prevent default and call function", async () => {
       const main = document.createElement("main");
       const body = document.querySelector("body");
@@ -8479,6 +8496,25 @@ describe("main", () => {
       browser.tabs.query.resolves([{id: 1}]);
       const evt = {
         deltaY: 3,
+        preventDefault: sinon.stub(),
+      };
+      const res = await func(evt);
+      assert.isTrue(evt.preventDefault.calledOnce, "called");
+      assert.isTrue(browser.tabs.query.calledOnce, "called");
+      assert.isNull(res, "result");
+    });
+
+    it("should prevent default and call function", async () => {
+      const main = document.createElement("main");
+      const body = document.querySelector("body");
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      mjs.sidebar.switchTabByScrolling = true;
+      browser.tabs.query.resolves([{id: 1}]);
+      const evt = {
+        deltaY: -3.1,
         preventDefault: sinon.stub(),
       };
       const res = await func(evt);

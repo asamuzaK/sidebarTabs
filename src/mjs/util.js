@@ -397,11 +397,11 @@ export const switchTab = async opt => {
     const {deltaY, skipCollapsed, windowId} = opt;
     const activeTabId = await getActiveTabId(windowId);
     const activeTab = document.querySelector(`[data-tab-id="${activeTabId}"]`);
-    if (activeTab && Number.isInteger(deltaY)) {
+    if (activeTab && Number.isFinite(deltaY)) {
       let targetTab;
       if (deltaY > 0) {
         targetTab = getNextTab(activeTab, skipCollapsed);
-      } else {
+      } else if (deltaY < 0) {
         targetTab = getPreviousTab(activeTab, skipCollapsed);
       }
       if (targetTab) {
