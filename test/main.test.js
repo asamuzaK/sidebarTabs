@@ -3,7 +3,7 @@
  */
 /*
   eslint-disable array-bracket-newline, camelcase, default-case,
-                 no-await-in-loop, no-magic-numbers, object-shorthand
+                 no-await-in-loop, no-magic-numbers
 */
 
 import {assert} from "chai";
@@ -49,7 +49,7 @@ describe("main", () => {
     const dom = createJsdom();
     Object.defineProperty(dom.window.HTMLElement.prototype, "clientHeight", {
       configurable: true,
-      get: function () {
+      get() {
         return this._clientHeight || 0;
       },
       set(val) {
@@ -58,7 +58,7 @@ describe("main", () => {
     });
     Object.defineProperty(dom.window.HTMLElement.prototype, "scrollHeight", {
       configurable: true,
-      get: function () {
+      get() {
         return this._scrollHeight || 0;
       },
       set(val) {
