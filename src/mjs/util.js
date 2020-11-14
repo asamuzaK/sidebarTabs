@@ -3,18 +3,18 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString,
-} from "./common.js";
+  getType, isObjectNotEmpty, isString
+} from './common.js';
 import {
   getActiveTabId, getCloseTabsByDoubleClickValue, getCurrentWindow,
-  getSessionWindowValue, setSessionWindowValue, setStorage, updateTab,
-} from "./browser.js";
+  getSessionWindowValue, setSessionWindowValue, setStorage, updateTab
+} from './browser.js';
 
 /* constants */
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_LIST, TAB_QUERY,
-} from "./constant.js";
+  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_LIST, TAB_QUERY
+} from './constant.js';
 
 /**
  * get template
@@ -29,7 +29,7 @@ export const getTemplate = id => {
   let frag;
   const tmpl = document.getElementById(id);
   if (tmpl) {
-    const {content: {firstElementChild}} = tmpl;
+    const { content: { firstElementChild } } = tmpl;
     frag = document.importNode(firstElementChild, true);
   }
   return frag || null;
@@ -44,7 +44,7 @@ export const getTemplate = id => {
 export const getSidebarTabContainer = node => {
   let container;
   while (node && node.parentNode) {
-    const {classList, parentNode} = node;
+    const { classList, parentNode } = node;
     if (classList.contains(CLASS_TAB_CONTAINER)) {
       container = node;
       break;
@@ -62,7 +62,7 @@ export const getSidebarTabContainer = node => {
  */
 export const restoreTabContainer = container => {
   if (container && container.nodeType === Node.ELEMENT_NODE) {
-    const {childElementCount, classList, parentNode} = container;
+    const { childElementCount, classList, parentNode } = container;
     switch (childElementCount) {
       case 0:
         parentNode.removeChild(container);
@@ -84,7 +84,7 @@ export const restoreTabContainer = container => {
 export const getSidebarTab = node => {
   let tab;
   while (node && node.parentNode) {
-    const {dataset, parentNode} = node;
+    const { dataset, parentNode } = node;
     if (dataset.tabId) {
       tab = node;
       break;
@@ -103,7 +103,7 @@ export const getSidebarTab = node => {
 export const getSidebarTabId = node => {
   let tabId;
   while (node && node.parentNode) {
-    const {dataset, parentNode} = node;
+    const { dataset, parentNode } = node;
     if (dataset.tabId) {
       tabId = dataset.tabId * 1;
       break;
@@ -154,9 +154,7 @@ export const getSidebarTabIndex = node => {
       i++;
     }
   }
-  return Number.isInteger(index) ?
-    index :
-    null;
+  return Number.isInteger(index) ? index : null;
 };
 
 /**
@@ -198,8 +196,8 @@ export const getNextTab = (elm, skipCollapsed = false) => {
   let tab;
   const currentTab = getSidebarTab(elm);
   if (currentTab) {
-    const {parentNode, nextElementSibling} = currentTab;
-    const {nextElementSibling: nextParent} = parentNode;
+    const { parentNode, nextElementSibling } = currentTab;
+    const { nextElementSibling: nextParent } = parentNode;
     if (nextElementSibling) {
       if (skipCollapsed && parentNode.classList.contains(CLASS_TAB_COLLAPSED)) {
         if (nextParent && nextParent.id !== NEW_TAB) {
@@ -226,8 +224,8 @@ export const getPreviousTab = (elm, skipCollapsed = false) => {
   let tab;
   const currentTab = getSidebarTab(elm);
   if (currentTab) {
-    const {parentNode, previousElementSibling} = currentTab;
-    const {previousElementSibling: previousParent} = parentNode;
+    const { parentNode, previousElementSibling } = currentTab;
+    const { previousElementSibling: previousParent } = parentNode;
     const heading = parentNode.querySelector(`.${CLASS_HEADING}`);
     if (previousElementSibling && previousElementSibling !== heading) {
       tab = previousElementSibling;
@@ -253,7 +251,7 @@ export const getPreviousTab = (elm, skipCollapsed = false) => {
 export const isNewTab = node => {
   let tab;
   while (node && node.parentNode) {
-    const {id, parentNode} = node;
+    const { id, parentNode } = node;
     if (id === NEW_TAB) {
       tab = node;
       break;
@@ -275,7 +273,7 @@ export const getSessionTabList = async key => {
   }
   let tabList;
   const win = await getCurrentWindow();
-  const {id: windowId} = win;
+  const { id: windowId } = win;
   const value = await getSessionWindowValue(key, windowId);
   if (isString(value)) {
     tabList = JSON.parse(value);
@@ -293,12 +291,12 @@ export const mutex = new Set();
  */
 export const setSessionTabList = async () => {
   const win = await getCurrentWindow();
-  const {id: windowId, incognito} = win;
+  const { id: windowId, incognito } = win;
   if (!incognito && !mutex.has(windowId)) {
     mutex.add(windowId);
     try {
       const tabList = {
-        recent: {},
+        recent: {}
       };
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
@@ -316,16 +314,20 @@ export const setSessionTabList = async () => {
         const childTabs = item.querySelectorAll(TAB_QUERY);
         for (const tab of childTabs) {
           const tabsTab = tab.dataset.tab;
-          const {url} = JSON.parse(tabsTab);
+          const { url } = JSON.parse(tabsTab);
           const tabIndex = getSidebarTabIndex(tab);
           tabList.recent[tabIndex] = {
-            collapsed, headingLabel, headingShown, url,
-            containerIndex: i,
+            collapsed,
+            headingLabel,
+            headingShown,
+            url,
+            containerIndex: i
           };
         }
         i++;
       }
-      if (isObjectNotEmpty(prevList) && prevList.hasOwnProperty("recent")) {
+      if (isObjectNotEmpty(prevList) &&
+          Object.prototype.hasOwnProperty.call(prevList, 'recent')) {
         tabList.prev = Object.assign({}, prevList.recent);
       }
       await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
@@ -348,7 +350,7 @@ export const activateTab = async elm => {
   let func;
   if (Number.isInteger(tabId)) {
     func = updateTab(tabId, {
-      active: true,
+      active: true
     });
   }
   return func || null;
@@ -364,19 +366,19 @@ export const scrollTabIntoView = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const tabsTab = elm.dataset.tab;
     if (tabsTab) {
-      const {active, openerTabId} = JSON.parse(tabsTab);
+      const { active, openerTabId } = JSON.parse(tabsTab);
       if (active || Number.isInteger(openerTabId)) {
         const pinned = document.getElementById(PINNED);
         const newTab = document.getElementById(NEW_TAB);
-        const {bottom: pinnedBottom} = pinned.getBoundingClientRect();
-        const {top: newTabTop} = newTab.getBoundingClientRect();
-        const {bottom: tabBottom, top: tabTop} = elm.getBoundingClientRect();
+        const { bottom: pinnedBottom } = pinned.getBoundingClientRect();
+        const { top: newTabTop } = newTab.getBoundingClientRect();
+        const { bottom: tabBottom, top: tabTop } = elm.getBoundingClientRect();
         const viewTop = Number.isInteger(openerTabId) && tabTop < pinnedBottom;
-        const behavior = viewTop && "auto" || "smooth";
+        const behavior = viewTop ? 'auto' : 'smooth';
         if (viewTop || tabBottom > newTabTop) {
           elm.scrollIntoView({
             behavior,
-            block: "center",
+            block: 'center'
           });
         }
       }
@@ -394,7 +396,7 @@ export const scrollTabIntoView = async elm => {
 export const switchTab = async opt => {
   let func;
   if (isObjectNotEmpty(opt)) {
-    const {deltaY, skipCollapsed, windowId} = opt;
+    const { deltaY, skipCollapsed, windowId } = opt;
     const activeTabId = await getActiveTabId(windowId);
     const activeTab = document.querySelector(`[data-tab-id="${activeTabId}"]`);
     if (activeTab && Number.isFinite(deltaY)) {
@@ -422,14 +424,14 @@ export const createUrlMatchString = url => {
   if (!isString(url)) {
     throw new TypeError(`Expected String but got ${getType(url)}.`);
   }
-  const {hostname, protocol} = new URL(url);
-  const {psl} = window;
+  const { hostname, protocol } = new URL(url);
+  const { psl } = window;
   const isHttp = /^https?:$/.test(protocol);
   const isIp = /^(?:(?:(?:1[0-9]|[1-9])?[0-9]|2(?:[0-4][0-9]|5[0-5]))\.){3}(?:(?:1[0-9]|[1-9])?[0-9]|2(?:[0-4][0-9]|5[0-5]))|\[(?:(?:(?:(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|[0-9a-f]{1,4}?::(?:[0-9a-f]{1,4}:){4}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4}:){6})(?:(?:(?:(?:1[0-9]|[1-9])?[0-9]|2(?:[0-4][0-9]|5[0-5]))\.){3}(?:(?:1[0-9]|[1-9])?[0-9]|2(?:[0-4][0-9]|5[0-5]))|[0-9a-f]{1,4}:[0-9a-f]{1,4})|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)%25(?:[a-z0-9\-._~]|%[0-9A-F]{2})+|(?:(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|[0-9a-f]{1,4}?::(?:[0-9a-f]{1,4}:){4}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4}:){6})(?:(?:(?:(?:1[0-9]|[1-9])?[0-9]|2(?:[0-4][0-9]|5[0-5]))\.){3}(?:(?:1[0-9]|[1-9])?[0-9]|2(?:[0-4][0-9]|5[0-5]))|[0-9a-f]{1,4}:[0-9a-f]{1,4})|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::|v[0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]$/.test(hostname);
   const domain = !isIp && psl.get(hostname);
   let str;
   if (/^file:$/.test(protocol)) {
-    str = "file:///*";
+    str = 'file:///*';
   } else if (isHttp) {
     if (domain) {
       str = `*://*.${domain}/*`;
@@ -454,18 +456,19 @@ export const storeCloseTabsByDoubleClickValue = async bool => {
   let checked, value;
   if (bool) {
     const {
-      levelOfControl, value: userValue,
+      levelOfControl, value: userValue
     } = await getCloseTabsByDoubleClickValue();
     checked = !!userValue;
     value = levelOfControl;
   } else {
     checked = false;
-    value = "";
+    value = '';
   }
   return setStorage({
     closeTabsByDoubleClick: {
-      id: "closeTabsByDoubleClick",
-      checked, value,
-    },
+      id: 'closeTabsByDoubleClick',
+      checked,
+      value
+    }
   });
 };

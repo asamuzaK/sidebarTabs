@@ -4,21 +4,18 @@
 
 import {
   addElementContentEditable, getType, isObjectNotEmpty,
-  removeElementContentEditable, throwErr,
-} from "./common.js";
+  removeElementContentEditable, throwErr
+} from './common.js';
 import {
-  getStorage, getTab, queryTabs,
-} from "./browser.js";
+  getStorage, getTab, queryTabs
+} from './browser.js';
 import {
-  moveTabsInOrder,
-} from "./browser-tabs.js";
+  moveTabsInOrder
+} from './browser-tabs.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTemplate, setSessionTabList,
-} from "./util.js";
-
-/* api */
-const {i18n, windows} = browser;
+  getSidebarTabId, getSidebarTabIndex, getTemplate, setSessionTabList
+} from './util.js';
 
 /* constants */
 import {
@@ -26,8 +23,11 @@ import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
   CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND, TAB_QUERY,
-} from "./constant.js";
+  TAB_GROUP_EXPAND, TAB_QUERY
+} from './constant.js';
+
+/* api */
+const { i18n, windows } = browser;
 
 /**
  * restore sidebar tab containers
@@ -38,7 +38,7 @@ export const restoreTabContainers = async () => {
   const items =
     document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
   for (const item of items) {
-    const {classList, id, parentNode} = item;
+    const { classList, id, parentNode } = item;
     const tabLength = item.querySelectorAll(TAB_QUERY).length;
     switch (tabLength) {
       case 0:
@@ -61,14 +61,14 @@ export const restoreTabContainers = async () => {
  * @returns {void}
  */
 export const collapseTabGroup = async (elm, activate) => {
-  const body = document.querySelector("body");
+  const body = document.querySelector('body');
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_GROUP) &&
       !body.classList.contains(CLASS_UNGROUP)) {
     const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
     const controller = heading || elm.querySelector(TAB_QUERY);
-    const {firstElementChild: context} = controller;
-    const {firstElementChild: toggleIcon} = context;
+    const { firstElementChild: context } = controller;
+    const { firstElementChild: toggleIcon } = context;
     elm.classList.add(CLASS_TAB_COLLAPSED);
     if (heading) {
       if (activate) {
@@ -93,8 +93,8 @@ export const expandTabGroup = async elm => {
       elm.classList.contains(CLASS_TAB_GROUP)) {
     const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
     const controller = heading || elm.querySelector(TAB_QUERY);
-    const {firstElementChild: context} = controller;
-    const {firstElementChild: toggleIcon} = context;
+    const { firstElementChild: context } = controller;
+    const { firstElementChild: toggleIcon } = context;
     elm.classList.remove(CLASS_TAB_COLLAPSED);
     heading && heading.classList.remove(ACTIVE);
     context.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
@@ -108,11 +108,11 @@ export const expandTabGroup = async elm => {
  * @returns {void}
  */
 export const toggleTabGrouping = async () => {
-  const body = document.querySelector("body");
+  const body = document.querySelector('body');
   const store = await getStorage([TAB_GROUP_ENABLE]);
   let enable;
   if (isObjectNotEmpty(store)) {
-    const {enableTabGroup} = store;
+    const { enableTabGroup } = store;
     enable = !!enableTabGroup.checked;
   } else {
     enable = true;
@@ -233,7 +233,7 @@ export const getTabGroupHeading = node => {
  * @returns {?(Function|Error)} - promise chain
  */
 export const handleTabGroupCollapsedState = evt => {
-  const {target} = evt;
+  const { target } = evt;
   const heading = getTabGroupHeading(target);
   const tab = getSidebarTab(target);
   let func;
@@ -242,9 +242,8 @@ export const handleTabGroupCollapsedState = evt => {
       toggleTabGroupCollapsedState(heading, true).then(setSessionTabList)
         .catch(throwErr);
   } else if (tab) {
-    func =
-      toggleTabGroupCollapsedState(tab, true).then(setSessionTabList)
-        .catch(throwErr);
+    func = toggleTabGroupCollapsedState(tab, true).then(setSessionTabList)
+      .catch(throwErr);
   }
   return func || null;
 };
@@ -256,13 +255,12 @@ export const handleTabGroupCollapsedState = evt => {
  * @returns {?(Function|Error)} - promise chain
  */
 export const handleTabGroupsCollapsedState = evt => {
-  const {target} = evt;
+  const { target } = evt;
   const container = getSidebarTabContainer(target);
   let func;
   if (container) {
-    func =
-      toggleTabGroupsCollapsedState(container).then(setSessionTabList)
-        .catch(throwErr);
+    func = toggleTabGroupsCollapsedState(container).then(setSessionTabList)
+      .catch(throwErr);
   }
   return func || null;
 };
@@ -278,21 +276,21 @@ export const addTabContextClickListener = (elm, multi) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     if (elm.classList.contains(CLASS_TAB_CONTEXT)) {
       if (multi) {
-        elm.addEventListener("click", handleTabGroupsCollapsedState);
-        elm.removeEventListener("click", handleTabGroupCollapsedState);
+        elm.addEventListener('click', handleTabGroupsCollapsedState);
+        elm.removeEventListener('click', handleTabGroupCollapsedState);
       } else {
-        elm.addEventListener("click", handleTabGroupCollapsedState);
-        elm.removeEventListener("click", handleTabGroupsCollapsedState);
+        elm.addEventListener('click', handleTabGroupCollapsedState);
+        elm.removeEventListener('click', handleTabGroupsCollapsedState);
       }
     } else if (elm.classList.contains(CLASS_HEADING_LABEL)) {
       if (multi) {
         elm.parentNode.dataset.multi = !!multi;
-        elm.addEventListener("click", handleTabGroupsCollapsedState);
-        elm.removeEventListener("click", handleTabGroupCollapsedState);
+        elm.addEventListener('click', handleTabGroupsCollapsedState);
+        elm.removeEventListener('click', handleTabGroupCollapsedState);
       } else {
         delete elm.parentNode.dataset.multi;
-        elm.addEventListener("click", handleTabGroupCollapsedState);
-        elm.removeEventListener("click", handleTabGroupsCollapsedState);
+        elm.addEventListener('click', handleTabGroupCollapsedState);
+        elm.removeEventListener('click', handleTabGroupsCollapsedState);
       }
     }
   }
@@ -324,7 +322,7 @@ export const expandActivatedCollapsedTab = async () => {
   const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
   let func;
   if (tab) {
-    const {parentNode} = tab;
+    const { parentNode } = tab;
     const firstTab = parentNode.querySelector(TAB_QUERY);
     if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
         firstTab !== tab) {
@@ -341,22 +339,22 @@ export const expandActivatedCollapsedTab = async () => {
  * @returns {?(Function|Error)} - promise chain
  */
 export const finishGroupLabelEdit = evt => {
-  const {isComposing, key, target, type} = evt;
+  const { isComposing, key, target, type } = evt;
   let func;
-  if (type === "blur" ||
-      type === "keydown" && !isComposing && key === "Enter") {
+  if (type === 'blur' ||
+      (type === 'keydown' && !isComposing && key === 'Enter')) {
     const heading = getTabGroupHeading(target);
     const label = heading && heading.querySelector(`.${CLASS_HEADING_LABEL}`);
     if (label) {
       removeElementContentEditable(label);
-      label.removeEventListener("keydown", finishGroupLabelEdit);
-      label.removeEventListener("blur", finishGroupLabelEdit);
+      label.removeEventListener('keydown', finishGroupLabelEdit);
+      label.removeEventListener('blur', finishGroupLabelEdit);
       if (heading.dataset.multi) {
-        label.addEventListener("click", handleTabGroupsCollapsedState);
-        label.removeEventListener("click", handleTabGroupCollapsedState);
+        label.addEventListener('click', handleTabGroupsCollapsedState);
+        label.removeEventListener('click', handleTabGroupCollapsedState);
       } else {
-        label.addEventListener("click", handleTabGroupCollapsedState);
-        label.removeEventListener("click", handleTabGroupsCollapsedState);
+        label.addEventListener('click', handleTabGroupCollapsedState);
+        label.removeEventListener('click', handleTabGroupsCollapsedState);
       }
       func = setSessionTabList().catch(throwErr);
       evt.preventDefault();
@@ -374,14 +372,14 @@ export const finishGroupLabelEdit = evt => {
 export const startGroupLabelEdit = async node => {
   const heading = getTabGroupHeading(node);
   const label = heading && !heading.hidden && addElementContentEditable(
-    heading.querySelector(`.${CLASS_HEADING_LABEL}`),
+    heading.querySelector(`.${CLASS_HEADING_LABEL}`)
   );
   if (label) {
     label.focus();
-    label.removeEventListener("click", handleTabGroupsCollapsedState);
-    label.removeEventListener("click", handleTabGroupCollapsedState);
-    label.addEventListener("keydown", finishGroupLabelEdit);
-    label.addEventListener("blur", finishGroupLabelEdit);
+    label.removeEventListener('click', handleTabGroupsCollapsedState);
+    label.removeEventListener('click', handleTabGroupCollapsedState);
+    label.addEventListener('keydown', finishGroupLabelEdit);
+    label.addEventListener('blur', finishGroupLabelEdit);
   }
   return label || null;
 };
@@ -393,7 +391,7 @@ export const startGroupLabelEdit = async node => {
  * @returns {(Function|Error)} - promise chain
  */
 export const enableGroupLabelEdit = evt => {
-  const {target} = evt;
+  const { target } = evt;
   return startGroupLabelEdit(target).catch(throwErr);
 };
 
@@ -417,7 +415,7 @@ export const addListenersToHeadingItems = async (node, multi) => {
     }
     context && addTabContextClickListener(context, !!multi);
     label && addTabContextClickListener(label, !!multi);
-    button && button.addEventListener("click", enableGroupLabelEdit);
+    button && button.addEventListener('click', enableGroupLabelEdit);
   }
 };
 
@@ -436,14 +434,14 @@ export const removeListenersFromHeadingItems = async node => {
     delete heading.dataset.multi;
     if (label) {
       removeElementContentEditable(label);
-      label.removeEventListener("keydown", finishGroupLabelEdit);
-      label.removeEventListener("blur", finishGroupLabelEdit);
+      label.removeEventListener('keydown', finishGroupLabelEdit);
+      label.removeEventListener('blur', finishGroupLabelEdit);
     }
     if (context) {
-      context.removeEventListener("click", handleTabGroupsCollapsedState);
-      context.removeEventListener("click", handleTabGroupCollapsedState);
+      context.removeEventListener('click', handleTabGroupsCollapsedState);
+      context.removeEventListener('click', handleTabGroupCollapsedState);
     }
-    button && button.removeEventListener("click", enableGroupLabelEdit);
+    button && button.removeEventListener('click', enableGroupLabelEdit);
   }
 };
 
@@ -462,7 +460,7 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
       heading.hidden = false;
       func.push(
         addListenersToHeadingItems(heading, !!multi),
-        startGroupLabelEdit(heading),
+        startGroupLabelEdit(heading)
       );
     } else {
       heading.hidden = true;
@@ -492,22 +490,22 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
   for (const item of revArr) {
     const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {
-      const {parentNode} = item;
+      const { parentNode } = item;
       if (parentNode.classList.contains(CLASS_TAB_GROUP) &&
           !parentNode.classList.contains(PINNED)) {
         const {
           lastElementChild: parentLastChild,
-          nextElementSibling: parentNextSibling,
+          nextElementSibling: parentNextSibling
         } = parentNode;
         const move = item !== parentLastChild;
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         const itemIndex = getSidebarTabIndex(item);
         container.appendChild(item);
-        container.removeAttribute("hidden");
+        container.removeAttribute('hidden');
         parentNode.parentNode.insertBefore(container, parentNextSibling);
         move && arr.push({
           index: itemIndex,
-          tabId: itemId,
+          tabId: itemId
         });
       }
     }
@@ -537,9 +535,9 @@ export const groupSelectedTabs = async windowId => {
       const tabParent = tab.parentNode;
       container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
       container.appendChild(tab);
-      container.removeAttribute("hidden");
+      container.removeAttribute('hidden');
       tabParent.parentNode.insertBefore(container,
-                                        tabParent.nextElementSibling);
+        tabParent.nextElementSibling);
     } else {
       container = tab.parentNode;
     }
@@ -555,7 +553,7 @@ export const groupSelectedTabs = async windowId => {
       }
       arr.push({
         index: itemIndex,
-        tabId: itemId,
+        tabId: itemId
       });
     }
     if (!Number.isInteger(windowId)) {
@@ -578,13 +576,14 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
   const tabsTab = await getTab(tabId);
-  const {cookieStoreId} = tabsTab;
+  const { cookieStoreId } = tabsTab;
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
   const items = await queryTabs({
-    cookieStoreId, windowId,
-    pinned: false,
+    cookieStoreId,
+    windowId,
+    pinned: false
   });
   let func;
   if (Array.isArray(items) && items.length > 1) {
@@ -596,15 +595,15 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
     if (tabParent.classList.contains(CLASS_TAB_GROUP)) {
       container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
       container.appendChild(tab);
-      container.removeAttribute("hidden");
+      container.removeAttribute('hidden');
       tabParent.parentNode.insertBefore(container,
-                                        tabParent.nextElementSibling);
+        tabParent.nextElementSibling);
       containerTabs.push([tab, tabId]);
     } else {
       container = tabParent;
     }
     for (const item of items) {
-      const {id: itemId} = item;
+      const { id: itemId } = item;
       if (itemId !== tabId) {
         const itemTab = document.querySelector(`[data-tab-id="${itemId}"]`);
         itemTab.dataset.group = tabId;
@@ -616,7 +615,7 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
       const itemIndex = getSidebarTabIndex(itemTab);
       arr.push({
         index: itemIndex,
-        tabId: itemId,
+        tabId: itemId
       });
     }
     func = moveTabsInOrder(arr, windowId);
@@ -636,14 +635,15 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
   const tabsTab = await getTab(tabId);
-  const {url: tabUrl} = tabsTab;
+  const { url: tabUrl } = tabsTab;
   const url = createUrlMatchString(tabUrl);
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
   const items = await queryTabs({
-    url, windowId,
-    pinned: false,
+    url,
+    windowId,
+    pinned: false
   });
   let func;
   if (Array.isArray(items) && items.length > 1) {
@@ -655,15 +655,15 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
     if (tabParent.classList.contains(CLASS_TAB_GROUP)) {
       container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
       container.appendChild(tab);
-      container.removeAttribute("hidden");
+      container.removeAttribute('hidden');
       tabParent.parentNode.insertBefore(container,
-                                        tabParent.nextElementSibling);
+        tabParent.nextElementSibling);
       domainTabs.push([tab, tabId]);
     } else {
       container = tabParent;
     }
     for (const item of items) {
-      const {id: itemId} = item;
+      const { id: itemId } = item;
       if (itemId !== tabId) {
         const itemTab = document.querySelector(`[data-tab-id="${itemId}"]`);
         itemTab.dataset.group = tabId;
@@ -675,7 +675,7 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
       const itemIndex = getSidebarTabIndex(itemTab);
       arr.push({
         index: itemIndex,
-        tabId: itemId,
+        tabId: itemId
       });
     }
     func = moveTabsInOrder(arr, windowId);
@@ -691,13 +691,13 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
  */
 export const ungroupTabs = async node => {
   if (node && node.nodeType === Node.ELEMENT_NODE) {
-    const {id, classList, parentNode} = node;
+    const { id, classList, parentNode } = node;
     if (id !== PINNED && classList.contains(CLASS_TAB_GROUP)) {
       const items = node.querySelectorAll(TAB_QUERY);
       for (const item of items) {
         const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(item);
-        container.removeAttribute("hidden");
+        container.removeAttribute('hidden');
         parentNode.insertBefore(container, node);
       }
     }

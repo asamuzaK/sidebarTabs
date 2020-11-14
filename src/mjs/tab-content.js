@@ -4,67 +4,67 @@
 
 import {
   getType, isObjectNotEmpty, isString, logErr, setElementDataset,
-  preventDefaultEvent, throwErr,
-} from "./common.js";
+  preventDefaultEvent, throwErr
+} from './common.js';
 import {
-  getTab, updateTab,
-} from "./browser.js";
+  getTab, updateTab
+} from './browser.js';
 import {
-  closeTabs, muteTabs,
-} from "./browser-tabs.js";
+  closeTabs, muteTabs
+} from './browser-tabs.js';
 import {
-  getSidebarTab, getSidebarTabId,
-} from "./util.js";
-
-/* api */
-const {i18n} = browser;
+  getSidebarTab, getSidebarTabId
+} from './util.js';
 
 /* constants */
 import {
   CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
   CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,
   TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED,
-  URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
-} from "./constant.js";
+  URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER
+} from './constant.js';
+
+/* api */
+const { i18n } = browser;
 
 /* favicon */
 export const favicon = new Map([
   [
-    "https://abs.twimg.com/favicons/favicon.ico",
-    "../img/twitter-logo-blue.svg",
+    'https://abs.twimg.com/favicons/favicon.ico',
+    '../img/twitter-logo-blue.svg'
   ],
   [
-    "https://abs.twimg.com/icons/apple-touch-icon-192x192.png",
-    "../img/twitter-logo-blue.svg",
+    'https://abs.twimg.com/icons/apple-touch-icon-192x192.png',
+    '../img/twitter-logo-blue.svg'
   ],
   [
-    "chrome://browser/skin/customize.svg",
-    "../img/customize-favicon.svg",
+    'chrome://browser/skin/customize.svg',
+    '../img/customize-favicon.svg'
   ],
   [
-    "chrome://browser/skin/settings.svg",
-    "../img/options-favicon.svg",
+    'chrome://browser/skin/settings.svg',
+    '../img/options-favicon.svg'
   ],
   [
-    "chrome://mozapps/skin/extensions/extensionGeneric-16.svg",
-    "../img/addons-favicon.svg",
+    'chrome://mozapps/skin/extensions/extensionGeneric-16.svg',
+    '../img/addons-favicon.svg'
   ],
   [
-    "chrome://mozapps/skin/extensions/extension.svg",
-    "../img/addons-favicon.svg",
-  ],
+    'chrome://mozapps/skin/extensions/extension.svg',
+    '../img/addons-favicon.svg'
+  ]
 ]);
 
 /* contextual identities icon name */
 export const contextualIdentitiesIconName = new Set([
-  "briefcase", "cart", "chill", "dollar", "fingerprint", "food", "fruit",
-  "gift", "pet", "tree", "vacation",
+  'briefcase', 'cart', 'chill', 'dollar', 'fingerprint', 'food', 'fruit',
+  'gift', 'pet', 'tree', 'vacation'
 ]);
 
 /* contextual identities icon color */
 export const contextualIdentitiesIconColor = new Set([
-  "blue", "purple", "pink", "red", "orange", "yellow", "green",
-  "turquoise",
+  'blue', 'purple', 'pink', 'red', 'orange', 'yellow', 'green',
+  'turquoise'
 ]);
 
 /**
@@ -75,8 +75,8 @@ export const contextualIdentitiesIconColor = new Set([
  */
 export const tabIconFallback = evt => {
   if (isObjectNotEmpty(evt)) {
-    const {target, type} = evt;
-    if (type === "error" && target && isString(target.src)) {
+    const { target, type } = evt;
+    if (type === 'error' && target && isString(target.src)) {
       target.src = URL_FAVICON_DEFAULT;
     }
   }
@@ -90,8 +90,8 @@ export const tabIconFallback = evt => {
  * @returns {void}
  */
 export const addTabIconErrorListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img") {
-    elm.addEventListener("error", tabIconFallback);
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img') {
+    elm.addEventListener('error', tabIconFallback);
   }
 };
 
@@ -103,21 +103,21 @@ export const addTabIconErrorListener = async elm => {
  * @returns {void}
  */
 export const setTabIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img' &&
       isObjectNotEmpty(info)) {
-    const {favIconUrl, status, title, url} = info;
-    if (status === "loading") {
+    const { favIconUrl, status, title, url } = info;
+    if (status === 'loading') {
       try {
         if (isString(title) && isString(url)) {
-          const {href} = new URL(url);
+          const { href } = new URL(url);
           const connecting =
-            href.replace(/\/$/, "").endsWith(title.replace(/\/$/, ""));
+            href.replace(/\/$/, '').endsWith(title.replace(/\/$/, ''));
           if (connecting) {
             elm.dataset.connecting = url;
           } else if (elm.dataset.connecting) {
-            const {stroke} = window.getComputedStyle(elm);
+            const { stroke } = window.getComputedStyle(elm);
             elm.style.fill = stroke;
-            elm.dataset.connecting = "";
+            elm.dataset.connecting = '';
           }
         } else {
           elm.dataset.connecting = url;
@@ -128,8 +128,8 @@ export const setTabIcon = async (elm, info) => {
       }
       elm.src = URL_LOADING_THROBBER;
     } else {
-      elm.dataset.connecting = "";
-      elm.style.fill = "";
+      elm.dataset.connecting = '';
+      elm.style.fill = '';
       if (favIconUrl) {
         elm.src = favicon.get(favIconUrl) || favIconUrl;
       } else {
@@ -149,14 +149,14 @@ export const setTabIcon = async (elm, info) => {
  */
 export const setTabContent = async (tab, tabsTab) => {
   if (tab && tab.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(tabsTab)) {
-    const {favIconUrl, status, title, url} = tabsTab;
+    const { favIconUrl, status, title, url } = tabsTab;
     const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
     const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
     const tabIcon = tab.querySelector(`.${CLASS_TAB_ICON}`);
     tabContent.title = title;
     tabTitle.textContent = title;
-    await setTabIcon(tabIcon, {favIconUrl, status, title, url});
-    await setElementDataset(tab, "tab", JSON.stringify(tabsTab));
+    await setTabIcon(tabIcon, { favIconUrl, status, title, url });
+    await setElementDataset(tab, 'tab', JSON.stringify(tabsTab));
   }
 };
 
@@ -168,19 +168,19 @@ export const setTabContent = async (tab, tabsTab) => {
  * @returns {?Function} - muteTabs() / updateTab()
  */
 export const handleClickedTabAudio = async evt => {
-  const {target} = evt;
+  const { target } = evt;
   const tab = getSidebarTab(target);
   const tabId = getSidebarTabId(tab);
   let func;
   if (Number.isInteger(tabId)) {
     const tabsTab = await getTab(tabId);
-    const {mutedInfo: {muted}} = tabsTab;
-    const {classList} = tab;
+    const { mutedInfo: { muted } } = tabsTab;
+    const { classList } = tab;
     if (classList.contains(HIGHLIGHTED)) {
       const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
       func = muteTabs(Array.from(selectedTabs), !muted);
     } else {
-      func = updateTab(tabId, {muted: !muted});
+      func = updateTab(tabId, { muted: !muted });
     }
   }
   return func;
@@ -204,7 +204,7 @@ export const tabAudioOnClick = evt =>
 export const addTabAudioClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_AUDIO)) {
-    elm.addEventListener("click", tabAudioOnClick);
+    elm.addEventListener('click', tabAudioOnClick);
   }
 };
 
@@ -217,7 +217,7 @@ export const addTabAudioClickListener = async elm => {
  */
 export const setTabAudio = async (elm, info) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(info)) {
-    const {audible, muted, highlighted} = info;
+    const { audible, muted, highlighted } = info;
     if (muted) {
       if (highlighted) {
         elm.title = i18n.getMessage(`${TABS_MUTE_UNMUTE}_tooltip`);
@@ -231,7 +231,7 @@ export const setTabAudio = async (elm, info) => {
         elm.title = i18n.getMessage(`${TAB_MUTE}_tooltip`);
       }
     } else {
-      elm.title = "";
+      elm.title = '';
     }
   }
 };
@@ -244,9 +244,9 @@ export const setTabAudio = async (elm, info) => {
  * @returns {void}
  */
 export const setTabAudioIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img' &&
       isObjectNotEmpty(info)) {
-    const {audible, muted} = info;
+    const { audible, muted } = info;
     if (muted) {
       elm.alt = i18n.getMessage(`${TAB_MUTE_UNMUTE}`);
       elm.src = URL_AUDIO_MUTED;
@@ -254,8 +254,8 @@ export const setTabAudioIcon = async (elm, info) => {
       elm.alt = i18n.getMessage(`${TAB_MUTE}`);
       elm.src = URL_AUDIO_PLAYING;
     } else {
-      elm.alt = "";
-      elm.src = "";
+      elm.alt = '';
+      elm.src = '';
     }
   }
 };
@@ -286,11 +286,11 @@ export const setCloseTab = async (elm, highlighted) => {
  * @returns {?Function} - closeTabs()
  */
 export const handleClickedCloseButton = async evt => {
-  const {target} = evt;
+  const { target } = evt;
   const tab = getSidebarTab(target);
   let func;
   if (tab) {
-    const {classList} = tab;
+    const { classList } = tab;
     if (classList.contains(HIGHLIGHTED)) {
       const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
       func = closeTabs(Array.from(selectedTabs));
@@ -319,8 +319,8 @@ export const tabCloseOnClick = evt =>
 export const addTabCloseClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_CLOSE)) {
-    elm.addEventListener("mousedown", preventDefaultEvent);
-    elm.addEventListener("click", tabCloseOnClick);
+    elm.addEventListener('mousedown', preventDefaultEvent);
+    elm.addEventListener('click', tabCloseOnClick);
   }
 };
 
@@ -333,9 +333,9 @@ export const addTabCloseClickListener = async elm => {
  * @returns {void}
  */
 export const setContextualIdentitiesIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === "img" &&
+  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img' &&
       isObjectNotEmpty(info)) {
-    const {color, icon, name} = info;
+    const { color, icon, name } = info;
     if (contextualIdentitiesIconColor.has(color) &&
         contextualIdentitiesIconName.has(icon) &&
         isString(name)) {
@@ -358,16 +358,17 @@ export const addHighlight = async elm => {
   const tabId = getSidebarTabId(elm);
   if (Number.isInteger(tabId)) {
     const tab = await getTab(tabId);
-    const {audible, mutedInfo: {muted}} = tab;
+    const { audible, mutedInfo: { muted } } = tab;
     const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
     const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
     elm.classList.add(HIGHLIGHTED);
     func.push(
       setCloseTab(closeElm, true),
       setTabAudio(muteElm, {
-        audible, muted,
-        highlighted: true,
-      }),
+        audible,
+        muted,
+        highlighted: true
+      })
     );
   }
   return Promise.all(func);
@@ -404,16 +405,17 @@ export const removeHighlight = async elm => {
   const tabId = getSidebarTabId(elm);
   if (Number.isInteger(tabId)) {
     const tab = await getTab(tabId);
-    const {audible, mutedInfo: {muted}} = tab;
+    const { audible, mutedInfo: { muted } } = tab;
     const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
     const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
     elm.classList.remove(HIGHLIGHTED);
     func.push(
       setCloseTab(closeElm, false),
       setTabAudio(muteElm, {
-        audible, muted,
-        highlighted: false,
-      }),
+        audible,
+        muted,
+        highlighted: false
+      })
     );
   }
   return Promise.all(func);

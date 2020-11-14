@@ -3,15 +3,15 @@
  */
 
 import {
-  getType, isObjectNotEmpty, isString,
-} from "./common.js";
+  getType, isObjectNotEmpty, isString
+} from './common.js';
 import {
   getAllStorage, getCurrentTheme, getEnabledTheme, getStorage, removeStorage,
-  sendMessage, setStorage,
-} from "./browser.js";
+  sendMessage, setStorage
+} from './browser.js';
 import {
-  blendColors, convertColorToHex,
-} from "./color.js";
+  blendColors, convertColorToHex
+} from './color.js';
 
 /* constants */
 import {
@@ -31,8 +31,8 @@ import {
   CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT,
-} from "./constant.js";
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT
+} from './constant.js';
 
 /* theme map */
 export const themeMap = {
@@ -52,44 +52,44 @@ export const themeMap = {
     [CUSTOM_COLOR_DISCARDED]: CSS_VAR_COLOR_DISCARDED,
     [CUSTOM_COLOR_HOVER]: CSS_VAR_COLOR_HOVER,
     [CUSTOM_COLOR_SELECT]: CSS_VAR_COLOR_SELECT,
-    [CUSTOM_COLOR_SELECT_HOVER]: CSS_VAR_COLOR_SELECT_HOVER,
+    [CUSTOM_COLOR_SELECT_HOVER]: CSS_VAR_COLOR_SELECT_HOVER
   },
   [THEME_LIGHT]: {
-    [CUSTOM_BG]: "#ededf0",
-    [CUSTOM_BG_ACTIVE]: "#f9f9fa",
-    [CUSTOM_BG_DISCARDED]: "#ededf0",
-    [CUSTOM_BG_HOVER]: "#d7d7db",
-    [CUSTOM_BG_HOVER_SHADOW]: "#0c0c0d1a",
-    [CUSTOM_BG_SELECT]: "#0a84ff",
-    [CUSTOM_BG_SELECT_HOVER]: "#0a78e6",
-    [CUSTOM_BORDER]: "#cccccc",
-    [CUSTOM_BORDER_ACTIVE]: "#999999",
-    [CUSTOM_BORDER_DISCARDED]: "#cccccc",
-    [CUSTOM_COLOR]: "#0c0c0d",
-    [CUSTOM_COLOR_ACTIVE]: "#0c0c0d",
-    [CUSTOM_COLOR_DISCARDED]: "#0c0c0d",
-    [CUSTOM_COLOR_HOVER]: "#0c0c0d",
-    [CUSTOM_COLOR_SELECT]: "#f9f9fa",
-    [CUSTOM_COLOR_SELECT_HOVER]: "#f9f9fa",
+    [CUSTOM_BG]: '#ededf0',
+    [CUSTOM_BG_ACTIVE]: '#f9f9fa',
+    [CUSTOM_BG_DISCARDED]: '#ededf0',
+    [CUSTOM_BG_HOVER]: '#d7d7db',
+    [CUSTOM_BG_HOVER_SHADOW]: '#0c0c0d1a',
+    [CUSTOM_BG_SELECT]: '#0a84ff',
+    [CUSTOM_BG_SELECT_HOVER]: '#0a78e6',
+    [CUSTOM_BORDER]: '#cccccc',
+    [CUSTOM_BORDER_ACTIVE]: '#999999',
+    [CUSTOM_BORDER_DISCARDED]: '#cccccc',
+    [CUSTOM_COLOR]: '#0c0c0d',
+    [CUSTOM_COLOR_ACTIVE]: '#0c0c0d',
+    [CUSTOM_COLOR_DISCARDED]: '#0c0c0d',
+    [CUSTOM_COLOR_HOVER]: '#0c0c0d',
+    [CUSTOM_COLOR_SELECT]: '#f9f9fa',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#f9f9fa'
   },
   [THEME_DARK]: {
-    [CUSTOM_BG]: "#0c0c0d",
-    [CUSTOM_BG_ACTIVE]: "#38383d",
-    [CUSTOM_BG_DISCARDED]: "#0c0c0d",
-    [CUSTOM_BG_HOVER]: "#2a2a2e",
-    [CUSTOM_BG_HOVER_SHADOW]: "#f9f9fa1a",
-    [CUSTOM_BG_SELECT]: "#0a84ff",
-    [CUSTOM_BG_SELECT_HOVER]: "#0a78e6",
-    [CUSTOM_BORDER]: "#666666",
-    [CUSTOM_BORDER_ACTIVE]: "#999999",
-    [CUSTOM_BORDER_DISCARDED]: "#666666",
-    [CUSTOM_COLOR]: "#f9f9fa",
-    [CUSTOM_COLOR_ACTIVE]: "#f9f9fa",
-    [CUSTOM_COLOR_DISCARDED]: "#f9f9fa",
-    [CUSTOM_COLOR_HOVER]: "#f9f9fa",
-    [CUSTOM_COLOR_SELECT]: "#f9f9fa",
-    [CUSTOM_COLOR_SELECT_HOVER]: "#f9f9fa",
-  },
+    [CUSTOM_BG]: '#0c0c0d',
+    [CUSTOM_BG_ACTIVE]: '#38383d',
+    [CUSTOM_BG_DISCARDED]: '#0c0c0d',
+    [CUSTOM_BG_HOVER]: '#2a2a2e',
+    [CUSTOM_BG_HOVER_SHADOW]: '#f9f9fa1a',
+    [CUSTOM_BG_SELECT]: '#0a84ff',
+    [CUSTOM_BG_SELECT_HOVER]: '#0a78e6',
+    [CUSTOM_BORDER]: '#666666',
+    [CUSTOM_BORDER_ACTIVE]: '#999999',
+    [CUSTOM_BORDER_DISCARDED]: '#666666',
+    [CUSTOM_COLOR]: '#f9f9fa',
+    [CUSTOM_COLOR_ACTIVE]: '#f9f9fa',
+    [CUSTOM_COLOR_DISCARDED]: '#f9f9fa',
+    [CUSTOM_COLOR_HOVER]: '#f9f9fa',
+    [CUSTOM_COLOR_SELECT]: '#f9f9fa',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#f9f9fa'
+  }
 };
 
 /* current theme colors */
@@ -129,22 +129,22 @@ export const getCurrentThemeBaseValues = async () => {
     switch (key) {
       case CUSTOM_BG:
       case CUSTOM_BG_DISCARDED: {
-        const valueA = currentThemeColors.get("sidebar");
-        const valueB = currentThemeColors.get("frame");
-        const valueC = currentThemeColors.get("accentcolor");
+        const valueA = currentThemeColors.get('sidebar');
+        const valueB = currentThemeColors.get('frame');
+        const valueC = currentThemeColors.get('accentcolor');
         values[key] = valueA || valueB || valueC || baseValues[key];
         break;
       }
       case CUSTOM_BG_ACTIVE: {
-        const valueA = currentThemeColors.get("sidebar_highlight");
-        const valueB = currentThemeColors.get("tab_selected");
-        const valueC = currentThemeColors.get("toolbar");
+        const valueA = currentThemeColors.get('sidebar_highlight');
+        const valueB = currentThemeColors.get('tab_selected');
+        const valueC = currentThemeColors.get('toolbar');
         values[key] = valueA || valueB || valueC || baseValues[key];
         break;
       }
       case CUSTOM_BG_HOVER_SHADOW: {
-        const valueA = currentThemeColors.get("tab_background_text");
-        const valueB = currentThemeColors.get("textcolor");
+        const valueA = currentThemeColors.get('tab_background_text');
+        const valueB = currentThemeColors.get('textcolor');
         if (valueA) {
           values[key] = `${valueA}1a`;
         } else if (valueB) {
@@ -155,40 +155,40 @@ export const getCurrentThemeBaseValues = async () => {
         break;
       }
       case CUSTOM_BG_SELECT: {
-        const valueA = currentThemeColors.get("tab_line");
+        const valueA = currentThemeColors.get('tab_line');
         values[key] = valueA || baseValues[key];
         break;
       }
       case CUSTOM_BORDER:
       case CUSTOM_BORDER_DISCARDED: {
-        const valueA = currentThemeColors.get("sidebar_border");
-        const valueB = currentThemeColors.get("tab_background_separator");
+        const valueA = currentThemeColors.get('sidebar_border');
+        const valueB = currentThemeColors.get('tab_background_separator');
         values[key] = valueA || valueB || baseValues[key];
         break;
       }
       case CUSTOM_BORDER_ACTIVE: {
-        const valueA = currentThemeColors.get("sidebar_border");
-        const valueB = currentThemeColors.get("toolbar_top_separator");
-        const valueC = currentThemeColors.get("toolbar_bottom_separator");
-        const valueD = currentThemeColors.get("tab_background_separator");
+        const valueA = currentThemeColors.get('sidebar_border');
+        const valueB = currentThemeColors.get('toolbar_top_separator');
+        const valueC = currentThemeColors.get('toolbar_bottom_separator');
+        const valueD = currentThemeColors.get('tab_background_separator');
         values[key] = valueA || valueB || valueC || valueD || baseValues[key];
         break;
       }
       case CUSTOM_COLOR:
       case CUSTOM_COLOR_DISCARDED: {
-        const valueA = currentThemeColors.get("sidebar_text");
-        const valueB = currentThemeColors.get("tab_background_text");
-        const valueC = currentThemeColors.get("textcolor");
+        const valueA = currentThemeColors.get('sidebar_text');
+        const valueB = currentThemeColors.get('tab_background_text');
+        const valueC = currentThemeColors.get('textcolor');
         values[key] = valueA || valueB || valueC || baseValues[key];
         break;
       }
       case CUSTOM_COLOR_ACTIVE: {
-        const valueA = currentThemeColors.get("sidebar_highlight_text");
-        const valueB = currentThemeColors.get("tab_text");
-        const valueC = currentThemeColors.get("bookmark_text");
-        const valueD = currentThemeColors.get("toolbar_text");
-        const valueE = currentThemeColors.get("tab_background_text");
-        const valueF = currentThemeColors.get("textcolor");
+        const valueA = currentThemeColors.get('sidebar_highlight_text');
+        const valueB = currentThemeColors.get('tab_text');
+        const valueC = currentThemeColors.get('bookmark_text');
+        const valueD = currentThemeColors.get('toolbar_text');
+        const valueE = currentThemeColors.get('tab_background_text');
+        const valueF = currentThemeColors.get('textcolor');
         values[key] = valueA || valueB || valueC || valueD || valueE ||
                       valueF || baseValues[key];
         break;
@@ -198,8 +198,8 @@ export const getCurrentThemeBaseValues = async () => {
     }
   }
   // override CUSTOM_BG_SELECT_HOVER color
-  if (currentThemeColors.get("tab_line")) {
-    const base = currentThemeColors.get("tab_line");
+  if (currentThemeColors.get('tab_line')) {
+    const base = currentThemeColors.get('tab_line');
     const blend = values[CUSTOM_BG_HOVER_SHADOW];
     const value = await blendColors(blend, base).then(convertColorToHex);
     values[CUSTOM_BG_SELECT_HOVER] = value;
@@ -216,7 +216,7 @@ export const getBaseValues = async () => {
   const appliedTheme = await getCurrentTheme();
   let values;
   if (isObjectNotEmpty(appliedTheme)) {
-    const {colors} = appliedTheme;
+    const { colors } = appliedTheme;
     if (isObjectNotEmpty(colors)) {
       const colorsItems = Object.entries(colors);
       const func = [];
@@ -230,7 +230,7 @@ export const getBaseValues = async () => {
     const items = await getEnabledTheme();
     if (Array.isArray(items)) {
       for (const item of items) {
-        const {id} = item;
+        const { id } = item;
         switch (id) {
           case THEME_DARK_ID:
             values = themeMap[THEME_DARK];
@@ -263,7 +263,7 @@ export const setCurrentThemeValue = async () => {
   const baseValues = await getBaseValues();
   const items = Object.entries(baseValues);
   for (const [key, val] of items) {
-    const {value} = store[key] || {};
+    const { value } = store[key] || {};
     if (value) {
       values[key] = value;
     } else {
@@ -283,7 +283,7 @@ export const sendCurrentTheme = async () => {
   const obj = currentTheme.get(THEME_CURRENT);
   if (obj) {
     const msg = {
-      [THEME_CUSTOM_SETTING]: obj,
+      [THEME_CUSTOM_SETTING]: obj
     };
     func = sendMessage(null, msg);
   }
@@ -305,11 +305,11 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
   const elm = document.getElementById(CSS_ID);
   const customTheme = currentTheme.get(THEME_CURRENT);
   if (elm && elm.sheet && isObjectNotEmpty(customTheme)) {
-    const {sheet} = elm;
+    const { sheet } = elm;
     const l = sheet.cssRules.length;
     const propKeys = themeMap[CSS_ID];
     const items = Object.entries(customTheme);
-    let cssText = "";
+    let cssText = '';
     for (const [key, val] of items) {
       if (key === prop && isString(value)) {
         cssText += `${propKeys[key]}: ${value};`;
@@ -320,7 +320,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
       }
     }
     if (l) {
-      let i = l - 1, bool;
+      let i = l - 1; let bool;
       while (i >= 0) {
         if (sheet.cssRules[i].selectorText === sel) {
           sheet.cssRules[i].style.cssText = cssText;
@@ -347,7 +347,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
 export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
   const elm = document.getElementById(CSS_ID);
   if (elm && elm.sheet) {
-    const {sheet} = elm;
+    const { sheet } = elm;
     const l = sheet.cssRules.length;
     if (l) {
       const arr = [];
@@ -403,7 +403,7 @@ export const getTheme = async () => {
   const data = await getStorage(THEME);
   const themes = [];
   if (isObjectNotEmpty(data)) {
-    const {theme: storedTheme} = data;
+    const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
       for (const item of storedTheme) {
         themes.push(item);
@@ -413,7 +413,7 @@ export const getTheme = async () => {
     const items = await getEnabledTheme();
     if (Array.isArray(items)) {
       for (const item of items) {
-        const {id} = item;
+        const { id } = item;
         switch (id) {
           case THEME_DARK_ID:
             themes.push(THEME_DARK);
@@ -442,8 +442,8 @@ export const setTheme = async themes => {
   if (!Array.isArray(themes)) {
     throw new TypeError(`Expected Array but got ${getType(themes)}.`);
   }
-  const elm = document.querySelector("body");
-  const {classList} = elm;
+  const elm = document.querySelector('body');
+  const { classList } = elm;
   for (const item of themes) {
     switch (item) {
       case THEME_CUSTOM: {
@@ -467,7 +467,7 @@ export const setTheme = async themes => {
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
   await setStorage({
-    [THEME]: themes,
+    [THEME]: themes
   });
 };
 
@@ -481,7 +481,7 @@ export const getTabHeight = async () => {
   const data = await getStorage(THEME_TAB_COMPACT);
   let compact;
   if (isObjectNotEmpty(data)) {
-    const {checked} = data[THEME_TAB_COMPACT];
+    const { checked } = data[THEME_TAB_COMPACT];
     compact = checked;
   }
   return !!compact;
@@ -494,8 +494,8 @@ export const getTabHeight = async () => {
  * @returns {void}
  */
 export const setTabHeight = async compact => {
-  const elm = document.querySelector("body");
-  const {classList} = elm;
+  const elm = document.querySelector('body');
+  const { classList } = elm;
   if (compact) {
     classList.add(CLASS_COMPACT);
   } else {
@@ -513,7 +513,7 @@ export const getScrollbarWidth = async () => {
   const data = await getStorage(THEME_SCROLLBAR_NARROW);
   let narrow;
   if (isObjectNotEmpty(data)) {
-    const {checked} = data[THEME_SCROLLBAR_NARROW];
+    const { checked } = data[THEME_SCROLLBAR_NARROW];
     narrow = checked;
   }
   return !!narrow;
@@ -526,8 +526,8 @@ export const getScrollbarWidth = async () => {
  * @returns {void}
  */
 export const setScrollbarWidth = async narrow => {
-  const elm = document.querySelector("body");
-  const {classList} = elm;
+  const elm = document.querySelector('body');
+  const { classList } = elm;
   if (narrow) {
     classList.add(CLASS_NARROW);
   } else {
@@ -541,9 +541,9 @@ export const setScrollbarWidth = async narrow => {
  * @returns {void}
  */
 export const applyCss = async () => {
-  const items = document.querySelectorAll("section[hidden]");
+  const items = document.querySelectorAll('section[hidden]');
   for (const item of items) {
-    item.removeAttribute("hidden");
+    item.removeAttribute('hidden');
   }
 };
 
@@ -555,5 +555,5 @@ export const applyCss = async () => {
 export const setSidebarTheme = async () => Promise.all([
   setCurrentThemeValue().then(getTheme).then(setTheme),
   getTabHeight().then(setTabHeight),
-  getScrollbarWidth().then(setScrollbarWidth),
+  getScrollbarWidth().then(setScrollbarWidth)
 ]).then(applyCss);

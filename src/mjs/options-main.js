@@ -3,18 +3,18 @@
  */
 
 import {
-  isObjectNotEmpty, isString, throwErr,
-} from "./common.js";
+  isObjectNotEmpty, isString, throwErr
+} from './common.js';
 import {
   getAllStorage, clearContextMenuOnMouseup, removePermission,
-  requestPermission, sendMessage, setContextMenuOnMouseup, setStorage,
-} from "./browser.js";
+  requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
+} from './browser.js';
 
 /* constant */
 import {
   BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP, THEME_CUSTOM,
-  THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO,
-} from "./constant.js";
+  THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO
+} from './constant.js';
 
 /**
  * send message
@@ -38,7 +38,7 @@ export const initExt = async (init = false) => {
   let func;
   if (init) {
     func = sendMsg({
-      [EXT_INIT]: !!init,
+      [EXT_INIT]: !!init
     });
   }
   return func || null;
@@ -54,7 +54,7 @@ export const initCustomTheme = async (init = false) => {
   let func;
   if (init) {
     func = sendMsg({
-      [THEME_CUSTOM_INIT]: !!init,
+      [THEME_CUSTOM_INIT]: !!init
     });
   }
   return func || null;
@@ -70,7 +70,7 @@ export const requestCustomTheme = async (bool = false) => {
   let func;
   if (bool) {
     func = sendMsg({
-      [THEME_CUSTOM_REQ]: !!bool,
+      [THEME_CUSTOM_REQ]: !!bool
     });
   }
   return func || null;
@@ -83,15 +83,16 @@ export const requestCustomTheme = async (bool = false) => {
  * @returns {object} - pref data
  */
 export const createPref = async (elm = {}) => {
-  const {dataset, id} = elm;
-  return id && {
+  const { dataset, id } = elm;
+  const data = id && {
     [id]: {
       id,
       checked: !!elm.checked,
-      value: elm.value || "",
-      subItemOf: dataset && dataset.subItemOf || null,
-    },
-  } || null;
+      value: elm.value || '',
+      subItemOf: (dataset && dataset.subItemOf) || null
+    }
+  };
+  return data || null;
 };
 
 /**
@@ -101,10 +102,10 @@ export const createPref = async (elm = {}) => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const storePref = async evt => {
-  const {target} = evt;
-  const {checked, id, name, type} = target;
+  const { target } = evt;
+  const { checked, id, name, type } = target;
   const func = [];
-  if (type === "radio") {
+  if (type === 'radio') {
     const nodes = document.querySelectorAll(`[name=${name}]`);
     for (const node of nodes) {
       func.push(createPref(node).then(setStorage));
@@ -113,16 +114,16 @@ export const storePref = async evt => {
     switch (id) {
       case BROWSER_SETTINGS_READ:
         if (checked) {
-          target.checked = await requestPermission(["browserSettings"]);
+          target.checked = await requestPermission(['browserSettings']);
         } else {
-          await removePermission(["browserSettings"]);
+          await removePermission(['browserSettings']);
         }
         func.push(createPref(target).then(setStorage));
         break;
       case MENU_SHOW_MOUSEUP: {
         if (checked) {
           const res = await setContextMenuOnMouseup();
-          !res && window.alert("Failed to modify value.");
+          !res && window.alert('Failed to modify value.');
           target.checked = res;
         } else {
           await clearContextMenuOnMouseup();
@@ -145,14 +146,14 @@ export const storePref = async evt => {
  * @returns {void}
  */
 export const toggleCustomThemeSettings = evt => {
-  const {target} = evt;
+  const { target } = evt;
   const elm = document.getElementById(THEME_CUSTOM_SETTING);
   if (elm) {
-    const {checked, id} = target;
+    const { checked, id } = target;
     if (id === THEME_CUSTOM && checked) {
-      elm.removeAttribute("hidden");
+      elm.removeAttribute('hidden');
     } else {
-      elm.setAttribute("hidden", "hidden");
+      elm.setAttribute('hidden', 'hidden');
     }
   }
 };
@@ -165,7 +166,7 @@ export const toggleCustomThemeSettings = evt => {
 export const addCustomThemeListener = async () => {
   const nodes = document.querySelectorAll(`input[name=${THEME_RADIO}]`);
   for (const node of nodes) {
-    node.addEventListener("change", toggleCustomThemeSettings);
+    node.addEventListener('change', toggleCustomThemeSettings);
   }
 };
 
@@ -181,8 +182,8 @@ export const setCustomThemeValue = async (obj = {}) => {
     for (const [key, value] of items) {
       const elm = document.getElementById(key);
       if (elm) {
-        const {type} = elm;
-        if (type === "color" &&
+        const { type } = elm;
+        if (type === 'color' &&
             isString(value) && /^#[\da-f]{6}$/i.test(value)) {
           elm.value = value.toLowerCase();
         }
@@ -198,7 +199,7 @@ export const setCustomThemeValue = async (obj = {}) => {
  * @returns {Promise.<Array>} - result of each handler
  */
 export const handleInitCustomThemeClick = evt => {
-  const {currentTarget, target} = evt;
+  const { currentTarget, target } = evt;
   evt.preventDefault();
   evt.stopPropagation();
   return initCustomTheme(currentTarget === target).catch(throwErr);
@@ -212,7 +213,7 @@ export const handleInitCustomThemeClick = evt => {
 export const addInitCustomThemeListener = async () => {
   const elm = document.getElementById(THEME_CUSTOM_INIT);
   if (elm) {
-    elm.addEventListener("click", handleInitCustomThemeClick);
+    elm.addEventListener('click', handleInitCustomThemeClick);
   }
 };
 
@@ -224,7 +225,7 @@ export const addInitCustomThemeListener = async () => {
  * @returns {Function} - initExt()
  */
 export const handleInitExtClick = evt => {
-  const {currentTarget, target} = evt;
+  const { currentTarget, target } = evt;
   evt.preventDefault();
   evt.stopPropagation();
   return initExt(currentTarget === target).catch(throwErr);
@@ -238,7 +239,7 @@ export const handleInitExtClick = evt => {
 export const addInitExtensionListener = async () => {
   const elm = document.getElementById(EXT_INIT);
   if (elm) {
-    elm.addEventListener("click", handleInitExtClick);
+    elm.addEventListener('click', handleInitExtClick);
   }
 };
 
@@ -256,9 +257,9 @@ export const handleInputChange = evt => storePref(evt).catch(throwErr);
  * @returns {void}
  */
 export const addInputChangeListener = async () => {
-  const nodes = document.querySelectorAll("input");
+  const nodes = document.querySelectorAll('input');
   for (const node of nodes) {
-    node.addEventListener("change", handleInputChange);
+    node.addEventListener('change', handleInputChange);
   }
 };
 
@@ -269,27 +270,27 @@ export const addInputChangeListener = async () => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setHtmlInputValue = async (data = {}) => {
-  const {checked, id, value} = data;
+  const { checked, id, value } = data;
   const elm = id && document.getElementById(id);
   const func = [];
   if (elm) {
-    const {type} = elm;
+    const { type } = elm;
     switch (type) {
-      case "checkbox":
-      case "radio":
+      case 'checkbox':
+      case 'radio':
         elm.checked = !!checked;
         if (id === THEME_CUSTOM) {
           func.push(toggleCustomThemeSettings({
             target: {
-              checked, id,
-            },
+              checked, id
+            }
           }));
         }
         break;
-      case "color":
-      case "text":
-      case "url":
-        elm.value = isString(value) && value || "";
+      case 'color':
+      case 'text':
+      case 'url':
+        elm.value = isString(value) ? value : '';
         break;
       default:
     }

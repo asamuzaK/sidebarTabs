@@ -3,20 +3,20 @@
  */
 
 import {
-  getType, isString,
-} from "./common.js";
-
-/* api */
-const {sidebarAction, windows} = browser;
+  getType, isString
+} from './common.js';
 
 /* constant */
-import {SIDEBAR_STATE_UPDATE, TOGGLE_STATE} from "./constant.js";
-const {WINDOW_ID_NONE} = windows;
+import { SIDEBAR_STATE_UPDATE, TOGGLE_STATE } from './constant.js';
+
+/* api */
+const { sidebarAction, windows } = browser;
+const { WINDOW_ID_NONE } = windows;
 
 /* sidebar */
 export const sidebar = {
   windowId: null,
-  isOpen: false,
+  isOpen: false
 };
 
 /**
@@ -45,7 +45,7 @@ export const setSidebarState = async windowId => {
  * @returns {?Function} - sidebarAction.close() / sidebarAction.open()
  */
 export const toggleSidebar = async () => {
-  const {isOpen, windowId} = sidebar;
+  const { isOpen, windowId } = sidebar;
   let func;
   if (Number.isInteger(windowId)) {
     if (isOpen) {
@@ -69,7 +69,7 @@ export const handleMsg = async msg => {
   for (const [key, value] of items) {
     switch (key) {
       case SIDEBAR_STATE_UPDATE: {
-        const {windowId} = value;
+        const { windowId } = value;
         func.push(setSidebarState(windowId));
         break;
       }
