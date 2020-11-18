@@ -3,9 +3,8 @@
  * NOTE: "currentColor" keyword is not supported
  */
 
-import {
-  getType, isString
-} from './common.js';
+/* shared */
+import { getType, isString } from './common.js';
 
 /* constants */
 const DEG = 360;

@@ -2,24 +2,15 @@
  * tab-dnd.js
  */
 
-import {
-  isObjectNotEmpty, logErr, throwErr
-} from './common.js';
-import {
-  moveTab
-} from './browser.js';
-import {
-  createTabsInOrder, moveTabsInOrder
-} from './browser-tabs.js';
+/* shared */
+import { isObjectNotEmpty, logErr, throwErr } from './common.js';
+import { moveTab } from './browser.js';
+import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
   getTemplate, setSessionTabList
 } from './util.js';
-import {
-  restoreTabContainers
-} from './tab-group.js';
-
-/* constants */
+import { restoreTabContainers } from './tab-group.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
@@ -27,9 +18,9 @@ import {
 } from './constant.js';
 
 /* api */
-const {
-  windows
-} = browser;
+const { windows } = browser;
+
+/* constants */
 const { WINDOW_ID_NONE } = windows;
 const HALF = 0.5;
 

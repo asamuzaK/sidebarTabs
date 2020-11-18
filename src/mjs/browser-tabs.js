@@ -2,9 +2,8 @@
  * browser-tabs.js
  */
 
-import {
-  getType, isObjectNotEmpty, isString
-} from './common.js';
+/* shared */
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   createBookmark, createNewWindow, createTab, getActiveTab, getTab,
   highlightTab, moveTab, reloadTab, removeTab, updateTab
@@ -13,8 +12,6 @@ import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
   getTemplate
 } from './util.js';
-
-/* constants */
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_QUERY
 } from './constant.js';

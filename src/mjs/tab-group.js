@@ -2,22 +2,17 @@
  * tab-group.js
  */
 
+/* shared */
 import {
   addElementContentEditable, getType, isObjectNotEmpty,
   removeElementContentEditable, throwErr
 } from './common.js';
-import {
-  getStorage, getTab, queryTabs
-} from './browser.js';
-import {
-  moveTabsInOrder
-} from './browser-tabs.js';
+import { getStorage, getTab, queryTabs } from './browser.js';
+import { moveTabsInOrder } from './browser-tabs.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
   getSidebarTabId, getSidebarTabIndex, getTemplate, setSessionTabList
 } from './util.js';
-
-/* constants */
 import {
   ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,

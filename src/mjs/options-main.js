@@ -2,15 +2,12 @@
  * options.js
  */
 
-import {
-  isObjectNotEmpty, isString, throwErr
-} from './common.js';
+/* shared */
+import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   getAllStorage, clearContextMenuOnMouseup, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
-
-/* constant */
 import {
   BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP, THEME_CUSTOM,
   THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO

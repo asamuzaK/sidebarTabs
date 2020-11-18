@@ -2,9 +2,8 @@
  * main.js
  */
 
-import {
-  getType, isObjectNotEmpty, isString, throwErr
-} from './common.js';
+/* shared */
+import { getType, isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
@@ -44,12 +43,8 @@ import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
   updateCustomThemeCss
 } from './theme.js';
-import {
-  overrideContextMenu, updateContextMenu
-} from './menu.js';
+import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
-
-/* constants */
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON,
@@ -81,9 +76,9 @@ import {
 } from './constant.js';
 
 /* api */
-const {
-  i18n, tabs
-} = browser;
+const { i18n, tabs } = browser;
+
+/* constants */
 const { TAB_ID_NONE } = tabs;
 const MOUSE_BUTTON_LEFT = 0;
 const MOUSE_BUTTON_MIDDLE = 1;

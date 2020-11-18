@@ -2,15 +2,16 @@
  * menu.js
  */
 
+/* shared */
 import { getType, isObjectNotEmpty, isString, throwErr } from './common.js';
 import { getAllContextualIdentities } from './browser.js';
 import menuItems from './menu-items.js';
-
-/* constants */
 import { NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER } from './constant.js';
 
 /* api */
 const { menus, runtime } = browser;
+
+/* constant */
 const ICON_SIZE_16 = 16;
 
 /* menu item map */

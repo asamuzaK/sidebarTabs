@@ -2,9 +2,8 @@
  * background.js
  */
 
-import {
-  throwErr
-} from './common.js';
+/* shared */
+import { throwErr } from './common.js';
 import {
   handleCmd, handleMsg, setSidebarState, toggleSidebar
 } from './background-main.js';

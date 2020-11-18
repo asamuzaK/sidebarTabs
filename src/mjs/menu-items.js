@@ -2,8 +2,7 @@
  * menu-item.js
  */
 
-/* api */
-/* constants */
+/* shared */
 import {
   NEW_TAB_OPEN_CONTAINER, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
@@ -19,6 +18,7 @@ import {
   TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER
 } from './constant.js';
 
+/* api */
 const { i18n } = browser;
 
 /* context menu items */

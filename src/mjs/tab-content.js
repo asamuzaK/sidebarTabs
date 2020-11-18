@@ -2,21 +2,14 @@
  * tab-content.js
  */
 
+/* shared */
 import {
   getType, isObjectNotEmpty, isString, logErr, setElementDataset,
   preventDefaultEvent, throwErr
 } from './common.js';
-import {
-  getTab, updateTab
-} from './browser.js';
-import {
-  closeTabs, muteTabs
-} from './browser-tabs.js';
-import {
-  getSidebarTab, getSidebarTabId
-} from './util.js';
-
-/* constants */
+import { getTab, updateTab } from './browser.js';
+import { closeTabs, muteTabs } from './browser-tabs.js';
+import { getSidebarTab, getSidebarTabId } from './util.js';
 import {
   CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
   CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,

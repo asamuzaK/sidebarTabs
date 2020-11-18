@@ -2,21 +2,14 @@
  * sidebar.js
  */
 
-import {
-  throwErr
-} from './common.js';
-import {
-  setSessionTabList
-} from './util.js';
+/* shared */
+import { throwErr } from './common.js';
+import { setSessionTabList } from './util.js';
 import {
   expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
 } from './tab-group.js';
-import {
-  localizeHtml
-} from './localize.js';
-import {
-  initCustomTheme, setSidebarTheme
-} from './theme.js';
+import { localizeHtml } from './localize.js';
+import { initCustomTheme, setSidebarTheme } from './theme.js';
 import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
   handleClickedMenu, handleContextmenuEvt, handleCreatedTab, handleDetachedTab,
@@ -26,9 +19,7 @@ import {
 } from './main.js';
 
 /* api */
-const {
-  contextualIdentities, menus, runtime, storage, tabs, theme
-} = browser;
+const { contextualIdentities, menus, runtime, storage, tabs, theme } = browser;
 
 /* listeners */
 contextualIdentities.onCreated.addListener(() =>

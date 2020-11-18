@@ -2,15 +2,12 @@
  * util.js
  */
 
-import {
-  getType, isObjectNotEmpty, isString
-} from './common.js';
+/* shared */
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getActiveTabId, getCloseTabsByDoubleClickValue, getCurrentWindow,
   getSessionWindowValue, setSessionWindowValue, setStorage, updateTab
 } from './browser.js';
-
-/* constants */
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_LIST, TAB_QUERY

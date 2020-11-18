@@ -2,18 +2,13 @@
  * theme.js
  */
 
-import {
-  getType, isObjectNotEmpty, isString
-} from './common.js';
+/* shared */
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getAllStorage, getCurrentTheme, getEnabledTheme, getStorage, removeStorage,
   sendMessage, setStorage
 } from './browser.js';
-import {
-  blendColors, convertColorToHex
-} from './color.js';
-
-/* constants */
+import { blendColors, convertColorToHex } from './color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,

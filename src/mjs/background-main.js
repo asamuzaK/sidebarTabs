@@ -2,15 +2,14 @@
  * background-main.js
  */
 
-import {
-  getType, isString
-} from './common.js';
-
-/* constant */
+/* shared */
+import { getType, isString } from './common.js';
 import { SIDEBAR_STATE_UPDATE, TOGGLE_STATE } from './constant.js';
 
 /* api */
 const { sidebarAction, windows } = browser;
+
+/* constant */
 const { WINDOW_ID_NONE } = windows;
 
 /* sidebar */
