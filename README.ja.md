@@ -1,6 +1,6 @@
 [EN](./README.md) | JA
 
-[![Build Status](https://travis-ci.com/asamuzaK/sidebarTabs.svg?branch=master)](https://travis-ci.com/asamuzaK/sidebarTabs)
+[![build](https://github.com/asamuzaK/sidebarTabs/workflows/build/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3Abuild)
 [![devDependency Status](https://david-dm.org/asamuzaK/sidebarTabs/dev-status.svg)](https://david-dm.org/asamuzaK/sidebarTabs?type=dev)
 [![Mozilla Add-on](https://img.shields.io/amo/v/sidebarTabs@asamuzak.jp.svg)](https://addons.mozilla.org/firefox/addon/sidebartabs/)
 
