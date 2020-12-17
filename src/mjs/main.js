@@ -315,8 +315,10 @@ export const handleClickedTab = evt => {
   if ((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
       (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
        closeTabsByDoubleClick)) {
-    tab && func.push(closeTabs([tab]));
-    evt.preventDefault();
+    if (tab) {
+      func.push(closeTabs([tab]));
+      evt.preventDefault();
+    }
   } else if (type === 'click') {
     if (shiftKey) {
       if (tab && firstSelectedTab) {

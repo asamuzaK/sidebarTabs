@@ -946,13 +946,16 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
       const evt = {
+        preventDefault,
         button: 1,
         target: body,
         type: 'mousedown'
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
+      assert.isFalse(preventDefault.called, 'not called preventDefault');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -964,13 +967,16 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
       const evt = {
+        preventDefault,
         button: 0,
         target: elm,
         type: 'mousedown'
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
+      assert.isFalse(preventDefault.called, 'not called preventDefault');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -983,7 +989,9 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
       const evt = {
+        preventDefault,
         button: 1,
         target: body,
         type: 'dblclick'
@@ -991,6 +999,7 @@ describe('main', () => {
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
       assert.strictEqual(remove.callCount, j, 'not called update');
+      assert.isFalse(preventDefault.called, 'not called preventDefault');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -1237,13 +1246,16 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
       const evt = {
+        preventDefault,
         button: 1,
         target: elm,
         type: 'mousedown'
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
+      assert.isTrue(preventDefault.calledOnce, 'called preventDefault');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1255,7 +1267,9 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
       const evt = {
+        preventDefault,
         button: 0,
         target: elm,
         type: 'dblclick'
@@ -1263,6 +1277,7 @@ describe('main', () => {
       mjs.sidebar.closeTabsByDoubleClick = true;
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
+      assert.isTrue(preventDefault.calledOnce, 'called preventDefault');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1274,7 +1289,9 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
       const evt = {
+        preventDefault,
         button: 0,
         target: elm,
         type: 'dblclick'
@@ -1282,6 +1299,7 @@ describe('main', () => {
       mjs.sidebar.closeTabsByDoubleClick = false;
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
+      assert.isFalse(preventDefault.called, 'not called preventDefault');
       assert.deepEqual(res, [], 'result');
     });
   });
