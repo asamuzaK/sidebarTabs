@@ -955,7 +955,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
-      assert.isFalse(preventDefault.called, 'not called preventDefault');
+      assert.isFalse(preventDefault.called, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -976,7 +976,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
-      assert.isFalse(preventDefault.called, 'not called preventDefault');
+      assert.isFalse(preventDefault.called, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -999,7 +999,7 @@ describe('main', () => {
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
       assert.strictEqual(remove.callCount, j, 'not called update');
-      assert.isFalse(preventDefault.called, 'not called preventDefault');
+      assert.isFalse(preventDefault.called, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -1255,7 +1255,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
-      assert.isTrue(preventDefault.calledOnce, 'called preventDefault');
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1277,7 +1277,7 @@ describe('main', () => {
       mjs.sidebar.closeTabsByDoubleClick = true;
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
-      assert.isTrue(preventDefault.calledOnce, 'called preventDefault');
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1299,7 +1299,7 @@ describe('main', () => {
       mjs.sidebar.closeTabsByDoubleClick = false;
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
-      assert.isFalse(preventDefault.called, 'not called preventDefault');
+      assert.isFalse(preventDefault.called, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
   });
