@@ -316,6 +316,7 @@ export const handleClickedTab = evt => {
       (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
        closeTabsByDoubleClick)) {
     tab && func.push(closeTabs([tab]));
+    evt.preventDefault();
   } else if (type === 'click') {
     if (shiftKey) {
       if (tab && firstSelectedTab) {
