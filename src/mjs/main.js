@@ -1217,7 +1217,7 @@ export const prepareContexualIdsMenuItems = async parentId => {
   if (Array.isArray(contextualIds)) {
     const itemKeys = contextualIds.filter(k => isString(k) && k);
     for (const itemKey of itemKeys) {
-      func.push(updateContextMenu(`${itemKey}Reopen`, {
+      func.push(updateContextMenu(`${itemKey}NewTab`, {
         parentId
       }));
     }
