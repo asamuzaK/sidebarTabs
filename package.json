@@ -29,7 +29,7 @@
     "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.12.13",
     "@babel/register": "^7.12.13",
-    "addons-linter": "^2.17.0",
+    "addons-linter": "^2.18.0",
     "chai": "^4.3.0",
     "eslint": "^7.19.0",
     "eslint-config-standard": "^16.0.2",
@@ -46,5 +46,5 @@
     "sinon": "^9.2.4",
     "webext-schema": "^1.4.6"
   },
-  "version": "3.7.3"
+  "version": "3.7.4"
 }
