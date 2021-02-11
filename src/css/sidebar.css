@@ -218,9 +218,7 @@ main {
   fill: var(--foreground-discarded-color);
   stroke: var(--foreground-highlight-color);
 }
-.tab:hover .tab-icon,
-.tab.active:hover .tab-icon,
-.tab.discarded:hover .tab-icon {
+:is(.tab:hover, .tab.active:hover, .tab.discarded:hover) .tab-icon {
   fill: var(--foreground-hover-color);
   stroke: var(--foreground-highlight-color);
 }
@@ -270,9 +268,7 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.tab:hover .tab-audio.audible,
-.tab.active:hover .tab-audio.audible,
-.tab.discarded:hover .tab-audio.audible {
+:is(.tab:hover, .tab.active:hover, .tab.discarded:hover) .tab-audio.audible {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
@@ -335,9 +331,7 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.tab:hover > .tab-close,
-.tab.active:hover > .tab-close,
-.tab.discarded:hover > .tab-close {
+:is(.tab:hover, .tab.active:hover, .tab.discarded:hover) > .tab-close {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
@@ -395,9 +389,7 @@ main {
   fill-opacity: 0.7;
   stroke: var(--foreground-highlight-color);
 }
-.tab-container.pinned > .tab:hover > .tab-pinned,
-.tab-container.pinned > .tab.active:hover > .tab-pinned,
-.tab-container.pinned > .tab.discarded:hover > .tab-pinned {
+.tab-container.pinned > :is(.tab:hover, .tab.active:hover, .tab.discarded:hover) > .tab-pinned {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.7;
   stroke: var(--foreground-highlight-color);
@@ -525,8 +517,7 @@ main {
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
 }
-.heading:hover > .heading-label-edit,
-.heading.active:hover > .heading-label-edit {
+:is(.heading:hover, .heading.active:hover) > .heading-label-edit {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.8;
   stroke: var(--foreground-highlight-color);
