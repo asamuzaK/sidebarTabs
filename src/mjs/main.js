@@ -522,7 +522,7 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     const list = document.querySelectorAll(TAB_QUERY);
     const listedTab = list[index];
     const listedTabPrev = index > 0 && list[index - 1];
-    let container, openerTab, openerTabsTab;
+    let container, openerTab;
     for (const item of items) {
       const { classList } = item;
       if (classList.contains(CLASS_TAB_CONTEXT)) {
@@ -590,7 +590,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     }
     if (Number.isInteger(openerTabId) && !emulate) {
       openerTab = document.querySelector(`[data-tab-id="${openerTabId}"]`);
-      openerTabsTab = await getTab(openerTabId);
     }
     if (pinned) {
       container = document.getElementById(PINNED);
@@ -603,14 +602,13 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       if (container.childElementCount > 1) {
         container.classList.add(CLASS_TAB_GROUP);
       }
-    } else if (openerTab && !openerTab.classList.contains(PINNED) &&
-               openerTabsTab) {
+    } else if (openerTab && !openerTab.classList.contains(PINNED)) {
       container = openerTab.parentNode;
+      const { lastElementChild: lastChildTab } = container;
+      const lastChildTabId = getSidebarTabId(lastChildTab);
+      const lastChildTabsTab = await getTab(lastChildTabId);
+      const { index: lastChildTabIndex } = lastChildTabsTab;
       if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
-        const { lastElementChild: lastChildTab } = container;
-        const lastChildTabId = getSidebarTabId(lastChildTab);
-        const lastChildTabsTab = await getTab(lastChildTabId);
-        const { index: lastChildTabIndex } = lastChildTabsTab;
         if (index < lastChildTabIndex) {
           await moveTab(id, {
             windowId,
@@ -618,8 +616,8 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
           });
         }
         container.appendChild(tab);
-      } else if (openerTabsTab.index === index - 1) {
-        container.insertBefore(tab, openerTab.nextElementSibling);
+      } else if (index < lastChildTabIndex) {
+        container.insertBefore(tab, listedTab);
       } else {
         container.appendChild(tab);
       }

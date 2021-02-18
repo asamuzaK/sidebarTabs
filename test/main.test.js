@@ -2350,8 +2350,66 @@ describe('main', () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
-      browser.tabs.get.withArgs(2).resolves({
-        index: 0
+      browser.tabs.get.withArgs(3).resolves({
+        index: 1
+      });
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.parentNode === parent, 'parent');
+      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+        'not collapsed');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, [undefined, undefined], undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 1,
+        openerTabId: 2,
+        pinned: false,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const parent = document.createElement('section');
+      const child = document.createElement('div');
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      const child2 = document.createElement('div');
+      const child3 = document.createElement('div');
+      const body = document.querySelector('body');
+      const newTab = document.getElementById(NEW_TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_COLLAPSED);
+      span.appendChild(img);
+      child.classList.add(TAB);
+      child.dataset.tabId = '2';
+      child.appendChild(span);
+      child2.classList.add(TAB);
+      child2.dataset.tabId = '3';
+      child2.classList.add(TAB);
+      child2.dataset.tabId = '4';
+      parent.appendChild(child);
+      parent.appendChild(child2);
+      body.insertBefore(parent, newTab);
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
