@@ -2403,10 +2403,11 @@ describe('main', () => {
       child.appendChild(span);
       child2.classList.add(TAB);
       child2.dataset.tabId = '3';
-      child2.classList.add(TAB);
-      child2.dataset.tabId = '4';
+      child3.classList.add(TAB);
+      child3.dataset.tabId = '4';
       parent.appendChild(child);
       parent.appendChild(child2);
+      parent.appendChild(child3);
       body.insertBefore(parent, newTab);
       browser.tabs.get.withArgs(4).resolves({
         index: 2
