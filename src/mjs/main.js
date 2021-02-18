@@ -522,7 +522,6 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     const list = document.querySelectorAll(TAB_QUERY);
     const listedTab = list[index];
     const listedTabPrev = index > 0 && list[index - 1];
-    let container, openerTab, openerTabsTab;
     for (const item of items) {
       const { classList } = item;
       if (classList.contains(CLASS_TAB_CONTEXT)) {
@@ -588,12 +587,8 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
         name
       }));
     }
-    if (Number.isInteger(openerTabId) && !emulate) {
-      openerTab = document.querySelector(`[data-tab-id="${openerTabId}"]`);
-      openerTabsTab = await getTab(openerTabId);
-    }
     if (pinned) {
-      container = document.getElementById(PINNED);
+      const container = document.getElementById(PINNED);
       tab.classList.add(PINNED);
       if (container.children[index]) {
         container.insertBefore(tab, container.children[index]);
@@ -603,48 +598,57 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       if (container.childElementCount > 1) {
         container.classList.add(CLASS_TAB_GROUP);
       }
-    } else if (openerTab && !openerTab.classList.contains(PINNED) &&
-               openerTabsTab) {
-      container = openerTab.parentNode;
-      if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
+    } else if (emulate) {
+      const target = document.getElementById(NEW_TAB);
+      const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+      container.appendChild(tab);
+      container.removeAttribute('hidden');
+      target.parentNode.insertBefore(container, target);
+    } else {
+      const openerTab = Number.isInteger(openerTabId) &&
+        document.querySelector(`[data-tab-id="${openerTabId}"]`);
+      if (openerTab && !openerTab.classList.contains(PINNED)) {
+        const container = openerTab.parentNode;
         const { lastElementChild: lastChildTab } = container;
         const lastChildTabId = getSidebarTabId(lastChildTab);
         const lastChildTabsTab = await getTab(lastChildTabId);
         const { index: lastChildTabIndex } = lastChildTabsTab;
-        if (index < lastChildTabIndex) {
-          await moveTab(id, {
-            windowId,
-            index: lastChildTabIndex
-          });
+        if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
+          if (index < lastChildTabIndex) {
+            await moveTab(id, {
+              windowId,
+              index: lastChildTabIndex
+            });
+          }
+          container.appendChild(tab);
+        } else if (index < lastChildTabIndex && listedTab) {
+          container.insertBefore(tab, listedTab);
+        } else {
+          container.appendChild(tab);
         }
-        container.appendChild(tab);
-      } else if (openerTabsTab.index === index - 1) {
-        container.insertBefore(tab, openerTab.nextElementSibling);
+        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabGroupCollapsedState(tab, true));
+      } else if (list.length !== index && listedTab && listedTab.parentNode &&
+                 listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listedTabPrev && listedTabPrev.parentNode &&
+                 listedTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+                 listedTab.parentNode === listedTabPrev.parentNode) {
+        const container = listedTab.parentNode;
+        container.insertBefore(tab, listedTab);
+        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabGroupCollapsedState(tab, true));
       } else {
+        let target;
+        if (list.length !== index && listedTab && listedTab.parentNode) {
+          target = listedTab.parentNode;
+        } else {
+          target = document.getElementById(NEW_TAB);
+        }
+        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
         container.appendChild(tab);
+        container.removeAttribute('hidden');
+        target.parentNode.insertBefore(container, target);
       }
-      container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState(tab, true));
-    } else if (list.length !== index && listedTab && listedTab.parentNode &&
-               listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-               listedTabPrev && listedTabPrev.parentNode &&
-               listedTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-               listedTab.parentNode === listedTabPrev.parentNode) {
-      container = listedTab.parentNode;
-      container.insertBefore(tab, listedTab);
-      container.classList.contains(CLASS_TAB_COLLAPSED) &&
-        func.push(toggleTabGroupCollapsedState(tab, true));
-    } else {
-      let target;
-      if (list.length !== index && listedTab && listedTab.parentNode) {
-        target = listedTab.parentNode;
-      } else {
-        target = document.getElementById(NEW_TAB);
-      }
-      container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-      container.appendChild(tab);
-      container.removeAttribute('hidden');
-      target.parentNode.insertBefore(container, target);
     }
     if (hidden) {
       tab.setAttribute('hidden', 'hidden');
