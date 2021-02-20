@@ -499,7 +499,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
       muted
     }
   } = tabsTab;
-  const { emulate } = opt;
+  const { attached, emulate } = opt;
   const func = [];
   if (!Number.isInteger(id)) {
     throw new TypeError(`Expected Number but got ${getType(id)}.`);
@@ -611,6 +611,15 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
       container.appendChild(tab);
       container.removeAttribute('hidden');
       target.parentNode.insertBefore(container, target);
+    } else if (attached) {
+      if (inGroup) {
+        const container = targetTab.parentNode;
+        container.insertBefore(tab, targetTab);
+        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabGroupCollapsedState(tab, true));
+      } else {
+        await createSidebarTab(tab, insertTarget);
+      }
     } else {
       const openerTab = Number.isInteger(openerTabId) &&
         document.querySelector(`[data-tab-id="${openerTabId}"]`);
