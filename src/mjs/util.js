@@ -9,8 +9,9 @@ import {
   getSessionWindowValue, setSessionWindowValue, setStorage, updateTab
 } from './browser.js';
 import {
-  CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_LIST, TAB_QUERY
+  CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  NEW_TAB, PINNED, TAB_LIST, TAB_QUERY
 } from './constant.js';
 
 /**
@@ -70,6 +71,28 @@ export const restoreTabContainer = container => {
       default:
     }
   }
+};
+
+/**
+ * create sidebar tab
+ *
+ * @param {object} node - node
+ * @param {object} [target] - target element to insert before
+ * @returns {object} - sidebar tab
+ */
+export const createSidebarTab = (node, target) => {
+  let tab;
+  if (node && node.nodeType === Node.ELEMENT_NODE) {
+    const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
+    tab = node;
+    container.appendChild(tab);
+    container.removeAttribute('hidden');
+    if (!target || node.nodeType !== Node.ELEMENT_NODE) {
+      target = document.getElementById(NEW_TAB);
+    }
+    target.parentNode.insertBefore(container, target);
+  }
+  return tab || null;
 };
 
 /**

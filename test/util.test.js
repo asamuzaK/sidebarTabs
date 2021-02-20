@@ -10,7 +10,7 @@ import sinon from 'sinon';
 import * as mjs from '../src/mjs/util.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB, TAB_LIST
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB, TAB_LIST
 } from '../src/mjs/constant.js';
 
 describe('util', () => {
@@ -165,6 +165,54 @@ describe('util', () => {
       body.appendChild(parent);
       await func(elm);
       assert.isTrue(elm.classList.contains(CLASS_TAB_GROUP), 'result');
+    });
+  });
+
+  describe('create sidebar tab', () => {
+    const func = mjs.createSidebarTab;
+
+    it('should get null if no argument given', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
+      const res = await func('foo');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get result', async () => {
+      const tmpl = document.createElement('template');
+      const div = document.createElement('div');
+      const elm = document.createElement('div');
+      const newTab = document.createElement('div');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(div);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(newTab);
+      const res = await func(elm);
+      assert.deepEqual(res, elm, 'result');
+      assert.deepEqual(res.parentNode.nextElementSibling, newTab, 'position');
+    });
+
+    it('should get result', async () => {
+      const tmpl = document.createElement('template');
+      const div = document.createElement('div');
+      const elm = document.createElement('div');
+      const div2 = document.createElement('div');
+      const newTab = document.createElement('div');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(div);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(div2);
+      body.appendChild(newTab);
+      const res = await func(elm, div2);
+      assert.deepEqual(res, elm, 'result');
+      assert.deepEqual(res.parentNode.nextElementSibling, div2, 'position');
     });
   });
 

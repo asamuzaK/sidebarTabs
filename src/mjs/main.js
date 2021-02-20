@@ -17,10 +17,10 @@ import {
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
 } from './browser-tabs.js';
 import {
-  activateTab, getSessionTabList, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate, isNewTab,
-  scrollTabIntoView, setSessionTabList, storeCloseTabsByDoubleClickValue,
-  switchTab
+  activateTab, createSidebarTab, getSessionTabList, getSidebarTab,
+  getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex, getTabsInRange,
+  getTemplate, isNewTab, scrollTabIntoView, setSessionTabList,
+  storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -488,10 +488,10 @@ export const handleActivatedTab = async info => {
  * handle created tab
  *
  * @param {!object} tabsTab - tabs.Tab
- * @param {boolean} emulate - emulate tab
+ * @param {object} opt - options
  * @returns {Promise.<Array>} - results of each handler
  */
-export const handleCreatedTab = async (tabsTab, emulate = false) => {
+export const handleCreatedTab = async (tabsTab, opt = {}) => {
   const {
     active, audible, cookieStoreId, favIconUrl, hidden, id, index, openerTabId,
     pinned, status, title, url, windowId: tabWindowId,
@@ -499,17 +499,18 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       muted
     }
   } = tabsTab;
-  const func = [];
   if (!Number.isInteger(id)) {
     throw new TypeError(`Expected Number but got ${getType(id)}.`);
   }
   if (!Number.isInteger(tabWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
+  const { attached, emulate } = opt;
   const {
     closeTabsByDoubleClick, enableTabGroup, incognito,
     tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd, windowId
   } = sidebar;
+  const func = [];
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
     const tab = getTemplate(CLASS_TAB_TMPL);
     const tabItems = [
@@ -519,9 +520,17 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
       `.${CLASS_TAB_CLOSE}`, `.${CLASS_TAB_CLOSE_ICON}`
     ];
     const items = tab.querySelectorAll(tabItems.join(','));
-    const list = document.querySelectorAll(TAB_QUERY);
-    const listedTab = list[index];
-    const listedTabPrev = index > 0 && list[index - 1];
+    const newTab = document.getElementById(NEW_TAB);
+    const tabList = document.querySelectorAll(TAB_QUERY);
+    const targetTab = tabList[index];
+    const targetTabPrev = index > 0 && tabList[index - 1];
+    const insertTarget = tabList.length !== index && targetTab &&
+      targetTab.parentNode;
+    const inGroup = tabList.length !== index && targetTab && targetTabPrev &&
+      targetTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+      targetTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
+      targetTab.parentNode === targetTabPrev.parentNode;
+    let scroll;
     for (const item of items) {
       const { classList } = item;
       if (classList.contains(CLASS_TAB_CONTEXT)) {
@@ -599,55 +608,58 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
         container.classList.add(CLASS_TAB_GROUP);
       }
     } else if (emulate) {
-      const target = document.getElementById(NEW_TAB);
       const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
       container.appendChild(tab);
       container.removeAttribute('hidden');
-      target.parentNode.insertBefore(container, target);
+      newTab.parentNode.insertBefore(container, newTab);
+    } else if (attached) {
+      if (inGroup) {
+        const container = targetTab.parentNode;
+        container.insertBefore(tab, targetTab);
+        container.classList.contains(CLASS_TAB_COLLAPSED) &&
+          func.push(toggleTabGroupCollapsedState(tab, true));
+      } else {
+        await createSidebarTab(tab, insertTarget);
+      }
     } else {
       const openerTab = Number.isInteger(openerTabId) &&
         document.querySelector(`[data-tab-id="${openerTabId}"]`);
       if (openerTab && !openerTab.classList.contains(PINNED)) {
         const container = openerTab.parentNode;
-        const { lastElementChild: lastChildTab } = container;
+        const {
+          lastElementChild: lastChildTab,
+          nextElementSibling: nextContainer
+        } = container;
         const lastChildTabId = getSidebarTabId(lastChildTab);
         const lastChildTabsTab = await getTab(lastChildTabId);
         const { index: lastChildTabIndex } = lastChildTabsTab;
-        if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
-          if (index < lastChildTabIndex) {
-            await moveTab(id, {
-              windowId,
-              index: lastChildTabIndex
-            });
-          }
-          container.appendChild(tab);
-        } else if (index < lastChildTabIndex && listedTab) {
-          container.insertBefore(tab, listedTab);
+        if (tabList.length === index && nextContainer !== newTab) {
+          await createSidebarTab(tab, insertTarget);
         } else {
-          container.appendChild(tab);
+          if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
+            if (index < lastChildTabIndex) {
+              await moveTab(id, {
+                windowId,
+                index: lastChildTabIndex
+              });
+            }
+            container.appendChild(tab);
+          } else if (index < lastChildTabIndex && targetTab) {
+            container.insertBefore(tab, targetTab);
+          } else {
+            container.appendChild(tab);
+          }
+          container.classList.contains(CLASS_TAB_COLLAPSED) &&
+            func.push(toggleTabGroupCollapsedState(tab, true));
+          scroll = true;
         }
-        container.classList.contains(CLASS_TAB_COLLAPSED) &&
-          func.push(toggleTabGroupCollapsedState(tab, true));
-      } else if (list.length !== index && listedTab && listedTab.parentNode &&
-                 listedTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-                 listedTabPrev && listedTabPrev.parentNode &&
-                 listedTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-                 listedTab.parentNode === listedTabPrev.parentNode) {
-        const container = listedTab.parentNode;
-        container.insertBefore(tab, listedTab);
+      } else if (inGroup) {
+        const container = targetTab.parentNode;
+        container.insertBefore(tab, targetTab);
         container.classList.contains(CLASS_TAB_COLLAPSED) &&
           func.push(toggleTabGroupCollapsedState(tab, true));
       } else {
-        let target;
-        if (list.length !== index && listedTab && listedTab.parentNode) {
-          target = listedTab.parentNode;
-        } else {
-          target = document.getElementById(NEW_TAB);
-        }
-        const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-        container.appendChild(tab);
-        container.removeAttribute('hidden');
-        target.parentNode.insertBefore(container, target);
+        await createSidebarTab(tab, insertTarget);
       }
     }
     if (hidden) {
@@ -655,7 +667,8 @@ export const handleCreatedTab = async (tabsTab, emulate = false) => {
     } else {
       tab.removeAttribute('hidden');
       if (active ||
-          (Number.isInteger(openerTabId) && openerTabId !== TAB_ID_NONE)) {
+          (scroll && Number.isInteger(openerTabId) &&
+           openerTabId !== TAB_ID_NONE)) {
         func.push(scrollTabIntoView(tab, {
           active,
           openerTabId
@@ -692,8 +705,11 @@ export const handleAttachedTab = async (tabId, info) => {
   }
   if (tabId !== TAB_ID_NONE && newWindowId === windowId) {
     const tabsTab = await getTab(tabId);
+    const opt = {
+      attached: true
+    };
     tabsTab.index = newPosition;
-    func = handleCreatedTab(tabsTab);
+    func = handleCreatedTab(tabsTab, opt);
   }
   return func || null;
 };
@@ -2050,7 +2066,10 @@ export const emulateTabsInOrder = async arr => {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
   const tab = arr.shift();
-  isObjectNotEmpty(tab) && await handleCreatedTab(tab, true);
+  const opt = {
+    emulate: true
+  };
+  isObjectNotEmpty(tab) && await handleCreatedTab(tab, opt);
   arr.length && await emulateTabsInOrder(arr);
 };
 
