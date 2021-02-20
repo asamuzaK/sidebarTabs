@@ -2416,7 +2416,9 @@ describe('main', () => {
       child.dataset.tabId = '2';
       parent.appendChild(child);
       body.insertBefore(parent, newTab);
-      const res = await func(tabsTab, true);
+      const res = await func(tabsTab, {
+        emulate: true
+      });
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
