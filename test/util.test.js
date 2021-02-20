@@ -212,6 +212,25 @@ describe('util', () => {
       body.appendChild(newTab);
       const res = await func(elm, div2);
       assert.deepEqual(res, elm, 'result');
+      assert.deepEqual(res.parentNode.nextElementSibling, newTab, 'position');
+    });
+
+    it('should get result', async () => {
+      const tmpl = document.createElement('template');
+      const div = document.createElement('div');
+      const elm = document.createElement('div');
+      const div2 = document.createElement('div');
+      const newTab = document.createElement('div');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(div);
+      div2.classList.add(CLASS_TAB_CONTAINER);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(div2);
+      body.appendChild(newTab);
+      const res = await func(elm, div2);
+      assert.deepEqual(res, elm, 'result');
       assert.deepEqual(res.parentNode.nextElementSibling, div2, 'position');
     });
   });
