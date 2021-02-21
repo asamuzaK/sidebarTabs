@@ -2241,6 +2241,167 @@ describe('main', () => {
         audible: false,
         cookieStoreId: COOKIE_STORE_DEFAULT,
         id: 1,
+        index: 0,
+        pinned: true,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const pinned = document.getElementById(PINNED);
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
+      assert.isTrue(elm.draggable, 'draggable');
+      assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm === pinned.firstElementChild, 'position');
+      assert.isFalse(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 1, 'count');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 0,
+        pinned: true,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const pinned = document.getElementById(PINNED);
+      const child = document.createElement('div');
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      child.classList.add(TAB);
+      child.dataset.tabId = '2';
+      pinned.appendChild(child);
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
+      assert.isTrue(elm.draggable, 'draggable');
+      assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm === pinned.firstElementChild, 'position');
+      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 2, 'count');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 0,
+        pinned: true,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const pinned = document.getElementById(PINNED);
+      const child = document.createElement('div');
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      child.classList.add(TAB);
+      child.dataset.tabId = '2';
+      pinned.appendChild(child);
+      mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
+      assert.isTrue(elm.draggable, 'draggable');
+      assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm === pinned.firstElementChild, 'position');
+      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 2, 'count');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 1,
+        pinned: true,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const pinned = document.getElementById(PINNED);
+      const child = document.createElement('div');
+      pinned.classList.add(CLASS_TAB_CONTAINER);
+      child.classList.add(TAB);
+      child.dataset.tabId = '2';
+      pinned.appendChild(child);
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
+      assert.isTrue(elm.draggable, 'draggable');
+      assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm === pinned.lastElementChild, 'position');
+      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 2, 'count');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
         index: 1,
         pinned: true,
         status: 'complete',
@@ -2271,6 +2432,10 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(PINNED), 'pinned');
       assert.isTrue(elm.draggable, 'draggable');
       assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm.previousElementSibling === child, 'position');
+      assert.isTrue(elm.nextElementSibling === child2, 'position');
+      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 3, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined
@@ -2284,7 +2449,7 @@ describe('main', () => {
         audible: false,
         cookieStoreId: COOKIE_STORE_DEFAULT,
         id: 1,
-        index: 1,
+        index: 2,
         pinned: true,
         status: 'complete',
         title: 'foo',
@@ -2296,12 +2461,15 @@ describe('main', () => {
       };
       const pinned = document.getElementById(PINNED);
       const child = document.createElement('div');
+      const child2 = document.createElement('div');
       pinned.classList.add(CLASS_TAB_CONTAINER);
+      pinned.classList.add(CLASS_TAB_GROUP);
       child.classList.add(TAB);
       child.dataset.tabId = '2';
+      child2.classList.add(TAB);
+      child2.dataset.tabId = '3';
       pinned.appendChild(child);
-      mjs.sidebar.enableTabGroup = false;
-      mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      pinned.appendChild(child2);
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2311,7 +2479,10 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(PINNED), 'pinned');
       assert.isTrue(elm.draggable, 'draggable');
       assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm.previousElementSibling === child2, 'position');
+      assert.isTrue(pinned.lastElementChild === elm, 'position');
       assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 3, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined
@@ -2336,11 +2507,20 @@ describe('main', () => {
         }
       };
       const pinned = document.getElementById(PINNED);
+      const div = document.createElement('div');
       const child = document.createElement('div');
+      const child2 = document.createElement('div');
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector('body');
       pinned.classList.add(CLASS_TAB_CONTAINER);
+      div.classList.add(CLASS_TAB_CONTAINER);
       child.classList.add(TAB);
       child.dataset.tabId = '2';
+      child2.classList.add(TAB);
+      child2.dataset.tabId = '3';
       pinned.appendChild(child);
+      div.appendChild(child2);
+      body.insertBefore(div, newTab);
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2350,41 +2530,9 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(PINNED), 'pinned');
       assert.isTrue(elm.draggable, 'draggable');
       assert.isTrue(elm.parentNode === pinned, 'parent');
+      assert.isTrue(elm === pinned.lastElementChild, 'position');
       assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
-      assert.deepEqual(res, [
-        undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
-      ], 'result');
-    });
-
-    it('should create element', async () => {
-      const i = browser.i18n.getMessage.callCount;
-      const tabsTab = {
-        active: false,
-        audible: false,
-        cookieStoreId: COOKIE_STORE_DEFAULT,
-        id: 1,
-        index: 1,
-        pinned: true,
-        status: 'complete',
-        title: 'foo',
-        url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        mutedInfo: {
-          muted: false
-        }
-      };
-      const res = await func(tabsTab);
-      const elm = document.querySelector('[data-tab-id="1"]');
-      const pinned = document.getElementById(PINNED);
-      assert.isOk(elm, 'created');
-      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
-      assert.strictEqual(elm.dataset.tabId, '1', 'id');
-      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isFalse(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined

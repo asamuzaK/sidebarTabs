@@ -599,8 +599,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     if (pinned) {
       const container = document.getElementById(PINNED);
       tab.classList.add(PINNED);
-      if (container.children[index]) {
-        container.insertBefore(tab, container.children[index]);
+      if (container.children[index] === targetTab) {
+        container.insertBefore(tab, targetTab);
       } else {
         container.appendChild(tab);
       }
@@ -608,10 +608,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         container.classList.add(CLASS_TAB_GROUP);
       }
     } else if (emulate) {
-      const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
-      container.appendChild(tab);
-      container.removeAttribute('hidden');
-      newTab.parentNode.insertBefore(container, newTab);
+      await createSidebarTab(tab, insertTarget);
     } else if (attached) {
       if (inGroup) {
         const container = targetTab.parentNode;
