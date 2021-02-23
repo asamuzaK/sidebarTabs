@@ -26,15 +26,15 @@
     "test_all": "npm-run-all -s test:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.17",
-    "@babel/preset-env": "^7.12.17",
-    "@babel/register": "^7.12.13",
+    "@babel/core": "^7.13.1",
+    "@babel/preset-env": "^7.13.0",
+    "@babel/register": "^7.13.0",
     "addons-linter": "^2.19.0",
     "chai": "^4.3.0",
     "eslint": "^7.20.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^32.0.2",
+    "eslint-plugin-jsdoc": "^32.2.0",
     "eslint-plugin-no-unsanitized": "^3.1.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
@@ -44,7 +44,7 @@
     "nyc": "^15.1.0",
     "psl": "^1.8.0",
     "sinon": "^9.2.4",
-    "webext-schema": "^1.4.7"
+    "webext-schema": "^1.4.8"
   },
-  "version": "3.7.4"
+  "version": "4.0.0"
 }
