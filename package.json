@@ -11,9 +11,6 @@
     "url": "git+https://github.com/asamuzaK/sidebarTabs.git"
   },
   "license": "MPL-2.0",
-  "engines": {
-    "node": ">=10.13.0"
-  },
   "scripts": {
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
@@ -26,9 +23,9 @@
     "test_all": "npm-run-all -s test:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.1",
-    "@babel/preset-env": "^7.13.0",
-    "@babel/register": "^7.13.0",
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.8",
+    "@babel/register": "^7.13.8",
     "addons-linter": "^2.19.0",
     "chai": "^4.3.0",
     "eslint": "^7.20.0",
