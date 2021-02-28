@@ -505,13 +505,13 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
   if (!Number.isInteger(tabWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
-  const { attached, emulate } = opt;
   const {
     closeTabsByDoubleClick, enableTabGroup, incognito,
     tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd, windowId
   } = sidebar;
   const func = [];
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
+    const { attached, emulate } = opt;
     const tab = getTemplate(CLASS_TAB_TMPL);
     const tabItems = [
       `.${CLASS_TAB_CONTEXT}`, `.${CLASS_TAB_TOGGLE_ICON}`,
