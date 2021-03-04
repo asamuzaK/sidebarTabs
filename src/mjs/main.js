@@ -11,7 +11,7 @@ import {
   restoreSession, sendMessage, setSessionWindowValue, warmupTab
 } from './browser.js';
 import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd,
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToBottom,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
   moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
@@ -1068,7 +1068,7 @@ export const handleClickedMenu = async info => {
       func.push(closeTabs([tab]));
       break;
     case TAB_CLOSE_BOTTOM:
-      func.push(closeTabsToEnd(tab));
+      func.push(closeTabsToBottom(tab));
       break;
     case TAB_CLOSE_OTHER:
       func.push(closeOtherTabs([tab]));

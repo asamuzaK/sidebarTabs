@@ -76,7 +76,7 @@ export const closeOtherTabs = async nodes => {
   let func;
   const tabIds = getSidebarTabIds(nodes);
   if (tabIds.length) {
-    const items = document.querySelectorAll(TAB_QUERY);
+    const items = document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
     const arr = [];
     for (const item of items) {
       const itemId = getSidebarTabId(item);
@@ -92,19 +92,20 @@ export const closeOtherTabs = async nodes => {
 };
 
 /**
- * close tabs to the end
+ * close tabs to the bottom
  *
  * @param {object} elm - element
  * @returns {?Function} - removeTab()
  */
-export const closeTabsToEnd = async elm => {
+export const closeTabsToBottom = async elm => {
   let func;
   const tabId = getSidebarTabId(elm);
   const index = getSidebarTabIndex(elm);
   const arr = [];
   if (Number.isInteger(tabId) && Number.isInteger(index)) {
-    const items =
-      document.querySelectorAll(`${TAB_QUERY}:not([data-tab-id="${tabId}"])`);
+    const items = document.querySelectorAll(
+      `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+    );
     for (const item of items) {
       const itemId = getSidebarTabId(item);
       const itemIndex = getSidebarTabIndex(item);
