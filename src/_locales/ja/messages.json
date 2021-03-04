@@ -113,10 +113,10 @@
   "closeTabs_tooltip": {
     "message": "選択したタブを閉じます"
   },
-  "closeTabsToTheEnd": {
+  "closeTabsToTheBottom": {
     "message": "下のタブをすべて閉じる"
   },
-  "closeTabsToTheEnd_title": {
+  "closeTabsToTheBottom_title": {
     "message": "下のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
