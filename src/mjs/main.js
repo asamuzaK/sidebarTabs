@@ -60,7 +60,7 @@ import {
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
   SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE_DBLCLICK, TAB_CLOSE_BOTTOM, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
@@ -1066,7 +1066,7 @@ export const handleClickedMenu = async info => {
     case TAB_CLOSE:
       func.push(closeTabs([tab]));
       break;
-    case TAB_CLOSE_END:
+    case TAB_CLOSE_BOTTOM:
       func.push(closeTabsToEnd(tab));
       break;
     case TAB_CLOSE_OTHER:
@@ -1458,7 +1458,7 @@ export const prepareTabMenuItems = async elm => {
     TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE, TABS_MUTE, TABS_PIN,
     TABS_RELOAD, TABS_REOPEN_CONTAINER
   ];
-  const closeKeys = [TAB_CLOSE_END, TAB_CLOSE_OTHER];
+  const closeKeys = [TAB_CLOSE_BOTTOM, TAB_CLOSE_OTHER];
   const sepKeys = ['sep-1', 'sep-2', 'sep-3'];
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs =
@@ -1558,7 +1558,7 @@ export const prepareTabMenuItems = async elm => {
         visible: true
       };
       switch (itemKey) {
-        case TAB_CLOSE_END:
+        case TAB_CLOSE_BOTTOM:
           data.enabled = !allTabsSelected && index < allTabs.length - 1 &&
                          lastSelectedTabIndex < allTabs.length - 1;
           break;

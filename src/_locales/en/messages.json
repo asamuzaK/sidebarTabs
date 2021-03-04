@@ -113,11 +113,11 @@
   "closeTabs_tooltip": {
     "message": "Close Selected Tabs"
   },
-  "closeTabsToTheEnd": {
-    "message": "Close Tabs to the End"
+  "closeTabsToTheBottom": {
+    "message": "Close Tabs to the Bottom"
   },
-  "closeTabsToTheEnd_title": {
-    "message": "Close Tabs to the &End",
+  "closeTabsToTheBottom_title": {
+    "message": "Close Tabs to the &Bottom",
     "placeholders": {
       "key": {
         "content": "$1",
