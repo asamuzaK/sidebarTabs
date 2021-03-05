@@ -312,8 +312,8 @@ describe('browser-tabs', () => {
     });
   });
 
-  describe('close tabs to the bottom', () => {
-    const func = mjs.closeTabsToBottom;
+  describe('close tabs to the end', () => {
+    const func = mjs.closeTabsToEnd;
 
     it('should not call function if no argument given', async () => {
       const i = browser.tabs.remove.callCount;
@@ -409,8 +409,8 @@ describe('browser-tabs', () => {
     });
   });
 
-  describe('close tabs to the top', () => {
-    const func = mjs.closeTabsToTop;
+  describe('close tabs to the start', () => {
+    const func = mjs.closeTabsToStart;
 
     it('should not call function if no argument given', async () => {
       const i = browser.tabs.remove.callCount;

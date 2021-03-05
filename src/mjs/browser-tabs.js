@@ -92,12 +92,12 @@ export const closeOtherTabs = async nodes => {
 };
 
 /**
- * close tabs to the bottom
+ * close tabs to the end
  *
  * @param {object} elm - element
  * @returns {?Function} - removeTab()
  */
-export const closeTabsToBottom = async elm => {
+export const closeTabsToEnd = async elm => {
   let func;
   const tabId = getSidebarTabId(elm);
   const index = getSidebarTabIndex(elm);
@@ -122,12 +122,12 @@ export const closeTabsToBottom = async elm => {
 };
 
 /**
- * close tabs to the top
+ * close tabs to the start
  *
  * @param {object} elm - element
  * @returns {?Function} - removeTab()
  */
-export const closeTabsToTop = async elm => {
+export const closeTabsToStart = async elm => {
   let func;
   const tabId = getSidebarTabId(elm);
   const index = getSidebarTabIndex(elm);
