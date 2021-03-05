@@ -121,6 +121,36 @@ export const closeTabsToBottom = async elm => {
   return func || null;
 };
 
+/**
+ * close tabs to the top
+ *
+ * @param {object} elm - element
+ * @returns {?Function} - removeTab()
+ */
+export const closeTabsToTop = async elm => {
+  let func;
+  const tabId = getSidebarTabId(elm);
+  const index = getSidebarTabIndex(elm);
+  const arr = [];
+  if (Number.isInteger(tabId) && Number.isInteger(index)) {
+    const items = document.querySelectorAll(
+      `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+    );
+    for (const item of items) {
+      const itemId = getSidebarTabId(item);
+      const itemIndex = getSidebarTabIndex(item);
+      if (Number.isInteger(itemId) && Number.isInteger(itemIndex) &&
+          itemIndex < index) {
+        arr.push(itemId);
+      }
+    }
+  }
+  if (arr.length) {
+    func = removeTab(arr);
+  }
+  return func || null;
+};
+
 /* create */
 /**
  * create tabs in order

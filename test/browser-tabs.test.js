@@ -312,7 +312,7 @@ describe('browser-tabs', () => {
     });
   });
 
-  describe('close tabs to the end', () => {
+  describe('close tabs to the bottom', () => {
     const func = mjs.closeTabsToBottom;
 
     it('should not call function if no argument given', async () => {
@@ -404,6 +404,100 @@ describe('browser-tabs', () => {
       body.appendChild(elm4);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.remove.withArgs([4]).callCount, i + 1,
+        'called');
+      assert.isUndefined(res, 'result');
+    });
+  });
+
+  describe('close tabs to the top', () => {
+    const func = mjs.closeTabsToTop;
+
+    it('should not call function if no argument given', async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func();
+      assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function if argument is not element', async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func('foo');
+      assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function if given argument is pinned', async () => {
+      const i = browser.tabs.remove.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.remove.withArgs([1, 2]).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func(elm3);
+      assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
+        'called');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.remove.withArgs([2, 3]).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func(elm4);
+      assert.strictEqual(browser.tabs.remove.withArgs([2, 3]).callCount, i + 1,
         'called');
       assert.isUndefined(res, 'result');
     });
