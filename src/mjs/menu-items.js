@@ -5,8 +5,8 @@
 /* shared */
 import {
   NEW_TAB_OPEN_CONTAINER, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
-  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_BOTTOM, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
-  TAB_DUPE,
+  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_BOTTOM, TAB_CLOSE_OTHER, TAB_CLOSE_TOP,
+  TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND,
   TAB_GROUP_LABEL_HIDE, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED,
@@ -418,6 +418,15 @@ export default {
     enabled: true,
     visible: true,
     subItems: {
+      [TAB_CLOSE_TOP]: {
+        id: TAB_CLOSE_TOP,
+        title: i18n.getMessage(`${TAB_CLOSE_TOP}_title`, '(&T)'),
+        type: 'normal',
+        contexts: ['tab'],
+        viewTypes: ['sidebar'],
+        enabled: false,
+        visible: true
+      },
       [TAB_CLOSE_BOTTOM]: {
         id: TAB_CLOSE_BOTTOM,
         title: i18n.getMessage(`${TAB_CLOSE_BOTTOM}_title`, '(&B)'),

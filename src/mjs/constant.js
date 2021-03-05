@@ -96,6 +96,7 @@ export const TAB_CLOSE_BOTTOM = 'closeTabsToTheBottom';
 export const TAB_CLOSE_DBLCLICK = 'closeTabsByDoubleClick';
 export const TAB_CLOSE_DUPE = 'closeDupeTabs';
 export const TAB_CLOSE_OTHER = 'closeOtherTabs';
+export const TAB_CLOSE_TOP = 'closeTabsToTheTop';
 export const TAB_CLOSE_UNDO = 'undoCloseTab';
 export const TAB_DUPE = 'dupeTab';
 export const TAB_GROUP = 'tabGroup';
