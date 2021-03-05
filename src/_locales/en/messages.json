@@ -125,6 +125,18 @@
       }
     }
   },
+  "closeTabsToTheTop": {
+    "message": "Close Tabs to the Top"
+  },
+  "closeTabsToTheTop_title": {
+    "message": "Close Tabs to the &Top",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "collapseOtherTabGroups": {
     "message": "Collapse Other Tab Groups"
   },

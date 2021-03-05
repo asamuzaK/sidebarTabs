@@ -125,6 +125,18 @@
       }
     }
   },
+  "closeTabsToTheTop": {
+    "message": "上のタブをすべて閉じる"
+  },
+  "closeTabsToTheTop_title": {
+    "message": "上のタブをすべて閉じる$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "collapseOtherTabGroups": {
     "message": "他のタブグループをすべて折りたたむ"
   },
