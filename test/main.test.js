@@ -24,8 +24,8 @@ import {
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
-  TAB_CLOSE, TAB_CLOSE_BOTTOM, TAB_CLOSE_DBLCLICK, TAB_CLOSE_OTHER,
-  TAB_CLOSE_TOP, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
+  TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
@@ -5837,7 +5837,7 @@ describe('main', () => {
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
       const info = {
-        menuItemId: TAB_CLOSE_TOP
+        menuItemId: TAB_CLOSE_START
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
@@ -5919,7 +5919,7 @@ describe('main', () => {
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
       const info = {
-        menuItemId: TAB_CLOSE_BOTTOM
+        menuItemId: TAB_CLOSE_END
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
