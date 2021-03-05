@@ -11,7 +11,7 @@ import {
   restoreSession, sendMessage, setSessionWindowValue, warmupTab
 } from './browser.js';
 import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToBottom,
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToBottom, closeTabsToTop,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
   moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
@@ -60,8 +60,8 @@ import {
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
   SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_BOTTOM, TAB_CLOSE_DBLCLICK, TAB_CLOSE_OTHER, TAB_CLOSE_UNDO,
-  TAB_DUPE,
+  TAB_CLOSE_BOTTOM, TAB_CLOSE_DBLCLICK, TAB_CLOSE_OTHER, TAB_CLOSE_TOP,
+  TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
@@ -1073,6 +1073,9 @@ export const handleClickedMenu = async info => {
     case TAB_CLOSE_OTHER:
       func.push(closeOtherTabs([tab]));
       break;
+    case TAB_CLOSE_TOP:
+      func.push(closeTabsToTop(tab));
+      break;
     case TAB_CLOSE_UNDO:
       func.push(undoCloseTab());
       break;
@@ -1459,7 +1462,7 @@ export const prepareTabMenuItems = async elm => {
     TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE, TABS_MUTE, TABS_PIN,
     TABS_RELOAD, TABS_REOPEN_CONTAINER
   ];
-  const closeKeys = [TAB_CLOSE_BOTTOM, TAB_CLOSE_OTHER];
+  const closeKeys = [TAB_CLOSE_TOP, TAB_CLOSE_BOTTOM, TAB_CLOSE_OTHER];
   const sepKeys = ['sep-1', 'sep-2', 'sep-3'];
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs =
@@ -1483,8 +1486,7 @@ export const prepareTabMenuItems = async elm => {
     const otherTabs = document.querySelectorAll(
       `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
     );
-    const lastSelectedTabIndex =
-      getSidebarTabIndex(selectedTabs[selectedTabs.length - 1]);
+    const lastTab = allTabs[allTabs.length - 1];
     const tabsTab = await getTab(tabId);
     const { index, mutedInfo: { muted }, pinned } = tabsTab;
     for (const itemKey of tabKeys) {
@@ -1560,11 +1562,14 @@ export const prepareTabMenuItems = async elm => {
       };
       switch (itemKey) {
         case TAB_CLOSE_BOTTOM:
-          data.enabled = !allTabsSelected && index < allTabs.length - 1 &&
-                         lastSelectedTabIndex < allTabs.length - 1;
+          data.enabled = !allTabsSelected && lastTab !== tab;
           break;
         case TAB_CLOSE_OTHER:
           data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
+          break;
+        case TAB_CLOSE_TOP:
+          data.enabled = !allTabsSelected && firstUnpinnedTab !== tab &&
+            !tab.classList.contains(PINNED);
           break;
         default:
       }
