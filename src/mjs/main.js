@@ -43,9 +43,7 @@ import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
   updateCustomThemeCss
 } from './theme.js';
-import {
-  overrideContextMenu, restoreContextMenu, updateContextMenu
-} from './menu.js';
+import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -260,7 +258,7 @@ export const undoCloseTab = async () => {
   let func;
   if (lastClosedTab) {
     const { sessionId } = lastClosedTab;
-    func = restoreSession(sessionId).then(restoreContextMenu);
+    func = restoreSession(sessionId);
   }
   return func || null;
 };
@@ -1564,7 +1562,8 @@ export const prepareTabMenuItems = async elm => {
       };
       switch (itemKey) {
         case TAB_CLOSE_END:
-          data.enabled = !allTabsSelected && lastTab !== tab;
+          data.enabled =
+            !allTabsSelected && firstUnpinnedTab && lastTab !== tab;
           break;
         case TAB_CLOSE_OTHER:
           data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
@@ -1577,6 +1576,9 @@ export const prepareTabMenuItems = async elm => {
       }
       func.push(updateContextMenu(id, data));
     }
+    func.push(updateContextMenu(closeMenu.id, {
+      visible: true
+    }));
     if (multiTabsSelected) {
       const tabsMoveMenu = menuItems[TABS_MOVE];
       const tabsMoveKeys = [TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN];
@@ -1698,6 +1700,9 @@ export const prepareTabMenuItems = async elm => {
         multiTabsSelected,
         headingShown: !heading.hidden,
         pinned: heading.parentNode === pinnedContainer
+      }),
+      updateContextMenu(closeMenu.id, {
+        visible: false
       }),
       updateContextMenu(bookmarkMenu.id, {
         enabled: true,
