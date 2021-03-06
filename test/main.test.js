@@ -617,15 +617,19 @@ describe('main', () => {
 
     it('should call function', async () => {
       const { sidebar } = mjs;
-      const restore = browser.sessions.restore.withArgs('foo');
-      const i = restore.callCount;
+      const restoreSession =
+        browser.sessions.restore.withArgs('foo').resolves({});
+      const restoreMenu = browser.menus.removeAll.resolves(undefined);
+      const i = restoreSession.callCount;
+      const j = restoreMenu.callCount;
       sidebar.lastClosedTab = {
         sessionId: 'foo'
       };
-      restore.resolves({});
       const res = await func();
-      assert.strictEqual(restore.callCount, i + 1, 'called');
-      assert.deepEqual(res, {}, 'result');
+      assert.strictEqual(restoreSession.callCount, i + 1, 'called');
+      assert.strictEqual(restoreMenu.callCount, j + 1, 'called');
+      assert.isArray(res, 'result');
+      assert.strictEqual(res.length, 32, 'length');
     });
   });
 
@@ -6111,16 +6115,22 @@ describe('main', () => {
 
     it('should call function', async () => {
       const i = browser.sessions.restore.callCount;
+      const j = browser.menus.removeAll.callCount;
       mjs.sidebar.lastClosedTab = {
         sessionId: 'foo'
       };
       browser.sessions.restore.withArgs('foo').resolves({});
+      browser.menus.removeAll.resolves(undefined);
       const info = {
         menuItemId: TAB_CLOSE_UNDO
       };
       const res = await func(info);
       assert.strictEqual(browser.sessions.restore.callCount, i + 1, 'called');
-      assert.deepEqual(res, [{}], 'result');
+      assert.strictEqual(browser.menus.removeAll.callCount, j + 1, 'called');
+      assert.isArray(res, 'result');
+      assert.strictEqual(res.length, 1, 'length');
+      assert.isArray(res[0], 'result');
+      assert.strictEqual(res[0].length, 32, 'length');
     });
 
     it('should call function', async () => {

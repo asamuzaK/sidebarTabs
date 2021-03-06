@@ -8,13 +8,13 @@ import {
   handleCmd, handleMsg, setSidebarState, toggleSidebar
 } from './background-main.js';
 import {
-  createContextMenu, createContextualIdentitiesMenu,
-  removeContextualIdentitiesMenu, updateContextualIdentitiesMenu
+  createContextualIdentitiesMenu, removeContextualIdentitiesMenu,
+  restoreContextMenu, updateContextualIdentitiesMenu
 } from './menu.js';
 
 /* api */
 const {
-  browserAction, commands, contextualIdentities, menus, runtime, windows
+  browserAction, commands, contextualIdentities, runtime, windows
 } = browser;
 
 /* listeners */
@@ -40,5 +40,5 @@ windows.onFocusChanged.addListener(windowId =>
 
 /* startup */
 document.addEventListener('DOMContentLoaded', () =>
-  menus.removeAll().then(createContextMenu).catch(throwErr)
+  restoreContextMenu().catch(throwErr)
 );
