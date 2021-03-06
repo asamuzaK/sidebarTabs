@@ -530,6 +530,7 @@ export const setScrollbarWidth = async narrow => {
   }
 };
 
+/* tab group color bar */
 /**
  * set tab group color bar width
  *
