@@ -250,6 +250,14 @@ export const removeContextualIdentitiesMenu = async info => {
 };
 
 /**
+ * restore context menu
+ *
+ * @returns {Function} - promise chain
+ */
+export const restoreContextMenu = async () =>
+  menus.removeAll().then(createContextMenu);
+
+/**
  * override context menu
  *
  * @param {object} opt - options

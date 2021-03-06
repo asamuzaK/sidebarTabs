@@ -374,6 +374,19 @@ describe('menu', () => {
     });
   });
 
+  describe('restore context menu', () => {
+    const func = mjs.restoreContextMenu;
+
+    it('should get array', async () => {
+      const remove = browser.menus.removeAll.resolves(undefined);
+      const create = browser.menus.create;
+      const res = await func();
+      assert.isTrue(remove.calledOnce, 'called');
+      assert.isTrue(create.called, 'called');
+      assert.isArray(res, 'result');
+    });
+  });
+
   describe('override context menu', () => {
     const func = mjs.overrideContextMenu;
     beforeEach(() => {
