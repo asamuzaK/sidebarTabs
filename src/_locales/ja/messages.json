@@ -458,6 +458,12 @@
   "optionsNarrowScrollbarDetail": {
     "message": "幅の細いスクロールバーを使用します。"
   },
+  "optionsNarrowTabGroupColorBar": {
+    "message": "タブグループのカラーバーの幅を狭める"
+  },
+  "optionsNarrowTabGroupColorBarDetail": {
+    "message": "タブグループの色分け表示の幅を狭めます。"
+  },
   "optionsOptionalSettings": {
     "message": "オプション設定"
   },

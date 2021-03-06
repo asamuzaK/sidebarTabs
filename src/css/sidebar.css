@@ -46,6 +46,7 @@
   --icon-size: calc(var(--scale-size) * 4);
   --icon-small-size: calc(var(--scale-size) * 3);
   --icon-x-small-size: calc(var(--scale-size) * 2);
+  --icon-xx-small-size: calc(var(--scale-size) * 3 / 2);
 }
 .dark-theme {
   --background-color: #0c0c0d;
@@ -548,6 +549,9 @@ main {
   flex: 0 0 var(--icon-small-size);
   height: var(--tab-height);
 }
+.narrow-tab-group .tab-group > :not([hidden]) > .tab-context {
+  flex: 0 0 var(--icon-x-small-size);
+}
 .ungroup .tab-group .tab-context {
   display: none;
 }
@@ -563,6 +567,10 @@ main {
   height: var(--icon-x-small-size);
   transition: transform 0.1s;
   pointer-events: none;
+}
+.narrow-tab-group .tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
+  width: var(--icon-xx-small-size);
+  height: var(--icon-xx-small-size);
 }
 .tab-group > :not([hidden]) ~ .tab > .tab-context > .tab-toggle-icon {
   display: none;

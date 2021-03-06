@@ -40,8 +40,8 @@ import {
   toggleTabGroupsCollapsedState, toggleTabGroupHeadingState, ungroupTabs
 } from './tab-group.js';
 import {
-  initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
-  updateCustomThemeCss
+  initCustomTheme, sendCurrentTheme, setScrollbarWidth,
+  setTabGroupColorBarWidth, setTabHeight, setTheme, updateCustomThemeCss
 } from './theme.js';
 import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
@@ -73,7 +73,7 @@ import {
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from './constant.js';
 
 /* api */
@@ -1927,6 +1927,9 @@ export const setVar = async (item, obj, changed = false) => {
         break;
       case THEME_TAB_COMPACT:
         changed && func.push(setTabHeight(!!checked));
+        break;
+      case THEME_TAB_GROUP_NARROW:
+        changed && func.push(setTabGroupColorBarWidth(!!checked));
         break;
       default:
         if (Object.prototype.hasOwnProperty.call(sidebar, item)) {

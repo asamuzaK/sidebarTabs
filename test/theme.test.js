@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
 import * as mjs from '../src/mjs/theme.js';
 import {
-  CLASS_COMPACT, CLASS_NARROW,
+  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
   CSS_ID, CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED,
   CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
@@ -1149,6 +1149,24 @@ describe('theme', () => {
       body.classList.add(CLASS_NARROW);
       await func(false);
       assert.isFalse(body.classList.contains(CLASS_NARROW));
+    });
+  });
+
+  describe('set tab group color bar width', () => {
+    const func = mjs.setTabGroupColorBarWidth;
+
+    it('should set height', async () => {
+      const body = document.querySelector('body');
+      body.classList.remove(CLASS_NARROW_TAB_GROUP);
+      await func(true);
+      assert.isTrue(body.classList.contains(CLASS_NARROW_TAB_GROUP));
+    });
+
+    it('should set height', async () => {
+      const body = document.querySelector('body');
+      body.classList.add(CLASS_NARROW_TAB_GROUP);
+      await func(false);
+      assert.isFalse(body.classList.contains(CLASS_NARROW_TAB_GROUP));
     });
   });
 
