@@ -10,7 +10,7 @@ import {
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
 import {
-  CLASS_COMPACT, CLASS_NARROW,
+  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
   CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED,
   CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
@@ -527,6 +527,22 @@ export const setScrollbarWidth = async narrow => {
     classList.add(CLASS_NARROW);
   } else {
     classList.remove(CLASS_NARROW);
+  }
+};
+
+/**
+ * set tab group color bar width
+ *
+ * @param {boolean} narrow - narrow
+ * @returns {void}
+ */
+export const setTabGroupColorBarWidth = async narrow => {
+  const elm = document.querySelector('body');
+  const { classList } = elm;
+  if (narrow) {
+    classList.add(CLASS_NARROW_TAB_GROUP);
+  } else {
+    classList.remove(CLASS_NARROW_TAB_GROUP);
   }
 };
 

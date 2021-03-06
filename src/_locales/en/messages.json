@@ -458,6 +458,12 @@
   "optionsNarrowScrollbarDetail": {
     "message": "Reduce the width of the scrollbar."
   },
+  "optionsNarrowTabGroupColorBar": {
+    "message": "Reduce tab group color bar width"
+  },
+  "optionsNarrowTabGroupColorBarDetail": {
+    "message": "Reduce the width of the tab group color bar."
+  },
   "optionsOptionalSettings": {
     "message": "Optional Settings"
   },
