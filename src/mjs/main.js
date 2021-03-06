@@ -43,7 +43,9 @@ import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth, setTabHeight, setTheme,
   updateCustomThemeCss
 } from './theme.js';
-import { overrideContextMenu, updateContextMenu } from './menu.js';
+import {
+  overrideContextMenu, restoreContextMenu, updateContextMenu
+} from './menu.js';
 import menuItems from './menu-items.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -258,7 +260,7 @@ export const undoCloseTab = async () => {
   let func;
   if (lastClosedTab) {
     const { sessionId } = lastClosedTab;
-    func = restoreSession(sessionId);
+    func = restoreSession(sessionId).then(restoreContextMenu);
   }
   return func || null;
 };
