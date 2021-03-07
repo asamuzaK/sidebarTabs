@@ -1137,14 +1137,14 @@ describe('theme', () => {
   describe('set scrollbar width', () => {
     const func = mjs.setScrollbarWidth;
 
-    it('should set height', async () => {
+    it('should set width', async () => {
       const body = document.querySelector('body');
       body.classList.remove(CLASS_NARROW);
       await func(true);
       assert.isTrue(body.classList.contains(CLASS_NARROW));
     });
 
-    it('should set height', async () => {
+    it('should set width', async () => {
       const body = document.querySelector('body');
       body.classList.add(CLASS_NARROW);
       await func(false);
@@ -1192,14 +1192,14 @@ describe('theme', () => {
   describe('set tab group color bar width', () => {
     const func = mjs.setTabGroupColorBarWidth;
 
-    it('should set height', async () => {
+    it('should set width', async () => {
       const body = document.querySelector('body');
       body.classList.remove(CLASS_NARROW_TAB_GROUP);
       await func(true);
       assert.isTrue(body.classList.contains(CLASS_NARROW_TAB_GROUP));
     });
 
-    it('should set height', async () => {
+    it('should set width', async () => {
       const body = document.querySelector('body');
       body.classList.add(CLASS_NARROW_TAB_GROUP);
       await func(false);
