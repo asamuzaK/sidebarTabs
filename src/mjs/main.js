@@ -600,7 +600,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     if (pinned) {
       const container = document.getElementById(PINNED);
       tab.classList.add(PINNED);
-      if (container.children[index] === targetTab) {
+      if (targetTab && targetTab.parentNode === container) {
         container.insertBefore(tab, targetTab);
       } else {
         container.appendChild(tab);
@@ -977,7 +977,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           if (info.pinned) {
             const container = pinnedContainer;
             tab.classList.add(PINNED);
-            container.appendChild(tab);
+            tab.parentNode !== container && container.appendChild(tab);
             func.push(restoreTabContainers().then(setSessionTabList));
           } else {
             const {
