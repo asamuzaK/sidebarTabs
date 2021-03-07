@@ -15,7 +15,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_DISCARDED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 
 describe('theme', () => {
@@ -1149,6 +1149,43 @@ describe('theme', () => {
       body.classList.add(CLASS_NARROW);
       await func(false);
       assert.isFalse(body.classList.contains(CLASS_NARROW));
+    });
+  });
+
+  describe('get tab group color bar width', () => {
+    const func = mjs.getTabGroupColorBarWidth;
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(THEME_TAB_GROUP_NARROW)
+        .resolves(undefined);
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(THEME_TAB_GROUP_NARROW).resolves({
+        [THEME_TAB_GROUP_NARROW]: {
+          checked: true
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(THEME_TAB_GROUP_NARROW).resolves({
+        [THEME_TAB_GROUP_NARROW]: {
+          checked: false
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isFalse(res, 'result');
     });
   });
 

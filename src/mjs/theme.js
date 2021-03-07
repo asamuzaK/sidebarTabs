@@ -26,7 +26,7 @@ import {
   CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT
+  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from './constant.js';
 
 /* theme map */
@@ -532,6 +532,21 @@ export const setScrollbarWidth = async narrow => {
 
 /* tab group color bar */
 /**
+ * get tab group color bar width
+ *
+ * @returns {boolean} - result
+ */
+export const getTabGroupColorBarWidth = async () => {
+  const data = await getStorage(THEME_TAB_GROUP_NARROW);
+  let narrow;
+  if (isObjectNotEmpty(data)) {
+    const { checked } = data[THEME_TAB_GROUP_NARROW];
+    narrow = checked;
+  }
+  return !!narrow;
+};
+
+/**
  * set tab group color bar width
  *
  * @param {boolean} narrow - narrow
@@ -567,5 +582,6 @@ export const applyCss = async () => {
 export const setSidebarTheme = async () => Promise.all([
   setCurrentThemeValue().then(getTheme).then(setTheme),
   getTabHeight().then(setTabHeight),
-  getScrollbarWidth().then(setScrollbarWidth)
+  getScrollbarWidth().then(setScrollbarWidth),
+  getTabGroupColorBarWidth().then(setTabGroupColorBarWidth)
 ]).then(applyCss);
