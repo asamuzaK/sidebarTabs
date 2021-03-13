@@ -5,7 +5,7 @@
 /* shared */
 import { throwErr } from './common.js';
 import {
-  handleCmd, handleMsg, setSidebarState, toggleSidebar
+  handleCmd, handleMsg, removeSidebarState, setSidebarState, toggleSidebar
 } from './background-main.js';
 import {
   createContextualIdentitiesMenu, removeContextualIdentitiesMenu,
@@ -36,6 +36,9 @@ runtime.onMessage.addListener((msg, sender) =>
 );
 windows.onFocusChanged.addListener(windowId =>
   setSidebarState(windowId).catch(throwErr)
+);
+windows.onRemoved.addListener(windowId =>
+  removeSidebarState(windowId).catch(throwErr)
 );
 
 /* startup */

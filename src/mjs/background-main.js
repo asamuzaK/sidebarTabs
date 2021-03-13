@@ -51,6 +51,17 @@ export const setSidebarState = async windowId => {
 };
 
 /**
+ * remove sidebar state
+ *
+ * @param {number} windowId - window ID
+ * @returns {boolean} - result
+ */
+export const removeSidebarState = async windowId => {
+  const res = sidebar.delete(windowId);
+  return res;
+};
+
+/**
  * toggle sidebar
  *
  * @returns {?Function} - sidebarAction.toggle()

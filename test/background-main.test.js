@@ -190,6 +190,28 @@ describe('background-main', () => {
     });
   });
 
+  describe('remove sidebar state', () => {
+    const func = mjs.removeSidebarState;
+    beforeEach(() => {
+      mjs.sidebar.clear();
+    });
+    afterEach(() => {
+      mjs.sidebar.clear();
+    });
+
+    it('should remove entry', async () => {
+      mjs.sidebar.set(1, {});
+      const res = await func(1);
+      assert.isFalse(mjs.sidebar.has(1), 'entry');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get false if entry does not exist', async () => {
+      const res = await func(2);
+      assert.isFalse(res, 'result');
+    });
+  });
+
   describe('toggle sidebar', () => {
     const func = mjs.toggleSidebar;
 
