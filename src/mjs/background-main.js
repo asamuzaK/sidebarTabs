@@ -64,7 +64,7 @@ export const removeSidebarState = async windowId => {
 /**
  * toggle sidebar
  *
- * @returns {?Function} - sidebarAction.toggle()
+ * @returns {Function} - sidebarAction.toggle()
  */
 export const toggleSidebar = async () => sidebarAction.toggle();
 
