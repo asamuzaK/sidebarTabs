@@ -4,19 +4,17 @@
 
 /* shared */
 import { getType, isString } from './common.js';
+import { getCurrentWindow, getWindow } from './browser.js';
 import { SIDEBAR_STATE_UPDATE, TOGGLE_STATE } from './constant.js';
 
 /* api */
 const { sidebarAction, windows } = browser;
 
 /* constant */
-const { WINDOW_ID_NONE } = windows;
+const { WINDOW_ID_CURRENT, WINDOW_ID_NONE } = windows;
 
 /* sidebar */
-export const sidebar = {
-  windowId: null,
-  isOpen: false
-};
+export const sidebar = new Map();
 
 /**
  * set sidebar state
@@ -25,36 +23,39 @@ export const sidebar = {
  * @returns {void}
  */
 export const setSidebarState = async windowId => {
-  if (!Number.isInteger(windowId)) {
-    windowId = windows.WINDOW_ID_CURRENT;
+  let win;
+  if (!Number.isInteger(windowId) || windowId === WINDOW_ID_CURRENT) {
+    win = await getCurrentWindow();
+    windowId = win.id;
+  } else if (windowId !== WINDOW_ID_NONE) {
+    win = await getWindow(windowId);
   }
-  if (windowId === WINDOW_ID_NONE) {
-    sidebar.windowId = null;
-    sidebar.isOpen = false;
-  } else {
-    const isOpen = await sidebarAction.isOpen({});
-    sidebar.windowId = windowId;
-    sidebar.isOpen = !!isOpen;
+  if (win) {
+    const { sessionId, type } = win;
+    if (type === 'normal') {
+      const isOpen = await sidebarAction.isOpen({ windowId });
+      let value;
+      if (sidebar.has(windowId)) {
+        value = sidebar.get(windowId);
+        value.isOpen = isOpen;
+        value.sessionId = sessionId;
+        value.windowId = windowId;
+      } else {
+        value = {
+          isOpen, sessionId, windowId
+        };
+      }
+      sidebar.set(windowId, value);
+    }
   }
 };
 
 /**
  * toggle sidebar
  *
- * @returns {?Function} - sidebarAction.close() / sidebarAction.open()
+ * @returns {?Function} - sidebarAction.toggle()
  */
-export const toggleSidebar = async () => {
-  const { isOpen, windowId } = sidebar;
-  let func;
-  if (Number.isInteger(windowId)) {
-    if (isOpen) {
-      func = sidebarAction.close();
-    } else {
-      func = sidebarAction.open();
-    }
-  }
-  return func;
-};
+export const toggleSidebar = async () => sidebarAction.toggle();
 
 /**
  * handle runtime message
