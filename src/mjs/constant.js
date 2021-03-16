@@ -85,6 +85,7 @@ export const MIME_URI = 'text/uri-list';
 export const NEW_TAB = 'newtab';
 export const NEW_TAB_OPEN_CONTAINER = 'openNewTabInContainer';
 export const PINNED = 'pinned';
+export const SESSION_SAVE = 'saveSession';
 export const SIDEBAR_MAIN = 'sidebar-tabs-container';
 export const SIDEBAR_STATE_UPDATE = 'updateSidebarState';
 export const TAB = 'tab';

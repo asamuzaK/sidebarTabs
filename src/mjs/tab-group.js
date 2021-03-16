@@ -11,7 +11,7 @@ import { getStorage, getTab, queryTabs } from './browser.js';
 import { moveTabsInOrder } from './browser-tabs.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTemplate, setSessionTabList
+  getSidebarTabId, getSidebarTabIndex, getTemplate, requestSaveSession
 } from './util.js';
 import {
   ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
@@ -234,10 +234,10 @@ export const handleTabGroupCollapsedState = evt => {
   let func;
   if (heading && !heading.hidden) {
     func =
-      toggleTabGroupCollapsedState(heading, true).then(setSessionTabList)
+      toggleTabGroupCollapsedState(heading, true).then(requestSaveSession)
         .catch(throwErr);
   } else if (tab) {
-    func = toggleTabGroupCollapsedState(tab, true).then(setSessionTabList)
+    func = toggleTabGroupCollapsedState(tab, true).then(requestSaveSession)
       .catch(throwErr);
   }
   return func || null;
@@ -254,7 +254,7 @@ export const handleTabGroupsCollapsedState = evt => {
   const container = getSidebarTabContainer(target);
   let func;
   if (container) {
-    func = toggleTabGroupsCollapsedState(container).then(setSessionTabList)
+    func = toggleTabGroupsCollapsedState(container).then(requestSaveSession)
       .catch(throwErr);
   }
   return func || null;
@@ -351,7 +351,7 @@ export const finishGroupLabelEdit = evt => {
         label.addEventListener('click', handleTabGroupCollapsedState);
         label.removeEventListener('click', handleTabGroupsCollapsedState);
       }
-      func = setSessionTabList().catch(throwErr);
+      func = requestSaveSession().catch(throwErr);
       evt.preventDefault();
     }
   }

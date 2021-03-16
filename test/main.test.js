@@ -40,7 +40,7 @@ import {
 const IS_WIN = os.platform() === 'win32';
 
 describe('main', () => {
-  const globalKeys = ['Node'];
+  const globalKeys = ['DOMParser', 'Node', 'XMLSerializer'];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -630,10 +630,6 @@ describe('main', () => {
 
   describe('create DnD data', () => {
     const func = mjs.createDnDData;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
-
     it('should not set data', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
@@ -644,6 +640,7 @@ describe('main', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
+      mjs.sidebar.windowId = 1;
       const setData = sinon.stub();
       const evt = {
         currentTarget: elm,
@@ -669,6 +666,7 @@ describe('main', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
+      mjs.sidebar.windowId = 1;
       let parsedData;
       const evt = {
         currentTarget: elm,
@@ -685,16 +683,13 @@ describe('main', () => {
       assert.deepEqual(parsedData, {
         pinned: false,
         tabIds: [1],
-        dragWindowId: browser.windows.WINDOW_ID_CURRENT
+        dragWindowId: 1
       }, 'data');
     });
   });
 
   describe('handle create new tab', () => {
     const func = mjs.handleCreateNewTab;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should not call function', async () => {
       const { create } = browser.tabs;
@@ -708,6 +703,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         button: 1,
         target: body
@@ -729,6 +725,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         button: 0,
         target: main,
@@ -751,6 +748,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         button: 1,
         target: main,
@@ -773,6 +771,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         button: 1,
         target: main,
@@ -796,6 +795,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         button: 0,
         target: main,
@@ -819,6 +819,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         target: elm
       };
@@ -840,6 +841,7 @@ describe('main', () => {
       elm.appendChild(span);
       main.appendChild(elm);
       body.appendChild(main);
+      mjs.sidebar.windowId = 1;
       const evt = {
         currentTarget: elm,
         target: span
@@ -853,9 +855,6 @@ describe('main', () => {
 
   describe('handle clicked tab', () => {
     const func = mjs.handleClickedTab;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should not call function', async () => {
       const { update } = browser.tabs;
@@ -865,6 +864,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: false,
         metaKey: false,
@@ -885,6 +885,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: false,
         metaKey: false,
@@ -905,6 +906,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: true,
         metaKey: false,
@@ -925,6 +927,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: false,
         metaKey: false,
@@ -945,6 +948,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
       const evt = {
         preventDefault,
@@ -966,6 +970,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
       const evt = {
         preventDefault,
@@ -988,6 +993,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
       const evt = {
         preventDefault,
@@ -1010,6 +1016,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: false,
         metaKey: false,
@@ -1039,6 +1046,7 @@ describe('main', () => {
       body.appendChild(activeElm);
       body.appendChild(elm);
       mjs.sidebar.firstSelectedTab = activeElm;
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: false,
         metaKey: false,
@@ -1047,7 +1055,7 @@ describe('main', () => {
         type: 'click'
       };
       highlight.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         tabs: [0, 1]
       }).resolves([{}, {}]);
       query.resolves([{
@@ -1076,6 +1084,7 @@ describe('main', () => {
       body.appendChild(activeElm);
       body.appendChild(elm);
       mjs.sidebar.firstSelectedTab = activeElm;
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: true,
         metaKey: false,
@@ -1084,7 +1093,7 @@ describe('main', () => {
         type: 'click'
       };
       highlight.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         tabs: [0, 1]
       }).resolves([{}, {}]);
       const res = await func(evt);
@@ -1111,6 +1120,7 @@ describe('main', () => {
       body.appendChild(activeElm);
       body.appendChild(elm);
       mjs.sidebar.firstSelectedTab = activeElm;
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: true,
         metaKey: false,
@@ -1119,7 +1129,7 @@ describe('main', () => {
         type: 'click'
       };
       highlight.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         tabs: [0]
       }).resolves([{}]);
       const res = await func(evt);
@@ -1146,6 +1156,7 @@ describe('main', () => {
       body.appendChild(activeElm);
       body.appendChild(elm);
       mjs.sidebar.firstSelectedTab = activeElm;
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: true,
         metaKey: false,
@@ -1154,7 +1165,7 @@ describe('main', () => {
         type: 'click'
       };
       highlight.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         tabs: [1]
       }).resolves([{}]);
       const res = await func(evt);
@@ -1181,6 +1192,7 @@ describe('main', () => {
       body.appendChild(activeElm);
       body.appendChild(elm);
       mjs.sidebar.firstSelectedTab = activeElm;
+      mjs.sidebar.windowId = 1;
       get.resolves({
         audible: false,
         mutedInfo: {
@@ -1219,6 +1231,7 @@ describe('main', () => {
       body.appendChild(elm);
       mjs.sidebar.firstSelectedTab = activeElm;
       mjs.sidebar.isMac = true;
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: false,
         metaKey: true,
@@ -1227,7 +1240,7 @@ describe('main', () => {
         type: 'click'
       };
       highlight.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         tabs: [0, 1]
       }).resolves([{}, {}]);
       const res = await func(evt);
@@ -1245,6 +1258,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
       const evt = {
         preventDefault,
@@ -1266,6 +1280,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
       const evt = {
         preventDefault,
@@ -1288,6 +1303,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
       const evt = {
         preventDefault,
@@ -1593,9 +1609,6 @@ describe('main', () => {
 
   describe('handle activated tab', () => {
     const func = mjs.handleActivatedTab;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should throw', async () => {
       await func({
@@ -1645,6 +1658,7 @@ describe('main', () => {
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       await func(info);
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -1682,6 +1696,7 @@ describe('main', () => {
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       await func(info);
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -1719,6 +1734,7 @@ describe('main', () => {
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       await func(info);
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -1738,7 +1754,7 @@ describe('main', () => {
       const body = document.querySelector('body');
       const info = {
         tabId: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
@@ -1756,6 +1772,7 @@ describe('main', () => {
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       await func(info);
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -1775,7 +1792,7 @@ describe('main', () => {
       const body = document.querySelector('body');
       const info = {
         tabId: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
@@ -1794,6 +1811,7 @@ describe('main', () => {
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       await func(info);
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
       assert.isTrue(heading.classList.contains(ACTIVE), 'add class');
@@ -1892,11 +1910,9 @@ describe('main', () => {
       const newTab = document.createElement('section');
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.incognito = false;
     });
     afterEach(() => {
-      mjs.sidebar.windowId = null;
       mjs.sidebar.incognito = false;
     });
 
@@ -1938,11 +1954,12 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: 1,
+        windowId: 2,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
@@ -1963,11 +1980,12 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       const tabItems = [
@@ -2026,11 +2044,12 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       const tabItems = [
@@ -2088,11 +2107,12 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2118,11 +2138,12 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2147,11 +2168,12 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: true
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2176,7 +2198,7 @@ describe('main', () => {
         status: 'complete',
         title: 'bar',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2186,6 +2208,7 @@ describe('main', () => {
         icon: 'fingerprint',
         name: 'baz'
       });
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2210,12 +2233,13 @@ describe('main', () => {
         status: 'complete',
         title: 'bar',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
       };
       mjs.sidebar.incognito = true;
+      mjs.sidebar.windowId = 1;
       browser.contextualIdentities.get.withArgs('foo').resolves({
         color: 'red',
         icon: 'fingerprint',
@@ -2245,13 +2269,14 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
       };
       const pinned = document.getElementById(PINNED);
       pinned.classList.add(CLASS_TAB_CONTAINER);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2282,7 +2307,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2293,6 +2318,7 @@ describe('main', () => {
       child.classList.add(TAB);
       child.dataset.tabId = '2';
       pinned.appendChild(child);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2323,7 +2349,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2335,6 +2361,7 @@ describe('main', () => {
       child.dataset.tabId = '2';
       pinned.appendChild(child);
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2365,7 +2392,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2376,6 +2403,7 @@ describe('main', () => {
       child.classList.add(TAB);
       child.dataset.tabId = '2';
       pinned.appendChild(child);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2406,7 +2434,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2422,6 +2450,7 @@ describe('main', () => {
       child2.dataset.tabId = '3';
       pinned.appendChild(child);
       pinned.appendChild(child2);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2453,7 +2482,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2469,6 +2498,7 @@ describe('main', () => {
       child2.dataset.tabId = '3';
       pinned.appendChild(child);
       pinned.appendChild(child2);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2500,7 +2530,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2520,6 +2550,7 @@ describe('main', () => {
       pinned.appendChild(child);
       div.appendChild(child2);
       body.insertBefore(div, newTab);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
@@ -2550,7 +2581,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2563,6 +2594,7 @@ describe('main', () => {
       child.dataset.tabId = '2';
       parent.appendChild(child);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab, {
         emulate: true
       });
@@ -2590,7 +2622,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2603,6 +2635,7 @@ describe('main', () => {
       child.dataset.tabId = '2';
       parent.appendChild(child);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       const res = await func(tabsTab, {
         attached: true
       });
@@ -2630,7 +2663,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2654,6 +2687,7 @@ describe('main', () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1
       });
@@ -2687,7 +2721,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2712,6 +2746,7 @@ describe('main', () => {
       parent2.appendChild(child2);
       body.insertBefore(parent, newTab);
       body.insertBefore(parent2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         index: 0
       });
@@ -2742,7 +2777,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2766,6 +2801,7 @@ describe('main', () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1
       });
@@ -2798,7 +2834,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2822,6 +2858,7 @@ describe('main', () => {
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         index: 0
       });
@@ -2856,7 +2893,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2880,6 +2917,7 @@ describe('main', () => {
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         index: 0
       });
@@ -2913,7 +2951,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -2941,6 +2979,7 @@ describe('main', () => {
       parent.appendChild(child2);
       parent.appendChild(child3);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(4).resolves({
         index: 2
       });
@@ -2972,7 +3011,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -3000,6 +3039,7 @@ describe('main', () => {
       parent.appendChild(child2);
       parent.appendChild(child3);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(4).resolves({
         index: 2
       });
@@ -3030,7 +3070,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -3054,6 +3094,7 @@ describe('main', () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1
       });
@@ -3084,7 +3125,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -3112,6 +3153,7 @@ describe('main', () => {
       parent.appendChild(child2);
       parent.appendChild(child3);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(4).resolves({
         index: 2
       });
@@ -3142,7 +3184,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -3164,6 +3206,7 @@ describe('main', () => {
       parent.appendChild(child);
       parent.appendChild(child2);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1
       });
@@ -3192,7 +3235,7 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         mutedInfo: {
           muted: false
         }
@@ -3218,6 +3261,7 @@ describe('main', () => {
       parent.appendChild(child2);
       parent.appendChild(child3);
       body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(4).resolves({
         index: 2
       });
@@ -3319,7 +3363,6 @@ describe('main', () => {
       const newTab = document.createElement('section');
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
     });
 
     it('should throw', async () => {
@@ -3352,9 +3395,10 @@ describe('main', () => {
     it('should not call function', async () => {
       const info = {
         newPosition: 0,
-        newWindowId: browser.windows.WINDOW_ID_CURRENT
+        newWindowId: 1
       };
       const i = browser.tabs.get.callCount;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         id: 1,
         mutedInfo: {}
@@ -3367,9 +3411,10 @@ describe('main', () => {
     it('should not call function', async () => {
       const info = {
         newPosition: 0,
-        newWindowId: 1
+        newWindowId: 2
       };
       const i = browser.tabs.get.callCount;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         id: 1,
         mutedInfo: {}
@@ -3382,13 +3427,14 @@ describe('main', () => {
     it('should call function', async () => {
       const info = {
         newPosition: 0,
-        newWindowId: browser.windows.WINDOW_ID_CURRENT
+        newWindowId: 1
       };
       const i = browser.tabs.get.callCount;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         id: 1,
         mutedInfo: {},
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       const res = await func(1, info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
@@ -3401,9 +3447,6 @@ describe('main', () => {
 
   describe('handle detached tab', () => {
     const func = mjs.handleDetachedTab;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should throw', async () => {
       await func('foo', {}).catch(e => {
@@ -3423,24 +3466,26 @@ describe('main', () => {
 
     it('should not remove element', async () => {
       const info = {
-        oldWindowId: 1
+        oldWindowId: 2
       };
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       await func(1, info);
       assert.deepEqual(elm.parentNode, body, 'not removed');
     });
 
     it('should remove element', async () => {
       const info = {
-        oldWindowId: browser.windows.WINDOW_ID_CURRENT
+        oldWindowId: 1
       };
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       await func(1, info);
       assert.isNull(elm.parentNode, 'removed');
     });
@@ -3448,9 +3493,6 @@ describe('main', () => {
 
   describe('handle highlighted tab', () => {
     const func = mjs.handleHighlightedTab;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should throw', async () => {
       await func({
@@ -3473,9 +3515,10 @@ describe('main', () => {
     });
 
     it('should do nothing if window ID does not match', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func({
         tabIds: [],
-        windowId: 1
+        windowId: 2
       });
       assert.deepEqual(res, [], 'result');
     });
@@ -3493,6 +3536,7 @@ describe('main', () => {
       elm2.dataset.tabId = '2';
       body.appendChild(elm);
       body.appendChild(elm2);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         audible: false,
         mutedInfo: {
@@ -3501,7 +3545,7 @@ describe('main', () => {
       });
       const res = await func({
         tabIds: [1],
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
@@ -3526,6 +3570,7 @@ describe('main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         audible: false,
         mutedInfo: {
@@ -3540,7 +3585,7 @@ describe('main', () => {
       });
       const res = await func({
         tabIds: [1, 3],
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
@@ -3569,9 +3614,10 @@ describe('main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
+      mjs.sidebar.windowId = 1;
       const res = await func({
         tabIds: [1, 2],
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
@@ -3596,7 +3642,6 @@ describe('main', () => {
       const newTab = document.createElement('section');
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
     });
 
     it('should throw', async () => {
@@ -3644,10 +3689,8 @@ describe('main', () => {
     });
 
     it('should get null if window ID does not match', async () => {
-      let windowId = browser.windows.WINDOW_ID_CURRENT + 1;
-      if (windowId === browser.windows.WINDOW_ID_NONE) {
-        windowId++;
-      }
+      const windowId = 2;
+      mjs.sidebar.windowId = 1;
       const res = await func(1, {
         windowId,
         fromIndex: 0,
@@ -3657,16 +3700,21 @@ describe('main', () => {
     });
 
     it('should get null if tab not found', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.isNull(res, 'result');
     });
 
     it('should remove value', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const body = document.querySelector('body');
@@ -3679,26 +3727,28 @@ describe('main', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
       const res = await func(1, {
         fromIndex: 1,
         toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.strictEqual(elm.dataset.restore, '', 'restore');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should remove value', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const body = document.querySelector('body');
@@ -3711,24 +3761,28 @@ describe('main', () => {
       elm.dataset.group = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
       const res = await func(1, {
         fromIndex: 1,
         toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.strictEqual(elm.dataset.group, '', 'restore');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.isNull(res, 'result');
     });
 
     it('should not move', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const elm = document.createElement('div');
@@ -3744,26 +3798,30 @@ describe('main', () => {
       parent2.appendChild(elm2);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
       const res = await func(1, {
         fromIndex: 1,
         toIndex: 0,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '2'], 'not move');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.isNull(res, 'result');
     });
 
     it('should set value', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -3786,19 +3844,17 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       body.appendChild(parent3);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 1,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(mjs.sidebar.tabsWaitingToMove, [undefined, {
         index: 1,
@@ -3806,10 +3862,17 @@ describe('main', () => {
         toIndex: 2
       }], 'wait');
       assert.deepEqual(items, ['1', '2', '3'], 'not move');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.isNull(res, 'result');
     });
 
     it('should set value', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -3827,19 +3890,17 @@ describe('main', () => {
       parent.appendChild(elm2);
       parent.appendChild(elm3);
       body.appendChild(parent);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 1,
         pinned: true
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(mjs.sidebar.pinnedTabsWaitingToMove, [undefined, {
         index: 1,
@@ -3847,11 +3908,18 @@ describe('main', () => {
         toIndex: 2
       }], 'wait');
       assert.deepEqual(items, ['1', '2', '3'], 'not move');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.isNull(res, 'result');
     });
 
     // pinned
     it('should move', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -3878,25 +3946,30 @@ describe('main', () => {
       parent.appendChild(elm2);
       parent.appendChild(elm3);
       body.appendChild(parent);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1,
         pinned: true
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(3, {
         fromIndex: 2,
         toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -3923,26 +3996,30 @@ describe('main', () => {
       parent.appendChild(elm2);
       parent.appendChild(elm3);
       body.appendChild(parent);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         index: 2,
         pinned: true
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
       });
       const res = await func(2, {
         fromIndex: 1,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -3969,12 +4046,10 @@ describe('main', () => {
       parent.appendChild(elm2);
       parent.appendChild(elm3);
       body.appendChild(parent);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({
         index: 2,
         pinned: true
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
       });
       mjs.sidebar.pinnedTabsWaitingToMove = [undefined, {
         index: 1,
@@ -3984,20 +4059,24 @@ describe('main', () => {
       const res = await func(2, {
         fromIndex: 1,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['3', '1', '2'], 'move');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     // group
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -4030,30 +4109,32 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       body.appendChild(parent3);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(3, {
         fromIndex: 2,
         toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
       assert.isTrue(elm.parentNode === elm3.parentNode, 'group');
       assert.strictEqual(elm3.dataset.group, '', 'value');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -4086,30 +4167,32 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       body.appendChild(parent3);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 1,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '3'], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'group');
       assert.strictEqual(elm.dataset.group, '', 'value');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -4152,38 +4235,40 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      browser.tabs.get.withArgs(4).resolves({
-        index: 2,
-        pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
+      mjs.sidebar.windowId = 1;
       mjs.sidebar.tabsWaitingToMove = [undefined, {
         index: 1,
         tabId: 1,
         toIndex: 2
       }];
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2,
+        pinned: false
+      });
       const res = await func(4, {
         fromIndex: 3,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '4', '3'], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'group');
       assert.isTrue(elm4.parentNode === elm2.parentNode, 'group');
       assert.strictEqual(elm4.dataset.group, '', 'value');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     // grouped tab
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4194,7 +4279,8 @@ describe('main', () => {
       const body = document.querySelector('body');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_GROUP, CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm.dataset.tab = JSON.stringify({
@@ -4215,29 +4301,31 @@ describe('main', () => {
       parent2.appendChild(elm3);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(3).resolves({
         index: 1,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(3, {
         fromIndex: 2,
         toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
       assert.isTrue(elm.parentNode === elm3.parentNode, 'parent');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4248,7 +4336,8 @@ describe('main', () => {
       const body = document.querySelector('body');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
-      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_GROUP, CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm.dataset.tab = JSON.stringify({
@@ -4269,29 +4358,31 @@ describe('main', () => {
       parent2.appendChild(elm3);
       body.appendChild(parent);
       body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 1,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 1,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '3'], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4304,7 +4395,9 @@ describe('main', () => {
       const body = document.querySelector('body');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
-      parent2.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP, CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm.dataset.tab = JSON.stringify({
@@ -4332,36 +4425,38 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       body.appendChild(parent3);
-      browser.tabs.get.withArgs(4).resolves({
-        index: 2,
-        pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
+      mjs.sidebar.windowId = 1;
       mjs.sidebar.tabsWaitingToMove = [undefined, {
         index: 1,
         tabId: 1,
         toIndex: 2
       }];
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2,
+        pinned: false
+      });
       const res = await func(4, {
         fromIndex: 3,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '4', '3'], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
       assert.isTrue(elm4.parentNode === elm2.parentNode, 'parent');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4375,6 +4470,10 @@ describe('main', () => {
       const body = document.querySelector('body');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
+      parent4.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm.dataset.tab = JSON.stringify({
@@ -4403,30 +4502,32 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(4).resolves({
         index: 2,
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
       });
       const res = await func(4, {
         fromIndex: 3,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '2', '4', '3'], 'move');
       assert.isTrue(elm4.parentNode !== elm2.parentNode, 'parent');
       assert.isTrue(elm4.parentNode !== elm3.parentNode, 'parent');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4440,6 +4541,10 @@ describe('main', () => {
       const body = document.querySelector('body');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
+      parent4.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm.dataset.tab = JSON.stringify({
@@ -4468,30 +4573,32 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 2,
         pinned: false
       });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
       const res = await func(1, {
         fromIndex: 0,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '3', '1', '4'], 'move');
       assert.isTrue(elm.parentNode !== elm3.parentNode, 'parent');
       assert.isTrue(elm.parentNode !== elm4.parentNode, 'parent');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
 
     it('should move', async () => {
-      const i = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4505,6 +4612,10 @@ describe('main', () => {
       const body = document.querySelector('body');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent3.classList.add(CLASS_TAB_CONTAINER);
+      parent4.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm.dataset.tab = JSON.stringify({
@@ -4533,41 +4644,36 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      browser.tabs.get.withArgs(4).resolves({
-        index: 2,
-        pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT
-      });
+      mjs.sidebar.windowId = 1;
       mjs.sidebar.tabsWaitingToMove = [undefined, {
         index: 1,
         tabId: 1,
         toIndex: 2
       }];
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2,
+        pinned: false
+      });
       const res = await func(4, {
         fromIndex: 3,
         toIndex: 2,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
-      const items = Array.from(document.querySelectorAll(`.${TAB}`))
+      const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '4', '3'], 'move');
       assert.isTrue(elm.parentNode !== elm2.parentNode, 'parent');
       assert.isTrue(elm.parentNode !== elm4.parentNode, 'parent');
       assert.isTrue(elm4.parentNode !== elm3.parentNode, 'parent');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i + 1,
-        'called');
-      assert.isUndefined(res, 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
   });
 
   describe('handle removed tab', () => {
     const func = mjs.handleRemovedTab;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should throw', async () => {
       await func('foo', {}).catch(e => {
@@ -4591,7 +4697,34 @@ describe('main', () => {
       const body = document.querySelector('body');
       elm.dataset.tabId = '1';
       body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       await func(1, {
+        isWindowClosing: false,
+        windowId: 2
+      });
+      assert.isTrue(elm.parentNode === body, 'not removed');
+    });
+
+    it('should not remove', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
+      await func(1, {
+        isWindowClosing: true,
+        windowId: 1
+      });
+      assert.isTrue(elm.parentNode === body, 'not removed');
+    });
+
+    it('should not remove', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
+      await func(2, {
         isWindowClosing: false,
         windowId: 1
       });
@@ -4603,33 +4736,10 @@ describe('main', () => {
       const body = document.querySelector('body');
       elm.dataset.tabId = '1';
       body.appendChild(elm);
-      await func(1, {
-        isWindowClosing: true,
-        windowId: browser.windows.WINDOW_ID_CURRENT
-      });
-      assert.isTrue(elm.parentNode === body, 'not removed');
-    });
-
-    it('should not remove', async () => {
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      elm.dataset.tabId = '1';
-      body.appendChild(elm);
-      await func(2, {
-        isWindowClosing: false,
-        windowId: browser.windows.WINDOW_ID_CURRENT
-      });
-      assert.isTrue(elm.parentNode === body, 'not removed');
-    });
-
-    it('should not remove', async () => {
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      elm.dataset.tabId = '1';
-      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
       await func(1, {
         isWindowClosing: false,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.isFalse(elm.parentNode === body, 'removed');
       assert.strictEqual(body.childElementCount, 0, 'child count');
@@ -4701,7 +4811,7 @@ describe('main', () => {
       pinned.appendChild(pinnedIcon);
       tab.appendChild(pinned);
       const sect = document.createElement('section');
-      sect.classList.add('tab-container');
+      sect.classList.add(CLASS_TAB_CONTAINER);
       const h1 = document.createElement('h1');
       const label = document.createElement('span');
       h1.classList.add(CLASS_HEADING);
@@ -4711,7 +4821,6 @@ describe('main', () => {
       sect.appendChild(tab);
       const body = document.querySelector('body');
       body.appendChild(sect);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
     });
 
     it('should throw', async () => {
@@ -4722,6 +4831,7 @@ describe('main', () => {
     });
 
     it('should not update', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func(1, {}, {
         windowId: 1
       });
@@ -4729,13 +4839,15 @@ describe('main', () => {
     });
 
     it('should not update', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func(2, {}, {
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.deepEqual(res, [], 'result');
     });
 
     it('should not update', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func(2, {
         foo: 'bar'
       }, {});
@@ -4743,18 +4855,20 @@ describe('main', () => {
     });
 
     it('should not update', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func(2, {
         foo: 'bar'
       }, {
         mutedInfo: {
           muted: false
         },
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       });
       assert.deepEqual(res, [], 'result');
     });
 
     it('should not update', async () => {
+      mjs.sidebar.windowId = 1;
       const res = await func(2, {
         foo: 'bar'
       }, {
@@ -4767,6 +4881,11 @@ describe('main', () => {
     });
 
     it('should update, not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const info = {
         foo: 'bar'
       };
@@ -4778,16 +4897,24 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, add class', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const elm = document.querySelector('[data-tab-id="1"]');
       const info = {
         hidden: true
@@ -4800,16 +4927,24 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.hasAttribute('hidden'), 'hidden');
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, add class', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const elm = document.querySelector('[data-tab-id="1"]');
       const info = {
         hidden: false
@@ -4822,18 +4957,25 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       elm.setAttribute('hidden', 'hidden');
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isFalse(elm.hasAttribute('hidden'), 'hidden');
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
-    it('should update, call function', async () => {
-      const i = browser.windows.getCurrent.callCount;
+    it('should update, not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const info = {
         discarded: true
       };
@@ -4845,22 +4987,24 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       const elm = document.querySelector('[data-tab-id="1"]');
-      browser.windows.getCurrent.resolves({
-        incognito: true,
-        windowId: browser.windows.WINDOW_ID_CURRENT
-      });
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
-      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.deepEqual(res, [], 'result');
     });
 
-    it('should update, call function', async () => {
-      const i = browser.windows.getCurrent.callCount;
+    it('should update, not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const info = {
         discarded: false
       };
@@ -4872,19 +5016,17 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       const elm = document.querySelector('[data-tab-id="1"]');
       elm.classList.add(DISCARDED);
-      browser.windows.getCurrent.resolves({
-        incognito: true,
-        windowId: browser.windows.WINDOW_ID_CURRENT
-      });
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
-      assert.strictEqual(browser.windows.getCurrent.callCount, i + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should not update, not call function', async () => {
@@ -4901,10 +5043,11 @@ describe('main', () => {
         status: 'loading',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
+      mjs.sidebar.windowId = 1;
       browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         active: true,
         windowType: 'normal'
       }).resolves([tabsTab]);
@@ -4930,10 +5073,11 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
+      mjs.sidebar.windowId = 1;
       browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         active: true,
         windowType: 'normal'
       }).resolves([tabsTab]);
@@ -4946,9 +5090,11 @@ describe('main', () => {
     });
 
     it('should update, call function', async () => {
-      const i = browser.windows.getCurrent.callCount;
-      const j = browser.sessions.getWindowValue.callCount;
-      const k = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const pinned = document.createElement('section');
       pinned.id = PINNED;
       pinned.classList.add('tab-container');
@@ -4967,30 +5113,24 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isTrue(elm.classList.contains(PINNED), 'class');
       assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.strictEqual(browser.windows.getCurrent.callCount, i + 2,
-        'called windows get');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, j + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, k + 1,
-        'called sessions set');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should update, call function', async () => {
-      const i = browser.windows.getCurrent.callCount;
-      const j = browser.sessions.getWindowValue.callCount;
-      const k = browser.sessions.setWindowValue.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const body = document.querySelector('body');
       const tmpl = document.createElement('template');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
@@ -5012,24 +5152,16 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
-      browser.sessions.getWindowValue.resolves(undefined);
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isFalse(elm.classList.contains(PINNED), 'class');
       assert.isTrue(elm.parentNode === pinned.nextElementSibling, 'parent');
-      assert.strictEqual(browser.windows.getCurrent.callCount, i + 2,
-        'called windows get');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, j + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, k + 1,
-        'called sessions set');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should update', async () => {
@@ -5045,12 +5177,13 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         audible: true,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       const audio = elm.querySelector('.tab-audio');
@@ -5071,12 +5204,13 @@ describe('main', () => {
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         audible: false,
         mutedInfo: {
           muted: false
         }
       };
+      mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       const audio = elm.querySelector('.tab-audio');
@@ -5087,9 +5221,6 @@ describe('main', () => {
 
   describe('handle clicked menu', () => {
     const func = mjs.handleClickedMenu;
-    beforeEach(() => {
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
-    });
 
     it('should not call function', async () => {
       const info = {
@@ -5108,6 +5239,7 @@ describe('main', () => {
       ];
       const body = document.querySelector('body');
       mjs.sidebar.context = body;
+      mjs.sidebar.windowId = 1;
       for (const item of items) {
         const info = {
           menuItemId: item
@@ -5131,13 +5263,14 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = elm;
       mjs.sidebar.contextualIds = ['foo'];
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       const info = {
         menuItemId: 'foo'
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.tabs.create.callCount, j, 'called create');
+      assert.strictEqual(browser.tabs.create.callCount, j, 'not called create');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -5154,6 +5287,7 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = elm;
       mjs.sidebar.contextualIds = ['foo'];
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       const info = {
         menuItemId: 'fooReopen'
@@ -5183,6 +5317,7 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = elm;
       mjs.sidebar.contextualIds = ['foo'];
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({});
       const info = {
         menuItemId: 'fooReopen'
@@ -5197,7 +5332,7 @@ describe('main', () => {
       const i = browser.tabs.create.callCount;
       const newTab = document.getElementById(NEW_TAB);
       browser.tabs.create.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         active: true,
         cookieStoreId: 'foo'
       }).resolves({
@@ -5205,6 +5340,7 @@ describe('main', () => {
       });
       mjs.sidebar.context = newTab;
       mjs.sidebar.contextualIds = ['foo'];
+      mjs.sidebar.windowId = 1;
       const info = {
         menuItemId: 'fooNewTab'
       };
@@ -5232,6 +5368,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       const info = {
         menuItemId: TABS_RELOAD
       };
@@ -5257,6 +5394,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       const info = {
         menuItemId: TAB_RELOAD
       };
@@ -5283,6 +5421,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         pinned: true
       });
@@ -5315,6 +5454,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         pinned: false
       });
@@ -5347,6 +5487,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         pinned: true
       });
@@ -5378,6 +5519,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         pinned: false
       });
@@ -5409,6 +5551,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         mutedInfo: {
           muted: true
@@ -5443,6 +5586,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         mutedInfo: {
           muted: false
@@ -5477,6 +5621,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         mutedInfo: {
           muted: true
@@ -5510,6 +5655,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         mutedInfo: {
           muted: false
@@ -5544,6 +5690,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.windows.create.resolves({
         id: 1
@@ -5579,9 +5726,10 @@ describe('main', () => {
       sect.appendChild(elm2);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.windows.create.resolves({
-        id: 1
+        id: 2
       });
       browser.tabs.move.resolves([{}, {}]);
       const info = {
@@ -5616,6 +5764,7 @@ describe('main', () => {
       body.appendChild(pinned);
       body.appendChild(sect);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.move.resolves([{}, {}]);
       const info = {
@@ -5648,6 +5797,7 @@ describe('main', () => {
       body.appendChild(pinned);
       body.appendChild(sect);
       mjs.sidebar.context = elm2;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.move.resolves([{}]);
       const info = {
@@ -5683,6 +5833,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.move.resolves([{}, {}]);
       const info = {
@@ -5718,6 +5869,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.move.resolves([{}]);
       const info = {
@@ -5753,6 +5905,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.create.resolves({});
@@ -5790,6 +5943,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.create.resolves({});
@@ -5831,6 +5985,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm3;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -5872,6 +6027,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -5913,6 +6069,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -5954,6 +6111,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -5995,6 +6153,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -6044,6 +6203,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -6094,6 +6254,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
@@ -6113,6 +6274,7 @@ describe('main', () => {
       mjs.sidebar.lastClosedTab = {
         sessionId: 'foo'
       };
+      mjs.sidebar.windowId = 1;
       browser.sessions.restore.withArgs('foo').resolves({});
       const info = {
         menuItemId: TAB_CLOSE_UNDO
@@ -6123,10 +6285,12 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6169,33 +6333,28 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_UNGROUP
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.tabs.move.callCount;
+      const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6239,10 +6398,11 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       const arg = {
         pinned: false,
         url: '*://*.example.com/*',
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       browser.tabs.get.resolves({
         url: 'https://www.example.com/foo'
@@ -6257,31 +6417,25 @@ describe('main', () => {
           url: 'https://example.com/bar'
         }
       ]);
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
       const info = {
         menuItemId: TAB_GROUP_DOMAIN
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.tabs.move.callCount, m + 2, 'called move');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.tabs.move.callCount;
+      const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6325,10 +6479,11 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       const arg = {
         cookieStoreId: 'foo',
         pinned: false,
-        windowId: browser.windows.WINDOW_ID_CURRENT
+        windowId: 1
       };
       browser.tabs.get.resolves({
         cookieStoreId: 'foo'
@@ -6343,31 +6498,25 @@ describe('main', () => {
           cookieStoreId: 'foo'
         }
       ]);
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
-      });
       const info = {
         menuItemId: TAB_GROUP_CONTAINER
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.tabs.move.callCount, m + 2, 'called move');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.tabs.move.callCount;
+      const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6412,34 +6561,29 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_SELECTED
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.tabs.move.callCount, m + 2, 'called move');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.tabs.move.callCount;
+      const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6484,34 +6628,29 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_DETACH_TABS
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.tabs.move.callCount, m + 1, 'called move');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.tabs.move.callCount;
+      const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6556,26 +6695,19 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_DETACH
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.tabs.move.callCount, m + 1, 'called move');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should get result', async () => {
@@ -6594,6 +6726,7 @@ describe('main', () => {
       sect.appendChild(heading);
       body.appendChild(sect);
       mjs.sidebar.context = heading;
+      mjs.sidebar.windowId = 1;
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW
       };
@@ -6619,6 +6752,7 @@ describe('main', () => {
       sect.appendChild(heading);
       body.appendChild(sect);
       mjs.sidebar.context = heading;
+      mjs.sidebar.windowId = 1;
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW
       };
@@ -6628,11 +6762,13 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.i18n.getMessage.callCount;
+      const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6681,35 +6817,30 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_COLLAPSE
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+      assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.i18n.getMessage.callCount;
+      const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6759,35 +6890,30 @@ describe('main', () => {
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
       mjs.sidebar.tabGroupOnExpandCollapseOther = true;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_COLLAPSE
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+      assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.i18n.getMessage.callCount;
+      const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6838,35 +6964,30 @@ describe('main', () => {
       mjs.sidebar.context = elm;
       mjs.sidebar.enableTabGroup = false;
       mjs.sidebar.tabGroupOnExpandCollapseOther = true;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_COLLAPSE
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+      assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.get.callCount;
-      const j = browser.windows.getCurrent.callCount;
-      const k = browser.sessions.getWindowValue.callCount;
-      const l = browser.sessions.setWindowValue.callCount;
-      const m = browser.i18n.getMessage.callCount;
+      const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -6924,27 +7045,20 @@ describe('main', () => {
       body.appendChild(parent2);
       body.appendChild(newTab);
       mjs.sidebar.context = elm3;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({
         pinned: false
-      });
-      browser.windows.getCurrent.resolves({
-        id: browser.windows.WINDOW_ID_CURRENT,
-        incognito: false
       });
       const info = {
         menuItemId: TAB_GROUP_COLLAPSE_OTHER
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
-        'called windows get current');
-      assert.strictEqual(browser.sessions.getWindowValue.callCount, k + 1,
-        'called sessions get');
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, l + 1,
-        'called sessions set');
-      assert.strictEqual(browser.i18n.getMessage.callCount, m + 2,
+      assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
@@ -6974,9 +7088,10 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         active: true,
         windowType: 'normal'
       }).resolves([{
@@ -7021,9 +7136,10 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = body;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.query.withArgs({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowId: 1,
         active: true,
         windowType: 'normal'
       }).resolves([{
@@ -7067,6 +7183,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.highlight.resolves(undefined);
       const info = {
@@ -7104,6 +7221,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = body;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.highlight.resolves(undefined);
       const info = {
@@ -7153,6 +7271,7 @@ describe('main', () => {
       body.appendChild(sect);
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.bookmarks.create.resolves({});
       const info = {
@@ -7479,17 +7598,16 @@ describe('main', () => {
       newTab.id = NEW_TAB;
       body.appendChild(pinned);
       body.appendChild(newTab);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.incognito = false;
     });
     afterEach(() => {
-      mjs.sidebar.windowId = null;
       mjs.sidebar.incognito = false;
     });
 
     it('should call function', async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
+      mjs.sidebar.windowId = 1;
       const res = await func();
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.strictEqual(browser.menus.update.callCount, j + 25, 'called');
@@ -7527,6 +7645,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -7594,6 +7713,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -7661,6 +7781,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -7728,6 +7849,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -7795,6 +7917,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -7864,6 +7987,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -7932,6 +8056,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8000,6 +8125,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8067,6 +8193,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8136,6 +8263,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8205,6 +8333,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8268,6 +8397,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       sect.appendChild(elm3);
       body.insertBefore(sect, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8324,6 +8454,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       sect.appendChild(elm3);
       body.insertBefore(sect, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8381,6 +8512,7 @@ describe('main', () => {
       sect.appendChild(elm2);
       sect.appendChild(elm3);
       body.insertBefore(sect, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8421,11 +8553,9 @@ describe('main', () => {
       newTab.id = NEW_TAB;
       body.appendChild(pinned);
       body.appendChild(newTab);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
       mjs.sidebar.incognito = false;
     });
     afterEach(() => {
-      mjs.sidebar.windowId = null;
       mjs.sidebar.incognito = false;
     });
 
@@ -8437,6 +8567,7 @@ describe('main', () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
       const body = document.querySelector('body');
+      mjs.sidebar.windowId = 1;
       browser.menus.update.resolves(undefined);
       const evt = {
         target: body
@@ -8480,6 +8611,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       const evt = {
         ctrlKey: true,
         key: 'c',
@@ -8525,6 +8657,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.query.resolves([{
         index: 1
       }]);
@@ -8576,6 +8709,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.query.resolves([{
         index: 1
       }]);
@@ -8627,6 +8761,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.query.resolves([{
         index: 1
       }]);
@@ -8679,6 +8814,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       const evt = {
         shiftKey: true,
         key: 'F10',
@@ -8724,6 +8860,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
         mutedInfo: {
@@ -8797,6 +8934,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       const evt = {
         key: 'ContextMenu',
         target: body
@@ -8841,6 +8979,7 @@ describe('main', () => {
       sect2.appendChild(elm3);
       body.insertBefore(sect, newTab);
       body.insertBefore(sect2, newTab);
+      mjs.sidebar.windowId = 1;
       const evt = {
         button: 2,
         target: body
@@ -11490,7 +11629,6 @@ describe('main', () => {
       const newTab = document.createElement('section');
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
-      mjs.sidebar.windowId = browser.windows.WINDOW_ID_CURRENT;
     });
 
     it('should create tab', async () => {
@@ -11506,12 +11644,13 @@ describe('main', () => {
           status: 'complete',
           title: 'foo',
           url: 'https://example.com',
-          windowId: browser.windows.WINDOW_ID_CURRENT,
+          windowId: 1,
           mutedInfo: {
             muted: false
           }
         }
       ];
+      mjs.sidebar.windowId = 1;
       browser.tabs.query.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
         windowType: 'normal'

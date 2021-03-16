@@ -6,12 +6,13 @@
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getActiveTabId, getCloseTabsByDoubleClickValue, getCurrentWindow,
-  getSessionWindowValue, setSessionWindowValue, setStorage, updateTab
+  getSessionWindowValue, getWindow, sendMessage, setSessionWindowValue,
+  setStorage, updateTab
 } from './browser.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
-  NEW_TAB, PINNED, TAB_LIST, TAB_QUERY
+  NEW_TAB, PINNED, SESSION_SAVE, TAB_LIST, TAB_QUERY
 } from './constant.js';
 
 /**
@@ -286,15 +287,18 @@ export const isNewTab = node => {
  * get tab list from sessions
  *
  * @param {string} key - key
+ * @param {number} windowId - window ID
  * @returns {object} - tab list
  */
-export const getSessionTabList = async key => {
+export const getSessionTabList = async (key, windowId) => {
   if (!isString(key)) {
     throw new TypeError(`Expected String but got ${getType(key)}.`);
   }
+  if (!Number.isInteger(windowId)) {
+    const win = await getCurrentWindow();
+    windowId = win.id;
+  }
   let tabList;
-  const win = await getCurrentWindow();
-  const { id: windowId } = win;
   const value = await getSessionWindowValue(key, windowId);
   if (isString(value)) {
     tabList = JSON.parse(value);
@@ -306,24 +310,34 @@ export const getSessionTabList = async key => {
 export const mutex = new Set();
 
 /**
- * set tab list to sessions
+ * save tab list to sessions
  *
- * @returns {void}
+ * @param {string} domStr - DOM string
+ * @param {number} windowId - window ID
+ * @returns {boolean} - saved
  */
-export const setSessionTabList = async () => {
-  const win = await getCurrentWindow();
-  const { id: windowId, incognito } = win;
+export const saveSessionTabList = async (domStr, windowId) => {
+  if (!isString(domStr)) {
+    throw new TypeError(`Expected String but got ${getType(domStr)}.`);
+  }
+  if (!Number.isInteger(windowId)) {
+    throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
+  }
+  let res;
+  const win = await getWindow(windowId);
+  const { incognito } = win;
   if (!incognito && !mutex.has(windowId)) {
     mutex.add(windowId);
     try {
       const tabList = {
         recent: {}
       };
+      const dom = new DOMParser().parseFromString(domStr, 'text/html');
       const items =
-        document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-      const prevList = await getSessionTabList(TAB_LIST);
+        dom.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+      const prevList = await getSessionTabList(TAB_LIST, windowId);
       const l = items.length;
-      let i = 0;
+      let i = 0; let j = 0;
       while (i < l) {
         const item = items[i];
         const collapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
@@ -336,14 +350,14 @@ export const setSessionTabList = async () => {
         for (const tab of childTabs) {
           const tabsTab = tab.dataset.tab;
           const { url } = JSON.parse(tabsTab);
-          const tabIndex = getSidebarTabIndex(tab);
-          tabList.recent[tabIndex] = {
+          tabList.recent[j] = {
             collapsed,
             headingLabel,
             headingShown,
             url,
             containerIndex: i
           };
+          j++;
         }
         i++;
       }
@@ -352,12 +366,45 @@ export const setSessionTabList = async () => {
         tabList.prev = Object.assign({}, prevList.recent);
       }
       await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);
-      mutex.delete(windowId);
+      res = mutex.delete(windowId);
     } catch (e) {
       mutex.delete(windowId);
       throw e;
     }
   }
+  return !!res;
+};
+
+/**
+ * request save session
+ *
+ * @param {number} windowId - window ID
+ * @returns {?Function} - sendMessage()
+ */
+export const requestSaveSession = async windowId => {
+  let func, win;
+  if (Number.isInteger(windowId)) {
+    win = await getWindow(windowId);
+  } else {
+    win = await getCurrentWindow();
+    windowId = win.id;
+  }
+  if (win && !win.incognito) {
+    const cloneBody = document.body.cloneNode(true);
+    const items =
+      cloneBody.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+    if (items.length) {
+      const frag = document.createDocumentFragment();
+      frag.append(...items);
+      func = sendMessage(null, {
+        [SESSION_SAVE]: {
+          windowId,
+          domString: new XMLSerializer().serializeToString(frag)
+        }
+      });
+    }
+  }
+  return func || null;
 };
 
 /**

@@ -5,7 +5,10 @@
 /* shared */
 import { getType, isString } from './common.js';
 import { getCurrentWindow, getWindow } from './browser.js';
-import { SIDEBAR_STATE_UPDATE, TOGGLE_STATE } from './constant.js';
+import { saveSessionTabList } from './util.js';
+import {
+  SESSION_SAVE, SIDEBAR_STATE_UPDATE, TOGGLE_STATE
+} from './constant.js';
 
 /* api */
 const { sidebarAction, windows } = browser;
@@ -31,18 +34,19 @@ export const setSidebarState = async windowId => {
     win = await getWindow(windowId);
   }
   if (win) {
-    const { sessionId, type } = win;
+    const { incognito, sessionId, type } = win;
     if (type === 'normal') {
       const isOpen = await sidebarAction.isOpen({ windowId });
       let value;
       if (sidebar.has(windowId)) {
         value = sidebar.get(windowId);
+        value.incognito = incognito;
         value.isOpen = isOpen;
         value.sessionId = sessionId;
         value.windowId = windowId;
       } else {
         value = {
-          isOpen, sessionId, windowId
+          incognito, isOpen, sessionId, windowId
         };
       }
       sidebar.set(windowId, value);
@@ -69,6 +73,26 @@ export const removeSidebarState = async windowId => {
 export const toggleSidebar = async () => sidebarAction.toggle();
 
 /**
+ * handle save session request
+ *
+ * @param {object} obj - obj
+ * @returns {?Function} - saveSessionTabList()
+ */
+export const handleSaveSessionRequest = async (obj = {}) => {
+  let func;
+  const { domString, windowId } = obj;
+  if (isString(domString) && Number.isInteger(windowId) &&
+      sidebar.has(windowId)) {
+    const value = sidebar.get(windowId);
+    const { incognito } = value;
+    if (!incognito) {
+      func = saveSessionTabList(domString, windowId);
+    }
+  }
+  return func || null;
+};
+
+/**
  * handle runtime message
  *
  * @param {!object} msg - message
@@ -79,6 +103,10 @@ export const handleMsg = async msg => {
   const func = [];
   for (const [key, value] of items) {
     switch (key) {
+      case SESSION_SAVE: {
+        func.push(handleSaveSessionRequest(value));
+        break;
+      }
       case SIDEBAR_STATE_UPDATE: {
         const { windowId } = value;
         func.push(setSidebarState(windowId));

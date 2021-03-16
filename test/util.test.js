@@ -10,11 +10,12 @@ import sinon from 'sinon';
 import * as mjs from '../src/mjs/util.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB, TAB_LIST
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, SESSION_SAVE,
+  TAB, TAB_LIST
 } from '../src/mjs/constant.js';
 
 describe('util', () => {
-  const globalKeys = ['Node', 'NodeList'];
+  const globalKeys = ['DOMParser', 'Node', 'NodeList', 'XMLSerializer'];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -785,7 +786,7 @@ describe('util', () => {
       assert.isNull(res, 'result');
     });
 
-    it('should get null', async () => {
+    it('should get value', async () => {
       browser.windows.getCurrent.resolves({
         id: 1
       });
@@ -802,10 +803,28 @@ describe('util', () => {
         bar: 'baz'
       }, 'result');
     });
+
+    it('should get value', async () => {
+      browser.windows.getCurrent.resolves({
+        id: 1
+      });
+      browser.sessions.getWindowValue.withArgs(1, 'foo')
+        .resolves('{"bar":"baz"}');
+      const i = browser.windows.getCurrent.callCount;
+      const j = browser.sessions.getWindowValue.callCount;
+      const res = await func('foo', 1);
+      assert.strictEqual(browser.windows.getCurrent.callCount, i,
+        'not called windows');
+      assert.strictEqual(browser.sessions.getWindowValue.callCount, j + 1,
+        'called sessions');
+      assert.deepEqual(res, {
+        bar: 'baz'
+      }, 'result');
+    });
   });
 
-  describe('set tab list to sessions', () => {
-    const func = mjs.setSessionTabList;
+  describe('save tab list to sessions', () => {
+    const func = mjs.saveSessionTabList;
     beforeEach(() => {
       mjs.mutex.clear();
     });
@@ -813,117 +832,69 @@ describe('util', () => {
       mjs.mutex.clear();
     });
 
-    it('should not call function if incognito', async () => {
-      browser.windows.getCurrent.resolves({
-        incognito: true
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.');
       });
-      const i = browser.sessions.setWindowValue.callCount;
-      await func();
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
-        'not called');
-    });
-
-    it('should not call function if mutex has window ID', async () => {
-      browser.windows.getCurrent.resolves({
-        incognito: false,
-        id: 1
-      });
-      mjs.mutex.add(1);
-      const i = browser.sessions.setWindowValue.callCount;
-      await func();
-      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
-        'not called');
-    });
-
-    it('should call function', async () => {
-      browser.windows.getCurrent.resolves({
-        incognito: false,
-        id: 1
-      });
-      browser.sessions.getWindowValue.withArgs(1, TAB_LIST).resolves(undefined);
-      const arg = JSON.stringify({
-        recent: {
-          0: {
-            collapsed: false,
-            headingLabel: null,
-            headingShown: null,
-            url: 'http://example.com',
-            containerIndex: 0
-          },
-          1: {
-            collapsed: false,
-            headingLabel: null,
-            headingShown: null,
-            url: 'https://example.com',
-            containerIndex: 1
-          },
-          2: {
-            collapsed: false,
-            headingLabel: null,
-            headingShown: null,
-            url: 'https://www.example.com',
-            containerIndex: 1
-          }
-        }
-      });
-      const i = browser.sessions.setWindowValue.withArgs(1, 'tabList', arg)
-        .callCount;
-      const parent = document.createElement('div');
-      const parent2 = document.createElement('div');
-      const elm = document.createElement('p');
-      const elm2 = document.createElement('p');
-      const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.dataset.tab = JSON.stringify({
-        url: 'http://example.com'
-      });
-      elm2.classList.add(TAB);
-      elm2.classList.add(CLASS_TAB_COLLAPSED);
-      elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({
-        url: 'https://example.com'
-      });
-      elm3.classList.add(TAB);
-      elm3.classList.add(CLASS_TAB_COLLAPSED);
-      elm3.dataset.tabId = '3';
-      elm3.dataset.tab = JSON.stringify({
-        url: 'https://www.example.com'
-      });
-      parent.appendChild(elm);
-      parent2.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      await func();
-      assert.strictEqual(
-        browser.sessions.setWindowValue.withArgs(1, 'tabList', arg).callCount,
-        i + 1, 'called set'
-      );
     });
 
     it('should throw', async () => {
-      browser.windows.getCurrent.resolves({
+      await func('foo').catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.');
+      });
+    });
+
+    it('should not call function if incognito', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: true
+      });
+      const i = browser.sessions.setWindowValue.callCount;
+      const res = await func('foo', 1);
+      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
+        'not called');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should not call function if mutex has window ID', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      mjs.mutex.add(1);
+      const i = browser.sessions.setWindowValue.callCount;
+      const res = await func('foo', 1);
+      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
+        'not called');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should throw', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
         incognito: false,
         id: 1
       });
-      browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+      const stubGetValue = browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
         .rejects(new Error('error'));
-      await func().catch(e => {
+      await func('foo', 1).catch(e => {
         assert.strictEqual(e.message, 'error', 'error');
       });
+      assert.isTrue(stubWin.calledOnce, 'called');
+      assert.isTrue(stubGetValue.calledOnce, 'called');
       assert.isFalse(mjs.mutex.has(1), 'mutex');
     });
 
     it('should call function', async () => {
-      browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
         incognito: false,
         id: 1
       });
-      browser.sessions.getWindowValue.withArgs(1, TAB_LIST).resolves(undefined);
+      const stubGetValue = browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+        .resolves(undefined);
       const arg = JSON.stringify({
         recent: {
           0: {
@@ -949,14 +920,14 @@ describe('util', () => {
           }
         }
       });
-      const i = browser.sessions.setWindowValue.withArgs(1, 'tabList', arg)
-        .callCount;
+      const stubSetValue =
+        browser.sessions.setWindowValue.withArgs(1, 'tabList', arg);
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
+      const frag = document.createDocumentFragment();
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
@@ -979,24 +950,100 @@ describe('util', () => {
       parent.appendChild(elm);
       parent2.appendChild(elm2);
       parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      await Promise.all([
-        func(),
-        func()
+      frag.appendChild(parent);
+      frag.appendChild(parent2);
+      const domstr = new XMLSerializer().serializeToString(frag);
+      const res = await func(domstr, 1);
+      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.isTrue(stubGetValue.calledOnce, 'called get');
+      assert.isTrue(stubSetValue.calledOnce, 'called set');
+      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        incognito: false,
+        id: 1
+      });
+      const stubGetValue = browser.sessions.getWindowValue
+        .withArgs(1, TAB_LIST).resolves(undefined);
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: 'http://example.com',
+            containerIndex: 0
+          },
+          1: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: 'https://example.com',
+            containerIndex: 1
+          },
+          2: {
+            collapsed: false,
+            headingLabel: null,
+            headingShown: null,
+            url: 'https://www.example.com',
+            containerIndex: 1
+          }
+        }
+      });
+      const stubSetValue = browser.sessions.setWindowValue
+        .withArgs(1, 'tabList', arg);
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const frag = document.createDocumentFragment();
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'http://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://www.example.com'
+      });
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      frag.appendChild(parent);
+      frag.appendChild(parent2);
+      const domstr = new XMLSerializer().serializeToString(frag);
+      const res = await Promise.all([
+        func(domstr, 1),
+        func(domstr, 1)
       ]);
-      assert.strictEqual(
-        browser.sessions.setWindowValue.withArgs(1, 'tabList', arg).callCount,
-        i + 1, 'called set'
-      );
+      assert.isTrue(stubWin.calledTwice, 'called window');
+      assert.isTrue(stubGetValue.calledOnce, 'called get');
+      assert.isTrue(stubSetValue.calledOnce, 'called set');
+      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.deepEqual(res, [true, false], 'result');
     });
 
     it('should call function', async () => {
-      browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
         incognito: false,
         id: 1
       });
-      browser.sessions.getWindowValue.withArgs(1, TAB_LIST).resolves(undefined);
+      const stubGetValue = browser.sessions.getWindowValue
+        .withArgs(1, TAB_LIST).resolves(undefined);
       const arg = JSON.stringify({
         recent: {
           0: {
@@ -1022,14 +1069,14 @@ describe('util', () => {
           }
         }
       });
-      const i = browser.sessions.setWindowValue.withArgs(1, 'tabList', arg)
-        .callCount;
+      const stubSetValue = browser.sessions.setWindowValue
+        .withArgs(1, 'tabList', arg);
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
+      const frag = document.createDocumentFragment();
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
@@ -1052,21 +1099,23 @@ describe('util', () => {
       parent.appendChild(elm);
       parent2.appendChild(elm2);
       parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      await func().then(func);
-      assert.strictEqual(
-        browser.sessions.setWindowValue.withArgs(1, 'tabList', arg).callCount,
-        i + 2, 'called set'
-      );
+      frag.appendChild(parent);
+      frag.appendChild(parent2);
+      const domstr = new XMLSerializer().serializeToString(frag);
+      const res = await func(domstr, 1).then(() => func(domstr, 1));
+      assert.isTrue(stubWin.calledTwice, 'called window');
+      assert.isTrue(stubGetValue.calledTwice, 'called get');
+      assert.isTrue(stubSetValue.calledTwice, 'called set');
+      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.isTrue(res, 'result');
     });
 
     it('should call function', async () => {
-      browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
         incognito: false,
         id: 1
       });
-      browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+      const stubGetValue = browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
         .resolves(JSON.stringify({
           recent: {
             foo: 'bar'
@@ -1100,14 +1149,14 @@ describe('util', () => {
           foo: 'bar'
         }
       });
-      const i = browser.sessions.setWindowValue.withArgs(1, 'tabList', arg)
-        .callCount;
+      const stubSetValue = browser.sessions.setWindowValue
+        .withArgs(1, 'tabList', arg);
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
+      const frag = document.createDocumentFragment();
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent2.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
@@ -1130,21 +1179,23 @@ describe('util', () => {
       parent.appendChild(elm);
       parent2.appendChild(elm2);
       parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      await func();
-      assert.strictEqual(
-        browser.sessions.setWindowValue.withArgs(1, 'tabList', arg).callCount,
-        i + 1, 'called set'
-      );
+      frag.appendChild(parent);
+      frag.appendChild(parent2);
+      const domstr = new XMLSerializer().serializeToString(frag);
+      const res = await func(domstr, 1);
+      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.isTrue(stubGetValue.calledOnce, 'called get');
+      assert.isTrue(stubSetValue.calledOnce, 'called set');
+      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.isTrue(res, 'result');
     });
 
     it('should call function', async () => {
-      browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
         incognito: false,
         id: 1
       });
-      browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+      const stubGetValue = browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
         .resolves(JSON.stringify({
           recent: {
             foo: 'bar'
@@ -1178,8 +1229,8 @@ describe('util', () => {
           foo: 'bar'
         }
       });
-      const i = browser.sessions.setWindowValue.withArgs(1, 'tabList', arg)
-        .callCount;
+      const stubSetValue = browser.sessions.setWindowValue
+        .withArgs(1, 'tabList', arg);
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -1189,7 +1240,7 @@ describe('util', () => {
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
+      const frag = document.createDocumentFragment();
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent2.classList.add(CLASS_TAB_CONTAINER);
       label.classList.add(CLASS_HEADING_LABEL);
@@ -1222,13 +1273,173 @@ describe('util', () => {
       parent2.appendChild(heading2);
       parent2.appendChild(elm2);
       parent2.appendChild(elm3);
+      frag.appendChild(parent);
+      frag.appendChild(parent2);
+      const domstr = new XMLSerializer().serializeToString(frag);
+      const res = await func(domstr, 1);
+      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.isTrue(stubGetValue.calledOnce, 'called get');
+      assert.isTrue(stubSetValue.calledOnce, 'called set');
+      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.isTrue(res, 'result');
+    });
+  });
+
+  describe('request save session', () => {
+    const func = mjs.requestSaveSession;
+
+    it('should not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: true
+      });
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: true
+      });
+      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
+        const [, msg] = args;
+        return msg;
+      });
+      const res = await func();
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isFalse(stubWin.called, 'not called window');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: true
+      });
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: true
+      });
+      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
+        const [, msg] = args;
+        return msg;
+      });
+      const res = await func(1);
+      assert.isFalse(stubCurrentWin.called, 'not called current window');
+      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
+        const [, msg] = args;
+        return msg;
+      });
+      const res = await func();
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isFalse(stubWin.called, 'not called window');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
+        const [, msg] = args;
+        return msg;
+      });
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const heading = document.createElement('h1');
+      const heading2 = document.createElement('h1');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      heading.classList.add(CLASS_HEADING);
+      heading2.classList.add(CLASS_HEADING);
+      elm.classList.add(TAB);
+      elm2.classList.add(TAB);
+      elm3.classList.add(TAB);
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
       body.appendChild(parent);
       body.appendChild(parent2);
-      await func();
-      assert.strictEqual(
-        browser.sessions.setWindowValue.withArgs(1, 'tabList', arg).callCount,
-        i + 1, 'called set'
-      );
+      const res = await func();
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isFalse(stubWin.called, 'not called window');
+      assert.isTrue(stubMsg.calledOnce, 'called message');
+      assert.isObject(res, 'result');
+      assert.property(res, SESSION_SAVE, 'property');
+      assert.property(res[SESSION_SAVE], 'windowId', 'property');
+      assert.property(res[SESSION_SAVE], 'domString', 'property');
+      assert.isNumber(res[SESSION_SAVE].windowId, 'value');
+      assert.isString(res[SESSION_SAVE].domString, 'value');
+    });
+
+    it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
+        const [, msg] = args;
+        return msg;
+      });
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const heading = document.createElement('h1');
+      const heading2 = document.createElement('h1');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      heading.classList.add(CLASS_HEADING);
+      heading2.classList.add(CLASS_HEADING);
+      elm.classList.add(TAB);
+      elm2.classList.add(TAB);
+      elm3.classList.add(TAB);
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(1);
+      assert.isFalse(stubCurrentWin.called, 'not called current window');
+      assert.isTrue(stubWin.calledOnce, 'not called window');
+      assert.isTrue(stubMsg.calledOnce, 'called message');
+      assert.isObject(res, 'result');
+      assert.property(res, SESSION_SAVE, 'property');
+      assert.property(res[SESSION_SAVE], 'windowId', 'property');
+      assert.property(res[SESSION_SAVE], 'domString', 'property');
+      assert.isNumber(res[SESSION_SAVE].windowId, 'value');
+      assert.isString(res[SESSION_SAVE].domString, 'value');
     });
   });
 

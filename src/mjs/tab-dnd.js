@@ -8,7 +8,7 @@ import { moveTab } from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
-  getTemplate, setSessionTabList
+  getTemplate, requestSaveSession
 } from './util.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
@@ -297,7 +297,7 @@ export const handleDrop = evt => {
           opts.push(opt);
         }
         func = createTabsInOrder(opts).then(restoreTabContainers)
-          .then(setSessionTabList).catch(throwErr);
+          .then(requestSaveSession).catch(throwErr);
         evt.preventDefault();
       } else if (data) {
         try {
@@ -308,7 +308,7 @@ export const handleDrop = evt => {
             };
             item.dropWindowId = windowId;
             func = extractDroppedTabs(dropTarget, item, keyOpt)
-              .then(restoreTabContainers).then(setSessionTabList)
+              .then(restoreTabContainers).then(requestSaveSession)
               .catch(throwErr);
             evt.preventDefault();
           }
