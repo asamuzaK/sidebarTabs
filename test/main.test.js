@@ -5066,7 +5066,7 @@ describe('main', () => {
       });
       const stubMsg = browser.runtime.sendMessage.resolves({});
       const info = {
-        url: 'https://example.com',
+        url: 'https://example.com'
       };
       const tabsTab = {
         discarded: false,

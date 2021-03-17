@@ -101,7 +101,6 @@ export const handleSaveSessionRequest = async (obj = {}) => {
             windowId,
             domString: sessionValue
           });
-          console.log(`inner:${res}`)
         }
       }
     }

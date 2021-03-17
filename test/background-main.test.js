@@ -422,34 +422,6 @@ describe('background-main', () => {
             foo: 'bar'
           }
         }));
-      const arg = JSON.stringify({
-        recent: {
-          0: {
-            collapsed: false,
-            headingLabel: '',
-            headingShown: false,
-            url: 'http://example.com',
-            containerIndex: 0
-          },
-          1: {
-            collapsed: false,
-            headingLabel: 'foo',
-            headingShown: true,
-            url: 'https://example.com',
-            containerIndex: 1
-          },
-          2: {
-            collapsed: false,
-            headingLabel: 'foo',
-            headingShown: true,
-            url: 'https://www.example.com',
-            containerIndex: 1
-          }
-        },
-        prev: {
-          foo: 'bar'
-        }
-      });
       const stubSetValue = browser.sessions.setWindowValue;
       stubSetValue.onFirstCall().callsFake(() => sleep(1000));
       const parent = document.createElement('div');
@@ -635,6 +607,9 @@ describe('background-main', () => {
         }
       };
       const res = await func(msg);
+      assert.isTrue(stubWin.calledOnce, 'called');
+      assert.isTrue(stubGetValue.calledOnce, 'called');
+      assert.isTrue(stubSetValue.calledOnce, 'called');
       assert.deepEqual(res, [true], 'result');
     });
 
