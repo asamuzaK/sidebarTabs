@@ -969,8 +969,10 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           } else {
             tabAudio.classList.remove(AUDIBLE);
           }
-          func.push(setTabAudio(tabAudio, opt));
-          func.push(setTabAudioIcon(tabAudioIcon, opt));
+          func.push(
+            setTabAudio(tabAudio, opt),
+            setTabAudioIcon(tabAudioIcon, opt)
+          );
         }
         if (Object.prototype.hasOwnProperty.call(info, 'pinned')) {
           const pinnedContainer = document.getElementById(PINNED);
@@ -1000,6 +1002,9 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             windowId,
             tabId: activeTabId
           }));
+        }
+        if (Object.prototype.hasOwnProperty.call(info, 'url')) {
+          func.push(requestSaveSession(windowId));
         }
         if (Object.prototype.hasOwnProperty.call(info, 'discarded')) {
           if (info.discarded) {

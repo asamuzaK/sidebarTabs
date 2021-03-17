@@ -46,7 +46,11 @@ export const setSidebarState = async windowId => {
         value.windowId = windowId;
       } else {
         value = {
-          incognito, isOpen, sessionId, windowId
+          incognito,
+          isOpen,
+          sessionId,
+          windowId,
+          sessionValue: null
         };
       }
       sidebar.set(windowId, value);
@@ -76,20 +80,33 @@ export const toggleSidebar = async () => sidebarAction.toggle();
  * handle save session request
  *
  * @param {object} obj - obj
- * @returns {?Function} - saveSessionTabList()
+ * @returns {boolean} - result
  */
 export const handleSaveSessionRequest = async (obj = {}) => {
-  let func;
+  let res;
   const { domString, windowId } = obj;
   if (isString(domString) && Number.isInteger(windowId) &&
       sidebar.has(windowId)) {
     const value = sidebar.get(windowId);
     const { incognito } = value;
     if (!incognito) {
-      func = saveSessionTabList(domString, windowId);
+      value.sessionValue = domString;
+      sidebar.set(windowId, value);
+      res = await saveSessionTabList(domString, windowId);
+      if (res) {
+        const currentValue = sidebar.get(windowId);
+        const { sessionValue } = currentValue;
+        if (sessionValue !== domString) {
+          res = await handleSaveSessionRequest({
+            windowId,
+            domString: sessionValue
+          });
+          console.log(`inner:${res}`)
+        }
+      }
     }
   }
-  return func || null;
+  return !!res;
 };
 
 /**

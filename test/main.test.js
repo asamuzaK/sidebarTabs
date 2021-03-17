@@ -5060,6 +5060,33 @@ describe('main', () => {
     });
 
     it('should update, call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const info = {
+        url: 'https://example.com',
+      };
+      const tabsTab = {
+        discarded: false,
+        id: 1,
+        mutedInfo: {
+          muted: false
+        },
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1
+      };
+      mjs.sidebar.windowId = 1;
+      const res = await func(1, info, tabsTab);
+      assert.isTrue(stubWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should update, call function', async () => {
       const i = browser.tabs.query.callCount;
       const info = {
         status: 'complete'
