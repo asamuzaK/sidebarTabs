@@ -5029,36 +5029,6 @@ describe('main', () => {
       assert.deepEqual(res, [], 'result');
     });
 
-    it('should not update, not call function', async () => {
-      const i = browser.tabs.query.callCount;
-      const info = {
-        status: 'loading'
-      };
-      const tabsTab = {
-        discarded: false,
-        id: 1,
-        mutedInfo: {
-          muted: false
-        },
-        status: 'loading',
-        title: 'foo',
-        url: 'https://example.com',
-        windowId: 1
-      };
-      mjs.sidebar.windowId = 1;
-      browser.tabs.query.withArgs({
-        windowId: 1,
-        active: true,
-        windowType: 'normal'
-      }).resolves([tabsTab]);
-      const res = await func(1, info, tabsTab);
-      const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isFalse(elm.classList.contains(ACTIVE), 'class');
-      assert.strictEqual(browser.tabs.query.callCount, i, 'not called');
-      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.deepEqual(res, [], 'result');
-    });
-
     it('should update, call function', async () => {
       const stubWin = browser.windows.get.withArgs(1, null).resolves({
         id: 1,
@@ -5086,7 +5056,49 @@ describe('main', () => {
       assert.deepEqual(res, [{}], 'result');
     });
 
+    it('should not update, not call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const i = browser.tabs.query.callCount;
+      const info = {
+        status: 'loading'
+      };
+      const tabsTab = {
+        discarded: false,
+        id: 1,
+        mutedInfo: {
+          muted: false
+        },
+        status: 'loading',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1
+      };
+      mjs.sidebar.windowId = 1;
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).resolves([tabsTab]);
+      const res = await func(1, info, tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isFalse(elm.classList.contains(ACTIVE), 'class');
+      assert.strictEqual(browser.tabs.query.callCount, i, 'not called');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
+      assert.isFalse(stubWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
     it('should update, call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.query.callCount;
       const info = {
         status: 'complete'
@@ -5113,7 +5125,9 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');
       assert.strictEqual(browser.tabs.query.callCount, i + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isTrue(stubWin.calledOnce, 'called');
+      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.deepEqual(res, [undefined, {}], 'result');
     });
 
     it('should update, call function', async () => {

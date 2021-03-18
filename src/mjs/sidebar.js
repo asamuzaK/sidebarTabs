@@ -70,7 +70,7 @@ tabs.onUpdated.addListener(
   {
     properties: [
       'audible', 'discarded', 'favIconUrl', 'hidden', 'mutedInfo', 'pinned',
-      'status', 'title', 'url'
+      'status', 'title'
     ]
   }
 );

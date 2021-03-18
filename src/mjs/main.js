@@ -998,10 +998,13 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             info.status === 'complete') {
           const activeTabsTab = await getActiveTab(windowId);
           const { id: activeTabId } = activeTabsTab;
-          func.push(handleActivatedTab({
-            windowId,
-            tabId: activeTabId
-          }));
+          func.push(
+            handleActivatedTab({
+              windowId,
+              tabId: activeTabId
+            }),
+            requestSaveSession(windowId)
+          );
         }
         if (Object.prototype.hasOwnProperty.call(info, 'url')) {
           func.push(requestSaveSession(windowId));
