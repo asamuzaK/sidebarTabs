@@ -19,7 +19,7 @@ import {
 import {
   activateTab, createSidebarTab, getSessionTabList, getSidebarTab,
   getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex, getTabsInRange,
-  getTemplate, isNewTab, scrollTabIntoView, setSessionTabList,
+  getTemplate, isNewTab, requestSaveSession, scrollTabIntoView,
   storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
 import {
@@ -910,7 +910,7 @@ export const handleMovedTab = async (tabId, info) => {
       setSession = true;
     }
     if (setSession) {
-      func = restoreTabContainers().then(setSessionTabList);
+      func = restoreTabContainers().then(requestSaveSession);
     }
   }
   return func || null;
@@ -969,8 +969,10 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           } else {
             tabAudio.classList.remove(AUDIBLE);
           }
-          func.push(setTabAudio(tabAudio, opt));
-          func.push(setTabAudioIcon(tabAudioIcon, opt));
+          func.push(
+            setTabAudio(tabAudio, opt),
+            setTabAudioIcon(tabAudioIcon, opt)
+          );
         }
         if (Object.prototype.hasOwnProperty.call(info, 'pinned')) {
           const pinnedContainer = document.getElementById(PINNED);
@@ -978,7 +980,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             const container = pinnedContainer;
             tab.classList.add(PINNED);
             tab.parentNode !== container && container.appendChild(tab);
-            func.push(restoreTabContainers().then(setSessionTabList));
+            func.push(restoreTabContainers().then(requestSaveSession));
           } else {
             const {
               nextElementSibling: pinnedNextSibling,
@@ -989,17 +991,23 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             container.appendChild(tab);
             container.removeAttribute('hidden');
             pinnedParentNode.insertBefore(container, pinnedNextSibling);
-            func.push(restoreTabContainers().then(setSessionTabList));
+            func.push(restoreTabContainers().then(requestSaveSession));
           }
         }
         if (Object.prototype.hasOwnProperty.call(info, 'status') &&
             info.status === 'complete') {
           const activeTabsTab = await getActiveTab(windowId);
           const { id: activeTabId } = activeTabsTab;
-          func.push(handleActivatedTab({
-            windowId,
-            tabId: activeTabId
-          }));
+          func.push(
+            handleActivatedTab({
+              windowId,
+              tabId: activeTabId
+            }),
+            requestSaveSession(windowId)
+          );
+        }
+        if (Object.prototype.hasOwnProperty.call(info, 'url')) {
+          func.push(requestSaveSession(windowId));
         }
         if (Object.prototype.hasOwnProperty.call(info, 'discarded')) {
           if (info.discarded) {
@@ -1007,7 +1015,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           } else {
             tab.classList.remove(DISCARDED);
           }
-          func.push(setSessionTabList());
         } else if (discarded) {
           tab.classList.add(DISCARDED);
         } else {
@@ -1086,11 +1093,11 @@ export const handleClickedMenu = async info => {
       if (tab) {
         if (enableTabGroup && tabGroupOnExpandCollapseOther) {
           func.push(
-            toggleTabGroupsCollapsedState(tab).then(setSessionTabList)
+            toggleTabGroupsCollapsedState(tab).then(requestSaveSession)
           );
         } else {
           func.push(
-            toggleTabGroupCollapsedState(tab, true).then(setSessionTabList)
+            toggleTabGroupCollapsedState(tab, true).then(requestSaveSession)
           );
         }
       }
@@ -1099,30 +1106,30 @@ export const handleClickedMenu = async info => {
       tab && func.push(Promise.all([
         activateTab(tab),
         collapseTabGroups(tab)
-      ]).then(setSessionTabList));
+      ]).then(requestSaveSession));
       break;
     case TAB_GROUP_CONTAINER:
       func.push(
         groupSameContainerTabs(tabId, windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(requestSaveSession)
       );
       break;
     case TAB_GROUP_DETACH:
       tab && func.push(
         detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(requestSaveSession)
       );
       break;
     case TAB_GROUP_DETACH_TABS:
       func.push(
         detachTabsFromGroup(Array.from(selectedTabs), windowId)
-          .then(restoreTabContainers).then(setSessionTabList)
+          .then(restoreTabContainers).then(requestSaveSession)
       );
       break;
     case TAB_GROUP_DOMAIN:
       func.push(
         groupSameDomainTabs(tabId, windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(requestSaveSession)
       );
       break;
     case TAB_GROUP_LABEL_SHOW:
@@ -1133,13 +1140,13 @@ export const handleClickedMenu = async info => {
     case TAB_GROUP_SELECTED:
       func.push(
         groupSelectedTabs(windowId).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(requestSaveSession)
       );
       break;
     case TAB_GROUP_UNGROUP:
       tab && func.push(
         ungroupTabs(tab.parentNode).then(restoreTabContainers)
-          .then(setSessionTabList)
+          .then(requestSaveSession)
       );
       break;
     case TAB_MOVE_END:
@@ -1988,10 +1995,10 @@ export const restoreHighlightedTabs = async () => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const restoreTabGroups = async () => {
-  const tabList = await getSessionTabList(TAB_LIST);
+  const { tabGroupOnExpandCollapseOther: multi, windowId } = sidebar;
+  const tabList = await getSessionTabList(TAB_LIST, windowId);
   const func = [];
   if (isObjectNotEmpty(tabList)) {
-    const { tabGroupOnExpandCollapseOther: multi } = sidebar;
     const { recent } = tabList;
     const listItems = Object.entries(recent);
     const listItemIndexes = new Map();

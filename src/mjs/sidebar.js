@@ -4,7 +4,7 @@
 
 /* shared */
 import { throwErr } from './common.js';
-import { setSessionTabList } from './util.js';
+import { requestSaveSession } from './util.js';
 import {
   expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
 } from './tab-group.js';
@@ -38,19 +38,19 @@ runtime.onMessage.addListener((msg, sender) =>
 storage.onChanged.addListener(data => setVars(data).catch(throwErr));
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab)
-    .then(setSessionTabList).catch(throwErr)
+    .then(requestSaveSession).catch(throwErr)
 );
 tabs.onAttached.addListener((tabId, info) =>
   handleAttachedTab(tabId, info).then(restoreTabContainers)
-    .then(restoreHighlightedTabs).then(setSessionTabList).catch(throwErr)
+    .then(restoreHighlightedTabs).then(requestSaveSession).catch(throwErr)
 );
 tabs.onCreated.addListener(tabsTab =>
   handleCreatedTab(tabsTab).then(restoreTabContainers)
-    .then(setSessionTabList).then(getLastClosedTab).catch(throwErr)
+    .then(requestSaveSession).then(getLastClosedTab).catch(throwErr)
 );
 tabs.onDetached.addListener((tabId, info) =>
   handleDetachedTab(tabId, info).then(restoreTabContainers)
-    .then(expandActivatedCollapsedTab).then(setSessionTabList)
+    .then(expandActivatedCollapsedTab).then(requestSaveSession)
     .catch(throwErr)
 );
 tabs.onHighlighted.addListener(info =>
@@ -61,13 +61,14 @@ tabs.onMoved.addListener((tabId, info) =>
 );
 tabs.onRemoved.addListener((tabId, info) =>
   handleRemovedTab(tabId, info).then(restoreTabContainers)
-    .then(expandActivatedCollapsedTab).then(setSessionTabList)
+    .then(expandActivatedCollapsedTab).then(requestSaveSession)
     .then(getLastClosedTab).catch(throwErr)
 );
 tabs.onUpdated.addListener(
   (tabId, info, tabsTab) =>
     handleUpdatedTab(tabId, info, tabsTab).catch(throwErr),
   {
+    // FIXME: add 'url' when Firefox 91 is released, issue #131
     properties: [
       'audible', 'discarded', 'favIconUrl', 'hidden', 'mutedInfo', 'pinned',
       'status', 'title'
@@ -89,6 +90,6 @@ document.addEventListener('DOMContentLoaded', () => Promise.all([
   setSidebar().then(setMain).then(requestSidebarStateUpdate),
   setSidebarTheme()
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
-  .then(toggleTabGrouping).then(restoreHighlightedTabs).then(setSessionTabList)
+  .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)
   .then(getLastClosedTab).catch(throwErr)
 );
