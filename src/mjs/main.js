@@ -980,7 +980,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             const container = pinnedContainer;
             tab.classList.add(PINNED);
             tab.parentNode !== container && container.appendChild(tab);
-            func.push(restoreTabContainers().then(requestSaveSession));
           } else {
             const {
               nextElementSibling: pinnedNextSibling,
@@ -991,23 +990,25 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             container.appendChild(tab);
             container.removeAttribute('hidden');
             pinnedParentNode.insertBefore(container, pinnedNextSibling);
-            func.push(restoreTabContainers().then(requestSaveSession));
           }
+          func.push(restoreTabContainers().then(requestSaveSession));
         }
-        if (Object.prototype.hasOwnProperty.call(info, 'status') &&
-            info.status === 'complete') {
-          const activeTabsTab = await getActiveTab(windowId);
-          const { id: activeTabId } = activeTabsTab;
-          func.push(
-            handleActivatedTab({
-              windowId,
-              tabId: activeTabId
-            }),
-            requestSaveSession(windowId)
-          );
-        }
-        if (Object.prototype.hasOwnProperty.call(info, 'url')) {
-          func.push(requestSaveSession(windowId));
+        if ((Object.prototype.hasOwnProperty.call(info, 'status') &&
+             info.status === 'complete') ||
+            Object.prototype.hasOwnProperty.call(info, 'url')) {
+          if (info.status === 'complete') {
+            const activeTabsTab = await getActiveTab(windowId);
+            const { id: activeTabId } = activeTabsTab;
+            func.push(
+              handleActivatedTab({
+                windowId,
+                tabId: activeTabId
+              }),
+              requestSaveSession(windowId)
+            );
+          } else {
+            info.url && func.push(requestSaveSession(windowId));
+          }
         }
         if (Object.prototype.hasOwnProperty.call(info, 'discarded')) {
           if (info.discarded) {

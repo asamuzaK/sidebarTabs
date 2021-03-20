@@ -1744,6 +1744,44 @@ describe('main', () => {
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
     });
 
+    it('should not set class', async () => {
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const heading = document.createElement('h1');
+      const heading2 = document.createElement('h1');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      const info = {
+        tabId: 3,
+        windowId: 1
+      };
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(ACTIVE);
+      elm2.dataset.tabId = '2';
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent2.classList.add(ACTIVE);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      mjs.sidebar.windowId = 1;
+      await func(info);
+      assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
+      assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
+      assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
+      assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
+      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
+      assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
+    });
+
     it('should set class', async () => {
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
@@ -5062,6 +5100,33 @@ describe('main', () => {
         incognito: false
       });
       const stubMsg = browser.runtime.sendMessage.resolves({});
+      const info = {
+        url: null
+      };
+      const tabsTab = {
+        discarded: false,
+        id: 1,
+        mutedInfo: {
+          muted: false
+        },
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1
+      };
+      mjs.sidebar.windowId = 1;
+      const res = await func(1, info, tabsTab);
+      assert.isFalse(stubWin.called, 'not called');
+      assert.isFalse(stubMsg.called, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not update, not call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubMsg = browser.runtime.sendMessage.resolves({});
       const i = browser.tabs.query.callCount;
       const info = {
         status: 'loading'
@@ -5367,6 +5432,36 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 3, 'called get');
       assert.strictEqual(browser.tabs.create.callCount, j + 2, 'called create');
       assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.create.callCount;
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.contextualIds = ['foo'];
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.resolves({});
+      const info = {
+        menuItemId: 'barReopen'
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.tabs.create.callCount, j, 'not called create');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should call function', async () => {
