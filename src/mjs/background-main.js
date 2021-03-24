@@ -79,14 +79,19 @@ export const toggleSidebar = async () => sidebarAction.toggle();
 /**
  * handle save session request
  *
- * @param {object} obj - obj
+ * @param {string} domString - DOM string
+ * @param {number} windowId - window ID
  * @returns {boolean} - result
  */
-export const handleSaveSessionRequest = async (obj = {}) => {
+export const handleSaveSessionRequest = async (domString, windowId) => {
+  if (!isString(domString)) {
+    throw new TypeError(`Expected String but got ${getType(domString)}.`);
+  }
+  if (!Number.isInteger(windowId)) {
+    throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
+  }
   let res;
-  const { domString, windowId } = obj;
-  if (isString(domString) && Number.isInteger(windowId) &&
-      sidebar.has(windowId)) {
+  if (sidebar.has(windowId)) {
     const value = sidebar.get(windowId);
     const { incognito } = value;
     if (!incognito) {
@@ -97,10 +102,7 @@ export const handleSaveSessionRequest = async (obj = {}) => {
         const currentValue = sidebar.get(windowId);
         const { sessionValue } = currentValue;
         if (sessionValue !== domString) {
-          res = await handleSaveSessionRequest({
-            windowId,
-            domString: sessionValue
-          });
+          res = await handleSaveSessionRequest(sessionValue, windowId);
         }
       }
     }
@@ -120,7 +122,9 @@ export const handleMsg = async msg => {
   for (const [key, value] of items) {
     switch (key) {
       case SESSION_SAVE: {
-        func.push(handleSaveSessionRequest(value));
+        const { domString, windowId } = value;
+        isString(domString) && Number.isInteger(windowId) &&
+          func.push(handleSaveSessionRequest(domString, windowId));
         break;
       }
       case SIDEBAR_STATE_UPDATE: {

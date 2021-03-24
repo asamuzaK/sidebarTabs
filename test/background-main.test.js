@@ -278,23 +278,24 @@ describe('background-main', () => {
       mjs.sidebar.clear();
     });
 
-    it('should get false', async () => {
-      const res = await func();
-      assert.isFalse(res, 'result');
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo').catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'message');
+      });
     });
 
     it('should get false', async () => {
-      const res = await func({
-        domString: 'foo'
-      });
-      assert.isFalse(res, 'result');
-    });
-
-    it('should get false', async () => {
-      const res = await func({
-        domString: 'foo',
-        windowId: 1
-      });
+      const res = await func('foo', 1);
       assert.isFalse(res, 'result');
     });
 
@@ -302,10 +303,7 @@ describe('background-main', () => {
       mjs.sidebar.set(1, {
         incognito: true
       });
-      const res = await func({
-        domString: 'foo',
-        windowId: 1
-      });
+      const res = await func('foo', 1);
       assert.isFalse(res, 'result');
     });
 
@@ -398,10 +396,7 @@ describe('background-main', () => {
       frag.appendChild(parent);
       frag.appendChild(parent2);
       const domstr = new XMLSerializer().serializeToString(frag);
-      const res = await func({
-        domString: domstr,
-        windowId: 1
-      });
+      const res = await func(domstr, 1);
       assert.isTrue(stubWin.calledOnce, 'called');
       assert.isTrue(stubGetValue.calledOnce, 'called');
       assert.isTrue(stubSetValue.calledOnce, 'called');
@@ -472,15 +467,9 @@ describe('background-main', () => {
       frag2.appendChild(parent2);
       const domstr2 = new XMLSerializer().serializeToString(frag2);
       const arr = [];
-      arr.push(func({
-        domString: domstr,
-        windowId: 1
-      }));
+      arr.push(func(domstr, 1));
       await sleep(100);
-      arr.push(func({
-        domString: domstr2,
-        windowId: 1
-      }));
+      arr.push(func(domstr2, 1));
       const res = await Promise.all(arr);
       assert.isTrue(stubWin.calledThrice, 'called');
       assert.isTrue(stubGetValue.calledTwice, 'called');
@@ -508,6 +497,161 @@ describe('background-main', () => {
         foo: true
       };
       const res = await func(msg);
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        incognito: false,
+        id: 1
+      });
+      mjs.sidebar.set(1, {
+        incognito: false
+      });
+      const stubGetValue = browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            foo: 'bar'
+          }
+        }));
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            headingLabel: '',
+            headingShown: false,
+            url: 'http://example.com',
+            containerIndex: 0
+          },
+          1: {
+            collapsed: false,
+            headingLabel: 'foo',
+            headingShown: true,
+            url: 'https://example.com',
+            containerIndex: 1
+          },
+          2: {
+            collapsed: false,
+            headingLabel: 'foo',
+            headingShown: true,
+            url: 'https://www.example.com',
+            containerIndex: 1
+          }
+        },
+        prev: {
+          foo: 'bar'
+        }
+      });
+      const stubSetValue = browser.sessions.setWindowValue
+        .withArgs(1, 'tabList', arg);
+      const msg = {
+        [SESSION_SAVE]: {}
+      };
+      const res = await func(msg);
+      assert.isFalse(stubWin.called, 'not called');
+      assert.isFalse(stubGetValue.called, 'not called');
+      assert.isFalse(stubSetValue.called, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        incognito: false,
+        id: 1
+      });
+      mjs.sidebar.set(1, {
+        incognito: false
+      });
+      const stubGetValue = browser.sessions.getWindowValue.withArgs(1, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            foo: 'bar'
+          }
+        }));
+      const arg = JSON.stringify({
+        recent: {
+          0: {
+            collapsed: false,
+            headingLabel: '',
+            headingShown: false,
+            url: 'http://example.com',
+            containerIndex: 0
+          },
+          1: {
+            collapsed: false,
+            headingLabel: 'foo',
+            headingShown: true,
+            url: 'https://example.com',
+            containerIndex: 1
+          },
+          2: {
+            collapsed: false,
+            headingLabel: 'foo',
+            headingShown: true,
+            url: 'https://www.example.com',
+            containerIndex: 1
+          }
+        },
+        prev: {
+          foo: 'bar'
+        }
+      });
+      const stubSetValue = browser.sessions.setWindowValue
+        .withArgs(1, 'tabList', arg);
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const heading = document.createElement('h1');
+      const heading2 = document.createElement('h1');
+      const label = document.createElement('span');
+      const label2 = document.createElement('span');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const frag = document.createDocumentFragment();
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      label.classList.add(CLASS_HEADING_LABEL);
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      heading.appendChild(label);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      label2.textContent = 'foo';
+      heading2.classList.add(CLASS_HEADING);
+      heading2.appendChild(label2);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'http://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(CLASS_TAB_COLLAPSED);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.classList.add(CLASS_TAB_COLLAPSED);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://www.example.com'
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      frag.appendChild(parent);
+      frag.appendChild(parent2);
+      const domstr = new XMLSerializer().serializeToString(frag);
+      const msg = {
+        [SESSION_SAVE]: {
+          domString: domstr
+        }
+      };
+      const res = await func(msg);
+      assert.isFalse(stubWin.called, 'not called');
+      assert.isFalse(stubGetValue.called, 'not called');
+      assert.isFalse(stubSetValue.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
