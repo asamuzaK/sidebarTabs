@@ -337,7 +337,8 @@ export const saveSessionTabList = async (domStr, windowId) => {
         dom.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
       const prevList = await getSessionTabList(TAB_LIST, windowId);
       const l = items.length;
-      let i = 0; let j = 0;
+      let i = 0;
+      let j = 0;
       while (i < l) {
         const item = items[i];
         const collapsed = item.classList.contains(CLASS_TAB_COLLAPSED);
