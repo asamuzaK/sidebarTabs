@@ -6,13 +6,13 @@
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getActiveTabId, getCloseTabsByDoubleClickValue, getCurrentWindow,
-  getSessionWindowValue, getWindow, sendMessage, setSessionWindowValue,
-  setStorage, updateTab
+  getSessionWindowValue, getWindow, setSessionWindowValue, setStorage, updateTab
 } from './browser.js';
+import { ports } from './port.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
-  NEW_TAB, PINNED, SESSION_SAVE, TAB_LIST, TAB_QUERY
+  NEW_TAB, PINNED, SESSION_SAVE, SIDEBAR, TAB_LIST, TAB_QUERY
 } from './constant.js';
 
 /**
@@ -380,7 +380,7 @@ export const saveSessionTabList = async (domStr, windowId) => {
  * request save session
  *
  * @param {number} windowId - window ID
- * @returns {?Function} - sendMessage()
+ * @returns {?Function} - port.postMessage()
  */
 export const requestSaveSession = async windowId => {
   let func, win;
@@ -390,14 +390,15 @@ export const requestSaveSession = async windowId => {
     win = await getCurrentWindow();
     windowId = win.id;
   }
-  if (win && !win.incognito) {
+  const port = ports.get(`${SIDEBAR}_${windowId}`);
+  if (port && win && !win.incognito) {
     const cloneBody = document.body.cloneNode(true);
     const items =
       cloneBody.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
     if (items.length) {
       const frag = document.createDocumentFragment();
       frag.append(...items);
-      func = sendMessage(null, {
+      func = port.postMessage({
         [SESSION_SAVE]: {
           windowId,
           domString: new XMLSerializer().serializeToString(frag)
@@ -541,3 +542,6 @@ export const storeCloseTabsByDoubleClickValue = async bool => {
     }
   });
 };
+
+// For test
+export { ports };

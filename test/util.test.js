@@ -4,14 +4,14 @@
 
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom } from './mocha/setup.js';
+import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import psl from 'psl';
 import sinon from 'sinon';
 import * as mjs from '../src/mjs/util.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, SESSION_SAVE,
-  TAB, TAB_LIST
+  SIDEBAR, TAB, TAB_LIST
 } from '../src/mjs/constant.js';
 
 describe('util', () => {
@@ -1287,6 +1287,12 @@ describe('util', () => {
 
   describe('request save session', () => {
     const func = mjs.requestSaveSession;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should not call function', async () => {
       const stubCurrentWin = browser.windows.getCurrent.resolves({
@@ -1297,14 +1303,15 @@ describe('util', () => {
         id: 1,
         incognito: true
       });
-      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
-        const [, msg] = args;
-        return msg;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
       });
+      mjs.ports.set(portId, port);
       const res = await func();
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
       assert.isFalse(stubWin.called, 'not called window');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1317,14 +1324,15 @@ describe('util', () => {
         id: 1,
         incognito: true
       });
-      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
-        const [, msg] = args;
-        return msg;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
       });
+      mjs.ports.set(portId, port);
       const res = await func(1);
       assert.isFalse(stubCurrentWin.called, 'not called current window');
       assert.isTrue(stubWin.calledOnce, 'called window');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1337,14 +1345,36 @@ describe('util', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
-        const [, msg] = args;
-        return msg;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
       });
+      mjs.ports.set(portId, port);
       const res = await func();
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
       assert.isFalse(stubWin.called, 'not called window');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_2`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
+      const res = await func();
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isFalse(stubWin.called, 'not called window');
+      assert.isFalse(port.postMessage.called, 'not called message');
       assert.isNull(res, 'result');
     });
 
@@ -1357,10 +1387,12 @@ describe('util', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
-        const [, msg] = args;
-        return msg;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId,
       });
+      port.postMessage.callsFake(msg => msg);
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -1386,7 +1418,7 @@ describe('util', () => {
       const res = await func();
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
       assert.isFalse(stubWin.called, 'not called window');
-      assert.isTrue(stubMsg.calledOnce, 'called message');
+      assert.isTrue(port.postMessage.calledOnce, 'called message');
       assert.isObject(res, 'result');
       assert.property(res, SESSION_SAVE, 'property');
       assert.property(res[SESSION_SAVE], 'windowId', 'property');
@@ -1404,10 +1436,12 @@ describe('util', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.callsFake((...args) => {
-        const [, msg] = args;
-        return msg;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId,
       });
+      port.postMessage.callsFake(msg => msg);
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -1433,7 +1467,7 @@ describe('util', () => {
       const res = await func(1);
       assert.isFalse(stubCurrentWin.called, 'not called current window');
       assert.isTrue(stubWin.calledOnce, 'not called window');
-      assert.isTrue(stubMsg.calledOnce, 'called message');
+      assert.isTrue(port.postMessage.calledOnce, 'called message');
       assert.isObject(res, 'result');
       assert.property(res, SESSION_SAVE, 'property');
       assert.property(res[SESSION_SAVE], 'windowId', 'property');
