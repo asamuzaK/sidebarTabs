@@ -8,7 +8,7 @@ import { moveTab } from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
-  getTemplate, requestSaveSession
+  getTemplate, ports, requestSaveSession
 } from './util.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
@@ -478,3 +478,6 @@ export const handleDragStart = (evt, opt = {}) => {
   dataTransfer.effectAllowed = 'move';
   dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
 };
+
+// For test
+export { ports };
