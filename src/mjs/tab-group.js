@@ -11,7 +11,7 @@ import { getStorage, getTab, queryTabs } from './browser.js';
 import { moveTabsInOrder } from './browser-tabs.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTemplate, requestSaveSession
+  getSidebarTabId, getSidebarTabIndex, getTemplate, ports, requestSaveSession
 } from './util.js';
 import {
   ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
@@ -698,3 +698,6 @@ export const ungroupTabs = async node => {
     }
   }
 };
+
+// For test
+export { ports };

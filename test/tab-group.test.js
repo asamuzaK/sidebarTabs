@@ -4,7 +4,7 @@
 
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom } from './mocha/setup.js';
+import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import psl from 'psl';
 import sinon from 'sinon';
 import * as mjs from '../src/mjs/tab-group.js';
@@ -12,7 +12,7 @@ import {
   ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
-  HIGHLIGHTED, PINNED, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
+  HIGHLIGHTED, PINNED, SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND
 } from '../src/mjs/constant.js';
 
@@ -862,6 +862,12 @@ describe('tab-group', () => {
 
   describe('handle individual tab group collapsed state', () => {
     const func = mjs.handleTabGroupCollapsedState;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should throw', () => {
       assert.throws(() => func());
@@ -872,7 +878,11 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
@@ -881,7 +891,7 @@ describe('tab-group', () => {
       };
       const res = await func(evt);
       assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(stubMsg.called, 'not called msg');
+      assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
     });
 
@@ -890,7 +900,12 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -904,7 +919,7 @@ describe('tab-group', () => {
       };
       const res = await func(evt);
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -913,7 +928,12 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const child = document.createElement('span');
@@ -940,13 +960,19 @@ describe('tab-group', () => {
       };
       const res = await func(evt);
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
   });
 
   describe('handle multiple tab groups collapsed state', () => {
     const func = mjs.handleTabGroupsCollapsedState;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should throw', () => {
       assert.throws(() => func());
@@ -958,7 +984,11 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
@@ -968,7 +998,7 @@ describe('tab-group', () => {
       const res = await func(evt);
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(stubMsg.called, 'not called msg');
+      assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
     });
 
@@ -978,7 +1008,12 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const elm = document.createElement('div');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
@@ -1051,7 +1086,7 @@ describe('tab-group', () => {
       assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isTrue(elmC.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current winddow');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -1582,6 +1617,12 @@ describe('tab-group', () => {
 
   describe('finish editing group label', () => {
     const func = mjs.finishGroupLabelEdit;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should throw', () => {
       assert.throws(() => func());
@@ -1592,7 +1633,11 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const stub = sinon.stub();
       const evt = {
         preventDefault: stub
@@ -1600,7 +1645,7 @@ describe('tab-group', () => {
       const res = await func(evt);
       assert.isFalse(stub.called, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(stubMsg.called, 'not called msg');
+      assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
     });
 
@@ -1609,7 +1654,11 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const stub = sinon.stub();
       const evt = {
         preventDefault: stub,
@@ -1618,7 +1667,7 @@ describe('tab-group', () => {
       const res = await func(evt);
       assert.isFalse(stub.called, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(stubMsg.called, 'not called msg');
+      assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
     });
 
@@ -1627,7 +1676,11 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const stub = sinon.stub();
       const evt = {
         preventDefault: stub,
@@ -1636,7 +1689,7 @@ describe('tab-group', () => {
       const res = await func(evt);
       assert.isFalse(stub.called, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(stubMsg.called, 'not called msg');
+      assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
     });
 
@@ -1645,7 +1698,11 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const stub = sinon.stub();
       const evt = {
         isComposing: false,
@@ -1656,7 +1713,7 @@ describe('tab-group', () => {
       const res = await func(evt);
       assert.isFalse(stub.called, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(stubMsg.called, 'not called msg');
+      assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
     });
 
@@ -1665,7 +1722,12 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const child = document.createElement('div');
@@ -1690,7 +1752,7 @@ describe('tab-group', () => {
       assert.isTrue(spy.calledThrice, 'called removeEventListener');
       assert.isTrue(spy2.calledOnce, 'called addEventListener');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.called, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1699,7 +1761,12 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const child = document.createElement('div');
@@ -1726,7 +1793,7 @@ describe('tab-group', () => {
       assert.isTrue(spy.calledThrice, 'called removeEventListener');
       assert.isTrue(spy2.calledOnce, 'called addEventListener');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1735,7 +1802,12 @@ describe('tab-group', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const child = document.createElement('div');
@@ -1763,7 +1835,7 @@ describe('tab-group', () => {
       assert.isTrue(spy.calledThrice, 'called removeEventListener');
       assert.isTrue(spy2.calledOnce, 'called addEventListener');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
   });
