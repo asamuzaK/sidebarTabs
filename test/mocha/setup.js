@@ -50,6 +50,13 @@ console.log(`Channel: ${channel}`);
 
 const browser = new Schema(channel).mock();
 
+const mockPort = ({ name, sender }) => {
+  const port = Object.assign({}, browser.runtime.Port);
+  port.name = name;
+  port.sender = sender;
+  return port;
+};
+
 browser.i18n.getMessage.callsFake((...args) => args.toString());
 browser.permissions.contains.resolves(true);
 
@@ -58,5 +65,5 @@ global.document = document;
 global.browser = browser;
 
 module.exports = {
-  browser, createJsdom
+  browser, createJsdom, mockPort
 };
