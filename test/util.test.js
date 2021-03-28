@@ -1389,7 +1389,7 @@ describe('util', () => {
       });
       const portId = `${SIDEBAR}_1`;
       const port = mockPort({
-        name: portId,
+        name: portId
       });
       port.postMessage.callsFake(msg => msg);
       mjs.ports.set(portId, port);
@@ -1438,7 +1438,7 @@ describe('util', () => {
       });
       const portId = `${SIDEBAR}_1`;
       const port = mockPort({
-        name: portId,
+        name: portId
       });
       port.postMessage.callsFake(msg => msg);
       mjs.ports.set(portId, port);
