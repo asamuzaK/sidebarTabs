@@ -910,6 +910,11 @@ describe('background-main', () => {
       assert.isUndefined(res, 'result');
     });
 
+    it('should get null', async () => {
+      const res = await func(null);
+      assert.isNull(res, 'result');
+    });
+
     it('should get empty array', async () => {
       const res = await func({
         foo: 'bar'
@@ -1065,7 +1070,7 @@ describe('background-main', () => {
       });
       mjs.ports.set(portId, port);
       mjs.sidebar.set(1, {});
-      const res = await func();
+      await func();
       const { called: errCalled } = stubErr;
       stubErr.restore();
       assert.isFalse(errCalled, 'not called error');
@@ -1083,7 +1088,7 @@ describe('background-main', () => {
       });
       mjs.ports.set(portId, port);
       mjs.sidebar.set(1, {});
-      const res = await func({
+      await func({
         error: new Error('error')
       });
       const { calledOnce: errCalled } = stubErr;
@@ -1103,7 +1108,7 @@ describe('background-main', () => {
       });
       mjs.ports.set(portId, port);
       mjs.sidebar.set(1, {});
-      const res = await func({
+      await func({
         name: 'foo'
       });
       const { called: errCalled } = stubErr;
@@ -1123,7 +1128,7 @@ describe('background-main', () => {
       });
       mjs.ports.set(portId, port);
       mjs.sidebar.set(2, {});
-      const res = await func({
+      await func({
         name: portId
       });
       const { called: errCalled } = stubErr;
@@ -1144,7 +1149,7 @@ describe('background-main', () => {
       mjs.sidebar.set(1, {
         incognito: true
       });
-      const res = await func({
+      await func({
         name: portId
       });
       const { called: errCalled } = stubErr;
@@ -1165,7 +1170,7 @@ describe('background-main', () => {
         incognito: false,
         sessionValue: null
       });
-      const res = await func({
+      await func({
         name: portId
       });
       const { called: errCalled } = stubErr;
@@ -1271,7 +1276,7 @@ describe('background-main', () => {
         incognito: false,
         sessionValue: domstr
       });
-      const res = await func({
+      await func({
         name: portId
       });
       const { called: errCalled } = stubErr;
@@ -1291,6 +1296,11 @@ describe('background-main', () => {
     it('should get undefined', async () => {
       const res = await func();
       assert.isUndefined(res, 'result');
+    });
+
+    it('should get null', async () => {
+      const res = await func(null);
+      assert.isNull(res, 'result');
     });
 
     it('should call function', async () => {
@@ -1400,6 +1410,7 @@ describe('background-main', () => {
       assert.isTrue(stubSetValue.calledOnce, 'called');
       assert.strictEqual(mjs.ports.size, 0, 'ports size');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
+      assert.isUndefined(res, 'result');
     });
   });
 
