@@ -5,7 +5,8 @@
 /* shared */
 import { throwErr } from './common.js';
 import {
-  handleCmd, handleMsg, removeSidebarState, setSidebarState, toggleSidebar
+  handleCmd, handleConnectedPort, handleMsg, removeSidebarState,
+  setSidebarState, toggleSidebar
 } from './background-main.js';
 import {
   createContextualIdentitiesMenu, removeContextualIdentitiesMenu,
@@ -30,6 +31,9 @@ contextualIdentities.onRemoved.addListener(info =>
 );
 contextualIdentities.onUpdated.addListener(info =>
   updateContextualIdentitiesMenu(info).catch(throwErr)
+);
+runtime.onConnect.addListener(port =>
+  handleConnectedPort(port).catch(throwErr)
 );
 runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
