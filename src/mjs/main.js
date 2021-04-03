@@ -8,14 +8,9 @@ import {
   clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
   getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, sendMessage, setSessionWindowValue, warmupTab
+  restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
-import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
-  createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
-  moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
-  muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
-} from './browser-tabs.js';
+import { ports } from './port.js';
 import {
   activateTab, createSidebarTab, getSessionTabList, getSidebarTab,
   getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex, getTabsInRange,
@@ -23,9 +18,11 @@ import {
   storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
 import {
-  handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
-  handleDragStart, handleDrop
-} from './tab-dnd.js';
+  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
+  createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
+  moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
+  muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
+} from './browser-tabs.js';
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
   addTabIconErrorListener, removeHighlight,
@@ -33,18 +30,22 @@ import {
   setTabIcon, toggleHighlight
 } from './tab-content.js';
 import {
+  handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
+  handleDragStart, handleDrop
+} from './tab-dnd.js';
+import {
   addListenersToHeadingItems, addTabContextClickListener, collapseTabGroups,
   detachTabsFromGroup, getTabGroupHeading, groupSameContainerTabs,
   groupSameDomainTabs, groupSelectedTabs, replaceTabContextClickListener,
   restoreTabContainers, toggleTabGrouping, toggleTabGroupCollapsedState,
   toggleTabGroupsCollapsedState, toggleTabGroupHeadingState, ungroupTabs
 } from './tab-group.js';
+import { overrideContextMenu, updateContextMenu } from './menu.js';
+import menuItems from './menu-items.js';
 import {
   initCustomTheme, sendCurrentTheme, setScrollbarWidth,
   setTabGroupColorBarWidth, setTabHeight, setTheme, updateCustomThemeCss
 } from './theme.js';
-import { overrideContextMenu, updateContextMenu } from './menu.js';
-import menuItems from './menu-items.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON,
@@ -58,7 +59,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
-  SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
   TAB_CLOSE_UNDO, TAB_DUPE,
@@ -114,7 +115,7 @@ export const setSidebar = async () => {
   const win = await getCurrentWindow({
     populate: true
   });
-  const { id, incognito } = win;
+  const { id: windowId, incognito } = win;
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
     TAB_CLOSE_DBLCLICK,
@@ -163,7 +164,7 @@ export const setSidebar = async () => {
   }
   sidebar.incognito = incognito;
   sidebar.isMac = os === 'mac';
-  sidebar.windowId = id;
+  sidebar.windowId = windowId;
 };
 
 /**
@@ -440,7 +441,7 @@ export const addTabEventListeners = async elm => {
     elm.addEventListener('dragleave', handleDragLeave);
     elm.addEventListener('dragend', handleDragEnd);
     elm.addEventListener('drop', handleDrop);
-    elm.addEventListener('mouseover', triggerTabWarmup);
+    elm.addEventListener('click', triggerTabWarmup, true);
   }
 };
 
@@ -1859,12 +1860,13 @@ export const handleMsg = async msg => {
 /**
  * request sidebar state update
  *
- * @returns {?Function} - sendMessage()
+ * @returns {?Function} - port.postMessage()
  */
 export const requestSidebarStateUpdate = async () => {
-  const { windowId } = sidebar;
   let func;
-  if (Number.isInteger(windowId)) {
+  const { windowId } = sidebar;
+  const port = ports.get(`${SIDEBAR}_${windowId}`);
+  if (port && Number.isInteger(windowId)) {
     const win = await getCurrentWindow();
     const { focused, id, type } = win;
     if (windowId === id && focused && type === 'normal') {
@@ -1873,7 +1875,7 @@ export const requestSidebarStateUpdate = async () => {
           windowId
         }
       };
-      func = sendMessage(null, msg);
+      func = port.postMessage(msg);
     }
   }
   return func || null;
@@ -2117,3 +2119,6 @@ export const setMain = async () => {
   main.addEventListener('wheel', handleWheelEvt);
   newTab.addEventListener('click', handleCreateNewTab);
 };
+
+// For test
+export { ports };

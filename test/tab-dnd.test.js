@@ -4,13 +4,13 @@
 
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom } from './mocha/setup.js';
+import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import sinon from 'sinon';
 import * as mjs from '../src/mjs/tab-dnd.js';
 import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, TAB
+  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, TAB
 } from '../src/mjs/constant.js';
 
 describe('dnd', () => {
@@ -1352,6 +1352,12 @@ describe('dnd', () => {
 
   describe('handle drop', () => {
     const func = mjs.handleDrop;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should throw', () => {
       assert.throws(() => func());
@@ -1372,7 +1378,11 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
@@ -1384,7 +1394,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1395,7 +1405,11 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
@@ -1407,7 +1421,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1418,7 +1432,11 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1434,7 +1452,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1445,7 +1463,11 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1470,7 +1492,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1481,7 +1503,12 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1512,7 +1539,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1523,7 +1550,12 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1554,7 +1586,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.called, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1565,7 +1597,12 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
@@ -1600,7 +1637,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1612,7 +1649,11 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1645,7 +1686,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isFalse(preventDefault.called, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1657,7 +1698,11 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1690,7 +1735,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isFalse(preventDefault.called, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -1702,7 +1747,12 @@ describe('dnd', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1738,7 +1788,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
   });

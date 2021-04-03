@@ -4,12 +4,8 @@
 
 /* shared */
 import { throwErr } from './common.js';
+import { addPort } from './port.js';
 import { requestSaveSession } from './util.js';
-import {
-  expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
-} from './tab-group.js';
-import { localizeHtml } from './localize.js';
-import { initCustomTheme, setSidebarTheme } from './theme.js';
 import {
   emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
   handleClickedMenu, handleContextmenuEvt, handleCreatedTab, handleDetachedTab,
@@ -17,6 +13,11 @@ import {
   handleUpdatedTab, requestSidebarStateUpdate, restoreHighlightedTabs,
   restoreTabGroups, setContextualIds, setMain, setSidebar, setVars
 } from './main.js';
+import {
+  expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
+} from './tab-group.js';
+import { localizeHtml } from './localize.js';
+import { initCustomTheme, setSidebarTheme } from './theme.js';
 
 /* api */
 const { contextualIdentities, menus, runtime, storage, tabs, theme } = browser;
@@ -87,7 +88,7 @@ window.addEventListener('contextmenu', handleContextmenuEvt);
 document.addEventListener('DOMContentLoaded', () => Promise.all([
   localizeHtml(),
   setContextualIds(),
-  setSidebar().then(setMain).then(requestSidebarStateUpdate),
+  addPort().then(setSidebar).then(setMain).then(requestSidebarStateUpdate),
   setSidebarTheme()
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)

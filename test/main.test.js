@@ -5,7 +5,7 @@
 
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom } from './mocha/setup.js';
+import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import os from 'os';
 import psl from 'psl';
 import sinon from 'sinon';
@@ -22,7 +22,7 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR_MAIN,
+  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
   TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -3680,6 +3680,10 @@ describe('main', () => {
       const newTab = document.createElement('section');
       newTab.id = NEW_TAB;
       body.appendChild(newTab);
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
     });
 
     it('should throw', async () => {
@@ -3747,12 +3751,38 @@ describe('main', () => {
       assert.isNull(res, 'result');
     });
 
+    it('should not call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_2`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const res = await func(1, {
+        fromIndex: 1,
+        toIndex: 0,
+        windowId: 1
+      });
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
+      assert.isNull(res, 'result');
+    });
+
     it('should remove value', async () => {
       const stubCurrentWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const body = document.querySelector('body');
@@ -3777,7 +3807,7 @@ describe('main', () => {
       });
       assert.strictEqual(elm.dataset.restore, '', 'restore');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3786,7 +3816,11 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const body = document.querySelector('body');
@@ -3811,7 +3845,7 @@ describe('main', () => {
       });
       assert.strictEqual(elm.dataset.group, '', 'restore');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -3820,7 +3854,11 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const elm = document.createElement('div');
@@ -3850,7 +3888,7 @@ describe('main', () => {
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '2'], 'not move');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -3859,7 +3897,11 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -3901,7 +3943,7 @@ describe('main', () => {
       }], 'wait');
       assert.deepEqual(items, ['1', '2', '3'], 'not move');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -3910,7 +3952,11 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -3947,7 +3993,7 @@ describe('main', () => {
       }], 'wait');
       assert.deepEqual(items, ['1', '2', '3'], 'not move');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -3957,7 +4003,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -3998,7 +4049,7 @@ describe('main', () => {
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4007,7 +4058,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -4048,7 +4104,7 @@ describe('main', () => {
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4057,7 +4113,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const elm = document.createElement('div');
       const elm2 = document.createElement('div');
@@ -4104,7 +4165,7 @@ describe('main', () => {
       assert.deepEqual(items, ['3', '1', '2'], 'move');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4114,7 +4175,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -4163,7 +4229,7 @@ describe('main', () => {
       assert.isTrue(elm.parentNode === elm3.parentNode, 'group');
       assert.strictEqual(elm3.dataset.group, '', 'value');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4172,7 +4238,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -4221,7 +4292,7 @@ describe('main', () => {
       assert.isTrue(elm.parentNode === elm2.parentNode, 'group');
       assert.strictEqual(elm.dataset.group, '', 'value');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4230,7 +4301,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const parent3 = document.createElement('section');
@@ -4296,7 +4372,7 @@ describe('main', () => {
       assert.strictEqual(elm4.dataset.group, '', 'value');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4306,7 +4382,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4354,7 +4435,7 @@ describe('main', () => {
       assert.deepEqual(items, ['1', '3', '2'], 'move');
       assert.isTrue(elm.parentNode === elm3.parentNode, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4363,7 +4444,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4411,7 +4497,7 @@ describe('main', () => {
       assert.deepEqual(items, ['2', '1', '3'], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4420,7 +4506,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4485,7 +4576,7 @@ describe('main', () => {
       assert.isTrue(elm4.parentNode === elm2.parentNode, 'parent');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4494,7 +4585,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4556,7 +4652,7 @@ describe('main', () => {
       assert.isTrue(elm4.parentNode !== elm2.parentNode, 'parent');
       assert.isTrue(elm4.parentNode !== elm3.parentNode, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4565,7 +4661,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4627,7 +4728,7 @@ describe('main', () => {
       assert.isTrue(elm.parentNode !== elm3.parentNode, 'parent');
       assert.isTrue(elm.parentNode !== elm4.parentNode, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4636,7 +4737,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const tmpl = document.createElement('template');
       const cnt = document.createElement('section');
       const parent = document.createElement('section');
@@ -4705,7 +4811,7 @@ describe('main', () => {
       assert.isTrue(elm4.parentNode !== elm3.parentNode, 'parent');
       assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -4859,6 +4965,10 @@ describe('main', () => {
       sect.appendChild(tab);
       const body = document.querySelector('body');
       body.appendChild(sect);
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
     });
 
     it('should throw', async () => {
@@ -4923,7 +5033,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const info = {
         foo: 'bar'
       };
@@ -4943,7 +5058,7 @@ describe('main', () => {
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -4952,7 +5067,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const elm = document.querySelector('[data-tab-id="1"]');
       const info = {
         hidden: true
@@ -4973,7 +5093,7 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -4982,7 +5102,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const elm = document.querySelector('[data-tab-id="1"]');
       const info = {
         hidden: false
@@ -5004,7 +5129,7 @@ describe('main', () => {
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -5013,7 +5138,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const info = {
         discarded: true
       };
@@ -5033,7 +5163,7 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -5042,7 +5172,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const info = {
         discarded: false
       };
@@ -5063,7 +5198,7 @@ describe('main', () => {
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -5072,7 +5207,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const info = {
         url: 'https://example.com'
       };
@@ -5090,7 +5230,7 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -5099,7 +5239,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const info = {
         url: null
       };
@@ -5117,7 +5262,7 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -5126,7 +5271,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.query.callCount;
       const info = {
         status: 'loading'
@@ -5154,7 +5304,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.query.callCount, i, 'not called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(stubMsg.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -5163,7 +5313,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.query.callCount;
       const info = {
         status: 'complete'
@@ -5191,7 +5346,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.query.callCount, i + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [undefined, {}], 'result');
     });
 
@@ -5200,7 +5355,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const pinned = document.createElement('section');
       pinned.id = PINNED;
       pinned.classList.add('tab-container');
@@ -5227,7 +5387,7 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(PINNED), 'class');
       assert.isTrue(elm.parentNode === pinned, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -5236,7 +5396,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const body = document.querySelector('body');
       const tmpl = document.createElement('template');
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
@@ -5266,7 +5431,7 @@ describe('main', () => {
       assert.isFalse(elm.classList.contains(PINNED), 'class');
       assert.isTrue(elm.parentNode === pinned.nextElementSibling, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(stubMsg.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -5327,6 +5492,12 @@ describe('main', () => {
 
   describe('handle clicked menu', () => {
     const func = mjs.handleClickedMenu;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should not call function', async () => {
       const info = {
@@ -6425,7 +6596,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
@@ -6479,7 +6655,7 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6488,7 +6664,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
@@ -6560,7 +6741,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6569,7 +6750,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
@@ -6641,7 +6827,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6650,7 +6836,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
@@ -6708,7 +6899,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6717,7 +6908,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
@@ -6775,7 +6971,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6784,7 +6980,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
@@ -6842,7 +7043,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6902,7 +7103,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
@@ -6965,7 +7171,7 @@ describe('main', () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6974,7 +7180,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
@@ -7038,7 +7249,7 @@ describe('main', () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -7047,7 +7258,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
@@ -7112,7 +7328,7 @@ describe('main', () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -7121,7 +7337,12 @@ describe('main', () => {
         id: 1,
         incognito: false
       });
-      const stubMsg = browser.runtime.sendMessage.resolves({});
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
       const tmpl = document.createElement('template');
@@ -7193,7 +7414,7 @@ describe('main', () => {
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(stubMsg.calledOnce, 'called msg');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9478,18 +9699,28 @@ describe('main', () => {
 
   describe('requestSidebarStateUpdate', () => {
     const func = mjs.requestSidebarStateUpdate;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
 
     it('should not call function', async () => {
       browser.windows.getCurrent.resolves({
         id: browser.windows.WINDOW_ID_CURRENT
       });
-      const i = browser.runtime.sendMessage.callCount;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const i = port.postMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
       const res = await func();
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
-        'not called');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j,
-        'not called');
+      assert.strictEqual(port.postMessage.callCount, i, 'not called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -9499,14 +9730,18 @@ describe('main', () => {
         id: 1,
         type: 'normal'
       });
-      const i = browser.runtime.sendMessage.callCount;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const i = port.postMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
       mjs.sidebar.windowId = 1;
       const res = await func();
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
-        'not called');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-        'called');
+      assert.strictEqual(port.postMessage.callCount, i, 'not called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
       assert.isNull(res, 'result');
     });
 
@@ -9516,14 +9751,18 @@ describe('main', () => {
         id: 2,
         type: 'normal'
       });
-      const i = browser.runtime.sendMessage.callCount;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const i = port.postMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
       mjs.sidebar.windowId = 1;
       const res = await func();
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
-        'not called');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-        'called');
+      assert.strictEqual(port.postMessage.callCount, i, 'not called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
       assert.isNull(res, 'result');
     });
 
@@ -9533,14 +9772,18 @@ describe('main', () => {
         id: 1,
         type: 'popup'
       });
-      const i = browser.runtime.sendMessage.callCount;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const i = port.postMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
       mjs.sidebar.windowId = 1;
       const res = await func();
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
-        'not called');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-        'called');
+      assert.strictEqual(port.postMessage.callCount, i, 'not called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
       assert.isNull(res, 'result');
     });
 
@@ -9550,16 +9793,19 @@ describe('main', () => {
         id: 1,
         type: 'normal'
       });
-      browser.runtime.sendMessage.resolves(true);
-      const i = browser.runtime.sendMessage.callCount;
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const i = port.postMessage.callCount;
       const j = browser.windows.getCurrent.callCount;
       mjs.sidebar.windowId = 1;
       const res = await func();
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
-        'called');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(port.postMessage.callCount, i + 1, 'called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
     });
   });
 

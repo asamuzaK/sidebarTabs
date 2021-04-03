@@ -3,18 +3,20 @@
  */
 
 /* shared */
-import { getType, isString } from './common.js';
+import { getType, isString, logErr, throwErr } from './common.js';
 import { getCurrentWindow, getWindow } from './browser.js';
+import { ports, removePort } from './port.js';
 import { saveSessionTabList } from './util.js';
 import {
-  SESSION_SAVE, SIDEBAR_STATE_UPDATE, TOGGLE_STATE
+  SESSION_SAVE, SIDEBAR, SIDEBAR_STATE_UPDATE, TOGGLE_STATE
 } from './constant.js';
 
 /* api */
 const { sidebarAction, windows } = browser;
 
-/* constant */
+/* constants */
 const { WINDOW_ID_CURRENT, WINDOW_ID_NONE } = windows;
+const REG_PORT = new RegExp(`${SIDEBAR}_(-?\\d+)`);
 
 /* sidebar */
 export const sidebar = new Map();
@@ -50,6 +52,7 @@ export const setSidebarState = async windowId => {
           isOpen,
           sessionId,
           windowId,
+          remove: false,
           sessionValue: null
         };
       }
@@ -91,7 +94,8 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
   let res;
-  if (sidebar.has(windowId)) {
+  const portId = `${SIDEBAR}_${windowId}`;
+  if (ports.has(portId) && sidebar.has(windowId)) {
     const value = sidebar.get(windowId);
     const { incognito } = value;
     if (!incognito) {
@@ -100,10 +104,11 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
       res = await saveSessionTabList(domString, windowId);
       if (res) {
         const currentValue = sidebar.get(windowId);
-        const { sessionValue } = currentValue;
+        const { remove, sessionValue } = currentValue;
         if (sessionValue !== domString) {
           res = await handleSaveSessionRequest(sessionValue, windowId);
         }
+        res && remove && await removeSidebarState(windowId);
       }
     }
   }
@@ -139,6 +144,70 @@ export const handleMsg = async msg => {
 };
 
 /**
+ * port on message
+ *
+ * @param {object} msg - message
+ * @returns {Function} - promise chain
+ */
+export const portOnMessage = msg => msg && handleMsg(msg).catch(throwErr);
+
+/**
+ * handle disconnected port
+ *
+ * @param {object} port - port
+ * @returns {void}
+ */
+export const handleDisconnectedPort = async (port = {}) => {
+  const { error, name: portId } = port;
+  error && logErr(error);
+  if (isString(portId) && REG_PORT.test(portId)) {
+    const [, winId] = REG_PORT.exec(portId);
+    const windowId = winId * 1;
+    if (sidebar.has(windowId)) {
+      const value = sidebar.get(windowId);
+      const { incognito, sessionValue } = value;
+      if (!incognito && isString(sessionValue)) {
+        value.remove = true;
+        sidebar.set(windowId, value);
+        await handleSaveSessionRequest(sessionValue, windowId);
+      } else {
+        await removeSidebarState(windowId);
+      }
+    }
+  }
+  ports.has(portId) && await removePort(portId);
+};
+
+/**
+ * port on disconnect
+ *
+ * @param {object} port - port
+ * @returns {Function} - promise chain
+ */
+export const portOnDisconnect = port =>
+  port && handleDisconnectedPort(port).catch(throwErr);
+
+/**
+ * handle connected port
+ *
+ * @param {object} port - port
+ * @returns {void}
+ */
+export const handleConnectedPort = async (port = {}) => {
+  const { name: portId } = port;
+  if (isString(portId) && REG_PORT.test(portId)) {
+    const [, winId] = REG_PORT.exec(portId);
+    const windowId = winId * 1;
+    if (windowId !== WINDOW_ID_NONE) {
+      port.onDisconnect.addListener(portOnDisconnect);
+      port.onMessage.addListener(portOnMessage);
+      ports.set(portId, port);
+      await setSidebarState(windowId);
+    }
+  }
+};
+
+/**
  * handle command
  *
  * @param {!string} cmd - command
@@ -157,3 +226,6 @@ export const handleCmd = async cmd => {
   }
   return func || null;
 };
+
+// For test
+export { ports };
