@@ -22,7 +22,8 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, PINNED, SIDEBAR, SIDEBAR_MAIN,
+  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_OPEN_CONTAINER, PINNED,
+  SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
   TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -31,9 +32,10 @@ import {
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
-  TAB_QUERY, TAB_RELOAD, TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END,
-  TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD,
+  TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TAB_SKIP_COLLAPSED,
+  TAB_SWITCH_SCROLL,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
+  TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
@@ -7668,10 +7670,34 @@ describe('main', () => {
       assert.deepEqual(res, [], 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const i = browser.menus.update.callCount;
       mjs.sidebar.contextualIds = ['bar', 'baz'];
       const res = await func('foo');
+      assert.strictEqual(browser.menus.update.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.menus.update.callCount;
+      mjs.sidebar.contextualIds = ['bar', 'baz'];
+      const res = await func(TAB_REOPEN_CONTAINER);
+      assert.strictEqual(browser.menus.update.callCount, i + 2, 'called');
+      assert.deepEqual(res, [[undefined], [undefined]], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.menus.update.callCount;
+      mjs.sidebar.contextualIds = ['bar', 'baz'];
+      const res = await func(TABS_REOPEN_CONTAINER);
+      assert.strictEqual(browser.menus.update.callCount, i + 2, 'called');
+      assert.deepEqual(res, [[undefined], [undefined]], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.menus.update.callCount;
+      mjs.sidebar.contextualIds = ['bar', 'baz'];
+      const res = await func(NEW_TAB_OPEN_CONTAINER);
       assert.strictEqual(browser.menus.update.callCount, i + 2, 'called');
       assert.deepEqual(res, [[undefined], [undefined]], 'result');
     });

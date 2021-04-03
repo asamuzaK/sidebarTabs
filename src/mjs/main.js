@@ -1247,9 +1247,18 @@ export const prepareContexualIdsMenuItems = async parentId => {
   if (Array.isArray(contextualIds)) {
     const itemKeys = contextualIds.filter(k => isString(k) && k);
     for (const itemKey of itemKeys) {
-      func.push(updateContextMenu(`${itemKey}NewTab`, {
-        parentId
-      }));
+      if (parentId === TAB_REOPEN_CONTAINER ||
+          parentId === TABS_REOPEN_CONTAINER) {
+        func.push(updateContextMenu(`${itemKey}Reopen`, {
+          parentId
+        }));
+      } else {
+        parentId === NEW_TAB_OPEN_CONTAINER && func.push(
+          updateContextMenu(`${itemKey}NewTab`, {
+            parentId
+          })
+        );
+      }
     }
   }
   return Promise.all(func);
