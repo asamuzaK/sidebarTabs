@@ -501,7 +501,7 @@
     "message": "Expanding a tab group collapses other previously expanded tab groups."
   },
   "optionsTabGroupPutNewTabAtTheEnd": {
-    "message": "Always put the newly opened tab at the end of the group"
+    "message": "Always put the newly opened grouped tab at the end of the group"
   },
   "optionsTabGroupPutNewTabAtTheEndDetail": {
     "message": "When opening a new tab from a grouped tab, open that tab at the end of the tab group, not below the opener tab."
