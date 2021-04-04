@@ -39,7 +39,7 @@
     "message": "Bookmark Tabs"
   },
   "bookmarkTabs_title": {
-    "message": "&Bookmark Tabs",
+    "message": "&Bookmark Tabs…",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -121,7 +121,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&E)"
+        "example": "(&B)"
       }
     }
   },
@@ -133,7 +133,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&E)"
+        "example": "(&T)"
       }
     }
   },
@@ -420,10 +420,10 @@
     "message": "Open a new tab"
   },
   "openNewTabInContainer": {
-    "message": "Open in Container"
+    "message": "Open in New Container Tab"
   },
   "openNewTabInContainer_title": {
-    "message": "Op&en in Container",
+    "message": "Op&en in New Container Tab",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -597,7 +597,7 @@
     "message": "Reload All Tabs"
   },
   "reloadAllTabs_title": {
-    "message": "&Reload All Tabs",
+    "message": "Re&load All Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -630,10 +630,10 @@
     }
   },
   "reopenTabInContainer": {
-    "message": "Reopen in Container"
+    "message": "Open in New Container Tab"
   },
   "reopenTabInContainer_title": {
-    "message": "R&eopen in Container",
+    "message": "Op&en in New Container Tab",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -736,14 +736,14 @@
     "message": "Toggle open/close state"
   },
   "undoCloseTab": {
-    "message": "Undo Close Tab"
+    "message": "Reopen Closed Tab"
   },
   "undoCloseTab_title": {
-    "message": "&Undo Close Tab",
+    "message": "Re&open Closed Tab",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&U)"
+        "example": "(&O)"
       }
     }
   },
