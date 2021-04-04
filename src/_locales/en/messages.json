@@ -39,7 +39,7 @@
     "message": "Bookmark Tabs"
   },
   "bookmarkTabs_title": {
-    "message": "&Bookmark Tabs…",
+    "message": "&Bookmark Tabs",
     "placeholders": {
       "key": {
         "content": "$1",

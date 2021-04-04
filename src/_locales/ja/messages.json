@@ -39,7 +39,7 @@
     "message": "タブをブックマーク"
   },
   "bookmarkTabs_title": {
-    "message": "タブをブックマーク$KEY$…",
+    "message": "タブをブックマーク$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
