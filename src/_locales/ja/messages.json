@@ -36,10 +36,10 @@
     }
   },
   "bookmarkTabs": {
-    "message": "選択したタブをブックマーク"
+    "message": "タブをブックマーク"
   },
   "bookmarkTabs_title": {
-    "message": "選択したタブをブックマーク$KEY$",
+    "message": "タブをブックマーク$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -99,10 +99,10 @@
     "message": "タブを閉じます"
   },
   "closeTabs": {
-    "message": "選択したタブを閉じる"
+    "message": "タブを閉じる"
   },
   "closeTabs_title": {
-    "message": "選択したタブを閉じる$KEY$",
+    "message": "タブを閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -114,26 +114,26 @@
     "message": "選択したタブを閉じます"
   },
   "closeTabsToTheEnd": {
-    "message": "下のタブをすべて閉じる"
+    "message": "下側のタブをすべて閉じる"
   },
   "closeTabsToTheEnd_title": {
-    "message": "下のタブをすべて閉じる$KEY$",
+    "message": "下側のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&E)"
+        "example": "(&B)"
       }
     }
   },
   "closeTabsToTheStart": {
-    "message": "上のタブをすべて閉じる"
+    "message": "上側のタブをすべて閉じる"
   },
   "closeTabsToTheStart_title": {
-    "message": "上のタブをすべて閉じる$KEY$",
+    "message": "上側のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&E)"
+        "example": "(&T)"
       }
     }
   },
@@ -183,10 +183,10 @@
     }
   },
   "detachTabsFromGroup": {
-    "message": "選択したタブをグループから切り離す"
+    "message": "タブをグループから切り離す"
   },
   "detachTabsFromGroup_title": {
-    "message": "選択したタブをグループから切り離す$KEY$",
+    "message": "タブをグループから切り離す$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -207,10 +207,10 @@
     }
   },
   "dupeTabs": {
-    "message": "選択したタブを複製"
+    "message": "タブを複製"
   },
   "dupeTabs_title": {
-    "message": "選択したタブを複製$KEY$",
+    "message": "タブを複製$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -333,10 +333,10 @@
     }
   },
   "moveTabs": {
-    "message": "選択したタブを移動"
+    "message": "タブを移動"
   },
   "moveTabs_title": {
-    "message": "選択したタブを移動$KEY$",
+    "message": "タブを移動$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -396,10 +396,10 @@
     "message": "タブをミュートします"
   },
   "muteTabs": {
-    "message": "選択したタブをミュート"
+    "message": "タブをミュート"
   },
   "muteTabs_title": {
-    "message": "選択したタブをミュート$KEY$",
+    "message": "タブをミュート$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -567,10 +567,10 @@
     }
   },
   "pinTabs": {
-    "message": "選択したタブをピン留め"
+    "message": "タブをピン留め"
   },
   "pinTabs_title": {
-    "message": "選択したタブをピン留め$KEY$",
+    "message": "タブをピン留め$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -618,10 +618,10 @@
     }
   },
   "reloadTabs": {
-    "message": "選択したタブを再読み込み"
+    "message": "タブを再読み込み"
   },
   "reloadTabs_title": {
-    "message": "選択したタブを再読み込み$KEY$",
+    "message": "タブを再読み込み$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -630,10 +630,10 @@
     }
   },
   "reopenTabInContainer": {
-    "message": "コンテナーを開き直す"
+    "message": "新しいコンテナータブで開く"
   },
   "reopenTabInContainer_title": {
-    "message": "コンテナーを開き直す$KEY$",
+    "message": "新しいコンテナータブで開く$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -642,10 +642,10 @@
     }
   },
   "reopenTabsInContainer": {
-    "message": "選択したタブのコンテナーを開き直す"
+    "message": "新しいコンテナータブで開く"
   },
   "reopenTabsInContainer_title": {
-    "message": "選択したタブのコンテナーを開き直す$KEY$",
+    "message": "新しいコンテナータブで開く$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -657,7 +657,7 @@
     "message": "すべてのタブを選択"
   },
   "selectAllTabs_title": {
-    "message": "すべてのタブを選択(&S)",
+    "message": "すべてのタブを選択$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -678,10 +678,10 @@
     }
   },
   "sendTabsToDevice": {
-    "message": "選択したタブを端末に送る"
+    "message": "タブを端末に送る"
   },
   "sendTabsToDevice_title": {
-    "message": "選択した$NUM$個のタブを端末に送る$KEY$",
+    "message": "$NUM$個のタブを端末に送る$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -736,14 +736,14 @@
     "message": "開閉状態を切り替える"
   },
   "undoCloseTab": {
-    "message": "閉じたタブを元に戻す"
+    "message": "閉じたタブを開きなおす"
   },
   "undoCloseTab_title": {
-    "message": "閉じたタブを元に戻す$KEY$",
+    "message": "閉じたタブを開きなおす$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&U)"
+        "example": "(&O)"
       }
     }
   },
@@ -775,10 +775,10 @@
     "message": "タブのミュートを解除します"
   },
   "unmuteTabs": {
-    "message": "選択したタブのミュートを解除"
+    "message": "タブのミュートを解除"
   },
   "unmuteTabs_title": {
-    "message": "選択したタブのミュートを解除$KEY$",
+    "message": "タブのミュートを解除$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -802,10 +802,10 @@
     }
   },
   "unpinTabs": {
-    "message": "選択したタブのピン留めを外す"
+    "message": "タブのピン留めを外す"
   },
   "unpinTabs_title": {
-    "message": "選択したタブのピン留めを外す$KEY$",
+    "message": "タブのピン留めを外す$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",

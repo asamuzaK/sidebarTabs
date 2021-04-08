@@ -78,12 +78,6 @@ export default {
     enabled: false,
     visible: false
   },
-  'sep-1': {
-    id: 'sep-1',
-    type: 'separator',
-    contexts: ['tab'],
-    viewTypes: ['sidebar']
-  },
   [TAB_PIN]: {
     id: TAB_PIN,
     title: i18n.getMessage(`${TAB_PIN}_title`, '(&P)'),
@@ -98,24 +92,6 @@ export default {
     id: TABS_PIN,
     title: i18n.getMessage(`${TABS_PIN}_title`, '(&P)'),
     toggleTitle: i18n.getMessage(`${TABS_PIN_UNPIN}_title`, '(&P)'),
-    type: 'normal',
-    contexts: ['tab'],
-    viewTypes: ['sidebar'],
-    enabled: false,
-    visible: false
-  },
-  [TAB_BOOKMARK]: {
-    id: TAB_BOOKMARK,
-    title: i18n.getMessage(`${TAB_BOOKMARK}_title`, '(&B)'),
-    type: 'normal',
-    contexts: ['tab'],
-    viewTypes: ['sidebar'],
-    enabled: false,
-    visible: true
-  },
-  [TABS_BOOKMARK]: {
-    id: TABS_BOOKMARK,
-    title: i18n.getMessage(`${TABS_BOOKMARK}_title`, '(&B)'),
     type: 'normal',
     contexts: ['tab'],
     viewTypes: ['sidebar'],
@@ -140,18 +116,24 @@ export default {
     enabled: false,
     visible: false
   },
-  [TAB_REOPEN_CONTAINER]: {
-    id: TAB_REOPEN_CONTAINER,
-    title: i18n.getMessage(`${TAB_REOPEN_CONTAINER}_title`, '(&E)'),
+  'sep-1': {
+    id: 'sep-1',
+    type: 'separator',
+    contexts: ['tab'],
+    viewTypes: ['sidebar']
+  },
+  [TAB_BOOKMARK]: {
+    id: TAB_BOOKMARK,
+    title: i18n.getMessage(`${TAB_BOOKMARK}_title`, '(&B)'),
     type: 'normal',
     contexts: ['tab'],
     viewTypes: ['sidebar'],
     enabled: false,
     visible: true
   },
-  [TABS_REOPEN_CONTAINER]: {
-    id: TABS_REOPEN_CONTAINER,
-    title: i18n.getMessage(`${TABS_REOPEN_CONTAINER}_title`, '(&E)'),
+  [TABS_BOOKMARK]: {
+    id: TABS_BOOKMARK,
+    title: i18n.getMessage(`${TABS_BOOKMARK}_title`, '(&B)'),
     type: 'normal',
     contexts: ['tab'],
     viewTypes: ['sidebar'],
@@ -255,6 +237,24 @@ export default {
     visible: false,
   },
   */
+  [TAB_REOPEN_CONTAINER]: {
+    id: TAB_REOPEN_CONTAINER,
+    title: i18n.getMessage(`${TAB_REOPEN_CONTAINER}_title`, '(&E)'),
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: true
+  },
+  [TABS_REOPEN_CONTAINER]: {
+    id: TABS_REOPEN_CONTAINER,
+    title: i18n.getMessage(`${TABS_REOPEN_CONTAINER}_title`, '(&E)'),
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: false
+  },
   'sep-2': {
     id: 'sep-2',
     type: 'separator',
@@ -271,15 +271,6 @@ export default {
     enabled: false,
     visible: true
   },
-  [TAB_ALL_SELECT]: {
-    id: TAB_ALL_SELECT,
-    title: i18n.getMessage(`${TAB_ALL_SELECT}_title`, '(&S)'),
-    type: 'normal',
-    contexts: ['page', 'tab'],
-    viewTypes: ['sidebar'],
-    enabled: false,
-    visible: true
-  },
   [TAB_ALL_BOOKMARK]: {
     id: TAB_ALL_BOOKMARK,
     title: i18n.getMessage(`${TAB_ALL_BOOKMARK}_title`, '(&B)'),
@@ -288,6 +279,15 @@ export default {
     viewTypes: ['sidebar'],
     enabled: false,
     visible: false
+  },
+  [TAB_ALL_SELECT]: {
+    id: TAB_ALL_SELECT,
+    title: i18n.getMessage(`${TAB_ALL_SELECT}_title`, '(&S)'),
+    type: 'normal',
+    contexts: ['page', 'tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: true
   },
   'sep-3': {
     id: 'sep-3',
@@ -333,7 +333,7 @@ export default {
       [TAB_GROUP_LABEL_SHOW]: {
         id: TAB_GROUP_LABEL_SHOW,
         title: i18n.getMessage(`${TAB_GROUP_LABEL_SHOW}_title`, '(&L)'),
-        toggleTitle: i18n.getMessage(`${TAB_GROUP_LABEL_HIDE}_title`, '(&E)'),
+        toggleTitle: i18n.getMessage(`${TAB_GROUP_LABEL_HIDE}_title`, '(&L)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -408,7 +408,24 @@ export default {
     contexts: ['page', 'tab'],
     viewTypes: ['sidebar']
   },
-  /* close multiple tabs */
+  [TAB_CLOSE]: {
+    id: TAB_CLOSE,
+    title: i18n.getMessage(`${TAB_CLOSE}_title`, '(&C)'),
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: true
+  },
+  [TABS_CLOSE]: {
+    id: TABS_CLOSE,
+    title: i18n.getMessage(`${TABS_CLOSE}_title`, '(&C)'),
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: false
+  },
   [TABS_CLOSE_MULTIPLE]: {
     id: TABS_CLOSE_MULTIPLE,
     title: i18n.getMessage(`${TABS_CLOSE_MULTIPLE}_title`, '(&M)'),
@@ -436,6 +453,18 @@ export default {
         enabled: false,
         visible: true
       },
+      // Not implemented yet in Firefox
+      /*
+      [TAB_CLOSE_DUPE]: {
+        id: TAB_CLOSE_DUPE,
+        title: i18n.getMessage(`${TAB_CLOSE_DUPE}_title`, "(&D)"),
+        type: "normal",
+        contexts: ["tab"],
+        viewTypes: ["sidebar"],
+        enabled: false,
+        visible: true,
+      },
+      */
       [TAB_CLOSE_OTHER]: {
         id: TAB_CLOSE_OTHER,
         title: i18n.getMessage(`${TAB_CLOSE_OTHER}_title`, '(&O)'),
@@ -447,43 +476,13 @@ export default {
       }
     }
   },
-  // Not implemented yet in Firefox
-  /*
-  [TAB_CLOSE_DUPE]: {
-    id: TAB_CLOSE_DUPE,
-    title: i18n.getMessage(`${TAB_CLOSE_DUPE}_title`, "(&D)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: true,
-  },
-  */
   [TAB_CLOSE_UNDO]: {
     id: TAB_CLOSE_UNDO,
-    title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, '(&U)'),
+    title: i18n.getMessage(`${TAB_CLOSE_UNDO}_title`, '(&O)'),
     type: 'normal',
     contexts: ['page', 'tab'],
     viewTypes: ['sidebar'],
     enabled: false,
     visible: true
-  },
-  [TAB_CLOSE]: {
-    id: TAB_CLOSE,
-    title: i18n.getMessage(`${TAB_CLOSE}_title`, '(&C)'),
-    type: 'normal',
-    contexts: ['tab'],
-    viewTypes: ['sidebar'],
-    enabled: false,
-    visible: true
-  },
-  [TABS_CLOSE]: {
-    id: TABS_CLOSE,
-    title: i18n.getMessage(`${TABS_CLOSE}_title`, '(&U)'),
-    type: 'normal',
-    contexts: ['tab'],
-    viewTypes: ['sidebar'],
-    enabled: false,
-    visible: false
   }
 };
