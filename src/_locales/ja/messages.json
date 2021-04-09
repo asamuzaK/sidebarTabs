@@ -117,7 +117,7 @@
     "message": "下側のタブをすべて閉じる"
   },
   "closeTabsToTheEnd_title": {
-    "message": "下側のタブをすべて閉じる$KEY$",
+    "message": "下のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -129,7 +129,7 @@
     "message": "上側のタブをすべて閉じる"
   },
   "closeTabsToTheStart_title": {
-    "message": "上側のタブをすべて閉じる$KEY$",
+    "message": "上のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -420,10 +420,10 @@
     "message": "新しいタブを開きます"
   },
   "openNewTabInContainer": {
-    "message": "コンテナーを開く"
+    "message": "新しいコンテナータブを開く"
   },
   "openNewTabInContainer_title": {
-    "message": "コンテナーを開く$KEY$",
+    "message": "新しいコンテナータブを開く$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",

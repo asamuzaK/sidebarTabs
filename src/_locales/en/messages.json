@@ -420,10 +420,10 @@
     "message": "Open a new tab"
   },
   "openNewTabInContainer": {
-    "message": "Open in New Container Tab"
+    "message": "Open New Container Tab"
   },
   "openNewTabInContainer_title": {
-    "message": "Op&en in New Container Tab",
+    "message": "Op&en New Container Tab",
     "placeholders": {
       "key": {
         "content": "$1",
