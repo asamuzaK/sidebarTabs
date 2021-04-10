@@ -50,14 +50,13 @@ export const favicon = new Map([
 
 /* contextual identities icon name */
 export const contextualIdentitiesIconName = new Set([
-  'briefcase', 'cart', 'chill', 'dollar', 'fingerprint', 'food', 'fruit',
-  'gift', 'pet', 'tree', 'vacation'
+  'briefcase', 'cart', 'chill', 'dollar', 'fence', 'fingerprint', 'food',
+  'fruit', 'gift', 'pet', 'tree', 'vacation'
 ]);
 
 /* contextual identities icon color */
 export const contextualIdentitiesIconColor = new Set([
-  'blue', 'purple', 'pink', 'red', 'orange', 'yellow', 'green',
-  'turquoise'
+  'blue', 'green', 'orange', 'pink', 'purple', 'red', 'turquoise', 'yellow'
 ]);
 
 /**
