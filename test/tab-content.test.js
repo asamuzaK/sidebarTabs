@@ -85,7 +85,7 @@ describe('tab-content', () => {
     it('should exist', async () => {
       const { contextualIdentitiesIconName: iconName } = mjs;
       const itemKeys = [
-        'briefcase', 'cart', 'chill', 'dollar', 'fingerprint', 'food',
+        'briefcase', 'cart', 'chill', 'dollar', 'fence', 'fingerprint', 'food',
         'fruit', 'gift', 'pet', 'tree', 'vacation'
       ];
       assert.strictEqual(iconName.size, itemKeys.length, 'size');
