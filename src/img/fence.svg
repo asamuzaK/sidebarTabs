@@ -8,7 +8,7 @@
       <cc:Work rdf:about="">
         <dcterms:format>image/svg+xml</dcterms:format>
         <dcterms:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-        <dcterms:title>Tree Icon</dcterms:title>
+        <dcterms:title>Fence Icon</dcterms:title>
         <dcterms:license rdf:resource="https://www.mozilla.org/en-US/MPL/2.0/"/>
       </cc:Work>
     </rdf:RDF>
@@ -20,10 +20,10 @@
     }
   </style>
   <symbol id="outline">
-  <path d="M0.7,18c0,4.9,3.6,8.8,8.1,9.5v4.3c0.2,0,3.2,0,3.2,0v-4.3c1.8-0.4,3.6-1.1,4.9-2.5c0.2-0.2,0.2-0.2,0.2-0.5
-           c-0.2-0.4-0.2-1.1-0.2-1.6c0-2,0.2-4.9,1.6-7.9c0,0,0.9-1.6,0.7-1.8C18,7.2,14.4,0,10.4,0C5,0,0.7,12.6,0.7,18z
-           M18.3,22.8
-           c0,3.1,2.2,5.6,4.9,6.3V32h3.2v-2.9c2.7-0.7,4.9-3.2,4.9-6.3c0-3.6-2.9-12.9-6.5-12.9S18.3,19.2,18.3,22.8z"/>
+    <path d="M28,4l-2,2v4h-4V6l-2-2l-2,2v4h-4V6l-2-2l-2,2v4H6V6L4,4L2,6v22h4v-4h4v4h4v-4h4v4h4v-4h4v4h4V6L28,4z
+             M6,22V12 h4v10H6z
+             M14,22V12h4v10H14z
+             M22,22V12h4v10H22z"/>
   </symbol>
   <g id="blue" fill="#37adff">
     <use href="#outline"/>
