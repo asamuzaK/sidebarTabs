@@ -237,6 +237,27 @@ export default {
     visible: false,
   },
   */
+  // FIXME:
+  /*
+  [TAB_SHARE]: {
+    id: TAB_SHARE,
+    title: i18n.getMessage(`${TAB_SHARE}_title`, "(&H)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
+  },
+  [TABS_SHARE]: {
+    id: TABS_SHARE,
+    title: i18n.getMessage(`${TABS_SHARE}_title`, "(&H)"),
+    type: "normal",
+    contexts: ["tab"],
+    viewTypes: ["sidebar"],
+    enabled: false,
+    visible: false,
+  },
+  */
   [TAB_REOPEN_CONTAINER]: {
     id: TAB_REOPEN_CONTAINER,
     title: i18n.getMessage(`${TAB_REOPEN_CONTAINER}_title`, '(&E)'),
