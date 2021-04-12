@@ -37,13 +37,19 @@
   <g id="context" fill="context-fill" fill-opacity="context-fill-opacity">
     <use href="#sidetab"/>
   </g>
-  <g id="current" fill="currentColor">
+  <g id="current"
+     fill="context-fill currentColor"
+     fill-opacity="context-fill-opacity">
     <use href="#sidetab"/>
   </g>
-  <g id="dark" fill="#0C0C0D" fill-opacity="0.8">
+  <g id="dark"
+     fill="context-fill #0C0C0D"
+     fill-opacity="context-fill-opacity 0.8">
     <use href="#sidetab"/>
   </g>
-  <g id="light" fill="#F9F9FA" fill-opacity="0.7">
+  <g id="light"
+     fill="context-fill #F9F9FA"
+     fill-opacity="context-fill-opacity 0.7">
     <use href="#sidetab"/>
   </g>
   <g id="color">
