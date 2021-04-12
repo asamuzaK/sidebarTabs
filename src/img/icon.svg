@@ -39,7 +39,7 @@
   </g>
   <g id="current"
      fill="context-fill currentColor"
-     fill-opacity="context-fill-opacity">
+     fill-opacity="context-fill-opacity 1.0">
     <use href="#sidetab"/>
   </g>
   <g id="dark"
