@@ -379,32 +379,32 @@ main {
   height: var(--icon-size);
   fill: var(--foreground-color);
   fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
+  stroke: var(--foreground-color);
 }
 .tab-container.pinned > .tab.active > .tab-pinned {
   fill: var(--foreground-active-color);
   fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
+  stroke: var(--foreground-active-color);
 }
 .tab-container.pinned > .tab.discarded > .tab-pinned {
   fill: var(--foreground-discarded-color);
   fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
+  stroke: var(--foreground-discarded-color);
 }
 .tab-container.pinned > :is(.tab:hover, .tab.active:hover, .tab.discarded:hover) > .tab-pinned {
   fill: var(--foreground-hover-color);
   fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
+  stroke: var(--foreground-hover-color);
 }
 .tab-container.pinned > .tab.highlighted > .tab-pinned {
   fill: var(--foreground-selection-color);
   fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
+  stroke: var(--foreground-selection-color);
 }
 .tab-container.pinned > .tab.highlighted:hover > .tab-pinned {
   fill: var(--foreground-selection-hover-color);
   fill-opacity: 0.7;
-  stroke: var(--foreground-highlight-color);
+  stroke: var(--foreground-selection-hover-color);
 }
 .tab-pinned-icon {
   height: var(--icon-small-size);
