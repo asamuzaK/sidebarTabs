@@ -45,7 +45,7 @@
   --tab-height-compact: calc(var(--scale-size) * 6);
   --icon-size: calc(var(--scale-size) * 4);
   --icon-medium-size: calc(var(--scale-size) * 3);
-  --icon-small-size: calc(var(--scale-size) * 2.5);
+  --icon-small-size: calc(var(--scale-size) * (3 * 3) / (2 * 2));
   --icon-x-small-size: calc(var(--scale-size) * 2);
   --icon-xx-small-size: calc(var(--scale-size) * 3 / 2);
 }
