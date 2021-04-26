@@ -19,6 +19,9 @@ const createJsdom = () => {
     runScripts: 'dangerously',
     beforeParse(window) {
       window.alert = sinon.stub().callsFake((...args) => args.toString());
+      window.matchMedia = sinon.stub().returns({
+        matches: false
+      });
     }
   };
   return new JSDOM(domstr, opt);
