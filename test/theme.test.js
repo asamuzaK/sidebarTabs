@@ -129,6 +129,12 @@ describe('theme', () => {
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      const res = await func();
+      assert.deepEqual(res, themeMap[THEME_DARK], 'result');
+    });
+
     it('should not set values', async () => {
       mjs.currentThemeColors.set('accentcolor', '#ff0000');
       const res = await func();

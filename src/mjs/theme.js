@@ -122,7 +122,8 @@ export const setCurrentThemeColors = async (key, value) => {
  */
 export const getCurrentThemeBaseValues = async () => {
   const values = {};
-  const baseValues = themeMap[THEME_LIGHT];
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const baseValues = (dark && themeMap[THEME_DARK]) || themeMap[THEME_LIGHT];
   const items = Object.keys(baseValues);
   for (const key of items) {
     switch (key) {
