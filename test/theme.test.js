@@ -194,16 +194,12 @@ describe('theme', () => {
     it('should not set values', async () => {
       mjs.currentThemeColors.set('sidebar_highlight', '#ff0000');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
     it('should not set values', async () => {
       mjs.currentThemeColors.set('sidebar_highlight_text', '#ff0000');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
