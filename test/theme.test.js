@@ -494,6 +494,7 @@ describe('theme', () => {
     });
 
     it('should equal dark theme values', async () => {
+      window.matchMedia().matches = true;
       browser.theme.getCurrent.resolves({
         colors: {
           appmenu_info_icon_color: '#80ebff',
