@@ -5,25 +5,26 @@
   --background-color: #f0f0f4;
   --background-active-color: #ffffff;
   --background-discarded-color: #f0f0f4;
+  --background-field-active-color: #ffffff;
+  --background-field-color: #f0f0f4;
   --background-hover-color: #dadade;
   --background-hover-shadow: #15141a1a;
   --background-selection-color: #ffffff;
   --background-selection-hover-color: #dadade;
-  --background-textbox-color: #ffffff;
   --border-color: transparent;
   --border-active-color: #80808e;
   --border-discarded-color: transparent;
-  --border-drop-color: #053e94;
-  --border-textbox-color: transparent;
-  --border-textbox-active-color: #053e94;
+  --border-field-active-color: #053e94;
+  --border-field-color: transparent;
   --foreground-color: #15141a;
   --foreground-active-color: #15141a;
   --foreground-discarded-color: #15141a;
+  --foreground-field-color: #15141a;
+  --foreground-field-active-color: #15141a;
   --foreground-hover-color: #15141a;
   --foreground-highlight-color: #15141a;
   --foreground-selection-color: #15141a;
   --foreground-selection-hover-color: #15141a;
-  --foreground-textbox-color: #15141a;
   --tab-group-pinned: #7d004f;
   --tab-group-pinned-heading-text: #7d004f;
   --tab-group-1: #669;
@@ -53,24 +54,27 @@
   --background-color: #38383d;
   --background-active-color: #42414d;
   --background-discarded-color: #38383d;
+  --background-field-active-color: #42414d;
+  --background-field-color: #1c1b22;
   --background-hover-color: #4c4c50;
   --background-hover-shadow: #fbfbfe1a;
   --background-selection-color: #42414d;
   --background-selection-hover-color: #4c4c50;
-  --background-textbox-color: #42414d;
   --border-color: transparent;
   --border-active-color: transparent;
   --border-discarded-color: transparent;
   --border-drop-color: #aaf2ff;
+  --border-field-active-color: #aaf2ff;
+  --border-field-color: transparent;
   --border-textbox-color: transparent;
-  --border-textbox-active-color: #aaf2ff;
   --foreground-color: #f9f9fa;
   --foreground-active-color: #fbfbfe;
   --foreground-discarded-color: #f9f9fa;
+  --foreground-field-active-color: #fbfbfe;
+  --foreground-field-color: #fbfbfe;
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #fbfbfe;
   --foreground-selection-hover-color: #f9f9fa;
-  --foreground-textbox-color: #fbfbfe;
   --tab-group-pinned-heading-text: #eb0095;
   --tab-group-1-heading-text: #7878a5;
   --tab-group-2-heading-text: #c96;
@@ -193,10 +197,10 @@ main {
   border-color: var(--border-active-color);
 }
 .tab.drop-target.drop-after-target {
-  border-bottom-color: var(--border-drop-color);
+  border-bottom-color: var(--border-field-active-color);
 }
 .tab.drop-target.drop-before-target {
-  border-top-color: var(--border-drop-color);
+  border-top-color: var(--border-field-active-color);
 }
 
 /* tab items */
@@ -656,11 +660,11 @@ main {
 /* text box */
 [contenteditable=""],
 [contenteditable="true"] {
-  background: var(--background-textbox-color);
-  border: 1px solid var(--border-textbox-color);
+  background: var(--background-field-color);
+  border: 1px solid var(--border-field-color);
   border-radius: calc(var(--scale-size) / 2);
   padding: calc(var(--scale-size) / 3);
-  color: var(--foreground-textbox-color);
+  color: var(--foreground-field-color);
   font-weight: normal;
   width: calc(100% - var(--scale-size) / 3 * 2);
   height: var(--icon-size);
@@ -670,7 +674,9 @@ main {
 }
 [contenteditable=""]:focus,
 [contenteditable="true"]:focus {
-  border-color: var(--border-textbox-active-color);
+  background-color: var(--background-field-active-color);
+  border-color: var(--border-field-active-color);
+  color: var(--foreground-field-active-color);
 }
 
 @media (prefers-reduced-motion: reduce) {
