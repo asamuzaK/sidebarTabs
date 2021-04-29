@@ -778,7 +778,6 @@ main {
   --border-color: transparent;
   --border-active-color: transparent;
   --border-discarded-color: transparent;
-  --border-drop-color: #aaf2ff;
   --border-field-color: transparent;
   --border-field-active-color: #aaf2ff;
   --foreground-color: #f9f9fa;
@@ -799,7 +798,7 @@ main {
   --tab-group-7-heading-text: #696;
 }
 
-.dark-theme :is(.tab.drop-target.drop-after-target, .tab.drop-target.drop-before-target) > .tab-items {
+.dark-theme :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
   box-shadow: none;
 }
 
