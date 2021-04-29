@@ -855,6 +855,54 @@ describe('main', () => {
     });
   });
 
+  describe('activate clicked tab', () => {
+    const func = mjs.activateClickedTab;
+
+    it('should not call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      const res = await func();
+      assert.strictEqual(update.callCount, i, 'not called');
+      assert.strictEqual(getTab.callCount, j, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      update.resolves({});
+      getTab.withArgs(1).rejects(new Error('error'));
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(update.callCount, i, 'not called');
+      assert.strictEqual(getTab.callCount, j + 1, 'called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      update.resolves({});
+      getTab.withArgs(1).resolves({});
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(update.callCount, i + 1, 'called');
+      assert.strictEqual(getTab.callCount, j + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+  });
+
   describe('handle clicked tab', () => {
     const func = mjs.handleClickedTab;
 
@@ -1011,8 +1059,10 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
-      const { update } = browser.tabs;
+      const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
+      const j = getTab.callCount;
+      getTab.withArgs(1).resolves({});
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.classList.add(TAB);
@@ -1029,6 +1079,7 @@ describe('main', () => {
       update.resolves({});
       const res = await func(evt);
       assert.strictEqual(update.callCount, i + 1, 'called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called update');
       assert.deepEqual(res, [{}], 'result');
     });
 

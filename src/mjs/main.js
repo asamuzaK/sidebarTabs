@@ -7,7 +7,7 @@ import { getType, isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
+  getOs, getRecentlyClosedTab, getStorage, getTab, isTab, highlightTab, moveTab,
   restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { ports } from './port.js';
@@ -305,6 +305,24 @@ export const handleCreateNewTab = evt => {
 };
 
 /**
+ * activate clicked tab
+ *
+ * @param {object} elm - tab
+ * @returns {Function} - activateTab()
+ */
+export const activateClickedTab = async elm => {
+  const tabId = getSidebarTabId(elm);
+  let func;
+  if (Number.isInteger(tabId)) {
+    const res = await isTab(tabId);
+    if (res) {
+      func = activateTab(elm);
+    }
+  }
+  return func || null;
+};
+
+/**
  * handle clicked tab
  *
  * @param {!object} evt - event
@@ -353,7 +371,7 @@ export const handleClickedTab = evt => {
         }
       }
     } else {
-      tab && func.push(activateTab(tab));
+      tab && func.push(activateClickedTab(tab));
     }
   }
   return Promise.all(func).catch(throwErr);
