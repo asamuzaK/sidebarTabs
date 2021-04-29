@@ -15,6 +15,7 @@
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
+    "lint:style": "stylelint --fix src/css/*.css",
     "test": "npm run test:central",
     "test:beta": "nyc --reporter=text mocha test/*.test.js --require test/mocha/setup.js --channel=beta --require @babel/register --exit",
     "test:central": "nyc --reporter=text mocha test/*.test.js --require test/mocha/setup.js --channel=central --require @babel/register --exit",
@@ -41,6 +42,8 @@
     "nyc": "^15.1.0",
     "psl": "^1.8.0",
     "sinon": "^10.0.1",
+    "stylelint": "^13.13.0",
+    "stylelint-config-standard": "^22.0.0",
     "webext-schema": "^1.4.11"
   },
   "version": "5.0.1"
