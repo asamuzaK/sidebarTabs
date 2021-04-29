@@ -2451,6 +2451,59 @@ describe('browser-tabs', () => {
     });
 
     it('should call function', async () => {
+      browser.permissions.contains.resolves(false);
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, 2);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.permissions.contains.resolves(true);
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'atEnd'
+      });
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, 2);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.permissions.contains.resolves(true);
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      const create = browser.tabs.create.withArgs({
+        index: 2,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, 2);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.permissions.contains.resolves(true);
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'relatedAfterCurrent'
+      });
       const create = browser.tabs.create.withArgs({
         index: 2,
         windowId: 1,
