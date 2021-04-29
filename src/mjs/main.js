@@ -52,7 +52,8 @@ import {
   CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
   CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON,
-  CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM,
+  CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
+  CLASS_THEME_CUSTOM,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
@@ -366,7 +367,7 @@ export const handleClickedTab = evt => {
  */
 export const addTabClickListener = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_CONTENT)) {
+      elm.classList.contains(CLASS_TAB_ITEMS)) {
     elm.addEventListener('click', handleClickedTab);
     elm.addEventListener('mousedown', handleClickedTab);
   }
@@ -545,18 +546,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
         item.title = title;
         func.push(
-          addTabClickListener(item),
+          addTabClickListener(item.parentNode),
           toggleTabDblClickListener(item, !!closeTabsByDoubleClick)
-        );
-      } else if (classList.contains(CLASS_TAB_ICON)) {
-        func.push(
-          setTabIcon(item, {
-            favIconUrl,
-            status,
-            title,
-            url
-          }),
-          addTabIconErrorListener(item)
         );
       } else if (classList.contains(CLASS_TAB_TITLE)) {
         item.textContent = title;
@@ -573,16 +564,27 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
           }),
           addTabAudioClickListener(item)
         );
-      } else if (classList.contains(CLASS_TAB_AUDIO_ICON)) {
-        func.push(setTabAudioIcon(item, {
-          audible,
-          muted
-        }));
       } else if (classList.contains(CLASS_TAB_CLOSE)) {
         item.title = i18n.getMessage(`${TAB_CLOSE}_tooltip`);
         func.push(addTabCloseClickListener(item));
       } else if (classList.contains(CLASS_TAB_CLOSE_ICON)) {
         item.alt = i18n.getMessage(TAB_CLOSE);
+      } else {
+        classList.contains(CLASS_TAB_ICON) && func.push(
+          setTabIcon(item, {
+            favIconUrl,
+            status,
+            title,
+            url
+          }),
+          addTabIconErrorListener(item)
+        );
+        classList.contains(CLASS_TAB_AUDIO_ICON) && func.push(
+          setTabAudioIcon(item, {
+            audible,
+            muted
+          })
+        );
       }
     }
     tab.dataset.tabId = id;
