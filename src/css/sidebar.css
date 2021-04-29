@@ -302,15 +302,15 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 var(--icon-size);
+  flex: 0 0 var(--icon-medium-size);
   margin: 0;
   padding: calc(var(--scale-size) / 3);
-  height: var(--icon-size);
+  height: var(--icon-medium-size);
 }
 
 .tab-ident-icon {
-  width: var(--icon-size);
-  height: var(--icon-size);
+  width: var(--icon-medium-size);
+  height: var(--icon-medium-size);
 }
 
 /* close button */
@@ -619,13 +619,29 @@ main {
 
 .tab-group > :not([hidden]) > .tab-context {
   display: flex;
+  flex: 0 0 var(--icon-medium-size);
   align-items: center;
   justify-content: space-around;
-  flex: 0 0 var(--icon-medium-size);
+  margin: calc(var(--scale-size) / 2) 0 0 calc(var(--scale-size) / 2);
+  border-top-left-radius: calc(var(--scale-size) / 2);
+  border-top-right-radius: calc(var(--scale-size) / 2);
+  padding: 0;
 }
 
 .narrow-tab-group .tab-group > :not([hidden]) > .tab-context {
   flex: 0 0 var(--icon-x-small-size);
+}
+
+.tab-group > :not([hidden]) ~ .tab > .tab-context {
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+:is(.tab-group > :not([hidden]) ~ .tab:last-child, .tab-group.tab-collapsed > :not([hidden])) > .tab-context {
+  margin-bottom: calc(var(--scale-size) / 2);
+  border-bottom-left-radius: calc(var(--scale-size) / 2);
+  border-bottom-right-radius: calc(var(--scale-size) / 2);
 }
 
 .ungroup .tab-group .tab-context {
