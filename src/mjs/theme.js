@@ -68,7 +68,7 @@ export const themeMap = {
     [CUSTOM_BG_HOVER]: '#dadade',
     [CUSTOM_BG_HOVER_SHADOW]: '#15141a1a',
     [CUSTOM_BG_SELECT]: '#ffffff',
-    [CUSTOM_BG_SELECT_HOVER]: '#dadade',
+    [CUSTOM_BG_SELECT_HOVER]: '#e7e7e8',
     [CUSTOM_BORDER]: '#f0f0f4', // NOTE: 'transparent',
     [CUSTOM_BORDER_ACTIVE]: '#80808e',
     [CUSTOM_BORDER_DISCARDED]: '#f0f0f4', // NOTE: 'transparent',
@@ -92,7 +92,7 @@ export const themeMap = {
     [CUSTOM_BG_HOVER]: '#4c4c50',
     [CUSTOM_BG_HOVER_SHADOW]: '#fbfbfe1a',
     [CUSTOM_BG_SELECT]: '#42414d',
-    [CUSTOM_BG_SELECT_HOVER]: '#4c4c50',
+    [CUSTOM_BG_SELECT_HOVER]: '#55545f',
     [CUSTOM_BORDER]: '#38383d', // NOTE: 'transparent',
     [CUSTOM_BORDER_ACTIVE]: '#38383d', // NOTE: 'transparent',
     [CUSTOM_BORDER_DISCARDED]: '#38383d', // NOTE: 'transparent',
@@ -105,7 +105,7 @@ export const themeMap = {
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#fbfbfe',
     [CUSTOM_COLOR_HOVER]: '#f9f9fa',
     [CUSTOM_COLOR_SELECT]: '#fbfbfe',
-    [CUSTOM_COLOR_SELECT_HOVER]: '#f9f9fa'
+    [CUSTOM_COLOR_SELECT_HOVER]: '#fbfbfe'
   }
 };
 
@@ -244,7 +244,9 @@ export const getCurrentThemeBaseValues = async () => {
     }
   }
   // override CUSTOM_*_HOVER color
-  if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame')) {
+  if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame') ||
+      (currentThemeColors.has('sidebar_highlight_text') &&
+       currentThemeColors.has('sidebar_highlight'))) {
     const hoverBase = values[CUSTOM_BG];
     const hoverColor = await convertColorToHex(values[CUSTOM_COLOR]);
     const hoverBlend = `${hoverColor}1a`;
