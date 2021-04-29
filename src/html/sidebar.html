@@ -19,16 +19,18 @@
               <img class="tab-toggle-icon" draggable="false"
                    src="../img/drop-arrow.svg" tabindex="-1" alt="" />
             </span>
-            <span class="tab-content" title="">
-              <img class="tab-icon" draggable="false" src="../img/folder.svg"
-                   tabindex="-1" width="16" height="16" alt="" />
-              <span class="heading-label tab-title" dir="auto" tabindex="0">
+            <span class="tab-items">
+              <span class="tab-content" title="">
+                <img class="tab-icon" draggable="false" src="../img/folder.svg"
+                     tabindex="-1" width="16" height="16" alt="" />
+                <span class="heading-label tab-title" dir="auto" tabindex="0">
+                </span>
               </span>
+              <button class="heading-label-edit" title="">
+                <img class="heading-label-edit-icon" draggable="false"
+                     src="../img/edit.svg" tabindex="-1" alt="" />
+              </button>
             </span>
-            <button class="heading-label-edit" title="">
-              <img class="heading-label-edit-icon" draggable="false"
-                   src="../img/edit.svg" tabindex="-1" alt="" />
-            </button>
           </h1>
         </section>
       </template>
@@ -40,27 +42,29 @@
             <img class="tab-toggle-icon" draggable="false"
                  src="../img/drop-arrow.svg" tabindex="-1" alt="" />
           </span>
-          <span class="tab-content" title="">
-            <img class="tab-icon" draggable="false" src="" tabindex="-1"
-                 width="16" height="16" alt="" data-connecting="" />
-            <span class="tab-title" dir="auto">
+          <span class="tab-items">
+            <span class="tab-content" title="">
+              <img class="tab-icon" draggable="false" src="" tabindex="-1"
+                   width="16" height="16" alt="" data-connecting="" />
+              <span class="tab-title" dir="auto">
+              </span>
             </span>
-          </span>
-          <span class="tab-audio" tabindex="0" title="">
-            <img class="tab-audio-icon" draggable="false" src="" tabindex="-1"
-                 alt="" />
-          </span>
-          <span class="tab-ident" tabindex="0" title="">
-            <img class="tab-ident-icon" draggable="false" src="" tabindex="-1"
-                 alt="" />
-          </span>
-          <button class="tab-close" title="">
-            <img class="tab-close-icon" draggable="false" src="../img/close.svg"
-                 tabindex="-1" alt="" />
-          </button>
-          <span class="tab-pinned">
-            <img class="tab-pinned-icon" draggable="false" src="../img/pin.svg"
-                 tabindex="-1" alt="" />
+            <span class="tab-audio" tabindex="0" title="">
+              <img class="tab-audio-icon" draggable="false" src="" tabindex="-1"
+                   alt="" />
+            </span>
+            <span class="tab-ident" tabindex="0" title="">
+              <img class="tab-ident-icon" draggable="false" src="" tabindex="-1"
+                   alt="" />
+            </span>
+            <button class="tab-close" title="">
+              <img class="tab-close-icon" draggable="false"
+                   src="../img/close.svg" tabindex="-1" alt="" />
+            </button>
+            <span class="tab-pinned">
+              <img class="tab-pinned-icon" draggable="false"
+                   src="../img/pin.svg" tabindex="-1" alt="" />
+            </span>
           </span>
         </div>
       </template>
@@ -73,25 +77,30 @@
             <img class="tab-toggle-icon" draggable="false"
                  src="../img/drop-arrow.svg" tabindex="-1" alt="" />
           </span>
-          <span class="tab-content" title="">
-            <img class="tab-icon" draggable="false" src="../img/folder.svg"
-                 tabindex="-1" width="16" height="16" alt="" />
-            <span class="heading-label tab-title" dir="auto" tabindex="0"
-                  data-i18n="pinnedTabsLabel">Pinned Tabs</span>
+          <span class="tab-items">
+            <span class="tab-content" title="">
+              <img class="tab-icon" draggable="false" src="../img/folder.svg"
+                   tabindex="-1" width="16" height="16" alt="" />
+              <span class="heading-label tab-title" dir="auto" tabindex="0"
+                    data-i18n="pinnedTabsLabel">Pinned Tabs</span>
+            </span>
+            <button class="heading-label-edit" title="">
+              <img class="heading-label-edit-icon" draggable="false"
+                   src="../img/edit.svg" tabindex="-1" alt="" />
+            </button>
           </span>
-          <button class="heading-label-edit" title="">
-            <img class="heading-label-edit-icon" draggable="false"
-                 src="../img/edit.svg" tabindex="-1" alt="" />
-          </button>
         </h1>
       </section>
       <!-- new tab -->
       <section id="newtab" class="tab-container newtab" hidden>
         <div class="tab newtab">
-          <button class="newtab" title="Open a new tab"
+          <button class="tab-items newtab" title="Open a new tab"
                   data-i18n="newTabButton">
-            <img class="newtab-icon" draggable="false" src="../img/new-tab.svg"
-                 tabindex="-1" alt="New Tab" data-i18n="newTabButton" />
+            <span class="tab-content newtab">
+              <img class="tab-icon newtab-icon" draggable="false"
+                   src="../img/new-tab.svg" tabindex="-1" alt="New Tab"
+                   data-i18n="newTabButton" />
+            </span>
           </button>
         </div>
       </section>
