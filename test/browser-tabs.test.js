@@ -2437,6 +2437,31 @@ describe('browser-tabs', () => {
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
     });
+
+    it('should call function', async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, -1);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const create = browser.tabs.create.withArgs({
+        index: 2,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, 2);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
   });
 
   describe('create new tab in container', () => {
