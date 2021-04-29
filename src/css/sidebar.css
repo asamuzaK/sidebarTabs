@@ -443,7 +443,7 @@ main {
   border-top: 1px solid var(--background-hover-shadow);
 }
 
-.tab.newtab > .tab-items.newtab {
+.tab.newtab > .newtab-items {
   all: unset;
   flex: 1 1 auto;
   flex-flow: row nowrap;
@@ -457,11 +457,11 @@ main {
   min-width: 0;
 }
 
-.compact .tab-items.newtab {
+.compact .newtab-items {
   height: var(--tab-height-compact);
 }
 
-.tab.newtab:hover > .tab-items.newtab {
+.tab.newtab:hover > .newtab-items {
   background-color: var(--background-hover-shadow);
   color: var(--foreground-hover-color);
   fill: var(--foreground-hover-color);
@@ -469,11 +469,11 @@ main {
   z-index: 7;
 }
 
-.compact .tab.newtab > .tab-items.newtab {
+.compact .tab.newtab > .newtab-items {
   padding: 0;
 }
 
-.tab.newtab > .tab-items.newtab > .tab-content {
+.tab.newtab > .newtab-items > .newtab-content {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -481,7 +481,7 @@ main {
   min-width: 0;
 }
 
-.compact .tab.newtab > .tab-items.newtab > .tab-content {
+.compact .tab.newtab > .newtab-items > .newtab-content {
   margin: 0;
   padding: 0;
 }
@@ -489,6 +489,8 @@ main {
 .tab.newtab .newtab-icon {
   margin: 0;
   padding: 0;
+  width: var(--icon-size);
+  height: var(--icon-size);
   pointer-events: none;
 }
 
