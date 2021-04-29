@@ -31,8 +31,8 @@ import {
   TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
   TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
-  TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_PIN,
-  TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TAB_SKIP_COLLAPSED,
+  TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_NEW,
+  TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TAB_SKIP_COLLAPSED,
   TAB_SWITCH_SCROLL,
   TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
@@ -5840,6 +5840,41 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called update');
       assert.deepEqual(res, [[{}]], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      const create = browser.tabs.create.withArgs({
+        index: 1,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {

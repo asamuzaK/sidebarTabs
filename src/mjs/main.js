@@ -1055,6 +1055,7 @@ export const handleClickedMenu = async info => {
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const tabId = getSidebarTabId(tab);
+  const tabIndex = getSidebarTabIndex(tab);
   const heading = getTabGroupHeading(context);
   const func = [];
   let tabsTab;
@@ -1062,10 +1063,9 @@ export const handleClickedMenu = async info => {
     tabsTab = await getTab(tabId);
   }
   switch (menuItemId) {
-    case TAB_ALL_BOOKMARK: {
+    case TAB_ALL_BOOKMARK:
       func.push(bookmarkTabs(Array.from(allTabs)));
       break;
-    }
     case TAB_ALL_RELOAD:
       func.push(reloadTabs(Array.from(allTabs)));
       break;
@@ -1167,6 +1167,9 @@ export const handleClickedMenu = async info => {
         const { mutedInfo: { muted } } = tabsTab;
         func.push(muteTabs([tab], !muted));
       }
+      break;
+    case TAB_NEW:
+      func.push(createNewTab(windowId, tabIndex + 1));
       break;
     case TAB_PIN:
       if (tabsTab) {
