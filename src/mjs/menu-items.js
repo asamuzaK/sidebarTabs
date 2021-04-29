@@ -12,7 +12,8 @@ import {
   TAB_GROUP_LABEL_HIDE, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED,
   TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
-  TAB_MUTE_UNMUTE, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+  TAB_MUTE_UNMUTE, TAB_NEW, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD,
+  TAB_REOPEN_CONTAINER,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
   TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER
@@ -40,6 +41,21 @@ export default {
     viewTypes: ['sidebar']
   },
   /* tab */
+  [TAB_NEW]: {
+    id: TAB_NEW,
+    title: i18n.getMessage(`${TAB_NEW}_title`, '(&W)'),
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: true,
+    visible: true
+  },
+  'sep-1': {
+    id: 'sep-1',
+    type: 'separator',
+    contexts: ['tab'],
+    viewTypes: ['sidebar']
+  },
   [TAB_RELOAD]: {
     id: TAB_RELOAD,
     title: i18n.getMessage(`${TAB_RELOAD}_title`, '(&R)'),
@@ -116,8 +132,8 @@ export default {
     enabled: false,
     visible: false
   },
-  'sep-1': {
-    id: 'sep-1',
+  'sep-2': {
+    id: 'sep-2',
     type: 'separator',
     contexts: ['tab'],
     viewTypes: ['sidebar']
@@ -276,8 +292,8 @@ export default {
     enabled: false,
     visible: false
   },
-  'sep-2': {
-    id: 'sep-2',
+  'sep-3': {
+    id: 'sep-3',
     type: 'separator',
     contexts: ['tab'],
     viewTypes: ['sidebar']
@@ -310,8 +326,8 @@ export default {
     enabled: false,
     visible: true
   },
-  'sep-3': {
-    id: 'sep-3',
+  'sep-4': {
+    id: 'sep-4',
     type: 'separator',
     contexts: ['tab'],
     viewTypes: ['sidebar']
@@ -423,8 +439,8 @@ export default {
       }
     }
   },
-  'sep-4': {
-    id: 'sep-4',
+  'sep-5': {
+    id: 'sep-5',
     type: 'separator',
     contexts: ['page', 'tab'],
     viewTypes: ['sidebar']

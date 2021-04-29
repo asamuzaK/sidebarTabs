@@ -5,8 +5,9 @@
 /* shared */
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
-  createBookmark, createNewWindow, createTab, getActiveTab, getTab,
-  highlightTab, moveTab, reloadTab, removeTab, updateTab
+  createBookmark, createNewWindow, createTab, getActiveTab,
+  getNewTabPositionValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
+  updateTab
 } from './browser.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
@@ -540,16 +541,27 @@ export const muteTabs = async (nodes, muted) => {
  * create new tab
  *
  * @param {number} windowId - window ID
+ * @param {number} index - tab index
  * @returns {Function} - createTab()
  */
-export const createNewTab = async windowId => {
+export const createNewTab = async (windowId, index) => {
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  return createTab({
+  const opt = {
     windowId,
     active: true
-  });
+  };
+  if (Number.isInteger(index) && index >= 0) {
+    const pos = await getNewTabPositionValue();
+    if (pos) {
+      const { value } = pos;
+      if (value === 'afterCurrent' || value === 'relatedAfterCurrent') {
+        opt.index = index;
+      }
+    }
+  }
+  return createTab(opt);
 };
 
 /**

@@ -410,6 +410,15 @@
   "muteTabs_tooltip": {
     "message": "選択したタブをミュートします"
   },
+  "newTab_title": {
+    "message": "新しいタブ",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
   "newTabButton": {
     "message": ""
   },
