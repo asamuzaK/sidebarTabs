@@ -231,8 +231,7 @@ export const getCurrentThemeBaseValues = async () => {
         values[key] = valueA || baseValues[key];
         break;
       }
-      case CUSTOM_COLOR_SELECT:
-      case CUSTOM_COLOR_SELECT_HOVER: {
+      case CUSTOM_COLOR_SELECT: {
         const valueA = currentThemeColors.has('sidebar_highlight') &&
           currentThemeColors.get('sidebar_highlight_text');
         const valueB = currentThemeColors.get('tab_text');
@@ -246,24 +245,20 @@ export const getCurrentThemeBaseValues = async () => {
   }
   // override CUSTOM_*_HOVER color
   if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame')) {
-    const base = values[CUSTOM_BG];
-    const color = await convertColorToHex(values[CUSTOM_COLOR]);
-    const blend = `${color}1a`;
-    const value = await blendColors(blend, base).then(convertColorToHex);
-    values[CUSTOM_BG_HOVER] = value;
-    values[CUSTOM_BG_SELECT_HOVER] = value;
+    const hoverBase = values[CUSTOM_BG];
+    const hoverColor = await convertColorToHex(values[CUSTOM_COLOR]);
+    const hoverBlend = `${hoverColor}1a`;
+    const hoverValue =
+      await blendColors(hoverBlend, hoverBase).then(convertColorToHex);
+    const selectBase = values[CUSTOM_BG_SELECT];
+    const selectColor = await convertColorToHex(values[CUSTOM_COLOR_SELECT]);
+    const selectBlend = `${selectColor}1a`;
+    const selectValue =
+      await blendColors(selectBlend, selectBase).then(convertColorToHex);
+    values[CUSTOM_BG_HOVER] = hoverValue;
     values[CUSTOM_COLOR_HOVER] = values[CUSTOM_COLOR];
-    values[CUSTOM_COLOR_SELECT_HOVER] = values[CUSTOM_COLOR];
-  }
-  // override CUSTOM_BG_SELECT_HOVER color
-  if (currentThemeColors.has('sidebar_highlight') &&
-      currentThemeColors.has('sidebar_highlight_text')) {
-    const base = currentThemeColors.get('sidebar_highlight');
-    const color =
-      await convertColorToHex(currentThemeColors.get('sidebar_highlight_text'));
-    const blend = `${color}1a`;
-    const value = await blendColors(blend, base).then(convertColorToHex);
-    values[CUSTOM_BG_SELECT_HOVER] = value;
+    values[CUSTOM_BG_SELECT_HOVER] = selectValue;
+    values[CUSTOM_COLOR_SELECT_HOVER] = values[CUSTOM_COLOR_SELECT];
   }
   // override transparent CUSTOM_BORDER_* color
   if (currentThemeColors.get('tab_line') === 'transparent') {
