@@ -825,6 +825,17 @@ main {
   box-shadow: none;
 }
 
+@media (prefers-color-scheme: dark) {
+  --tab-group-pinned-heading-text: #eb0095;
+  --tab-group-1-heading-text: #7878a5;
+  --tab-group-2-heading-text: #c96;
+  --tab-group-3-heading-text: #438484;
+  --tab-group-4-heading-text: #69c;
+  --tab-group-5-heading-text: #7d7d3f;
+  --tab-group-6-heading-text: #c9c;
+  --tab-group-7-heading-text: #696;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tab,
   .tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
