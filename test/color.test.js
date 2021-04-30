@@ -468,6 +468,21 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('rgba(1,2,3,0.5)');
+      assert.strictEqual(res, '#010203', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(1,2,3,0.5)', true);
+      assert.strictEqual(res, '#01020380', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(1,2,3,1)', true);
+      assert.strictEqual(res, '#010203', 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('hsl(240 100% 50% / 0.5)');
       assert.strictEqual(res, '#0000ff', 'result');
     });
@@ -485,6 +500,21 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func('hsl(240 100% 50%)');
       assert.strictEqual(res, '#0000ff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsla(180,50%,50%,0.5)');
+      assert.strictEqual(res, '#40bfbf', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsla(180,50%,50%,0.5)', true);
+      assert.strictEqual(res, '#40bfbf80', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsla(180,50%,50%,1)', true);
+      assert.strictEqual(res, '#40bfbf', 'result');
     });
   });
 

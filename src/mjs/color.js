@@ -491,7 +491,11 @@ export const convertColorToHex = async (value, alpha = false) => {
         numberToHexString(b),
         numberToHexString(a * NUM_MAX)
       ]);
-      hex = alpha ? `#${rr}${gg}${bb}${aa}` : `#${rr}${gg}${bb}`;
+      if (!alpha || aa === 'ff') {
+        hex = `#${rr}${gg}${bb}`;
+      } else {
+        hex = `#${rr}${gg}${bb}${aa}`;
+      }
     }
   // hsl()
   } else if (value.startsWith('hsl')) {
@@ -504,7 +508,11 @@ export const convertColorToHex = async (value, alpha = false) => {
         numberToHexString(b),
         numberToHexString(a * NUM_MAX)
       ]);
-      hex = alpha ? `#${rr}${gg}${bb}${aa}` : `#${rr}${gg}${bb}`;
+      if (!alpha || aa === 'ff') {
+        hex = `#${rr}${gg}${bb}`;
+      } else {
+        hex = `#${rr}${gg}${bb}${aa}`;
+      }
     }
   }
   return hex || null;
