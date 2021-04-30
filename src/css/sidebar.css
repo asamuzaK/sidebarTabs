@@ -256,8 +256,8 @@ main {
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-medium-size);
-  margin: 0;
-  padding: calc(var(--scale-size) / 2);
+  margin: 0 var(--scale-size) 0 0;
+  padding: var(--scale-size);
   height: var(--icon-medium-size);
   fill: var(--foreground-color);
   stroke: var(--foreground-highlight-color);
@@ -289,8 +289,8 @@ main {
 }
 
 .tab-audio-icon {
-  width: var(--icon-medium-size);
-  height: var(--icon-medium-size);
+  width: var(--icon-small-size);
+  height: var(--icon-small-size);
 }
 
 /* contextual identities */
@@ -303,8 +303,8 @@ main {
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-medium-size);
-  margin: 0;
-  padding: calc(var(--scale-size) / 3);
+  margin: 0 var(--scale-size) 0 0;
+  padding: var(--scale-size);
   height: var(--icon-medium-size);
 }
 
@@ -392,7 +392,7 @@ main {
   justify-content: space-around;
   flex: 0 0 var(--icon-size);
   margin: var(--scale-size);
-  padding: calc(var(--scale-size) / 3);
+  padding: 0;
   height: var(--icon-size);
   fill: var(--foreground-color);
   stroke: var(--foreground-color);
