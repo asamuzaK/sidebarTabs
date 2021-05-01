@@ -373,8 +373,8 @@ main {
   top: 0;
   background-color: var(--background-color);
   color: var(--foreground-color);
-  fill: var(--foreground-color);
-  stroke: var(--foreground-highlight-color);
+  fill: none;
+  stroke: var(--foreground-color);
   z-index: 6;
 }
 
@@ -394,7 +394,7 @@ main {
   margin: var(--scale-size);
   padding: 0;
   height: var(--icon-size);
-  fill: var(--foreground-color);
+  fill: transparent;
   stroke: var(--foreground-color);
 }
 
@@ -404,27 +404,27 @@ main {
 }
 
 .tab-container.pinned > .tab.active .tab-pinned {
-  fill: var(--foreground-active-color);
+  fill: transparent;
   stroke: var(--foreground-active-color);
 }
 
 .tab-container.pinned > .tab.discarded .tab-pinned {
-  fill: var(--foreground-discarded-color);
+  fill: transparent;
   stroke: var(--foreground-discarded-color);
 }
 
 .tab-container.pinned > :is(.tab:hover, .tab.active:hover, .tab.discarded:hover) .tab-pinned {
-  fill: var(--foreground-hover-color);
+  fill: transparent;
   stroke: var(--foreground-hover-color);
 }
 
 .tab-container.pinned > .tab.highlighted .tab-pinned {
-  fill: var(--foreground-selection-color);
+  fill: transparent;
   stroke: var(--foreground-selection-color);
 }
 
 .tab-container.pinned > .tab.highlighted:hover .tab-pinned {
-  fill: var(--foreground-selection-hover-color);
+  fill: transparent;
   stroke: var(--foreground-selection-hover-color);
 }
 
@@ -602,8 +602,8 @@ main {
 }
 
 .heading-label-edit-icon {
-  width: var(--icon-small-size);
-  height: var(--icon-small-size);
+  width: var(--icon-medium-size);
+  height: var(--icon-medium-size);
 }
 
 /* tab group */
