@@ -6,6 +6,7 @@ export const ACTIVE = 'active';
 export const AUDIBLE = 'audible';
 export const BROWSER_SETTINGS_READ = 'readBrowserSettings';
 export const CLASS_COMPACT = 'compact';
+export const CLASS_GROUP = 'group';
 export const CLASS_HEADING = 'heading';
 export const CLASS_HEADING_LABEL = 'heading-label';
 export const CLASS_HEADING_LABEL_EDIT = 'heading-label-edit';

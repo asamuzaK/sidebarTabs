@@ -14,7 +14,8 @@ import {
   getSidebarTabId, getSidebarTabIndex, getTemplate, ports, requestSaveSession
 } from './util.js';
 import {
-  ACTIVE, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
+  ACTIVE,
+  CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
   CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
@@ -30,8 +31,10 @@ const { i18n, windows } = browser;
  * @returns {void}
  */
 export const restoreTabContainers = async () => {
+  const body = document.querySelector('body');
   const items =
     document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+  let group;
   for (const item of items) {
     const { classList, id, parentNode } = item;
     const tabLength = item.querySelectorAll(TAB_QUERY).length;
@@ -44,7 +47,13 @@ export const restoreTabContainers = async () => {
         break;
       default:
         classList.add(CLASS_TAB_GROUP);
+        group = true;
     }
+  }
+  if (group) {
+    body.classList.add(CLASS_GROUP);
+  } else {
+    body.classList.remove(CLASS_GROUP);
   }
 };
 

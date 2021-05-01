@@ -617,7 +617,7 @@ main {
   display: none;
 }
 
-.tab-group > :not([hidden]) > .tab-context {
+.group:not(.ungroup) :is(.tab-group > :not([hidden]), :not(.tab-group) > .tab) > .tab-context {
   display: flex;
   flex: 0 0 var(--icon-medium-size);
   align-items: center;
@@ -628,31 +628,27 @@ main {
   padding: 0;
 }
 
-.narrow-tab-group .tab-group > :not([hidden]) > .tab-context {
+.narrow-tab-group.group:not(.ungroup) :is(.tab-group > :not([hidden]), :not(.tab-group) > .tab) > .tab-context {
   flex: 0 0 var(--icon-x-small-size);
 }
 
-.tab-group > :not([hidden]) ~ .tab > .tab-context {
+.group:not(.ungroup) .tab-group > :not([hidden]) ~ .tab > .tab-context {
   margin-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 
-:is(.tab-group > :not([hidden]) ~ .tab:last-child, .tab-group.tab-collapsed > :not([hidden])) > .tab-context {
+.group:not(.ungroup) :is(.tab-group > :not([hidden]) ~ .tab:last-child, .tab-group.tab-collapsed > :not([hidden])) > .tab-context {
   margin-bottom: calc(var(--scale-size) / 2);
   border-bottom-left-radius: calc(var(--scale-size) / 2);
   border-bottom-right-radius: calc(var(--scale-size) / 2);
-}
-
-.ungroup .tab-group .tab-context {
-  display: none;
 }
 
 .tab-group.tab-collapsed > :not([hidden]) > .tab-context > .tab-toggle-icon {
   transform: rotate(-90deg);
 }
 
-.tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
+:is(.tab-group > :not([hidden]), :not(.tab-group) > .tab) > .tab-context > .tab-toggle-icon {
   margin: 0;
   width: var(--icon-x-small-size);
   height: var(--icon-x-small-size);
@@ -660,12 +656,12 @@ main {
   pointer-events: none;
 }
 
-.narrow-tab-group .tab-group > :not([hidden]) > .tab-context > .tab-toggle-icon {
+.narrow-tab-group :is(.tab-group > :not([hidden]), not(.tab-group) > .tab) > .tab-context > .tab-toggle-icon {
   width: var(--icon-xx-small-size);
   height: var(--icon-xx-small-size);
 }
 
-.tab-group > :not([hidden]) ~ .tab > .tab-context > .tab-toggle-icon {
+.group :is(.tab-group > :not([hidden]) ~ .tab, :not(.tab-group) > .tab) > .tab-context > .tab-toggle-icon {
   display: none;
 }
 
