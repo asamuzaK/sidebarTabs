@@ -19,7 +19,7 @@ import {
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
   CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND, TAB_QUERY
+  TAB_GROUP_EXPAND, TAB_GROUP_LABEL_EDIT, TAB_QUERY
 } from './constant.js';
 
 /* api */
@@ -460,6 +460,10 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
   const func = [];
   const heading = getTabGroupHeading(node);
   if (heading) {
+    const editButton = heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
+    if (editButton) {
+      editButton.title = i18n.getMessage(`${TAB_GROUP_LABEL_EDIT}_title`);
+    }
     if (heading.hidden) {
       heading.hidden = false;
       func.push(

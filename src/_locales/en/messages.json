@@ -218,6 +218,12 @@
       }
     }
   },
+  "editTabGroupLabel": {
+    "message": ""
+  },
+  "editTabGroupLabel_title": {
+    "message": "Edit label"
+  },
   "expandTabGroup": {
     "message": "Expand Tab Group"
   },

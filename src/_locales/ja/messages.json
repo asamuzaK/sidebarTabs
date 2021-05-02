@@ -218,6 +218,12 @@
       }
     }
   },
+  "editTabGroupLabel": {
+    "message": ""
+  },
+  "editTabGroupLabel_title": {
+    "message": "ラベルを編集します"
+  },
   "expandTabGroup": {
     "message": "タブグループを展開"
   },

@@ -13,7 +13,7 @@ import {
   CLASS_HEADING_LABEL_EDIT, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, PINNED, SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND
+  TAB_GROUP_EXPAND, TAB_GROUP_LABEL_EDIT
 } from '../src/mjs/constant.js';
 
 describe('tab-group', () => {
@@ -2132,6 +2132,10 @@ describe('tab-group', () => {
     });
 
     it('should get array', async () => {
+      const msg = browser.i18n.getMessage
+        .withArgs(`${TAB_GROUP_LABEL_EDIT}_title`);
+      const i = msg.callCount;
+      msg.returns('foo');
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const body = document.querySelector('body');
@@ -2140,10 +2144,15 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(parent);
+      assert.strictEqual(msg.callCount, i, 'not called msg');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should call function', async () => {
+      const msg = browser.i18n.getMessage
+        .withArgs(`${TAB_GROUP_LABEL_EDIT}_title`);
+      const i = msg.callCount;
+      msg.returns('foo');
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const context = document.createElement('span');
@@ -2167,10 +2176,16 @@ describe('tab-group', () => {
       assert.isTrue(spy.calledTwice, 'called child removeEventListener');
       assert.isTrue(spy2.calledOnce, 'called button removeEventListener');
       assert.isTrue(spy3.calledTwice, 'called context removeEventListener');
+      assert.strictEqual(msg.callCount, i + 1, 'called msg');
+      assert.strictEqual(button.title, 'foo', 'title');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should get array', async () => {
+      const msg = browser.i18n.getMessage
+        .withArgs(`${TAB_GROUP_LABEL_EDIT}_title`);
+      const i = msg.callCount;
+      msg.returns('foo');
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const child = document.createElement('div');
@@ -2187,10 +2202,16 @@ describe('tab-group', () => {
       body.appendChild(parent);
       const res = await func(parent);
       assert.isFalse(elm.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(msg.callCount, i + 1, 'called msg');
+      assert.strictEqual(button.title, 'foo', 'title');
       assert.deepEqual(res, [undefined, child], 'result');
     });
 
     it('should get array', async () => {
+      const msg = browser.i18n.getMessage
+        .withArgs(`${TAB_GROUP_LABEL_EDIT}_title`);
+      const i = msg.callCount;
+      msg.returns('foo');
       const parent = document.createElement('div');
       const elm = document.createElement('div');
       const child = document.createElement('div');
@@ -2208,6 +2229,8 @@ describe('tab-group', () => {
       const res = await func(parent, true);
       assert.isTrue(elm.hasAttribute('data-multi'), 'dataset');
       assert.strictEqual(elm.dataset.multi, 'true', 'dataset value');
+      assert.strictEqual(msg.callCount, i + 1, 'called msg');
+      assert.strictEqual(button.title, 'foo', 'title');
       assert.deepEqual(res, [undefined, child], 'result');
     });
   });
