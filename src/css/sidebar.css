@@ -560,6 +560,7 @@ main {
 .heading-label {
   display: block;
   flex: 1 1 auto;
+  margin: 0 var(--scale-size) 0 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
