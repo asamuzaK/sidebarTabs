@@ -5910,10 +5910,8 @@ describe('main', () => {
       const body = document.querySelector('body');
       sect.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       sect.appendChild(elm);
       sect.appendChild(elm2);
@@ -5924,7 +5922,190 @@ describe('main', () => {
         menuItemId: TAB_NEW
       };
       const res = await func(info);
-      assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      const create = browser.tabs.create.withArgs({
+        index: 1,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = body;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      const create = browser.tabs.create.withArgs({
+        index: 1,
+        openerTabId: 1,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      const create = browser.tabs.create.withArgs({
+        index: 1,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const sect = document.createElement('section');
+      const sect2 = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect2.appendChild(elm2);
+      body.appendChild(sect);
+      body.appendChild(sect2);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      browser.tabs.get.withArgs(1).resolves({
+        cookieStoreId: COOKIE_STORE_DEFAULT
+      });
+      const create = browser.tabs.create.withArgs({
+        index: 1,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const sect = document.createElement('section');
+      const sect2 = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect2.appendChild(elm2);
+      body.appendChild(sect);
+      body.appendChild(sect2);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      browser.tabs.get.withArgs(1).resolves({
+        cookieStoreId: 'foo'
+      });
+      const create = browser.tabs.create.withArgs({
+        cookieStoreId: 'foo',
+        index: 1,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const sect = document.createElement('section');
+      const sect2 = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect2.appendChild(elm2);
+      body.appendChild(sect);
+      body.appendChild(sect2);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 

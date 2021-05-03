@@ -1186,9 +1186,24 @@ export const handleClickedMenu = async info => {
         func.push(muteTabs([tab], !muted));
       }
       break;
-    case TAB_NEW:
-      func.push(createNewTab(windowId, tabIndex + 1));
+    case TAB_NEW: {
+      const opt = {
+        index: tabIndex + 1
+      };
+      if (tab) {
+        if (tab.parentNode.classList.contains(CLASS_TAB_GROUP)) {
+          opt.openerTabId = tabId;
+        }
+      }
+      if (tabsTab) {
+        const { cookieStoreId } = tabsTab;
+        if (cookieStoreId !== COOKIE_STORE_DEFAULT) {
+          opt.cookieStoreId = cookieStoreId;
+        }
+      }
+      func.push(createNewTab(windowId, opt));
       break;
+    }
     case TAB_PIN:
       if (tabsTab) {
         const { pinned } = tabsTab;

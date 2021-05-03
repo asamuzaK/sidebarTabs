@@ -2445,7 +2445,9 @@ describe('browser-tabs', () => {
       });
       const i = create.callCount;
       create.resolves({});
-      const res = await func(1, -1);
+      const res = await func(1, {
+        index: -1
+      });
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
     });
@@ -2461,7 +2463,9 @@ describe('browser-tabs', () => {
       });
       const i = create.callCount;
       create.resolves({});
-      const res = await func(1, 2);
+      const res = await func(1, {
+        index: 2
+      });
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
     });
@@ -2477,7 +2481,9 @@ describe('browser-tabs', () => {
       });
       const i = create.callCount;
       create.resolves({});
-      const res = await func(1, 2);
+      const res = await func(1, {
+        index: 2
+      });
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
     });
@@ -2494,7 +2500,9 @@ describe('browser-tabs', () => {
       });
       const i = create.callCount;
       create.resolves({});
-      const res = await func(1, 2);
+      const res = await func(1, {
+        index: 2
+      });
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
     });
@@ -2511,7 +2519,67 @@ describe('browser-tabs', () => {
       });
       const i = create.callCount;
       create.resolves({});
-      const res = await func(1, 2);
+      const res = await func(1, {
+        index: 2
+      });
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, {
+        openerTabId: browser.tabs.TAB_ID_NONE
+      });
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, {
+        openerTabId: 'foo'
+      });
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const create = browser.tabs.create.withArgs({
+        openerTabId: 2,
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, {
+        openerTabId: 2
+      });
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const create = browser.tabs.create.withArgs({
+        cookieStoreId: 'foo',
+        windowId: 1,
+        active: true
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, {
+        cookieStoreId: 'foo'
+      });
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
     });

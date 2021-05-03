@@ -18,7 +18,7 @@ import {
 } from './constant.js';
 
 /* api */
-const { windows } = browser;
+const { tabs, windows } = browser;
 
 /* bookmark */
 /**
@@ -221,7 +221,7 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
 /**
  * duplicate tab
  *
- * @param {object} tabId - tab ID
+ * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
  * @returns {?Function} - createTab()
  */
@@ -541,27 +541,44 @@ export const muteTabs = async (nodes, muted) => {
  * create new tab
  *
  * @param {number} windowId - window ID
- * @param {number} index - tab index
+ * @param {object} opt - options
  * @returns {Function} - createTab()
  */
-export const createNewTab = async (windowId, index) => {
+export const createNewTab = async (windowId, opt = {}) => {
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const opt = {
+  const prop = {
     windowId,
     active: true
   };
-  if (Number.isInteger(index) && index >= 0) {
-    const pos = await getNewTabPositionValue();
-    if (pos) {
-      const { value } = pos;
-      if (value === 'afterCurrent' || value === 'relatedAfterCurrent') {
-        opt.index = index;
+  if (isObjectNotEmpty(opt)) {
+    const items = Object.entries(opt);
+    for (const [key, value] of items) {
+      switch (key) {
+        case 'index':
+          if (Number.isInteger(value) && value >= 0) {
+            const pos = await getNewTabPositionValue();
+            if (pos) {
+              const { value: posValue } = pos;
+              if (posValue === 'afterCurrent' ||
+                  posValue === 'relatedAfterCurrent') {
+                prop.index = value;
+              }
+            }
+          }
+          break;
+        case 'openerTabId':
+          if (Number.isInteger(value) && value !== tabs.TAB_ID_NONE) {
+            prop[key] = value;
+          }
+          break;
+        default:
+          prop[key] = value;
       }
     }
   }
-  return createTab(opt);
+  return createTab(prop);
 };
 
 /**
@@ -589,7 +606,7 @@ export const createNewTabInContainer = async (cookieId, windowId) => {
 /**
  * pin tabs
  *
- * @param {object} nodes - array of node
+ * @param {Array} nodes - array of node
  * @param {boolean} pinned - pinned
  * @returns {Promise.<Array>} - results of each handler
  */
