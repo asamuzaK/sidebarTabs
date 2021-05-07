@@ -557,7 +557,7 @@ export const createNewTab = async (windowId, opt = {}) => {
     for (const [key, value] of items) {
       switch (key) {
         case 'index':
-          if (Number.isInteger(value) && value >= 0) {
+          if (Number.isInteger(value) && value > 0) {
             const pos = await getNewTabPositionValue();
             if (pos) {
               const { value: posValue } = pos;
