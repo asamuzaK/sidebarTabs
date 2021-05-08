@@ -35,22 +35,16 @@
   --foreground-highlight-color: #15141a;
   --foreground-selection-color: #15141a;
   --foreground-selection-hover-color: #15141a;
-  --tab-group-pinned: #7d004f;
-  --tab-group-pinned-heading-text: #7d004f;
-  --tab-group-1: #669;
-  --tab-group-1-heading-text: #669;
-  --tab-group-2: #c96;
-  --tab-group-2-heading-text: #916130;
-  --tab-group-3: #366;
-  --tab-group-3-heading-text: #366;
-  --tab-group-4: #69c;
-  --tab-group-4-heading-text: #376ea4;
-  --tab-group-5: #663;
-  --tab-group-5-heading-text: #663;
-  --tab-group-6: #c9c;
-  --tab-group-6-heading-text: #994d99;
-  --tab-group-7: #696;
-  --tab-group-7-heading-text: #4e744e;
+  --tab-group-pinned: #666699;
+  --tab-group-pinned-heading-text: #333399;
+  --tab-group-1: #cc6633;
+  --tab-group-1-heading-text: #993300;
+  --tab-group-2: #339966;
+  --tab-group-2-heading-text: #006633;
+  --tab-group-3: #cc6699;
+  --tab-group-3-heading-text: #993366;
+  --tab-group-4: #6699cc;
+  --tab-group-4-heading-text: #336699;
 }
 
 /* structure */
@@ -666,88 +660,52 @@ main {
   display: none;
 }
 
-.tab-group:nth-child(7n + 1) > :not([hidden]) > .tab-context {
+.tab-group:nth-child(4n + 1) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-1);
 }
 
-.tab-group:nth-child(7n + 1) > .heading > .tab-items > .tab-content > .tab-icon {
+.tab-group:nth-child(4n + 1) > .heading > .tab-items > .tab-content > .tab-icon {
   fill: var(--tab-group-1-heading-text);
 }
 
-.tab-group:nth-child(7n + 1) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
+.tab-group:nth-child(4n + 1) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-1-heading-text);
 }
 
-.tab-group:nth-child(7n + 2) > :not([hidden]) > .tab-context {
+.tab-group:nth-child(4n + 2) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-2);
 }
 
-.tab-group:nth-child(7n + 2) > .heading > .tab-items > .tab-content > .tab-icon {
+.tab-group:nth-child(4n + 2) > .heading > .tab-items > .tab-content > .tab-icon {
   fill: var(--tab-group-2-heading-text);
 }
 
-.tab-group:nth-child(7n + 2) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
+.tab-group:nth-child(4n + 2) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-2-heading-text);
 }
 
-.tab-group:nth-child(7n + 3) > :not([hidden]) > .tab-context {
+.tab-group:nth-child(4n + 3) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-3);
 }
 
-.tab-group:nth-child(7n + 3) > .heading > .tab-items > .tab-content > .tab-icon {
+.tab-group:nth-child(4n + 3) > .heading > .tab-items > .tab-content > .tab-icon {
   fill: var(--tab-group-3-heading-text);
 }
 
-.tab-group:nth-child(7n + 3) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
+.tab-group:nth-child(4n + 3) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-3-heading-text);
 }
 
-.tab-group:nth-child(7n + 4) > :not([hidden]) > .tab-context {
+.tab-group:nth-child(4n) > :not([hidden]) > .tab-context {
   background-color: var(--tab-group-4);
 }
 
-.tab-group:nth-child(7n + 4) > .heading > .tab-items > .tab-content > .tab-icon {
+.tab-group:nth-child(4n) > .heading > .tab-items > .tab-content > .tab-icon {
   fill: var(--tab-group-4-heading-text);
 }
 
-.tab-group:nth-child(7n + 4) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
+.tab-group:nth-child(4n) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
   color: var(--tab-group-4-heading-text);
-}
-
-.tab-group:nth-child(7n + 5) > :not([hidden]) > .tab-context {
-  background-color: var(--tab-group-5);
-}
-
-.tab-group:nth-child(7n + 5) > .heading > .tab-items > .tab-content > .tab-icon {
-  fill: var(--tab-group-5-heading-text);
-}
-
-.tab-group:nth-child(7n + 5) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-5-heading-text);
-}
-
-.tab-group:nth-child(7n + 6) > :not([hidden]) > .tab-context {
-  background-color: var(--tab-group-6);
-}
-
-.tab-group:nth-child(7n + 6) > .heading > .tab-items > .tab-content > .tab-icon {
-  fill: var(--tab-group-6-heading-text);
-}
-
-.tab-group:nth-child(7n + 6) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-6-heading-text);
-}
-
-.tab-group:nth-child(7n) > :not([hidden]) > .tab-context {
-  background-color: var(--tab-group-7);
-}
-
-.tab-group:nth-child(7n) > .heading > .tab-items > .tab-content > .tab-icon {
-  fill: var(--tab-group-7-heading-text);
-}
-
-.tab-group:nth-child(7n) > .heading > .tab-items > .tab-content > .heading-label:not([contenteditable]) {
-  color: var(--tab-group-7-heading-text);
 }
 
 .tab-group.pinned > :not([hidden]) > .tab-context {
@@ -808,14 +766,11 @@ main {
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #fbfbfe;
   --foreground-selection-hover-color: #f9f9fa;
-  --tab-group-pinned-heading-text: #eb0095;
-  --tab-group-1-heading-text: #7878a5;
-  --tab-group-2-heading-text: #c96;
-  --tab-group-3-heading-text: #438484;
-  --tab-group-4-heading-text: #69c;
-  --tab-group-5-heading-text: #7d7d3f;
-  --tab-group-6-heading-text: #c9c;
-  --tab-group-7-heading-text: #696;
+  --tab-group-pinned-heading-text: #ccccff;
+  --tab-group-1-heading-text: #ff9966;
+  --tab-group-2-heading-text: #66cc99;
+  --tab-group-3-heading-text: #ff99cc;
+  --tab-group-4-heading-text: #99ccff;
 }
 
 .dark-theme :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
@@ -823,14 +778,11 @@ main {
 }
 
 @media (prefers-color-scheme: dark) {
-  --tab-group-pinned-heading-text: #eb0095;
-  --tab-group-1-heading-text: #7878a5;
-  --tab-group-2-heading-text: #c96;
-  --tab-group-3-heading-text: #438484;
-  --tab-group-4-heading-text: #69c;
-  --tab-group-5-heading-text: #7d7d3f;
-  --tab-group-6-heading-text: #c9c;
-  --tab-group-7-heading-text: #696;
+  --tab-group-pinned-heading-text: #ccccff;
+  --tab-group-1-heading-text: #ff9966;
+  --tab-group-2-heading-text: #66cc99;
+  --tab-group-3-heading-text: #ff99cc;
+  --tab-group-4-heading-text: #99ccff;
 }
 
 @media (prefers-reduced-motion: reduce) {
