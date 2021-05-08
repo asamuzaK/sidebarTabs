@@ -569,72 +569,122 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#0000ff11', '#0000ff');
-      assert.strictEqual(res, '#0000ffff', 'result');
+      assert.strictEqual(res, '#0000ff', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff11', '#000000');
-      assert.strictEqual(res, '#111111ff', 'result');
+      assert.strictEqual(res, '#111111', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff22', '#000000');
-      assert.strictEqual(res, '#222222ff', 'result');
+      assert.strictEqual(res, '#222222', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff33', '#000000');
-      assert.strictEqual(res, '#333333ff', 'result');
+      assert.strictEqual(res, '#333333', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff66', '#000000');
-      assert.strictEqual(res, '#666666ff', 'result');
+      assert.strictEqual(res, '#666666', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff99', '#000000');
-      assert.strictEqual(res, '#999999ff', 'result');
+      assert.strictEqual(res, '#999999', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffffcc', '#000000');
-      assert.strictEqual(res, '#ccccccff', 'result');
+      assert.strictEqual(res, '#cccccc', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#0c0c0d1a', '#0a84ff');
-      assert.strictEqual(res, '#0a78e6ff', 'result');
+      assert.strictEqual(res, '#0a78e6', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#d7d7db1a', '#0a84ff');
-      assert.strictEqual(res, '#1f8cfbff', 'result');
+      assert.strictEqual(res, '#1f8cfb', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#d7d7db33', '#0a84ff');
-      assert.strictEqual(res, '#3395f8ff', 'result');
+      assert.strictEqual(res, '#3395f8', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#f9f9fa1a', '#0a84ff');
-      assert.strictEqual(res, '#2290feff', 'result');
+      assert.strictEqual(res, '#2290fe', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#2a2a2e1a', '#0a84ff');
-      assert.strictEqual(res, '#0d7beaff', 'result');
+      assert.strictEqual(res, '#0d7bea', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#2a2a2e33', '#0a84ff');
-      assert.strictEqual(res, '#1072d5ff', 'result');
+      assert.strictEqual(res, '#1072d5', 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff11', '#000000ee');
       assert.strictEqual(res, '#121212ef', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#66669999', '#15141a');
+      assert.strictEqual(res, '#464566', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#cc663399', '#15141a');
+      assert.strictEqual(res, '#834529', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#33996699', '#15141a');
+      assert.strictEqual(res, '#276448', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#cc669999', '#15141a');
+      assert.strictEqual(res, '#834566', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#6699cc99', '#15141a');
+      assert.strictEqual(res, '#466485', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#66669999', '#f9f9fa');
+      assert.strictEqual(res, '#a1a1c0', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#cc663399', '#f9f9fa');
+      assert.strictEqual(res, '#dea183', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#33996699', '#f9f9fa');
+      assert.strictEqual(res, '#82bfa1', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#cc669999', '#f9f9fa');
+      assert.strictEqual(res, '#dea1c0', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#6699cc99', '#f9f9fa');
+      assert.strictEqual(res, '#a1bfde', 'result');
     });
   });
 });

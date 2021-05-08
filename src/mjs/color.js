@@ -552,7 +552,11 @@ export const blendColors = async (blend, base) => {
         numberToHexString(baseB * baseAlpha + blendB * blendAlpha),
         numberToHexString(alpha * NUM_MAX)
       ]);
-      hex = `#${r}${g}${b}${a}`;
+      if (a === 'ff') {
+        hex = `#${r}${g}${b}`;
+      } else {
+        hex = `#${r}${g}${b}${a}`;
+      }
     }
   }
   return hex || null;
