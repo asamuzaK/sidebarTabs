@@ -14,6 +14,9 @@ import {
   CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_BORDER_DISCARDED,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_DISCARDED,
   CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
+  CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
+  CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
@@ -259,6 +262,16 @@ describe('theme', () => {
           assert.strictEqual(value, '#ff0000', `${key}`);
         } else if (key === CUSTOM_COLOR_SELECT_HOVER) {
           assert.strictEqual(value, '#15141a', `${key}`);
+        } else if (key === CUSTOM_HEADING_TEXT_GROUP_1) {
+          assert.strictEqual(value, '#e03d1f', `${key}`);
+        } else if (key === CUSTOM_HEADING_TEXT_GROUP_2) {
+          assert.strictEqual(value, '#855c3d', `${key}`);
+        } else if (key === CUSTOM_HEADING_TEXT_GROUP_3) {
+          assert.strictEqual(value, '#e03d5c', `${key}`);
+        } else if (key === CUSTOM_HEADING_TEXT_GROUP_4) {
+          assert.strictEqual(value, '#a35c7a', `${key}`);
+        } else if (key === CUSTOM_HEADING_TEXT_PINNED) {
+          assert.strictEqual(value, '#a33d5c', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }

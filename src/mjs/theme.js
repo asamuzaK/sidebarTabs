@@ -20,6 +20,9 @@ import {
   CSS_VAR_COLOR, CSS_VAR_COLOR_ACTIVE, CSS_VAR_COLOR_DISCARDED,
   CSS_VAR_COLOR_FIELD, CSS_VAR_COLOR_FIELD_ACTIVE,
   CSS_VAR_COLOR_HOVER, CSS_VAR_COLOR_SELECT, CSS_VAR_COLOR_SELECT_HOVER,
+  CSS_VAR_HEADING_TEXT_GROUP_1, CSS_VAR_HEADING_TEXT_GROUP_2,
+  CSS_VAR_HEADING_TEXT_GROUP_3, CSS_VAR_HEADING_TEXT_GROUP_4,
+  CSS_VAR_HEADING_TEXT_PINNED,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
   CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
@@ -28,6 +31,9 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_DISCARDED, CUSTOM_COLOR_FIELD,
   CUSTOM_COLOR_FIELD_ACTIVE, CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT,
   CUSTOM_COLOR_SELECT_HOVER,
+  CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
+  CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
+  CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
@@ -57,7 +63,12 @@ export const themeMap = {
     [CUSTOM_COLOR_FIELD_ACTIVE]: CSS_VAR_COLOR_FIELD_ACTIVE,
     [CUSTOM_COLOR_HOVER]: CSS_VAR_COLOR_HOVER,
     [CUSTOM_COLOR_SELECT]: CSS_VAR_COLOR_SELECT,
-    [CUSTOM_COLOR_SELECT_HOVER]: CSS_VAR_COLOR_SELECT_HOVER
+    [CUSTOM_COLOR_SELECT_HOVER]: CSS_VAR_COLOR_SELECT_HOVER,
+    [CUSTOM_HEADING_TEXT_GROUP_1]: CSS_VAR_HEADING_TEXT_GROUP_1,
+    [CUSTOM_HEADING_TEXT_GROUP_2]: CSS_VAR_HEADING_TEXT_GROUP_2,
+    [CUSTOM_HEADING_TEXT_GROUP_3]: CSS_VAR_HEADING_TEXT_GROUP_3,
+    [CUSTOM_HEADING_TEXT_GROUP_4]: CSS_VAR_HEADING_TEXT_GROUP_4,
+    [CUSTOM_HEADING_TEXT_PINNED]: CSS_VAR_HEADING_TEXT_PINNED
   },
   [THEME_LIGHT]: {
     [CUSTOM_BG]: '#f0f0f4',
@@ -81,7 +92,12 @@ export const themeMap = {
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#15141a',
     [CUSTOM_COLOR_HOVER]: '#15141a',
     [CUSTOM_COLOR_SELECT]: '#15141a',
-    [CUSTOM_COLOR_SELECT_HOVER]: '#15141a'
+    [CUSTOM_COLOR_SELECT_HOVER]: '#15141a',
+    [CUSTOM_HEADING_TEXT_GROUP_1]: '#834529',
+    [CUSTOM_HEADING_TEXT_GROUP_2]: '#276448',
+    [CUSTOM_HEADING_TEXT_GROUP_3]: '#834566',
+    [CUSTOM_HEADING_TEXT_GROUP_4]: '#466485',
+    [CUSTOM_HEADING_TEXT_PINNED]: '#464566'
   },
   [THEME_DARK]: {
     [CUSTOM_BG]: '#38383d',
@@ -105,7 +121,12 @@ export const themeMap = {
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#fbfbfe',
     [CUSTOM_COLOR_HOVER]: '#f9f9fa',
     [CUSTOM_COLOR_SELECT]: '#fbfbfe',
-    [CUSTOM_COLOR_SELECT_HOVER]: '#fbfbfe'
+    [CUSTOM_COLOR_SELECT_HOVER]: '#fbfbfe',
+    [CUSTOM_HEADING_TEXT_GROUP_1]: '#dea183',
+    [CUSTOM_HEADING_TEXT_GROUP_2]: '#82bfa1',
+    [CUSTOM_HEADING_TEXT_GROUP_3]: '#dea1c0',
+    [CUSTOM_HEADING_TEXT_GROUP_4]: '#a1bfde',
+    [CUSTOM_HEADING_TEXT_PINNED]: '#a1a1c0'
   }
 };
 
@@ -243,26 +264,36 @@ export const getCurrentThemeBaseValues = async () => {
         values[key] = baseValues[key];
     }
   }
-  // override CUSTOM_*_HOVER color
+  // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
   if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame') ||
       (currentThemeColors.has('sidebar_highlight_text') &&
        currentThemeColors.has('sidebar_highlight'))) {
-    const hoverBase = values[CUSTOM_BG];
-    const hoverColor = await convertColorToHex(values[CUSTOM_COLOR]);
-    const hoverBlend = `${hoverColor}1a`;
-    const hoverValue =
-      await blendColors(hoverBlend, hoverBase).then(convertColorToHex);
+    const base = values[CUSTOM_BG];
+    const color = await convertColorToHex(values[CUSTOM_COLOR]);
+    const hoverBlend = `${color}1a`;
+    const hoverValue = await blendColors(hoverBlend, base);
     const selectBase = values[CUSTOM_BG_SELECT];
     const selectColor = await convertColorToHex(values[CUSTOM_COLOR_SELECT]);
     const selectBlend = `${selectColor}1a`;
-    const selectValue =
-      await blendColors(selectBlend, selectBase).then(convertColorToHex);
+    const selectValue = await blendColors(selectBlend, selectBase);
+    const groupBase = {
+      [CUSTOM_HEADING_TEXT_GROUP_1]: '#cc6633',
+      [CUSTOM_HEADING_TEXT_GROUP_2]: '#339966',
+      [CUSTOM_HEADING_TEXT_GROUP_3]: '#cc6699',
+      [CUSTOM_HEADING_TEXT_GROUP_4]: '#6699cc',
+      [CUSTOM_HEADING_TEXT_PINNED]: '#666699'
+    };
+    const items = Object.entries(groupBase);
+    for (const [key, value] of items) {
+      const textBlend = `${value}99`;
+      values[key] = await blendColors(textBlend, color);
+    }
     values[CUSTOM_BG_HOVER] = hoverValue;
     values[CUSTOM_COLOR_HOVER] = values[CUSTOM_COLOR];
     values[CUSTOM_BG_SELECT_HOVER] = selectValue;
     values[CUSTOM_COLOR_SELECT_HOVER] = values[CUSTOM_COLOR_SELECT];
   }
-  // override CUSTOM_BORDER_* color
+  // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
     const tabLine = currentThemeColors.get('tab_line');
     let value;
