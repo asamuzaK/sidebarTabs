@@ -276,17 +276,15 @@ export const getCurrentThemeBaseValues = async () => {
     const selectColor = await convertColorToHex(values[CUSTOM_COLOR_SELECT]);
     const selectBlend = `${selectColor}1a`;
     const selectValue = await blendColors(selectBlend, selectBase);
-    const groupBase = {
-      [CUSTOM_HEADING_TEXT_GROUP_1]: '#cc6633',
-      [CUSTOM_HEADING_TEXT_GROUP_2]: '#339966',
-      [CUSTOM_HEADING_TEXT_GROUP_3]: '#cc6699',
-      [CUSTOM_HEADING_TEXT_GROUP_4]: '#6699cc',
-      [CUSTOM_HEADING_TEXT_PINNED]: '#666699'
-    };
-    const items = Object.entries(groupBase);
-    for (const [key, value] of items) {
-      const textBlend = `${value}99`;
-      values[key] = await blendColors(textBlend, color);
+    const groupColors = [
+      [CUSTOM_HEADING_TEXT_GROUP_1, '#cc663399'],
+      [CUSTOM_HEADING_TEXT_GROUP_2, '#33996699'],
+      [CUSTOM_HEADING_TEXT_GROUP_3, '#cc669999'],
+      [CUSTOM_HEADING_TEXT_GROUP_4, '#6699cc99'],
+      [CUSTOM_HEADING_TEXT_PINNED, '#66669999']
+    ];
+    for (const [key, value] of groupColors) {
+      values[key] = await blendColors(value, color);
     }
     values[CUSTOM_BG_HOVER] = hoverValue;
     values[CUSTOM_COLOR_HOVER] = values[CUSTOM_COLOR];
@@ -425,7 +423,8 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
       }
     }
     if (l) {
-      let i = l - 1; let bool;
+      let i = l - 1;
+      let bool;
       while (i >= 0) {
         if (sheet.cssRules[i].selectorText === sel) {
           sheet.cssRules[i].style.cssText = cssText;
