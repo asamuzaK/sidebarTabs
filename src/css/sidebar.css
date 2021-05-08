@@ -36,15 +36,15 @@
   --foreground-selection-color: #15141a;
   --foreground-selection-hover-color: #15141a;
   --tab-group-pinned: #669;
-  --tab-group-pinned-heading-text: #339;
+  --tab-group-pinned-heading-text: #464566;
   --tab-group-1: #c63;
-  --tab-group-1-heading-text: #930;
+  --tab-group-1-heading-text: #834529;
   --tab-group-2: #396;
-  --tab-group-2-heading-text: #063;
+  --tab-group-2-heading-text: #276448;
   --tab-group-3: #c69;
-  --tab-group-3-heading-text: #936;
+  --tab-group-3-heading-text: #834566;
   --tab-group-4: #69c;
-  --tab-group-4-heading-text: #369;
+  --tab-group-4-heading-text: #466485;
 }
 
 /* structure */
@@ -766,11 +766,11 @@ main {
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #fbfbfe;
   --foreground-selection-hover-color: #f9f9fa;
-  --tab-group-pinned-heading-text: #ccf;
-  --tab-group-1-heading-text: #f96;
-  --tab-group-2-heading-text: #6c9;
-  --tab-group-3-heading-text: #f9c;
-  --tab-group-4-heading-text: #9cf;
+  --tab-group-pinned-heading-text: #a1a1c0;
+  --tab-group-1-heading-text: #dea183;
+  --tab-group-2-heading-text: #82bfa1;
+  --tab-group-3-heading-text: #dea1c0;
+  --tab-group-4-heading-text: #a1bfde;
 }
 
 .dark-theme :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
@@ -778,11 +778,11 @@ main {
 }
 
 @media (prefers-color-scheme: dark) {
-  --tab-group-pinned-heading-text: #ccf;
-  --tab-group-1-heading-text: #f96;
-  --tab-group-2-heading-text: #6c9;
-  --tab-group-3-heading-text: #f9c;
-  --tab-group-4-heading-text: #9cf;
+  --tab-group-pinned-heading-text: #a1a1c0;
+  --tab-group-1-heading-text: #dea183;
+  --tab-group-2-heading-text: #82bfa1;
+  --tab-group-3-heading-text: #dea1c0;
+  --tab-group-4-heading-text: #a1bfde;
 }
 
 @media (prefers-reduced-motion: reduce) {
