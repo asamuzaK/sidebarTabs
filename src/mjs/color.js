@@ -440,6 +440,8 @@ export const numberToHexString = async value => {
 
 /**
  * convert color to hex
+ * NOTE: convertColorToHex('transparent') resolves null
+ *       convertColorToHex('transparent', true) resolves #00000000
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
