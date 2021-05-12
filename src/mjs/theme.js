@@ -151,7 +151,7 @@ export const setCurrentThemeColors = async (key, value) => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   if (value === 'transparent') {
-    currentThemeColors.set(key, 'transparent');
+    currentThemeColors.set(key, value);
   } else {
     const hexValue = await convertColorToHex(value, true);
     hexValue && currentThemeColors.set(key, hexValue);
@@ -299,7 +299,7 @@ export const getCurrentThemeBaseValues = async () => {
       value = values[CUSTOM_BG];
     } else {
       const base = values[CUSTOM_BG];
-      value = await blendColors(tabLine, base).then(convertColorToHex);
+      value = await blendColors(tabLine, base);
     }
     values[CUSTOM_BORDER_ACTIVE] = value;
   }
