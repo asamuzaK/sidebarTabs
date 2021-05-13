@@ -357,8 +357,8 @@ main {
 }
 
 .tab-close-icon {
-  width: var(--icon-small-size);
-  height: var(--icon-small-size);
+  width: var(--icon-medium-size);
+  height: var(--icon-medium-size);
 }
 
 /* pinned tabs */
@@ -381,19 +381,21 @@ main {
 }
 
 .tab-container.pinned .tab-pinned {
+  all: unset;
   display: flex;
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-size);
-  margin: var(--scale-size);
-  padding: 0;
+  margin: 0;
+  border-radius: var(--scale-size);
+  padding: var(--scale-size);
   height: var(--icon-size);
   fill: transparent;
   stroke: var(--foreground-color);
 }
 
 .compact .tab-container.pinned .tab-pinned {
-  margin: 0;
+  border-radius: calc(var(--scale-size) / 2);
   padding: 0;
 }
 
