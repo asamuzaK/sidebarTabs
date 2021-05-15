@@ -4,7 +4,7 @@
 
 /* shared */
 import {
-  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr
+  getType, isObjectNotEmpty, isString, sleep, throwErr
 } from './common.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities,
@@ -317,19 +317,13 @@ export const activateClickedTab = async elm => {
   let func;
   if (Number.isInteger(tabId)) {
     const { closeTabsByDoubleClick } = sidebar;
-    if (closeTabsByDoubleClick) {
-      await sleep(300);
-    }
+    closeTabsByDoubleClick && await sleep(300);
     try {
-      const tabsTab = await getTab(tabId);
-      if (isObjectNotEmpty(tabsTab)) {
-        const { active } = tabsTab;
-        if (!active) {
-          func = activateTab(elm);
-        }
+      const { active } = await getTab(tabId);
+      if (!active) {
+        func = activateTab(elm);
       }
     } catch (e) {
-      logErr(e);
       func = null;
     }
   }
@@ -1363,7 +1357,7 @@ export const prepareNewTabMenuItems = async elm => {
 export const preparePageMenuItems = async opt => {
   const func = [];
   if (isObjectNotEmpty(opt)) {
-    const { allTabsLength, allTabsSelected, isTab } = opt;
+    const { allTabsLength, allTabsSelected, isTabContext } = opt;
     const { lastClosedTab } = sidebar;
     const pageKeys = [TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_CLOSE_UNDO];
     for (const itemKey of pageKeys) {
@@ -1375,7 +1369,8 @@ export const preparePageMenuItems = async opt => {
       switch (itemKey) {
         case TAB_ALL_RELOAD:
           data.enabled = true;
-          data.visible = !isTab || (allTabsLength > 1 && !allTabsSelected);
+          data.visible =
+            !isTabContext || (allTabsLength > 1 && !allTabsSelected);
           break;
         case TAB_ALL_SELECT:
           data.enabled = allTabsLength > 1 && !allTabsSelected;
@@ -1409,7 +1404,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
     const { classList: tabClass, parentNode } = elm;
     const { classList: parentClass } = parentNode;
     const { headingShown, multiTabsSelected, pinned } = opt;
-    const isTab = !!elm.dataset.tabId;
+    const hasTabId = !!elm.dataset.tabId;
     const tabGroups =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
     const tabGroupKeys = [
@@ -1447,19 +1442,19 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           }
           break;
         case TAB_GROUP_CONTAINER:
-          data.enabled = isTab && !(pinned || multiTabsSelected);
+          data.enabled = hasTabId && !(pinned || multiTabsSelected);
           data.title = title;
           data.visible = !incognito;
           break;
         case TAB_GROUP_DOMAIN:
-          data.enabled = isTab && !(pinned || multiTabsSelected);
+          data.enabled = hasTabId && !(pinned || multiTabsSelected);
           data.title = title;
           data.visible = true;
           break;
         case TAB_GROUP_DETACH:
           if (multiTabsSelected) {
             data.visible = false;
-          } else if (isTab && !pinned &&
+          } else if (hasTabId && !pinned &&
                      parentClass.contains(CLASS_TAB_GROUP)) {
             data.enabled = true;
             data.title = title;
@@ -1502,7 +1497,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           data.visible = true;
           break;
         default:
-          data.enabled = isTab && parentClass.contains(CLASS_TAB_GROUP);
+          data.enabled = hasTabId && parentClass.contains(CLASS_TAB_GROUP);
           data.title = title;
           data.visible = true;
       }
@@ -1822,7 +1817,7 @@ export const prepareTabMenuItems = async elm => {
   func.push(preparePageMenuItems({
     allTabsSelected,
     allTabsLength: allTabs.length,
-    isTab: !!tab
+    isTabContext: !!tab
   }));
   return Promise.all(func);
 };

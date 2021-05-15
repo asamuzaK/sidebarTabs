@@ -869,32 +869,11 @@ describe('main', () => {
     });
 
     it('should not call function', async () => {
-      const stubErr = sinon.stub(console, 'error');
       const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
       const j = getTab.callCount;
       update.resolves({});
       getTab.withArgs(1).rejects(new Error('error'));
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      body.appendChild(elm);
-      const res = await func(elm);
-      const { calledOnce: calledErr } = stubErr;
-      stubErr.restore();
-      assert.isTrue(calledErr, 'error called');
-      assert.strictEqual(update.callCount, i, 'not called update');
-      assert.strictEqual(getTab.callCount, j + 1, 'called get');
-      assert.isNull(res, 'result');
-    });
-
-    it('should not call function', async () => {
-      const { get: getTab, update } = browser.tabs;
-      const i = update.callCount;
-      const j = getTab.callCount;
-      update.resolves({});
-      getTab.withArgs(1).resolves({});
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.classList.add(TAB);
@@ -964,7 +943,7 @@ describe('main', () => {
       assert.isNull(res, 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
       const j = getTab.callCount;
