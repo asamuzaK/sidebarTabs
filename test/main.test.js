@@ -912,7 +912,7 @@ describe('main', () => {
       const j = getTab.callCount;
       update.resolves({});
       getTab.withArgs(1).resolves({
-        active: false,
+        active: false
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -931,7 +931,7 @@ describe('main', () => {
       const j = getTab.callCount;
       update.resolves({});
       getTab.withArgs(1).resolves({
-        active: false,
+        active: false
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -951,7 +951,7 @@ describe('main', () => {
       const j = getTab.callCount;
       update.resolves({});
       getTab.withArgs(1).resolves({
-        active: true,
+        active: true
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -970,7 +970,7 @@ describe('main', () => {
       const j = getTab.callCount;
       update.resolves({});
       getTab.withArgs(1).resolves({
-        active: true,
+        active: true
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1145,7 +1145,7 @@ describe('main', () => {
       const i = update.callCount;
       const j = getTab.callCount;
       getTab.withArgs(1).resolves({
-        active: false,
+        active: false
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1172,7 +1172,7 @@ describe('main', () => {
       const i = update.callCount;
       const j = getTab.callCount;
       getTab.withArgs(1).resolves({
-        active: false,
+        active: false
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1200,7 +1200,7 @@ describe('main', () => {
       const i = update.callCount;
       const j = getTab.callCount;
       getTab.withArgs(1).resolves({
-        active: true,
+        active: true
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1228,7 +1228,7 @@ describe('main', () => {
       const i = update.callCount;
       const j = getTab.callCount;
       getTab.withArgs(1).resolves({
-        active: false,
+        active: false
       });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -1497,8 +1497,49 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
-      const { remove } = browser.tabs;
+      const { get: getTab, remove, update } = browser.tabs;
       const i = remove.callCount;
+      const j = getTab.callCount;
+      const k = update.callCount;
+      getTab.withArgs(1).resolves({
+        active: true
+      });
+      update.resolves({});
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(ACTIVE);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        button: 0,
+        target: elm,
+        type: 'dblclick'
+      };
+      mjs.sidebar.closeTabsByDoubleClick = true;
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i + 1, 'called remove');
+      assert.strictEqual(getTab.callCount, j, 'not called get');
+      assert.strictEqual(update.callCount, k, 'not called remove');
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const { get: getTab, remove, update } = browser.tabs;
+      const i = remove.callCount;
+      const j = getTab.callCount;
+      const k = update.callCount;
+      getTab.withArgs(1).resolves({
+        active: false
+      });
+      update.resolves({});
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.classList.add(TAB);
@@ -1516,15 +1557,23 @@ describe('main', () => {
       };
       mjs.sidebar.closeTabsByDoubleClick = true;
       const res = await func(evt);
-      assert.strictEqual(remove.callCount, i + 1, 'called remove');
+      assert.strictEqual(remove.callCount, i, 'not called remove');
+      assert.strictEqual(getTab.callCount, j, 'not called get');
+      assert.strictEqual(update.callCount, k + 1, 'called update');
       assert.isTrue(preventDefault.calledOnce, 'event prevented');
       assert.isTrue(stopPropagation.calledOnce, 'event stopped');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should not call function', async () => {
-      const { remove } = browser.tabs;
+      const { get: getTab, remove, update } = browser.tabs;
       const i = remove.callCount;
+      const j = getTab.callCount;
+      const k = update.callCount;
+      getTab.withArgs(1).resolves({
+        active: true
+      });
+      update.resolves({});
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.classList.add(TAB);
@@ -1543,6 +1592,8 @@ describe('main', () => {
       mjs.sidebar.closeTabsByDoubleClick = false;
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
+      assert.strictEqual(getTab.callCount, j, 'not called get');
+      assert.strictEqual(update.callCount, k, 'not called update');
       assert.isFalse(preventDefault.called, 'event not prevented');
       assert.isFalse(stopPropagation.calledOnce, 'event not stopped');
       assert.deepEqual(res, [], 'result');

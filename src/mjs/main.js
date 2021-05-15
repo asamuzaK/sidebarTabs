@@ -347,14 +347,20 @@ export const handleClickedTab = evt => {
   const { closeTabsByDoubleClick, firstSelectedTab, isMac, windowId } = sidebar;
   const tab = getSidebarTab(target);
   const func = [];
-  if ((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
-      (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
-       closeTabsByDoubleClick)) {
-    if (tab) {
+  if (button === MOUSE_BUTTON_MIDDLE && type === 'mousedown' && tab) {
+    func.push(closeTabs([tab]));
+    evt.stopPropagation();
+    evt.preventDefault();
+  } else if (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
+             closeTabsByDoubleClick && tab) {
+    const { classList } = tab;
+    if (classList.contains(ACTIVE)) {
       func.push(closeTabs([tab]));
-      evt.stopPropagation();
-      evt.preventDefault();
+    } else {
+      func.push(activateTab(tab));
     }
+    evt.stopPropagation();
+    evt.preventDefault();
   } else if (type === 'click') {
     if (shiftKey) {
       if (tab && firstSelectedTab) {
