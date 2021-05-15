@@ -863,12 +863,13 @@ describe('main', () => {
       const i = update.callCount;
       const j = getTab.callCount;
       const res = await func();
-      assert.strictEqual(update.callCount, i, 'not called');
-      assert.strictEqual(getTab.callCount, j, 'not called');
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j, 'not called get');
       assert.isNull(res, 'result');
     });
 
     it('should not call function', async () => {
+      const stubErr = sinon.stub(console, 'error');
       const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
       const j = getTab.callCount;
@@ -880,12 +881,15 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       body.appendChild(elm);
       const res = await func(elm);
-      assert.strictEqual(update.callCount, i, 'not called');
-      assert.strictEqual(getTab.callCount, j + 1, 'called');
+      const { calledOnce: calledErr } = stubErr;
+      stubErr.restore();
+      assert.isTrue(calledErr, 'error called');
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
       assert.isNull(res, 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
       const j = getTab.callCount;
@@ -897,9 +901,87 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       body.appendChild(elm);
       const res = await func(elm);
-      assert.strictEqual(update.callCount, i + 1, 'called');
-      assert.strictEqual(getTab.callCount, j + 1, 'called');
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      update.resolves({});
+      getTab.withArgs(1).resolves({
+        active: false,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(update.callCount, i + 1, 'called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
       assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      update.resolves({});
+      getTab.withArgs(1).resolves({
+        active: false,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.closeTabsByDoubleClick = true;
+      const res = await func(elm);
+      assert.strictEqual(update.callCount, i + 1, 'called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should not call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      update.resolves({});
+      getTab.withArgs(1).resolves({
+        active: true,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      const res = await func(elm);
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      update.resolves({});
+      getTab.withArgs(1).resolves({
+        active: true,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.closeTabsByDoubleClick = true;
+      const res = await func(elm);
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
+      assert.isNull(res, 'result');
     });
   });
 
@@ -1058,11 +1140,13 @@ describe('main', () => {
       assert.deepEqual(res, [], 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
       const j = getTab.callCount;
-      getTab.withArgs(1).resolves({});
+      getTab.withArgs(1).resolves({
+        active: false,
+      });
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       elm.classList.add(TAB);
@@ -1078,9 +1162,93 @@ describe('main', () => {
       };
       update.resolves({});
       const res = await func(evt);
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j, 'not called update');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      getTab.withArgs(1).resolves({
+        active: false,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
+      const evt = {
+        ctrlKey: false,
+        detail: 1,
+        metaKey: false,
+        shiftKey: false,
+        target: elm,
+        type: 'click'
+      };
+      update.resolves({});
+      const res = await func(evt);
       assert.strictEqual(update.callCount, i + 1, 'called update');
-      assert.strictEqual(getTab.callCount, j + 1, 'called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
       assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should not call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      getTab.withArgs(1).resolves({
+        active: true,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
+      const evt = {
+        ctrlKey: false,
+        detail: 1,
+        metaKey: false,
+        shiftKey: false,
+        target: elm,
+        type: 'click'
+      };
+      update.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j + 1, 'called get');
+      assert.deepEqual(res, [null], 'result');
+    });
+
+    it('should not call function', async () => {
+      const { get: getTab, update } = browser.tabs;
+      const i = update.callCount;
+      const j = getTab.callCount;
+      getTab.withArgs(1).resolves({
+        active: false,
+      });
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.windowId = 1;
+      const evt = {
+        ctrlKey: false,
+        detail: 2,
+        metaKey: false,
+        shiftKey: false,
+        target: elm,
+        type: 'click'
+      };
+      update.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(update.callCount, i, 'not called update');
+      assert.strictEqual(getTab.callCount, j, 'not called update');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should call function', async () => {

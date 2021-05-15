@@ -3,11 +3,13 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString, throwErr } from './common.js';
+import {
+  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr
+} from './common.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab, isTab, highlightTab, moveTab,
+  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
   restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { ports } from './port.js';
@@ -314,9 +316,21 @@ export const activateClickedTab = async elm => {
   const tabId = getSidebarTabId(elm);
   let func;
   if (Number.isInteger(tabId)) {
-    const res = await isTab(tabId);
-    if (res) {
-      func = activateTab(elm);
+    const { closeTabsByDoubleClick } = sidebar;
+    if (closeTabsByDoubleClick) {
+      await sleep(300);
+    }
+    try {
+      const tabsTab = await getTab(tabId);
+      if (isObjectNotEmpty(tabsTab)) {
+        const { active } = tabsTab;
+        if (!active) {
+          func = activateTab(elm);
+        }
+      }
+    } catch (e) {
+      logErr(e);
+      func = null;
     }
   }
   return func || null;
@@ -329,7 +343,7 @@ export const activateClickedTab = async elm => {
  * @returns {Promise.<Array|Error>} - promise chain
  */
 export const handleClickedTab = evt => {
-  const { button, ctrlKey, metaKey, shiftKey, target, type } = evt;
+  const { button, ctrlKey, detail, metaKey, shiftKey, target, type } = evt;
   const { closeTabsByDoubleClick, firstSelectedTab, isMac, windowId } = sidebar;
   const tab = getSidebarTab(target);
   const func = [];
@@ -372,7 +386,7 @@ export const handleClickedTab = evt => {
         }
       }
     } else {
-      tab && func.push(activateClickedTab(tab));
+      tab && detail === 1 && func.push(activateClickedTab(tab));
     }
   }
   return Promise.all(func).catch(throwErr);
