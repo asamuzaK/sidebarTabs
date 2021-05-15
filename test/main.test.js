@@ -1313,8 +1313,10 @@ describe('main', () => {
       body.appendChild(elm);
       mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
         preventDefault,
+        stopPropagation,
         button: 1,
         target: elm,
         type: 'mousedown'
@@ -1322,6 +1324,7 @@ describe('main', () => {
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
       assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1335,8 +1338,10 @@ describe('main', () => {
       body.appendChild(elm);
       mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
         preventDefault,
+        stopPropagation,
         button: 0,
         target: elm,
         type: 'dblclick'
@@ -1345,6 +1350,7 @@ describe('main', () => {
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
       assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1358,8 +1364,10 @@ describe('main', () => {
       body.appendChild(elm);
       mjs.sidebar.windowId = 1;
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
         preventDefault,
+        stopPropagation,
         button: 0,
         target: elm,
         type: 'dblclick'
@@ -1368,6 +1376,7 @@ describe('main', () => {
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
       assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.calledOnce, 'event not stopped');
       assert.deepEqual(res, [], 'result');
     });
   });
@@ -1630,7 +1639,7 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const i = spy.callCount;
       await func(elm);
-      assert.strictEqual(spy.callCount, i + 6, 'not called');
+      assert.strictEqual(spy.callCount, i + 8, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -1643,7 +1652,7 @@ describe('main', () => {
       await func(elm);
       const i = spy.callCount;
       await func(elm);
-      assert.strictEqual(spy.callCount, i + 6, 'not called');
+      assert.strictEqual(spy.callCount, i + 8, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -1655,7 +1664,7 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const i = spy.callCount;
       await func(elm);
-      assert.strictEqual(spy.callCount, i + 7, 'called');
+      assert.strictEqual(spy.callCount, i + 9, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -2118,7 +2127,7 @@ describe('main', () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2182,7 +2191,7 @@ describe('main', () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2213,7 +2222,7 @@ describe('main', () => {
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined, undefined
+        undefined, undefined, undefined, undefined
       ], 'result');
     });
 
@@ -2243,7 +2252,7 @@ describe('main', () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2273,7 +2282,7 @@ describe('main', () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2308,7 +2317,7 @@ describe('main', () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined
+        undefined, undefined, undefined
       ], 'result');
     });
 
@@ -2344,7 +2353,7 @@ describe('main', () => {
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2382,7 +2391,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 1, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2424,7 +2433,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2467,7 +2476,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2509,7 +2518,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2557,7 +2566,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 3, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2605,7 +2614,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 3, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2656,7 +2665,7 @@ describe('main', () => {
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2697,7 +2706,7 @@ describe('main', () => {
       assert.isFalse(elm.parentNode.hasAttribute('hidden'), 'hidden attr');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2738,7 +2747,7 @@ describe('main', () => {
       assert.isFalse(elm.parentNode.hasAttribute('hidden'), 'hidden attr');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2795,7 +2804,7 @@ describe('main', () => {
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, undefined]
+        undefined, undefined, [undefined, undefined]
       ], 'result');
     });
 
@@ -2851,7 +2860,7 @@ describe('main', () => {
       assert.isTrue(elm.parentNode !== parent2, 'parent');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -2907,7 +2916,7 @@ describe('main', () => {
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, undefined], undefined
+        undefined, undefined, [undefined, undefined], undefined
       ], 'result');
     });
 
@@ -2966,7 +2975,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined
+        undefined, undefined, undefined
       ], 'result');
     });
 
@@ -3025,7 +3034,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called move');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined
+        undefined, undefined, undefined
       ], 'result');
     });
 
@@ -3085,7 +3094,7 @@ describe('main', () => {
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, undefined], undefined
+        undefined, undefined, [undefined, undefined], undefined
       ], 'result');
     });
 
@@ -3145,7 +3154,7 @@ describe('main', () => {
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, undefined], undefined
+        undefined, undefined, [undefined, undefined], undefined
       ], 'result');
     });
 
@@ -3200,7 +3209,7 @@ describe('main', () => {
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, undefined]
+        undefined, undefined, [undefined, undefined]
       ], 'result');
     });
 
@@ -3259,7 +3268,7 @@ describe('main', () => {
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, [undefined, undefined]
+        undefined, undefined, [undefined, undefined]
       ], 'result');
     });
 
@@ -3310,7 +3319,7 @@ describe('main', () => {
       assert.isFalse(elm.parentNode === parent, 'parent');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
 
@@ -3365,7 +3374,7 @@ describe('main', () => {
       assert.isFalse(elm.parentNode === parent, 'parent');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
   });
@@ -3531,7 +3540,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined
+        undefined, undefined
       ], 'result');
     });
   });

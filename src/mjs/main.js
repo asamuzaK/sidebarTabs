@@ -295,8 +295,8 @@ export const handleCreateNewTab = evt => {
   const newTab = document.getElementById(NEW_TAB_BUTTON);
   let func;
   if (currentTarget === newTab || target === newTab ||
-      (((button === MOUSE_BUTTON_LEFT && type === 'dblclick') ||
-        (button === MOUSE_BUTTON_MIDDLE && type === 'mousedown')) &&
+      (((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
+        (button === MOUSE_BUTTON_LEFT && type === 'dblclick')) &&
        target === main)) {
     const { windowId } = sidebar;
     func = createNewTab(windowId).catch(throwErr);
@@ -338,6 +338,7 @@ export const handleClickedTab = evt => {
        closeTabsByDoubleClick)) {
     if (tab) {
       func.push(closeTabs([tab]));
+      evt.stopPropagation();
       evt.preventDefault();
     }
   } else if (type === 'click') {
@@ -461,6 +462,8 @@ export const addTabEventListeners = async elm => {
     elm.addEventListener('dragend', handleDragEnd);
     elm.addEventListener('drop', handleDrop);
     elm.addEventListener('click', triggerTabWarmup, true);
+    elm.addEventListener('click', handleClickedTab);
+    elm.addEventListener('mousedown', handleClickedTab);
   }
 };
 
@@ -563,10 +566,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         item.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
         item.title = title;
-        func.push(
-          addTabClickListener(item.parentNode),
-          toggleTabDblClickListener(item, !!closeTabsByDoubleClick)
-        );
+        func.push(toggleTabDblClickListener(item, !!closeTabsByDoubleClick));
       } else if (classList.contains(CLASS_TAB_TITLE)) {
         item.textContent = title;
       } else if (classList.contains(CLASS_TAB_AUDIO)) {
