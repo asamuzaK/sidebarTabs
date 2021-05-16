@@ -486,7 +486,7 @@
     "message": "Allow extension to read and modify browser settings"
   },
   "optionsReadBrowserSettingsDetail": {
-    "message": "Add permissions that allow the extension to read and modify certain values from browser settings."
+    "message": "Adds permissions that allow the extension to read and modify certain values from browser settings. Recommended to enable this for better compatibility with the native behavior of the browser."
   },
   "optionsShowMenuOnMouseup": {
     "message": "Show context menu on mouseup"
