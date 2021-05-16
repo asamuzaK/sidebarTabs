@@ -919,10 +919,16 @@ describe('tab-group', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
       };
       const res = await func(evt);
+      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.called, 'event not stopped');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
       assert.isFalse(port.postMessage.called, 'not called msg');
       assert.isNull(res, 'result');
@@ -947,10 +953,16 @@ describe('tab-group', () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
       };
       const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
@@ -988,10 +1000,16 @@ describe('tab-group', () => {
       parent.appendChild(elm2);
       parent.appendChild(elm3);
       body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
       };
       const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, {}, 'result');
@@ -1025,10 +1043,16 @@ describe('tab-group', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
       };
       const res = await func(evt);
+      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.called, 'event not stopped');
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called current window');
       assert.isFalse(port.postMessage.called, 'not called msg');
@@ -1110,10 +1134,16 @@ describe('tab-group', () => {
       body.appendChild(elm);
       body.appendChild(elmB);
       body.appendChild(elmC);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
-        target: elm4
+        preventDefault,
+        stopPropagation,
+        target: elm
       };
       const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');

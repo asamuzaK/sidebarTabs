@@ -489,26 +489,27 @@ describe('tab-content', () => {
   describe('handle clicked audio button', () => {
     const func = mjs.handleClickedTabAudio;
 
-    it('should get undefined', async () => {
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
       const elm = document.createElement('button');
       const body = document.querySelector('body');
       body.appendChild(elm);
-      const res = await func({
-        target: elm
-      });
-      assert.isUndefined(res, 'result');
+      const res = await func(elm);
+      assert.isNull(res, 'result');
     });
 
-    it('should get undefined', async () => {
+    it('should get null', async () => {
       const parent = document.createElement('p');
       const elm = document.createElement('button');
       const body = document.querySelector('body');
       parent.appendChild(elm);
       body.appendChild(parent);
-      const res = await func({
-        target: elm
-      });
-      assert.isUndefined(res, 'result');
+      const res = await func(elm);
+      assert.isNull(res, 'result');
     });
 
     it('should get result', async () => {
@@ -528,9 +529,7 @@ describe('tab-content', () => {
       parent.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
-      const res = await func({
-        target: elm
-      });
+      const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called update');
       assert.isTrue(res, 'result');
@@ -561,9 +560,7 @@ describe('tab-content', () => {
       parent2.classList.add(HIGHLIGHTED);
       body.appendChild(parent);
       body.appendChild(parent2);
-      const res = await func({
-        target: elm
-      });
+      const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.update.callCount, j + 2, 'called update');
       assert.deepEqual(res, [true, true], 'result');
@@ -573,11 +570,119 @@ describe('tab-content', () => {
   describe('handle tab audio onclick', () => {
     const func = mjs.tabAudioOnClick;
 
-    it('should call function', async () => {
+    it('should get null', async () => {
       const res = await func({
         foo: 'bar'
       });
-      assert.isUndefined(res, 'result');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
+      const elm = document.createElement('button');
+      const body = document.querySelector('body');
+      body.appendChild(elm);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.called, 'event not stopped');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
+      const parent = document.createElement('p');
+      const elm = document.createElement('button');
+      const body = document.querySelector('body');
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.called, 'event not stopped');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        mutedInfo: {
+          muted: true
+        }
+      });
+      browser.tabs.update.withArgs(1, {
+        muted: false
+      }).resolves(true);
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.update.callCount;
+      const parent = document.createElement('p');
+      const elm = document.createElement('button');
+      const body = document.querySelector('body');
+      parent.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called update');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        mutedInfo: {
+          muted: true
+        }
+      });
+      browser.tabs.update.withArgs(1, {
+        muted: false
+      }).resolves(true);
+      browser.tabs.update.withArgs(2, {
+        muted: false
+      }).resolves(true);
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.update.callCount;
+      const parent = document.createElement('p');
+      const parent2 = document.createElement('p');
+      const elm = document.createElement('button');
+      const body = document.querySelector('body');
+      parent.dataset.tabId = '1';
+      parent.classList.add(HIGHLIGHTED);
+      parent.appendChild(elm);
+      parent2.dataset.tabId = '2';
+      parent2.classList.add(HIGHLIGHTED);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.tabs.update.callCount, j + 2, 'called update');
+      assert.deepEqual(res, [true, true], 'result');
     });
   });
 
@@ -807,16 +912,23 @@ describe('tab-content', () => {
     });
   });
 
-  describe('handle clicked close button', () => {
-    const func = mjs.handleClickedCloseButton;
+  describe('handle tab close button click', () => {
+    const func = mjs.tabCloseOnClick;
 
     it('should get null', async () => {
       const elm = document.createElement('button');
       const body = document.querySelector('body');
       body.appendChild(elm);
-      const res = await func({
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
-      });
+      };
+      const res = await func(evt);
+      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.called, 'event not stopped');
       assert.isNull(res, 'result');
     });
 
@@ -829,9 +941,16 @@ describe('tab-content', () => {
       parent.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
-      const res = await func({
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
-      });
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -848,29 +967,16 @@ describe('tab-content', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       body.appendChild(parent2);
-      const res = await func({
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
         target: elm
-      });
-      assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
-    });
-  });
-
-  describe('handle tab close button click', () => {
-    const func = mjs.tabCloseOnClick;
-
-    it('should call function', async () => {
-      browser.tabs.remove.withArgs([1]).resolves(undefined);
-      const i = browser.tabs.remove.callCount;
-      const parent = document.createElement('p');
-      const elm = document.createElement('button');
-      const body = document.querySelector('body');
-      parent.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const res = await func({
-        target: elm
-      });
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called');
       assert.isUndefined(res, 'result');
     });

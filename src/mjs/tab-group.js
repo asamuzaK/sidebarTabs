@@ -245,9 +245,13 @@ export const handleTabGroupCollapsedState = evt => {
     func =
       toggleTabGroupCollapsedState(heading, true).then(requestSaveSession)
         .catch(throwErr);
+    evt.stopPropagation();
+    evt.preventDefault();
   } else if (tab) {
     func = toggleTabGroupCollapsedState(tab, true).then(requestSaveSession)
       .catch(throwErr);
+    evt.stopPropagation();
+    evt.preventDefault();
   }
   return func || null;
 };
@@ -265,6 +269,8 @@ export const handleTabGroupsCollapsedState = evt => {
   if (container) {
     func = toggleTabGroupsCollapsedState(container).then(requestSaveSession)
       .catch(throwErr);
+    evt.stopPropagation();
+    evt.preventDefault();
   }
   return func || null;
 };

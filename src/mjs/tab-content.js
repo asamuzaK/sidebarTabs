@@ -156,36 +156,46 @@ export const setTabContent = async (tab, tabsTab) => {
 /**
  * handle clicked audio button
  *
- * @param {!object} evt - event
+ * @param {object} elm - element
  * @returns {?Function} - muteTabs() / updateTab()
  */
-export const handleClickedTabAudio = async evt => {
-  const { target } = evt;
-  const tab = getSidebarTab(target);
-  const tabId = getSidebarTabId(tab);
+export const handleClickedTabAudio = async elm => {
   let func;
-  if (Number.isInteger(tabId)) {
-    const tabsTab = await getTab(tabId);
-    const { mutedInfo: { muted } } = tabsTab;
-    const { classList } = tab;
-    if (classList.contains(HIGHLIGHTED)) {
-      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-      func = muteTabs(Array.from(selectedTabs), !muted);
-    } else {
-      func = updateTab(tabId, { muted: !muted });
+  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+    const tab = getSidebarTab(elm);
+    const tabId = getSidebarTabId(tab);
+    if (Number.isInteger(tabId)) {
+      const tabsTab = await getTab(tabId);
+      const { mutedInfo: { muted } } = tabsTab;
+      const { classList } = tab;
+      if (classList.contains(HIGHLIGHTED)) {
+        const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+        func = muteTabs(Array.from(selectedTabs), !muted);
+      } else {
+        func = updateTab(tabId, { muted: !muted });
+      }
     }
   }
-  return func;
+  return func || null;
 };
 
 /**
  * handle tab audio onclick
  *
  * @param {!object} evt - Event
- * @returns {Function} - handleClickedTabAudio()
+ * @returns {?Function} - promise chain
  */
-export const tabAudioOnClick = evt =>
-  handleClickedTabAudio(evt).catch(throwErr);
+export const tabAudioOnClick = evt => {
+  const { target } = evt;
+  const tab = getSidebarTab(target);
+  let func;
+  if (tab) {
+    func = handleClickedTabAudio(tab).catch(throwErr);
+    evt.stopPropagation();
+    evt.preventDefault();
+  }
+  return func || null;
+};
 
 /**
  * add tab audio click event listener
@@ -272,12 +282,12 @@ export const setCloseTab = async (elm, highlighted) => {
 };
 
 /**
- * handle clicked close button
+ * handle tab close button click
  *
- * @param {object} evt - event
- * @returns {?Function} - closeTabs()
+ * @param {!object} evt - Event
+ * @returns {Function} - promise chain
  */
-export const handleClickedCloseButton = async evt => {
+export const tabCloseOnClick = evt => {
   const { target } = evt;
   const tab = getSidebarTab(target);
   let func;
@@ -285,22 +295,15 @@ export const handleClickedCloseButton = async evt => {
     const { classList } = tab;
     if (classList.contains(HIGHLIGHTED)) {
       const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-      func = closeTabs(Array.from(selectedTabs));
+      func = closeTabs(Array.from(selectedTabs)).catch(throwErr);
     } else {
-      func = closeTabs([tab]);
+      func = closeTabs([tab]).catch(throwErr);
     }
+    evt.stopPropagation();
+    evt.preventDefault();
   }
   return func || null;
 };
-
-/**
- * handle tab close button click
- *
- * @param {!object} evt - Event
- * @returns {Function} - handleClickedCloseButton()
- */
-export const tabCloseOnClick = evt =>
-  handleClickedCloseButton(evt).catch(throwErr);
 
 /**
  * add tab close click listener
