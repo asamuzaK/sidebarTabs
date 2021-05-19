@@ -19,7 +19,8 @@ import {
   CLASS_TAB_GROUP, CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
   CLASS_THEME_LIGHT, CLASS_THEME_DARK, COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
-  CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE,
+  CUSTOM_BG_SELECT_HOVER,
+  CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
@@ -10348,11 +10349,6 @@ describe('main', () => {
     });
 
     it('should not set variable', async () => {
-      const res = await func(CUSTOM_BORDER, { value: '#ff0000' });
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should not set variable', async () => {
       const res = await func(CUSTOM_BORDER_ACTIVE, { value: '#ff0000' });
       assert.deepEqual(res, [], 'result');
     });
@@ -10424,11 +10420,6 @@ describe('main', () => {
 
     it('should set variable', async () => {
       const res = await func(CUSTOM_BG_SELECT_HOVER, { value: '#ff0000' }, true);
-      assert.deepEqual(res, [undefined], 'result');
-    });
-
-    it('should set variable', async () => {
-      const res = await func(CUSTOM_BORDER, { value: '#ff0000' }, true);
       assert.deepEqual(res, [undefined], 'result');
     });
 

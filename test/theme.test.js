@@ -11,7 +11,7 @@ import {
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
   CSS_ID, CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_HOVER,
   CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
-  CUSTOM_BORDER, CUSTOM_BORDER_ACTIVE, CUSTOM_BORDER_DISCARDED,
+  CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_DISCARDED,
   CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
@@ -278,19 +278,10 @@ describe('theme', () => {
       }
     });
 
-    it('should get values', async () => {
+    it('should not set values', async () => {
       mjs.currentThemeColors.set('tab_background_separator', '#ff0000');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
-      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
-      for (const [key, value] of items) {
-        if (key === CUSTOM_BORDER || key === CUSTOM_BORDER_DISCARDED) {
-          assert.strictEqual(value, '#ff0000', `${key}`);
-        } else {
-          assert.strictEqual(value, obj[key], `${key}`);
-        }
-      }
+      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
     it('should get values', async () => {

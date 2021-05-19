@@ -21,7 +21,6 @@
   --background-hover-shadow: #15141a1a;
   --background-selection-color: #fff;
   --background-selection-hover-color: #dadade;
-  --border-color: transparent;
   --border-active-color: #8b8b98;
   --border-discarded-color: transparent;
   --border-field-color: transparent;
@@ -138,7 +137,6 @@ main {
 }
 
 .tab.discarded > .tab-items {
-  border-color: var(--border-discarded-color);
   background: var(--background-discarded-color);
   color: var(--foreground-discarded-color);
   fill: var(--foreground-discarded-color);
@@ -755,9 +753,7 @@ main {
   --background-hover-shadow: #fbfbfe1a;
   --background-selection-color: #42414d;
   --background-selection-hover-color: #4c4c50;
-  --border-color: transparent;
   --border-active-color: transparent;
-  --border-discarded-color: transparent;
   --border-field-color: transparent;
   --border-field-active-color: #aaf2ff;
   --foreground-color: #f9f9fa;
