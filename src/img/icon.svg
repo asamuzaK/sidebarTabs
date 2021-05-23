@@ -17,40 +17,25 @@
       display: none;
     }
   </style>
-  <symbol id="sidetab">
-    <path d="M 26 10 C 17.274378 10 10 17.274378 10 26
-             L 10 102 C 10 110.72562 17.274378 118 26 118
-             L 102 118 C 110.72562 118 118 110.72562 118 102
-             L 118 26 C 118 17.274378 110.72562 10 102 10 L 26 10 z
-             M 26 26 L 46 26 L 46 39 L 26 39 L 26 26 z
-             M 54 26 L 102 26 L 102 102 L 54 102 L 54 26 z
-             M 26 47 L 46 47 L 46 60 L 26 60 L 26 47 z
-             M 26 68 L 46 68 L 46 81 L 26 81 L 26 68 z
-             M 26 89 L 46 89 L 46 102 L 26 102 L 26 89 z"/>
-  </symbol>
-  <symbol id="activetab">
-    <path d="M 25,46 H 47 V 62 H 25 Z"/>
+  <symbol id="outline">
+    <path d="m26 14c-6.5788 0-12 5.4212-12 12v76c0 6.5788 5.4212 12 12 12h76c6.5788 0 12-5.4212 12-12v-76c0-6.5788-5.4212-12-12-12h-76zm0 8h20v1.0156 13.984h-24v-11c0-2.2852 1.7148-4 4-4zm28 0h48c2.2852 0 4 1.7148 4 4v76c0 2.2852-1.7148 4-4 4h-48v-84zm-32 23h24v15h-24v-15zm0 23h24v15h-24v-15zm0 23h24v15h-20c-2.2852 0-4-1.7148-4-4v-11z"/>
   </symbol>
   <symbol id="background">
-    <path d="M 26,26 H 102 V 102 H 26 Z"/>
+    <path d="m22 22h84v84h-84z"/>
+  </symbol>
+  <symbol id="activetab">
+    <path d="m23 45h24v16h-24z"/>
+  </symbol>
+  <symbol id="sidetab">
+    <path d="m26 12c-7.6522 0-14 6.3478-14 14v76c0 7.6522 6.3478 14 14 14h76c7.6522 0 14-6.3478 14-14v-76c0-7.6522-6.3478-14-14-14zm0 12h20v14h-22v-12c0-1.2118 0.78822-2 2-2zm28 0h48c1.2118 0 2 0.78822 2 2v76c0 1.2118-0.78822 2-2 2h-48zm-30 22h22v14h-22zm0 22h22v14h-22zm0 22h22v14h-20c-1.2118 0-2-0.78822-2-2z"/>
   </symbol>
   <g id="context" fill="context-fill" fill-opacity="context-fill-opacity">
-    <use href="#sidetab"/>
+    <use href="#outline"/>
   </g>
   <g id="current"
      fill="context-fill currentColor"
-     fill-opacity="context-fill-opacity 1.0">
-    <use href="#sidetab"/>
-  </g>
-  <g id="dark"
-     fill="context-fill #0C0C0D"
-     fill-opacity="context-fill-opacity 0.8">
-    <use href="#sidetab"/>
-  </g>
-  <g id="light"
-     fill="context-fill #F9F9FA"
-     fill-opacity="context-fill-opacity 0.7">
-    <use href="#sidetab"/>
+     fill-opacity="context-fill-opacity">
+    <use href="#outline"/>
   </g>
   <g id="color">
     <use href="#background" fill="#FFF"/>
