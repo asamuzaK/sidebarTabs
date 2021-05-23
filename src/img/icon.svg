@@ -18,7 +18,7 @@
     }
   </style>
   <symbol id="outline">
-    <path d="m26 14c-6.5788 0-12 5.4212-12 12v76c0 6.5788 5.4212 12 12 12h76c6.5788 0 12-5.4212 12-12v-76c0-6.5788-5.4212-12-12-12h-76zm0 8h20v1.0156 13.984h-24v-11c0-2.2852 1.7148-4 4-4zm28 0h48c2.2852 0 4 1.7148 4 4v76c0 2.2852-1.7148 4-4 4h-48v-84zm-32 23h24v15h-24v-15zm0 23h24v15h-24v-15zm0 23h24v15h-20c-2.2852 0-4-1.7148-4-4v-11z"/>
+    <path d="m26 10c-8.7256 0-16 7.2744-16 16v76c0 8.7256 7.2744 16 16 16h76c8.7256 0 16-7.2744 16-16v-76c0-8.7256-7.2744-16-16-16zm-6 14.8 4.8-4.8h21.2v14.5h-26zm36-4.8h47.2l4.8 4.8v78.4l-4.8 4.8h-47.2zm-36 24.5h26v14.5h-26zm0 24.5h26v14.5h-26zm0 24.5h26v14.5h-21.2l-4.8-4.8z"/>
   </symbol>
   <symbol id="background">
     <path d="m22 22h84v84h-84z"/>
@@ -29,17 +29,22 @@
   <symbol id="sidetab">
     <path d="m26 12c-7.6522 0-14 6.3478-14 14v76c0 7.6522 6.3478 14 14 14h76c7.6522 0 14-6.3478 14-14v-76c0-7.6522-6.3478-14-14-14zm0 12h20v14h-22v-12c0-1.2118 0.78822-2 2-2zm28 0h48c1.2118 0 2 0.78822 2 2v76c0 1.2118-0.78822 2-2 2h-48zm-30 22h22v14h-22zm0 22h22v14h-22zm0 22h22v14h-20c-1.2118 0-2-0.78822-2-2z"/>
   </symbol>
-  <g id="context" fill="context-fill" fill-opacity="context-fill-opacity">
+  <g id="context" fill="context-fill rgb(91,91,102)"
+     fill-opacity="context-fill-opacity 1.0">
     <use href="#outline"/>
   </g>
-  <g id="current"
-     fill="context-fill currentColor"
-     fill-opacity="context-fill-opacity">
+  <g id="current" fill="context-fill currentColor">
+    <use href="#outline"/>
+  </g>
+  <g id="dark" fill="rgb(91,91,102)">
+    <use href="#outline"/>
+  </g>
+  <g id="light" fill="rgb(251,251,254)">
     <use href="#outline"/>
   </g>
   <g id="color">
-    <use href="#background" fill="#FFF"/>
-    <use href="#activetab" fill="#E66000"/>
+    <use href="#background" fill="#fff"/>
+    <use href="#activetab" fill="#e66000"/>
     <use href="#sidetab" fill="#002147"/>
   </g>
 </svg>
