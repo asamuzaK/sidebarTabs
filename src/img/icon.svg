@@ -29,17 +29,16 @@
   <symbol id="sidetab">
     <path d="m26 10c-8.7256 0-16 7.2744-16 16v76c0 8.7256 7.2744 16 16 16h76c8.7256 0 16-7.2744 16-16v-76c0-8.7256-7.2744-16-16-16h-76zm0 16h20v13h-20v-13zm28 0h48v76h-48v-76zm-28 21h20v13h-20v-13zm0 21h20v13h-20v-13zm0 21h20v13h-20v-13z"/>
   </symbol>
-  <g id="context" fill="context-fill rgb(91,91,102)"
-     fill-opacity="context-fill-opacity 1.0">
+  <g id="context" fill="context-fill rgb(91,91,102)">
     <use href="#outline"/>
   </g>
   <g id="current" fill="context-fill currentColor">
     <use href="#outline"/>
   </g>
-  <g id="dark" fill="rgb(91,91,102)">
+  <g id="dark" fill="context-fill rgb(91,91,102)">
     <use href="#outline"/>
   </g>
-  <g id="light" fill="rgb(251,251,254)">
+  <g id="light" fill="context-fill rgb(251,251,254)">
     <use href="#outline"/>
   </g>
   <g id="color">
