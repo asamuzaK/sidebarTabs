@@ -4,7 +4,7 @@
   },
   "browser_action": {
     "browser_style": true,
-    "default_icon": "img/icon.svg#context",
+    "default_icon": "img/icon.svg#dark",
     "default_title": "__MSG_extensionName__",
     "theme_icons": [
       {
