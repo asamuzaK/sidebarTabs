@@ -302,41 +302,38 @@ export const getCurrentThemeBaseValues = async () => {
  * @returns {object} - values
  */
 export const getBaseValues = async () => {
-  const appliedTheme = await getCurrentTheme();
   let values;
-  if (isObjectNotEmpty(appliedTheme)) {
-    const { colors } = appliedTheme;
-    if (isObjectNotEmpty(colors)) {
-      const colorsItems = Object.entries(colors);
-      const func = [];
-      for (const [key, value] of colorsItems) {
-        value && func.push(setCurrentThemeColors(key, value));
-      }
-      await Promise.all(func);
-      values = await getCurrentThemeBaseValues();
-    }
-  } else {
-    const items = await getEnabledTheme();
-    if (Array.isArray(items)) {
-      for (const item of items) {
-        const { id } = item;
-        switch (id) {
-          case THEME_DARK_ID:
-            values = themeMap[THEME_DARK];
-            break;
-          case THEME_LIGHT_ID:
-            values = themeMap[THEME_LIGHT];
-            break;
-          default:
-        }
-        if (values) {
-          break;
-        }
-      }
+  const items = await getEnabledTheme();
+  if (Array.isArray(items) && items.length === 1) {
+    const [{ id }] = items;
+    switch (id) {
+      case THEME_DARK_ID:
+        values = themeMap[THEME_DARK];
+        break;
+      case THEME_LIGHT_ID:
+        values = themeMap[THEME_LIGHT];
+        break;
+      default:
     }
   }
   if (!values) {
-    values = themeMap[THEME_LIGHT];
+    const appliedTheme = await getCurrentTheme();
+    if (isObjectNotEmpty(appliedTheme)) {
+      const { colors } = appliedTheme;
+      if (isObjectNotEmpty(colors)) {
+        const colorsItems = Object.entries(colors);
+        const func = [];
+        for (const [key, value] of colorsItems) {
+          value && func.push(setCurrentThemeColors(key, value));
+        }
+        await Promise.all(func);
+        values = await getCurrentThemeBaseValues();
+      } else {
+        values = themeMap[THEME_LIGHT];
+      }
+    } else {
+      values = themeMap[THEME_LIGHT];
+    }
   }
   return values;
 };
@@ -501,17 +498,22 @@ export const getTheme = async () => {
     }
   } else {
     const items = await getEnabledTheme();
-    if (Array.isArray(items)) {
-      for (const item of items) {
-        const { id } = item;
-        switch (id) {
-          case THEME_DARK_ID:
+    if (Array.isArray(items) && items.length === 1) {
+      const [{ id }] = items;
+      switch (id) {
+        case THEME_DARK_ID:
+          themes.push(THEME_DARK);
+          break;
+        case THEME_LIGHT_ID:
+          themes.push(THEME_LIGHT);
+          break;
+        default: {
+          const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+          if (dark) {
             themes.push(THEME_DARK);
-            break;
-          case THEME_LIGHT_ID:
+          } else {
             themes.push(THEME_LIGHT);
-            break;
-          default:
+          }
         }
       }
     }

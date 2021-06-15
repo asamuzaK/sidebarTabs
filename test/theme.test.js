@@ -1000,6 +1000,42 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
       assert.deepEqual(res, [THEME_LIGHT], 'result');
     });
+
+    it('should get dark theme', async () => {
+      window.matchMedia().matches = true;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.get.callCount;
+      const j = browser.management.getAll.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
+      assert.deepEqual(res, [THEME_DARK], 'result');
+    });
+
+    it('should get light theme', async () => {
+      window.matchMedia().matches = false;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.get.callCount;
+      const j = browser.management.getAll.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
+      assert.deepEqual(res, [THEME_LIGHT], 'result');
+    });
   });
 
   describe('set theme', () => {
