@@ -18,7 +18,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 
@@ -400,6 +400,33 @@ describe('theme', () => {
       ]);
       const res = await func();
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
     });
 
     it('should get fallback values', async () => {
@@ -938,6 +965,17 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.deepEqual(res, [THEME_LIGHT], 'result');
+    });
+
+    it('should get dark theme', async () => {
+      window.matchMedia().matches = true;
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: 'foo'
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_DARK], 'result');
     });
 
     it('should get stored theme', async () => {

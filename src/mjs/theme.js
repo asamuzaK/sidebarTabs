@@ -33,7 +33,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from './constant.js';
 
@@ -303,6 +303,7 @@ export const getCurrentThemeBaseValues = async () => {
  */
 export const getBaseValues = async () => {
   let values;
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   const items = await getEnabledTheme();
   if (Array.isArray(items) && items.length === 1) {
     const [{ id }] = items;
@@ -312,6 +313,13 @@ export const getBaseValues = async () => {
         break;
       case THEME_LIGHT_ID:
         values = themeMap[THEME_LIGHT];
+        break;
+      case THEME_SYSTEM_ID:
+        if (dark) {
+          values = themeMap[THEME_DARK];
+        } else {
+          values = themeMap[THEME_LIGHT];
+        }
         break;
       default:
     }
@@ -487,8 +495,9 @@ export const initCustomTheme = async (rem = false) => {
  * @returns {Array} - theme class list
  */
 export const getTheme = async () => {
-  const data = await getStorage(THEME);
   const themes = [];
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
     const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
@@ -507,19 +516,21 @@ export const getTheme = async () => {
         case THEME_LIGHT_ID:
           themes.push(THEME_LIGHT);
           break;
-        default: {
-          const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+        default:
           if (dark) {
             themes.push(THEME_DARK);
           } else {
             themes.push(THEME_LIGHT);
           }
-        }
       }
     }
   }
   if (!themes.length) {
-    themes.push(THEME_LIGHT);
+    if (dark) {
+      themes.push(THEME_DARK);
+    } else {
+      themes.push(THEME_LIGHT);
+    }
   }
   return themes;
 };

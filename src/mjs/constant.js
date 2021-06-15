@@ -176,6 +176,7 @@ export const THEME_DARK = 'darkTheme';
 export const THEME_DARK_ID = 'firefox-compact-dark@mozilla.org';
 export const THEME_LIGHT = 'lightTheme';
 export const THEME_LIGHT_ID = 'firefox-compact-light@mozilla.org';
+export const THEME_SYSTEM_ID = 'default-theme@mozilla.org';
 export const THEME_RADIO = 'themeRadio';
 export const THEME_SCROLLBAR_NARROW = 'narrowScrollbar';
 export const THEME_TAB_COMPACT = 'compactTab';
