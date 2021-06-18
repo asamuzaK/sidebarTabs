@@ -17,9 +17,9 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
-  THEME, THEME_AUTO, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM,
-  THEME_SYSTEM_ID,
+  THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
+  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID,
+  THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 
@@ -381,6 +381,33 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({});
       browser.management.getAll.resolves([
         {
+          id: THEME_ALPEN_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_ALPEN], 'result');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_ALPEN_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_ALPEN_DARK], 'result');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
           id: THEME_DARK_ID,
           enabled: true,
           type: 'theme'
@@ -473,6 +500,102 @@ describe('theme', () => {
       const res = await func();
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#0000ff', 'color');
+    });
+
+    it('should equal alpenglow theme values', async () => {
+      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/alpenglow/manifest.json
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'hsla(240, 20%, 98%, 1)',
+          toolbar: 'hsla(0, 0%, 100%, .76)',
+          button_background_active: 'hsla(240, 26%, 11%, .16)',
+          button_background_hover: 'hsla(240, 26%, 11%, .08)',
+          icons: 'hsla(258, 66%, 48%, 1)',
+          icons_attention: 'hsla(180, 100%, 32%, 1)',
+          toolbar_text: 'hsla(261, 53%, 15%, 1)',
+          toolbar_vertical_separator: 'hsla(261, 53%, 15%, .2)',
+          toolbar_field: 'hsla(0, 0%, 100%, .8)',
+          toolbar_field_focus: 'hsla(261, 53%, 15%, .96)',
+          toolbar_field_text: 'hsla(261, 53%, 15%, 1)',
+          toolbar_field_text_focus: 'hsla(255, 100%, 94%, 1)',
+          toolbar_field_border: 'transparent',
+          toolbar_field_border_focus: 'hsla(265, 100%, 72%, 1)',
+          toolbar_field_highlight: 'hsla(265, 100%, 72%, .32)',
+          toolbar_top_separator: 'transparent',
+          toolbar_bottom_separator: 'hsla(261, 53%, 15%, .32)',
+          bookmark_text: 'hsla(261, 53%, 15%, 1)',
+          tab_text: 'hsla(261, 53%, 15%, 1)',
+          tab_background_text: 'hsla(261, 53%, 15%, 1)',
+          tab_background_separator: 'hsla(261, 53%, 15%, 1)',
+          tab_line: 'hsla(265, 100%, 72%, 1)',
+          tab_loading: 'hsla(265, 100%, 72%, 1)',
+          ntp_background: '#F9F9FB',
+          ntp_text: 'hsla(261, 53%, 15%, 1)',
+          popup: 'hsla(254, 46%, 21%, 1)',
+          popup_text: 'hsla(255, 100%, 94%, 1)',
+          popup_border: 'hsla(255, 100%, 94%, .32)',
+          popup_highlight: 'hsla(255, 100%, 94%, .12)',
+          popup_highlight_text: 'hsla(0, 0%, 100%, 1)',
+          sidebar: 'hsla(240, 15%, 95%, 1)',
+          sidebar_text: 'hsla(261, 53%, 15%, 1)',
+          sidebar_border: 'hsla(261, 53%, 15%, .24)',
+          sidebar_highlight: 'hsla(265, 100%, 72%, 1)',
+          sidebar_highlight_text: 'hsla(0, 0%, 100%, 1)',
+          focus_outline: 'hsla(258, 65%, 48%, 1)'
+        }
+      });
+      browser.management.getAll.resolves(null);
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_ALPEN], 'result');
+    });
+
+    it('should equal dark alpenglow theme values', async () => {
+      window.matchMedia().matches = true;
+      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/alpenglow/manifest.json
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'hsla(240, 20%, 98%, 1)',
+          toolbar: 'hsla(254, 46%, 21%, .96)',
+          button_background_active: 'hsla(255, 100%, 94%, .24)',
+          button_background_hover: 'hsla(255, 100%, 94%, .12)',
+          icons: 'hsla(271, 100%, 77%, 1)',
+          icons_attention: 'hsla(157, 100%, 66%, 1)',
+          toolbar_text: 'hsla(255, 100%, 94%, 1)',
+          toolbar_vertical_separator: 'hsla(271, 100%, 77%, .4)',
+          toolbar_field: 'hsla(250, 43%, 25%, 1)',
+          toolbar_field_focus: 'hsla(250, 43%, 25%, .98)',
+          toolbar_field_text: 'hsla(255, 100%, 94%, 1)',
+          toolbar_field_text_focus: 'hsla(255, 100%, 94%, 1)',
+          toolbar_field_border: 'transparent',
+          toolbar_field_border_focus: 'hsla(265, 100%, 72%, 1)',
+          toolbar_field_highlight: 'hsla(265, 100%, 72%, .32)',
+          toolbar_top_separator: 'transparent',
+          toolbar_bottom_separator: 'hsla(245, 38%, 33%, .96)',
+          bookmark_text: 'hsla(255, 100%, 94%, 1)',
+          tab_selected: 'rgb(60, 31, 123)',
+          tab_text: 'hsla(255, 100%, 94%, 1)',
+          tab_background_text: 'hsla(255, 100%, 94%, 1)',
+          tab_background_separator: 'hsla(255, 100%, 94%, 1)',
+          tab_line: 'hsla(265, 100%, 72%, 1)',
+          tab_loading: 'hsla(265, 100%, 72%, 1)',
+          ntp_background: '#2A2A2E',
+          ntp_text: 'hsla(255, 100%, 94%, 1)',
+          popup: 'hsla(250, 43%, 25%, 1)',
+          popup_text: 'hsla(255, 100%, 94%, 1)',
+          popup_border: 'hsla(255, 100%, 94%, .32)',
+          popup_highlight: 'hsla(255, 100%, 94%, .12)',
+          popup_highlight_text: 'hsla(0, 0%, 100%, 1)',
+          sidebar: 'hsla(250, 43%, 25%, 1)',
+          sidebar_text: 'hsla(255, 100%, 94%, 1)',
+          sidebar_border: 'hsla(255, 100%, 94%, .24)',
+          sidebar_highlight: 'hsla(259, 76%, 58%, 1)',
+          sidebar_highlight_text: 'hsla(0, 0%, 100%, 1)',
+          focus_outline: 'hsla(265, 100%, 72%, 1)'
+        }
+      });
+      browser.management.getAll.resolves(null);
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_ALPEN_DARK], 'result');
     });
 
     it('should equal light theme values', async () => {
@@ -1053,6 +1176,23 @@ describe('theme', () => {
       browser.management.getAll.resolves([
         {
           id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.get.callCount;
+      const j = browser.management.getAll.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
+    });
+
+    it('should get alpenglow theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: THEME_ALPEN_ID,
           type: 'theme',
           enabled: true
         }

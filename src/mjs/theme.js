@@ -32,7 +32,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
-  THEME, /* THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, */ THEME_AUTO,
+  THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID,
   THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
@@ -66,6 +66,60 @@ export const themeMap = {
     [CUSTOM_HEADING_TEXT_GROUP_3]: CSS_VAR_HEADING_TEXT_GROUP_3,
     [CUSTOM_HEADING_TEXT_GROUP_4]: CSS_VAR_HEADING_TEXT_GROUP_4,
     [CUSTOM_HEADING_TEXT_PINNED]: CSS_VAR_HEADING_TEXT_PINNED
+  },
+  [THEME_ALPEN]: {
+    [CUSTOM_BG]: '#f0f0f4',
+    [CUSTOM_BG_ACTIVE]: '#ffffff',
+    [CUSTOM_BG_DISCARDED]: '#f0f0f4',
+    [CUSTOM_BG_FIELD]: '#ffffffcc',
+    [CUSTOM_BG_FIELD_ACTIVE]: '#20123bf5',
+    [CUSTOM_BG_HOVER]: '#dbd9e1',
+    [CUSTOM_BG_HOVER_SHADOW]: '#20123b1a',
+    [CUSTOM_BG_SELECT]: '#ac70ff',
+    [CUSTOM_BG_SELECT_HOVER]: '#b47fff',
+    [CUSTOM_BORDER_ACTIVE]: '#ac70ff',
+    [CUSTOM_BORDER_FIELD]: '#f0f0f4', // NOTE: 'transparent',
+    [CUSTOM_BORDER_FIELD_ACTIVE]: '#ac70ff',
+    [CUSTOM_COLOR]: '#20123b',
+    [CUSTOM_COLOR_ACTIVE]: '#20123b',
+    [CUSTOM_COLOR_DISCARDED]: '#20123b',
+    [CUSTOM_COLOR_FIELD]: '#20123b',
+    [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_HOVER]: '#20123b',
+    [CUSTOM_COLOR_SELECT]: '#ffffff',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#ffffff',
+    [CUSTOM_HEADING_TEXT_GROUP_1]: '#874436',
+    [CUSTOM_HEADING_TEXT_GROUP_2]: '#2b6355',
+    [CUSTOM_HEADING_TEXT_GROUP_3]: '#874473',
+    [CUSTOM_HEADING_TEXT_GROUP_4]: '#4a6392',
+    [CUSTOM_HEADING_TEXT_PINNED]: '#4a4473'
+  },
+  [THEME_ALPEN_DARK]: {
+    [CUSTOM_BG]: '#2d245b',
+    [CUSTOM_BG_ACTIVE]: '#3c1f7b',
+    [CUSTOM_BG_DISCARDED]: '#2d245b',
+    [CUSTOM_BG_FIELD]: '#2d245b',
+    [CUSTOM_BG_FIELD_ACTIVE]: '#2d245bfa',
+    [CUSTOM_BG_HOVER]: '#40376c',
+    [CUSTOM_BG_HOVER_SHADOW]: '#e8e0ff1a',
+    [CUSTOM_BG_SELECT]: '#7643e5',
+    [CUSTOM_BG_SELECT_HOVER]: '#8456e8',
+    [CUSTOM_BORDER_ACTIVE]: '#ac70ff',
+    [CUSTOM_BORDER_FIELD]: '#2d245b', // NOTE: 'transparent',
+    [CUSTOM_BORDER_FIELD_ACTIVE]: '#ac70ff',
+    [CUSTOM_COLOR]: '#e8e0ff',
+    [CUSTOM_COLOR_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_DISCARDED]: '#e8e0ff',
+    [CUSTOM_COLOR_FIELD]: '#e8e0ff',
+    [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_HOVER]: '#e8e0ff',
+    [CUSTOM_COLOR_SELECT]: '#ffffff',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#ffffff',
+    [CUSTOM_HEADING_TEXT_GROUP_1]: '#d79785',
+    [CUSTOM_HEADING_TEXT_GROUP_2]: '#7bb5a3',
+    [CUSTOM_HEADING_TEXT_GROUP_3]: '#d797c2',
+    [CUSTOM_HEADING_TEXT_GROUP_4]: '#9ab5e0',
+    [CUSTOM_HEADING_TEXT_PINNED]: '#9a97c2'
   },
   [THEME_LIGHT]: {
     [CUSTOM_BG]: '#f0f0f4',
@@ -309,6 +363,13 @@ export const getBaseValues = async () => {
   if (Array.isArray(items) && items.length === 1) {
     const [{ id }] = items;
     switch (id) {
+      case THEME_ALPEN_ID:
+        if (dark) {
+          values = themeMap[THEME_ALPEN_DARK];
+        } else {
+          values = themeMap[THEME_ALPEN];
+        }
+        break;
       case THEME_DARK_ID:
         values = themeMap[THEME_DARK];
         break;
@@ -497,7 +558,6 @@ export const initCustomTheme = async (rem = false) => {
  */
 export const getTheme = async () => {
   const themes = new Map();
-  // const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
     const { theme: storedTheme } = data;
@@ -522,6 +582,7 @@ export const getTheme = async () => {
         case THEME_SYSTEM_ID:
           themes.set(THEME_SYSTEM, false);
           break;
+        case THEME_ALPEN_ID:
         default:
           themes.set(THEME_AUTO, false);
       }
