@@ -8,7 +8,7 @@ import { browser, createJsdom } from './mocha/setup.js';
 import * as mjs from '../src/mjs/theme.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   CSS_ID, CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_HOVER,
   CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE,
@@ -18,7 +18,8 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM_ID,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM,
+  THEME_SYSTEM_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 
@@ -957,17 +958,17 @@ describe('theme', () => {
   describe('get theme', () => {
     const func = mjs.getTheme;
 
-    it('should get light theme', async () => {
+    it('should get system theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: 'foo'
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_LIGHT], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
     });
 
-    it('should get dark theme', async () => {
+    it('should get system theme', async () => {
       window.matchMedia().matches = true;
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: 'foo'
@@ -975,7 +976,7 @@ describe('theme', () => {
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_DARK], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
     });
 
     it('should get stored theme', async () => {
@@ -988,7 +989,7 @@ describe('theme', () => {
       assert.deepEqual(res, ['foo'], 'result');
     });
 
-    it('should get light theme', async () => {
+    it('should get system theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
         {
@@ -1002,7 +1003,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_LIGHT], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
     });
 
     it('should get dark theme', async () => {
@@ -1039,7 +1040,43 @@ describe('theme', () => {
       assert.deepEqual(res, [THEME_LIGHT], 'result');
     });
 
-    it('should get dark theme', async () => {
+    it('should get system theme', async () => {
+      window.matchMedia().matches = true;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.get.callCount;
+      const j = browser.management.getAll.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+    });
+
+    it('should get system theme', async () => {
+      window.matchMedia().matches = false;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.get.callCount;
+      const j = browser.management.getAll.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+    });
+
+    it('should get system theme', async () => {
       window.matchMedia().matches = true;
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
@@ -1054,10 +1091,10 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_DARK], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
     });
 
-    it('should get light theme', async () => {
+    it('should get system theme', async () => {
       window.matchMedia().matches = false;
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
@@ -1072,7 +1109,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_LIGHT], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM], 'result');
     });
   });
 
@@ -1093,7 +1130,7 @@ describe('theme', () => {
       });
     });
 
-    it('should set light theme', async () => {
+    it('should set system light theme', async () => {
       const body = document.querySelector('body');
       const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
@@ -1103,6 +1140,48 @@ describe('theme', () => {
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system dark theme', async () => {
+      window.matchMedia().matches = true;
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func(['foo']);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system light theme', async () => {
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_SYSTEM]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system dark theme', async () => {
+      window.matchMedia().matches = true;
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_SYSTEM]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
 
     it('should set light theme', async () => {
@@ -1115,6 +1194,21 @@ describe('theme', () => {
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set light theme', async () => {
+      window.matchMedia().matches = true;
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_LIGHT]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
 
     it('should set dark theme', async () => {
@@ -1127,6 +1221,21 @@ describe('theme', () => {
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set dark theme', async () => {
+      window.matchMedia().matches = false;
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.remove(CLASS_THEME_DARK);
+      body.classList.add(CLASS_THEME_LIGHT);
+      await func([THEME_DARK]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
 
     it('should set custom theme', async () => {
@@ -1139,6 +1248,21 @@ describe('theme', () => {
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set custom theme', async () => {
+      window.matchMedia().matches = true;
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.remove(CLASS_THEME_DARK);
+      body.classList.add(CLASS_THEME_LIGHT);
+      await func([THEME_CUSTOM]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
   });
 

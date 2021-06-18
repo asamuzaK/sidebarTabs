@@ -11,7 +11,7 @@ import {
 import { blendColors, convertColorToHex } from './color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
   CSS_VAR_BG_FIELD_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
@@ -33,7 +33,8 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM_ID,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
 } from './constant.js';
 
@@ -496,7 +497,7 @@ export const initCustomTheme = async (rem = false) => {
  */
 export const getTheme = async () => {
   const themes = [];
-  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  // const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
     const { theme: storedTheme } = data;
@@ -517,20 +518,12 @@ export const getTheme = async () => {
           themes.push(THEME_LIGHT);
           break;
         default:
-          if (dark) {
-            themes.push(THEME_DARK);
-          } else {
-            themes.push(THEME_LIGHT);
-          }
+          themes.push(THEME_SYSTEM);
       }
     }
   }
   if (!themes.length) {
-    if (dark) {
-      themes.push(THEME_DARK);
-    } else {
-      themes.push(THEME_LIGHT);
-    }
+    themes.push(THEME_SYSTEM);
   }
   return themes;
 };
@@ -545,6 +538,7 @@ export const setTheme = async themes => {
   if (!Array.isArray(themes)) {
     throw new TypeError(`Expected Array but got ${getType(themes)}.`);
   }
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   const elm = document.querySelector('body');
   const { classList } = elm;
   for (const item of themes) {
@@ -552,19 +546,36 @@ export const setTheme = async themes => {
       case THEME_CUSTOM: {
         classList.remove(CLASS_THEME_DARK);
         classList.remove(CLASS_THEME_LIGHT);
+        classList.remove(CLASS_THEME_SYSTEM);
         classList.add(CLASS_THEME_CUSTOM);
         break;
       }
       case THEME_DARK: {
         classList.remove(CLASS_THEME_CUSTOM);
         classList.remove(CLASS_THEME_LIGHT);
+        classList.remove(CLASS_THEME_SYSTEM);
         classList.add(CLASS_THEME_DARK);
         break;
       }
-      default: {
+      case THEME_LIGHT: {
         classList.remove(CLASS_THEME_CUSTOM);
         classList.remove(CLASS_THEME_DARK);
+        classList.remove(CLASS_THEME_SYSTEM);
         classList.add(CLASS_THEME_LIGHT);
+        break;
+      }
+      default: {
+        if (dark) {
+          classList.remove(CLASS_THEME_CUSTOM);
+          classList.remove(CLASS_THEME_LIGHT);
+          classList.add(CLASS_THEME_DARK);
+          classList.add(CLASS_THEME_SYSTEM);
+        } else {
+          classList.remove(CLASS_THEME_CUSTOM);
+          classList.remove(CLASS_THEME_DARK);
+          classList.add(CLASS_THEME_LIGHT);
+          classList.add(CLASS_THEME_SYSTEM);
+        }
       }
     }
   }

@@ -566,6 +566,9 @@
   "optionsThemeLightLabel": {
     "message": "明るいテーマ"
   },
+  "optionsThemeSystemLabel": {
+    "message": "システムのテーマ"
+  },
   "optionsTitle": {
     "message": "サイドバータブ - 設定"
   },

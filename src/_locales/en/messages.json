@@ -566,6 +566,9 @@
   "optionsThemeLightLabel": {
     "message": "Light Theme"
   },
+  "optionsThemeSystemLabel": {
+    "message": "System Theme"
+  },
   "optionsTitle": {
     "message": "Sidebar Tabs - Options"
   },
