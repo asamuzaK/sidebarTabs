@@ -32,9 +32,9 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
-  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME, /* THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, */ THEME_AUTO,
+  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID,
+  THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
 
@@ -503,7 +503,7 @@ export const getTheme = async () => {
     const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
       const [key, value] = storedTheme;
-      if (isString(key) && key !== THEME_SYSTEM && value) {
+      if (isString(key) && key !== THEME_AUTO && value) {
         themes.set(key, !!value);
       }
     }
@@ -519,11 +519,14 @@ export const getTheme = async () => {
         case THEME_LIGHT_ID:
           themes.set(THEME_LIGHT, false);
           break;
-        default:
+        case THEME_SYSTEM_ID:
           themes.set(THEME_SYSTEM, false);
+          break;
+        default:
+          themes.set(THEME_AUTO, false);
       }
     } else {
-      themes.set(THEME_SYSTEM, false);
+      themes.set(THEME_AUTO, false);
     }
   }
   const [res] = Array.from(themes);
@@ -546,34 +549,48 @@ export const setTheme = async info => {
   const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   switch (key) {
     case THEME_CUSTOM: {
+      classList.add(CLASS_THEME_CUSTOM);
       classList.remove(CLASS_THEME_DARK);
       classList.remove(CLASS_THEME_LIGHT);
       classList.remove(CLASS_THEME_SYSTEM);
-      classList.add(CLASS_THEME_CUSTOM);
       break;
     }
     case THEME_DARK: {
       classList.remove(CLASS_THEME_CUSTOM);
+      classList.add(CLASS_THEME_DARK);
       classList.remove(CLASS_THEME_LIGHT);
       classList.remove(CLASS_THEME_SYSTEM);
-      classList.add(CLASS_THEME_DARK);
       break;
     }
     case THEME_LIGHT: {
       classList.remove(CLASS_THEME_CUSTOM);
       classList.remove(CLASS_THEME_DARK);
-      classList.remove(CLASS_THEME_SYSTEM);
       classList.add(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+      break;
+    }
+    case THEME_SYSTEM: {
+      if (dark) {
+        classList.remove(CLASS_THEME_CUSTOM);
+        classList.add(CLASS_THEME_DARK);
+        classList.remove(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_SYSTEM);
+      } else {
+        classList.remove(CLASS_THEME_CUSTOM);
+        classList.remove(CLASS_THEME_DARK);
+        classList.add(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_SYSTEM);
+      }
       break;
     }
     default: {
       if (dark) {
-        classList.remove(CLASS_THEME_CUSTOM);
-        classList.remove(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_CUSTOM);
         classList.add(CLASS_THEME_DARK);
+        classList.remove(CLASS_THEME_LIGHT);
         classList.add(CLASS_THEME_SYSTEM);
       } else {
-        classList.remove(CLASS_THEME_CUSTOM);
+        classList.add(CLASS_THEME_CUSTOM);
         classList.remove(CLASS_THEME_DARK);
         classList.add(CLASS_THEME_LIGHT);
         classList.add(CLASS_THEME_SYSTEM);

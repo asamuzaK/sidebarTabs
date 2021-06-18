@@ -167,6 +167,12 @@ export const TABS_RELOAD = 'reloadTabs';
 export const TABS_REOPEN_CONTAINER = 'reopenTabsInContainer';
 export const TOGGLE_STATE = 'toggleOpenCloseState';
 export const THEME = 'theme';
+/*
+export const THEME_ALPEN = 'alpenTheme';
+export const THEME_ALPEN_DARK = 'alpenDarkTheme';
+export const THEME_ALPEN_ID = 'firefox-alpenglow@mozilla.org';
+*/
+export const THEME_AUTO = 'autoTheme';
 export const THEME_CURRENT = 'currentTheme';
 export const THEME_CURRENT_COLOR = 'currentThemeColors';
 export const THEME_CUSTOM = 'customTheme';

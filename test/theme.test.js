@@ -17,7 +17,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
-  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
+  THEME, THEME_AUTO, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM,
   THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
@@ -958,54 +958,54 @@ describe('theme', () => {
   describe('get theme', () => {
     const func = mjs.getTheme;
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: 'foo'
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: ['foo']
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
-        theme: [THEME_SYSTEM]
+        theme: [THEME_AUTO]
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: ['foo', false]
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
-        theme: [THEME_SYSTEM, true]
+        theme: [THEME_AUTO, true]
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
     it('should get stored theme', async () => {
@@ -1018,7 +1018,37 @@ describe('theme', () => {
       assert.deepEqual(res, ['foo', true], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get stored theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: [THEME_LIGHT, true]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_LIGHT, true], 'result');
+    });
+
+    it('should get stored theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: [THEME_DARK, true]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_DARK, true], 'result');
+    });
+
+    it('should get stored theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: [THEME_CUSTOM, true]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_CUSTOM, true], 'result');
+    });
+
+    it('should get auto theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
         {
@@ -1032,7 +1062,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
     it('should get dark theme', async () => {
@@ -1105,7 +1135,7 @@ describe('theme', () => {
       assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       window.matchMedia().matches = true;
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
@@ -1120,10 +1150,10 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
-    it('should get system theme', async () => {
+    it('should get auto theme', async () => {
       window.matchMedia().matches = false;
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
@@ -1138,7 +1168,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
   });
 
@@ -1159,20 +1189,20 @@ describe('theme', () => {
       });
     });
 
-    it('should set system light theme', async () => {
+    it('should set auto light theme', async () => {
       const body = document.querySelector('body');
       const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func(['foo']);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
       assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
 
-    it('should set system dark theme', async () => {
+    it('should set auto dark theme', async () => {
       window.matchMedia().matches = true;
       const body = document.querySelector('body');
       const i = browser.storage.local.set.callCount;
@@ -1180,7 +1210,7 @@ describe('theme', () => {
       body.classList.remove(CLASS_THEME_LIGHT);
       await func(['foo']);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
       assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
@@ -1317,11 +1347,11 @@ describe('theme', () => {
         }
       ]);
       const i = browser.storage.local.set.withArgs({
-        [THEME]: [THEME_SYSTEM]
+        [THEME]: [THEME_AUTO, false]
       }).callCount;
       await func();
       assert.strictEqual(browser.storage.local.set.withArgs({
-        [THEME]: [THEME_SYSTEM, false]
+        [THEME]: [THEME_AUTO, false]
       }).callCount, i + 1, 'called');
     });
   });
