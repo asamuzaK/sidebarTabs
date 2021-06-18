@@ -20,7 +20,7 @@ import {
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM,
   THEME_SYSTEM_ID,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 
 describe('theme', () => {
@@ -965,28 +965,57 @@ describe('theme', () => {
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
 
     it('should get system theme', async () => {
-      window.matchMedia().matches = true;
-      browser.storage.local.get.withArgs(THEME).resolves({
-        theme: 'foo'
-      });
-      const i = browser.storage.local.get.callCount;
-      const res = await func();
-      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
-    });
-
-    it('should get stored theme', async () => {
       browser.storage.local.get.withArgs(THEME).resolves({
         theme: ['foo']
       });
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.deepEqual(res, ['foo'], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+    });
+
+    it('should get system theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: [THEME_SYSTEM]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+    });
+
+    it('should get system theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: ['foo', false]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+    });
+
+    it('should get system theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: [THEME_SYSTEM, true]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+    });
+
+    it('should get stored theme', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves({
+        theme: ['foo', true]
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, ['foo', true], 'result');
     });
 
     it('should get system theme', async () => {
@@ -1003,7 +1032,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
 
     it('should get dark theme', async () => {
@@ -1020,7 +1049,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_DARK], 'result');
+      assert.deepEqual(res, [THEME_DARK, false], 'result');
     });
 
     it('should get light theme', async () => {
@@ -1037,7 +1066,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_LIGHT], 'result');
+      assert.deepEqual(res, [THEME_LIGHT, false], 'result');
     });
 
     it('should get system theme', async () => {
@@ -1055,7 +1084,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
 
     it('should get system theme', async () => {
@@ -1073,7 +1102,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
 
     it('should get system theme', async () => {
@@ -1091,7 +1120,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
 
     it('should get system theme', async () => {
@@ -1109,7 +1138,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM], 'result');
+      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
     });
   });
 
@@ -1266,11 +1295,43 @@ describe('theme', () => {
     });
   });
 
+  describe('apply theme', () => {
+    const func = mjs.applyTheme;
+    beforeEach(() => {
+      mjs.currentTheme.clear();
+      mjs.currentThemeColors.clear();
+    });
+    afterEach(() => {
+      mjs.currentTheme.clear();
+      mjs.currentThemeColors.clear();
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM]
+      }).callCount;
+      await func();
+      assert.strictEqual(browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      }).callCount, i + 1, 'called');
+    });
+  });
+
   describe('get tab height', () => {
     const func = mjs.getTabHeight;
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_TAB_COMPACT).resolves(undefined);
+      browser.storage.local.get.withArgs(THEME_UI_TAB_COMPACT)
+        .resolves(undefined);
       const i = browser.storage.local.get.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
@@ -1278,8 +1339,8 @@ describe('theme', () => {
     });
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_TAB_COMPACT).resolves({
-        [THEME_TAB_COMPACT]: {
+      browser.storage.local.get.withArgs(THEME_UI_TAB_COMPACT).resolves({
+        [THEME_UI_TAB_COMPACT]: {
           checked: true
         }
       });
@@ -1290,8 +1351,8 @@ describe('theme', () => {
     });
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_TAB_COMPACT).resolves({
-        [THEME_TAB_COMPACT]: {
+      browser.storage.local.get.withArgs(THEME_UI_TAB_COMPACT).resolves({
+        [THEME_UI_TAB_COMPACT]: {
           checked: false
         }
       });
@@ -1324,7 +1385,7 @@ describe('theme', () => {
     const func = mjs.getScrollbarWidth;
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW)
+      browser.storage.local.get.withArgs(THEME_UI_SCROLLBAR_NARROW)
         .resolves(undefined);
       const i = browser.storage.local.get.callCount;
       const res = await func();
@@ -1333,8 +1394,8 @@ describe('theme', () => {
     });
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW).resolves({
-        [THEME_SCROLLBAR_NARROW]: {
+      browser.storage.local.get.withArgs(THEME_UI_SCROLLBAR_NARROW).resolves({
+        [THEME_UI_SCROLLBAR_NARROW]: {
           checked: true
         }
       });
@@ -1345,8 +1406,8 @@ describe('theme', () => {
     });
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_SCROLLBAR_NARROW).resolves({
-        [THEME_SCROLLBAR_NARROW]: {
+      browser.storage.local.get.withArgs(THEME_UI_SCROLLBAR_NARROW).resolves({
+        [THEME_UI_SCROLLBAR_NARROW]: {
           checked: false
         }
       });
@@ -1379,7 +1440,7 @@ describe('theme', () => {
     const func = mjs.getTabGroupColorBarWidth;
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_TAB_GROUP_NARROW)
+      browser.storage.local.get.withArgs(THEME_UI_TAB_GROUP_NARROW)
         .resolves(undefined);
       const i = browser.storage.local.get.callCount;
       const res = await func();
@@ -1388,8 +1449,8 @@ describe('theme', () => {
     });
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_TAB_GROUP_NARROW).resolves({
-        [THEME_TAB_GROUP_NARROW]: {
+      browser.storage.local.get.withArgs(THEME_UI_TAB_GROUP_NARROW).resolves({
+        [THEME_UI_TAB_GROUP_NARROW]: {
           checked: true
         }
       });
@@ -1400,8 +1461,8 @@ describe('theme', () => {
     });
 
     it('should get result', async () => {
-      browser.storage.local.get.withArgs(THEME_TAB_GROUP_NARROW).resolves({
-        [THEME_TAB_GROUP_NARROW]: {
+      browser.storage.local.get.withArgs(THEME_UI_TAB_GROUP_NARROW).resolves({
+        [THEME_UI_TAB_GROUP_NARROW]: {
           checked: false
         }
       });

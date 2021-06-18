@@ -35,7 +35,7 @@ import {
   THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
   THEME_SYSTEM, THEME_SYSTEM_ID,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
 
 /* theme map */
@@ -496,94 +496,103 @@ export const initCustomTheme = async (rem = false) => {
  * @returns {Array} - theme class list
  */
 export const getTheme = async () => {
-  const themes = [];
+  const themes = new Map();
   // const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
     const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
-      for (const item of storedTheme) {
-        themes.push(item);
+      const [key, value] = storedTheme;
+      if (isString(key) && key !== THEME_SYSTEM && value) {
+        themes.set(key, !!value);
       }
     }
-  } else {
+  }
+  if (!themes.size) {
     const items = await getEnabledTheme();
-    if (Array.isArray(items) && items.length === 1) {
+    if (Array.isArray(items)) {
       const [{ id }] = items;
       switch (id) {
         case THEME_DARK_ID:
-          themes.push(THEME_DARK);
+          themes.set(THEME_DARK, false);
           break;
         case THEME_LIGHT_ID:
-          themes.push(THEME_LIGHT);
+          themes.set(THEME_LIGHT, false);
           break;
         default:
-          themes.push(THEME_SYSTEM);
+          themes.set(THEME_SYSTEM, false);
       }
+    } else {
+      themes.set(THEME_SYSTEM, false);
     }
   }
-  if (!themes.length) {
-    themes.push(THEME_SYSTEM);
-  }
-  return themes;
+  const [res] = Array.from(themes);
+  return res;
 };
 
 /**
  * set theme
  *
- * @param {Array} themes - array of theme
+ * @param {Array} info - theme info
  * @returns {void}
  */
-export const setTheme = async themes => {
-  if (!Array.isArray(themes)) {
-    throw new TypeError(`Expected Array but got ${getType(themes)}.`);
+export const setTheme = async info => {
+  if (!Array.isArray(info)) {
+    throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
-  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const [key, value] = info;
   const elm = document.querySelector('body');
   const { classList } = elm;
-  for (const item of themes) {
-    switch (item) {
-      case THEME_CUSTOM: {
-        classList.remove(CLASS_THEME_DARK);
-        classList.remove(CLASS_THEME_LIGHT);
-        classList.remove(CLASS_THEME_SYSTEM);
-        classList.add(CLASS_THEME_CUSTOM);
-        break;
-      }
-      case THEME_DARK: {
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  switch (key) {
+    case THEME_CUSTOM: {
+      classList.remove(CLASS_THEME_DARK);
+      classList.remove(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+      classList.add(CLASS_THEME_CUSTOM);
+      break;
+    }
+    case THEME_DARK: {
+      classList.remove(CLASS_THEME_CUSTOM);
+      classList.remove(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+      classList.add(CLASS_THEME_DARK);
+      break;
+    }
+    case THEME_LIGHT: {
+      classList.remove(CLASS_THEME_CUSTOM);
+      classList.remove(CLASS_THEME_DARK);
+      classList.remove(CLASS_THEME_SYSTEM);
+      classList.add(CLASS_THEME_LIGHT);
+      break;
+    }
+    default: {
+      if (dark) {
         classList.remove(CLASS_THEME_CUSTOM);
         classList.remove(CLASS_THEME_LIGHT);
-        classList.remove(CLASS_THEME_SYSTEM);
         classList.add(CLASS_THEME_DARK);
-        break;
-      }
-      case THEME_LIGHT: {
+        classList.add(CLASS_THEME_SYSTEM);
+      } else {
         classList.remove(CLASS_THEME_CUSTOM);
         classList.remove(CLASS_THEME_DARK);
-        classList.remove(CLASS_THEME_SYSTEM);
         classList.add(CLASS_THEME_LIGHT);
-        break;
-      }
-      default: {
-        if (dark) {
-          classList.remove(CLASS_THEME_CUSTOM);
-          classList.remove(CLASS_THEME_LIGHT);
-          classList.add(CLASS_THEME_DARK);
-          classList.add(CLASS_THEME_SYSTEM);
-        } else {
-          classList.remove(CLASS_THEME_CUSTOM);
-          classList.remove(CLASS_THEME_DARK);
-          classList.add(CLASS_THEME_LIGHT);
-          classList.add(CLASS_THEME_SYSTEM);
-        }
+        classList.add(CLASS_THEME_SYSTEM);
       }
     }
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
   await setStorage({
-    [THEME]: themes
+    [THEME]: [key, !!value]
   });
 };
+
+/**
+ * apply theme
+ *
+ * @returns {Function} - promise chain
+ */
+export const applyTheme = async () =>
+  setCurrentThemeValue().then(getTheme).then(setTheme);
 
 /* tab height */
 /**
@@ -592,10 +601,10 @@ export const setTheme = async themes => {
  * @returns {boolean} - result
  */
 export const getTabHeight = async () => {
-  const data = await getStorage(THEME_TAB_COMPACT);
+  const data = await getStorage(THEME_UI_TAB_COMPACT);
   let compact;
   if (isObjectNotEmpty(data)) {
-    const { checked } = data[THEME_TAB_COMPACT];
+    const { checked } = data[THEME_UI_TAB_COMPACT];
     compact = checked;
   }
   return !!compact;
@@ -624,10 +633,10 @@ export const setTabHeight = async compact => {
  * @returns {boolean} - result
  */
 export const getScrollbarWidth = async () => {
-  const data = await getStorage(THEME_SCROLLBAR_NARROW);
+  const data = await getStorage(THEME_UI_SCROLLBAR_NARROW);
   let narrow;
   if (isObjectNotEmpty(data)) {
-    const { checked } = data[THEME_SCROLLBAR_NARROW];
+    const { checked } = data[THEME_UI_SCROLLBAR_NARROW];
     narrow = checked;
   }
   return !!narrow;
@@ -656,10 +665,10 @@ export const setScrollbarWidth = async narrow => {
  * @returns {boolean} - result
  */
 export const getTabGroupColorBarWidth = async () => {
-  const data = await getStorage(THEME_TAB_GROUP_NARROW);
+  const data = await getStorage(THEME_UI_TAB_GROUP_NARROW);
   let narrow;
   if (isObjectNotEmpty(data)) {
-    const { checked } = data[THEME_TAB_GROUP_NARROW];
+    const { checked } = data[THEME_UI_TAB_GROUP_NARROW];
     narrow = checked;
   }
   return !!narrow;
@@ -699,7 +708,7 @@ export const applyCss = async () => {
  * @returns {void}
  */
 export const setSidebarTheme = async () => Promise.all([
-  setCurrentThemeValue().then(getTheme).then(setTheme),
+  applyTheme(),
   getTabHeight().then(setTabHeight),
   getScrollbarWidth().then(setScrollbarWidth),
   getTabGroupColorBarWidth().then(setTabGroupColorBarWidth)
