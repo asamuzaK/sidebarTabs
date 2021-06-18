@@ -11,7 +11,7 @@ import {
 import { blendColors, convertColorToHex } from './color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
   CSS_VAR_BG_FIELD_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
@@ -32,9 +32,10 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
-  THEME, THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
+  THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
+  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID,
+  THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
 
 /* theme map */
@@ -65,6 +66,60 @@ export const themeMap = {
     [CUSTOM_HEADING_TEXT_GROUP_3]: CSS_VAR_HEADING_TEXT_GROUP_3,
     [CUSTOM_HEADING_TEXT_GROUP_4]: CSS_VAR_HEADING_TEXT_GROUP_4,
     [CUSTOM_HEADING_TEXT_PINNED]: CSS_VAR_HEADING_TEXT_PINNED
+  },
+  [THEME_ALPEN]: {
+    [CUSTOM_BG]: '#f0f0f4',
+    [CUSTOM_BG_ACTIVE]: '#ffffff',
+    [CUSTOM_BG_DISCARDED]: '#f0f0f4',
+    [CUSTOM_BG_FIELD]: '#ffffffcc',
+    [CUSTOM_BG_FIELD_ACTIVE]: '#20123bf5',
+    [CUSTOM_BG_HOVER]: '#dbd9e1',
+    [CUSTOM_BG_HOVER_SHADOW]: '#20123b1a',
+    [CUSTOM_BG_SELECT]: '#ac70ff',
+    [CUSTOM_BG_SELECT_HOVER]: '#b47fff',
+    [CUSTOM_BORDER_ACTIVE]: '#ac70ff',
+    [CUSTOM_BORDER_FIELD]: '#f0f0f4', // NOTE: 'transparent',
+    [CUSTOM_BORDER_FIELD_ACTIVE]: '#ac70ff',
+    [CUSTOM_COLOR]: '#20123b',
+    [CUSTOM_COLOR_ACTIVE]: '#20123b',
+    [CUSTOM_COLOR_DISCARDED]: '#20123b',
+    [CUSTOM_COLOR_FIELD]: '#20123b',
+    [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_HOVER]: '#20123b',
+    [CUSTOM_COLOR_SELECT]: '#ffffff',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#ffffff',
+    [CUSTOM_HEADING_TEXT_GROUP_1]: '#874436',
+    [CUSTOM_HEADING_TEXT_GROUP_2]: '#2b6355',
+    [CUSTOM_HEADING_TEXT_GROUP_3]: '#874473',
+    [CUSTOM_HEADING_TEXT_GROUP_4]: '#4a6392',
+    [CUSTOM_HEADING_TEXT_PINNED]: '#4a4473'
+  },
+  [THEME_ALPEN_DARK]: {
+    [CUSTOM_BG]: '#2d245b',
+    [CUSTOM_BG_ACTIVE]: '#3c1f7b',
+    [CUSTOM_BG_DISCARDED]: '#2d245b',
+    [CUSTOM_BG_FIELD]: '#2d245b',
+    [CUSTOM_BG_FIELD_ACTIVE]: '#2d245bfa',
+    [CUSTOM_BG_HOVER]: '#40376c',
+    [CUSTOM_BG_HOVER_SHADOW]: '#e8e0ff1a',
+    [CUSTOM_BG_SELECT]: '#7643e5',
+    [CUSTOM_BG_SELECT_HOVER]: '#8456e8',
+    [CUSTOM_BORDER_ACTIVE]: '#ac70ff',
+    [CUSTOM_BORDER_FIELD]: '#2d245b', // NOTE: 'transparent',
+    [CUSTOM_BORDER_FIELD_ACTIVE]: '#ac70ff',
+    [CUSTOM_COLOR]: '#e8e0ff',
+    [CUSTOM_COLOR_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_DISCARDED]: '#e8e0ff',
+    [CUSTOM_COLOR_FIELD]: '#e8e0ff',
+    [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_HOVER]: '#e8e0ff',
+    [CUSTOM_COLOR_SELECT]: '#ffffff',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#ffffff',
+    [CUSTOM_HEADING_TEXT_GROUP_1]: '#d79785',
+    [CUSTOM_HEADING_TEXT_GROUP_2]: '#7bb5a3',
+    [CUSTOM_HEADING_TEXT_GROUP_3]: '#d797c2',
+    [CUSTOM_HEADING_TEXT_GROUP_4]: '#9ab5e0',
+    [CUSTOM_HEADING_TEXT_PINNED]: '#9a97c2'
   },
   [THEME_LIGHT]: {
     [CUSTOM_BG]: '#f0f0f4',
@@ -302,41 +357,53 @@ export const getCurrentThemeBaseValues = async () => {
  * @returns {object} - values
  */
 export const getBaseValues = async () => {
-  const appliedTheme = await getCurrentTheme();
   let values;
-  if (isObjectNotEmpty(appliedTheme)) {
-    const { colors } = appliedTheme;
-    if (isObjectNotEmpty(colors)) {
-      const colorsItems = Object.entries(colors);
-      const func = [];
-      for (const [key, value] of colorsItems) {
-        value && func.push(setCurrentThemeColors(key, value));
-      }
-      await Promise.all(func);
-      values = await getCurrentThemeBaseValues();
-    }
-  } else {
-    const items = await getEnabledTheme();
-    if (Array.isArray(items)) {
-      for (const item of items) {
-        const { id } = item;
-        switch (id) {
-          case THEME_DARK_ID:
-            values = themeMap[THEME_DARK];
-            break;
-          case THEME_LIGHT_ID:
-            values = themeMap[THEME_LIGHT];
-            break;
-          default:
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const items = await getEnabledTheme();
+  if (Array.isArray(items) && items.length === 1) {
+    const [{ id }] = items;
+    switch (id) {
+      case THEME_ALPEN_ID:
+        if (dark) {
+          values = themeMap[THEME_ALPEN_DARK];
+        } else {
+          values = themeMap[THEME_ALPEN];
         }
-        if (values) {
-          break;
+        break;
+      case THEME_DARK_ID:
+        values = themeMap[THEME_DARK];
+        break;
+      case THEME_LIGHT_ID:
+        values = themeMap[THEME_LIGHT];
+        break;
+      case THEME_SYSTEM_ID:
+        if (dark) {
+          values = themeMap[THEME_DARK];
+        } else {
+          values = themeMap[THEME_LIGHT];
         }
-      }
+        break;
+      default:
     }
   }
   if (!values) {
-    values = themeMap[THEME_LIGHT];
+    const appliedTheme = await getCurrentTheme();
+    if (isObjectNotEmpty(appliedTheme)) {
+      const { colors } = appliedTheme;
+      if (isObjectNotEmpty(colors)) {
+        const colorsItems = Object.entries(colors);
+        const func = [];
+        for (const [key, value] of colorsItems) {
+          value && func.push(setCurrentThemeColors(key, value));
+        }
+        await Promise.all(func);
+        values = await getCurrentThemeBaseValues();
+      } else {
+        values = themeMap[THEME_LIGHT];
+      }
+    } else {
+      values = themeMap[THEME_LIGHT];
+    }
   }
   return values;
 };
@@ -490,76 +557,120 @@ export const initCustomTheme = async (rem = false) => {
  * @returns {Array} - theme class list
  */
 export const getTheme = async () => {
+  const themes = new Map();
   const data = await getStorage(THEME);
-  const themes = [];
   if (isObjectNotEmpty(data)) {
     const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
-      for (const item of storedTheme) {
-        themes.push(item);
+      const [key, value] = storedTheme;
+      if (isString(key) && key !== THEME_AUTO && value) {
+        themes.set(key, !!value);
       }
     }
-  } else {
+  }
+  if (!themes.size) {
     const items = await getEnabledTheme();
     if (Array.isArray(items)) {
-      for (const item of items) {
-        const { id } = item;
-        switch (id) {
-          case THEME_DARK_ID:
-            themes.push(THEME_DARK);
-            break;
-          case THEME_LIGHT_ID:
-            themes.push(THEME_LIGHT);
-            break;
-          default:
-        }
+      const [{ id }] = items;
+      switch (id) {
+        case THEME_DARK_ID:
+          themes.set(THEME_DARK, false);
+          break;
+        case THEME_LIGHT_ID:
+          themes.set(THEME_LIGHT, false);
+          break;
+        case THEME_SYSTEM_ID:
+          themes.set(THEME_SYSTEM, false);
+          break;
+        case THEME_ALPEN_ID:
+        default:
+          themes.set(THEME_AUTO, false);
       }
+    } else {
+      themes.set(THEME_AUTO, false);
     }
   }
-  if (!themes.length) {
-    themes.push(THEME_LIGHT);
-  }
-  return themes;
+  const [res] = Array.from(themes);
+  return res;
 };
 
 /**
  * set theme
  *
- * @param {Array} themes - array of theme
+ * @param {Array} info - theme info
  * @returns {void}
  */
-export const setTheme = async themes => {
-  if (!Array.isArray(themes)) {
-    throw new TypeError(`Expected Array but got ${getType(themes)}.`);
+export const setTheme = async info => {
+  if (!Array.isArray(info)) {
+    throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
+  const [key, value] = info;
   const elm = document.querySelector('body');
   const { classList } = elm;
-  for (const item of themes) {
-    switch (item) {
-      case THEME_CUSTOM: {
-        classList.remove(CLASS_THEME_DARK);
-        classList.remove(CLASS_THEME_LIGHT);
-        classList.add(CLASS_THEME_CUSTOM);
-        break;
-      }
-      case THEME_DARK: {
+  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  switch (key) {
+    case THEME_CUSTOM: {
+      classList.add(CLASS_THEME_CUSTOM);
+      classList.remove(CLASS_THEME_DARK);
+      classList.remove(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+      break;
+    }
+    case THEME_DARK: {
+      classList.remove(CLASS_THEME_CUSTOM);
+      classList.add(CLASS_THEME_DARK);
+      classList.remove(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+      break;
+    }
+    case THEME_LIGHT: {
+      classList.remove(CLASS_THEME_CUSTOM);
+      classList.remove(CLASS_THEME_DARK);
+      classList.add(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+      break;
+    }
+    case THEME_SYSTEM: {
+      if (dark) {
         classList.remove(CLASS_THEME_CUSTOM);
-        classList.remove(CLASS_THEME_LIGHT);
         classList.add(CLASS_THEME_DARK);
-        break;
-      }
-      default: {
+        classList.remove(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_SYSTEM);
+      } else {
         classList.remove(CLASS_THEME_CUSTOM);
         classList.remove(CLASS_THEME_DARK);
         classList.add(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_SYSTEM);
+      }
+      break;
+    }
+    default: {
+      if (dark) {
+        classList.add(CLASS_THEME_CUSTOM);
+        classList.add(CLASS_THEME_DARK);
+        classList.remove(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_SYSTEM);
+      } else {
+        classList.add(CLASS_THEME_CUSTOM);
+        classList.remove(CLASS_THEME_DARK);
+        classList.add(CLASS_THEME_LIGHT);
+        classList.add(CLASS_THEME_SYSTEM);
       }
     }
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
   await setStorage({
-    [THEME]: themes
+    [THEME]: [key, !!value]
   });
 };
+
+/**
+ * apply theme
+ *
+ * @returns {Function} - promise chain
+ */
+export const applyTheme = async () =>
+  setCurrentThemeValue().then(getTheme).then(setTheme);
 
 /* tab height */
 /**
@@ -568,10 +679,10 @@ export const setTheme = async themes => {
  * @returns {boolean} - result
  */
 export const getTabHeight = async () => {
-  const data = await getStorage(THEME_TAB_COMPACT);
+  const data = await getStorage(THEME_UI_TAB_COMPACT);
   let compact;
   if (isObjectNotEmpty(data)) {
-    const { checked } = data[THEME_TAB_COMPACT];
+    const { checked } = data[THEME_UI_TAB_COMPACT];
     compact = checked;
   }
   return !!compact;
@@ -600,10 +711,10 @@ export const setTabHeight = async compact => {
  * @returns {boolean} - result
  */
 export const getScrollbarWidth = async () => {
-  const data = await getStorage(THEME_SCROLLBAR_NARROW);
+  const data = await getStorage(THEME_UI_SCROLLBAR_NARROW);
   let narrow;
   if (isObjectNotEmpty(data)) {
-    const { checked } = data[THEME_SCROLLBAR_NARROW];
+    const { checked } = data[THEME_UI_SCROLLBAR_NARROW];
     narrow = checked;
   }
   return !!narrow;
@@ -632,10 +743,10 @@ export const setScrollbarWidth = async narrow => {
  * @returns {boolean} - result
  */
 export const getTabGroupColorBarWidth = async () => {
-  const data = await getStorage(THEME_TAB_GROUP_NARROW);
+  const data = await getStorage(THEME_UI_TAB_GROUP_NARROW);
   let narrow;
   if (isObjectNotEmpty(data)) {
-    const { checked } = data[THEME_TAB_GROUP_NARROW];
+    const { checked } = data[THEME_UI_TAB_GROUP_NARROW];
     narrow = checked;
   }
   return !!narrow;
@@ -675,7 +786,7 @@ export const applyCss = async () => {
  * @returns {void}
  */
 export const setSidebarTheme = async () => Promise.all([
-  setCurrentThemeValue().then(getTheme).then(setTheme),
+  applyTheme(),
   getTabHeight().then(setTabHeight),
   getScrollbarWidth().then(setScrollbarWidth),
   getTabGroupColorBarWidth().then(setTabGroupColorBarWidth)

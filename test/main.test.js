@@ -17,7 +17,8 @@ import {
   CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
   CLASS_TAB_GROUP, CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_LIGHT, CLASS_THEME_DARK, COOKIE_STORE_DEFAULT,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
+  COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE,
@@ -37,8 +38,9 @@ import {
   TAB_SWITCH_SCROLL,
   TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
+  THEME_SYSTEM,
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 const IS_WIN = os.platform() === 'win32';
 
@@ -10379,12 +10381,12 @@ describe('main', () => {
     });
 
     it('should not set variable', async () => {
-      const res = await func(THEME_SCROLLBAR_NARROW, { checked: true });
+      const res = await func(THEME_UI_SCROLLBAR_NARROW, { checked: true });
       assert.deepEqual(res, [], 'result');
     });
 
     it('should not set variable', async () => {
-      const res = await func(THEME_TAB_COMPACT, { checked: true });
+      const res = await func(THEME_UI_TAB_COMPACT, { checked: true });
       assert.deepEqual(res, [], 'result');
     });
 
@@ -10419,7 +10421,8 @@ describe('main', () => {
     });
 
     it('should set variable', async () => {
-      const res = await func(CUSTOM_BG_SELECT_HOVER, { value: '#ff0000' }, true);
+      const res =
+        await func(CUSTOM_BG_SELECT_HOVER, { value: '#ff0000' }, true);
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -10456,21 +10459,23 @@ describe('main', () => {
 
     it('should set variable', async () => {
       const body = document.querySelector('body');
-      const res = await func(THEME_SCROLLBAR_NARROW, { checked: true }, true);
+      const res =
+        await func(THEME_UI_SCROLLBAR_NARROW, { checked: true }, true);
       assert.isTrue(body.classList.contains(CLASS_NARROW), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
       const body = document.querySelector('body');
-      const res = await func(THEME_TAB_COMPACT, { checked: true }, true);
+      const res = await func(THEME_UI_TAB_COMPACT, { checked: true }, true);
       assert.isTrue(body.classList.contains(CLASS_COMPACT), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
       const body = document.querySelector('body');
-      const res = await func(THEME_TAB_GROUP_NARROW, { checked: true }, true);
+      const res =
+        await func(THEME_UI_TAB_GROUP_NARROW, { checked: true }, true);
       assert.isTrue(body.classList.contains(CLASS_NARROW_TAB_GROUP), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
@@ -10486,6 +10491,20 @@ describe('main', () => {
       const body = document.querySelector('body');
       const res = await func(THEME_DARK, { checked: true }, true);
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'set');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const body = document.querySelector('body');
+      const res = await func(THEME_CUSTOM, { checked: true }, true);
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const body = document.querySelector('body');
+      const res = await func(THEME_SYSTEM, { checked: true }, true);
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 

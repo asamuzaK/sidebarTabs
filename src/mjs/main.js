@@ -77,7 +77,8 @@ import {
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
-  THEME_SCROLLBAR_NARROW, THEME_TAB_COMPACT, THEME_TAB_GROUP_NARROW
+  THEME_SYSTEM,
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
 
 /* api */
@@ -1991,15 +1992,16 @@ export const setVar = async (item, obj, changed = false) => {
       case THEME_CUSTOM:
       case THEME_DARK:
       case THEME_LIGHT:
-        changed && checked && func.push(setTheme([item]));
+      case THEME_SYSTEM:
+        changed && checked && func.push(setTheme([item, !!checked]));
         break;
-      case THEME_SCROLLBAR_NARROW:
+      case THEME_UI_SCROLLBAR_NARROW:
         changed && func.push(setScrollbarWidth(!!checked));
         break;
-      case THEME_TAB_COMPACT:
+      case THEME_UI_TAB_COMPACT:
         changed && func.push(setTabHeight(!!checked));
         break;
-      case THEME_TAB_GROUP_NARROW:
+      case THEME_UI_TAB_GROUP_NARROW:
         changed && func.push(setTabGroupColorBarWidth(!!checked));
         break;
       default:

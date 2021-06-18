@@ -17,7 +17,7 @@ import {
   expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
 } from './tab-group.js';
 import { localizeHtml } from './localize.js';
-import { initCustomTheme, setSidebarTheme } from './theme.js';
+import { applyTheme, setSidebarTheme } from './theme.js';
 
 /* api */
 const { contextualIdentities, menus, runtime, storage, tabs, theme } = browser;
@@ -77,7 +77,7 @@ tabs.onUpdated.addListener(
   }
 );
 theme.onUpdated.addListener(info =>
-  setSidebarTheme(info).then(initCustomTheme).catch(throwErr)
+  applyTheme(info).catch(throwErr)
 );
 
 window.addEventListener('keydown', handleEvt, true);

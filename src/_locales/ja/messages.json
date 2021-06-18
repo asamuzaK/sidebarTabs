@@ -566,6 +566,9 @@
   "optionsThemeLightLabel": {
     "message": "明るいテーマ"
   },
+  "optionsThemeAutoLabel": {
+    "message": "自動検出"
+  },
   "optionsTitle": {
     "message": "サイドバータブ - 設定"
   },
