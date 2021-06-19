@@ -38,8 +38,8 @@ import {
   TAB_SWITCH_SCROLL,
   TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT,
-  THEME_SYSTEM,
+  THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
+  THEME_DARK, THEME_LIGHT,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 const IS_WIN = os.platform() === 'win32';
@@ -10483,14 +10483,20 @@ describe('main', () => {
     it('should set variable', async () => {
       const body = document.querySelector('body');
       const res = await func(THEME_LIGHT, { checked: true }, true);
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'set');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
       const body = document.querySelector('body');
       const res = await func(THEME_DARK, { checked: true }, true);
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -10498,12 +10504,18 @@ describe('main', () => {
       const body = document.querySelector('body');
       const res = await func(THEME_CUSTOM, { checked: true }, true);
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
       const body = document.querySelector('body');
-      const res = await func(THEME_SYSTEM, { checked: true }, true);
+      const res = await func(THEME_AUTO, { checked: true }, true);
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'set');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'set');
       assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
