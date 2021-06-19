@@ -46,5 +46,5 @@
     "stylelint-config-standard": "^22.0.0",
     "webext-schema": "^1.4.13"
   },
-  "version": "6.1.0"
+  "version": "6.1.1"
 }
