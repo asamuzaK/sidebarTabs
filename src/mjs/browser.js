@@ -11,7 +11,7 @@ const { permissions, runtime, tabs, windows } = browser;
 /**
  * check if permission is granted
  *
- * @param {object} perm - permissions.Permission
+ * @param {string} perm - permissions.Permission
  * @returns {boolean} - result
  */
 export const isPermissionGranted = async perm => {
