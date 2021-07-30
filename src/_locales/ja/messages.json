@@ -111,7 +111,13 @@
     }
   },
   "closeTabs_tooltip": {
-    "message": "選択したタブを閉じます"
+    "message": "$NUM$ 個のタブを閉じます",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "closeTabsToTheEnd": {
     "message": "下側のタブをすべて閉じる"
@@ -414,7 +420,13 @@
     }
   },
   "muteTabs_tooltip": {
-    "message": "選択したタブをミュートします"
+    "message": "$NUM$ 個のタブをミュートします",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "newTab_title": {
     "message": "新しいタブ$KEY$",
@@ -790,7 +802,13 @@
     }
   },
   "unmuteTab_tooltip": {
-    "message": "タブのミュートを解除します"
+    "message": "＄NUM＄ 個のタブのミュートを解除します",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "unmuteTabs": {
     "message": "タブのミュートを解除"
