@@ -1378,7 +1378,7 @@ describe('main', () => {
       assert.deepEqual(res, [[{}]], 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const { get, highlight, query, update } = browser.tabs;
       const i = highlight.callCount;
       const j = query.callCount;
@@ -1413,8 +1413,8 @@ describe('main', () => {
       assert.strictEqual(highlight.callCount, i, 'not called highlight');
       assert.strictEqual(query.callCount, j, 'not called query');
       assert.strictEqual(update.callCount, k, 'not called update');
-      assert.strictEqual(get.callCount, l + 1, 'called get');
-      assert.deepEqual(res, [[undefined, undefined]], 'result');
+      assert.strictEqual(get.callCount, l, 'not called get');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should call function', async () => {
@@ -3838,6 +3838,12 @@ describe('main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        audible: false,
+        mutedInfo: {
+          muted: false
+        }
+      });
       browser.tabs.get.withArgs(2).resolves({
         audible: false,
         mutedInfo: {
@@ -3848,10 +3854,17 @@ describe('main', () => {
         tabIds: [1],
         windowId: 1
       });
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
+      assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
       assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.deepEqual(res, [[undefined, undefined]], 'result');
+      assert.deepEqual(res, [
+        [
+          [undefined, undefined]
+        ],
+        [
+          [undefined, undefined]
+        ]
+      ], 'result');
     });
 
     it('should call function', async () => {
@@ -3872,6 +3885,12 @@ describe('main', () => {
       body.appendChild(elm2);
       body.appendChild(elm3);
       mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        audible: false,
+        mutedInfo: {
+          muted: false
+        }
+      });
       browser.tabs.get.withArgs(2).resolves({
         audible: false,
         mutedInfo: {
@@ -3888,17 +3907,22 @@ describe('main', () => {
         tabIds: [1, 3],
         windowId: 1
       });
-      assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
+      assert.strictEqual(browser.tabs.get.callCount, i + 3, 'called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
       assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
       assert.isTrue(elm3.classList.contains(HIGHLIGHTED), 'add class');
       assert.deepEqual(res, [
-        [undefined, undefined],
-        [[undefined, undefined]]
+        [
+          [undefined, undefined],
+          [undefined, undefined]
+        ],
+        [
+          [undefined, undefined]
+        ]
       ], 'result');
     });
 
-    it('should not call function', async () => {
+    it('should call function', async () => {
       const i = browser.tabs.get.callCount;
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
@@ -3916,15 +3940,33 @@ describe('main', () => {
       body.appendChild(elm2);
       body.appendChild(elm3);
       mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        audible: false,
+        mutedInfo: {
+          muted: false
+        }
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        audible: false,
+        mutedInfo: {
+          muted: false
+        }
+      });
       const res = await func({
         tabIds: [1, 2],
         windowId: 1
       });
-      assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
       assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'class');
       assert.isFalse(elm3.classList.contains(HIGHLIGHTED), 'class');
-      assert.deepEqual(res, [], 'result');
+      assert.deepEqual(res, [
+        [
+          [undefined, undefined],
+          [undefined, undefined]
+        ],
+        []
+      ], 'result');
     });
   });
 

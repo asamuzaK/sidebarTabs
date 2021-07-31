@@ -751,7 +751,7 @@ describe('tab-content', () => {
       const body = document.querySelector('body');
       elm.title = 'foobar';
       body.appendChild(elm);
-      browser.i18n.getMessage.withArgs(`${TABS_MUTE_UNMUTE}_tooltip`, `2`)
+      browser.i18n.getMessage.withArgs(`${TABS_MUTE_UNMUTE}_tooltip`, '2')
         .returns('foo');
       await func(elm, {
         audible: false,
@@ -1359,6 +1359,94 @@ describe('tab-content', () => {
         'called');
       assert.isFalse(elm.classList.contains(HIGHLIGHTED));
       assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+  });
+
+  describe('remove highlight class from tabs', () => {
+    const func = mjs.removeHighlightFromTabs;
+
+    it('should throw if no argument given', async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'throw');
+      });
+    });
+
+    it('should throw if argument is not array', async () => {
+      await func(1).catch(e => {
+        assert.strictEqual(e.message, 'Expected Array but got Number.',
+          'throw');
+      });
+    });
+
+    it('should get empty array if array is empty', async () => {
+      const res = await func([]);
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should get empty array if tab not found', async () => {
+      const res = await func([1]);
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should get array', async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        audible: true,
+        mutedInfo: {
+          muted: false
+        }
+      });
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('img');
+      const elm3 = document.createElement('button');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      body.appendChild(elm);
+      const res = await func([1]);
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+        'called');
+      assert.isFalse(elm.classList.contains(HIGHLIGHTED));
+      assert.deepEqual(res, [[undefined, undefined]], 'result');
+    });
+
+    it('should get array', async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        audible: true,
+        mutedInfo: {
+          muted: false
+        }
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        audible: true,
+        mutedInfo: {
+          muted: false
+        }
+      });
+      const i = browser.tabs.get.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('img');
+      const elm3 = document.createElement('button');
+      const elm4 = document.createElement('p');
+      const elm5 = document.createElement('img');
+      const elm6 = document.createElement('button');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      elm4.dataset.tabId = '2';
+      elm5.appendChild(elm4);
+      elm6.appendChild(elm5);
+      body.appendChild(elm);
+      body.appendChild(elm4);
+      const res = await func([1, 2]);
+      assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
+      assert.isFalse(elm.classList.contains(HIGHLIGHTED));
+      assert.isFalse(elm4.classList.contains(HIGHLIGHTED));
+      assert.deepEqual(res, [[undefined, undefined], [undefined, undefined]],
+        'result');
     });
   });
 

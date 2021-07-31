@@ -427,6 +427,32 @@ export const removeHighlight = async elm => {
 };
 
 /**
+ * remove highlight class from tabs
+ *
+ * @param {Array} tabIds - array of tab ID
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const removeHighlightFromTabs = async tabIds => {
+  if (!Array.isArray(tabIds)) {
+    throw new TypeError(`Expected Array but got ${getType(tabIds)}.`);
+  }
+  const func = [];
+  const arr = [];
+  for (const id of tabIds) {
+    const item = document.querySelector(`[data-tab-id="${id}"]`);
+    if (item) {
+      arr.push(item);
+    }
+  }
+  if (arr.length) {
+    for (const item of arr) {
+      func.push(removeHighlight(item));
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
  * toggle highlight class of tab
  *
  * @param {object} elm - element
