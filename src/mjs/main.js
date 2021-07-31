@@ -27,9 +27,9 @@ import {
 } from './browser-tabs.js';
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
-  addTabIconErrorListener, removeHighlight,
+  addTabIconErrorListener, removeHighlightFromTabs,
   setContextualIdentitiesIcon, setTabAudio, setTabAudioIcon, setTabContent,
-  setTabIcon, toggleHighlight
+  setTabIcon
 } from './tab-content.js';
 import {
   handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
@@ -363,28 +363,24 @@ export const handleClickedTab = evt => {
         func.push(highlightTabs(items, windowId));
       }
     } else if ((isMac && metaKey) || (!isMac && ctrlKey)) {
-      const firstTabIndex = getSidebarTabIndex(firstSelectedTab);
+      const firstSelectedTabIndex = getSidebarTabIndex(firstSelectedTab);
       const tabIndex = getSidebarTabIndex(tab);
-      if (Number.isInteger(firstTabIndex) && Number.isInteger(tabIndex)) {
+      if (Number.isInteger(firstSelectedTabIndex) &&
+          Number.isInteger(tabIndex)) {
         const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-        const index = [firstTabIndex];
-        tabIndex !== firstTabIndex && index.push(tabIndex);
+        const highlights = new Set([firstSelectedTabIndex]);
+        highlights.add(tabIndex);
         for (const item of items) {
           const itemIndex = getSidebarTabIndex(item);
-          if (itemIndex === firstTabIndex && itemIndex === tabIndex) {
-            index.splice(0, 1);
-          } else if (itemIndex === tabIndex) {
-            const tabIndexIndex = index.findIndex(i => i === tabIndex);
-            index.splice(tabIndexIndex, 1);
-          } else if (!index.includes(itemIndex)) {
-            index.push(itemIndex);
+          if ((itemIndex === firstSelectedTabIndex && itemIndex === tabIndex) ||
+              itemIndex === tabIndex) {
+            highlights.delete(itemIndex);
+          } else {
+            highlights.add(itemIndex);
           }
         }
-        if (index.length && (index.length > 1 || !index.includes(tabIndex))) {
-          func.push(highlightTab(index, windowId));
-        } else {
-          func.push(toggleHighlight(firstSelectedTab));
-        }
+        highlights.size &&
+          func.push(highlightTab(Array.from(highlights), windowId));
       }
     } else {
       tab && detail === 1 && func.push(activateClickedTab(tab));
@@ -788,25 +784,20 @@ export const handleHighlightedTab = async info => {
   if (windowId === sidebar.windowId) {
     const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     const highlightedTabIds = tabIds.filter(i => Number.isInteger(i));
-    if (highlightedTabIds.length > 1) {
-      for (const item of items) {
-        const itemId = getSidebarTabId(item);
-        if (highlightedTabIds.includes(itemId)) {
-          const index = highlightedTabIds.findIndex(i => i === itemId);
-          highlightedTabIds.splice(index, 1);
-        } else {
-          func.push(removeHighlight(item));
-        }
-      }
-      highlightedTabIds.length &&
-        func.push(addHighlightToTabs(highlightedTabIds));
-    } else {
-      const [tabId] = highlightedTabIds;
-      for (const item of items) {
-        const itemId = getSidebarTabId(item);
-        itemId !== tabId && func.push(removeHighlight(item));
+    const addHighlights = new Set(highlightedTabIds);
+    const remHighlights = new Set();
+    for (const item of items) {
+      const itemId = getSidebarTabId(item);
+      if (highlightedTabIds.includes(itemId)) {
+        addHighlights.add(itemId);
+      } else {
+        remHighlights.add(itemId);
       }
     }
+    func.push(
+      addHighlightToTabs(Array.from(addHighlights)),
+      removeHighlightFromTabs(Array.from(remHighlights))
+    );
   }
   return Promise.all(func);
 };
@@ -1599,6 +1590,14 @@ export const prepareTabMenuItems = async elm => {
       const data = {};
       if (multiTabsSelected) {
         switch (itemKey) {
+          case TABS_CLOSE:
+            data.enabled = true;
+            data.title = i18n.getMessage(`${TABS_CLOSE}_title`, [
+              `${selectedTabs.length}`,
+              '(&C)'
+            ]);
+            data.visible = true;
+            break;
           case TABS_MUTE:
             data.enabled = true;
             data.title = muted ? toggleTitle : title;

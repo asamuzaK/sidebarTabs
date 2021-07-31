@@ -96,22 +96,32 @@
     }
   },
   "closeTab_tooltip": {
-    "message": "Close Tab"
+    "message": "Close tab"
   },
   "closeTabs": {
     "message": "Close Tabs"
   },
   "closeTabs_title": {
-    "message": "&Close Tabs",
+    "message": "&Close $NUM$ Tabs",
     "placeholders": {
-      "key": {
+      "num": {
         "content": "$1",
+        "example": "2"
+      },
+      "key": {
+        "content": "$2",
         "example": "(&C)"
       }
     }
   },
   "closeTabs_tooltip": {
-    "message": "Close Selected Tabs"
+    "message": "Close $NUM$ tabs",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "closeTabsToTheEnd": {
     "message": "Close Tabs to the Bottom"
@@ -162,7 +172,7 @@
     }
   },
   "collapseTabGroup_tooltip": {
-    "message": "Collapse Grouped Tabs"
+    "message": "Collapse grouped tabs"
   },
   "connecting": {
     "message": "connecting..."
@@ -237,7 +247,7 @@
     }
   },
   "expandTabGroup_tooltip": {
-    "message": "Expand Grouped Tabs"
+    "message": "Expand grouped tabs"
   },
   "groupSameContainerTabs": {
     "message": "Group Same Container Tabs"
@@ -399,7 +409,7 @@
     }
   },
   "muteTab_tooltip": {
-    "message": "Mute Tab"
+    "message": "Mute tab"
   },
   "muteTabs": {
     "message": "Mute Tabs"
@@ -414,7 +424,13 @@
     }
   },
   "muteTabs_tooltip": {
-    "message": "Mute Selected Tabs"
+    "message": "Mute $NUM$ tabs",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "newTab_title": {
     "message": "Ne&w Tab",
@@ -790,7 +806,7 @@
     }
   },
   "unmuteTab_tooltip": {
-    "message": "Unmute Tab"
+    "message": "Unmute tab"
   },
   "unmuteTabs": {
     "message": "Unmute Tabs"
@@ -805,7 +821,13 @@
     }
   },
   "unmuteTabs_tooltip": {
-    "message": "Unmute Selected Tabs"
+    "message": "Unmute $NUM$ tabs",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "unpinTab": {
     "message": "Unpin Tab"

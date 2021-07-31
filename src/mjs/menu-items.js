@@ -456,7 +456,9 @@ export default {
   },
   [TABS_CLOSE]: {
     id: TABS_CLOSE,
-    title: i18n.getMessage(`${TABS_CLOSE}_title`, '(&C)'),
+    // NOTE: title will be replaced in main.js prepareTabMenuItems()
+    // i18n.getMessage(`${TABS_CLOSE}_title`, ['$NUM$', '(&C)'])
+    title: null,
     type: 'normal',
     contexts: ['tab'],
     viewTypes: ['sidebar'],

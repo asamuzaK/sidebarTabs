@@ -215,20 +215,21 @@ export const addTabAudioClickListener = async elm => {
  *
  * @param {object} elm - element
  * @param {object} info - audio info
+ * @param {number} num - number of highlighted tabs
  * @returns {void}
  */
-export const setTabAudio = async (elm, info) => {
+export const setTabAudio = async (elm, info, num) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(info)) {
     const { audible, muted, highlighted } = info;
     if (muted) {
-      if (highlighted) {
-        elm.title = i18n.getMessage(`${TABS_MUTE_UNMUTE}_tooltip`);
+      if (highlighted && Number.isInteger(num) && num > 1) {
+        elm.title = i18n.getMessage(`${TABS_MUTE_UNMUTE}_tooltip`, `${num}`);
       } else {
         elm.title = i18n.getMessage(`${TAB_MUTE_UNMUTE}_tooltip`);
       }
     } else if (audible) {
-      if (highlighted) {
-        elm.title = i18n.getMessage(`${TABS_MUTE}_tooltip`);
+      if (highlighted && Number.isInteger(num) && num > 1) {
+        elm.title = i18n.getMessage(`${TABS_MUTE}_tooltip`, `${num}`);
       } else {
         elm.title = i18n.getMessage(`${TAB_MUTE}_tooltip`);
       }
@@ -268,13 +269,14 @@ export const setTabAudioIcon = async (elm, info) => {
  *
  * @param {object} elm - element
  * @param {boolean} highlighted - highlighted
+ * @param {number} num - number of highlighted tabs
  * @returns {void}
  */
-export const setCloseTab = async (elm, highlighted) => {
+export const setCloseTab = async (elm, highlighted, num) => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE &&
       elm.classList.contains(CLASS_TAB_CLOSE)) {
-    if (highlighted) {
-      elm.title = i18n.getMessage(`${TABS_CLOSE}_tooltip`);
+    if (highlighted && Number.isInteger(num) && num > 1) {
+      elm.title = i18n.getMessage(`${TABS_CLOSE}_tooltip`, `${num}`);
     } else {
       elm.title = i18n.getMessage(`${TAB_CLOSE}_tooltip`);
     }
@@ -346,9 +348,10 @@ export const setContextualIdentitiesIcon = async (elm, info) => {
  * add hightlight class to tab
  *
  * @param {object} elm - element
+ * @param {number} num - number of highlighted tabs
  * @returns {Promise.<Array>} - results of each handler
  */
-export const addHighlight = async elm => {
+export const addHighlight = async (elm, num) => {
   const func = [];
   const tabId = getSidebarTabId(elm);
   if (Number.isInteger(tabId)) {
@@ -358,12 +361,12 @@ export const addHighlight = async elm => {
     const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
     elm.classList.add(HIGHLIGHTED);
     func.push(
-      setCloseTab(closeElm, true),
+      setCloseTab(closeElm, true, num),
       setTabAudio(muteElm, {
         audible,
         muted,
         highlighted: true
-      })
+      }, num)
     );
   }
   return Promise.all(func);
@@ -380,10 +383,17 @@ export const addHighlightToTabs = async tabIds => {
     throw new TypeError(`Expected Array but got ${getType(tabIds)}.`);
   }
   const func = [];
+  const arr = [];
   for (const id of tabIds) {
     const item = document.querySelector(`[data-tab-id="${id}"]`);
     if (item) {
-      func.push(addHighlight(item));
+      arr.push(item);
+    }
+  }
+  if (arr.length) {
+    const l = arr.length;
+    for (const item of arr) {
+      func.push(addHighlight(item, l));
     }
   }
   return Promise.all(func);
@@ -417,19 +427,27 @@ export const removeHighlight = async elm => {
 };
 
 /**
- * toggle highlight class of tab
+ * remove highlight class from tabs
  *
- * @param {object} elm - element
- * @returns {Function} - addHighlight() / removeHightlight()
+ * @param {Array} tabIds - array of tab ID
+ * @returns {Promise.<Array>} - results of each handler
  */
-export const toggleHighlight = async elm => {
-  let func;
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    if (elm.classList.contains(HIGHLIGHTED)) {
-      func = removeHighlight(elm);
-    } else {
-      func = addHighlight(elm);
+export const removeHighlightFromTabs = async tabIds => {
+  if (!Array.isArray(tabIds)) {
+    throw new TypeError(`Expected Array but got ${getType(tabIds)}.`);
+  }
+  const func = [];
+  const arr = [];
+  for (const id of tabIds) {
+    const item = document.querySelector(`[data-tab-id="${id}"]`);
+    if (item) {
+      arr.push(item);
     }
   }
-  return func;
+  if (arr.length) {
+    for (const item of arr) {
+      func.push(removeHighlight(item));
+    }
+  }
+  return Promise.all(func);
 };
