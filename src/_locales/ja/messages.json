@@ -102,10 +102,14 @@
     "message": "タブを閉じる"
   },
   "closeTabs_title": {
-    "message": "タブを閉じる$KEY$",
+    "message": "$NUM$ 個のタブを閉じる$KEY$",
     "placeholders": {
-      "key": {
+      "num": {
         "content": "$1",
+        "example": "2"
+      },
+      "key": {
+        "content": "$2",
         "example": "(&C)"
       }
     }

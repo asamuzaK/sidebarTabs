@@ -1590,6 +1590,14 @@ export const prepareTabMenuItems = async elm => {
       const data = {};
       if (multiTabsSelected) {
         switch (itemKey) {
+          case TABS_CLOSE:
+            data.enabled = true;
+            data.title = i18n.getMessage(`${TABS_CLOSE}_title`, [
+              `${selectedTabs.length}`,
+              '(&C)'
+            ]);
+            data.visible = true;
+            break;
           case TABS_MUTE:
             data.enabled = true;
             data.title = muted ? toggleTitle : title;

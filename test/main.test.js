@@ -8655,6 +8655,10 @@ describe('main', () => {
     it('should call function', async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE}_title`, [
+        '2',
+        '(&C)'
+      ]).callCount;
       const sect = document.createElement('section');
       const sect2 = document.createElement('section');
       const elm = document.createElement('div');
@@ -8717,6 +8721,12 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.menus.update.callCount, j + 44,
         'called update');
+      assert.strictEqual(browser.i18n.getMessage.withArgs(
+        `${TABS_CLOSE}_title`, [
+          '2',
+          '(&C)'
+        ]
+      ).callCount, k + 1, 'called i18n');
       assert.strictEqual(res.length, 32, 'result');
     });
 

@@ -102,10 +102,14 @@
     "message": "Close Tabs"
   },
   "closeTabs_title": {
-    "message": "&Close Tabs",
+    "message": "&Close $NUM$ Tabs",
     "placeholders": {
-      "key": {
+      "num": {
         "content": "$1",
+        "example": "2"
+      },
+      "key": {
+        "content": "$2",
         "example": "(&C)"
       }
     }
