@@ -451,21 +451,3 @@ export const removeHighlightFromTabs = async tabIds => {
   }
   return Promise.all(func);
 };
-
-/**
- * toggle highlight class of tab
- *
- * @param {object} elm - element
- * @returns {Function} - addHighlight() / removeHightlight()
- */
-export const toggleHighlight = async elm => {
-  let func;
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    if (elm.classList.contains(HIGHLIGHTED)) {
-      func = removeHighlight(elm);
-    } else {
-      func = addHighlight(elm);
-    }
-  }
-  return func;
-};

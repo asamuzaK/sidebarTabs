@@ -1449,35 +1449,4 @@ describe('tab-content', () => {
         'result');
     });
   });
-
-  describe('toggle highlight class of tab', () => {
-    const func = mjs.toggleHighlight;
-
-    it('should not call function if no argument given', async () => {
-      const res = await func();
-      assert.isUndefined(res, 'result');
-    });
-
-    it('should not call function if argument is not element', async () => {
-      const res = await func('foo');
-      assert.isUndefined(res, 'result');
-    });
-
-    it('should call function', async () => {
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      body.appendChild(elm);
-      const res = await func(elm);
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should call function', async () => {
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      elm.classList.add(HIGHLIGHTED);
-      body.appendChild(elm);
-      const res = await func(elm);
-      assert.deepEqual(res, [], 'result');
-    });
-  });
 });
