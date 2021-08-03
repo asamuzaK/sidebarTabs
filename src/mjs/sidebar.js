@@ -69,10 +69,9 @@ tabs.onUpdated.addListener(
   (tabId, info, tabsTab) =>
     handleUpdatedTab(tabId, info, tabsTab).catch(throwErr),
   {
-    // FIXME: add 'url' when Firefox 91 is released, issue #131
     properties: [
       'audible', 'discarded', 'favIconUrl', 'hidden', 'mutedInfo', 'pinned',
-      'status', 'title'
+      'status', 'title', 'url'
     ]
   }
 );
