@@ -25,8 +25,8 @@ export const getTemplate = id => {
   if (!isString(id)) {
     throw new TypeError(`Expected String but got ${getType(id)}.`);
   }
-  let frag;
   const tmpl = document.getElementById(id);
+  let frag;
   if (tmpl) {
     const { content: { firstElementChild } } = tmpl;
     frag = document.importNode(firstElementChild, true);
@@ -162,8 +162,8 @@ export const getSidebarTabIds = nodes => {
  * @returns {?number} - index
  */
 export const getSidebarTabIndex = node => {
-  let index;
   const tab = getSidebarTab(node);
+  let index;
   if (tab) {
     const items = document.querySelectorAll(TAB_QUERY);
     const l = items.length;
@@ -215,8 +215,8 @@ export const getTabsInRange = (tabA, tabB) => {
  * @returns {object} - tab
  */
 export const getNextTab = (elm, skipCollapsed = false) => {
-  let tab;
   const currentTab = getSidebarTab(elm);
+  let tab;
   if (currentTab) {
     const { parentNode, nextElementSibling } = currentTab;
     const { nextElementSibling: nextParent } = parentNode;
@@ -243,8 +243,8 @@ export const getNextTab = (elm, skipCollapsed = false) => {
  * @returns {object} - tab
  */
 export const getPreviousTab = (elm, skipCollapsed = false) => {
-  let tab;
   const currentTab = getSidebarTab(elm);
+  let tab;
   if (currentTab) {
     const { parentNode, previousElementSibling } = currentTab;
     const { previousElementSibling: previousParent } = parentNode;
@@ -298,8 +298,8 @@ export const getSessionTabList = async (key, windowId) => {
     const win = await getCurrentWindow();
     windowId = win.id;
   }
-  let tabList;
   const value = await getSessionWindowValue(key, windowId);
+  let tabList;
   if (isString(value)) {
     tabList = JSON.parse(value);
   }
@@ -323,9 +323,9 @@ export const saveSessionTabList = async (domStr, windowId) => {
   if (!Number.isInteger(windowId)) {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
-  let res;
   const win = await getWindow(windowId);
   const { incognito } = win;
+  let res;
   if (!incognito && !mutex.has(windowId)) {
     mutex.add(windowId);
     try {
@@ -523,23 +523,20 @@ export const createUrlMatchString = url => {
  * @returns {void}
  */
 export const storeCloseTabsByDoubleClickValue = async bool => {
-  let checked, value;
+  const store = {
+    id: 'closeTabsByDoubleClick',
+    checked: false,
+    value: ''
+  };
   if (bool) {
     const {
       levelOfControl, value: userValue
     } = await getCloseTabsByDoubleClickValue();
-    checked = !!userValue;
-    value = levelOfControl;
-  } else {
-    checked = false;
-    value = '';
+    store.checked = !!userValue;
+    store.value = levelOfControl;
   }
   return setStorage({
-    closeTabsByDoubleClick: {
-      id: 'closeTabsByDoubleClick',
-      checked,
-      value
-    }
+    closeTabsByDoubleClick: store
   });
 };
 

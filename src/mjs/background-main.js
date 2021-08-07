@@ -93,8 +93,8 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
   if (!Number.isInteger(windowId)) {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
-  let res;
   const portId = `${SIDEBAR}_${windowId}`;
+  let res;
   if (ports.has(portId) && sidebar.has(windowId)) {
     const value = sidebar.get(windowId);
     const { incognito } = value;

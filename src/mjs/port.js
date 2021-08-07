@@ -28,11 +28,11 @@ export const removePort = async portId => ports.delete(portId);
  * @returns {object} - runtime.Port
  */
 export const addPort = async () => {
-  let port;
   const win = await getCurrentWindow({
     populate: true
   });
   const { id: windowId } = win;
+  let port;
   if (windowId !== WINDOW_ID_NONE) {
     const portId = `${SIDEBAR}_${windowId}`;
     if (ports.has(portId)) {

@@ -184,8 +184,8 @@ export const convertAngleToDeg = async angle => {
   if (!isString(angle)) {
     throw new TypeError(`Expected String but got ${getType(angle)}.`);
   }
-  let deg;
   const reg = new RegExp(`^(${REG_NUM})(${REG_ANGLE})?$`);
+  let deg;
   if (reg.test(angle)) {
     const [, val, unit] = angle.match(reg);
     const value = val.startsWith('.') ? `0${val}` : val;

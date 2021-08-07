@@ -357,9 +357,9 @@ export const getCurrentThemeBaseValues = async () => {
  * @returns {object} - values
  */
 export const getBaseValues = async () => {
-  let values;
   const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   const items = await getEnabledTheme();
+  let values;
   if (Array.isArray(items) && items.length === 1) {
     const [{ id }] = items;
     switch (id) {
@@ -435,8 +435,8 @@ export const setCurrentThemeValue = async () => {
  * @returns {?Function} - sendMessage()
  */
 export const sendCurrentTheme = async () => {
-  let func;
   const obj = currentTheme.get(THEME_CURRENT);
+  let func;
   if (obj) {
     const msg = {
       [THEME_CUSTOM_SETTING]: obj

@@ -222,8 +222,8 @@ export const collapseTabGroups = async elm => {
  * @returns {object} - heading element
  */
 export const getTabGroupHeading = node => {
-  let heading;
   const container = getSidebarTabContainer(node);
+  let heading;
   if (container) {
     heading = container.querySelector(`.${CLASS_HEADING}`);
   }
@@ -495,12 +495,12 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
-  let func;
-  const revArr = nodes.reverse();
-  const arr = [];
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
+  const revArr = nodes.reverse();
+  const arr = [];
+  let func;
   for (const item of revArr) {
     const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {

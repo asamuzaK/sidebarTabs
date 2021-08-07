@@ -56,8 +56,8 @@ export const closeTabs = async nodes => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
-  let func;
   const arr = getSidebarTabIds(nodes);
+  let func;
   if (arr.length) {
     func = removeTab(arr);
   }
@@ -74,8 +74,8 @@ export const closeOtherTabs = async nodes => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
-  let func;
   const tabIds = getSidebarTabIds(nodes);
+  let func;
   if (tabIds.length) {
     const items = document.querySelectorAll(`${TAB_QUERY}:not(.${PINNED})`);
     const arr = [];
@@ -99,10 +99,10 @@ export const closeOtherTabs = async nodes => {
  * @returns {?Function} - removeTab()
  */
 export const closeTabsToEnd = async elm => {
-  let func;
   const tabId = getSidebarTabId(elm);
   const index = getSidebarTabIndex(elm);
   const arr = [];
+  let func;
   if (Number.isInteger(tabId) && Number.isInteger(index)) {
     const items = document.querySelectorAll(
       `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
@@ -129,10 +129,10 @@ export const closeTabsToEnd = async elm => {
  * @returns {?Function} - removeTab()
  */
 export const closeTabsToStart = async elm => {
-  let func;
   const tabId = getSidebarTabId(elm);
   const index = getSidebarTabIndex(elm);
   const arr = [];
+  let func;
   if (Number.isInteger(tabId) && Number.isInteger(index)) {
     const items = document.querySelectorAll(
       `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
@@ -191,7 +191,8 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
     throw new TypeError(`Expected String but got ${getType(cookieId)}.`);
   }
   const opt = [];
-  let arr = []; let func;
+  let func;
+  let arr = [];
   for (const item of nodes) {
     const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {
@@ -229,8 +230,8 @@ export const dupeTab = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
-  let func;
   const tabsTab = await getTab(tabId);
+  let func;
   if (tabsTab) {
     const { index, url } = tabsTab;
     if (!Number.isInteger(windowId)) {
@@ -488,9 +489,9 @@ export const moveTabsToNewWindow = async nodes => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
-  let func;
   const firstTab = nodes.shift();
   const firstTabId = getSidebarTabId(firstTab);
+  let func;
   if (Number.isInteger(firstTabId)) {
     const win = await createNewWindow({
       tabId: firstTabId,

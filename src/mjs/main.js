@@ -1925,9 +1925,9 @@ export const handleMsg = async msg => {
  * @returns {?Function} - port.postMessage()
  */
 export const requestSidebarStateUpdate = async () => {
-  let func;
   const { windowId } = sidebar;
   const port = ports.get(`${SIDEBAR}_${windowId}`);
+  let func;
   if (port && Number.isInteger(windowId)) {
     const win = await getCurrentWindow();
     const { focused, id, type } = win;

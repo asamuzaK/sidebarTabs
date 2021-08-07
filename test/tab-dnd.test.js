@@ -1224,6 +1224,51 @@ describe('dnd', () => {
       tmpl.content.appendChild(cnt);
       parent.id = PINNED;
       parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED, DROP_TARGET, DROP_TARGET_BEFORE);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent3.appendChild(elm4);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      const res = await func(elm, {
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [2],
+        tabIds: []
+      });
+      const items = document.querySelectorAll(`.${TAB}`);
+      assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
+      assert.deepEqual(Array.from(items), [elm2, elm, elm3, elm4], 'move');
+      assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
+      assert.deepEqual(res, [[null]], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.move.callCount;
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const parent3 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
       elm.classList.add(TAB, PINNED);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB, PINNED, DROP_TARGET, DROP_TARGET_AFTER);
@@ -1320,6 +1365,51 @@ describe('dnd', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB, PINNED);
       elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent3.appendChild(elm4);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      const res = await func(elm4, {
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [],
+        tabIds: [3]
+      });
+      const items = document.querySelectorAll(`.${TAB}`);
+      assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
+      assert.deepEqual(Array.from(items), [elm, elm2, elm4, elm3], 'move');
+      assert.isFalse(elm4.parentNode === elm3.parentNode, 'parent');
+      assert.deepEqual(res, [[null]], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.move.callCount;
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const parent3 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = '2';
       elm3.classList.add(TAB, DROP_TARGET, DROP_TARGET_BEFORE);
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
@@ -1337,6 +1427,55 @@ describe('dnd', () => {
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: [4]
+      }, {
+        shiftKey: true
+      });
+      const items = document.querySelectorAll(`.${TAB}`);
+      assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
+      assert.deepEqual(Array.from(items), [elm2, elm, elm4, elm3], 'move');
+      assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
+      assert.isFalse(elm.parentNode === elm4.parentNode, 'parent');
+      assert.isTrue(elm4.parentNode === elm3.parentNode, 'parent');
+      assert.deepEqual(res, [[null], [null]], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.move.callCount;
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const parent3 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent3.appendChild(elm4);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      body.appendChild(parent3);
+      const res = await func(elm4, {
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [1],
+        tabIds: [3]
       }, {
         shiftKey: true
       });

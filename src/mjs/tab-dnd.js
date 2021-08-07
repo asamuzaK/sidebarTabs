@@ -195,19 +195,16 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
             isPinnedTabIds: true
           });
           const opt = {
+            dropAfter: true,
+            dropBefore: false,
             isPinned: true,
             windowId: dropWindowId
           };
-          let dropAfter, dropBefore;
-          if (target === dropTarget) {
-            dropAfter = dropTarget.classList.contains(DROP_TARGET_AFTER);
-            dropBefore = dropTarget.classList.contains(DROP_TARGET_BEFORE);
-          } else {
-            dropAfter = true;
-            dropBefore = false;
+          if (target === dropTarget &&
+              dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+            opt.dropAfter = false;
+            opt.dropBefore = true;
           }
-          opt.dropAfter = dropAfter;
-          opt.dropBefore = dropBefore;
           func.push(moveDroppedTabs(target, pinnedTabIds, opt));
         }
         if (Array.isArray(tabIds) && tabIds.length) {
@@ -216,20 +213,17 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
           });
           const targetParent = target.parentNode;
           const opt = {
+            dropAfter: false,
+            dropBefore: true,
             isGrouped: targetParent.classList.contains(CLASS_TAB_GROUP) ||
                        shiftKey,
             windowId: dropWindowId
           };
-          let dropAfter, dropBefore;
-          if (target === dropTarget) {
-            dropAfter = dropTarget.classList.contains(DROP_TARGET_AFTER);
-            dropBefore = dropTarget.classList.contains(DROP_TARGET_BEFORE);
-          } else {
-            dropAfter = false;
-            dropBefore = true;
+          if (target === dropTarget &&
+              dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+            opt.dropAfter = true;
+            opt.dropBefore = false;
           }
-          opt.dropAfter = dropAfter;
-          opt.dropBefore = dropBefore;
           func.push(moveDroppedTabs(target, tabIds, opt));
         }
       // dragged from other window
