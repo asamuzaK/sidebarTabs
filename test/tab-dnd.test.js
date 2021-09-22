@@ -2,16 +2,19 @@
  * tab-dnd.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import sinon from 'sinon';
-import * as mjs from '../src/mjs/tab-dnd.js';
 import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
   HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, TAB
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/tab-dnd.js';
 
 describe('dnd', () => {
   const globalKeys = ['Node', 'XMLSerializer'];

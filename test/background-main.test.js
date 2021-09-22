@@ -2,16 +2,19 @@
  * background-main.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import { sleep } from '../src/mjs/common.js';
-import * as mjs from '../src/mjs/background-main.js';
 import sinon from 'sinon';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   SESSION_SAVE, SIDEBAR, SIDEBAR_STATE_UPDATE, TAB, TAB_LIST, TOGGLE_STATE
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/background-main.js';
 
 describe('background-main', () => {
   const globalKeys = ['DOMParser', 'XMLSerializer'];

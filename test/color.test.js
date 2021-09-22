@@ -2,8 +2,11 @@
  * color.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { describe, it } from 'mocha';
+
+/* test */
 import * as mjs from '../src/mjs/color.js';
 
 describe('color', () => {

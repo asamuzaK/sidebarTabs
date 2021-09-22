@@ -2,6 +2,7 @@
  * tab-content.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
@@ -9,7 +10,6 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import sinon from 'sinon';
-import * as mjs from '../src/mjs/tab-content.js';
 import {
   CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
   CLASS_TAB_TITLE,
@@ -17,6 +17,9 @@ import {
   TABS_MUTE, TABS_MUTE_UNMUTE,
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/tab-content.js';
 
 describe('tab-content', () => {
   const globalKeys = ['Node'];

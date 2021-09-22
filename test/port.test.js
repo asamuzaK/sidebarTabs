@@ -2,11 +2,14 @@
  * port.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, mockPort } from './mocha/setup.js';
-import * as mjs from '../src/mjs/port.js';
 import { SIDEBAR } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/port.js';
 
 describe('port', () => {
   beforeEach(() => {

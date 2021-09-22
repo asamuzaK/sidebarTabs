@@ -2,13 +2,16 @@
  * browser-tabs.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import * as mjs from '../src/mjs/browser-tabs.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED, TAB
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/browser-tabs.js';
 
 describe('browser-tabs', () => {
   const globalKeys = ['Node'];

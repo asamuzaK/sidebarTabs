@@ -2,17 +2,20 @@
  * util.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import psl from 'psl';
 import sinon from 'sinon';
-import * as mjs from '../src/mjs/util.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, SESSION_SAVE,
   SIDEBAR, TAB, TAB_LIST
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/util.js';
 
 describe('util', () => {
   const globalKeys = ['DOMParser', 'Node', 'NodeList', 'XMLSerializer'];

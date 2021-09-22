@@ -2,10 +2,10 @@
  * menu-items.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser } from './mocha/setup.js';
-import menuItems from '../src/mjs/menu-items.js';
 import {
   NEW_TAB_OPEN_CONTAINER, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
@@ -19,6 +19,9 @@ import {
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER
 } from '../src/mjs/constant.js';
+
+/* test */
+import menuItems from '../src/mjs/menu-items.js';
 
 describe('menu items', () => {
   beforeEach(() => {

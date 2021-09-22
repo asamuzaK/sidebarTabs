@@ -2,15 +2,18 @@
  * options-main.test.js
  */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
 import sinon from 'sinon';
-import * as mjs from '../src/mjs/options-main.js';
 import {
   BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/options-main.js';
 
 describe('options-main', () => {
   let window, document;

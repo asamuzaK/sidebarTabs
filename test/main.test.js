@@ -3,13 +3,13 @@
  */
 /* eslint-disable camelcase */
 
+/* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import os from 'os';
 import psl from 'psl';
 import sinon from 'sinon';
-import * as mjs from '../src/mjs/main.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
@@ -42,6 +42,11 @@ import {
   THEME_DARK, THEME_LIGHT,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
+
+/* test */
+import * as mjs from '../src/mjs/main.js';
+
+/* constant */
 const IS_WIN = os.platform() === 'win32';
 
 describe('main', () => {
