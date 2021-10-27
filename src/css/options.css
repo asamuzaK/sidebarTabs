@@ -6,7 +6,7 @@
 
 body {
   padding: 1rem 1rem 0;
-  background-color: rgb(250, 250, 250);
+  background-color: rgb(250 250 250);
   color: black;
   line-height: 1.5;
 }
@@ -17,7 +17,7 @@ main {
 
 footer {
   margin: 1rem 0 2rem;
-  border-top: 1px solid rgb(128, 128, 128);
+  border-top: 1px solid rgb(128 128 128);
 }
 
 section {
@@ -25,7 +25,7 @@ section {
 }
 
 section + section {
-  border-top: 1px dotted rgb(128, 128, 128);
+  border-top: 1px dotted rgb(128 128 128);
 }
 
 section section + section {
@@ -34,7 +34,7 @@ section section + section {
 
 main > section + p {
   margin-top: 1rem;
-  border-top: 1px dotted rgb(128, 128, 128);
+  border-top: 1px dotted rgb(128 128 128);
   padding-top: 1rem;
 }
 
@@ -52,19 +52,19 @@ header > h1::before {
   margin-right: 0.5rem;
   width: 1.44em;
   height: 1.44em;
-  background-image: url(../img/icon.svg);
+  background-image: url("../img/icon.svg");
   background-size: 1.44em 1.44em;
   content: "";
   vertical-align: top;
 }
 
 form {
-  margin: 0 0 2rem 0;
+  margin: 0 0 2rem;
 }
 
 fieldset {
   margin-top: 1rem;
-  border: 1px solid rgb(128, 128, 128);
+  border: 1px solid rgb(128 128 128);
   border-radius: 8px;
 }
 
@@ -96,10 +96,10 @@ details {
 details > div {
   position: absolute;
   left: 0.9rem;
-  border: 1px solid rgb(192, 192, 192);
+  border: 1px solid rgb(192 192 192);
   border-radius: 4px;
-  background-color: rgb(240, 240, 240);
-  color: rgb(16, 16, 16);
+  background-color: rgb(240 240 240);
+  color: rgb(16 16 16);
   z-index: 2;
 }
 
@@ -111,11 +111,11 @@ details > div > p {
   margin: 0.5rem;
 }
 
-label[for^=buttonIcon] {
+label[for^="buttonIcon"] {
   display: inline-block;
   position: relative;
   margin-right: 1.2rem;
-  border: 1px solid rgba(192, 192, 192, 0.5);
+  border: 1px solid rgb(192 192 192 / 50%);
   border-radius: 4px;
   width: 2.4rem;
   height: 2.4rem;
@@ -123,16 +123,16 @@ label[for^=buttonIcon] {
   vertical-align: middle;
 }
 
-label[for=buttonIcon],
-label[for=buttonIconGray] {
-  background-color: rgb(240, 240, 240);
+label[for="buttonIcon"],
+label[for="buttonIconGray"] {
+  background-color: rgb(240 240 240);
 }
 
-label[for=buttonIconWhite] {
-  background-color: rgb(64, 64, 64);
+label[for="buttonIconWhite"] {
+  background-color: rgb(64 64 64);
 }
 
-label[for=buttonIconAuto] {
+label[for="buttonIconAuto"] {
   border: none;
   background-color: transparent;
   height: auto;
@@ -146,42 +146,27 @@ label[for=buttonIconAuto] {
   min-width: 15rem;
 }
 
-.subItem {
+.sub-item {
   display: block;
   margin-left: 1.5rem;
 }
 
-.subItem > .label {
+.sub-item > .label {
   margin-right: 1rem;
   min-width: auto;
 }
 
-.htmlOutput {
-  box-sizing: border-box;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: flex-start;
-  min-width: min-content;
-  width: fit-content;
-}
-
-.htmlOutput > label {
-  flex: 1 1 min-content;
-  display: inline-block;
-  margin-right: 2rem;
-}
-
-label + input[type=radio] {
+label + input[type="radio"] {
   margin-left: 1rem;
 }
 
-input[type=text],
-input[type=url] {
+input[type="text"],
+input[type="url"] {
   min-width: 15rem;
   max-width: calc(100% - 1rem);
 }
 
-input[type=submit],
+input[type="submit"],
 button {
   font-size: 0.9rem;
 }

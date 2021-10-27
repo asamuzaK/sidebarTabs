@@ -98,7 +98,6 @@ main {
   width: auto;
   height: auto;
   transition: margin-top 0.1s, height 0.1s;
-  -moz-user-select: none;
   user-select: none;
   z-index: 2;
 }
@@ -128,7 +127,7 @@ main {
 
 .tab.active > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 var(--scale-size) rgba(128, 128, 142, 0.5);
+  box-shadow: 0 0 var(--scale-size) rgb(128 128 142 / 50%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
   fill: var(--foreground-active-color);
@@ -154,7 +153,7 @@ main {
 
 .tab.highlighted > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 4px rgba(128, 128, 142, 0.5);
+  box-shadow: 0 0 4px rgb(128 128 142 / 50%);
   background: var(--background-selection-color);
   color: var(--foreground-selection-color);
   fill: var(--foreground-selection-color);
@@ -505,7 +504,6 @@ main {
   width: auto;
   height: auto;
   transition: margin-top 0.1s, height 0.1s;
-  -moz-user-select: none;
   user-select: none;
   z-index: 2;
 }
@@ -517,7 +515,7 @@ main {
 
 .heading.active > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 var(--scale-size) rgba(128, 128, 142, 0.5);
+  box-shadow: 0 0 var(--scale-size) rgb(128 128 142 / 50%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
   fill: var(--foreground-active-color);
@@ -535,7 +533,7 @@ main {
 
 .heading.highlighted > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 4px rgba(128, 128, 142, 0.5);
+  box-shadow: 0 0 4px rgb(128 128 142 / 50%);
   background: var(--background-selection-color);
   color: var(--foreground-selection-color);
   fill: var(--foreground-selection-color);
@@ -731,7 +729,6 @@ main {
   width: calc(100% - var(--scale-size) / 3 * 2);
   height: var(--icon-size);
   font-weight: normal;
-  -moz-user-select: text;
   user-select: text;
   mask-image: none;
 }

@@ -1,6 +1,8 @@
 {
   "extends": "stylelint-config-standard",
   "rules": {
-    "no-descending-specificity": null
+    "max-line-length": null,
+    "no-descending-specificity": null,
+    "selector-id-pattern": null
   }
 }
