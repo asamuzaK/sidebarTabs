@@ -25,7 +25,7 @@
     "test_all": "npm-run-all -s test:*"
   },
   "devDependencies": {
-    "addons-linter": "^3.22.0",
+    "addons-linter": "^3.23.0",
     "c8": "^7.10.0",
     "chai": "^4.3.4",
     "eslint": "^7.32.0",
