@@ -14,7 +14,7 @@ import {
   CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
   CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,
   TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED,
-  URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER
+  URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER, URL_SPACER
 } from './constant.js';
 
 /* api */
@@ -258,7 +258,7 @@ export const setTabAudioIcon = async (elm, info) => {
       elm.src = URL_AUDIO_PLAYING;
     } else {
       elm.alt = '';
-      elm.src = '';
+      elm.src = URL_SPACER;
     }
   }
 };

@@ -15,7 +15,8 @@ import {
   CLASS_TAB_TITLE,
   HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE,
   TABS_MUTE, TABS_MUTE_UNMUTE,
-  URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER
+  URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
+  URL_SPACER
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -895,7 +896,7 @@ describe('tab-content', () => {
       assert.strictEqual(elm.src, URL_AUDIO_PLAYING, 'src');
     });
 
-    it('should not set icon', async () => {
+    it('should set spacer icon', async () => {
       const i = browser.i18n.getMessage.callCount;
       const elm = document.createElement('img');
       const body = document.querySelector('body');
@@ -908,7 +909,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
       assert.strictEqual(elm.alt, '', 'alt');
-      assert.strictEqual(elm.src, '', 'src');
+      assert.strictEqual(elm.src, URL_SPACER, 'src');
     });
   });
 

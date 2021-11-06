@@ -191,3 +191,4 @@ export const URL_AUDIO_MUTED = '../img/audio-muted.svg';
 export const URL_AUDIO_PLAYING = '../img/audio-play.svg';
 export const URL_FAVICON_DEFAULT = '../img/default-favicon.svg';
 export const URL_LOADING_THROBBER = '../img/loading.svg';
+export const URL_SPACER = '../img/spacer.svg';
