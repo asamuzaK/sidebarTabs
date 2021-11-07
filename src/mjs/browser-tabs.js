@@ -6,8 +6,8 @@
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   createBookmark, createNewWindow, createTab, getActiveTab,
-  getNewTabPositionValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
-  requestPermission, updateTab
+  getNewTabPositionValue, getTab, highlightTab, isPermissionGranted, moveTab,
+  reloadTab, removeTab, updateTab
 } from './browser.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
@@ -31,7 +31,9 @@ export const bookmarkTabs = async nodes => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
-  const isGranted = await requestPermission(['bookmarks']);
+  const isGranted = await isPermissionGranted({
+    permissions: ['bookmarks']
+  });
   const func = [];
   if (isGranted) {
     for (const item of nodes) {

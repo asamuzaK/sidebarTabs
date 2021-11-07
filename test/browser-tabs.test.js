@@ -23,7 +23,6 @@ describe('browser-tabs', () => {
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);
-    browser.permissions.request.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -89,7 +88,7 @@ describe('browser-tabs', () => {
     });
 
     it('should not call function if permission is not granted', async () => {
-      browser.permissions.request.resolves(false);
+      browser.permissions.contains.resolves(false);
       const i = browser.bookmarks.create.callCount;
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');

@@ -10,7 +10,7 @@ import {
   clearStorage, getActiveTab, getAllContextualIdentities,
   getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
   getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, setSessionWindowValue, warmupTab
+  requestPermission, restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { ports } from './port.js';
 import {
@@ -1087,18 +1087,22 @@ export const handleClickedMenu = async info => {
     tabsTab = await getTab(tabId);
   }
   switch (menuItemId) {
-    case TAB_ALL_BOOKMARK:
-      func.push(bookmarkTabs(Array.from(allTabs)));
+    case TAB_ALL_BOOKMARK: {
+      const isGranted = await requestPermission(['bookmarks']);
+      isGranted && func.push(bookmarkTabs(Array.from(allTabs)));
       break;
+    }
     case TAB_ALL_RELOAD:
       func.push(reloadTabs(Array.from(allTabs)));
       break;
     case TAB_ALL_SELECT:
       func.push(highlightTabs(Array.from(allTabs), windowId));
       break;
-    case TAB_BOOKMARK:
-      func.push(bookmarkTabs([tab]));
+    case TAB_BOOKMARK: {
+      const isGranted = await requestPermission(['bookmarks']);
+      isGranted && func.push(bookmarkTabs([tab]));
       break;
+    }
     case TAB_CLOSE:
       func.push(closeTabs([tab]));
       break;
@@ -1219,9 +1223,11 @@ export const handleClickedMenu = async info => {
     case TAB_RELOAD:
       func.push(reloadTabs([tab]));
       break;
-    case TABS_BOOKMARK:
-      func.push(bookmarkTabs(Array.from(selectedTabs)));
+    case TABS_BOOKMARK: {
+      const isGranted = await requestPermission(['bookmarks']);
+      isGranted && func.push(bookmarkTabs(Array.from(selectedTabs)));
       break;
+    }
     case TABS_CLOSE:
       func.push(closeTabs(Array.from(selectedTabs)));
       break;
