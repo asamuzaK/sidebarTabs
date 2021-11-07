@@ -195,6 +195,61 @@ describe('browser', () => {
     });
   });
 
+  describe('get bookmark tree node', () => {
+    const func = mjs.getBookmarkTreeNode;
+
+    it('should not call function if permission is not granted', async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.bookmarks.create.callCount;
+      const res = await func({ foo: 'bar' });
+      assert.strictEqual(browser.bookmarks.create.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.bookmarks.get.callCount;
+      const j = browser.bookmarks.getTree.callCount;
+      browser.bookmarks.getTree.resolves({});
+      const res = await func();
+      assert.strictEqual(browser.bookmarks.get.callCount, i, 'not called get');
+      assert.strictEqual(browser.bookmarks.getTree.callCount, j + 1,
+        'called get tree');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should throw if ID not found', async () => {
+      const i = browser.bookmarks.get.callCount;
+      const j = browser.bookmarks.getTree.callCount;
+      browser.bookmarks.get.withArgs('foo').rejects(new Error('error'));
+      await func('foo').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'error', 'message');
+      });
+    });
+
+    it('should call function', async () => {
+      const i = browser.bookmarks.get.callCount;
+      const j = browser.bookmarks.getTree.callCount;
+      browser.bookmarks.get.withArgs('foo').resolves([{}]);
+      const res = await func('foo');
+      assert.strictEqual(browser.bookmarks.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.bookmarks.getTree.callCount, j,
+        'not called get tree');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.bookmarks.get.callCount;
+      const j = browser.bookmarks.getTree.callCount;
+      browser.bookmarks.get.withArgs(['foo', 'bar']).resolves([{}, {}]);
+      const res = await func(['foo', 'bar']);
+      assert.strictEqual(browser.bookmarks.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.bookmarks.getTree.callCount, j,
+        'not called get tree');
+      assert.deepEqual(res, [{}, {}], 'result');
+    });
+  });
+
   describe('get closeTabsByDoubleClick user value', () => {
     const func = mjs.getCloseTabsByDoubleClickValue;
 
