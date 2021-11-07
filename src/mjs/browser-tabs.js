@@ -5,9 +5,8 @@
 /* shared */
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
-  createBookmark, createNewWindow, createTab, getActiveTab,
-  getNewTabPositionValue, getTab, highlightTab, isPermissionGranted, moveTab,
-  reloadTab, removeTab, updateTab
+  createNewWindow, createTab, getActiveTab, getNewTabPositionValue, getTab,
+  highlightTab, moveTab, reloadTab, removeTab, updateTab
 } from './browser.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
@@ -19,36 +18,6 @@ import {
 
 /* api */
 const { tabs, windows } = browser;
-
-/* bookmark */
-/**
- * bookmark tabs
- *
- * @param {Array} nodes - array of node
- * @returns {Promise.<Array>} - results of each handler
- */
-export const bookmarkTabs = async nodes => {
-  if (!Array.isArray(nodes)) {
-    throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
-  }
-  const isGranted = await isPermissionGranted({
-    permissions: ['bookmarks']
-  });
-  const func = [];
-  if (isGranted) {
-    for (const item of nodes) {
-      if (item.nodeType === Node.ELEMENT_NODE) {
-        const { dataset } = item;
-        const itemTab = dataset.tab && JSON.parse(dataset.tab);
-        if (itemTab) {
-          const { title, url } = itemTab;
-          func.push(createBookmark({ title, url }));
-        }
-      }
-    }
-  }
-  return Promise.all(func);
-};
 
 /* close */
 /**

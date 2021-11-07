@@ -7000,59 +7000,7 @@ describe('main', () => {
       assert.deepEqual(res, [undefined], 'result');
     });
 
-    it('should not call function', async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.bookmarks.create.callCount;
-      const pinned = document.createElement('section');
-      const sect = document.createElement('section');
-      const newTab = document.createElement('section');
-      const elm = document.createElement('div');
-      const elm2 = document.createElement('div');
-      const elm3 = document.createElement('div');
-      const body = document.querySelector('body');
-      pinned.id = PINNED;
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = '1';
-      elm.dataset.tab = JSON.stringify({
-        title: 'foo',
-        url: 'https://example.com'
-      });
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({
-        title: 'bar',
-        url: 'https://www.example.com'
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = '3';
-      sect.appendChild(elm);
-      sect.appendChild(elm2);
-      sect.appendChild(elm3);
-      newTab.id = NEW_TAB;
-      body.appendChild(pinned);
-      body.appendChild(sect);
-      body.appendChild(newTab);
-      mjs.sidebar.context = elm;
-      mjs.sidebar.windowId = 1;
-      browser.tabs.get.withArgs(1).resolves({});
-      browser.tabs.get.withArgs(2).resolves({});
-      browser.tabs.get.withArgs(3).resolves({});
-      browser.bookmarks.create.resolves({});
-      const info = {
-        menuItemId: TABS_BOOKMARK
-      };
-      const res = await func(info);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.create.callCount, j,
-        'not called create');
-      assert.deepEqual(res, [], 'result');
-    });
-
     it('should call function', async () => {
-      browser.permissions.request.resolves(true);
       const i = browser.tabs.get.callCount;
       const j = browser.bookmarks.create.callCount;
       const pinned = document.createElement('section');
@@ -7104,58 +7052,6 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.bookmarks.create.callCount;
-      const pinned = document.createElement('section');
-      const sect = document.createElement('section');
-      const newTab = document.createElement('section');
-      const elm = document.createElement('div');
-      const elm2 = document.createElement('div');
-      const elm3 = document.createElement('div');
-      const body = document.querySelector('body');
-      pinned.id = PINNED;
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = '1';
-      elm.dataset.tab = JSON.stringify({
-        title: 'foo',
-        url: 'https://example.com'
-      });
-      elm2.classList.add(TAB);
-      elm2.classList.add(HIGHLIGHTED);
-      elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({
-        title: 'bar',
-        url: 'https://www.example.com'
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = '3';
-      sect.appendChild(elm);
-      sect.appendChild(elm2);
-      sect.appendChild(elm3);
-      newTab.id = NEW_TAB;
-      body.appendChild(pinned);
-      body.appendChild(sect);
-      body.appendChild(newTab);
-      mjs.sidebar.context = elm;
-      mjs.sidebar.windowId = 1;
-      browser.tabs.get.withArgs(1).resolves({});
-      browser.tabs.get.withArgs(2).resolves({});
-      browser.tabs.get.withArgs(3).resolves({});
-      browser.bookmarks.create.resolves({});
-      const info = {
-        menuItemId: TAB_BOOKMARK
-      };
-      const res = await func(info);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.create.callCount, j,
-        'not called create');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.permissions.request.resolves(true);
       const i = browser.tabs.get.callCount;
       const j = browser.bookmarks.create.callCount;
       const pinned = document.createElement('section');
@@ -8221,58 +8117,6 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
-      const i = browser.tabs.get.callCount;
-      const j = browser.bookmarks.create.callCount;
-      const pinned = document.createElement('section');
-      const sect = document.createElement('section');
-      const newTab = document.createElement('section');
-      const elm = document.createElement('div');
-      const elm2 = document.createElement('div');
-      const elm3 = document.createElement('div');
-      const body = document.querySelector('body');
-      pinned.id = PINNED;
-      sect.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.dataset.tab = JSON.stringify({
-        title: 'foo',
-        url: 'https://example.com'
-      });
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({
-        title: 'bar',
-        url: 'https://www.example.com'
-      });
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = '3';
-      elm3.dataset.tab = JSON.stringify({
-        title: 'baz',
-        url: 'http://example.com'
-      });
-      sect.appendChild(elm);
-      sect.appendChild(elm2);
-      sect.appendChild(elm3);
-      newTab.id = NEW_TAB;
-      body.appendChild(pinned);
-      body.appendChild(sect);
-      body.appendChild(newTab);
-      mjs.sidebar.context = elm;
-      mjs.sidebar.windowId = 1;
-      browser.tabs.get.withArgs(1).resolves({});
-      browser.bookmarks.create.resolves({});
-      const info = {
-        menuItemId: TAB_ALL_BOOKMARK
-      };
-      const res = await func(info);
-      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.create.callCount, j,
-        'not called create');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.permissions.request.resolves(true);
       const i = browser.tabs.get.callCount;
       const j = browser.bookmarks.create.callCount;
       const pinned = document.createElement('section');
