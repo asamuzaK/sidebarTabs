@@ -78,6 +78,7 @@ describe('main', () => {
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);
+    browser.permissions.request.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;

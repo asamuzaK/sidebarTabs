@@ -40,6 +40,7 @@
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
   "optional_permissions": [
+    "bookmarks",
     "browserSettings"
   ],
   "options_ui": {
@@ -49,7 +50,6 @@
   },
   "permissions": [
     "activeTab",
-    "bookmarks",
     "contextualIdentities",
     "cookies",
     "management",

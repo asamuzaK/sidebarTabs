@@ -23,6 +23,7 @@ describe('browser-tabs', () => {
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);
+    browser.permissions.request.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -83,6 +84,39 @@ describe('browser-tabs', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       const res = await func([elm]);
+      assert.strictEqual(browser.bookmarks.create.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function if permission is not granted', async () => {
+      browser.permissions.request.resolves(false);
+      const i = browser.bookmarks.create.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'http://example.com'
+      });
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items));
       assert.strictEqual(browser.bookmarks.create.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
