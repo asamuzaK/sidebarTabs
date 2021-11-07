@@ -7,7 +7,7 @@ import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   createBookmark, createNewWindow, createTab, getActiveTab,
   getNewTabPositionValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
-  updateTab
+  requestPermission, updateTab
 } from './browser.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
@@ -31,14 +31,17 @@ export const bookmarkTabs = async nodes => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
+  const isGranted = await requestPermission(['bookmarks']);
   const func = [];
-  for (const item of nodes) {
-    if (item.nodeType === Node.ELEMENT_NODE) {
-      const { dataset } = item;
-      const itemTab = dataset.tab && JSON.parse(dataset.tab);
-      if (itemTab) {
-        const { title, url } = itemTab;
-        func.push(createBookmark({ title, url }));
+  if (isGranted) {
+    for (const item of nodes) {
+      if (item.nodeType === Node.ELEMENT_NODE) {
+        const { dataset } = item;
+        const itemTab = dataset.tab && JSON.parse(dataset.tab);
+        if (itemTab) {
+          const { title, url } = itemTab;
+          func.push(createBookmark({ title, url }));
+        }
       }
     }
   }
