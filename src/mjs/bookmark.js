@@ -31,13 +31,24 @@ export const bookmarkTabs = async nodes => {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
   const func = [];
+  let parentId;
+  if (nodes.length > 1) {
+    const folderTitle = window.prompt('Input folder name');
+    const folder = await createBookmark({
+      title: folderTitle
+    });
+    if (folder) {
+      const { id } = folder;
+      parentId = id;
+    }
+  }
   for (const item of nodes) {
     if (item.nodeType === Node.ELEMENT_NODE) {
       const { dataset } = item;
       const itemTab = dataset.tab && JSON.parse(dataset.tab);
       if (itemTab) {
         const { title, url } = itemTab;
-        func.push(createBookmark({ title, url }));
+        func.push(createBookmark({ parentId, title, url }));
       }
     }
   }
