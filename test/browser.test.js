@@ -209,7 +209,7 @@ describe('browser', () => {
     it('should call function', async () => {
       const i = browser.bookmarks.get.callCount;
       const j = browser.bookmarks.getTree.callCount;
-      browser.bookmarks.getTree.resolves({});
+      browser.bookmarks.getTree.resolves([{}]);
       const res = await func();
       assert.strictEqual(browser.bookmarks.get.callCount, i, 'not called get');
       assert.strictEqual(browser.bookmarks.getTree.callCount, j + 1,

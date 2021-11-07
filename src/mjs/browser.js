@@ -54,8 +54,7 @@ export const getBookmarkTreeNode = async id => {
     if (isString(id) || Array.isArray(id)) {
       res = await bookmarks.get(id);
     } else {
-      const root = await bookmarks.getTree();
-      res = [root];
+      res = await bookmarks.getTree();
     }
   }
   return res || null;
