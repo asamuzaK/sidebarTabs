@@ -218,8 +218,6 @@ describe('browser', () => {
     });
 
     it('should throw if ID not found', async () => {
-      const i = browser.bookmarks.get.callCount;
-      const j = browser.bookmarks.getTree.callCount;
       browser.bookmarks.get.withArgs('foo').rejects(new Error('error'));
       await func('foo').catch(e => {
         assert.instanceOf(e, Error, 'error');
