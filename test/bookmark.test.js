@@ -227,5 +227,71 @@ describe('bookmark', () => {
       }).callCount, j + 1, 'called');
       assert.deepEqual(res, ['foo', 'bar'], 'result');
     });
+
+    it('should call function', async () => {
+      window.prompt.withArgs('Input folder name', 'foobar').returns('foobar');
+      browser.bookmarks.create.withArgs({
+        title: 'foobar'
+      }).resolves({
+        id: 'foobar_folder'
+      });
+      browser.bookmarks.create.withArgs({
+        parentId: 'foobar_folder',
+        title: 'foo',
+        url: 'https://example.com'
+      }).resolves('foo');
+      browser.bookmarks.create.withArgs({
+        parentId: 'foobar_folder',
+        title: 'bar',
+        url: 'https://www.example.com'
+      }).resolves('bar');
+      const i = browser.bookmarks.create.withArgs({
+        parentId: 'foobar_folder',
+        title: 'foo',
+        url: 'https://example.com'
+      }).callCount;
+      const j = browser.bookmarks.create.withArgs({
+        parentId: 'foobar_folder',
+        title: 'bar',
+        url: 'https://www.example.com'
+      }).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'http://example.com'
+      });
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items), 'foobar');
+      assert.strictEqual(browser.bookmarks.create.withArgs({
+        parentId: 'foobar_folder',
+        title: 'foo',
+        url: 'https://example.com'
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.bookmarks.create.withArgs({
+        parentId: 'foobar_folder',
+        title: 'bar',
+        url: 'https://www.example.com'
+      }).callCount, j + 1, 'called');
+      assert.deepEqual(res, ['foo', 'bar'], 'result');
+    });
   });
 });

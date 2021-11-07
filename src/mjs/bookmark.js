@@ -24,16 +24,17 @@ const { bookmarks } = browser;
  * bookmark tabs
  *
  * @param {Array} nodes - array of node
+ * @param {string} name - default folder name
  * @returns {Promise.<Array>} - results of each handler
  */
-export const bookmarkTabs = async nodes => {
+export const bookmarkTabs = async (nodes, name = "") => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
   const func = [];
   let parentId;
   if (nodes.length > 1) {
-    const folderTitle = window.prompt('Input folder name');
+    const folderTitle = window.prompt('Input folder name', name);
     const folder = await createBookmark({
       title: folderTitle
     });
