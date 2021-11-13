@@ -4,6 +4,7 @@
 
 export const ACTIVE = 'active';
 export const AUDIBLE = 'audible';
+export const BOOKMARK_LOCATION = 'bookmarkLocation';
 export const BROWSER_SETTINGS_READ = 'readBrowserSettings';
 export const CLASS_COMPACT = 'compact';
 export const CLASS_GROUP = 'group';

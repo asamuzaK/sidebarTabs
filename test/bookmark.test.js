@@ -6,7 +6,7 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import { HIGHLIGHTED, TAB } from '../src/mjs/constant.js';
+import { BOOKMARK_LOCATION, HIGHLIGHTED, TAB } from '../src/mjs/constant.js';
 
 /* test */
 import * as mjs from '../src/mjs/bookmark.js';
@@ -42,6 +42,339 @@ describe('bookmark', () => {
 
   it('should get browser object', () => {
     assert.isObject(browser, 'browser');
+  });
+
+  describe('create folder map', () => {
+    const func = mjs.createFolderMap;
+    beforeEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+    afterEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+
+    it('should get map of size 0', () => {
+      const res = func();
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 0, 'size');
+    });
+
+    it('should get map of size 0', () => {
+      const res = func({});
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 0, 'size');
+    });
+
+    it('should get map of size 0', () => {
+      const tree = {
+        type: 'foo'
+      };
+      const res = func(tree);
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 0, 'size');
+    });
+
+    it('should get map of size 0', () => {
+      const tree = {
+        type: 'folder'
+      };
+      const res = func(tree);
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 0, 'size');
+    });
+
+    it('should get map', () => {
+      const tree = {
+        id: 'foo',
+        type: 'folder'
+      };
+      const res = func(tree);
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 1, 'size');
+      assert.isTrue(res.has('foo'), 'key');
+    });
+
+    it('should get map', () => {
+      const tree = {
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      };
+      const res = func(tree);
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 3, 'size');
+      assert.isTrue(res.has('foo'), 'key');
+      assert.deepEqual(Array.from(res.get('foo').children), [
+        'bar',
+        'baz'
+      ], 'set');
+      assert.isTrue(res.has('bar'), 'key');
+      assert.deepEqual(Array.from(res.get('bar').children), [], 'set');
+      assert.isTrue(res.has('baz'), 'key');
+      assert.isFalse(res.has('qux'), 'key');
+      assert.isFalse(res.has('quux'), 'key');
+    });
+
+    it('should get map', () => {
+      const tree = {
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      };
+      const res = func(tree, true);
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 4, 'size');
+      assert.isTrue(res.has('foo'), 'key');
+      assert.deepEqual(Array.from(res.get('foo').children), [
+        'bar',
+        'baz'
+      ], 'set');
+      assert.isTrue(res.has('bar'), 'key');
+      assert.deepEqual(Array.from(res.get('bar').children), ['quux'], 'set');
+      assert.isTrue(res.has('baz'), 'key');
+      assert.isFalse(res.has('qux'), 'key');
+      assert.isTrue(res.has('quux'), 'key');
+    });
+  });
+
+  describe('get refreshed folder map', () => {
+    const func = mjs.getRefreshedFolderMap;
+    beforeEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+    afterEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+
+    it('should get map', async () => {
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      }]);
+      const res = await func();
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 3, 'size');
+      assert.isTrue(res.has('foo'), 'key');
+      assert.deepEqual(Array.from(res.get('foo').children), [
+        'bar',
+        'baz'
+      ], 'set');
+      assert.isTrue(res.has('bar'), 'key');
+      assert.deepEqual(Array.from(res.get('bar').children), [], 'set');
+      assert.isTrue(res.has('baz'), 'key');
+      assert.isFalse(res.has('qux'), 'key');
+      assert.isFalse(res.has('quux'), 'key');
+    });
+
+    it('should get map', async () => {
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      }]);
+      const res = await func(true);
+      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res.size, 4, 'size');
+      assert.isTrue(res.has('foo'), 'key');
+      assert.deepEqual(Array.from(res.get('foo').children), [
+        'bar',
+        'baz'
+      ], 'set');
+      assert.isTrue(res.has('bar'), 'key');
+      assert.deepEqual(Array.from(res.get('bar').children), ['quux'], 'set');
+      assert.isTrue(res.has('baz'), 'key');
+      assert.isFalse(res.has('qux'), 'key');
+      assert.isTrue(res.has('quux'), 'key');
+    });
+  });
+
+  describe('get bookmark location ID from storage', () => {
+    const func = mjs.getBookmarkLocationId;
+    beforeEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+    afterEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+
+    it('should get null', async () => {
+      browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves(undefined);
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
+      browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
+        foo: {
+          value: 'bar'
+        }
+      });
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
+      browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
+        [BOOKMARK_LOCATION]: {
+          value: 'foobar'
+        }
+      });
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      }]);
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
+        [BOOKMARK_LOCATION]: {
+          value: 'bar'
+        }
+      });
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      }]);
+      const res = await func();
+      assert.strictEqual(res, 'bar', 'result');
+    });
   });
 
   describe('bookmark tabs', () => {
@@ -163,9 +496,86 @@ describe('bookmark', () => {
     });
 
     it('should call function', async () => {
+      browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
+        [BOOKMARK_LOCATION]: {
+          value: 'bar'
+        }
+      });
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      }]);
+      browser.bookmarks.create.withArgs({
+        parentId: 'bar',
+        title: 'foo',
+        url: 'https://example.com'
+      }).resolves('bar');
+      const i = browser.bookmarks.create.withArgs({
+        parentId: 'bar',
+        title: 'foo',
+        url: 'https://example.com'
+      }).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'http://example.com'
+      });
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const items = document.querySelectorAll(`.${HIGHLIGHTED}`);
+      const res = await func(Array.from(items));
+      assert.strictEqual(browser.bookmarks.create.withArgs({
+        parentId: 'bar',
+        title: 'foo',
+        url: 'https://example.com'
+      }).callCount, i + 1, 'called');
+      assert.deepEqual(res, ['bar'], 'result');
+    });
+
+    it('should call function', async () => {
       window.prompt.returns('foobar');
       browser.bookmarks.create.withArgs({
-        title: 'foobar'
+        parentId: undefined,
+        title: 'foobar',
+        type: 'folder'
       }).resolves({
         id: 'foobar_folder'
       });
@@ -231,7 +641,9 @@ describe('bookmark', () => {
     it('should call function', async () => {
       window.prompt.withArgs('Input folder name', 'foobar').returns('foobar');
       browser.bookmarks.create.withArgs({
-        title: 'foobar'
+        parentId: undefined,
+        title: 'foobar',
+        type: 'folder'
       }).resolves({
         id: 'foobar_folder'
       });
