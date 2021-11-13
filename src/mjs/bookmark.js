@@ -69,7 +69,8 @@ export const getBookmarkLocationId = async () => {
     if (value && isString(value)) {
       try {
         const [tree] = await getBookmarkTreeNode(value);
-        if (isObjectNotEmpty(tree)) {
+        if (isObjectNotEmpty(tree) &&
+            Object.prototype.hasOwnProperty.call(tree, 'id')) {
           const { id: treeId } = tree;
           id = treeId;
         }

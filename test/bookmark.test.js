@@ -315,6 +315,19 @@ describe('bookmark', () => {
       assert.isNull(res, 'result');
     });
 
+    it('should get null', async () => {
+      browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
+        [BOOKMARK_LOCATION]: {
+          value: 'bar'
+        }
+      });
+      browser.bookmarks.get.withArgs('bar').resolves([{
+        foo: 'bar'
+      }]);
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
     it('should get result', async () => {
       browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
         [BOOKMARK_LOCATION]: {
