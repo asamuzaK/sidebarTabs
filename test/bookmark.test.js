@@ -310,32 +310,7 @@ describe('bookmark', () => {
           value: 'foobar'
         }
       });
-      browser.bookmarks.getTree.resolves([{
-        children: [
-          {
-            children: [{
-              id: 'quux',
-              parentId: 'bar',
-              type: 'folder'
-            }],
-            id: 'bar',
-            parentId: 'foo',
-            type: 'folder'
-          },
-          {
-            id: 'baz',
-            parentId: 'foo',
-            type: 'folder'
-          },
-          {
-            id: 'qux',
-            parentId: 'foo',
-            type: 'bookmark'
-          }
-        ],
-        id: 'foo',
-        type: 'folder'
-      }]);
+      browser.bookmarks.get.withArgs('foobar').rejects(new Error('error'));
       const res = await func();
       assert.isNull(res, 'result');
     });
@@ -346,30 +321,14 @@ describe('bookmark', () => {
           value: 'bar'
         }
       });
-      browser.bookmarks.getTree.resolves([{
-        children: [
-          {
-            children: [{
-              id: 'quux',
-              parentId: 'bar',
-              type: 'folder'
-            }],
-            id: 'bar',
-            parentId: 'foo',
-            type: 'folder'
-          },
-          {
-            id: 'baz',
-            parentId: 'foo',
-            type: 'folder'
-          },
-          {
-            id: 'qux',
-            parentId: 'foo',
-            type: 'bookmark'
-          }
-        ],
-        id: 'foo',
+      browser.bookmarks.get.withArgs('bar').resolves([{
+        children: [{
+          id: 'quux',
+          parentId: 'bar',
+          type: 'folder'
+        }],
+        id: 'bar',
+        parentId: 'foo',
         type: 'folder'
       }]);
       const res = await func();
@@ -501,30 +460,14 @@ describe('bookmark', () => {
           value: 'bar'
         }
       });
-      browser.bookmarks.getTree.resolves([{
-        children: [
-          {
-            children: [{
-              id: 'quux',
-              parentId: 'bar',
-              type: 'folder'
-            }],
-            id: 'bar',
-            parentId: 'foo',
-            type: 'folder'
-          },
-          {
-            id: 'baz',
-            parentId: 'foo',
-            type: 'folder'
-          },
-          {
-            id: 'qux',
-            parentId: 'foo',
-            type: 'bookmark'
-          }
-        ],
-        id: 'foo',
+      browser.bookmarks.get.withArgs('bar').resolves([{
+        children: [{
+          id: 'quux',
+          parentId: 'bar',
+          type: 'folder'
+        }],
+        id: 'bar',
+        parentId: 'foo',
         type: 'folder'
       }]);
       browser.bookmarks.create.withArgs({

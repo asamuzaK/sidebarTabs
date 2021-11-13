@@ -67,9 +67,14 @@ export const getBookmarkLocationId = async () => {
       Object.prototype.hasOwnProperty.call(folder, BOOKMARK_LOCATION)) {
     const { value } = folder[BOOKMARK_LOCATION];
     if (value && isString(value)) {
-      await getRefreshedFolderMap(true);
-      if (folderMap.has(value)) {
-        id = value;
+      try {
+        const [tree] = await getBookmarkTreeNode(value);
+        if (isObjectNotEmpty(tree)) {
+          const { id: treeId } = tree;
+          id = treeId;
+        }
+      } catch (e) {
+        // fail through
       }
     }
   }
