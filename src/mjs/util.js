@@ -540,16 +540,5 @@ export const storeCloseTabsByDoubleClickValue = async bool => {
   });
 };
 
-/**
- * is dialog element supported
- *
- * @returns {boolean} - result
- */
-export const isDialogSupported = () => {
-  const elm = document.createElement('dialog');
-  const res = typeof elm.showModal === 'function';
-  return res;
-};
-
 // For test
 export { ports };
