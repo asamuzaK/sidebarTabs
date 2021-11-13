@@ -541,7 +541,7 @@ export const storeCloseTabsByDoubleClickValue = async bool => {
 };
 
 /**
- * is dialog supported
+ * is dialog element supported
  *
  * @returns {boolean} - result
  */
