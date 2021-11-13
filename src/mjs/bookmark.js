@@ -62,7 +62,8 @@ export const getRefreshedFolderMap = async (recurse = false) => {
 export const getBookmarkLocationId = async () => {
   const folder = await getStorage(BOOKMARK_LOCATION);
   let id;
-  if (isObjectNotEmpty(folder) && folder.hasOwnProperty(BOOKMARK_LOCATION)) {
+  if (isObjectNotEmpty(folder) &&
+      Object.prototype.hasOwnProperty.call(folder, BOOKMARK_LOCATION)) {
     const { value } = folder[BOOKMARK_LOCATION];
     if (value && isString(value)) {
       await getRefreshedFolderMap(true);
