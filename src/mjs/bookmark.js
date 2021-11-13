@@ -96,14 +96,17 @@ export const bookmarkTabs = async (nodes, name = '') => {
   let folderId = await getBookmarkLocationId();
   if (nodes.length > 1) {
     const folderTitle = window.prompt('Input folder name', name);
-    const folder = await createBookmark({
-      parentId: folderId || undefined,
-      title: folderTitle,
-      type: 'folder'
-    });
-    if (folder) {
-      const { id } = folder;
-      folderId = id;
+    if (folderTitle) {
+      const folder = await createBookmark({
+        parentId: folderId || undefined,
+        title: folderTitle,
+        type: 'folder'
+      });
+      if (isObjectNotEmpty(folder) &&
+          Object.prototype.hasOwnProperty.call(folder, 'id')) {
+        const { id } = folder;
+        folderId = id;
+      }
     }
   }
   const func = [];
