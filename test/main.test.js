@@ -78,7 +78,6 @@ describe('main', () => {
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);
-    browser.permissions.request.resolves(true);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -7047,7 +7046,7 @@ describe('main', () => {
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.create.callCount, j + 2,
+      assert.strictEqual(browser.bookmarks.create.callCount, j + 3,
         'called create');
       assert.deepEqual(res, [[{}, {}]], 'result');
     });
@@ -8163,7 +8162,7 @@ describe('main', () => {
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.create.callCount, j + 3,
+      assert.strictEqual(browser.bookmarks.create.callCount, j + 4,
         'called create');
       assert.deepEqual(res, [[{}, {}, {}]], 'result');
     });

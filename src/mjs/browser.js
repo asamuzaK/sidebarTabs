@@ -38,6 +38,28 @@ export const createBookmark = async opt => {
   return node || null;
 };
 
+/**
+ * get bookmark tree node
+ *
+ * @param {string|Array} id - bookmark ID or array of bookmark IDs
+ * @returns {Array} - array of bookmarks.BookmarkTreeNode
+ */
+export const getBookmarkTreeNode = async id => {
+  const isGranted = await isPermissionGranted({
+    permissions: ['bookmarks']
+  });
+  let res;
+  if (isGranted) {
+    const { bookmarks } = browser;
+    if (isString(id) || Array.isArray(id)) {
+      res = await bookmarks.get(id);
+    } else {
+      res = await bookmarks.getTree();
+    }
+  }
+  return res || null;
+};
+
 /* browserSettings */
 /**
  * get closeTabsByDoubleClick user value

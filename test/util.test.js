@@ -2031,4 +2031,15 @@ describe('util', () => {
         i + 1, 'called');
     });
   });
+
+  describe('is dialog element supported', () => {
+    const func = mjs.isDialogSupported;
+
+    // TODO: jsdom hasn't implemented showModal yet. Only result type is tested.
+    // See https://github.com/jsdom/jsdom/blob/master/lib/jsdom/living/nodes/HTMLDialogElement.webidl
+    it('should get result', async () => {
+      const res = await func();
+      assert.isBoolean(res, 'result');
+    });
+  });
 });

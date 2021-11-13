@@ -19,8 +19,9 @@ import {
   getTemplate, isNewTab, requestSaveSession, scrollTabIntoView,
   storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
+import { bookmarkTabs } from './bookmark.js';
 import {
-  bookmarkTabs, closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
+  closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
   moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer

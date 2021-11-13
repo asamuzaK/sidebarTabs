@@ -21,6 +21,7 @@ export const createJsdom = () => {
       window.matchMedia = sinon.stub().returns({
         matches: false
       });
+      window.prompt = sinon.stub();
     }
   };
   return new JSDOM(domstr, opt);
