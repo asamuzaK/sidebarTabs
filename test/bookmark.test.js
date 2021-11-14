@@ -183,8 +183,8 @@ describe('bookmark', () => {
     });
   });
 
-  describe('get refreshed folder map', () => {
-    const func = mjs.getRefreshedFolderMap;
+  describe('get folder map', () => {
+    const func = mjs.getFolderMap;
     beforeEach(() => {
       const { folderMap } = mjs;
       folderMap.clear();

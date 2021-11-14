@@ -6,8 +6,9 @@
 import { throwErr } from './common.js';
 import { localizeHtml } from './localize.js';
 import {
-  addCustomThemeListener, addInitCustomThemeListener, addInitExtensionListener,
-  addInputChangeListener, handleMsg, requestCustomTheme, setValuesFromStorage
+  addBookmarkLocations, addCustomThemeListener, addInitCustomThemeListener,
+  addInitExtensionListener, addInputChangeListener,
+  handleMsg, requestCustomTheme, setValuesFromStorage
 } from './options-main.js';
 
 /* api */
@@ -19,11 +20,11 @@ runtime.onMessage.addListener((msg, sender) =>
 
 /* startup */
 document.addEventListener('DOMContentLoaded', () => Promise.all([
+  addBookmarkLocations().then(setValuesFromStorage),
   addCustomThemeListener(),
   addInitCustomThemeListener(),
   addInitExtensionListener(),
   addInputChangeListener(),
   localizeHtml(),
-  requestCustomTheme(true),
-  setValuesFromStorage()
+  requestCustomTheme(true)
 ]).catch(throwErr));

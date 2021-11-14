@@ -46,12 +46,12 @@ export const createFolderMap = (node, recurse = false) => {
 };
 
 /**
- * get refreshed folder map
+ * get folder map
  *
  * @param {boolean} recurse - create bookmark folder tree recursively
  * @returns {object} - folderMap
  */
-export const getRefreshedFolderMap = async (recurse = false) => {
+export const getFolderMap = async (recurse = false) => {
   const [tree] = await getBookmarkTreeNode();
   folderMap.clear();
   createFolderMap(tree, recurse);

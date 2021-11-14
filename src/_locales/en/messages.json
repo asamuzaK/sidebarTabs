@@ -477,6 +477,15 @@
       }
     }
   },
+  "optionsAutoLabel": {
+    "message": "Auto"
+  },
+  "optionsBookmarkLocation": {
+    "message": "Save bookmarks to:"
+  },
+  "optionsBookmarkLocationDetail": {
+    "message": "Save bookmarks and folder to the selected location."
+  },
   "optionsCompactTab": {
     "message": "Reduce tab height"
   },
@@ -596,9 +605,6 @@
   },
   "optionsThemeLightLabel": {
     "message": "Light Theme"
-  },
-  "optionsThemeAutoLabel": {
-    "message": "Auto Detect"
   },
   "optionsTitle": {
     "message": "Sidebar Tabs - Options"

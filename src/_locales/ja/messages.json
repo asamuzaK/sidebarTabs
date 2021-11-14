@@ -477,6 +477,15 @@
       }
     }
   },
+  "optionsAutoLabel": {
+    "message": "自動"
+  },
+  "optionsBookmarkLocation": {
+    "message": "ブックマークの保存先："
+  },
+  "optionsBookmarkLocationDetail": {
+    "message": "ブックマークとフォルダを選択した場所に保存します。"
+  },
   "optionsCompactTab": {
     "message": "タブの高さを縮める"
   },
@@ -596,9 +605,6 @@
   },
   "optionsThemeLightLabel": {
     "message": "明るいテーマ"
-  },
-  "optionsThemeAutoLabel": {
-    "message": "自動検出"
   },
   "optionsTitle": {
     "message": "サイドバータブ - 設定"

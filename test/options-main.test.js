@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
 import sinon from 'sinon';
 import {
-  BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO
 } from '../src/mjs/constant.js';
 
@@ -442,6 +442,109 @@ describe('options-main', () => {
     });
   });
 
+  describe('add bookmark locations', () => {
+    const func = mjs.addBookmarkLocations;
+    beforeEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+    afterEach(() => {
+      const { folderMap } = mjs;
+      folderMap.clear();
+    });
+
+    it('should not call function', async () => {
+      const i = browser.bookmarks.getTree.callCount;
+      await func();
+      assert.strictEqual(browser.bookmarks.getTree.callCount, i, 'not called');
+    });
+
+    it('should not ', async () => {
+      const i = browser.bookmarks.getTree.callCount;
+      const sel = document.createElement('select');
+      const body = document.querySelector('body');
+      body.appendChild(sel);
+      await func();
+      assert.strictEqual(browser.bookmarks.getTree.callCount, i, 'not called');
+      assert.strictEqual(sel.childNodes.length, 0, 'node length');
+    });
+
+    it('should not add children', async () => {
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        parentId: 'foobar',
+        type: 'folder'
+      }]);
+      const i = browser.bookmarks.getTree.callCount;
+      const sel = document.createElement('select');
+      const body = document.querySelector('body');
+      sel.id = BOOKMARK_LOCATION;
+      body.appendChild(sel);
+      await func();
+      assert.strictEqual(browser.bookmarks.getTree.callCount, i + 1, 'called');
+      assert.strictEqual(sel.childNodes.length, 0, 'node length');
+    });
+
+    it('should not add children', async () => {
+      browser.bookmarks.getTree.resolves([{
+        children: [
+          {
+            children: [{
+              id: 'quux',
+              parentId: 'bar',
+              type: 'folder'
+            }],
+            id: 'bar',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'baz',
+            parentId: 'foo',
+            type: 'folder'
+          },
+          {
+            id: 'qux',
+            parentId: 'foo',
+            type: 'bookmark'
+          }
+        ],
+        id: 'foo',
+        type: 'folder'
+      }]);
+      const i = browser.bookmarks.getTree.callCount;
+      const sel = document.createElement('select');
+      const body = document.querySelector('body');
+      sel.id = BOOKMARK_LOCATION;
+      body.appendChild(sel);
+      await func();
+      assert.strictEqual(browser.bookmarks.getTree.callCount, i + 1, 'called');
+      assert.strictEqual(sel.childNodes.length, 2, 'node length');
+    });
+  });
+
   describe('add event listener to init custom theme button', () => {
     const func = mjs.addInitCustomThemeListener;
 
@@ -721,6 +824,54 @@ describe('options-main', () => {
         value: '#ffffff'
       });
       assert.strictEqual(elm.value, '#ffffff', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not set option attribute', async () => {
+      const elm = document.createElement('select');
+      const child = document.createElement('option');
+      const child2 = document.createElement('option');
+      const child3 = document.createElement('option');
+      const body = document.querySelector('body');
+      elm.id = BOOKMARK_LOCATION;
+      child.id = 'foo';
+      child2.id = 'bar';
+      child3.id = 'baz';
+      elm.appendChild(child);
+      elm.appendChild(child2);
+      elm.appendChild(child3);
+      body.appendChild(elm);
+      const res = await func({
+        id: BOOKMARK_LOCATION,
+        value: 'qux'
+      });
+      assert.isFalse(child.hasAttribute('selected'), 'attr');
+      assert.isFalse(child2.hasAttribute('selected'), 'attr');
+      assert.isFalse(child3.hasAttribute('selected'), 'attr');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set option attribute', async () => {
+      const elm = document.createElement('select');
+      const child = document.createElement('option');
+      const child2 = document.createElement('option');
+      const child3 = document.createElement('option');
+      const body = document.querySelector('body');
+      elm.id = BOOKMARK_LOCATION;
+      child.id = 'foo';
+      child2.id = 'bar';
+      child3.id = 'baz';
+      elm.appendChild(child);
+      elm.appendChild(child2);
+      elm.appendChild(child3);
+      body.appendChild(elm);
+      const res = await func({
+        id: BOOKMARK_LOCATION,
+        value: 'bar'
+      });
+      assert.isFalse(child.hasAttribute('selected'), 'attr');
+      assert.isTrue(child2.hasAttribute('selected'), 'attr');
+      assert.isFalse(child3.hasAttribute('selected'), 'attr');
       assert.deepEqual(res, [], 'result');
     });
   });
