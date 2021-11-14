@@ -23,11 +23,26 @@
       }
     }
   },
+  "bookmarkFolderMessage": {
+    "message": "Folder name"
+  },
   "bookmarkTab": {
     "message": "Bookmark Tab"
   },
   "bookmarkTab_title": {
     "message": "&Bookmark Tab",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkTabGroup": {
+    "message": "Bookmark Tab Group"
+  },
+  "bookmarkTabGroup_title": {
+    "message": "&Bookmark Tab Group",
     "placeholders": {
       "key": {
         "content": "$1",

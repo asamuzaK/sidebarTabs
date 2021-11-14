@@ -9,7 +9,7 @@ import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import psl from 'psl';
 import sinon from 'sinon';
 import {
-  ACTIVE, CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL,
+  ACTIVE, BOOKMARK_FOLDER_MSG, CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL,
   CLASS_HEADING_LABEL_EDIT, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, PINNED, SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
@@ -2265,6 +2265,235 @@ describe('tab-group', () => {
       assert.strictEqual(msg.callCount, i + 1, 'called msg');
       assert.strictEqual(button.title, 'foo', 'title');
       assert.deepEqual(res, [undefined, child], 'result');
+    });
+  });
+
+  describe('bookmark tab group', () => {
+    const func = mjs.bookmarkTabGroup;
+
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.bookmarks.create.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      label.classList.add(CLASS_HEADING_LABEL);
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      body.appendChild(sect);
+      const res = await func(label);
+      assert.strictEqual(browser.bookmarks.create.callCount, i,
+        'not called create');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.bookmarks.create.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'https://www.example.com/baz'
+      });
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      const res = await func(elm);
+      assert.strictEqual(browser.bookmarks.create.callCount, i,
+        'not called create');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      window.prompt.withArgs('foo', '').returns(null);
+      const i = browser.bookmarks.create.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      label.classList.add(CLASS_HEADING_LABEL);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'https://www.example.com/baz'
+      });
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      browser.bookmarks.create.resolves({});
+      browser.bookmarks.create.withArgs({
+        parentId: undefined,
+        title: 'foobar',
+        type: 'folder'
+      }).resolves({
+        id: 'foo'
+      });
+      browser.i18n.getMessage.withArgs(BOOKMARK_FOLDER_MSG).returns('foo');
+      const res = await func(elm);
+      assert.strictEqual(browser.bookmarks.create.callCount, i + 3,
+        'called create');
+      assert.deepEqual(res, [{}, {}, {}], 'result');
+    });
+
+    it('should call function', async () => {
+      window.prompt.withArgs('foo', '').returns('foobar');
+      const i = browser.bookmarks.create.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      label.classList.add(CLASS_HEADING_LABEL);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'https://www.example.com/baz'
+      });
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      browser.bookmarks.create.resolves({});
+      browser.bookmarks.create.withArgs({
+        parentId: undefined,
+        title: 'foobar',
+        type: 'folder'
+      }).resolves({
+        id: 'foo'
+      });
+      browser.i18n.getMessage.withArgs(BOOKMARK_FOLDER_MSG).returns('foo');
+      const res = await func(elm);
+      assert.strictEqual(browser.bookmarks.create.callCount, i + 4,
+        'called create');
+      assert.deepEqual(res, [{}, {}, {}], 'result');
+    });
+
+    it('should call function', async () => {
+      window.prompt.withArgs('foo', 'foo').returns('foobar');
+      const i = browser.bookmarks.create.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      label.classList.add(CLASS_HEADING_LABEL);
+      label.textContent = 'foo';
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'https://www.example.com/baz'
+      });
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      browser.bookmarks.create.resolves({});
+      browser.bookmarks.create.withArgs({
+        parentId: undefined,
+        title: 'foobar',
+        type: 'folder'
+      }).resolves({
+        id: 'foo'
+      });
+      browser.i18n.getMessage.withArgs(BOOKMARK_FOLDER_MSG).returns('foo');
+      const res = await func(elm);
+      assert.strictEqual(browser.bookmarks.create.callCount, i + 4,
+        'called create');
+      assert.deepEqual(res, [{}, {}, {}], 'result');
     });
   });
 

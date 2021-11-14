@@ -9,6 +9,7 @@ import {
 } from './common.js';
 import { getStorage, getTab, queryTabs } from './browser.js';
 import { moveTabsInOrder } from './browser-tabs.js';
+import { bookmarkTabs } from './bookmark.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
   getSidebarTabId, getSidebarTabIndex, getTemplate, ports, requestSaveSession
@@ -482,6 +483,25 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * bookmark tab group
+ *
+ * @param {object} node - node
+ * @returns {?Function} - bookmarkTabs()
+ */
+export const bookmarkTabGroup = async node => {
+  const container = getSidebarTabContainer(node);
+  let func;
+  if (container) {
+    const label = container.querySelector(`.${CLASS_HEADING_LABEL}`);
+    const items = container.querySelectorAll(TAB_QUERY);
+    if (label && items.length) {
+      func = bookmarkTabs(Array.from(items), label.textContent);
+    }
+  }
+  return func || null;
 };
 
 /**

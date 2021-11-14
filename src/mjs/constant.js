@@ -4,6 +4,7 @@
 
 export const ACTIVE = 'active';
 export const AUDIBLE = 'audible';
+export const BOOKMARK_FOLDER_MSG = 'bookmarkFolderMessage';
 export const BOOKMARK_LOCATION = 'bookmarkLocation';
 export const BROWSER_SETTINGS_READ = 'readBrowserSettings';
 export const CLASS_COMPACT = 'compact';
@@ -122,6 +123,7 @@ export const TAB_CLOSE_START = 'closeTabsToTheStart';
 export const TAB_CLOSE_UNDO = 'undoCloseTab';
 export const TAB_DUPE = 'dupeTab';
 export const TAB_GROUP = 'tabGroup';
+export const TAB_GROUP_BOOKMARK = 'bookmarkTabGroup';
 export const TAB_GROUP_COLLAPSE = 'collapseTabGroup';
 export const TAB_GROUP_COLLAPSE_OTHER = 'collapseOtherTabGroups';
 export const TAB_GROUP_CONTAINER = 'groupSameContainerTabs';

@@ -37,11 +37,12 @@ import {
   handleDragStart, handleDrop
 } from './tab-dnd.js';
 import {
-  addListenersToHeadingItems, addTabContextClickListener, collapseTabGroups,
-  detachTabsFromGroup, getTabGroupHeading, groupSameContainerTabs,
-  groupSameDomainTabs, groupSelectedTabs, replaceTabContextClickListener,
-  restoreTabContainers, toggleTabGrouping, toggleTabGroupCollapsedState,
-  toggleTabGroupsCollapsedState, toggleTabGroupHeadingState, ungroupTabs
+  addListenersToHeadingItems, addTabContextClickListener, bookmarkTabGroup,
+  collapseTabGroups, detachTabsFromGroup, getTabGroupHeading,
+  groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
+  replaceTabContextClickListener, restoreTabContainers, toggleTabGrouping,
+  toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState,
+  toggleTabGroupHeadingState, ungroupTabs
 } from './tab-group.js';
 import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
@@ -67,10 +68,11 @@ import {
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
   TAB_CLOSE_UNDO, TAB_DUPE,
-  TAB_GROUP, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_LABEL_SHOW,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
+  TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
+  TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND_COLLAPSE_OTHER,
+  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
+  TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL,
@@ -1118,6 +1120,9 @@ export const handleClickedMenu = async info => {
     case TAB_DUPE:
       func.push(dupeTabs([tab], windowId));
       break;
+    case TAB_GROUP_BOOKMARK:
+      func.push(bookmarkTabGroup(tab));
+      break;
     case TAB_GROUP_COLLAPSE:
       if (tab) {
         if (enableTabGroup && tabGroupOnExpandCollapseOther) {
@@ -1401,9 +1406,10 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
     const tabGroups =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
     const tabGroupKeys = [
-      TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-      TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN,
-      TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+      TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
+      TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
+      TAB_GROUP_DOMAIN, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED,
+      TAB_GROUP_UNGROUP,
       'sepTabGroup-1', 'sepTabGroup-2'
     ];
     func.push(updateContextMenu(tabGroupMenu.id, {

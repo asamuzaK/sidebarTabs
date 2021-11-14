@@ -23,11 +23,26 @@
       }
     }
   },
+  "bookmarkFolderMessage": {
+    "message": "フォルダの名前"
+  },
   "bookmarkTab": {
     "message": "タブをブックマーク"
   },
   "bookmarkTab_title": {
     "message": "タブをブックマーク$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkTabGroup": {
+    "message": "タブグループをブックマーク"
+  },
+  "bookmarkTabGroup_title": {
+    "message": "タブグループをブックマーク&KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
