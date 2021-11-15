@@ -24,7 +24,7 @@
     }
   },
   "bookmarkFolderMessage": {
-    "message": "フォルダの名前"
+    "message": "フォルダーの名前"
   },
   "bookmarkTab": {
     "message": "タブをブックマーク"
@@ -484,7 +484,7 @@
     "message": "ブックマークの保存先："
   },
   "optionsBookmarkLocationDetail": {
-    "message": "ブックマークとフォルダを選択した場所に保存します。"
+    "message": "ブックマークとフォルダーを選択した場所に保存します。"
   },
   "optionsCompactTab": {
     "message": "タブの高さを縮める"
