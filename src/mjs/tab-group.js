@@ -498,7 +498,7 @@ export const bookmarkTabGroup = async node => {
     const label = container.querySelector(`.${CLASS_HEADING_LABEL}`);
     const items = container.querySelectorAll(TAB_QUERY);
     if (label && items.length) {
-      func = bookmarkTabs(Array.from(items), label.textContent);
+      func = bookmarkTabs(Array.from(items), label.textContent.trim());
     }
   }
   return func || null;

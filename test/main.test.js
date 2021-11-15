@@ -7133,6 +7133,76 @@ describe('main', () => {
       pinned.id = PINNED;
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
+      h1.classList.add(CLASS_HEADING);
+      label.classList.add(CLASS_HEADING_LABEL);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        title: 'foo',
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        title: 'bar',
+        url: 'https://www.example.com'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tab = JSON.stringify({
+        title: 'baz',
+        url: 'https://www.example.com/baz'
+      });
+      elm3.dataset.tabId = '3';
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(sect);
+      body.appendChild(newTab);
+      mjs.sidebar.context = label;
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({});
+      browser.tabs.get.withArgs(2).resolves({});
+      browser.tabs.get.withArgs(3).resolves({});
+      browser.bookmarks.create.resolves({});
+      browser.bookmarks.create.withArgs({
+        parentId: undefined,
+        title: 'foobar',
+        type: 'folder'
+      }).resolves({
+        id: 'foo'
+      });
+      const info = {
+        menuItemId: TAB_GROUP_BOOKMARK
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i, 'not called get');
+      assert.strictEqual(browser.bookmarks.create.callCount, j + 4,
+        'called create');
+      assert.deepEqual(res, [[{}, {}, {}]], 'result');
+    });
+
+    it('should call function', async () => {
+      window.prompt.returns('foobar');
+      const i = browser.tabs.get.callCount;
+      const j = browser.bookmarks.create.callCount;
+      const pinned = document.createElement('section');
+      const sect = document.createElement('section');
+      const newTab = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      pinned.id = PINNED;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      h1.classList.add(CLASS_HEADING);
       label.classList.add(CLASS_HEADING_LABEL);
       elm.classList.add(TAB);
       elm.classList.add(HIGHLIGHTED);

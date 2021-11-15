@@ -1121,7 +1121,7 @@ export const handleClickedMenu = async info => {
       func.push(dupeTabs([tab], windowId));
       break;
     case TAB_GROUP_BOOKMARK:
-      func.push(bookmarkTabGroup(tab));
+      func.push(bookmarkTabGroup(tab || heading));
       break;
     case TAB_GROUP_COLLAPSE:
       if (tab) {
@@ -1422,6 +1422,11 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       const { id, title, toggleTitle } = item;
       const data = {};
       switch (itemKey) {
+        case TAB_GROUP_BOOKMARK:
+          data.enabled = parentClass.contains(CLASS_TAB_GROUP);
+          data.title = title;
+          data.visible = true;
+          break;
         case TAB_GROUP_COLLAPSE:
           if (parentClass.contains(CLASS_TAB_GROUP) && toggleTitle) {
             data.enabled = true;
