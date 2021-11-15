@@ -8,9 +8,11 @@ import {
   getAllStorage, clearContextMenuOnMouseup, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
+import { folderMap, getFolderMap } from './bookmark.js';
 import {
-  BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP, THEME_CUSTOM,
-  THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_RADIO
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
+  THEME_RADIO
 } from './constant.js';
 
 /**
@@ -190,6 +192,39 @@ export const setCustomThemeValue = async (obj = {}) => {
 };
 
 /**
+ * add bookmark locations
+ *
+ * @returns {void}
+ */
+export const addBookmarkLocations = async () => {
+  const sel = document.getElementById(BOOKMARK_LOCATION);
+  if (sel) {
+    const folderMap = await getFolderMap();
+    const items = folderMap.values();
+    let root;
+    for (const item of items) {
+      const { id, parentId } = item;
+      if (!parentId) {
+        root = id;
+        break;
+      }
+    }
+    if (root) {
+      for (const item of items) {
+        const { id, parentId, title } = item;
+        if (parentId === root) {
+          const elm = document.createElement('option');
+          elm.textContent = title;
+          elm.id = id;
+          elm.value = id;
+          sel.appendChild(elm);
+        }
+      }
+    }
+  }
+};
+
+/**
  * handle init custom theme click
  *
  * @param {object} evt - Event
@@ -254,7 +289,7 @@ export const handleInputChange = evt => storePref(evt).catch(throwErr);
  * @returns {void}
  */
 export const addInputChangeListener = async () => {
-  const nodes = document.querySelectorAll('input');
+  const nodes = document.querySelectorAll('input, select');
   for (const node of nodes) {
     node.addEventListener('change', handleInputChange);
   }
@@ -271,10 +306,10 @@ export const setHtmlInputValue = async (data = {}) => {
   const elm = id && document.getElementById(id);
   const func = [];
   if (elm) {
-    const { type } = elm;
+    const { localName, type } = elm;
     switch (type) {
       case 'checkbox':
-      case 'radio':
+      case 'radio': {
         elm.checked = !!checked;
         if (id === THEME_CUSTOM) {
           func.push(toggleCustomThemeSettings({
@@ -284,12 +319,19 @@ export const setHtmlInputValue = async (data = {}) => {
           }));
         }
         break;
+      }
       case 'color':
       case 'text':
-      case 'url':
+      case 'url': {
         elm.value = isString(value) ? value : '';
         break;
-      default:
+      }
+      default: {
+        if (localName === 'select' && id === BOOKMARK_LOCATION && value) {
+          const child = elm.querySelector(`#${value}`);
+          child && child.setAttribute('selected', 'selected');
+        }
+      }
     }
   }
   return Promise.all(func);
@@ -335,4 +377,9 @@ export const handleMsg = async msg => {
     }
   }
   return Promise.all(func);
+};
+
+/* for test */
+export {
+  folderMap
 };

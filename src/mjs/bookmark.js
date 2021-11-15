@@ -5,7 +5,10 @@
 /* shared */
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import { createBookmark, getBookmarkTreeNode, getStorage } from './browser.js';
-import { BOOKMARK_LOCATION } from './constant.js';
+import { BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION } from './constant.js';
+
+/* api */
+const { i18n } = browser;
 
 /* bookmark folder map */
 export const folderMap = new Map();
@@ -43,12 +46,12 @@ export const createFolderMap = (node, recurse = false) => {
 };
 
 /**
- * get refreshed folder map
+ * get folder map
  *
  * @param {boolean} recurse - create bookmark folder tree recursively
  * @returns {object} - folderMap
  */
-export const getRefreshedFolderMap = async (recurse = false) => {
+export const getFolderMap = async (recurse = false) => {
   const [tree] = await getBookmarkTreeNode();
   folderMap.clear();
   createFolderMap(tree, recurse);
@@ -95,7 +98,8 @@ export const bookmarkTabs = async (nodes, name = '') => {
   }
   let folderId = await getBookmarkLocationId();
   if (nodes.length > 1) {
-    const folderTitle = window.prompt('Input folder name', name);
+    const promptMsg = i18n.getMessage(BOOKMARK_FOLDER_MSG);
+    const folderTitle = window.prompt(promptMsg, name);
     if (folderTitle) {
       const folder = await createBookmark({
         parentId: folderId || undefined,

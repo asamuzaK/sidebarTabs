@@ -6,7 +6,9 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import { BOOKMARK_LOCATION, HIGHLIGHTED, TAB } from '../src/mjs/constant.js';
+import {
+  BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION, HIGHLIGHTED, TAB
+} from '../src/mjs/constant.js';
 
 /* test */
 import * as mjs from '../src/mjs/bookmark.js';
@@ -181,8 +183,8 @@ describe('bookmark', () => {
     });
   });
 
-  describe('get refreshed folder map', () => {
-    const func = mjs.getRefreshedFolderMap;
+  describe('get folder map', () => {
+    const func = mjs.getFolderMap;
     beforeEach(() => {
       const { folderMap } = mjs;
       folderMap.clear();
@@ -527,7 +529,8 @@ describe('bookmark', () => {
     });
 
     it('should call function', async () => {
-      window.prompt.returns(null);
+      window.prompt.withArgs('foo', '').returns('foobar');
+      browser.i18n.getMessage.withArgs(BOOKMARK_FOLDER_MSG).returns('foo');
       browser.bookmarks.create.withArgs({
         parentId: undefined,
         title: 'foo',
@@ -588,7 +591,8 @@ describe('bookmark', () => {
     });
 
     it('should call function', async () => {
-      window.prompt.returns('foobar');
+      window.prompt.withArgs('foo', '').returns('foobar');
+      browser.i18n.getMessage.withArgs(BOOKMARK_FOLDER_MSG).returns('foo');
       browser.bookmarks.create.withArgs({
         parentId: undefined,
         title: 'foobar',
@@ -656,7 +660,8 @@ describe('bookmark', () => {
     });
 
     it('should call function', async () => {
-      window.prompt.withArgs('Input folder name', 'foobar').returns('foobar');
+      window.prompt.withArgs('foo', 'foobar').returns('foobar');
+      browser.i18n.getMessage.withArgs(BOOKMARK_FOLDER_MSG).returns('foo');
       browser.bookmarks.create.withArgs({
         parentId: undefined,
         title: 'foobar',
