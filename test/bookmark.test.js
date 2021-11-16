@@ -57,48 +57,48 @@ describe('bookmark', () => {
       folderMap.clear();
     });
 
-    it('should get map of size 0', () => {
-      const res = func();
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 0, 'size');
+    it('should get map of size 0', async () => {
+      const { folderMap } = mjs;
+      await func();
+      assert.strictEqual(folderMap.size, 0, 'size');
     });
 
-    it('should get map of size 0', () => {
-      const res = func({});
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 0, 'size');
+    it('should get map of size 0', async () => {
+      const { folderMap } = mjs;
+      await func({});
+      assert.strictEqual(folderMap.size, 0, 'size');
     });
 
-    it('should get map of size 0', () => {
+    it('should get map of size 0', async () => {
+      const { folderMap } = mjs;
       const tree = {
         type: 'foo'
       };
-      const res = func(tree);
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 0, 'size');
+      await func(tree);
+      assert.strictEqual(folderMap.size, 0, 'size');
     });
 
-    it('should get map of size 0', () => {
+    it('should get map of size 0', async () => {
+      const { folderMap } = mjs;
       const tree = {
         type: 'folder'
       };
-      const res = func(tree);
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 0, 'size');
+      await func(tree);
+      assert.strictEqual(folderMap.size, 0, 'size');
     });
 
-    it('should get map', () => {
+    it('should get map', async () => {
+      const { folderMap } = mjs;
       const tree = {
         id: 'foo',
         type: 'folder'
       };
-      const res = func(tree);
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 1, 'size');
-      assert.isTrue(res.has('foo'), 'key');
+      await func(tree);
+      assert.isTrue(folderMap.has('foo'), 'key');
     });
 
-    it('should get map', () => {
+    it('should get map', async () => {
+      const { folderMap } = mjs;
       const tree = {
         children: [
           {
@@ -125,22 +125,22 @@ describe('bookmark', () => {
         id: 'foo',
         type: 'folder'
       };
-      const res = func(tree);
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 3, 'size');
-      assert.isTrue(res.has('foo'), 'key');
-      assert.deepEqual(Array.from(res.get('foo').children), [
+      await func(tree);
+      assert.strictEqual(folderMap.size, 3, 'size');
+      assert.isTrue(folderMap.has('foo'), 'key');
+      assert.deepEqual(Array.from(folderMap.get('foo').children), [
         'bar',
         'baz'
       ], 'set');
-      assert.isTrue(res.has('bar'), 'key');
-      assert.deepEqual(Array.from(res.get('bar').children), [], 'set');
-      assert.isTrue(res.has('baz'), 'key');
-      assert.isFalse(res.has('qux'), 'key');
-      assert.isFalse(res.has('quux'), 'key');
+      assert.isTrue(folderMap.has('bar'), 'key');
+      assert.deepEqual(Array.from(folderMap.get('bar').children), [], 'set');
+      assert.isTrue(folderMap.has('baz'), 'key');
+      assert.isFalse(folderMap.has('qux'), 'key');
+      assert.isFalse(folderMap.has('quux'), 'key');
     });
 
-    it('should get map', () => {
+    it('should get map', async () => {
+      const { folderMap } = mjs;
       const tree = {
         children: [
           {
@@ -167,19 +167,20 @@ describe('bookmark', () => {
         id: 'foo',
         type: 'folder'
       };
-      const res = func(tree, true);
-      assert.instanceOf(res, Map, 'map');
-      assert.strictEqual(res.size, 4, 'size');
-      assert.isTrue(res.has('foo'), 'key');
-      assert.deepEqual(Array.from(res.get('foo').children), [
+      await func(tree, true);
+      assert.strictEqual(folderMap.size, 4, 'size');
+      assert.isTrue(folderMap.has('foo'), 'key');
+      assert.deepEqual(Array.from(folderMap.get('foo').children), [
         'bar',
         'baz'
       ], 'set');
-      assert.isTrue(res.has('bar'), 'key');
-      assert.deepEqual(Array.from(res.get('bar').children), ['quux'], 'set');
-      assert.isTrue(res.has('baz'), 'key');
-      assert.isFalse(res.has('qux'), 'key');
-      assert.isTrue(res.has('quux'), 'key');
+      assert.isTrue(folderMap.has('bar'), 'key');
+      assert.deepEqual(Array.from(folderMap.get('bar').children), [
+        'quux'
+      ], 'set');
+      assert.isTrue(folderMap.has('baz'), 'key');
+      assert.isFalse(folderMap.has('qux'), 'key');
+      assert.isTrue(folderMap.has('quux'), 'key');
     });
   });
 

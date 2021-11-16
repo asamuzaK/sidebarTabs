@@ -18,9 +18,9 @@ export const folderMap = new Map();
  *
  * @param {string} node - bookmark tree node
  * @param {boolean} recurse - create bookmark folder tree recursively
- * @returns {object} - folderMap
+ * @returns {void}
  */
-export const createFolderMap = (node, recurse = false) => {
+export const createFolderMap = async (node, recurse = false) => {
   if (isObjectNotEmpty(node)) {
     const { children, id, parentId, title, type } = node;
     if (id && type === 'folder') {
@@ -36,13 +36,14 @@ export const createFolderMap = (node, recurse = false) => {
         parent.children.add(id);
       }
       if ((!parentId || recurse) && Array.isArray(children)) {
+        const func = [];
         for (const child of children) {
-          createFolderMap(child, recurse);
+          func.push(createFolderMap(child, recurse));
         }
+        await Promise.all(func);
       }
     }
   }
-  return folderMap;
 };
 
 /**
@@ -54,7 +55,7 @@ export const createFolderMap = (node, recurse = false) => {
 export const getFolderMap = async (recurse = false) => {
   const [tree] = await getBookmarkTreeNode();
   folderMap.clear();
-  createFolderMap(tree, recurse);
+  await createFolderMap(tree, recurse);
   return folderMap;
 };
 
