@@ -8,7 +8,7 @@ import { moveTab } from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
-  getTemplate, ports, requestSaveSession
+  getTemplate, requestSaveSession
 } from './util.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
@@ -474,4 +474,4 @@ export const handleDragStart = (evt, opt = {}) => {
 };
 
 // For test
-export { ports };
+export { ports } from './util.js';

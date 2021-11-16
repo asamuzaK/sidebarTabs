@@ -12,7 +12,7 @@ import { moveTabsInOrder } from './browser-tabs.js';
 import { bookmarkTabs } from './bookmark.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTemplate, ports, requestSaveSession
+  getSidebarTabId, getSidebarTabIndex, getTemplate, requestSaveSession
 } from './util.js';
 import {
   ACTIVE,
@@ -739,4 +739,4 @@ export const ungroupTabs = async node => {
 };
 
 // For test
-export { ports };
+export { ports } from './util.js';

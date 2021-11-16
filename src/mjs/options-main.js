@@ -8,7 +8,7 @@ import {
   getAllStorage, clearContextMenuOnMouseup, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
-import { folderMap, getFolderMap } from './bookmark.js';
+import { getFolderMap } from './bookmark.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
@@ -199,8 +199,8 @@ export const setCustomThemeValue = async (obj = {}) => {
 export const addBookmarkLocations = async () => {
   const sel = document.getElementById(BOOKMARK_LOCATION);
   if (sel) {
-    const folderMap = await getFolderMap();
-    const items = folderMap.values();
+    const folder = await getFolderMap();
+    const items = folder.values();
     let root;
     for (const item of items) {
       const { id, parentId } = item;
@@ -379,7 +379,5 @@ export const handleMsg = async msg => {
   return Promise.all(func);
 };
 
-/* for test */
-export {
-  folderMap
-};
+/* For test */
+export { folderMap } from './bookmark.js';
