@@ -51,8 +51,10 @@ export const getBookmarkTreeNode = async id => {
   let res;
   if (isGranted) {
     const { bookmarks } = browser;
-    if (isString(id) || Array.isArray(id)) {
+    if (Array.isArray(id)) {
       res = await bookmarks.get(id);
+    } else if (isString(id)) {
+      res = await bookmarks.getSubTree(id);
     } else {
       res = await bookmarks.getTree();
     }

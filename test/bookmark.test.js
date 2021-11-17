@@ -313,7 +313,8 @@ describe('bookmark', () => {
           value: 'foobar'
         }
       });
-      browser.bookmarks.get.withArgs('foobar').rejects(new Error('error'));
+      browser.bookmarks.getSubTree.withArgs('foobar')
+        .rejects(new Error('error'));
       const res = await func();
       assert.isNull(res, 'result');
     });
@@ -324,7 +325,7 @@ describe('bookmark', () => {
           value: 'bar'
         }
       });
-      browser.bookmarks.get.withArgs('bar').resolves([{
+      browser.bookmarks.getSubTree.withArgs('bar').resolves([{
         foo: 'bar'
       }]);
       const res = await func();
@@ -337,7 +338,7 @@ describe('bookmark', () => {
           value: 'bar'
         }
       });
-      browser.bookmarks.get.withArgs('bar').resolves([{
+      browser.bookmarks.getSubTree.withArgs('bar').resolves([{
         children: [{
           id: 'quux',
           parentId: 'bar',
@@ -476,7 +477,7 @@ describe('bookmark', () => {
           value: 'bar'
         }
       });
-      browser.bookmarks.get.withArgs('bar').resolves([{
+      browser.bookmarks.getSubTree.withArgs('bar').resolves([{
         children: [{
           id: 'quux',
           parentId: 'bar',

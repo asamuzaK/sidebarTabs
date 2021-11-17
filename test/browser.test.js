@@ -208,17 +208,20 @@ describe('browser', () => {
 
     it('should call function', async () => {
       const i = browser.bookmarks.get.callCount;
-      const j = browser.bookmarks.getTree.callCount;
+      const j = browser.bookmarks.getSubTree.callCount;
+      const k = browser.bookmarks.getTree.callCount;
       browser.bookmarks.getTree.resolves([{}]);
       const res = await func();
       assert.strictEqual(browser.bookmarks.get.callCount, i, 'not called get');
-      assert.strictEqual(browser.bookmarks.getTree.callCount, j + 1,
+      assert.strictEqual(browser.bookmarks.getSubTree.callCount, j,
+        'not called get sub tree');
+      assert.strictEqual(browser.bookmarks.getTree.callCount, k + 1,
         'called get tree');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should throw if ID not found', async () => {
-      browser.bookmarks.get.withArgs('foo').rejects(new Error('error'));
+      browser.bookmarks.getSubTree.withArgs('foo').rejects(new Error('error'));
       await func('foo').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message, 'error', 'message');
@@ -227,22 +230,28 @@ describe('browser', () => {
 
     it('should call function', async () => {
       const i = browser.bookmarks.get.callCount;
-      const j = browser.bookmarks.getTree.callCount;
-      browser.bookmarks.get.withArgs('foo').resolves([{}]);
+      const j = browser.bookmarks.getSubTree.callCount;
+      const k = browser.bookmarks.getTree.callCount;
+      browser.bookmarks.getSubTree.withArgs('foo').resolves([{}]);
       const res = await func('foo');
-      assert.strictEqual(browser.bookmarks.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.getTree.callCount, j,
+      assert.strictEqual(browser.bookmarks.get.callCount, i, 'not called get');
+      assert.strictEqual(browser.bookmarks.getSubTree.callCount, j + 1,
+        'called get sub tree');
+      assert.strictEqual(browser.bookmarks.getTree.callCount, k,
         'not called get tree');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
       const i = browser.bookmarks.get.callCount;
-      const j = browser.bookmarks.getTree.callCount;
+      const j = browser.bookmarks.getSubTree.callCount;
+      const k = browser.bookmarks.getTree.callCount;
       browser.bookmarks.get.withArgs(['foo', 'bar']).resolves([{}, {}]);
       const res = await func(['foo', 'bar']);
       assert.strictEqual(browser.bookmarks.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.bookmarks.getTree.callCount, j,
+      assert.strictEqual(browser.bookmarks.getSubTree.callCount, j,
+        'not called get sub tree');
+      assert.strictEqual(browser.bookmarks.getTree.callCount, k,
         'not called get tree');
       assert.deepEqual(res, [{}, {}], 'result');
     });
