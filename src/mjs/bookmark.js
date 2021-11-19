@@ -90,7 +90,7 @@ export const getBookmarkLocationId = async () => {
  * bookmark tabs
  *
  * @param {Array} nodes - array of node
- * @param {string} name - default folder name
+ * @param {string} name - folder name
  * @returns {Promise.<Array>} - results of each handler
  */
 export const bookmarkTabs = async (nodes, name = '') => {
@@ -99,8 +99,8 @@ export const bookmarkTabs = async (nodes, name = '') => {
   }
   let folderId = await getBookmarkLocationId();
   if (nodes.length > 1) {
-    const promptMsg = i18n.getMessage(BOOKMARK_FOLDER_MSG);
-    const folderTitle = window.prompt(promptMsg, name);
+    const msg = i18n.getMessage(BOOKMARK_FOLDER_MSG);
+    const folderTitle = window.prompt(msg, name);
     if (folderTitle) {
       const folder = await createBookmark({
         parentId: folderId || undefined,
