@@ -1915,6 +1915,7 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
+      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       heading.classList.add(CLASS_HEADING);
       heading.hidden = true;
@@ -1932,9 +1933,11 @@ describe('main', () => {
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
+      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
       assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
+      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
     });
 
     it('should not set class', async () => {
@@ -1953,6 +1956,7 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
+      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       heading.classList.add(CLASS_HEADING);
       heading.hidden = true;
@@ -1970,9 +1974,11 @@ describe('main', () => {
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
+      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
       assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
+      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
     });
 
     it('should not set class', async () => {
@@ -1991,6 +1997,7 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
+      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       heading.classList.add(CLASS_HEADING);
       heading.hidden = true;
@@ -2008,9 +2015,11 @@ describe('main', () => {
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
+      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
       assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
+      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
     });
 
     it('should not set class', async () => {
@@ -2029,6 +2038,7 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
+      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       heading.classList.add(CLASS_HEADING);
       heading.hidden = true;
@@ -2046,9 +2056,11 @@ describe('main', () => {
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
+      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
       assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
+      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
     });
 
     it('should set class', async () => {
@@ -2067,6 +2079,7 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
+      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       heading.classList.add(CLASS_HEADING);
       heading.hidden = true;
@@ -2084,9 +2097,11 @@ describe('main', () => {
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isTrue(elm.classList.contains(ACTIVE), 'add class');
+      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'add class');
       assert.isFalse(parent2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(elm2.classList.contains(ACTIVE), 'remove class');
+      assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
     });
 
     it('should set class', async () => {
@@ -2105,6 +2120,7 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(ACTIVE);
+      elm2.classList.add(HIGHLIGHTED);
       elm2.dataset.tabId = '2';
       heading.classList.add(CLASS_HEADING);
       heading.hidden = false;
@@ -2123,9 +2139,11 @@ describe('main', () => {
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
       assert.isTrue(heading.classList.contains(ACTIVE), 'add class');
       assert.isTrue(elm.classList.contains(ACTIVE), 'add class');
+      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'add class');
       assert.isFalse(parent2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(elm2.classList.contains(ACTIVE), 'remove class');
+      assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
     });
   });
 

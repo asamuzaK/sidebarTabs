@@ -510,6 +510,7 @@ export const handleActivatedTab = async info => {
         } = item;
         const oldHeading = oldParent.querySelector(`.${CLASS_HEADING}`);
         oldClass.remove(ACTIVE);
+        oldClass.remove(HIGHLIGHTED);
         oldHeading.classList.remove(ACTIVE);
         oldParent.classList.remove(ACTIVE);
       }
@@ -517,6 +518,7 @@ export const handleActivatedTab = async info => {
       !newHeading.hidden && newParent.classList.contains(CLASS_TAB_COLLAPSED) &&
         newHeading.classList.add(ACTIVE);
       newClass.add(ACTIVE);
+      newClass.add(HIGHLIGHTED);
       sidebar.firstSelectedTab = tab;
     }
   }

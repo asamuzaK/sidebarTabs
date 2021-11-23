@@ -151,7 +151,7 @@ main {
   z-index: 5;
 }
 
-.tab.highlighted > .tab-items {
+.tab.highlighted:not(.active) > .tab-items {
   border-color: var(--border-active-color);
   box-shadow: 0 0 4px rgb(128 128 142 / 50%);
   background: var(--background-selection-color);
@@ -161,7 +161,7 @@ main {
   z-index: 4;
 }
 
-.tab.highlighted:hover > .tab-items {
+.tab.highlighted:not(.active):hover > .tab-items {
   background: var(--background-selection-hover-color);
   color: var(--foreground-selection-hover-color);
   fill: var(--foreground-selection-hover-color);
@@ -214,12 +214,12 @@ main {
   stroke: var(--foreground-highlight-color);
 }
 
-.tab.highlighted .tab-icon {
+.tab.highlighted:not(.active) .tab-icon {
   fill: var(--foreground-selection-color);
   stroke: var(--foreground-highlight-color);
 }
 
-.tab.highlighted:hover .tab-icon {
+.tab.highlighted:not(.active):hover .tab-icon {
   fill: var(--foreground-selection-hover-color);
   stroke: var(--foreground-highlight-color);
 }
@@ -269,12 +269,12 @@ main {
   stroke: var(--foreground-highlight-color);
 }
 
-.tab.highlighted .tab-audio.audible {
+.tab.highlighted:not(.active) .tab-audio.audible {
   fill: var(--foreground-selection-color);
   stroke: var(--foreground-highlight-color);
 }
 
-.tab.highlighted:hover .tab-audio.audible {
+.tab.highlighted:not(.active):hover .tab-audio.audible {
   fill: var(--foreground-selection-hover-color);
   stroke: var(--foreground-highlight-color);
 }
@@ -339,12 +339,12 @@ main {
   stroke: var(--foreground-highlight-color);
 }
 
-.tab.highlighted .tab-close {
+.tab.highlighted:not(.active) .tab-close {
   fill: var(--foreground-selection-color);
   stroke: var(--foreground-highlight-color);
 }
 
-.tab.highlighted:hover .tab-close {
+.tab.highlighted:not(.active):hover .tab-close {
   fill: var(--foreground-selection-hover-color);
   stroke: var(--foreground-highlight-color);
 }
@@ -411,12 +411,12 @@ main {
   stroke: var(--foreground-hover-color);
 }
 
-.tab-container.pinned > .tab.highlighted .tab-pinned {
+.tab-container.pinned > .tab.highlighted:not(.active) .tab-pinned {
   fill: transparent;
   stroke: var(--foreground-selection-color);
 }
 
-.tab-container.pinned > .tab.highlighted:hover .tab-pinned {
+.tab-container.pinned > .tab.highlighted:not(.active):hover .tab-pinned {
   fill: transparent;
   stroke: var(--foreground-selection-hover-color);
 }
@@ -531,7 +531,7 @@ main {
   z-index: 5;
 }
 
-.heading.highlighted > .tab-items {
+.heading.highlighted:not(.active) > .tab-items {
   border-color: var(--border-active-color);
   box-shadow: 0 0 4px rgb(128 128 142 / 50%);
   background: var(--background-selection-color);
@@ -541,7 +541,7 @@ main {
   z-index: 4;
 }
 
-.heading.highlighted:hover > .tab-items {
+.heading.highlighted:not(.active):hover > .tab-items {
   background: var(--background-selection-hover-color);
   color: var(--foreground-selection-hover-color);
   fill: var(--foreground-selection-hover-color);
