@@ -6,9 +6,9 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import alpen from '../resource/alpenglow-manifest.json';
-import dark from '../resource/dark-manifest.json';
-import light from '../resource/light-manifest.json';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -509,7 +509,13 @@ describe('theme', () => {
     });
 
     it('should equal alpenglow theme values', async () => {
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/alpenglow/manifest.json
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'alpenglow-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
+      });
       const {
         applications: {
           gecko: {
@@ -519,7 +525,7 @@ describe('theme', () => {
         theme: {
           colors
         }
-      } = alpen;
+      } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
@@ -529,7 +535,13 @@ describe('theme', () => {
 
     it('should equal dark alpenglow theme values', async () => {
       window.matchMedia().matches = true;
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/alpenglow/manifest.json
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'alpenglow-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
+      });
       const {
         applications: {
           gecko: {
@@ -539,7 +551,7 @@ describe('theme', () => {
         dark_theme: {
           colors
         }
-      } = alpen;
+      } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
@@ -549,7 +561,13 @@ describe('theme', () => {
 
     it('should equal dark theme values', async () => {
       window.matchMedia().matches = true;
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/dark/manifest.json
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'dark-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
+      });
       const {
         applications: {
           gecko: {
@@ -559,7 +577,7 @@ describe('theme', () => {
         theme: {
           colors
         }
-      } = dark;
+      } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
@@ -568,7 +586,13 @@ describe('theme', () => {
     });
 
     it('should equal light theme values', async () => {
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/light/manifest.json
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'light-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
+      });
       const {
         applications: {
           gecko: {
@@ -578,7 +602,7 @@ describe('theme', () => {
         theme: {
           colors
         }
-      } = light;
+      } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
