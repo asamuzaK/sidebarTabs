@@ -131,7 +131,7 @@ export const themeMap = {
     [CUSTOM_BG_HOVER_SHADOW]: '#15141a1a',
     [CUSTOM_BG_SELECT]: '#ffffff',
     [CUSTOM_BG_SELECT_HOVER]: '#e7e7e8',
-    [CUSTOM_BORDER_ACTIVE]: '#8b8b98',
+    [CUSTOM_BORDER_ACTIVE]: '#f0f0f4',
     [CUSTOM_BORDER_FIELD]: '#f0f0f4', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#053e94',
     [CUSTOM_COLOR]: '#15141a',
