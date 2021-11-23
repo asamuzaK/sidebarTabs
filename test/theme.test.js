@@ -6,6 +6,9 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -506,217 +509,105 @@ describe('theme', () => {
     });
 
     it('should equal alpenglow theme values', async () => {
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/alpenglow/manifest.json
-      browser.theme.getCurrent.resolves({
-        colors: {
-          frame: 'hsla(240, 20%, 98%, 1)',
-          toolbar: 'hsla(0, 0%, 100%, .76)',
-          button_background_active: 'hsla(240, 26%, 11%, .16)',
-          button_background_hover: 'hsla(240, 26%, 11%, .08)',
-          icons: 'hsla(258, 66%, 48%, 1)',
-          icons_attention: 'hsla(180, 100%, 32%, 1)',
-          toolbar_text: 'hsla(261, 53%, 15%, 1)',
-          toolbar_vertical_separator: 'hsla(261, 53%, 15%, .2)',
-          toolbar_field: 'hsla(0, 0%, 100%, .8)',
-          toolbar_field_focus: 'hsla(261, 53%, 15%, .96)',
-          toolbar_field_text: 'hsla(261, 53%, 15%, 1)',
-          toolbar_field_text_focus: 'hsla(255, 100%, 94%, 1)',
-          toolbar_field_border: 'transparent',
-          toolbar_field_border_focus: 'hsla(265, 100%, 72%, 1)',
-          toolbar_field_highlight: 'hsla(265, 100%, 72%, .32)',
-          toolbar_top_separator: 'transparent',
-          toolbar_bottom_separator: 'hsla(261, 53%, 15%, .32)',
-          bookmark_text: 'hsla(261, 53%, 15%, 1)',
-          tab_text: 'hsla(261, 53%, 15%, 1)',
-          tab_background_text: 'hsla(261, 53%, 15%, 1)',
-          tab_background_separator: 'hsla(261, 53%, 15%, 1)',
-          tab_line: 'hsla(265, 100%, 72%, 1)',
-          tab_loading: 'hsla(265, 100%, 72%, 1)',
-          ntp_background: '#F9F9FB',
-          ntp_text: 'hsla(261, 53%, 15%, 1)',
-          popup: 'hsla(254, 46%, 21%, 1)',
-          popup_text: 'hsla(255, 100%, 94%, 1)',
-          popup_border: 'hsla(255, 100%, 94%, .32)',
-          popup_highlight: 'hsla(255, 100%, 94%, .12)',
-          popup_highlight_text: 'hsla(0, 0%, 100%, 1)',
-          sidebar: 'hsla(240, 15%, 95%, 1)',
-          sidebar_text: 'hsla(261, 53%, 15%, 1)',
-          sidebar_border: 'hsla(261, 53%, 15%, .24)',
-          sidebar_highlight: 'hsla(265, 100%, 72%, 1)',
-          sidebar_highlight_text: 'hsla(0, 0%, 100%, 1)',
-          focus_outline: 'hsla(258, 65%, 48%, 1)'
-        }
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'alpenglow-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
       });
+      const {
+        applications: {
+          gecko: {
+            id
+          }
+        },
+        theme: {
+          colors
+        }
+      } = JSON.parse(file);
+      browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
+      assert.strictEqual(id, THEME_ALPEN_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_ALPEN], 'result');
     });
 
     it('should equal dark alpenglow theme values', async () => {
       window.matchMedia().matches = true;
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/alpenglow/manifest.json
-      browser.theme.getCurrent.resolves({
-        colors: {
-          frame: 'hsla(240, 20%, 98%, 1)',
-          toolbar: 'hsla(254, 46%, 21%, .96)',
-          button_background_active: 'hsla(255, 100%, 94%, .24)',
-          button_background_hover: 'hsla(255, 100%, 94%, .12)',
-          icons: 'hsla(271, 100%, 77%, 1)',
-          icons_attention: 'hsla(157, 100%, 66%, 1)',
-          toolbar_text: 'hsla(255, 100%, 94%, 1)',
-          toolbar_vertical_separator: 'hsla(271, 100%, 77%, .4)',
-          toolbar_field: 'hsla(250, 43%, 25%, 1)',
-          toolbar_field_focus: 'hsla(250, 43%, 25%, .98)',
-          toolbar_field_text: 'hsla(255, 100%, 94%, 1)',
-          toolbar_field_text_focus: 'hsla(255, 100%, 94%, 1)',
-          toolbar_field_border: 'transparent',
-          toolbar_field_border_focus: 'hsla(265, 100%, 72%, 1)',
-          toolbar_field_highlight: 'hsla(265, 100%, 72%, .32)',
-          toolbar_top_separator: 'transparent',
-          toolbar_bottom_separator: 'hsla(245, 38%, 33%, .96)',
-          bookmark_text: 'hsla(255, 100%, 94%, 1)',
-          tab_selected: 'rgb(60, 31, 123)',
-          tab_text: 'hsla(255, 100%, 94%, 1)',
-          tab_background_text: 'hsla(255, 100%, 94%, 1)',
-          tab_background_separator: 'hsla(255, 100%, 94%, 1)',
-          tab_line: 'hsla(265, 100%, 72%, 1)',
-          tab_loading: 'hsla(265, 100%, 72%, 1)',
-          ntp_background: '#2A2A2E',
-          ntp_text: 'hsla(255, 100%, 94%, 1)',
-          popup: 'hsla(250, 43%, 25%, 1)',
-          popup_text: 'hsla(255, 100%, 94%, 1)',
-          popup_border: 'hsla(255, 100%, 94%, .32)',
-          popup_highlight: 'hsla(255, 100%, 94%, .12)',
-          popup_highlight_text: 'hsla(0, 0%, 100%, 1)',
-          sidebar: 'hsla(250, 43%, 25%, 1)',
-          sidebar_text: 'hsla(255, 100%, 94%, 1)',
-          sidebar_border: 'hsla(255, 100%, 94%, .24)',
-          sidebar_highlight: 'hsla(259, 76%, 58%, 1)',
-          sidebar_highlight_text: 'hsla(0, 0%, 100%, 1)',
-          focus_outline: 'hsla(265, 100%, 72%, 1)'
-        }
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'alpenglow-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
       });
+      const {
+        applications: {
+          gecko: {
+            id
+          }
+        },
+        dark_theme: {
+          colors
+        }
+      } = JSON.parse(file);
+      browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
+      assert.strictEqual(id, THEME_ALPEN_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_ALPEN_DARK], 'result');
-    });
-
-    it('should equal light theme values', async () => {
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/light/manifest.json
-      browser.theme.getCurrent.resolves({
-        colors: {
-          tab_background_text: 'rgb(21,20,26)',
-          tab_selected: '#fff',
-          tab_text: 'rgb(21,20,26)',
-          icons: 'rgb(91,91,102)',
-          frame: '#f0f0f4',
-          popup: '#fff',
-          popup_text: 'rgb(21,20,26)',
-          popup_border: 'rgb(240,240,244)',
-          popup_highlight: '#e0e0e6',
-          popup_highlight_text: '#15141a',
-          tab_line: 'rgba(128,128,142,0.9)',
-          toolbar: '#f9f9fb',
-          toolbar_top_separator: 'transparent',
-          toolbar_bottom_separator: '#ccc',
-          toolbar_field: '#f0f0f4',
-          toolbar_field_text: 'rgb(21,20,26)',
-          toolbar_field_border: 'transparent',
-          toolbar_field_focus: 'white',
-          toolbar_text: 'rgb(21,20,26)',
-          ntp_background: '#F9F9FB',
-          ntp_text: 'rgb(21, 20, 26)',
-          popup_action_color: 'rgb(91,91,102)',
-          button: 'rgb(240,240,244)',
-          button_hover: 'rgb(224,224,230)',
-          button_active: 'rgb(207,207,216)',
-          button_primary: 'rgb(0, 97, 224)',
-          button_primary_hover: 'rgb(2, 80, 187)',
-          button_primary_active: 'rgb(5, 62, 148)',
-          button_primary_color: 'rgb(251, 251, 254)',
-          checkbox_border_color: 'rgb(143, 143, 157)',
-          checkbox_unchecked_background: 'rgb(240, 240, 244)',
-          checkbox_unchecked_background_hover: 'rgb(224, 224, 230)',
-          checkbox_unchecked_background_active: 'rgb(207, 207, 216)',
-          checkbox_checked_background: 'rgb(0, 97, 224)',
-          checkbox_checked_background_hover: 'rgb(2, 80, 187)',
-          checkbox_checked_background_active: 'rgb(5, 62, 148)',
-          checkbox_checked_color: 'rgb(251, 251, 254)',
-          error_text_color: 'rgb(197,0,66)',
-          autocomplete_popup_hover: 'rgb(240,240,244)',
-          autocomplete_popup_separator: 'rgb(240,240,244)',
-          appmenu_update_icon_color: '#2AC3A2',
-          appmenu_warning_icon_color: '#FFA436',
-          appmenu_info_icon_color: '#0090ED',
-          tab_icon_overlay_stroke: 'rgb(255,255,255)',
-          tab_icon_overlay_fill: 'rgb(91,91,102)'
-        }
-      });
-      browser.management.getAll.resolves(null);
-      const res = await func();
-      assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
     it('should equal dark theme values', async () => {
       window.matchMedia().matches = true;
-      // https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/dark/manifest.json
-      browser.theme.getCurrent.resolves({
-        colors: {
-          tab_background_text: '#fbfbfe',
-          tab_selected: 'rgb(66,65,77)',
-          tab_text: 'rgb(251,251,254)',
-          icons: 'rgb(251,251,254)',
-          frame: '#1c1b22',
-          popup: 'rgb(66,65,77)',
-          popup_text: 'rgb(251,251,254)',
-          popup_border: 'rgb(82,82,94)',
-          popup_highlight: 'rgb(43,42,51)',
-          tab_line: 'transparent',
-          toolbar: 'rgb(43,42,51)',
-          toolbar_top_separator: 'transparent',
-          toolbar_bottom_separator: 'hsl(240, 5%, 5%)',
-          toolbar_field: 'rgb(28,27,34)',
-          toolbar_field_border: 'transparent',
-          toolbar_field_text: 'rgb(251,251,254)',
-          toolbar_field_focus: 'rgb(66,65,77)',
-          toolbar_text: 'rgb(251, 251, 254)',
-          ntp_background: '#2A2A2E',
-          ntp_text: 'rgb(251, 251, 254)',
-          sidebar: '#38383D',
-          sidebar_text: 'rgb(249, 249, 250)',
-          sidebar_border: 'rgba(255, 255, 255, 0.1)',
-          button: 'rgb(43,42,51)',
-          button_hover: 'rgb(82,82,94)',
-          button_active: 'rgb(91,91,102)',
-          button_primary: 'rgb(0, 221, 255)',
-          button_primary_hover: 'rgb(128, 235, 255)',
-          button_primary_active: 'rgb(170, 242, 255)',
-          button_primary_color: 'rgb(43, 42, 51)',
-          checkbox_border_color: 'rgb(143, 143, 157)',
-          checkbox_unchecked_background: 'rgb(43, 42, 51)',
-          checkbox_unchecked_background_hover: 'rgb(82, 82, 94)',
-          checkbox_unchecked_background_active: 'rgb(91, 91, 102)',
-          checkbox_checked_background: 'rgb(0, 221, 255)',
-          checkbox_checked_color: 'rgb(43, 42, 51)',
-          checkbox_checked_background_hover: 'rgb(128, 235, 255)',
-          checkbox_checked_background_active: 'rgb(170, 242, 255)',
-          error_text_color: 'rgb(255, 154, 162)',
-          input_background: '#42414D',
-          input_color: '#BFBFC9',
-          input_border: '#8f8f9d',
-          input_border_error: 'rgb(255, 132, 138)',
-          zoom_controls: 'rgb(74,74,85)',
-          autocomplete_popup_separator: 'rgb(82,82,94)',
-          appmenu_update_icon_color: '#54FFBD',
-          appmenu_warning_icon_color: '#FFBD4F',
-          appmenu_info_icon_color: '#80EBFF',
-          tab_icon_overlay_stroke: 'rgb(66,65,77)',
-          tab_icon_overlay_fill: 'rgb(251,251,254)'
-        }
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'dark-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
       });
+      const {
+        applications: {
+          gecko: {
+            id
+          }
+        },
+        theme: {
+          colors
+        }
+      } = JSON.parse(file);
+      browser.theme.getCurrent.resolves({ colors });
       browser.management.getAll.resolves(null);
       const res = await func();
+      assert.strictEqual(id, THEME_DARK_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+    });
+
+    it('should equal light theme values', async () => {
+      const dirName = path.dirname(fileURLToPath(import.meta.url));
+      const filePath =
+        path.resolve(dirName, '../resource', 'light-manifest.json');
+      const file = fs.readFileSync(filePath, {
+        encoding: 'utf8',
+        flag: 'r'
+      });
+      const {
+        applications: {
+          gecko: {
+            id
+          }
+        },
+        theme: {
+          colors
+        }
+      } = JSON.parse(file);
+      browser.theme.getCurrent.resolves({ colors });
+      browser.management.getAll.resolves(null);
+      const res = await func();
+      assert.strictEqual(id, THEME_LIGHT_ID, 'id');
+      assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
   });
 
