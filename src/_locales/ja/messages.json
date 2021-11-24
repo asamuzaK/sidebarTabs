@@ -42,7 +42,7 @@
     "message": "タブグループをブックマーク"
   },
   "bookmarkTabGroup_title": {
-    "message": "タブグループをブックマーク&KEY$",
+    "message": "タブグループをブックマーク$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
