@@ -11,7 +11,7 @@ import path from 'path';
 import process from 'process';
 
 /* constants */
-export const BASE_URL =
+const BASE_URL =
   'https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/';
 const CHAR = 'utf8';
 const DIR_CWD = process.cwd();
