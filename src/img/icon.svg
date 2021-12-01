@@ -16,6 +16,18 @@
     g:target ~ #color {
       display: none;
     }
+    #current,
+    #dark {
+      fill: context-fill rgb(91,91,102);
+    }
+    #light {
+      fill: context-fill rgb(251,251,254);
+    }
+    @media (prefers-color-scheme: dark) {
+      #current {
+        fill: context-fill rgb(251,251,254);
+      }
+    }
   </style>
   <symbol id="outline">
     <path d="m26 10c-8.7256 0-16 7.2744-16 16v76c0 8.7256 7.2744 16 16 16h76c8.7256 0 16-7.2744 16-16v-76c0-8.7256-7.2744-16-16-16zm-6 14.8 4.8-4.8h21.2v14.5h-26zm36-4.8h47.2l4.8 4.8v78.4l-4.8 4.8h-47.2zm-36 24.5h26v14.5h-26zm0 24.5h26v14.5h-26zm0 24.5h26v14.5h-21.2l-4.8-4.8z"/>
@@ -29,13 +41,13 @@
   <symbol id="sidetab">
     <path d="m26 10c-8.7256 0-16 7.2744-16 16v76c0 8.7256 7.2744 16 16 16h76c8.7256 0 16-7.2744 16-16v-76c0-8.7256-7.2744-16-16-16h-76zm0 16h20v13h-20v-13zm28 0h48v76h-48v-76zm-28 21h20v13h-20v-13zm0 21h20v13h-20v-13zm0 21h20v13h-20v-13z"/>
   </symbol>
-  <g id="current" fill="context-fill currentColor">
+  <g id="current">
     <use href="#outline"/>
   </g>
-  <g id="dark" fill="context-fill rgb(91,91,102)">
+  <g id="dark">
     <use href="#outline"/>
   </g>
-  <g id="light" fill="context-fill rgb(251,251,254)">
+  <g id="light">
     <use href="#outline"/>
   </g>
   <g id="color">
