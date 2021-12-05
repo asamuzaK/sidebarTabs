@@ -4,10 +4,24 @@
  * options.css
  */
 
+:root {
+  --box-background-color: rgb(240 240 240);
+  --box-border-color: rgb(192 192 192);
+  --box-border-color-alpha: rgb(192 192 192 / 50%);
+  --box-color: rgb(16 16 16);
+  --info-background-color: #008ea4;
+  --info-color: #fff;
+  --page-background-color: rgb(250 250 250);
+  --page-color: #000;
+  --page-border-color: rgb(128 128 128);
+  --warn-background-color: transparent;
+  --warn-color: #d70022;
+}
+
 body {
   padding: 1rem 1rem 0;
-  background-color: rgb(250 250 250);
-  color: black;
+  background-color: var(--page-background-color);
+  color: var(--page-color);
   line-height: 1.5;
 }
 
@@ -17,7 +31,7 @@ main {
 
 footer {
   margin: 1rem 0 2rem;
-  border-top: 1px solid rgb(128 128 128);
+  border-top: 1px solid var(--page-border-color);
 }
 
 section {
@@ -25,7 +39,7 @@ section {
 }
 
 section + section {
-  border-top: 1px dotted rgb(128 128 128);
+  border-top: 1px dotted var(--page-border-color);
 }
 
 section section + section {
@@ -34,7 +48,7 @@ section section + section {
 
 main > section + p {
   margin-top: 1rem;
-  border-top: 1px dotted rgb(128 128 128);
+  border-top: 1px dotted var(--page-border-color);
   padding-top: 1rem;
 }
 
@@ -64,7 +78,7 @@ form {
 
 fieldset {
   margin-top: 1rem;
-  border: 1px solid rgb(128 128 128);
+  border: 1px solid var(--page-border-color);
   border-radius: 8px;
 }
 
@@ -96,10 +110,10 @@ details {
 details > div {
   position: absolute;
   left: 0.9rem;
-  border: 1px solid rgb(192 192 192);
+  border: 1px solid var(--box-border-color);
   border-radius: 4px;
-  background-color: rgb(240 240 240);
-  color: rgb(16 16 16);
+  background-color: var(--box-background-color);
+  color: var(--box-color);
   z-index: 2;
 }
 
@@ -109,34 +123,6 @@ fieldset:last-child > div:last-child > details > div {
 
 details > div > p {
   margin: 0.5rem;
-}
-
-label[for^="buttonIcon"] {
-  display: inline-block;
-  position: relative;
-  margin-right: 1.2rem;
-  border: 1px solid rgb(192 192 192 / 50%);
-  border-radius: 4px;
-  width: 2.4rem;
-  height: 2.4rem;
-  text-align: center;
-  vertical-align: middle;
-}
-
-label[for="buttonIcon"],
-label[for="buttonIconGray"] {
-  background-color: rgb(240 240 240);
-}
-
-label[for="buttonIconWhite"] {
-  background-color: rgb(64 64 64);
-}
-
-label[for="buttonIconAuto"] {
-  border: none;
-  background-color: transparent;
-  height: auto;
-  vertical-align: baseline;
 }
 
 .label {
@@ -152,18 +138,39 @@ label[for="buttonIconAuto"] {
 }
 
 .sub-item > .label {
-  margin-right: 1rem;
-  min-width: auto;
+  min-width: 13.5rem;
 }
 
 label + input[type="radio"] {
-  margin-left: 1rem;
+  margin-left: 0.5rem;
 }
 
 input[type="text"],
 input[type="url"] {
   min-width: 15rem;
   max-width: calc(100% - 1rem);
+}
+
+textarea {
+  min-width: 15rem;
+  max-width: calc(100% - 1rem);
+  vertical-align: top;
+}
+
+.status {
+  max-width: calc(100% - 1rem);
+}
+
+.info {
+  border-radius: 4px;
+  padding: 0.2em 0.5em;
+  background-color: var(--info-background-color);
+  color: var(--info-color);
+}
+
+.warn {
+  background-color: var(--warn-background-color);
+  color: var(--warn-color);
 }
 
 input[type="submit"],
@@ -180,6 +187,24 @@ img {
   margin: auto;
   width: 1.728rem;
   height: 1.728rem;
+}
+
+figure {
+  margin: 1rem;
+}
+
+pre {
+  border: 1px solid var(--page-border-color);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+code {
+  display: inline-block;
+}
+
+pre > code {
+  margin: 0 1rem;
 }
 
 #customThemeSettings[hidden] {
@@ -205,4 +230,24 @@ img {
   padding: 0.25rem;
   text-align: center;
   vertical-align: middle;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --box-background-color: rgb(35 34 43);
+    --box-border-color: rgb(64 64 64);
+    --box-border-color-alpha: rgb(64 64 64 / 50%);
+    --box-color: rgb(240 240 240);
+    --info-background-color: #008ea4;
+    --info-color: #fff;
+    --page-background-color: rgb(28 27 34);
+    --page-color: rgb(251 251 254);
+    --page-border-color: rgb(128 128 128);
+    --warn-background-color: transparent;
+    --warn-color: #ff4f5e;
+  }
+
+  header > h1::before {
+    background-image: url("../img/icon.svg#light");
+  }
 }
