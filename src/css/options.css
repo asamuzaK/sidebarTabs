@@ -125,22 +125,6 @@ details > div > p {
   margin: 0.5rem;
 }
 
-.label {
-  box-sizing: border-box;
-  display: inline-block;
-  padding-left: 0.2rem;
-  min-width: 15rem;
-}
-
-.sub-item {
-  display: block;
-  margin-left: 1.5rem;
-}
-
-.sub-item > .label {
-  min-width: 13.5rem;
-}
-
 label + input[type="radio"] {
   margin-left: 0.5rem;
 }
@@ -155,22 +139,6 @@ textarea {
   min-width: 15rem;
   max-width: calc(100% - 1rem);
   vertical-align: top;
-}
-
-.status {
-  max-width: calc(100% - 1rem);
-}
-
-.info {
-  border-radius: 4px;
-  padding: 0.2em 0.5em;
-  background-color: var(--info-background-color);
-  color: var(--info-color);
-}
-
-.warn {
-  background-color: var(--warn-background-color);
-  color: var(--warn-color);
 }
 
 input[type="submit"],
@@ -205,6 +173,38 @@ code {
 
 pre > code {
   margin: 0 1rem;
+}
+
+.label {
+  box-sizing: border-box;
+  display: inline-block;
+  padding-left: 0.2rem;
+  min-width: 15rem;
+}
+
+.sub-item {
+  display: block;
+  margin-left: 1.5rem;
+}
+
+.sub-item > .label {
+  min-width: 13.5rem;
+}
+
+.status {
+  max-width: calc(100% - 1rem);
+}
+
+.info {
+  border-radius: 4px;
+  padding: 0.2em 0.5em;
+  background-color: var(--info-background-color);
+  color: var(--info-color);
+}
+
+.warn {
+  background-color: var(--warn-background-color);
+  color: var(--warn-color);
 }
 
 #customThemeSettings[hidden] {
