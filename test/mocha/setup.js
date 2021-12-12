@@ -17,7 +17,7 @@ export const createJsdom = () => {
   const opt = {
     runScripts: 'dangerously',
     beforeParse(window) {
-      window.alert = sinon.stub().callsFake((...args) => args.toString());
+      window.alert = sinon.stub();
       window.matchMedia = sinon.stub().returns({
         matches: false
       });
