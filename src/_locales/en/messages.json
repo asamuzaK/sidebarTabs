@@ -139,10 +139,10 @@
     }
   },
   "closeTabsToTheEnd": {
-    "message": "Close Tabs to the Bottom"
+    "message": "Close Tabs to Bottom"
   },
   "closeTabsToTheEnd_title": {
-    "message": "Close Tabs to the &Bottom",
+    "message": "Close Tabs to &Bottom",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -151,10 +151,10 @@
     }
   },
   "closeTabsToTheStart": {
-    "message": "Close Tabs to the Top"
+    "message": "Close Tabs to Top"
   },
   "closeTabsToTheStart_title": {
-    "message": "Close Tabs to the &Top",
+    "message": "Close Tabs to &Top",
     "placeholders": {
       "key": {
         "content": "$1",
