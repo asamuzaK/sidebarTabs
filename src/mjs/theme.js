@@ -10,8 +10,8 @@ import {
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
 import {
-  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
+  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_THEME_CUSTOM,
+  CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM, COLOR_SCHEME_DARK,
   CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
   CSS_VAR_BG_FIELD_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
@@ -227,7 +227,7 @@ export const setCurrentThemeColors = async (key, value) => {
  */
 export const getCurrentThemeBaseValues = async () => {
   const values = {};
-  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const baseValues = (dark && themeMap[THEME_DARK]) || themeMap[THEME_LIGHT];
   const items = Object.keys(baseValues);
   for (const key of items) {
@@ -372,7 +372,7 @@ export const getCurrentThemeBaseValues = async () => {
  * @returns {object} - values
  */
 export const getBaseValues = async () => {
-  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const id = await getThemeId();
   let values;
   switch (id) {
@@ -614,7 +614,7 @@ export const setTheme = async info => {
   const [key, value] = info;
   const elm = document.querySelector('body');
   const { classList } = elm;
-  const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let item;
   if (key === THEME_AUTO) {
     const id = await getThemeId();

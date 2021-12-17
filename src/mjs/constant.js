@@ -36,6 +36,7 @@ export const CLASS_THEME_DARK = 'dark-theme';
 export const CLASS_THEME_LIGHT = 'light-theme';
 export const CLASS_THEME_SYSTEM = 'system-theme';
 export const CLASS_UNGROUP = 'ungroup';
+export const COLOR_SCHEME_DARK = '(prefers-color-scheme:dark)';
 export const COOKIE_STORE_DEFAULT = 'firefox-default';
 export const CSS_ID = 'custom-theme-style';
 export const CSS_VAR_BG = '--background-color';

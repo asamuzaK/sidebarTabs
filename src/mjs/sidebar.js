@@ -18,6 +18,7 @@ import {
 } from './tab-group.js';
 import { localizeHtml } from './localize.js';
 import { applyTheme, setSidebarTheme } from './theme.js';
+import { COLOR_SCHEME_DARK } from './constant.js';
 
 /* api */
 const { contextualIdentities, menus, runtime, storage, tabs, theme } = browser;
@@ -80,8 +81,9 @@ theme.onUpdated.addListener(info => applyTheme(info).catch(throwErr));
 window.addEventListener('keydown', handleEvt, true);
 window.addEventListener('mousedown', handleEvt, true);
 window.addEventListener('contextmenu', handleContextmenuEvt);
-window.matchMedia('(prefers-color-scheme:dark)')
-  .addEventListener('change', () => applyTheme().catch(throwErr));
+window.matchMedia(COLOR_SCHEME_DARK).addEventListener('change', () =>
+  applyTheme().catch(throwErr)
+);
 
 /* start up */
 document.addEventListener('DOMContentLoaded', () => Promise.all([
