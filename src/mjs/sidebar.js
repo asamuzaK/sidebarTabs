@@ -75,13 +75,13 @@ tabs.onUpdated.addListener(
     ]
   }
 );
-theme.onUpdated.addListener(info =>
-  applyTheme(info).catch(throwErr)
-);
+theme.onUpdated.addListener(info => applyTheme(info).catch(throwErr));
 
 window.addEventListener('keydown', handleEvt, true);
 window.addEventListener('mousedown', handleEvt, true);
 window.addEventListener('contextmenu', handleContextmenuEvt);
+window.matchMedia('(prefers-color-scheme:dark)')
+  .addEventListener('change', () => applyTheme().catch(throwErr));
 
 /* start up */
 document.addEventListener('DOMContentLoaded', () => Promise.all([
