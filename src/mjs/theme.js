@@ -131,7 +131,7 @@ export const themeMap = {
     [CUSTOM_BG_HOVER_SHADOW]: '#15141a1a',
     [CUSTOM_BG_SELECT]: '#ffffff',
     [CUSTOM_BG_SELECT_HOVER]: '#e7e7e8',
-    [CUSTOM_BORDER_ACTIVE]: '#f0f0f4',
+    [CUSTOM_BORDER_ACTIVE]: '#f0f0f4', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD]: '#f0f0f4', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#053e94',
     [CUSTOM_COLOR]: '#15141a',
@@ -182,6 +182,21 @@ export const currentThemeColors = new Map();
 
 /* current theme */
 export const currentTheme = new Map();
+
+/**
+ * get theme ID
+ *
+ * @returns {?string} - theme ID
+ */
+export const getThemeId = async () => {
+  const items = await getEnabledTheme();
+  let themeId;
+  if (Array.isArray(items) && items.length === 1) {
+    const [{ id }] = items;
+    themeId = id;
+  }
+  return themeId || null;
+};
 
 /**
  * set current theme colors map
@@ -358,33 +373,30 @@ export const getCurrentThemeBaseValues = async () => {
  */
 export const getBaseValues = async () => {
   const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
-  const items = await getEnabledTheme();
+  const id = await getThemeId();
   let values;
-  if (Array.isArray(items) && items.length === 1) {
-    const [{ id }] = items;
-    switch (id) {
-      case THEME_ALPEN_ID:
-        if (dark) {
-          values = themeMap[THEME_ALPEN_DARK];
-        } else {
-          values = themeMap[THEME_ALPEN];
-        }
-        break;
-      case THEME_DARK_ID:
+  switch (id) {
+    case THEME_ALPEN_ID:
+      if (dark) {
+        values = themeMap[THEME_ALPEN_DARK];
+      } else {
+        values = themeMap[THEME_ALPEN];
+      }
+      break;
+    case THEME_DARK_ID:
+      values = themeMap[THEME_DARK];
+      break;
+    case THEME_LIGHT_ID:
+      values = themeMap[THEME_LIGHT];
+      break;
+    case THEME_SYSTEM_ID:
+      if (dark) {
         values = themeMap[THEME_DARK];
-        break;
-      case THEME_LIGHT_ID:
+      } else {
         values = themeMap[THEME_LIGHT];
-        break;
-      case THEME_SYSTEM_ID:
-        if (dark) {
-          values = themeMap[THEME_DARK];
-        } else {
-          values = themeMap[THEME_LIGHT];
-        }
-        break;
-      default:
-    }
+      }
+      break;
+    default:
   }
   if (!values) {
     const appliedTheme = await getCurrentTheme();
@@ -569,25 +581,20 @@ export const getTheme = async () => {
     }
   }
   if (!themes.size) {
-    const items = await getEnabledTheme();
-    if (Array.isArray(items)) {
-      const [{ id }] = items;
-      switch (id) {
-        case THEME_DARK_ID:
-          themes.set(THEME_DARK, false);
-          break;
-        case THEME_LIGHT_ID:
-          themes.set(THEME_LIGHT, false);
-          break;
-        case THEME_SYSTEM_ID:
-          themes.set(THEME_SYSTEM, false);
-          break;
-        case THEME_ALPEN_ID:
-        default:
-          themes.set(THEME_AUTO, false);
-      }
-    } else {
-      themes.set(THEME_AUTO, false);
+    const id = await getThemeId();
+    switch (id) {
+      case THEME_DARK_ID:
+        themes.set(THEME_DARK, false);
+        break;
+      case THEME_LIGHT_ID:
+        themes.set(THEME_LIGHT, false);
+        break;
+      case THEME_SYSTEM_ID:
+        themes.set(THEME_SYSTEM, false);
+        break;
+      case THEME_ALPEN_ID:
+      default:
+        themes.set(THEME_AUTO, false);
     }
   }
   const [res] = Array.from(themes);
@@ -608,7 +615,18 @@ export const setTheme = async info => {
   const elm = document.querySelector('body');
   const { classList } = elm;
   const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
-  switch (key) {
+  let item;
+  if (key === THEME_AUTO) {
+    const id = await getThemeId();
+    if (id === THEME_SYSTEM_ID) {
+      item = THEME_SYSTEM;
+    } else {
+      item = key;
+    }
+  } else {
+    item = key;
+  }
+  switch (item) {
     case THEME_CUSTOM: {
       classList.add(CLASS_THEME_CUSTOM);
       classList.remove(CLASS_THEME_DARK);

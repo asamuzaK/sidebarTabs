@@ -73,6 +73,82 @@ describe('theme', () => {
     });
   });
 
+  describe('get theme ID', () => {
+    const func = mjs.getThemeId;
+
+    it('should get null', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves(null);
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get value', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.strictEqual(res, 'foo', 'result');
+    });
+
+    it('should get value', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_ALPEN_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.strictEqual(res, THEME_ALPEN_ID, 'result');
+    });
+
+    it('should get value', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_DARK_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.strictEqual(res, THEME_DARK_ID, 'result');
+    });
+
+    it('should get value', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_LIGHT_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.strictEqual(res, THEME_LIGHT_ID, 'result');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const res = await func();
+      assert.strictEqual(res, THEME_SYSTEM_ID, 'result');
+    });
+  });
+
   describe('set current theme colors map', () => {
     const func = mjs.setCurrentThemeColors;
     beforeEach(() => {
@@ -1270,6 +1346,49 @@ describe('theme', () => {
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_SYSTEM]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system light theme', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system dark theme', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      const body = document.querySelector('body');
+      const i = browser.storage.local.set.callCount;
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
