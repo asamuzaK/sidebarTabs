@@ -775,6 +775,8 @@ main {
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --background-color: #38383d;
+    --foreground-color: #f9f9fa;
     --tab-group-pinned-heading-text: #a1a1c0;
     --tab-group-1-heading-text: #dea183;
     --tab-group-2-heading-text: #82bfa1;
