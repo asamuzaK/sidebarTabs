@@ -196,10 +196,10 @@
     "message": "Dark Theme"
   },
   "detachTabFromGroup": {
-    "message": "Detach Tab From Group"
+    "message": "Detach Tab from Group"
   },
   "detachTabFromGroup_title": {
-    "message": "Detach &Tab From Group",
+    "message": "Detach &Tab from Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -208,10 +208,10 @@
     }
   },
   "detachTabsFromGroup": {
-    "message": "Detach Tabs From Group"
+    "message": "Detach Tabs from Group"
   },
   "detachTabsFromGroup_title": {
-    "message": "Detach &Tabs From Group",
+    "message": "Detach &Tabs from Group",
     "placeholders": {
       "key": {
         "content": "$1",
