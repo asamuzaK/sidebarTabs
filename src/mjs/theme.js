@@ -678,7 +678,7 @@ export const setTheme = async info => {
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
   await setStorage({
-    [THEME]: [key, !!value]
+    [THEME]: [item, !!value]
   });
 };
 

@@ -1300,12 +1300,15 @@ describe('theme', () => {
     });
 
     it('should set auto light theme', async () => {
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: ['foo', false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func(['foo']);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1314,12 +1317,15 @@ describe('theme', () => {
 
     it('should set auto dark theme', async () => {
       window.matchMedia().matches = true;
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: ['foo', false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func(['foo']);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1327,12 +1333,15 @@ describe('theme', () => {
     });
 
     it('should set system light theme', async () => {
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_SYSTEM]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1341,12 +1350,15 @@ describe('theme', () => {
 
     it('should set system dark theme', async () => {
       window.matchMedia().matches = true;
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_SYSTEM]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1362,12 +1374,15 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_AUTO]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1384,12 +1399,15 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_AUTO]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1397,12 +1415,15 @@ describe('theme', () => {
     });
 
     it('should set light theme', async () => {
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_LIGHT, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_LIGHT]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1411,12 +1432,15 @@ describe('theme', () => {
 
     it('should set light theme', async () => {
       window.matchMedia().matches = true;
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_LIGHT, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.add(CLASS_THEME_DARK);
       body.classList.remove(CLASS_THEME_LIGHT);
       await func([THEME_LIGHT]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1424,12 +1448,15 @@ describe('theme', () => {
     });
 
     it('should set dark theme', async () => {
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_DARK, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.remove(CLASS_THEME_DARK);
       body.classList.add(CLASS_THEME_LIGHT);
       await func([THEME_DARK]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1438,12 +1465,15 @@ describe('theme', () => {
 
     it('should set dark theme', async () => {
       window.matchMedia().matches = false;
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_DARK, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.remove(CLASS_THEME_DARK);
       body.classList.add(CLASS_THEME_LIGHT);
       await func([THEME_DARK]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1451,12 +1481,15 @@ describe('theme', () => {
     });
 
     it('should set custom theme', async () => {
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_CUSTOM, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.remove(CLASS_THEME_DARK);
       body.classList.add(CLASS_THEME_LIGHT);
       await func([THEME_CUSTOM]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
@@ -1465,12 +1498,15 @@ describe('theme', () => {
 
     it('should set custom theme', async () => {
       window.matchMedia().matches = true;
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_CUSTOM, false]
+      });
+      const i = stubStorage.callCount;
       const body = document.querySelector('body');
-      const i = browser.storage.local.set.callCount;
       body.classList.remove(CLASS_THEME_DARK);
       body.classList.add(CLASS_THEME_LIGHT);
       await func([THEME_CUSTOM]);
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
