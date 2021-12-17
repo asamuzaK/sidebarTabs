@@ -110,11 +110,14 @@ export const expandTabGroup = async elm => {
 /**
  * toggle enable / disable tab grouping
  *
- * @returns {void}
+ * @returns {Promise.<Array>} - results of each handler
  */
 export const toggleTabGrouping = async () => {
   const body = document.querySelector('body');
   const store = await getStorage([TAB_GROUP_ENABLE]);
+  const items =
+    document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+  const func = [];
   let enable;
   if (isObjectNotEmpty(store)) {
     const { enableTabGroup } = store;
@@ -124,16 +127,21 @@ export const toggleTabGrouping = async () => {
   }
   if (enable) {
     body.classList.remove(CLASS_UNGROUP);
+    for (const item of items) {
+      const { classList } = item;
+      if (classList.contains(CLASS_TAB_COLLAPSED)) {
+        func.push(collapseTabGroup(item));
+      } else {
+        func.push(expandTabGroup(item));
+      }
+    }
   } else {
-    const items =
-      document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-    const func = [];
+    body.classList.add(CLASS_UNGROUP);
     for (const item of items) {
       func.push(expandTabGroup(item));
     }
-    await Promise.all(func);
-    body.classList.add(CLASS_UNGROUP);
   }
+  return Promise.all(func);
 };
 
 /**

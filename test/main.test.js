@@ -10810,7 +10810,7 @@ describe('main', () => {
       const res =
         await func(TAB_GROUP_ENABLE, { checked: true }, true);
       assert.isTrue(mjs.sidebar.enableTabGroup, 'set');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.deepEqual(res, [[]], 'result');
     });
 
     it('should set variable', async () => {

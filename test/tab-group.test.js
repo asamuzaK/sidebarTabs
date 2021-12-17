@@ -318,17 +318,18 @@ describe('tab-group', () => {
   describe('toggle enable / disable tab grouping', () => {
     const func = mjs.toggleTabGrouping;
 
-    it('should not add class', async () => {
+    it('should remove class', async () => {
       const i = browser.storage.local.get.callCount;
       const body = document.querySelector('body');
       browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({});
       body.classList.add(CLASS_UNGROUP);
-      await func();
+      const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.deepEqual(res, [], 'result');
     });
 
-    it('should not add class', async () => {
+    it('should remove class', async () => {
       const i = browser.storage.local.get.callCount;
       const body = document.querySelector('body');
       browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({
@@ -337,9 +338,50 @@ describe('tab-group', () => {
         }
       });
       body.classList.add(CLASS_UNGROUP);
-      await func();
+      const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should remove class', async () => {
+      const i = browser.storage.local.get.callCount;
+      const elm = document.createElement('div');
+      const p = document.createElement('p');
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      const elm2 = document.createElement('div');
+      const p2 = document.createElement('p');
+      const span2 = document.createElement('span');
+      const img2 = document.createElement('img');
+      const body = document.querySelector('body');
+      browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({
+        enableTabGroup: {
+          checked: true
+        }
+      });
+      span.appendChild(img);
+      p.appendChild(span);
+      p.classList.add(TAB);
+      elm.appendChild(p);
+      elm.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      body.appendChild(elm);
+      span2.appendChild(img2);
+      p2.appendChild(span2);
+      p2.classList.add(TAB);
+      elm2.appendChild(p2);
+      elm2.classList.add(CLASS_TAB_CONTAINER);
+      elm2.classList.add(CLASS_TAB_GROUP);
+      body.appendChild(elm2);
+      body.classList.add(CLASS_UNGROUP);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.isFalse(elm2.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.isFalse(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.deepEqual(res, [undefined, undefined], 'result');
     });
 
     it('should add class', async () => {
@@ -348,6 +390,10 @@ describe('tab-group', () => {
       const p = document.createElement('p');
       const span = document.createElement('span');
       const img = document.createElement('img');
+      const elm2 = document.createElement('div');
+      const p2 = document.createElement('p');
+      const span2 = document.createElement('span');
+      const img2 = document.createElement('img');
       const body = document.querySelector('body');
       browser.storage.local.get.withArgs([TAB_GROUP_ENABLE]).resolves({
         enableTabGroup: {
@@ -362,11 +408,20 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(CLASS_TAB_COLLAPSED);
       body.appendChild(elm);
+      span2.appendChild(img2);
+      p2.appendChild(span2);
+      p2.classList.add(TAB);
+      elm2.appendChild(p2);
+      elm2.classList.add(CLASS_TAB_CONTAINER);
+      elm2.classList.add(CLASS_TAB_GROUP);
+      body.appendChild(elm2);
       body.classList.remove(CLASS_UNGROUP);
-      await func();
+      const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.isFalse(elm2.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isTrue(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
 
