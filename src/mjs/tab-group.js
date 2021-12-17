@@ -114,9 +114,9 @@ export const expandTabGroup = async elm => {
  */
 export const toggleTabGrouping = async () => {
   const body = document.querySelector('body');
-  const store = await getStorage([TAB_GROUP_ENABLE]);
   const items =
     document.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
+  const store = await getStorage([TAB_GROUP_ENABLE]);
   const func = [];
   let enable;
   if (isObjectNotEmpty(store)) {
