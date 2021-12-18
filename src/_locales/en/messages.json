@@ -42,7 +42,7 @@
     }
   },
   "bookmarkTabs_menu": {
-    "message": "&Bookmark Tabs",
+    "message": "&Bookmark Tabs…",
     "placeholders": {
       "key": {
         "content": "$1",

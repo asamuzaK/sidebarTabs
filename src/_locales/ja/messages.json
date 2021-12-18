@@ -42,7 +42,7 @@
     }
   },
   "bookmarkTabs_menu": {
-    "message": "タブをブックマーク$KEY$",
+    "message": "タブをブックマーク$KEY$...",
     "placeholders": {
       "key": {
         "content": "$1",
