@@ -1493,7 +1493,8 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
           data.visible = true;
           break;
         case TAB_GROUP_SELECTED:
-          data.enabled = !pinned && tabClass.contains(HIGHLIGHTED);
+          data.enabled =
+            !pinned && multiTabsSelected && tabClass.contains(HIGHLIGHTED);
           data.title = title;
           data.visible = true;
           break;
