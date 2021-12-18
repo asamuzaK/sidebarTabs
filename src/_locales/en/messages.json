@@ -69,7 +69,7 @@
     }
   },
   "closeOtherTabs_menu": {
-    "message": "Close &Other Tabs",
+    "message": "Cl&ose Other Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -124,7 +124,7 @@
     }
   },
   "closeTabsToTheStart_menu": {
-    "message": "Close Tabs to &Top",
+    "message": "Close &Tabs to Top",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -133,7 +133,7 @@
     }
   },
   "collapseOtherTabGroups_menu": {
-    "message": "Collapse &Other Tab Groups",
+    "message": "C&ollapse Other Tab Groups",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -163,7 +163,7 @@
     "message": "Dark Theme"
   },
   "detachTabFromGroup_menu": {
-    "message": "Detach &Tab from Group",
+    "message": "De&tach Tab from Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -172,7 +172,7 @@
     }
   },
   "detachTabsFromGroup_menu": {
-    "message": "Detach &Tabs from Group",
+    "message": "De&tach Tabs from Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -268,7 +268,7 @@
     }
   },
   "moveTabToEnd_menu": {
-    "message": "Move to &End",
+    "message": "Mov&e to End",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -304,7 +304,7 @@
     }
   },
   "moveTabsToEnd_menu": {
-    "message": "Move to &End",
+    "message": "Mov&e to End",
     "placeholders": {
       "key": {
         "content": "$1",
