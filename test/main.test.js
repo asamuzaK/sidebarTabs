@@ -8883,7 +8883,7 @@ describe('main', () => {
       assert.strictEqual(browser.menus.update.callCount, j + 45,
         'called update');
       assert.strictEqual(browser.i18n.getMessage.withArgs(
-        `${TABS_CLOSE}_title`, [
+        `${TABS_CLOSE}_menu`, [
           '2',
           '(&C)'
         ]

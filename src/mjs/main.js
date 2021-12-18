@@ -1606,7 +1606,7 @@ export const prepareTabMenuItems = async elm => {
         switch (itemKey) {
           case TABS_CLOSE:
             data.enabled = true;
-            data.title = i18n.getMessage(`${TABS_CLOSE}_title`, [
+            data.title = i18n.getMessage(`${TABS_CLOSE}_menu`, [
               `${selectedTabs.length}`,
               '(&C)'
             ]);
