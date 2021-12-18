@@ -555,15 +555,21 @@
   "pinnedTabsLabel": {
     "message": "ピン留めされたタブ"
   },
-  "playTab": {
-    "message": "タブのメディアを再生"
-  },
   "playTab_menu": {
     "message": "タブのメディアを再生$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&P)"
+        "example": "(&L)"
+      }
+    }
+  },
+  "playTabs_menu": {
+    "message": "タブのメディアを再生$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&Y)"
       }
     }
   },

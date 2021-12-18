@@ -543,15 +543,21 @@
   "pinnedTabsLabel": {
     "message": "Pinned Tabs"
   },
-  "playAudio": {
-    "message": "Play Audio"
-  },
-  "playAudio_menu": {
-    "message": "&Play Audio",
+  "playTab_menu": {
+    "message": "P&lay Tab",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&P)"
+        "example": "(&L)"
+      }
+    }
+  },
+  "playTabs_menu": {
+    "message": "Pla&y Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&Y)"
       }
     }
   },
