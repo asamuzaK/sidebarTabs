@@ -769,12 +769,12 @@ main {
   --tab-group-4-heading-text: #a1bfde;
 }
 
-.dark-theme :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
-  box-shadow: none;
+.custom-theme:not(.dark-theme) :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
+  box-shadow: 0 0 4px rgb(0 0 0 / 30%);
 }
 
-.custom-theme :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
-  box-shadow: 0 0 4px rgb(0 0 0 / 30%);
+.dark-theme :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
+  box-shadow: none;
 }
 
 @media (prefers-color-scheme: dark) {
