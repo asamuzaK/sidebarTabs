@@ -64,7 +64,8 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SIDEBAR, SIDEBAR_MAIN,
+  SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
   TAB_CLOSE_UNDO, TAB_DUPE,
@@ -85,7 +86,7 @@ import {
 } from './constant.js';
 
 /* api */
-const { i18n, tabs } = browser;
+const { i18n, runtime, tabs } = browser;
 
 /* constants */
 const { TAB_ID_NONE } = tabs;
@@ -1092,6 +1093,9 @@ export const handleClickedMenu = async info => {
     tabsTab = await getTab(tabId);
   }
   switch (menuItemId) {
+    case OPTIONS_OPEN:
+      func.push(runtime.openOptionsPage());
+      break;
     case TAB_ALL_BOOKMARK:
       func.push(bookmarkTabs(Array.from(allTabs)));
       break;
