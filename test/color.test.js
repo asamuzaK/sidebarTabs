@@ -689,5 +689,11 @@ describe('color', () => {
       const res = await func('#6699cc99', '#f9f9fa');
       assert.strictEqual(res, '#a1bfde', 'result');
     });
+
+    // current active tab border color of the default theme
+    it('should get value', async () => {
+      const res = await func('rgba(128,128,142,0.4)', '#fff');
+      assert.strictEqual(res, '#ccccd2', 'result');
+    });
   });
 });
