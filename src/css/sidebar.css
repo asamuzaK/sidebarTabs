@@ -128,7 +128,7 @@ main {
 
 .tab.active > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+  box-shadow: 0 0 4px rgb(0 0 0 / 30%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
   fill: var(--foreground-active-color);
@@ -154,7 +154,7 @@ main {
 
 .tab.highlighted:not(.active) > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+  box-shadow: 0 0 4px rgb(0 0 0 / 30%);
   background: var(--background-selection-color);
   color: var(--foreground-selection-color);
   fill: var(--foreground-selection-color);
@@ -516,7 +516,7 @@ main {
 
 .heading.active > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+  box-shadow: 0 0 4px rgb(0 0 0 / 30%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
   fill: var(--foreground-active-color);
@@ -534,7 +534,7 @@ main {
 
 .heading.highlighted:not(.active) > .tab-items {
   border-color: var(--border-active-color);
-  box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+  box-shadow: 0 0 4px rgb(0 0 0 / 30%);
   background: var(--background-selection-color);
   color: var(--foreground-selection-color);
   fill: var(--foreground-selection-color);
