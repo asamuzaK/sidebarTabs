@@ -390,6 +390,15 @@
       }
     }
   },
+  "openOptions_menu": {
+    "message": "Op&tions",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
   "optionsAutoLabel": {
     "message": "Auto"
   },

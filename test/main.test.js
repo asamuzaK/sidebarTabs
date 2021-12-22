@@ -25,7 +25,7 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, PINNED, SIDEBAR, SIDEBAR_MAIN,
+  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
   TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -5877,6 +5877,16 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.create.callCount, j, 'not called create');
       assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.runtime.openOptionsPage.callCount;
+      const res = await func({
+        menuItemId: OPTIONS_OPEN
+      });
+      assert.strictEqual(browser.runtime.openOptionsPage.callCount, i + 1,
+        'called');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should call function', async () => {
