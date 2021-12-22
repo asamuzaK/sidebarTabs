@@ -402,6 +402,15 @@
       }
     }
   },
+  "openOptions_menu": {
+    "message": "設定$KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
   "optionsAutoLabel": {
     "message": "自動"
   },
