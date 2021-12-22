@@ -519,6 +519,12 @@ describe('color', () => {
       const res = await func('hsla(180,50%,50%,1)', true);
       assert.strictEqual(res, '#40bfbf', 'result');
     });
+
+    // active tab border color of the default theme with alpha channel
+    it('should get value', async () => {
+      const res = await func('rgba(128,128,142,0.4)', true);
+      assert.strictEqual(res, '#80808e66', 'result');
+    });
   });
 
   describe('blend two colors', () => {
@@ -690,7 +696,7 @@ describe('color', () => {
       assert.strictEqual(res, '#a1bfde', 'result');
     });
 
-    // current active tab border color of the default theme
+    // active tab border mixed color of the default theme
     it('should get value', async () => {
       const res = await func('rgba(128,128,142,0.4)', '#fff');
       assert.strictEqual(res, '#ccccd2', 'result');
