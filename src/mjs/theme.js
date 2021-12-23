@@ -212,7 +212,7 @@ export const setCurrentThemeColors = async (key, value) => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  if (value === 'transparent') {
+  if (/^(?:currentcolor|transparent)$/i.test(value)) {
     currentThemeColors.set(key, value);
   } else {
     const hexValue = await convertColorToHex(value, true);
@@ -227,6 +227,7 @@ export const setCurrentThemeColors = async (key, value) => {
  */
 export const getCurrentThemeBaseValues = async () => {
   const values = {};
+  const currentColorKeys = new Set();
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const baseValues = (dark && themeMap[THEME_DARK]) || themeMap[THEME_LIGHT];
   const items = Object.keys(baseValues);
@@ -237,21 +238,25 @@ export const getCurrentThemeBaseValues = async () => {
         const valueA = currentThemeColors.get('sidebar');
         const valueB = currentThemeColors.get('frame');
         values[key] = valueA || valueB || baseValues[key];
+        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
       case CUSTOM_BG_ACTIVE: {
         const valueA = currentThemeColors.get('tab_selected');
         values[key] = valueA || baseValues[key];
+        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
       case CUSTOM_BG_FIELD: {
         const valueA = currentThemeColors.get('toolbar_field');
         values[key] = valueA || baseValues[key];
+        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
       case CUSTOM_BG_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_focus');
         values[key] = valueA || baseValues[key];
+        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
       case CUSTOM_BG_HOVER_SHADOW: {
@@ -267,6 +272,7 @@ export const getCurrentThemeBaseValues = async () => {
           currentThemeColors.get('sidebar_highlight');
         const valueB = currentThemeColors.get('tab_selected');
         values[key] = valueA || valueB || baseValues[key];
+        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
       case CUSTOM_BORDER_ACTIVE: {
@@ -290,22 +296,32 @@ export const getCurrentThemeBaseValues = async () => {
           currentThemeColors.get('sidebar_text');
         const valueB = currentThemeColors.get('tab_background_text');
         values[key] = valueA || valueB || baseValues[key];
+        if (/^currentColor$/i.test(values[key])) {
+          values[key] = baseValues[key];
+        }
         break;
       }
       case CUSTOM_COLOR_ACTIVE: {
         const valueA = currentThemeColors.get('tab_text');
         const valueB = currentThemeColors.get('bookmark_text');
         values[key] = valueA || valueB || baseValues[key];
+        if (/^currentColor$/i.test(values[key])) {
+          values[key] = baseValues[CUSTOM_COLOR];
+        }
         break;
       }
       case CUSTOM_COLOR_FIELD: {
         const valueA = currentThemeColors.get('toolbar_field_text');
         values[key] = valueA || baseValues[key];
+        if (/^currentColor$/i.test(values[key])) {
+          values[key] = baseValues[CUSTOM_COLOR];
+        }
         break;
       }
       case CUSTOM_COLOR_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_text_focus');
         values[key] = valueA || baseValues[key];
+        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
       case CUSTOM_COLOR_SELECT: {
@@ -314,10 +330,39 @@ export const getCurrentThemeBaseValues = async () => {
         const valueB = currentThemeColors.get('tab_text');
         const valueC = currentThemeColors.get('bookmark_text');
         values[key] = valueA || valueB || valueC || baseValues[key];
+        if (/^currentColor$/i.test(values[key])) {
+          values[key] = baseValues[CUSTOM_COLOR];
+        }
         break;
       }
       default:
         values[key] = baseValues[key];
+    }
+  }
+  // replace currentColor keywords to color values
+  if (currentColorKeys.size) {
+    if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
+      values[CUSTOM_COLOR_FIELD_ACTIVE] = values[CUSTOM_COLOR_FIELD];
+      currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
+    }
+    const keys = currentColorKeys.keys();
+    for (const key of keys) {
+      switch (key) {
+        case CUSTOM_BG_ACTIVE:
+          values[key] = values[CUSTOM_COLOR_ACTIVE];
+          break;
+        case CUSTOM_BG_FIELD:
+          values[key] = values[CUSTOM_COLOR_FIELD];
+          break;
+        case CUSTOM_BG_FIELD_ACTIVE:
+          values[key] = values[CUSTOM_COLOR_FIELD_ACTIVE];
+          break;
+        case CUSTOM_BG_SELECT:
+          values[key] = values[CUSTOM_COLOR_SELECT];
+          break;
+        default:
+          values[key] = values[CUSTOM_COLOR];
+      }
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
@@ -349,19 +394,43 @@ export const getCurrentThemeBaseValues = async () => {
   }
   // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
-    const tabLine = currentThemeColors.get('tab_line');
+    const border = currentThemeColors.get('tab_line');
+    const base = values[CUSTOM_BG];
     let value;
-    if (tabLine === 'transparent') {
-      value = values[CUSTOM_BG];
+    if (border === 'transparent') {
+      value = base;
+    } else if (/^currentColor$/i.test(border)) {
+      value = await blendColors(values[CUSTOM_COLOR_ACTIVE], base);
     } else {
-      const base = values[CUSTOM_BG];
-      value = await blendColors(tabLine, base);
+      value = await blendColors(border, base);
     }
     values[CUSTOM_BORDER_ACTIVE] = value;
   }
-  if (currentThemeColors.get('toolbar_field_border') === 'transparent') {
-    const value = values[CUSTOM_BG];
+  if (currentThemeColors.has('toolbar_field_border')) {
+    const border = currentThemeColors.get('toolbar_field_border');
+    const base = values[CUSTOM_BG];
+    let value;
+    if (border === 'transparent') {
+      value = base;
+    } else if (/^currentColor$/i.test(border)) {
+      value = await blendColors(values[CUSTOM_COLOR_FIELD], base);
+    } else {
+      value = await blendColors(border, base);
+    }
     values[CUSTOM_BORDER_FIELD] = value;
+  }
+  if (currentThemeColors.has('toolbar_field_border_focus')) {
+    const border = currentThemeColors.get('toolbar_field_border_focus');
+    const base = values[CUSTOM_BG];
+    let value;
+    if (border === 'transparent') {
+      value = base;
+    } else if (/^currentColor$/i.test(border)) {
+      value = await blendColors(values[CUSTOM_COLOR_FIELD_ACTIVE], base);
+    } else {
+      value = await blendColors(border, base);
+    }
+    values[CUSTOM_BORDER_FIELD_ACTIVE] = value;
   }
   return values;
 };
