@@ -12,8 +12,7 @@ import path from 'path';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
-  CSS_ID,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
+  CSS_ID, CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
   CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE, CUSTOM_BORDER_FIELD, CUSTOM_BORDER_FIELD_ACTIVE,
@@ -262,8 +261,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('bookmark_text', 'currentColor');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -513,8 +510,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('tab_background_text', 'currentColor');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -536,8 +531,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('tab_line', 'transparent');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -574,8 +567,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('toolbar_field_border', 'transparent');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -747,8 +738,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('tab_text', 'currentColor');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -770,8 +759,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('toolbar_field_text', 'currentColor');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -793,8 +780,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('toolbar_field_text_focus', 'currentColor');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
   });
