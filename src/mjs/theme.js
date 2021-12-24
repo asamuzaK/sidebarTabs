@@ -131,7 +131,7 @@ export const themeMap = {
     [CUSTOM_BG_HOVER_SHADOW]: '#15141a1a',
     [CUSTOM_BG_SELECT]: '#ffffff',
     [CUSTOM_BG_SELECT_HOVER]: '#e7e7e8',
-    [CUSTOM_BORDER_ACTIVE]: '#f0f0f4', // NOTE: 'transparent',
+    [CUSTOM_BORDER_ACTIVE]: '#dadade', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD]: '#f0f0f4', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#053e94',
     [CUSTOM_COLOR]: '#15141a',
@@ -158,7 +158,7 @@ export const themeMap = {
     [CUSTOM_BG_HOVER_SHADOW]: '#fbfbfe1a',
     [CUSTOM_BG_SELECT]: '#42414d',
     [CUSTOM_BG_SELECT_HOVER]: '#55545f',
-    [CUSTOM_BORDER_ACTIVE]: '#38383d', // NOTE: 'transparent',
+    [CUSTOM_BORDER_ACTIVE]: '#4c4c50', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD]: '#38383d', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#00ddff',
     [CUSTOM_COLOR]: '#f9f9fa',
@@ -394,11 +394,11 @@ export const getCurrentThemeBaseValues = async () => {
   }
   // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
-    const border = currentThemeColors.get('tab_line');
     const base = values[CUSTOM_BG];
+    const border = currentThemeColors.get('tab_line');
     let value;
     if (border === 'transparent') {
-      value = base;
+      value = values[CUSTOM_BG_HOVER];
     } else if (/^currentColor$/i.test(border)) {
       value = await blendColors(values[CUSTOM_COLOR_ACTIVE], base);
     } else {
@@ -407,8 +407,8 @@ export const getCurrentThemeBaseValues = async () => {
     values[CUSTOM_BORDER_ACTIVE] = value;
   }
   if (currentThemeColors.has('toolbar_field_border')) {
-    const border = currentThemeColors.get('toolbar_field_border');
     const base = values[CUSTOM_BG];
+    const border = currentThemeColors.get('toolbar_field_border');
     let value;
     if (border === 'transparent') {
       value = base;
@@ -420,8 +420,8 @@ export const getCurrentThemeBaseValues = async () => {
     values[CUSTOM_BORDER_FIELD] = value;
   }
   if (currentThemeColors.has('toolbar_field_border_focus')) {
-    const border = currentThemeColors.get('toolbar_field_border_focus');
     const base = values[CUSTOM_BG];
+    const border = currentThemeColors.get('toolbar_field_border_focus');
     let value;
     if (border === 'transparent') {
       value = base;
