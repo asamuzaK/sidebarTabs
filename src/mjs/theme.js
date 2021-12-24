@@ -277,7 +277,8 @@ export const getCurrentThemeBaseValues = async () => {
       }
       case CUSTOM_BORDER_ACTIVE: {
         const valueA = currentThemeColors.get('tab_line');
-        values[key] = valueA || baseValues[key];
+        const valueB = currentThemeColors.get('tab_text');
+        values[key] = valueA || valueB || baseValues[key];
         break;
       }
       case CUSTOM_BORDER_FIELD: {
@@ -304,7 +305,8 @@ export const getCurrentThemeBaseValues = async () => {
       case CUSTOM_COLOR_ACTIVE: {
         const valueA = currentThemeColors.get('tab_text');
         const valueB = currentThemeColors.get('bookmark_text');
-        values[key] = valueA || valueB || baseValues[key];
+        const valueC = currentThemeColors.get('tab_background_text');
+        values[key] = valueA || valueB || valueC || baseValues[key];
         if (/^currentColor$/i.test(values[key])) {
           values[key] = baseValues[CUSTOM_COLOR];
         }

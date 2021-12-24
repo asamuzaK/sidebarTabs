@@ -497,7 +497,8 @@ describe('theme', () => {
       const items = Object.entries(res);
       assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
       for (const [key, value] of items) {
-        if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED) {
+        if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
+            key === CUSTOM_COLOR_ACTIVE) {
           assert.strictEqual(value, '#ff0000', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
           assert.strictEqual(value, '#ff00001a', `${key}`);
@@ -727,7 +728,8 @@ describe('theme', () => {
       const items = Object.entries(res);
       assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
       for (const [key, value] of items) {
-        if (key === CUSTOM_COLOR_ACTIVE || key === CUSTOM_COLOR_SELECT) {
+        if (key === CUSTOM_COLOR_ACTIVE || key === CUSTOM_COLOR_SELECT ||
+            key === CUSTOM_BORDER_ACTIVE) {
           assert.strictEqual(value, '#ff0000', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
@@ -738,7 +740,16 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('tab_text', 'currentColor');
       const res = await func();
-      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
+      for (const [key, value] of items) {
+        if (key === CUSTOM_BORDER_ACTIVE) {
+          assert.strictEqual(value, 'currentColor', `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
     });
 
     it('should get values', async () => {
