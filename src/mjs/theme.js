@@ -340,11 +340,11 @@ export const getCurrentThemeBaseValues = async () => {
     }
   }
   // replace currentColor keywords to color values
+  if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
+    values[CUSTOM_COLOR_FIELD_ACTIVE] = values[CUSTOM_COLOR_FIELD];
+    currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
+  }
   if (currentColorKeys.size) {
-    if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
-      values[CUSTOM_COLOR_FIELD_ACTIVE] = values[CUSTOM_COLOR_FIELD];
-      currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
-    }
     const keys = currentColorKeys.keys();
     for (const key of keys) {
       switch (key) {
