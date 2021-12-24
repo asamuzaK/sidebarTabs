@@ -297,7 +297,7 @@ export const getCurrentThemeBaseValues = async () => {
         const valueB = currentThemeColors.get('tab_background_text');
         values[key] = valueA || valueB || baseValues[key];
         if (/^currentColor$/i.test(values[key])) {
-          values[key] = baseValues[key];
+          values[key] = baseValues[CUSTOM_COLOR];
         }
         break;
       }
