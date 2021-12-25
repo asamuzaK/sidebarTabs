@@ -14,7 +14,7 @@
   "type": "module",
   "scripts": {
     "copy": "npm-run-all -s copy:*",
-    "copy:tldts": "copyfiles -f node_modules/tldts/README.md node_modules/tldts/dist/index.esm.min.js node_modules/tldts/dist/index.esm.min.js.map src/lib/tldts",
+    "copy:tldts": "copyfiles -f node_modules/tldts/LICENSE node_modules/tldts/README.md node_modules/tldts/dist/index.esm.min.js node_modules/tldts/dist/index.esm.min.js.map src/lib/tldts",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
