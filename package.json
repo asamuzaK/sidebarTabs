@@ -14,7 +14,7 @@
   "type": "module",
   "scripts": {
     "bundle": "npm run bundle:tldts",
-    "bundle:tldts": "copyfiles -f node_modules/tldts/LICENSE node_modules/tldts/dist/index.esm.min.js node_modules/tldts/dist/index.esm.min.js.map src/lib/tldts",
+    "bundle:tldts": "copyfiles -f node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
@@ -57,7 +57,7 @@
     "sinon": "^12.0.1",
     "stylelint": "^14.2.0",
     "stylelint-config-standard": "^24.0.0",
-    "tldts": "^5.7.57",
+    "tldts-experimental": "^5.7.57",
     "webext-schema": "^2.0.5"
   },
   "version": "6.3.6"
