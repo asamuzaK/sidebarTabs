@@ -13,8 +13,7 @@
   "license": "MPL-2.0",
   "type": "module",
   "scripts": {
-    "include": "npm run include:tldts",
-    "include:tldts": "copyfiles -f node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts",
+    "include": "copyfiles -f node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
