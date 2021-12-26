@@ -14,7 +14,7 @@
   "type": "module",
   "scripts": {
     "bundle": "npm run bundle:tldts",
-    "bundle:tldts": "esbuild node_modules/tldts/dist/es6/index.js --bundle --format=esm --minify --sourcemap --outfile=src/lib/tldts/tldts.js && copyfiles -f node_modules/tldts/LICENSE src/lib/tldts",
+    "bundle:tldts": "esbuild node_modules/tldts/dist/index.esm.min.js --bundle --format=esm --minify --sourcemap --outfile=src/lib/tldts/tldts.js && copyfiles -f node_modules/tldts/LICENSE src/lib/tldts",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
