@@ -14,7 +14,7 @@ import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   NEW_TAB, PINNED, SESSION_SAVE, SIDEBAR, TAB_LIST, TAB_QUERY
 } from './constant.js';
-import { parse as parseTld } from '../lib/tldts/tldts.js';
+import { parse as parseTld } from '../lib/tldts/index.esm.min.js';
 
 /**
  * get template
