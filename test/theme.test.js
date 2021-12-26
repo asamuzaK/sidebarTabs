@@ -12,7 +12,7 @@ import path from 'path';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
-  CSS_ID, CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
+  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
   CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE, CUSTOM_BORDER_FIELD, CUSTOM_BORDER_FIELD_ACTIVE,
@@ -23,8 +23,9 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
-  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID,
-  THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from '../src/mjs/constant.js';
 
@@ -1132,7 +1133,7 @@ describe('theme', () => {
     it('should not update stylesheet if map is not set', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       await func('.foo');
       const { sheet } = elm;
@@ -1142,7 +1143,7 @@ describe('theme', () => {
     it('should not update stylesheet if map is empty object', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT, {});
       await func('.foo');
@@ -1166,7 +1167,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('p');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
       await func('.foo');
@@ -1177,7 +1178,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
       await func('.foo');
@@ -1190,7 +1191,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       elm.sheet.insertRule('.bar { background: red; }', 0);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
@@ -1205,7 +1206,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       elm.sheet.insertRule('.foo { background: red; }', 0);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
@@ -1219,7 +1220,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       elm.sheet.insertRule('.foo { background: red; }', 0);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
@@ -1251,7 +1252,7 @@ describe('theme', () => {
     it('should not delete style if selector does not match', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       elm.sheet.insertRule('.foo { background: red; }', 0);
       await func();
@@ -1263,7 +1264,7 @@ describe('theme', () => {
     it('should not delete style if no rules', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       await func();
       const { sheet } = elm;
@@ -1273,7 +1274,7 @@ describe('theme', () => {
     it('should delete style', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       elm.sheet.insertRule(`.${CLASS_THEME_CUSTOM} { background: red; }`, 0);
       await func();
@@ -1284,7 +1285,7 @@ describe('theme', () => {
     it('should delete style', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       elm.sheet.insertRule(`.${CLASS_THEME_CUSTOM} { background: red; }`, 0);
       elm.sheet.insertRule('.foo { color: red; }', 1);
@@ -1322,7 +1323,7 @@ describe('theme', () => {
       const j = browser.storage.local.remove.callCount;
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
@@ -1338,7 +1339,7 @@ describe('theme', () => {
       const j = browser.storage.local.remove.callCount;
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
@@ -1370,7 +1371,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
       const res = await func();
@@ -1395,7 +1396,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
-      elm.id = CSS_ID;
+      elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
       const res = await func(true);

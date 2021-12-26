@@ -12,7 +12,7 @@ import { blendColors, convertColorToHex } from './color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_THEME_CUSTOM,
   CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM, COLOR_SCHEME_DARK,
-  CSS_ID, CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
+  CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
   CSS_VAR_BG_FIELD_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
   CSS_VAR_BORDER_ACTIVE, CSS_VAR_BORDER_FIELD, CSS_VAR_BORDER_FIELD_ACTIVE,
@@ -33,14 +33,15 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
-  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID,
-  THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
 
 /* theme map */
 export const themeMap = {
-  [CSS_ID]: {
+  [THEME_CUSTOM]: {
     [CUSTOM_BG]: CSS_VAR_BG,
     [CUSTOM_BG_ACTIVE]: CSS_VAR_BG_ACTIVE,
     [CUSTOM_BG_DISCARDED]: CSS_VAR_BG_DISCARDED,
@@ -541,12 +542,12 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
   if (!isString(sel)) {
     throw new TypeError(`Expected String but got ${getType(sel)}.`);
   }
-  const elm = document.getElementById(CSS_ID);
+  const elm = document.getElementById(THEME_CUSTOM_ID);
   const customTheme = currentTheme.get(THEME_CURRENT);
   if (elm && elm.sheet && isObjectNotEmpty(customTheme)) {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
-    const propKeys = themeMap[CSS_ID];
+    const propKeys = themeMap[THEME_CUSTOM];
     const items = Object.entries(customTheme);
     let cssText = '';
     for (const [key, val] of items) {
@@ -585,7 +586,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
  * @returns {void}
  */
 export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
-  const elm = document.getElementById(CSS_ID);
+  const elm = document.getElementById(THEME_CUSTOM_ID);
   if (elm && elm.sheet) {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
@@ -612,7 +613,7 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
  * @returns {?Function} - sendCurrentTheme()
  */
 export const initCustomTheme = async (rem = false) => {
-  const elm = document.getElementById(CSS_ID);
+  const elm = document.getElementById(THEME_CUSTOM_ID);
   const obj = currentTheme.get(THEME_CURRENT);
   let func;
   if (elm && obj) {
