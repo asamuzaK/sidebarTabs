@@ -13,8 +13,8 @@
   "license": "MPL-2.0",
   "type": "module",
   "scripts": {
-    "copy": "npm-run-all -s copy:*",
-    "copy:tldts": "copyfiles -f node_modules/tldts/LICENSE node_modules/tldts/dist/index.esm.min.js node_modules/tldts/dist/index.esm.min.js.map src/lib/tldts",
+    "bundle": "npm run bundle:tldts",
+    "bundle:tldts": "esbuild node_modules/tldts/dist/es6/index.js --bundle --format=esm --minify --sourcemap --outfile=src/lib/tldts/tldts.js && copyfiles -f node_modules/tldts/LICENSE src/lib/tldts",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
@@ -42,6 +42,7 @@
     "c8": "^7.10.0",
     "chai": "^4.3.4",
     "copyfiles": "^2.4.1",
+    "esbuild": "^0.14.8",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.3",
