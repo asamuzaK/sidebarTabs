@@ -25,6 +25,7 @@
   },
   "bookmarkTab_menu": {
     "message": "タブをブックマーク$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -43,6 +44,7 @@
   },
   "bookmarkTabs_menu": {
     "message": "タブをブックマーク$KEY$...",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -52,6 +54,7 @@
   },
   "closeMultipleTabs_menu": {
     "message": "複数のタブを閉じる$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -61,6 +64,7 @@
   },
   "closeOtherTabs_menu": {
     "message": "他のタブをすべて閉じる$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -73,6 +77,7 @@
   },
   "closeTab_menu": {
     "message": "タブを閉じる$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -81,10 +86,12 @@
     }
   },
   "closeTab_tooltip": {
-    "message": "タブを閉じます"
+    "message": "タブを閉じます",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties"
   },
   "closeTabs_menu": {
     "message": "$NUM$ 個のタブを閉じる$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -98,6 +105,7 @@
   },
   "closeTabs_tooltip": {
     "message": "$NUM$ 個のタブを閉じます",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -173,6 +181,7 @@
   },
   "dupeTab_menu": {
     "message": "タブを複製$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -182,6 +191,7 @@
   },
   "dupeTabs_menu": {
     "message": "タブを複製$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -251,6 +261,7 @@
   },
   "moveTab_menu": {
     "message": "タブを移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -260,6 +271,7 @@
   },
   "moveTabToEnd_menu": {
     "message": "末尾に移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -269,6 +281,7 @@
   },
   "moveTabToNewWindow_menu": {
     "message": "新しいウィンドウへ移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -278,30 +291,27 @@
   },
   "moveTabToStart_menu": {
     "message": "先頭に移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
         "example": "(&V)"
       }
     }
-  },
-  "moveTabs": {
-    "message": "タブを移動"
   },
   "moveTabs_menu": {
     "message": "タブを移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
         "example": "(&V)"
       }
     }
-  },
-  "moveTabsToEnd": {
-    "message": "末尾に移動"
   },
   "moveTabsToEnd_menu": {
     "message": "末尾に移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -309,11 +319,9 @@
       }
     }
   },
-  "moveTabsToNewWindow": {
-    "message": "新しいウィンドウへ移動"
-  },
   "moveTabsToNewWindow_menu": {
     "message": "新しいウィンドウへ移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -321,11 +329,9 @@
       }
     }
   },
-  "moveTabsToStart": {
-    "message": "先頭に移動"
-  },
   "moveTabsToStart_menu": {
     "message": "先頭に移動$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -338,6 +344,7 @@
   },
   "muteTab_menu": {
     "message": "タブをミュート$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -346,10 +353,12 @@
     }
   },
   "muteTab_tooltip": {
-    "message": "タブをミュートします"
+    "message": "タブをミュートします",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties"
   },
   "muteTabs_menu": {
     "message": "タブをミュート$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -359,6 +368,7 @@
   },
   "muteTabs_tooltip": {
     "message": "$NUM$ 個のタブをミュートします",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -368,6 +378,7 @@
   },
   "newTab_menu": {
     "message": "新しいタブ$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -536,6 +547,7 @@
   },
   "pinTab_menu": {
     "message": "タブをピン留め$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -545,6 +557,7 @@
   },
   "pinTabs_menu": {
     "message": "タブをピン留め$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -557,6 +570,7 @@
   },
   "playTab_menu": {
     "message": "タブのメディアを再生$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -566,6 +580,7 @@
   },
   "playTabs_menu": {
     "message": "タブのメディアを再生$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -584,6 +599,7 @@
   },
   "reloadTab_menu": {
     "message": "タブを再読み込み$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -593,6 +609,7 @@
   },
   "reloadTabs_menu": {
     "message": "タブを再読み込み$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -602,6 +619,7 @@
   },
   "reopenTabInContainer_menu": {
     "message": "新しいコンテナータブで開く$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -611,6 +629,7 @@
   },
   "reopenTabsInContainer_menu": {
     "message": "新しいコンテナータブで開く$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -620,50 +639,11 @@
   },
   "selectAllTabs_menu": {
     "message": "すべてのタブを選択$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
         "example": "(&S)"
-      }
-    }
-  },
-  "sendTabToDevice": {
-    "message": "タブを端末に送る"
-  },
-  "sendTabToDevice_menu": {
-    "message": "タブを端末に送る$KEY$",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&S)"
-      }
-    }
-  },
-  "sendTabsToDevice": {
-    "message": "タブを端末に送る"
-  },
-  "sendTabsToDevice_menu": {
-    "message": "$NUM$個のタブを端末に送る$KEY$",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&S)"
-      },
-      "num": {
-        "content": "$2",
-        "example": "2"
-      }
-    }
-  },
-  "sendToAllDevices": {
-    "message": "すべての端末に送る"
-  },
-  "sendToAllDevices_menu": {
-    "message": "すべての端末に送る$KEY$",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&A)"
       }
     }
   },
@@ -693,6 +673,7 @@
   },
   "undoCloseTab_menu": {
     "message": "閉じたタブを開きなおす$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -714,6 +695,7 @@
   },
   "unmuteTab_menu": {
     "message": "タブのミュートを解除$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -722,7 +704,8 @@
     }
   },
   "unmuteTab_tooltip": {
-    "message": "＄NUM＄ 個のタブのミュートを解除します",
+    "message": "タブのミュートを解除します",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -732,6 +715,7 @@
   },
   "unmuteTabs_menu": {
     "message": "タブのミュートを解除$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -740,10 +724,18 @@
     }
   },
   "unmuteTabs_tooltip": {
-    "message": "選択したタブのミュートを解除します"
+    "message": "＄NUM＄ 個のタブのミュートを解除します",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "unpinTab_menu": {
     "message": "タブのピン留めを外す$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -753,6 +745,7 @@
   },
   "unpinTabs_menu": {
     "message": "タブのピン留めを外す$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",

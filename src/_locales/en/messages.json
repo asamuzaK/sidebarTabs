@@ -25,6 +25,7 @@
   },
   "bookmarkTab_menu": {
     "message": "&Bookmark Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -43,6 +44,7 @@
   },
   "bookmarkTabs_menu": {
     "message": "&Bookmark Tabs…",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -52,6 +54,7 @@
   },
   "closeMultipleTabs_menu": {
     "message": "Close &Multiple Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -61,6 +64,7 @@
   },
   "closeOtherTabs_menu": {
     "message": "Cl&ose Other Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -73,6 +77,7 @@
   },
   "closeTab_menu": {
     "message": "&Close Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -81,10 +86,12 @@
     }
   },
   "closeTab_tooltip": {
-    "message": "Close tab"
+    "message": "Close tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties"
   },
   "closeTabs_menu": {
     "message": "&Close $NUM$ Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -98,6 +105,7 @@
   },
   "closeTabs_tooltip": {
     "message": "Close $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -173,6 +181,7 @@
   },
   "dupeTab_menu": {
     "message": "&Duplicate Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -182,6 +191,7 @@
   },
   "dupeTabs_menu": {
     "message": "&Duplicate Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -251,6 +261,7 @@
   },
   "moveTab_menu": {
     "message": "Mo&ve Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -260,6 +271,7 @@
   },
   "moveTabToEnd_menu": {
     "message": "Mov&e to End",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -269,6 +281,7 @@
   },
   "moveTabToNewWindow_menu": {
     "message": "Move to New &Window",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -278,6 +291,7 @@
   },
   "moveTabToStart_menu": {
     "message": "Move to &Start",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -287,6 +301,7 @@
   },
   "moveTabs_menu": {
     "message": "Mo&ve Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -296,6 +311,7 @@
   },
   "moveTabsToEnd_menu": {
     "message": "Mov&e to End",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -305,6 +321,7 @@
   },
   "moveTabsToNewWindow_menu": {
     "message": "Move to New &Window",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -314,6 +331,7 @@
   },
   "moveTabsToStart_menu": {
     "message": "Move to &Start",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -326,6 +344,7 @@
   },
   "muteTab_menu": {
     "message": "&Mute Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -334,10 +353,12 @@
     }
   },
   "muteTab_tooltip": {
-    "message": "Mute tab"
+    "message": "Mute tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties"
   },
   "muteTabs_menu": {
     "message": "&Mute Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -347,6 +368,7 @@
   },
   "muteTabs_tooltip": {
     "message": "Mute $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -356,6 +378,7 @@
   },
   "newTab_menu": {
     "message": "Ne&w Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -524,6 +547,7 @@
   },
   "pinTab_menu": {
     "message": "&Pin Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -533,6 +557,7 @@
   },
   "pinTabs_menu": {
     "message": "&Pin Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -545,6 +570,7 @@
   },
   "playTab_menu": {
     "message": "P&lay Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -554,6 +580,7 @@
   },
   "playTabs_menu": {
     "message": "Pla&y Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -572,6 +599,7 @@
   },
   "reloadTab_menu": {
     "message": "&Reload Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -581,6 +609,7 @@
   },
   "reloadTabs_menu": {
     "message": "&Reload Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -590,6 +619,7 @@
   },
   "reopenTabInContainer_menu": {
     "message": "Op&en in New Container Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -599,6 +629,7 @@
   },
   "reopenTabsInContainer_menu": {
     "message": "Op&en in New Container Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -608,50 +639,11 @@
   },
   "selectAllTabs_menu": {
     "message": "&Select All Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
         "example": "(&S)"
-      }
-    }
-  },
-  "sendTabToDevice": {
-    "message": "Send Tab to Device"
-  },
-  "sendTabToDevice_menu": {
-    "message": "Se&nd Tab to Device",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&N)"
-      }
-    }
-  },
-  "sendTabsToDevice": {
-    "message": "Send Tabs to Device"
-  },
-  "sendTabsToDevice_menu": {
-    "message": "Se&nd $NUM$ Tabs to Device",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&N)"
-      },
-      "num": {
-        "content": "$2",
-        "example": "2"
-      }
-    }
-  },
-  "sendToAllDevices": {
-    "message": "Send to All Devices"
-  },
-  "sendToAllDevices_menu": {
-    "message": "Send to &All Devices",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&A)"
       }
     }
   },
@@ -681,6 +673,7 @@
   },
   "undoCloseTab_menu": {
     "message": "Re&open Closed Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -702,6 +695,7 @@
   },
   "unmuteTab_menu": {
     "message": "Un&mute Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -710,10 +704,18 @@
     }
   },
   "unmuteTab_tooltip": {
-    "message": "Unmute tab"
+    "message": "Unmute tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "unmuteTabs_menu": {
     "message": "Un&mute Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -723,6 +725,7 @@
   },
   "unmuteTabs_tooltip": {
     "message": "Unmute $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -732,6 +735,7 @@
   },
   "unpinTab_menu": {
     "message": "Un&pin Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -741,6 +745,7 @@
   },
   "unpinTabs_menu": {
     "message": "Un&pin Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
