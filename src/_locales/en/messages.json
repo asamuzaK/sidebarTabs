@@ -87,7 +87,13 @@
   },
   "closeTab_tooltip": {
     "message": "Close tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties"
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "closeTabs_menu": {
     "message": "&Close $NUM$ Tabs",
@@ -354,7 +360,13 @@
   },
   "muteTab_tooltip": {
     "message": "Mute tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties"
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
   },
   "muteTabs_menu": {
     "message": "&Mute Tabs",
