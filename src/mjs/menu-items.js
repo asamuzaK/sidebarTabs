@@ -239,48 +239,6 @@ export default {
       }
     }
   },
-  // FIXME: issue #7
-  /*
-  [TAB_SEND]: {
-    id: TAB_SEND,
-    title: i18n.getMessage(`${TAB_SEND}_menu`, "(&N)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
-  [TABS_SEND]: {
-    id: TABS_SEND,
-    title: i18n.getMessage(`${TABS_SEND}_menu`, "(&N)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
-  */
-  // FIXME:
-  /*
-  [TAB_SHARE]: {
-    id: TAB_SHARE,
-    title: i18n.getMessage(`${TAB_SHARE}_menu`, "(&H)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
-  [TABS_SHARE]: {
-    id: TABS_SHARE,
-    title: i18n.getMessage(`${TABS_SHARE}_menu`, "(&H)"),
-    type: "normal",
-    contexts: ["tab"],
-    viewTypes: ["sidebar"],
-    enabled: false,
-    visible: false,
-  },
-  */
   [TAB_REOPEN_CONTAINER]: {
     id: TAB_REOPEN_CONTAINER,
     title: i18n.getMessage(`${TAB_REOPEN_CONTAINER}_menu`, '(&E)'),
