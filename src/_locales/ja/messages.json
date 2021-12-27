@@ -50,15 +50,6 @@
       }
     }
   },
-  "closeDupeTabs_menu": {
-    "message": "重複したタブをすべて閉じる$KEY$",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&D)"
-      }
-    }
-  },
   "closeMultipleTabs_menu": {
     "message": "複数のタブを閉じる$KEY$",
     "placeholders": {

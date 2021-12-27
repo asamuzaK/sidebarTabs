@@ -50,15 +50,6 @@
       }
     }
   },
-  "closeDupeTabs_menu": {
-    "message": "Close &Duplicate Tabs",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&D)"
-      }
-    }
-  },
   "closeMultipleTabs_menu": {
     "message": "Close &Multiple Tabs",
     "placeholders": {
@@ -607,7 +598,7 @@
     }
   },
   "reopenTabsInContainer_menu": {
-    "message": "R&eopen Tabs in Container",
+    "message": "Op&en in New Container Tab",
     "placeholders": {
       "key": {
         "content": "$1",

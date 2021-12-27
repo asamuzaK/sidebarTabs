@@ -508,18 +508,6 @@ export default {
         enabled: false,
         visible: true
       },
-      // Not implemented yet in Firefox
-      /*
-      [TAB_CLOSE_DUPE]: {
-        id: TAB_CLOSE_DUPE,
-        title: i18n.getMessage(`${TAB_CLOSE_DUPE}_menu`, "(&D)"),
-        type: "normal",
-        contexts: ["tab"],
-        viewTypes: ["sidebar"],
-        enabled: false,
-        visible: true,
-      },
-      */
       [TAB_CLOSE_OTHER]: {
         id: TAB_CLOSE_OTHER,
         title: i18n.getMessage(`${TAB_CLOSE_OTHER}_menu`, '(&O)'),
