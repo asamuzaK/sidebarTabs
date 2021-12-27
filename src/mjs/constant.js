@@ -117,7 +117,6 @@ export const TAB_ALL_SELECT = 'selectAllTabs';
 export const TAB_BOOKMARK = 'bookmarkTab';
 export const TAB_CLOSE = 'closeTab';
 export const TAB_CLOSE_DBLCLICK = 'closeTabsByDoubleClick';
-export const TAB_CLOSE_DUPE = 'closeDupeTabs';
 export const TAB_CLOSE_END = 'closeTabsToTheEnd';
 export const TAB_CLOSE_OTHER = 'closeOtherTabs';
 export const TAB_CLOSE_START = 'closeTabsToTheStart';
