@@ -580,26 +580,6 @@
   "pinnedTabsLabel": {
     "message": "Pinned Tabs"
   },
-  "playTab_menu": {
-    "message": "P&lay Tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&L)"
-      }
-    }
-  },
-  "playTabs_menu": {
-    "message": "Pla&y Tabs",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&Y)"
-      }
-    }
-  },
   "reloadAllTabs_menu": {
     "message": "Re&load All Tabs",
     "placeholders": {

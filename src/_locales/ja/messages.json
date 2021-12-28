@@ -580,26 +580,6 @@
   "pinnedTabsLabel": {
     "message": "ピン留めされたタブ"
   },
-  "playTab_menu": {
-    "message": "タブのメディアを再生$KEY$",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&L)"
-      }
-    }
-  },
-  "playTabs_menu": {
-    "message": "タブのメディアを再生$KEY$",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
-    "placeholders": {
-      "key": {
-        "content": "$1",
-        "example": "(&Y)"
-      }
-    }
-  },
   "reloadAllTabs_menu": {
     "message": "すべてのタブを再読み込み$KEY$",
     "placeholders": {
