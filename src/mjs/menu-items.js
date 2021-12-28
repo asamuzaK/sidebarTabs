@@ -419,6 +419,7 @@ export default {
     contexts: ['page', 'tab'],
     viewTypes: ['sidebar']
   },
+  /* close */
   [TAB_CLOSE]: {
     id: TAB_CLOSE,
     title: i18n.getMessage(`${TAB_CLOSE}_menu`, '(&C)'),
