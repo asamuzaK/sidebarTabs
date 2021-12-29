@@ -1,3 +1,10 @@
 {
+  "name": "tldts-experimental",
+  "description": "Library to work against complex domain names, subdomains and URIs.",
+  "author": {
+    "name": "Rémi Berson"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/remusao/tldts#readme",
   "type": "module"
 }
