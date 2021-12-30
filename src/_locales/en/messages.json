@@ -441,7 +441,7 @@
     "message": "Reduce the height of the tab to display more tabs."
   },
   "optionsEnableTabGroup": {
-    "message": "Enable tab group"
+    "message": "Enable tab groups"
   },
   "optionsEnableTabGroupDetail": {
     "message": "Enable grouping tabs functionality."
@@ -495,7 +495,7 @@
     "message": "Switch to the next / previous tab by scrolling the mouse wheel."
   },
   "optionsTabGroup": {
-    "message": "Tab Group"
+    "message": "Tab Groups"
   },
   "optionsTabGroupOnExpandCollapseOther": {
     "message": "Always collapse other groups when expanding a tab group"
