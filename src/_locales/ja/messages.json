@@ -206,7 +206,8 @@
     }
   },
   "editTabGroupLabel": {
-    "message": ""
+    "message": "",
+    "description": "Leave empty"
   },
   "editTabGroupLabel_title": {
     "message": "ラベルを編集します"
@@ -399,7 +400,8 @@
     }
   },
   "newTabButton": {
-    "message": ""
+    "message": "",
+    "description": "Leave empty"
   },
   "newTabButton_alt": {
     "message": "新しいタブ"
