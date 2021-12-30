@@ -12,7 +12,7 @@
     "message": "Tabs"
   },
   "bookmarkAllTabs_menu": {
-    "message": "&Bookmark All Tabs",
+    "message": "&Bookmark All Tabs…",
     "placeholders": {
       "key": {
         "content": "$1",

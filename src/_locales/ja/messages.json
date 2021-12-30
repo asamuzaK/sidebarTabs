@@ -12,7 +12,7 @@
     "message": "タブ"
   },
   "bookmarkAllTabs_menu": {
-    "message": "すべてのタブをブックマーク$KEY$",
+    "message": "すべてのタブをブックマーク$KEY$...",
     "placeholders": {
       "key": {
         "content": "$1",
