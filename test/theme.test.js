@@ -7,7 +7,7 @@ import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { promises as fsPromise } from 'fs';
 import path from 'path';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
@@ -953,7 +953,7 @@ describe('theme', () => {
       const dirName = path.dirname(fileURLToPath(import.meta.url));
       const filePath =
         path.resolve(dirName, '../resource', 'alpenglow-manifest.json');
-      const file = fs.readFileSync(filePath, {
+      const file = await fsPromise.readFile(filePath, {
         encoding: 'utf8',
         flag: 'r'
       });
@@ -979,7 +979,7 @@ describe('theme', () => {
       const dirName = path.dirname(fileURLToPath(import.meta.url));
       const filePath =
         path.resolve(dirName, '../resource', 'alpenglow-manifest.json');
-      const file = fs.readFileSync(filePath, {
+      const file = await fsPromise.readFile(filePath, {
         encoding: 'utf8',
         flag: 'r'
       });
@@ -1005,7 +1005,7 @@ describe('theme', () => {
       const dirName = path.dirname(fileURLToPath(import.meta.url));
       const filePath =
         path.resolve(dirName, '../resource', 'dark-manifest.json');
-      const file = fs.readFileSync(filePath, {
+      const file = await fsPromise.readFile(filePath, {
         encoding: 'utf8',
         flag: 'r'
       });
@@ -1030,7 +1030,7 @@ describe('theme', () => {
       const dirName = path.dirname(fileURLToPath(import.meta.url));
       const filePath =
         path.resolve(dirName, '../resource', 'light-manifest.json');
-      const file = fs.readFileSync(filePath, {
+      const file = await fsPromise.readFile(filePath, {
         encoding: 'utf8',
         flag: 'r'
       });
