@@ -24,7 +24,7 @@ Experimental features are used, so you need to activate the following.
 
 * set `svg.context-properties.content.enabled` to `true`.
 
-## Tab group
+## Tab groups
 
 * Select tabs by "Shift + left click" or "Ctrl + left click" ("Cmd + left click" on Mac) on each tab.
 * Drag one of the selected tabs with "Shift + left click" and drop it on the tab you want to group.
