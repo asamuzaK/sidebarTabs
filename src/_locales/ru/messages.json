@@ -1,18 +1,18 @@
 {
   "extensionLocale": {
-    "message": "ja"
+    "message": "ru"
   },
   "extensionDescription": {
-    "message": "サイドバーにタブをエミュレートし、タブを縦に並べて表示します。さらに、タブをグループ化して折りたたみ・展開することが可能です。"
+    "message": "Emulate tabs in sidebar and display tabs vertically. In addition, group tabs and collapse / expand them."
   },
   "extensionName": {
-    "message": "サイドバータブ"
+    "message": "Sidebar Tabs"
   },
   "extensionShortName": {
-    "message": "タブ"
+    "message": "Tabs"
   },
   "bookmarkAllTabs_menu": {
-    "message": "すべてのタブをブックマーク$KEY$...",
+    "message": "Доб&авить все вкладки в закладки…",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -21,10 +21,10 @@
     }
   },
   "bookmarkFolderMessage": {
-    "message": "フォルダーの名前"
+    "message": "Имя папки"
   },
   "bookmarkTab_menu": {
-    "message": "タブをブックマーク$KEY$",
+    "message": "Доб&авить вкладку в закладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -34,7 +34,7 @@
     }
   },
   "bookmarkTabGroup_menu": {
-    "message": "タブグループをブックマーク$KEY$",
+    "message": "&Bookmark Tab Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -43,7 +43,7 @@
     }
   },
   "bookmarkTabs_menu": {
-    "message": "タブをブックマーク$KEY$...",
+    "message": "Доб&авить вкладки в закладки…",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -53,7 +53,7 @@
     }
   },
   "closeMultipleTabs_menu": {
-    "message": "複数のタブを閉じる$KEY$",
+    "message": "Закр&ыть несколько вкладок",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -63,7 +63,7 @@
     }
   },
   "closeOtherTabs_menu": {
-    "message": "他のタブをすべて閉じる$KEY$",
+    "message": "Закр&ыть другие вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -73,10 +73,10 @@
     }
   },
   "closeTab": {
-    "message": "タブを閉じる"
+    "message": "Закрыть вкладку"
   },
   "closeTab_menu": {
-    "message": "タブを閉じる$KEY$",
+    "message": "Закрыт&ь вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -86,7 +86,7 @@
     }
   },
   "closeTab_tooltip": {
-    "message": "タブを閉じます",
+    "message": "Закрыть вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
@@ -96,7 +96,7 @@
     }
   },
   "closeTabs_menu": {
-    "message": "$NUM$ 個のタブを閉じる$KEY$",
+    "message": "Закрыт&ь $NUM$ вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "num": {
@@ -110,7 +110,7 @@
     }
   },
   "closeTabs_tooltip": {
-    "message": "$NUM$ 個のタブを閉じます",
+    "message": "Закрыть $NUM$ вкладок",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
@@ -120,7 +120,7 @@
     }
   },
   "closeTabsToTheEnd_menu": {
-    "message": "下のタブをすべて閉じる$KEY$",
+    "message": "Close Tabs to &Bottom",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -129,7 +129,7 @@
     }
   },
   "closeTabsToTheStart_menu": {
-    "message": "上のタブをすべて閉じる$KEY$",
+    "message": "Close &Tabs to Top",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -138,7 +138,7 @@
     }
   },
   "collapseOtherTabGroups_menu": {
-    "message": "他のタブグループをすべて折りたたむ$KEY$",
+    "message": "C&ollapse Other Tab Groups",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -147,10 +147,10 @@
     }
   },
   "collapseTabGroup": {
-    "message": "タブグループを折りたたむ"
+    "message": "Collapse Tab Group"
   },
   "collapseTabGroup_menu": {
-    "message": "タブグループを折りたたむ$KEY$",
+    "message": "Collaps&e Tab Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -159,16 +159,16 @@
     }
   },
   "collapseTabGroup_tooltip": {
-    "message": "グループのタブを折りたたみます"
+    "message": "Collapse grouped tabs"
   },
   "connecting": {
-    "message": "接続中..."
+    "message": "connecting..."
   },
   "darkTheme": {
-    "message": "暗いテーマ"
+    "message": "Dark Theme"
   },
   "detachTabFromGroup_menu": {
-    "message": "タブをグループから切り離す$KEY$",
+    "message": "De&tach Tab from Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -177,7 +177,7 @@
     }
   },
   "detachTabsFromGroup_menu": {
-    "message": "タブをグループから切り離す$KEY$",
+    "message": "De&tach Tabs from Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -186,7 +186,7 @@
     }
   },
   "dupeTab_menu": {
-    "message": "タブを複製$KEY$",
+    "message": "Дуб&лировать вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -196,7 +196,7 @@
     }
   },
   "dupeTabs_menu": {
-    "message": "タブを複製$KEY$",
+    "message": "Дуб&лировать вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -210,13 +210,13 @@
     "description": "Leave empty"
   },
   "editTabGroupLabel_title": {
-    "message": "ラベルを編集します"
+    "message": "Edit label"
   },
   "expandTabGroup": {
-    "message": "タブグループを展開"
+    "message": "Expand Tab Group"
   },
   "expandTabGroup_menu": {
-    "message": "タブグループを展開$KEY$",
+    "message": "&Expand Tab Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -225,10 +225,10 @@
     }
   },
   "expandTabGroup_tooltip": {
-    "message": "グループのタブを展開します"
+    "message": "Expand grouped tabs"
   },
   "groupSameContainerTabs_menu": {
-    "message": "同じコンテナーのタブをグループ化$KEY$",
+    "message": "Group Same &Container Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -237,7 +237,7 @@
     }
   },
   "groupSameDomainTabs_menu": {
-    "message": "同じドメインのタブをグループ化$KEY$",
+    "message": "Group Same &Domain Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -246,7 +246,7 @@
     }
   },
   "groupSelectedTabs_menu": {
-    "message": "選択したタブをグループ化$KEY$",
+    "message": "Group &Selected Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -255,7 +255,7 @@
     }
   },
   "hideTabGroupLabel_menu": {
-    "message": "グループのラベルを隠す$KEY$",
+    "message": "Hide Group &Label",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -264,10 +264,10 @@
     }
   },
   "lightTheme": {
-    "message": "明るいテーマ"
+    "message": "Light Theme"
   },
   "moveTab_menu": {
-    "message": "タブを移動$KEY$",
+    "message": "Пере&местить вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -277,17 +277,17 @@
     }
   },
   "moveTabToEnd_menu": {
-    "message": "末尾に移動$KEY$",
+    "message": "Переместить в коне&ц",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&V)"
+        "example": "(&E)"
       }
     }
   },
   "moveTabToNewWindow_menu": {
-    "message": "新しいウィンドウへ移動$KEY$",
+    "message": "П&ереместить в новое окно",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -297,17 +297,17 @@
     }
   },
   "moveTabToStart_menu": {
-    "message": "先頭に移動$KEY$",
+    "message": "Переместить в на&чало",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&V)"
+        "example": "(&S)"
       }
     }
   },
   "moveTabs_menu": {
-    "message": "タブを移動$KEY$",
+    "message": "Пере&местить вкладок",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -317,17 +317,17 @@
     }
   },
   "moveTabsToEnd_menu": {
-    "message": "末尾に移動$KEY$",
+    "message": "Переместить в коне&ц",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&V)"
+        "example": "(&E)"
       }
     }
   },
   "moveTabsToNewWindow_menu": {
-    "message": "新しいウィンドウへ移動$KEY$",
+    "message": "П&ереместить в новое окно",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -337,20 +337,20 @@
     }
   },
   "moveTabsToStart_menu": {
-    "message": "先頭に移動$KEY$",
+    "message": "Переместить в на&чало",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&V)"
+        "example": "(&S)"
       }
     }
   },
   "muteTab": {
-    "message": "タブをミュート"
+    "message": "Отключить звук вкладки"
   },
   "muteTab_menu": {
-    "message": "タブをミュート$KEY$",
+    "message": "&Отключить звук вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
@@ -360,7 +360,7 @@
     }
   },
   "muteTab_tooltip": {
-    "message": "タブをミュートします",
+    "message": "Отключить звук вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
@@ -370,7 +370,7 @@
     }
   },
   "muteTabs_menu": {
-    "message": "タブをミュート$KEY$",
+    "message": "&Отключить звук вкладок",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
@@ -380,7 +380,7 @@
     }
   },
   "muteTabs_tooltip": {
-    "message": "$NUM$ 個のタブをミュートします",
+    "message": "Убрать звук в $NUM$ вкладках",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
@@ -390,7 +390,7 @@
     }
   },
   "newTab_menu": {
-    "message": "新しいタブ$KEY$",
+    "message": "Нова&я вкладка",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -404,13 +404,13 @@
     "description": "Leave empty"
   },
   "newTabButton_alt": {
-    "message": "新しいタブ"
+    "message": "Новая вкладка"
   },
   "newTabButton_title": {
-    "message": "新しいタブを開きます"
+    "message": "Открыть новую вкладку"
   },
   "openNewTabInContainer_menu": {
-    "message": "新しいコンテナータブを開く$KEY$",
+    "message": "Op&en New Container Tab",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -419,7 +419,7 @@
     }
   },
   "openOptions_menu": {
-    "message": "設定$KEY$",
+    "message": "Op&tions",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -428,139 +428,139 @@
     }
   },
   "optionsAutoLabel": {
-    "message": "自動"
+    "message": "Auto"
   },
   "optionsBookmarkLocation": {
-    "message": "ブックマークの保存先："
+    "message": "Save bookmarks to:"
   },
   "optionsBookmarkLocationDetail": {
-    "message": "ブックマークとフォルダーを選択した場所に保存します。"
+    "message": "Save bookmarks and folder to the selected location."
   },
   "optionsCompactTab": {
-    "message": "タブの高さを縮める"
+    "message": "Reduce tab height"
   },
   "optionsCompactTabDetail": {
-    "message": "タブの高さを縮めてより多くのタブを表示できるようにします。"
+    "message": "Reduce the height of the tab to display more tabs."
   },
   "optionsEnableTabGroup": {
-    "message": "タブグループを有効化"
+    "message": "Enable tab groups"
   },
   "optionsEnableTabGroupDetail": {
-    "message": "タブのグループ化機能を有効にします。"
+    "message": "Enable grouping tabs functionality."
   },
   "optionsInit": {
-    "message": "初期化"
+    "message": "Init"
   },
   "optionsInitSidebar": {
-    "message": "サイドバータブを初期化"
+    "message": "Init Sidebar Tabs"
   },
   "optionsInitSidebarDetail": {
-    "message": "サイドバータブを初期化します。すべての設定データが削除されます。"
+    "message": "Initialize Sidebar Tabs. All configuration data will be removed."
   },
   "optionsNarrowScrollbar": {
-    "message": "スクロールバーの幅を狭める"
+    "message": "Reduce scrollbar width"
   },
   "optionsNarrowScrollbarDetail": {
-    "message": "幅の細いスクロールバーを使用します。"
+    "message": "Reduce the width of the scrollbar."
   },
   "optionsNarrowTabGroupColorBar": {
-    "message": "タブグループのカラーバーの幅を狭める"
+    "message": "Reduce tab group color bar width"
   },
   "optionsNarrowTabGroupColorBarDetail": {
-    "message": "タブグループの色分け表示の幅を狭めます。"
+    "message": "Reduce the width of the tab group color bar."
   },
   "optionsOptionalSettings": {
-    "message": "オプション設定"
+    "message": "Optional Settings"
   },
   "optionsReadBrowserSettings": {
-    "message": "拡張機能がブラウザの設定を読み込んだり変更することを許可する"
+    "message": "Allow extension to read and modify browser settings"
   },
   "optionsReadBrowserSettingsDetail": {
-    "message": "拡張機能がブラウザ設定から特定の値を読み込んだり変更することを許可するアクセス権を追加します。ブラウザの組み込み動作との互換性を高めるために、このオプションを有効にすることをお勧めします。"
+    "message": "Adds permissions that allow the extension to read and modify certain values from browser settings. It is recommended to enable this option for better compatibility with built-in browser behaviors."
   },
   "optionsShowMenuOnMouseup": {
-    "message": "マウスアップでコンテキストメニューを表示"
+    "message": "Show context menu on mouseup"
   },
   "optionsShowMenuOnMouseupDetail": {
-    "message": "ブラウザのコンテキストメニューをマウスダウンではなくマウスアップのイベントで表示します。Mac と Linux 用の設定です。Windows では何も効果がありません。"
+    "message": "Show context menu on mouseup event instead of mousedown. This option is for Mac and Linux. It has no effect on Windows."
   },
   "optionsSkipCollapsed": {
-    "message": "折りたたまれたタブをスキップする"
+    "message": "Skip collapsed tabs"
   },
   "optionsSkipCollapsedDetail": {
-    "message": "次/前のタブを選択するときに折りたたまれたタブをスキップします。"
+    "message": "Skip collapsed tabs when selecting next / previous tab."
   },
   "optionsSwitchTabByScrolling": {
-    "message": "マウスホイールをスクロールしてタブを切り替える"
+    "message": "Switch tab by scrolling mouse wheel"
   },
   "optionsSwitchTabByScrollingDetail": {
-    "message": "マウスホイールをスクロールして、次/前のタブに切り替えます。"
+    "message": "Switch to the next / previous tab by scrolling the mouse wheel."
   },
   "optionsTabGroup": {
-    "message": "タブグループ"
+    "message": "Tab Groups"
   },
   "optionsTabGroupOnExpandCollapseOther": {
-    "message": "タブグループを展開したときは常に他のグループを折りたたむ"
+    "message": "Always collapse other groups when expanding a tab group"
   },
   "optionsTabGroupOnExpandCollapseOtherDetail": {
-    "message": "タブグループを展開すると、それまで展開していた他のタブグループは折りたたまれます。"
+    "message": "Expanding a tab group collapses other previously expanded tab groups."
   },
   "optionsTabGroupPutNewTabAtTheEnd": {
-    "message": "グループ内で新たに開いたタブは常にグループの末尾に置く"
+    "message": "Always put the newly opened grouped tab at the end of the group"
   },
   "optionsTabGroupPutNewTabAtTheEndDetail": {
-    "message": "タブグループ内のタブから新しいタブを開くときは、新しいタブを、常にタブグループの末尾に開きます。"
+    "message": "When opening a new tab from a grouped tab, open that tab at the end of the tab group, not below the opener tab."
   },
   "optionsTheme": {
-    "message": "サイドバーテーマ"
+    "message": "Sidebar Theme"
   },
   "optionsThemeCustomLabel": {
-    "message": "カスタムテーマ"
+    "message": "Custom Theme"
   },
   "optionsThemeCustomBackground": {
-    "message": "背景色"
+    "message": "Background"
   },
   "optionsThemeCustomBody": {
-    "message": "ボディ"
+    "message": "Body"
   },
   "optionsThemeCustomBorder": {
-    "message": "ボーダー色"
+    "message": "Border"
   },
   "optionsThemeCustomCaption": {
-    "message": "テーマをカスタマイズ"
+    "message": "Customize Theme"
   },
   "optionsThemeCustomTabActive": {
-    "message": "アクティブタブ"
+    "message": "Active Tab"
   },
   "optionsThemeCustomTabDiscarded": {
-    "message": "休止中のタブ"
+    "message": "Discarded Tab"
   },
   "optionsThemeCustomTabHover": {
-    "message": "ホバー状態のタブ"
+    "message": "Hovering Over Tab"
   },
   "optionsThemeCustomTabSelected": {
-    "message": "選択タブ"
+    "message": "Selected Tab"
   },
   "optionsThemeCustomTabSelectedHover": {
-    "message": "ホバー状態の選択タブ"
+    "message": "Hovering Over Selected Tab"
   },
   "optionsThemeCustomText": {
-    "message": "テキスト色"
+    "message": "Text"
   },
   "optionsThemeDarkLabel": {
-    "message": "暗いテーマ"
+    "message": "Dark Theme"
   },
   "optionsThemeDetail": {
-    "message": "テーマを選択してください。"
+    "message": "Choose theme."
   },
   "optionsThemeLightLabel": {
-    "message": "明るいテーマ"
+    "message": "Light Theme"
   },
   "optionsTitle": {
-    "message": "サイドバータブ - 設定"
+    "message": "Sidebar Tabs - Options"
   },
   "pinTab_menu": {
-    "message": "タブをピン留め$KEY$",
+    "message": "За&крепить вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -570,7 +570,7 @@
     }
   },
   "pinTabs_menu": {
-    "message": "タブをピン留め$KEY$",
+    "message": "За&крепить вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -580,10 +580,10 @@
     }
   },
   "pinnedTabsLabel": {
-    "message": "ピン留めされたタブ"
+    "message": "Закрепленные вкладки"
   },
   "reloadAllTabs_menu": {
-    "message": "すべてのタブを再読み込み$KEY$",
+    "message": "Обнов&ить все вкладки",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -592,7 +592,7 @@
     }
   },
   "reloadTab_menu": {
-    "message": "タブを再読み込み$KEY$",
+    "message": "Обнов&ить вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -602,7 +602,7 @@
     }
   },
   "reloadTabs_menu": {
-    "message": "タブを再読み込み$KEY$",
+    "message": "Обнов&ить вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -612,7 +612,7 @@
     }
   },
   "reopenTabInContainer_menu": {
-    "message": "新しいコンテナータブで開く$KEY$",
+    "message": "От&крыть в новой вкладке в контейнере",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -622,7 +622,7 @@
     }
   },
   "reopenTabsInContainer_menu": {
-    "message": "新しいコンテナータブで開く$KEY$",
+    "message": "От&крыть в новой вкладке в контейнере",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -632,7 +632,7 @@
     }
   },
   "selectAllTabs_menu": {
-    "message": "すべてのタブを選択$KEY$",
+    "message": "Вы&брать все вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -642,7 +642,7 @@
     }
   },
   "showTabGroupLabel_menu": {
-    "message": "グループのラベルを表示する$KEY$",
+    "message": "Show Group &Label",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -651,10 +651,10 @@
     }
   },
   "tab": {
-    "message": "タブ"
+    "message": "Tab"
   },
   "tabGroup_menu": {
-    "message": "タブグループ$KEY$",
+    "message": "Tab &Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -663,10 +663,10 @@
     }
   },
   "toggleOpenCloseState": {
-    "message": "開閉状態を切り替える"
+    "message": "Toggle open/close state"
   },
   "undoCloseTab_menu": {
-    "message": "閉じたタブを開きなおす$KEY$",
+    "message": "В&осстановить закрытую вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -676,7 +676,7 @@
     }
   },
   "ungroupTabs_menu": {
-    "message": "タブグループを解除$KEY$",
+    "message": "&Ungroup Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -685,10 +685,10 @@
     }
   },
   "unmuteTab": {
-    "message": "タブのミュートを解除"
+    "message": "Включить звук вкладки"
   },
   "unmuteTab_menu": {
-    "message": "タブのミュートを解除$KEY$",
+    "message": "Включить з&вук вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
@@ -698,7 +698,7 @@
     }
   },
   "unmuteTab_tooltip": {
-    "message": "タブのミュートを解除します",
+    "message": "Включить звук вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
@@ -708,7 +708,7 @@
     }
   },
   "unmuteTabs_menu": {
-    "message": "タブのミュートを解除$KEY$",
+    "message": "Включить з&вук вкладок",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
@@ -718,7 +718,7 @@
     }
   },
   "unmuteTabs_tooltip": {
-    "message": "＄NUM＄ 個のタブのミュートを解除します",
+    "message": "Восстановить звук в $NUM$ вкладках",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
     "placeholders": {
       "num": {
@@ -728,7 +728,7 @@
     }
   },
   "unpinTab_menu": {
-    "message": "タブのピン留めを外す$KEY$",
+    "message": "От&крепить вкладку",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -738,7 +738,7 @@
     }
   },
   "unpinTabs_menu": {
-    "message": "タブのピン留めを外す$KEY$",
+    "message": "От&крепить вкладки",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {

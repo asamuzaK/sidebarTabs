@@ -206,7 +206,8 @@
     }
   },
   "editTabGroupLabel": {
-    "message": ""
+    "message": "",
+    "description": "Leave empty"
   },
   "editTabGroupLabel_title": {
     "message": "Edit label"
@@ -399,7 +400,8 @@
     }
   },
   "newTabButton": {
-    "message": ""
+    "message": "",
+    "description": "Leave empty"
   },
   "newTabButton_alt": {
     "message": "New Tab"
@@ -706,7 +708,7 @@
     }
   },
   "unmuteTabs_menu": {
-    "message": "Un&mute Tab",
+    "message": "Un&mute Tabs",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
