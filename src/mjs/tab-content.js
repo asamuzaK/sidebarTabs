@@ -4,8 +4,7 @@
 
 /* shared */
 import {
-  getType, isObjectNotEmpty, isString, logErr, setElementDataset,
-  preventDefaultEvent, throwErr
+  getType, isObjectNotEmpty, isString, logErr, setElementDataset, throwErr
 } from './common.js';
 import { getTab, updateTab } from './browser.js';
 import { closeTabs, muteTabs } from './browser-tabs.js';
@@ -305,6 +304,16 @@ export const tabCloseOnClick = evt => {
     evt.preventDefault();
   }
   return func || null;
+};
+
+/**
+ * prevent default event behavior
+ *
+ * @param {object} evt - Event
+ * @returns {void}
+ */
+export const preventDefaultEvent = evt => {
+  evt && typeof evt.preventDefault === 'function' && evt.preventDefault();
 };
 
 /**

@@ -1027,6 +1027,19 @@ describe('tab-content', () => {
     });
   });
 
+  describe('prevent default event behavior', () => {
+    const func = mjs.preventDefaultEvent;
+
+    it('should call function', () => {
+      const stub = sinon.stub();
+      const evt = {
+        preventDefault: stub
+      };
+      func(evt);
+      assert.isTrue(stub.calledOnce);
+    });
+  });
+
   describe('add tab close click listener', () => {
     const func = mjs.addTabCloseClickListener;
 
