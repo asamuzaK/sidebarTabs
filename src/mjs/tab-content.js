@@ -313,7 +313,7 @@ export const tabCloseOnClick = evt => {
  * @returns {void}
  */
 export const preventDefaultEvent = evt => {
-  evt && typeof evt.preventDefault === 'function' && evt.preventDefault();
+  evt.preventDefault();
 };
 
 /**
