@@ -6,5 +6,10 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/remusao/tldts#readme",
-  "type": "module"
+  "type": "module",
+  "version": "5.7.58",
+  "origins": [
+    "index.esm.min.js": "https://unpkg.com/browse/tldts-experimental@5.7.58/dist/index.esm.min.js",
+    "index.esm.min.js.map": "https://unpkg.com/browse/tldts-experimental@5.7.58/dist/index.esm.min.js.map"
+  ]
 }
