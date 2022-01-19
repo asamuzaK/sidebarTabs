@@ -2199,6 +2199,11 @@ export const setMain = async () => {
   main.addEventListener('dblclick', handleCreateNewTab);
   main.addEventListener('wheel', handleWheelEvt);
   newTab.addEventListener('click', handleCreateNewTab);
+  newTab.addEventListener('dragenter', handleDragEnter);
+  newTab.addEventListener('dragover', handleDragOver);
+  newTab.addEventListener('dragleave', handleDragLeave);
+  newTab.addEventListener('dragend', handleDragEnd);
+  newTab.addEventListener('drop', handleDrop);
 };
 
 // For test

@@ -14,7 +14,7 @@ import { restoreTabContainers } from './tab-group.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, TAB_QUERY
+  HIGHLIGHTED, MIME_PLAIN, MIME_URI, NEW_TAB_BUTTON, PINNED, TAB_QUERY
 } from './constant.js';
 
 /* api */
@@ -265,7 +265,17 @@ export const openUriList = async (dropTarget, data = []) => {
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
       dropTarget.classList.contains(DROP_TARGET) &&
       Array.isArray(data) && data.length) {
-    if (data.length === 1 &&
+    const newTab = document.getElementById(NEW_TAB_BUTTON);
+    if (dropTarget === newTab) {
+      const opts = [];
+      for (const url of data) {
+        opts.push(createTab({
+          url
+        }));
+      }
+      func.push(createTabsInOrder(opts).then(restoreTabContainers)
+        .then(requestSaveSession));
+    } else if (data.length === 1 &&
         !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
         !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
       const [url] = data;
@@ -315,7 +325,11 @@ export const searchQuery = async (dropTarget, data = '') => {
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
       dropTarget.classList.contains(DROP_TARGET) &&
       data && isString(data)) {
-    if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+    const newTab = document.getElementById(NEW_TAB_BUTTON);
+    if (dropTarget === newTab) {
+      func.push(execSearch(data).then(restoreTabContainers)
+        .then(requestSaveSession));
+    } else if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
         !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
       const dropTargetId = getSidebarTabId(dropTarget);
       func.push(execSearch(data, {
@@ -334,8 +348,7 @@ export const searchQuery = async (dropTarget, data = '') => {
       }
       const tab = await createTab({
         index,
-        windowId,
-        active: true
+        windowId
       });
       func.push(execSearch(data, {
         tabId: tab.id
@@ -352,14 +365,15 @@ export const searchQuery = async (dropTarget, data = '') => {
  * @returns {?(Function|Error)} - promise chain
  */
 export const handleDrop = evt => {
-  const { currentTarget, dataTransfer, shiftKey, type } = evt;
+  const { currentTarget, dataTransfer, shiftKey, target, type } = evt;
   let func;
   if (type === 'drop') {
     const dropTarget = getSidebarTab(currentTarget);
+    const newTab = document.getElementById(NEW_TAB_BUTTON);
+    const uriList = dataTransfer.getData(MIME_URI).split('\n')
+      .filter(i => i && !i.startsWith('#')).reverse();
+    const data = dataTransfer.getData(MIME_PLAIN);
     if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
-      const uriList = dataTransfer.getData(MIME_URI).split('\n')
-        .filter(i => i && !i.startsWith('#')).reverse();
-      const data = dataTransfer.getData(MIME_PLAIN);
       // dropped uri list
       if (uriList.length) {
         func = openUriList(dropTarget, uriList).catch(throwErr);
@@ -390,6 +404,25 @@ export const handleDrop = evt => {
       }
       dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
         DROP_TARGET_BEFORE);
+    } else if (target === newTab && newTab.classList.contains(DROP_TARGET)) {
+      // dropped uri list
+      if (uriList.length) {
+        func = openUriList(newTab, uriList).catch(throwErr);
+        evt.preventDefault();
+      } else if (data) {
+        let item;
+        try {
+          item = JSON.parse(data);
+        } catch (e) {
+          item = data;
+        }
+        // dropped search query
+        if (item && isString(item)) {
+          func = searchQuery(newTab, item).catch(throwErr);
+          evt.preventDefault();
+        }
+      }
+      newTab.classList.remove(DROP_TARGET);
     }
   }
   return func || null;
@@ -419,11 +452,17 @@ export const handleDragEnd = evt => {
  * @returns {void}
  */
 export const handleDragLeave = evt => {
-  const { currentTarget, type } = evt;
+  const { currentTarget, target, type } = evt;
   if (type !== 'dragleave') {
     return;
   }
-  const dropTarget = getSidebarTab(currentTarget);
+  const newTab = document.getElementById(NEW_TAB_BUTTON);
+  let dropTarget;
+  if (target === newTab) {
+    dropTarget = newTab;
+  } else {
+    dropTarget = getSidebarTab(currentTarget);
+  }
   dropTarget && dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
     DROP_TARGET_BEFORE);
 };
@@ -435,15 +474,16 @@ export const handleDragLeave = evt => {
  * @returns {void}
  */
 export const handleDragOver = evt => {
-  const { clientY, currentTarget, dataTransfer, type } = evt;
+  const { clientY, currentTarget, dataTransfer, target, type } = evt;
   if (type !== 'dragover') {
     return;
   }
   const dropTarget = getSidebarTab(currentTarget);
+  const newTab = document.getElementById(NEW_TAB_BUTTON);
+  const data = dataTransfer.getData(MIME_PLAIN);
   if (dropTarget) {
     const { bottom, top } = dropTarget.getBoundingClientRect();
     const isPinned = dropTarget.classList.contains(PINNED);
-    const data = dataTransfer.getData(MIME_PLAIN);
     if (data) {
       let pinned;
       try {
@@ -483,6 +523,9 @@ export const handleDragOver = evt => {
       }
     }
     evt.preventDefault();
+  } else if (target === newTab && !data) {
+    newTab.classList.add(DROP_TARGET);
+    evt.preventDefault();
   }
 };
 
@@ -493,13 +536,14 @@ export const handleDragOver = evt => {
  * @returns {void}
  */
 export const handleDragEnter = evt => {
-  const { currentTarget, dataTransfer, type } = evt;
+  const { currentTarget, dataTransfer, target, type } = evt;
   if (type !== 'dragenter') {
     return;
   }
   const dropTarget = getSidebarTab(currentTarget);
+  const newTab = document.getElementById(NEW_TAB_BUTTON);
+  const data = dataTransfer.getData(MIME_PLAIN);
   if (dropTarget) {
-    const data = dataTransfer.getData(MIME_PLAIN);
     if (data) {
       const isPinned = dropTarget.classList.contains(PINNED);
       let pinned;
@@ -515,6 +559,8 @@ export const handleDragEnter = evt => {
     } else {
       dropTarget.classList.add(DROP_TARGET);
     }
+  } else {
+    target === newTab && !data && newTab.classList.add(DROP_TARGET);
   }
 };
 
