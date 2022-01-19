@@ -4,7 +4,7 @@
 
 /* shared */
 import { isObjectNotEmpty, logErr, throwErr } from './common.js';
-import { moveTab } from './browser.js';
+import { moveTab, updateTab } from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
@@ -270,29 +270,39 @@ export const handleDrop = evt => {
       const data = dataTransfer.getData(MIME_PLAIN);
       // dropped uri list
       if (uris) {
-        const dropTargetIndex = getSidebarTabIndex(currentTarget);
-        const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
         const urlArr =
           uris.split('\n').filter(i => i && !i.startsWith('#')).reverse();
-        const opts = [];
-        let index;
-        if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
-          index = dropTargetIndex;
-        } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
-                   dropTargetIndex < lastTabIndex) {
-          index = dropTargetIndex + 1;
-        }
-        for (const url of urlArr) {
-          const opt = {
-            url, windowId
-          };
-          if (Number.isInteger(index)) {
-            opt.index = index;
+        if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+            !dropTarget.classList.contains(DROP_TARGET_AFTER) &&
+            urlArr.length === 1) {
+          const dropTargetId = getSidebarTabId(dropTarget);
+          const [ url ] = urlArr;
+          func = updateTab(dropTargetId, {
+            url
+          }).catch(throwErr);
+        } else {
+          const dropTargetIndex = getSidebarTabIndex(dropTarget);
+          const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+          const opts = [];
+          let index;
+          if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+            index = dropTargetIndex;
+          } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
+                     dropTargetIndex < lastTabIndex) {
+            index = dropTargetIndex + 1;
           }
-          opts.push(opt);
+          for (const url of urlArr) {
+            const opt = {
+              url, windowId
+            };
+            if (Number.isInteger(index)) {
+              opt.index = index;
+            }
+            opts.push(opt);
+          }
+          func = createTabsInOrder(opts).then(restoreTabContainers)
+            .then(requestSaveSession).catch(throwErr);
         }
-        func = createTabsInOrder(opts).then(restoreTabContainers)
-          .then(requestSaveSession).catch(throwErr);
         evt.preventDefault();
       } else if (data) {
         try {
