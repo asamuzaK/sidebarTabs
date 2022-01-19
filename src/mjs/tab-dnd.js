@@ -4,7 +4,7 @@
 
 /* shared */
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
-import { execSearch, moveTab, updateTab } from './browser.js';
+import { createTab, execSearch, moveTab, updateTab } from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
@@ -254,6 +254,98 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
 };
 
 /**
+ * open dropped URI list
+ *
+ * @param {object} dropTarget - target element
+ * @param {Array} data - uri list
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const openUriList = async (dropTarget, data = []) => {
+  const func = [];
+  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
+      dropTarget.classList.contains(DROP_TARGET) &&
+      Array.isArray(data) && data.length) {
+    if (data.length === 1 &&
+        !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+        !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+      const [url] = data;
+      const dropTargetId = getSidebarTabId(dropTarget);
+      func.push(updateTab(dropTargetId, {
+        url,
+        active: true
+      }));
+    } else {
+      const { windowId } = JSON.parse(dropTarget.dataset.tab);
+      const dropTargetIndex = getSidebarTabIndex(dropTarget);
+      const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+      const opts = [];
+      let index;
+      if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+        index = dropTargetIndex;
+      } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
+                 dropTargetIndex < lastTabIndex) {
+        index = dropTargetIndex + 1;
+      }
+      for (const url of data) {
+        const opt = {
+          url,
+          windowId
+        };
+        if (Number.isInteger(index)) {
+          opt.index = index;
+        }
+        opts.push(opt);
+      }
+      func.push(createTabsInOrder(opts).then(restoreTabContainers)
+        .then(requestSaveSession));
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
+ * search dropped query
+ *
+ * @param {object} dropTarget - target element
+ * @param {string} data - seach query
+ * @returns {Promise.<Array>} - results of each handler
+ */
+export const searchQuery = async (dropTarget, data = '') => {
+  const func = [];
+  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
+      dropTarget.classList.contains(DROP_TARGET) &&
+      data && isString(data)) {
+    if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+        !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+      const dropTargetId = getSidebarTabId(dropTarget);
+      func.push(execSearch(data, {
+        tabId: dropTargetId
+      }));
+    } else {
+      const { windowId } = JSON.parse(dropTarget.dataset.tab);
+      const dropTargetIndex = getSidebarTabIndex(dropTarget);
+      const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+      let index;
+      if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+        index = dropTargetIndex;
+      } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
+                 dropTargetIndex < lastTabIndex) {
+        index = dropTargetIndex + 1;
+      }
+      const tab = await createTab({
+        index,
+        windowId,
+        active: true
+      });
+      func.push(execSearch(data, {
+        tabId: tab.id
+      }).then(restoreTabContainers).then(requestSaveSession));
+    }
+  }
+  return Promise.all(func);
+};
+
+/**
  * handle drop
  *
  * @param {!object} evt - event
@@ -265,45 +357,12 @@ export const handleDrop = evt => {
   if (type === 'drop') {
     const dropTarget = getSidebarTab(currentTarget);
     if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
-      const { windowId } = JSON.parse(dropTarget.dataset.tab);
-      const dropTargetId = getSidebarTabId(dropTarget);
       const uriList = dataTransfer.getData(MIME_URI).split('\n')
         .filter(i => i && !i.startsWith('#')).reverse();
       const data = dataTransfer.getData(MIME_PLAIN);
       // dropped uri list
       if (uriList.length) {
-        if (uriList.length === 1 &&
-            !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
-            !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
-          const [url] = uriList;
-          func = updateTab(dropTargetId, {
-            url,
-            active: true
-          }).catch(throwErr);
-        } else {
-          const dropTargetIndex = getSidebarTabIndex(dropTarget);
-          const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
-          const opts = [];
-          let index;
-          if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
-            index = dropTargetIndex;
-          } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
-                     dropTargetIndex < lastTabIndex) {
-            index = dropTargetIndex + 1;
-          }
-          for (const url of uriList) {
-            const opt = {
-              url,
-              windowId
-            };
-            if (Number.isInteger(index)) {
-              opt.index = index;
-            }
-            opts.push(opt);
-          }
-          func = createTabsInOrder(opts).then(restoreTabContainers)
-            .then(requestSaveSession).catch(throwErr);
-        }
+        func = openUriList(dropTarget, uriList).catch(throwErr);
         evt.preventDefault();
       } else if (data) {
         let item;
@@ -312,7 +371,9 @@ export const handleDrop = evt => {
         } catch (e) {
           item = data;
         }
+        // dropped tab
         if (isObjectNotEmpty(item)) {
+          const { windowId } = JSON.parse(dropTarget.dataset.tab);
           const keyOpt = {
             shiftKey
           };
@@ -321,15 +382,9 @@ export const handleDrop = evt => {
             .then(restoreTabContainers).then(requestSaveSession)
             .catch(throwErr);
           evt.preventDefault();
+        // dropped search query
         } else if (isString(item)) {
-          if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
-              !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
-            func = execSearch(item, {
-              tabId: dropTargetId
-            }).catch(throwErr);
-          } else {
-            // FIXME:
-          }
+          func = searchQuery(dropTarget, item).catch(throwErr);
           evt.preventDefault();
         }
       }
