@@ -3,8 +3,8 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, logErr, throwErr } from './common.js';
-import { moveTab, updateTab } from './browser.js';
+import { isObjectNotEmpty, isString, throwErr } from './common.js';
+import { execSearch, moveTab, updateTab } from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
@@ -266,19 +266,19 @@ export const handleDrop = evt => {
     const dropTarget = getSidebarTab(currentTarget);
     if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
       const { windowId } = JSON.parse(dropTarget.dataset.tab);
-      const uris = dataTransfer.getData(MIME_URI);
+      const dropTargetId = getSidebarTabId(dropTarget);
+      const uriList = dataTransfer.getData(MIME_URI).split('\n')
+        .filter(i => i && !i.startsWith('#')).reverse();
       const data = dataTransfer.getData(MIME_PLAIN);
       // dropped uri list
-      if (uris) {
-        const urlArr =
-          uris.split('\n').filter(i => i && !i.startsWith('#')).reverse();
-        if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
-            !dropTarget.classList.contains(DROP_TARGET_AFTER) &&
-            urlArr.length === 1) {
-          const dropTargetId = getSidebarTabId(dropTarget);
-          const [ url ] = urlArr;
+      if (uriList.length) {
+        if (uriList.length === 1 &&
+            !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+            !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+          const [url] = uriList;
           func = updateTab(dropTargetId, {
-            url
+            url,
+            active: true
           }).catch(throwErr);
         } else {
           const dropTargetIndex = getSidebarTabIndex(dropTarget);
@@ -291,9 +291,10 @@ export const handleDrop = evt => {
                      dropTargetIndex < lastTabIndex) {
             index = dropTargetIndex + 1;
           }
-          for (const url of urlArr) {
+          for (const url of uriList) {
             const opt = {
-              url, windowId
+              url,
+              windowId
             };
             if (Number.isInteger(index)) {
               opt.index = index;
@@ -305,20 +306,31 @@ export const handleDrop = evt => {
         }
         evt.preventDefault();
       } else if (data) {
+        let item;
         try {
-          const item = JSON.parse(data);
-          if (isObjectNotEmpty(item)) {
-            const keyOpt = {
-              shiftKey
-            };
-            item.dropWindowId = windowId;
-            func = extractDroppedTabs(dropTarget, item, keyOpt)
-              .then(restoreTabContainers).then(requestSaveSession)
-              .catch(throwErr);
-            evt.preventDefault();
-          }
+          item = JSON.parse(data);
         } catch (e) {
-          logErr(e);
+          item = data;
+        }
+        if (isObjectNotEmpty(item)) {
+          const keyOpt = {
+            shiftKey
+          };
+          item.dropWindowId = windowId;
+          func = extractDroppedTabs(dropTarget, item, keyOpt)
+            .then(restoreTabContainers).then(requestSaveSession)
+            .catch(throwErr);
+          evt.preventDefault();
+        } else if (isString(item)) {
+          if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+              !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+            func = execSearch(item, {
+              tabId: dropTargetId
+            }).catch(throwErr);
+          } else {
+            // FIXME:
+          }
+          evt.preventDefault();
         }
       }
       dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
@@ -374,6 +386,7 @@ export const handleDragOver = evt => {
   }
   const dropTarget = getSidebarTab(currentTarget);
   if (dropTarget) {
+    const { bottom, top } = dropTarget.getBoundingClientRect();
     const isPinned = dropTarget.classList.contains(PINNED);
     const data = dataTransfer.getData(MIME_PLAIN);
     if (data) {
@@ -400,7 +413,6 @@ export const handleDragOver = evt => {
         dataTransfer.dropEffect = 'none';
       }
     } else {
-      const { bottom, top } = dropTarget.getBoundingClientRect();
       if (isPinned) {
         dropTarget.classList.add(DROP_TARGET);
         dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
