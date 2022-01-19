@@ -23,6 +23,7 @@ const { windows } = browser;
 /* constants */
 const { WINDOW_ID_NONE } = windows;
 const HALF = 0.5;
+const ONE_THIRD = 1 / 3;
 
 /**
  * move dropped tabs
@@ -361,31 +362,48 @@ export const handleDragOver = evt => {
   if (type !== 'dragover') {
     return;
   }
-  const data = dataTransfer.getData(MIME_PLAIN);
   const dropTarget = getSidebarTab(currentTarget);
-  if (data && dropTarget) {
-    let pinned;
-    try {
-      const item = JSON.parse(data);
-      pinned = !!item.pinned;
-    } catch (e) {
-      pinned = false;
-    }
+  if (dropTarget) {
     const isPinned = dropTarget.classList.contains(PINNED);
-    if ((isPinned && pinned) || !(isPinned || pinned)) {
+    const data = dataTransfer.getData(MIME_PLAIN);
+    if (data) {
+      let pinned;
+      try {
+        const item = JSON.parse(data);
+        pinned = !!item.pinned;
+      } catch (e) {
+        pinned = false;
+      }
+      if ((isPinned && pinned) || !(isPinned || pinned)) {
+        const { bottom, top } = dropTarget.getBoundingClientRect();
+        if (clientY > (bottom - top) * HALF + top) {
+          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+          dropTarget.classList.remove(DROP_TARGET_BEFORE);
+        } else {
+          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+          dropTarget.classList.remove(DROP_TARGET_AFTER);
+        }
+        dataTransfer.dropEffect = 'move';
+      } else {
+        dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+          DROP_TARGET_BEFORE);
+        dataTransfer.dropEffect = 'none';
+      }
+    } else {
       const { bottom, top } = dropTarget.getBoundingClientRect();
-      if (clientY > (bottom - top) * HALF + top) {
+      if (isPinned) {
+        dropTarget.classList.add(DROP_TARGET);
+        dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
+      } else if (clientY < (bottom - top) * ONE_THIRD + top) {
+        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+        dropTarget.classList.remove(DROP_TARGET_AFTER);
+      } else if (clientY > bottom - (bottom - top) * ONE_THIRD) {
         dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
         dropTarget.classList.remove(DROP_TARGET_BEFORE);
       } else {
-        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
-        dropTarget.classList.remove(DROP_TARGET_AFTER);
+        dropTarget.classList.add(DROP_TARGET);
+        dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
       }
-      dataTransfer.dropEffect = 'move';
-    } else {
-      dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-        DROP_TARGET_BEFORE);
-      dataTransfer.dropEffect = 'none';
     }
     evt.preventDefault();
   }
@@ -402,18 +420,22 @@ export const handleDragEnter = evt => {
   if (type !== 'dragenter') {
     return;
   }
-  const data = dataTransfer.getData(MIME_PLAIN);
   const dropTarget = getSidebarTab(currentTarget);
-  if (data && dropTarget) {
-    let pinned;
-    try {
-      const item = JSON.parse(data);
-      pinned = !!item.pinned;
-    } catch (e) {
-      pinned = false;
-    }
-    const isPinned = dropTarget.classList.contains(PINNED);
-    if ((isPinned && pinned) || !(isPinned || pinned)) {
+  if (dropTarget) {
+    const data = dataTransfer.getData(MIME_PLAIN);
+    if (data) {
+      const isPinned = dropTarget.classList.contains(PINNED);
+      let pinned;
+      try {
+        const item = JSON.parse(data);
+        pinned = !!item.pinned;
+      } catch (e) {
+        pinned = false;
+      }
+      if ((isPinned && pinned) || !(isPinned || pinned)) {
+        dropTarget.classList.add(DROP_TARGET);
+      }
+    } else {
       dropTarget.classList.add(DROP_TARGET);
     }
   }
