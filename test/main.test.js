@@ -12810,7 +12810,7 @@ describe('main', () => {
       const spy = sinon.spy(button, 'addEventListener');
       const spy2 = sinon.spy(main, 'addEventListener');
       await func();
-      assert.strictEqual(spy.callCount, 6, 'called on new tab');
+      assert.isTrue(spy.calledOnce, 'called on new tab');
       assert.strictEqual(spy2.callCount, 3, 'called on main');
       button.addEventListener.restore();
       main.addEventListener.restore();
