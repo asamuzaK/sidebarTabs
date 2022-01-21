@@ -467,6 +467,28 @@ export const sendMessage = async (id, msg, opt) => {
   return func || null;
 };
 
+/* search */
+/**
+ * execute search
+ *
+ * @param {string} query - search query
+ * @param {object} opt - options
+ * @returns {void}
+ */
+export const execSearch = async (query, opt = {}) => {
+  if (!isString(query)) {
+    throw new TypeError(`Expected String but got ${getType(query)}.`);
+  }
+  const isGranted = await isPermissionGranted({
+    permissions: ['search']
+  });
+  if (isGranted) {
+    const { search } = browser;
+    opt.query = query;
+    await search.search(opt);
+  }
+};
+
 /* sessions */
 /**
  * get recently closed tab

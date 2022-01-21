@@ -55,6 +55,7 @@
     "management",
     "menus",
     "menus.overrideContext",
+    "search",
     "sessions",
     "storage",
     "tabs",

@@ -1055,6 +1055,58 @@ describe('browser', () => {
     });
   });
 
+  describe('execute search', () => {
+    const func = mjs.execSearch;
+
+    it('should throw if no argument given', async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message,
+          'Expected String but got Undefined.');
+      });
+    });
+
+    it('should throw if 1st argument is not string', async () => {
+      await func(1).catch(e => {
+        assert.strictEqual(e.message,
+          'Expected String but got Number.');
+      });
+    });
+
+    it('should not call function if permission is not granted', async () => {
+      browser.permissions.contains.resolves(false);
+      const i = browser.search.search.callCount;
+      await func('foo');
+      assert.strictEqual(browser.search.search.callCount, i, 'not called');
+    });
+
+    it('should call function', async () => {
+      const i = browser.search.search.withArgs({
+        query: 'foo'
+      }).callCount;
+      await func('foo');
+      assert.strictEqual(browser.search.search.withArgs({
+        query: 'foo'
+      }).callCount, i + 1, 'called');
+    });
+
+    it('should call function', async () => {
+      const i = browser.search.search.withArgs({
+        engine: 'bar',
+        query: 'foo',
+        tabId: 1
+      }).callCount;
+      await func('foo', {
+        engine: 'bar',
+        tabId: 1
+      });
+      assert.strictEqual(browser.search.search.withArgs({
+        engine: 'bar',
+        query: 'foo',
+        tabId: 1
+      }).callCount, i + 1, 'called');
+    });
+  });
+
   describe('get recently closed tab', () => {
     const func = mjs.getRecentlyClosedTab;
 
