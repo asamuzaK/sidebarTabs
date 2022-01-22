@@ -12,7 +12,7 @@ import sinon from 'sinon';
 import {
   commander, createFile, fetchText, saveThemeManifest, updateManifests,
   parseCommand
-} from '../modules/update.js';
+} from '../modules/commander.js';
 
 const BASE_URL = 'https://hg.mozilla.org';
 const BASE_DIR = '/mozilla-central/raw-file/tip/browser/themes/addons/';
