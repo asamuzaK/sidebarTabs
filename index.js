@@ -4,7 +4,7 @@
 
 /* api */
 import { logErr, throwErr } from './src/mjs/common.js';
-import { parseCommand } from './modules/update.js';
+import { parseCommand } from './modules/commander.js';
 import process from 'process';
 
 /* process */
