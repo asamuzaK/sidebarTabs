@@ -1,5 +1,5 @@
 /**
- * update.js
+ * commander.js
  */
 
 /* api */
