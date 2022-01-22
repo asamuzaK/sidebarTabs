@@ -457,6 +457,12 @@
   "optionsInitSidebarDetail": {
     "message": "サイドバータブを初期化します。すべての設定データが削除されます。"
   },
+  "optionsInvertScrollDirection": {
+    "message": "スクロール方向を反転させる"
+  },
+  "optionsInvertScrollDirectionDetail": {
+    "message": "マウスホイールの垂直スクロール量を反転させます。"
+  },
   "optionsNarrowScrollbar": {
     "message": "スクロールバーの幅を狭める"
   },

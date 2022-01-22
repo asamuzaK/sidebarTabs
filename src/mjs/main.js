@@ -64,8 +64,8 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SIDEBAR, SIDEBAR_MAIN,
-  SIDEBAR_STATE_UPDATE,
+  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
   TAB_CLOSE_UNDO, TAB_DUPE,
@@ -102,6 +102,7 @@ export const sidebar = {
   enableTabGroup: true,
   firstSelectedTab: null,
   incognito: false,
+  invertScrollDirection: false,
   isMac: false,
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
@@ -126,6 +127,7 @@ export const setSidebar = async () => {
   const { id: windowId, incognito } = win;
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
+    SCROLL_DIR_INVERT,
     TAB_CLOSE_DBLCLICK,
     TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
@@ -136,12 +138,15 @@ export const setSidebar = async () => {
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
     const {
-      closeTabsByDoubleClick, enableTabGroup, readBrowserSettings,
-      skipCollapsed, switchTabByScrolling, tabGroupOnExpandCollapseOther,
-      tabGroupPutNewTabAtTheEnd
+      closeTabsByDoubleClick, enableTabGroup, invertScrollDirection,
+      readBrowserSettings, skipCollapsed, switchTabByScrolling,
+      tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd
     } = store;
     sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
       ? !!closeTabsByDoubleClick.checked
+      : false;
+    sidebar.invertScrollDirection = invertScrollDirection
+      ? !!invertScrollDirection.checked
       : false;
     sidebar.readBrowserSettings = readBrowserSettings
       ? !!readBrowserSettings.checked
@@ -164,6 +169,7 @@ export const setSidebar = async () => {
   } else {
     sidebar.closeTabsByDoubleClick = false;
     sidebar.enableTabGroup = true;
+    sidebar.invertScrollDirection = false;
     sidebar.readBrowserSettings = false;
     sidebar.skipCollapsed = false;
     sidebar.switchTabByScrolling = false;
@@ -1896,16 +1902,18 @@ export const handleContextmenuEvt = evt => {
  */
 export const handleWheelEvt = evt => {
   const { deltaY } = evt;
-  const { skipCollapsed, switchTabByScrolling, windowId } = sidebar;
+  const {
+    invertScrollDirection, skipCollapsed, switchTabByScrolling, windowId
+  } = sidebar;
   const main = document.getElementById(SIDEBAR_MAIN);
   let func;
   if (switchTabByScrolling && Number.isFinite(deltaY) && deltaY !== 0 &&
       main && main.scrollHeight === main.clientHeight) {
     evt.preventDefault();
     func = switchTab({
-      deltaY,
       skipCollapsed,
-      windowId
+      windowId,
+      deltaY: invertScrollDirection ? deltaY * -1 : deltaY
     }).catch(throwErr);
   }
   return func || null;

@@ -457,6 +457,12 @@
   "optionsInitSidebarDetail": {
     "message": "Initialize Sidebar Tabs. All configuration data will be removed."
   },
+  "optionsInvertScrollDirection": {
+    "message": "Invert scroll direction"
+  },
+  "optionsInvertScrollDirectionDetail": {
+    "message": "Inverts the vertical scroll amount of the mouse wheel."
+  },
   "optionsNarrowScrollbar": {
     "message": "Reduce scrollbar width"
   },

@@ -106,6 +106,7 @@ export const NEW_TAB_BUTTON = 'newTabButton';
 export const NEW_TAB_OPEN_CONTAINER = 'openNewTabInContainer';
 export const OPTIONS_OPEN = 'openOptions';
 export const PINNED = 'pinned';
+export const SCROLL_DIR_INVERT = 'invertScrollDirection';
 export const SESSION_SAVE = 'saveSession';
 export const SIDEBAR = 'sidebar-tabs';
 export const SIDEBAR_MAIN = 'sidebar-tabs-container';

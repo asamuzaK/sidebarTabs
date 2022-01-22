@@ -25,7 +25,8 @@ import {
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SIDEBAR, SIDEBAR_MAIN,
+  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
   TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
@@ -90,6 +91,7 @@ describe('main', () => {
     mjs.sidebar.contextualIds = null;
     mjs.sidebar.enableTabGroup = true;
     mjs.sidebar.incognito = false;
+    mjs.sidebar.invertScrollDirection = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
@@ -116,6 +118,7 @@ describe('main', () => {
     mjs.sidebar.contextualIds = null;
     mjs.sidebar.enableTabGroup = true;
     mjs.sidebar.incognito = false;
+    mjs.sidebar.invertScrollDirection = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
@@ -136,6 +139,7 @@ describe('main', () => {
     const func = mjs.setSidebar;
     const args = [
       BROWSER_SETTINGS_READ,
+      SCROLL_DIR_INVERT,
       TAB_CLOSE_DBLCLICK,
       TAB_GROUP_ENABLE,
       TAB_GROUP_EXPAND_COLLAPSE_OTHER,
@@ -164,6 +168,9 @@ describe('main', () => {
         closeTabsByDoubleClick: {
           checked: true
         },
+        invertScrollDirection: {
+          checked: true
+        },
         readBrowserSettings: {
           checked: true
         },
@@ -189,6 +196,7 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isTrue(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isFalse(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isTrue(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isTrue(sidebar.skipCollapsed, 'skipCollapsed');
       assert.isTrue(sidebar.switchTabByScrolling, 'switchTab');
@@ -228,6 +236,7 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -268,6 +277,7 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -305,6 +315,7 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isTrue(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -342,6 +353,7 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isTrue(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -380,6 +392,7 @@ describe('main', () => {
       assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isTrue(sidebar.skipCollapsed, 'skipCollapsed');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -419,6 +432,47 @@ describe('main', () => {
       assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
       assert.isTrue(sidebar.switchTabByScrolling, 'switchTab');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
+      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+        'tabGroupCollapseOther');
+      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+        'tabGroupPutNewTabAtTheEnd');
+      assert.isTrue(sidebar.incognito, 'incognito');
+      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'mac'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true
+      });
+      getStorage.resolves({
+        invertScrollDirection: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
+      assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
+      assert.isFalse(sidebar.switchTabByScrolling, 'switchTab');
+      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -451,6 +505,7 @@ describe('main', () => {
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
@@ -10233,41 +10288,137 @@ describe('main', () => {
     });
 
     it('should prevent default and call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(3, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
       const main = document.createElement('main');
       const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
       body.appendChild(main);
       main.id = SIDEBAR_MAIN;
       main.scrollHeight = 120;
       main.clientHeight = 120;
       mjs.sidebar.switchTabByScrolling = true;
-      browser.tabs.query.resolves([{ id: 1 }]);
+      browser.tabs.query.resolves([{ id: 2 }]);
       const evt = {
         deltaY: 3,
         preventDefault: sinon.stub()
       };
       const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i + 1, 'called');
       assert.isTrue(evt.preventDefault.calledOnce, 'called');
       assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should prevent default and call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(1, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
       const main = document.createElement('main');
       const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
       body.appendChild(main);
       main.id = SIDEBAR_MAIN;
       main.scrollHeight = 120;
       main.clientHeight = 120;
       mjs.sidebar.switchTabByScrolling = true;
-      browser.tabs.query.resolves([{ id: 1 }]);
+      mjs.sidebar.invertScrollDirection = true;
+      browser.tabs.query.resolves([{ id: 2 }]);
+      const evt = {
+        deltaY: 3,
+        preventDefault: sinon.stub()
+      };
+      const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i + 1, 'called');
+      assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(browser.tabs.query.calledOnce, 'called');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should prevent default and call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(1, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const main = document.createElement('main');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      mjs.sidebar.switchTabByScrolling = true;
+      browser.tabs.query.resolves([{ id: 2 }]);
       const evt = {
         deltaY: -3.1,
         preventDefault: sinon.stub()
       };
       const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i + 1, 'called');
       assert.isTrue(evt.preventDefault.calledOnce, 'called');
       assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should prevent default and call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(3, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const main = document.createElement('main');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 120;
+      main.clientHeight = 120;
+      mjs.sidebar.switchTabByScrolling = true;
+      mjs.sidebar.invertScrollDirection = true;
+      browser.tabs.query.resolves([{ id: 2 }]);
+      const evt = {
+        deltaY: -3.1,
+        preventDefault: sinon.stub()
+      };
+      const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i + 1, 'called');
+      assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(browser.tabs.query.calledOnce, 'called');
+      assert.isUndefined(res, 'result');
     });
   });
 
@@ -10817,21 +10968,22 @@ describe('main', () => {
     });
 
     it('should set variable', async () => {
-      const res =
-        await func(TAB_GROUP_ENABLE, { checked: true }, true);
+      const res = await func(TAB_GROUP_ENABLE, { checked: true }, true);
       assert.isTrue(mjs.sidebar.enableTabGroup, 'set');
       assert.deepEqual(res, [[]], 'result');
     });
 
     it('should set variable', async () => {
-      const res = await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: true });
+      const res =
+        await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: true });
       assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, 'set');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should set variable', async () => {
       mjs.sidebar.tabGroupCollapseOther = true;
-      const res = await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: false });
+      const res =
+        await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: false });
       assert.isFalse(mjs.sidebar.tabGroupOnExpandCollapseOther, 'set');
       assert.deepEqual(res, [], 'result');
     });
@@ -10853,6 +11005,25 @@ describe('main', () => {
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
       const res = await func(TAB_GROUP_NEW_TAB_AT_END, { checked: false });
       assert.isFalse(mjs.sidebar.tabGroupPutNewTabAtTheEnd, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(SCROLL_DIR_INVERT, { checked: true });
+      assert.isTrue(mjs.sidebar.invertScrollDirection, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      mjs.sidebar.invertScrollDirection = true;
+      const res = await func(SCROLL_DIR_INVERT, { checked: false });
+      assert.isFalse(mjs.sidebar.invertScrollDirection, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(SCROLL_DIR_INVERT, { checked: true }, true);
+      assert.isTrue(mjs.sidebar.invertScrollDirection, 'set');
       assert.deepEqual(res, [], 'result');
     });
   });
