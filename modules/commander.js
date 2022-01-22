@@ -165,7 +165,7 @@ export const saveLibraryPackage = async (lib, info) => {
   const libPath = path.resolve(DIR_CWD, PATH_LIB, key);
   const pkgJsonPath =
     path.resolve(DIR_CWD, PATH_MODULE, moduleName, 'package.json');
-  const pkgJson = await readFile(pkgJsonPath, { encoding: 'utf8', flag: 'r' });
+  const pkgJson = await readFile(pkgJsonPath, { encoding: CHAR, flag: 'r' });
   const {
     author, description, homepage, license, name, version
   } = JSON.parse(pkgJson);
