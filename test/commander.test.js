@@ -3,7 +3,6 @@ import { assert } from 'chai';
 import { describe, it } from 'mocha';
 import fs, { promises as fsPromise } from 'fs';
 import nock from 'nock';
-import os from 'os';
 import path from 'path';
 import process from 'process';
 import sinon from 'sinon';
@@ -11,9 +10,8 @@ import util from 'util';
 
 /* test */
 import {
-  commander, copyLibraryFiles, createFile, fetchText, getStat,
-  includeLibraries, isFile, readFile, saveThemeManifest, updateManifests,
-  parseCommand
+  commander, copyLibraryFiles, includeLibraries, saveThemeManifest,
+  updateManifests, parseCommand
 } from '../modules/commander.js';
 
 const BASE_URL = 'https://hg.mozilla.org';
@@ -21,119 +19,6 @@ const BASE_DIR = '/mozilla-central/raw-file/tip/browser/themes/addons/';
 const DIR_CWD = process.cwd();
 const PATH_LIB = './src/lib';
 const PATH_MODULE = './node_modules';
-const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
-               os.tmpdir();
-
-describe('getStat', () => {
-  it('should be an object', () => {
-    const p = path.resolve(path.join('test', 'file', 'test.txt'));
-    assert.property(getStat(p), 'mode');
-  });
-
-  it('should get null if given argument is not string', () => {
-    assert.isNull(getStat());
-  });
-
-  it('should get null if file does not exist', () => {
-    const p = path.resolve(path.join('test', 'file', 'foo.txt'));
-    assert.isNull(getStat(p));
-  });
-});
-
-describe('isFile', () => {
-  it('should get true if file exists', () => {
-    const p = path.resolve(path.join('test', 'file', 'test.txt'));
-    assert.isTrue(isFile(p));
-  });
-
-  it('should get false if file does not exist', () => {
-    const p = path.resolve(path.join('test', 'file', 'foo.txt'));
-    assert.isFalse(isFile(p));
-  });
-});
-
-describe('readFile', () => {
-  it('should throw', async () => {
-    await readFile('foo/bar').catch(e => {
-      assert.strictEqual(e.message, 'foo/bar is not a file.');
-    });
-  });
-
-  it('should get file', async () => {
-    const p = path.resolve(path.join('test', 'file', 'test.txt'));
-    const opt = { encoding: 'utf8', flag: 'r' };
-    const file = await readFile(p, opt);
-    assert.strictEqual(file, 'test file\n');
-  });
-});
-
-describe('createFile', () => {
-  it('should get string', async () => {
-    const dirPath = path.join(TMPDIR, 'sidebartabs');
-    fs.mkdirSync(dirPath);
-    const filePath = path.join(dirPath, 'test.txt');
-    const value = 'test file.\n';
-    const file = await createFile(filePath, value);
-    assert.strictEqual(file, filePath);
-    fs.unlinkSync(file);
-    fs.rmdirSync(dirPath);
-  });
-
-  it('should throw if first argument is not a string', () => {
-    createFile().catch(e => {
-      assert.strictEqual(e.message, 'Expected String but got Undefined.');
-    });
-  });
-
-  it(
-    'should throw if second argument is not a string', () => {
-      const file = path.join(TMPDIR, 'sidebartabs', 'test.txt');
-      createFile(file).catch(e => {
-        assert.strictEqual(e.message, 'Expected String but got Undefined.');
-      });
-    }
-  );
-});
-
-describe('fetch text', () => {
-  it('should throw', async () => {
-    await fetchText().catch(e => {
-      assert.instanceOf(e, TypeError, 'error');
-      assert.strictEqual(e.message, 'Expected String but got Undefined.');
-    });
-  });
-
-  it('should throw', async () => {
-    const base = 'https://example.com';
-    nock(base).get('/').reply(undefined);
-    await fetchText(base).catch(e => {
-      assert.instanceOf(e, Error, 'error');
-      assert.strictEqual(e.message,
-        `Network response was not ok. status: undefined url: ${base}`
-      );
-    });
-    nock.cleanAll();
-  });
-
-  it('should throw', async () => {
-    const base = 'https://example.com';
-    nock(base).get('/').reply(404);
-    await fetchText(base).catch(e => {
-      assert.instanceOf(e, Error, 'error');
-      assert.strictEqual(e.message,
-        `Network response was not ok. status: 404 url: ${base}`);
-    });
-    nock.cleanAll();
-  });
-
-  it('should get result', async () => {
-    const base = 'https://example.com';
-    nock(base).get('/').reply(200, 'foo');
-    const res = await fetchText('https://example.com');
-    assert.strictEqual(res, 'foo', 'result');
-    nock.cleanAll();
-  });
-});
 
 describe('save theme manifest file', () => {
   it('should throw', async () => {
