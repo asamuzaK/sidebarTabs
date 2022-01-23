@@ -4,8 +4,10 @@
 
 /* api */
 import { getType, isString } from '../src/mjs/common.js';
+import { promisify } from 'util';
 import fs, { promises as fsPromise } from 'fs';
 import commander from 'commander';
+import copyfiles from 'copyfiles';
 import fetch from 'node-fetch';
 import path from 'path';
 import process from 'process';
@@ -146,13 +148,13 @@ export const updateManifests = async (cmdOpts = {}) => {
 };
 
 /**
- * save library package file
+ * copy library files and save package info
  *
  * @param {Array} lib - library
  * @param {boolean} info - console info
- * @returns {string} - file path
+ * @returns {string} - package.json file path
  */
-export const saveLibraryPackage = async (lib, info) => {
+export const copyLibraryFiles = async (lib, info) => {
   if (!Array.isArray(lib)) {
     throw new TypeError(`Expected Array but got ${getType(lib)}.`);
   }
@@ -163,27 +165,36 @@ export const saveLibraryPackage = async (lib, info) => {
     files
   } = value;
   const libPath = path.resolve(DIR_CWD, PATH_LIB, key);
-  const pkgJsonPath =
-    path.resolve(DIR_CWD, PATH_MODULE, moduleName, 'package.json');
+  const modulePath = path.resolve(DIR_CWD, PATH_MODULE, moduleName);
+  const pkgJsonPath = path.resolve(modulePath, 'package.json');
   const pkgJson = await readFile(pkgJsonPath, { encoding: CHAR, flag: 'r' });
   const {
     author, description, homepage, license, name, version
   } = JSON.parse(pkgJson);
+  const copyLibFiles = promisify(copyfiles);
+  const libFiles = [];
   const origins = [];
   for (const item of files) {
     const {
       file,
       path: itemPath
     } = item;
-    const itemFile = path.resolve(libPath, file);
+    const itemFile = path.resolve(modulePath, itemPath);
     if (!isFile(itemFile)) {
       throw new Error(`${itemFile} is not a file.`);
     }
+    libFiles.push(itemFile);
     origins.push({
       file,
       url: `${originUrl}@${version}/${itemPath}`
     });
   }
+  libFiles.push(libPath);
+  await copyLibFiles(libFiles, {
+    error: true,
+    up: true,
+    verbose: !!info
+  });
   const content = JSON.stringify({
     name,
     description,
@@ -232,11 +243,11 @@ export const includeLibraries = async (cmdOpts = {}) => {
   };
   const func = [];
   if (dir) {
-    func.push(saveLibraryPackage([dir, libraries[dir]], info));
+    func.push(copyLibraryFiles([dir, libraries[dir]], info));
   } else {
     const items = Object.entries(libraries);
     for (const [key, value] of items) {
-      func.push(saveLibraryPackage([key, value], info));
+      func.push(copyLibraryFiles([key, value], info));
     }
   }
   const arr = await Promise.allSettled(func);
