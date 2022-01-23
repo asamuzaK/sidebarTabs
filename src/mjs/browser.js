@@ -469,13 +469,13 @@ export const sendMessage = async (id, msg, opt) => {
 
 /* search */
 /**
- * execute search
+ * search with a search engine
  *
  * @param {string} query - search query
  * @param {object} opt - options
  * @returns {void}
  */
-export const execSearch = async (query, opt = {}) => {
+export const searchWithSearchEngine = async (query, opt = {}) => {
   if (!isString(query)) {
     throw new TypeError(`Expected String but got ${getType(query)}.`);
   }

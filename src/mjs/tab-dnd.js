@@ -4,7 +4,9 @@
 
 /* shared */
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
-import { createTab, execSearch, moveTab, updateTab } from './browser.js';
+import {
+  createTab, moveTab, searchWithSearchEngine, updateTab
+} from './browser.js';
 import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
@@ -318,7 +320,7 @@ export const searchQuery = async (dropTarget, data = '') => {
     if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
         !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
       const dropTargetId = getSidebarTabId(dropTarget);
-      func.push(execSearch(data, {
+      func.push(searchWithSearchEngine(data, {
         tabId: dropTargetId
       }));
     } else {
@@ -337,7 +339,7 @@ export const searchQuery = async (dropTarget, data = '') => {
         windowId,
         active: true
       });
-      func.push(execSearch(data, {
+      func.push(searchWithSearchEngine(data, {
         tabId: tab.id
       }).then(restoreTabContainers).then(requestSaveSession));
     }

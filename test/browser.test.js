@@ -1055,8 +1055,8 @@ describe('browser', () => {
     });
   });
 
-  describe('execute search', () => {
-    const func = mjs.execSearch;
+  describe('search with a search engine', () => {
+    const func = mjs.searchWithSearchEngine;
 
     it('should throw if no argument given', async () => {
       await func().catch(e => {
