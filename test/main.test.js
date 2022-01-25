@@ -2032,7 +2032,7 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
-      await func(info);
+      const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -2042,6 +2042,7 @@ describe('main', () => {
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.isNull(res, 'result');
     });
 
     it('should not set class', async () => {
@@ -2075,7 +2076,7 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
-      await func(info);
+      const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -2085,6 +2086,7 @@ describe('main', () => {
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.isNull(res, 'result');
     });
 
     it('should not set class', async () => {
@@ -2118,7 +2120,7 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
-      await func(info);
+      const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -2128,6 +2130,7 @@ describe('main', () => {
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.isNull(res, 'result');
     });
 
     it('should not set class', async () => {
@@ -2161,7 +2164,7 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
-      await func(info);
+      const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
@@ -2171,6 +2174,7 @@ describe('main', () => {
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
       assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.isNull(res, 'result');
     });
 
     it('should set class', async () => {
@@ -2205,7 +2209,7 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
-      await func(info);
+      const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
       assert.strictEqual(elm.dataset.tab, '{}', 'dataset');
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
@@ -2216,6 +2220,7 @@ describe('main', () => {
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(elm2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.isUndefined(res, 'result');
     });
 
     it('should set class', async () => {
@@ -2251,7 +2256,7 @@ describe('main', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
-      await func(info);
+      const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
       assert.strictEqual(elm.dataset.tab, '{}', 'dataset');
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
@@ -2262,6 +2267,7 @@ describe('main', () => {
       assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(elm2.classList.contains(ACTIVE), 'remove class');
       assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.isUndefined(res, 'result');
     });
   });
 
@@ -5394,14 +5400,14 @@ describe('main', () => {
       closeIcon.alt = '';
       closeButton.appendChild(closeIcon);
       tab.appendChild(closeButton);
-      const pinned = document.createElement('span');
-      pinned.classList.add('tab-pinned');
+      const pinnedTab = document.createElement('span');
+      pinnedTab.classList.add('tab-pinned');
       const pinnedIcon = document.createElement('img');
       pinnedIcon.classList.add('tab-pinned-icon');
       pinnedIcon.src = '';
       pinnedIcon.alt = '';
-      pinned.appendChild(pinnedIcon);
-      tab.appendChild(pinned);
+      pinnedTab.appendChild(pinnedIcon);
+      tab.appendChild(pinnedTab);
       const sect = document.createElement('section');
       sect.classList.add(CLASS_TAB_CONTAINER);
       const h1 = document.createElement('h1');
@@ -5411,8 +5417,24 @@ describe('main', () => {
       h1.appendChild(label);
       sect.appendChild(h1);
       sect.appendChild(tab);
+      const pinned = document.createElement('section');
+      pinned.id = PINNED;
+      pinned.classList.add('tab-container');
+      const newTab = document.createElement('section');
+      newTab.id = NEW_TAB;
       const body = document.querySelector('body');
+      body.appendChild(pinned);
       body.appendChild(sect);
+      body.appendChild(newTab);
+      sinon.stub(tab, 'getBoundingClientRect');
+      sinon.stub(pinned, 'getBoundingClientRect').returns({
+        top: 0,
+        bottom: 100
+      });
+      sinon.stub(newTab, 'getBoundingClientRect').returns({
+        top: 300,
+        bottom: 400
+      });
       mjs.ports.clear();
     });
     afterEach(() => {
@@ -5501,8 +5523,12 @@ describe('main', () => {
         windowId: 1
       };
       mjs.sidebar.windowId = 1;
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
+      const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
@@ -5522,6 +5548,10 @@ describe('main', () => {
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
       const info = {
         hidden: true
       };
@@ -5557,6 +5587,10 @@ describe('main', () => {
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
       const info = {
         hidden: false
       };
@@ -5606,6 +5640,10 @@ describe('main', () => {
         windowId: 1
       };
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
@@ -5640,6 +5678,10 @@ describe('main', () => {
         windowId: 1
       };
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
       elm.classList.add(DISCARDED);
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
@@ -5747,8 +5789,12 @@ describe('main', () => {
         active: true,
         windowType: 'normal'
       }).resolves([tabsTab]);
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
+      const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(ACTIVE), 'class');
       assert.strictEqual(browser.tabs.query.callCount, i, 'not called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
@@ -5791,8 +5837,13 @@ describe('main', () => {
         windowType: 'normal'
       }).resolves([tabsTab]);
       browser.tabs.get.withArgs(1).resolves(tabsTab);
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
+      elm.dataset.tab = JSON.stringify(tabsTab);
+      const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');
       assert.strictEqual(browser.tabs.query.callCount, i + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
@@ -5812,12 +5863,6 @@ describe('main', () => {
       });
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
-      const pinned = document.createElement('section');
-      pinned.id = PINNED;
-      pinned.classList.add('tab-container');
-      const body = document.querySelector('body');
-      const sect = body.querySelector('section');
-      body.insertBefore(pinned, sect);
       const info = {
         pinned: true
       };
@@ -5833,8 +5878,13 @@ describe('main', () => {
         windowId: 1
       };
       mjs.sidebar.windowId = 1;
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
+      const pinned = document.getElementById(PINNED);
+      const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(PINNED), 'class');
       assert.isTrue(elm.parentNode === pinned, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
@@ -5858,8 +5908,6 @@ describe('main', () => {
       tmpl.id = CLASS_TAB_CONTAINER_TMPL;
       const sect = document.createElement('section');
       sect.classList.add(CLASS_TAB_CONTAINER);
-      const pinned = body.querySelector('section');
-      pinned.id = PINNED;
       tmpl.content.appendChild(sect);
       body.appendChild(tmpl);
       const info = {
@@ -5877,8 +5925,13 @@ describe('main', () => {
         windowId: 1
       };
       mjs.sidebar.windowId = 1;
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
+      const pinned = document.getElementById(PINNED);
+      const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(PINNED), 'class');
       assert.isTrue(elm.parentNode === pinned.nextElementSibling, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
@@ -5906,9 +5959,13 @@ describe('main', () => {
         }
       };
       mjs.sidebar.windowId = 1;
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
       const audio = elm.querySelector('.tab-audio');
+      const res = await func(1, info, tabsTab);
       assert.isTrue(audio.classList.contains(AUDIBLE), 'audible');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
@@ -5933,9 +5990,13 @@ describe('main', () => {
         }
       };
       mjs.sidebar.windowId = 1;
-      const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
       const audio = elm.querySelector('.tab-audio');
+      const res = await func(1, info, tabsTab);
       assert.isFalse(audio.classList.contains(AUDIBLE), 'audible');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });

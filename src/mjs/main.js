@@ -501,7 +501,7 @@ export const addTabEventListeners = async elm => {
  * handle activated tab
  *
  * @param {!object} info - activated info
- * @returns {void}
+ * @returns {?Function} - scrollTabIntoView()
  */
 export const handleActivatedTab = async info => {
   const { tabId, windowId } = info;
@@ -511,6 +511,7 @@ export const handleActivatedTab = async info => {
   if (!Number.isInteger(windowId)) {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
+  let func;
   if (windowId === sidebar.windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     if (tab) {
@@ -537,8 +538,10 @@ export const handleActivatedTab = async info => {
       newClass.add(HIGHLIGHTED);
       tab.dataset.tab = JSON.stringify(tabsTab);
       sidebar.firstSelectedTab = tab;
+      func = scrollTabIntoView(tab);
     }
   }
+  return func || null;
 };
 
 /**
