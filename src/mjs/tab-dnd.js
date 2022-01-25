@@ -16,7 +16,7 @@ import { restoreTabContainers } from './tab-group.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, TAB_QUERY
+  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR_MAIN, TAB_QUERY
 } from './constant.js';
 
 /* api */
@@ -320,8 +320,11 @@ export const searchQuery = async (dropTarget, data = '') => {
     if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
         !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
       const dropTargetId = getSidebarTabId(dropTarget);
-      func.push(searchWithSearchEngine(data, {
+      await searchWithSearchEngine(data, {
         tabId: dropTargetId
+      });
+      func.push(updateTab(dropTargetId, {
+        active: true
       }));
     } else {
       const { windowId } = JSON.parse(dropTarget.dataset.tab);
@@ -485,6 +488,12 @@ export const handleDragOver = evt => {
       }
     }
     evt.preventDefault();
+    evt.stopPropagation();
+  } else {
+    const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
+    if (isMain) {
+      dataTransfer.dropEffect = 'none';
+    }
   }
 };
 

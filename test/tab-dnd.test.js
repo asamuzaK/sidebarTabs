@@ -10,7 +10,7 @@ import sinon from 'sinon';
 import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, TAB
+  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, SIDEBAR_MAIN, TAB
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -1750,7 +1750,7 @@ describe('dnd', () => {
     it('should get empty array', async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.search.search.callCount;
-      browser.tabs.update.resolves({});
+      const k = browser.tabs.update.callCount;
       const stubCurrentWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
@@ -1775,6 +1775,7 @@ describe('dnd', () => {
       const res = await func(elm);
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.search.search.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -1786,10 +1787,16 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 1
       }).callCount;
+      const k = browser.tabs.update.withArgs(1, {
+        active: true
+      }).callCount;
       browser.search.search.withArgs({
         query: 'foo',
         tabId: 1
       }).resolves(undefined);
+      browser.tabs.update.withArgs(1, {
+        active: true
+      }).resolves({});
       const stubCurrentWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
@@ -1817,9 +1824,12 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 1
       }).callCount, j + 1, 'called');
+      assert.strictEqual(browser.tabs.update.withArgs(1, {
+        active: true
+      }).callCount, k + 1, 'called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
@@ -1828,6 +1838,7 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 1
       }).callCount;
+      const k = browser.tabs.update.callCount;
       browser.tabs.create.resolves({
         id: 2
       });
@@ -1862,6 +1873,7 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 2
       }).callCount, j + 1, 'called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
@@ -1873,6 +1885,7 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 1
       }).callCount;
+      const k = browser.tabs.update.callCount;
       browser.tabs.create.resolves({
         id: 2
       });
@@ -1914,6 +1927,7 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 2
       }).callCount, j + 1, 'called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
@@ -2503,9 +2517,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2523,6 +2540,7 @@ describe('dnd', () => {
       assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
         'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
+      assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
 
     it('should set drop effect', async () => {
@@ -2540,9 +2558,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2559,6 +2580,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should set drop effect', async () => {
@@ -2576,9 +2598,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
@@ -2595,6 +2620,7 @@ describe('dnd', () => {
       assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should set drop effect none', async () => {
@@ -2612,9 +2638,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2631,6 +2660,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should set drop effect none', async () => {
@@ -2648,9 +2678,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2665,6 +2698,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should set drop effect', async () => {
@@ -2680,9 +2714,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2697,6 +2734,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should set drop effect', async () => {
@@ -2712,9 +2750,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
@@ -2729,6 +2770,7 @@ describe('dnd', () => {
       assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
@@ -2744,9 +2786,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
@@ -2762,6 +2807,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
@@ -2777,9 +2823,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 30,
         currentTarget: elm,
         dataTransfer: {
@@ -2795,6 +2844,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
@@ -2810,9 +2860,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2828,6 +2881,7 @@ describe('dnd', () => {
       assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
@@ -2845,9 +2899,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
@@ -2863,6 +2920,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
@@ -2880,9 +2938,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 30,
         currentTarget: elm,
         dataTransfer: {
@@ -2898,6 +2959,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
@@ -2915,9 +2977,12 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2933,23 +2998,30 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
     it('should not set drop effect', async () => {
+      const main = document.createElement('div');
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
       parent.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.getBoundingClientRect = sinon.stub().returns({
         top: 10, left: 0, right: 100, bottom: 50
       });
       parent.appendChild(elm);
-      body.appendChild(parent);
+      main.appendChild(parent);
+      body.appendChild(main);
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
       const evt = {
         preventDefault,
+        stopPropagation,
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
@@ -2962,6 +3034,42 @@ describe('dnd', () => {
       assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
         'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
+      assert.strictEqual(stopPropagation.callCount, j, 'not called');
+    });
+
+    it('should set drop effect', async () => {
+      const main = document.createElement('div');
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      main.appendChild(parent);
+      body.appendChild(main);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: main,
+        dataTransfer: {
+          getData: sinon.stub().returns(''),
+          dropEffect: 'uninitialized'
+        },
+        type: 'dragover'
+      };
+      await func(evt);
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i, 'called');
+      assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
   });
 
