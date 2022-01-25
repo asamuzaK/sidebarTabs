@@ -47,7 +47,7 @@ import {
 import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
 import {
-  initCustomTheme, sendCurrentTheme, setScrollbarWidth,
+  initCustomTheme, sendCurrentTheme, setNewTabSeparator, setScrollbarWidth,
   setTabGroupColorBarWidth, setTabHeight, setTheme, updateCustomThemeCss
 } from './theme.js';
 import {
@@ -63,8 +63,9 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  DISCARDED, EXT_INIT, HIGHLIGHTED,
+  NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
+  OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
@@ -107,6 +108,7 @@ export const sidebar = {
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
   readBrowserSettings: false,
+  showNewTabSeparator: false,
   skipCollapsed: false,
   switchTabByScrolling: false,
   tabGroupOnExpandCollapseOther: false,
@@ -127,6 +129,7 @@ export const setSidebar = async () => {
   const { id: windowId, incognito } = win;
   const store = await getStorage([
     BROWSER_SETTINGS_READ,
+    NEW_TAB_SEPARATOR_SHOW,
     SCROLL_DIR_INVERT,
     TAB_CLOSE_DBLCLICK,
     TAB_GROUP_ENABLE,
@@ -139,8 +142,9 @@ export const setSidebar = async () => {
   if (isObjectNotEmpty(store)) {
     const {
       closeTabsByDoubleClick, enableTabGroup, invertScrollDirection,
-      readBrowserSettings, skipCollapsed, switchTabByScrolling,
-      tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd
+      readBrowserSettings, showNewTabSeparator, skipCollapsed,
+      switchTabByScrolling, tabGroupOnExpandCollapseOther,
+      tabGroupPutNewTabAtTheEnd
     } = store;
     sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
       ? !!closeTabsByDoubleClick.checked
@@ -150,6 +154,9 @@ export const setSidebar = async () => {
       : false;
     sidebar.readBrowserSettings = readBrowserSettings
       ? !!readBrowserSettings.checked
+      : false;
+    sidebar.showNewTabSeparator = showNewTabSeparator
+      ? !!showNewTabSeparator.checked
       : false;
     sidebar.skipCollapsed = skipCollapsed ? !!skipCollapsed.checked : false;
     sidebar.switchTabByScrolling = switchTabByScrolling
@@ -171,6 +178,7 @@ export const setSidebar = async () => {
     sidebar.enableTabGroup = true;
     sidebar.invertScrollDirection = false;
     sidebar.readBrowserSettings = false;
+    sidebar.showNewTabSeparator = false;
     sidebar.skipCollapsed = false;
     sidebar.switchTabByScrolling = false;
     sidebar.tabGroupOnExpandCollapseOther = false;
@@ -2002,6 +2010,10 @@ export const setVar = async (item, obj, changed = false) => {
       case BROWSER_SETTINGS_READ:
         sidebar[item] = !!checked;
         changed && func.push(storeCloseTabsByDoubleClickValue(!!checked));
+        break;
+      case NEW_TAB_SEPARATOR_SHOW:
+        sidebar[item] = !!checked;
+        changed && func.push(setNewTabSeparator(!!checked));
         break;
       case TAB_CLOSE_DBLCLICK:
         sidebar[item] = !!checked;
