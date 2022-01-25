@@ -13,19 +13,21 @@ import sinon from 'sinon';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
-  CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE,
-  CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT,
-  CLASS_TAB_GROUP, CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
+  CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
+  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
+  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ITEMS, CLASS_TAB_TITLE,
+  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM, CLASS_THEME_DARK,
+  CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  DISCARDED, EXT_INIT, HIGHLIGHTED,
+  NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
+  OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
@@ -96,6 +98,7 @@ describe('main', () => {
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
     mjs.sidebar.readBrowserSettings = false;
+    mjs.sidebar.showNewTabSeparator = false;
     mjs.sidebar.skipCollapsed = false;
     mjs.sidebar.switchTabByScrolling = false;
     mjs.sidebar.tabGroupOnExpandCollapseOther = false;
@@ -123,6 +126,7 @@ describe('main', () => {
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
     mjs.sidebar.readBrowserSettings = false;
+    mjs.sidebar.showNewTabSeparator = false;
     mjs.sidebar.skipCollapsed = false;
     mjs.sidebar.switchTabByScrolling = false;
     mjs.sidebar.tabGroupOnExpandCollapseOther = false;
@@ -139,6 +143,7 @@ describe('main', () => {
     const func = mjs.setSidebar;
     const args = [
       BROWSER_SETTINGS_READ,
+      NEW_TAB_SEPARATOR_SHOW,
       SCROLL_DIR_INVERT,
       TAB_CLOSE_DBLCLICK,
       TAB_GROUP_ENABLE,
@@ -174,6 +179,9 @@ describe('main', () => {
         readBrowserSettings: {
           checked: true
         },
+        showNewTabSeparator: {
+          checked: true
+        },
         skipCollapsed: {
           checked: true
         },
@@ -198,6 +206,7 @@ describe('main', () => {
       assert.isFalse(sidebar.enableTabGroup, 'enableTabGroup');
       assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isTrue(sidebar.readBrowserSettings, 'readBrowserSettings');
+      assert.isTrue(sidebar.showNewTabSeparator, 'showNewTabSeparator');
       assert.isTrue(sidebar.skipCollapsed, 'skipCollapsed');
       assert.isTrue(sidebar.switchTabByScrolling, 'switchTab');
       assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
@@ -474,6 +483,44 @@ describe('main', () => {
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
       assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+        'tabGroupCollapseOther');
+      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+        'tabGroupPutNewTabAtTheEnd');
+      assert.isTrue(sidebar.incognito, 'incognito');
+      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'mac'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true
+      });
+      getStorage.resolves({
+        showNewTabSeparator: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
+      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
+      assert.isTrue(sidebar.showNewTabSeparator, 'showNewTabSeparator');
       assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
       assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
@@ -11025,6 +11072,48 @@ describe('main', () => {
       const res = await func(SCROLL_DIR_INVERT, { checked: true }, true);
       assert.isTrue(mjs.sidebar.invertScrollDirection, 'set');
       assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = NEW_TAB;
+      elm.classList.add(TAB, NEW_TAB);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(NEW_TAB_SEPARATOR_SHOW, { checked: true });
+      assert.isTrue(mjs.sidebar.showNewTabSeparator, 'set');
+      assert.isFalse(elm.classList.contains(CLASS_SEPARATOR_SHOW), 'class');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = NEW_TAB;
+      elm.classList.add(TAB, NEW_TAB);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(NEW_TAB_SEPARATOR_SHOW, { checked: true }, true);
+      assert.isTrue(mjs.sidebar.showNewTabSeparator, 'set');
+      assert.isTrue(elm.classList.contains(CLASS_SEPARATOR_SHOW), 'class');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = NEW_TAB;
+      elm.classList.add(TAB, NEW_TAB, CLASS_SEPARATOR_SHOW);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(NEW_TAB_SEPARATOR_SHOW, { checked: false }, true);
+      assert.isFalse(mjs.sidebar.showNewTabSeparator, 'set');
+      assert.isFalse(elm.classList.contains(CLASS_SEPARATOR_SHOW), 'class');
+      assert.deepEqual(res, [undefined], 'result');
     });
   });
 

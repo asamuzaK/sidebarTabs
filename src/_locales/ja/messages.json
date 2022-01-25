@@ -490,6 +490,12 @@
   "optionsShowMenuOnMouseupDetail": {
     "message": "ブラウザのコンテキストメニューをマウスダウンではなくマウスアップのイベントで表示します。Mac と Linux 用の設定です。Windows では何も効果がありません。"
   },
+  "optionsShowNewTabSeparator": {
+    "message": "新しいタブを開くボタンに境界線を表示する"
+  },
+  "optionsShowNewTabSeparatorDetail": {
+    "message": "新しいタブを開くボタンとタブを区切る境界線を表示します。"
+  },
   "optionsSkipCollapsed": {
     "message": "折りたたまれたタブをスキップする"
   },

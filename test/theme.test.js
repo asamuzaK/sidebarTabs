@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 import { promises as fsPromise } from 'fs';
 import path from 'path';
 import {
-  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
+  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
@@ -22,6 +22,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
+  NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
@@ -1950,14 +1951,14 @@ describe('theme', () => {
   describe('set tab height', () => {
     const func = mjs.setTabHeight;
 
-    it('should set height', async () => {
+    it('should add class', async () => {
       const body = document.querySelector('body');
       body.classList.remove(CLASS_COMPACT);
       await func(true);
       assert.isTrue(body.classList.contains(CLASS_COMPACT));
     });
 
-    it('should set height', async () => {
+    it('should not add class', async () => {
       const body = document.querySelector('body');
       body.classList.add(CLASS_COMPACT);
       await func(false);
@@ -2005,14 +2006,14 @@ describe('theme', () => {
   describe('set scrollbar width', () => {
     const func = mjs.setScrollbarWidth;
 
-    it('should set width', async () => {
+    it('should add class', async () => {
       const body = document.querySelector('body');
       body.classList.remove(CLASS_NARROW);
       await func(true);
       assert.isTrue(body.classList.contains(CLASS_NARROW));
     });
 
-    it('should set width', async () => {
+    it('should not add class', async () => {
       const body = document.querySelector('body');
       body.classList.add(CLASS_NARROW);
       await func(false);
@@ -2060,18 +2061,83 @@ describe('theme', () => {
   describe('set tab group color bar width', () => {
     const func = mjs.setTabGroupColorBarWidth;
 
-    it('should set width', async () => {
+    it('should add class', async () => {
       const body = document.querySelector('body');
       body.classList.remove(CLASS_NARROW_TAB_GROUP);
       await func(true);
       assert.isTrue(body.classList.contains(CLASS_NARROW_TAB_GROUP));
     });
 
-    it('should set width', async () => {
+    it('should not add class', async () => {
       const body = document.querySelector('body');
       body.classList.add(CLASS_NARROW_TAB_GROUP);
       await func(false);
       assert.isFalse(body.classList.contains(CLASS_NARROW_TAB_GROUP));
+    });
+  });
+
+  describe('get new tab separator', () => {
+    const func = mjs.getNewTabSeparator;
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(NEW_TAB_SEPARATOR_SHOW)
+        .resolves(undefined);
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(NEW_TAB_SEPARATOR_SHOW).resolves({
+        [NEW_TAB_SEPARATOR_SHOW]: {
+          checked: true
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get result', async () => {
+      browser.storage.local.get.withArgs(NEW_TAB_SEPARATOR_SHOW).resolves({
+        [NEW_TAB_SEPARATOR_SHOW]: {
+          checked: false
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isFalse(res, 'result');
+    });
+  });
+
+  describe('set new tab separator', () => {
+    const func = mjs.setNewTabSeparator;
+
+    it('should add class', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = NEW_TAB;
+      elm.classList.add(TAB, NEW_TAB);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      await func(true);
+      assert.isTrue(elm.classList.contains(CLASS_SEPARATOR_SHOW));
+    });
+
+    it('should not add class', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = NEW_TAB;
+      elm.classList.add(TAB, NEW_TAB, CLASS_SEPARATOR_SHOW);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      await func(false);
+      assert.isFalse(elm.classList.contains(CLASS_SEPARATOR_SHOW));
     });
   });
 
@@ -2093,6 +2159,13 @@ describe('theme', () => {
 
     it('should call functions', async () => {
       browser.storage.local.get.resolves({});
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = NEW_TAB;
+      elm.classList.add(TAB, NEW_TAB, CLASS_SEPARATOR_SHOW);
+      parent.appendChild(elm);
+      body.appendChild(parent);
       const res = await func();
       assert.isUndefined(res, 'result');
     });
