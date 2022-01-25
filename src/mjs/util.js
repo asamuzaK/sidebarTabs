@@ -437,18 +437,23 @@ export const scrollTabIntoView = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
     const tabsTab = elm.dataset.tab;
     if (tabsTab) {
-      const { active, openerTabId } = JSON.parse(tabsTab);
-      if (active || Number.isInteger(openerTabId)) {
+      const { active } = JSON.parse(tabsTab);
+      if (active) {
         const pinned = document.getElementById(PINNED);
         const newTab = document.getElementById(NEW_TAB);
-        const { bottom: pinnedBottom } = pinned.getBoundingClientRect();
+        const {
+          top: pinnedTop, bottom: pinnedBottom
+        } = pinned.getBoundingClientRect();
         const { top: newTabTop } = newTab.getBoundingClientRect();
         const { bottom: tabBottom, top: tabTop } = elm.getBoundingClientRect();
-        const viewTop = Number.isInteger(openerTabId) && tabTop < pinnedBottom;
-        const behavior = viewTop ? 'auto' : 'smooth';
-        if (viewTop || tabBottom > newTabTop) {
+        if (tabTop < pinnedBottom) {
           elm.scrollIntoView({
-            behavior,
+            behavior: 'smooth',
+            block: pinnedTop === pinnedBottom ? 'start' : 'center'
+          });
+        } else {
+          tabBottom > newTabTop && elm.scrollIntoView({
+            behavior: 'smooth',
             block: 'center'
           });
         }

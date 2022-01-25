@@ -1649,8 +1649,7 @@ describe('util', () => {
       });
       const stubFunc = sinon.stub();
       elm.dataset.tab = JSON.stringify({
-        active: false,
-        openerTabId: 1
+        active: false
       });
       elm.scrollIntoView = stubFunc;
       pinned.id = PINNED;
@@ -1659,9 +1658,9 @@ describe('util', () => {
       body.appendChild(elm);
       body.appendChild(newTab);
       await func(elm);
-      assert.isTrue(stubPinned.called, 'called');
-      assert.isTrue(stubNewTab.called, 'called');
-      assert.isTrue(stubElm.called, 'called');
+      assert.isFalse(stubPinned.called, 'not called');
+      assert.isFalse(stubNewTab.called, 'not called');
+      assert.isFalse(stubElm.called, 'not called');
       assert.isFalse(stubFunc.called, 'not called');
     });
 
@@ -1682,7 +1681,10 @@ describe('util', () => {
         top: 350,
         bottom: 450
       });
-      const stubFunc = sinon.stub();
+      const stubFunc = sinon.stub().withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      });
       elm.dataset.tab = JSON.stringify({
         active: true
       });
@@ -1693,10 +1695,10 @@ describe('util', () => {
       body.appendChild(elm);
       body.appendChild(newTab);
       await func(elm);
-      assert.isTrue(stubPinned.called, 'called');
-      assert.isTrue(stubNewTab.called, 'called');
-      assert.isTrue(stubElm.called, 'called');
-      assert.isTrue(stubFunc.called, 'not called');
+      assert.isTrue(stubPinned.calledOnce, 'called');
+      assert.isTrue(stubNewTab.calledOnce, 'called');
+      assert.isTrue(stubElm.calledOnce, 'called');
+      assert.isTrue(stubFunc.calledOnce, 'called');
     });
 
     it('should call function', async () => {
@@ -1706,20 +1708,22 @@ describe('util', () => {
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
-        bottom: 100
+        bottom: 0
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
         top: 300,
         bottom: 400
       });
       const stubElm = sinon.stub(elm, 'getBoundingClientRect').returns({
-        top: 350,
-        bottom: 450
+        top: -50,
+        bottom: 50
       });
-      const stubFunc = sinon.stub();
+      const stubFunc = sinon.stub().withArgs({
+        behavior: 'smooth',
+        block: 'start'
+      });
       elm.dataset.tab = JSON.stringify({
-        active: false,
-        openerTabId: 1
+        active: true
       });
       elm.scrollIntoView = stubFunc;
       pinned.id = PINNED;
@@ -1728,10 +1732,10 @@ describe('util', () => {
       body.appendChild(elm);
       body.appendChild(newTab);
       await func(elm);
-      assert.isTrue(stubPinned.called, 'called');
-      assert.isTrue(stubNewTab.called, 'called');
-      assert.isTrue(stubElm.called, 'called');
-      assert.isTrue(stubFunc.called, 'not called');
+      assert.isTrue(stubPinned.calledOnce, 'called');
+      assert.isTrue(stubNewTab.calledOnce, 'called');
+      assert.isTrue(stubElm.calledOnce, 'called');
+      assert.isTrue(stubFunc.calledOnce, 'called');
     });
 
     it('should call function', async () => {
@@ -1740,8 +1744,8 @@ describe('util', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
-        top: 0,
-        bottom: 100
+        top: 100,
+        bottom: 200
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
         top: 300,
@@ -1751,10 +1755,12 @@ describe('util', () => {
         top: 50,
         bottom: 150
       });
-      const stubFunc = sinon.stub();
+      const stubFunc = sinon.stub().withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      });
       elm.dataset.tab = JSON.stringify({
-        active: false,
-        openerTabId: 1
+        active: true
       });
       elm.scrollIntoView = stubFunc;
       pinned.id = PINNED;
@@ -1763,10 +1769,10 @@ describe('util', () => {
       body.appendChild(elm);
       body.appendChild(newTab);
       await func(elm);
-      assert.isTrue(stubPinned.called, 'called');
-      assert.isTrue(stubNewTab.called, 'called');
-      assert.isTrue(stubElm.called, 'called');
-      assert.isTrue(stubFunc.called, 'not called');
+      assert.isTrue(stubPinned.calledOnce, 'called');
+      assert.isTrue(stubNewTab.calledOnce, 'called');
+      assert.isTrue(stubElm.calledOnce, 'called');
+      assert.isTrue(stubFunc.calledOnce, 'called');
     });
   });
 
