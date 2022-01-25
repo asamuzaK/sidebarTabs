@@ -265,37 +265,49 @@ export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
 export const openUriList = async (dropTarget, data = []) => {
   const func = [];
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
-      dropTarget.classList.contains(DROP_TARGET) &&
       Array.isArray(data) && data.length) {
-    if (data.length === 1 &&
-        !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
-        !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
-      const [url] = data;
-      const dropTargetId = getSidebarTabId(dropTarget);
-      func.push(updateTab(dropTargetId, {
-        url,
-        active: true
-      }));
-    } else {
-      const { windowId } = JSON.parse(dropTarget.dataset.tab);
-      const dropTargetIndex = getSidebarTabIndex(dropTarget);
-      const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
-      const opts = [];
-      let index;
-      if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
-        index = dropTargetIndex;
-      } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
-                 dropTargetIndex < lastTabIndex) {
-        index = dropTargetIndex + 1;
+    const isMain = dropTarget === document.getElementById(SIDEBAR_MAIN);
+    if (dropTarget.classList.contains(DROP_TARGET)) {
+      if (data.length === 1 &&
+          !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+          !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+        const [url] = data;
+        const dropTargetId = getSidebarTabId(dropTarget);
+        func.push(updateTab(dropTargetId, {
+          url,
+          active: true
+        }));
+      } else {
+        const { windowId } = JSON.parse(dropTarget.dataset.tab);
+        const dropTargetIndex = getSidebarTabIndex(dropTarget);
+        const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+        const opts = [];
+        let index;
+        if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+          index = dropTargetIndex;
+        } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
+                   dropTargetIndex < lastTabIndex) {
+          index = dropTargetIndex + 1;
+        }
+        for (const url of data) {
+          const opt = {
+            url,
+            windowId
+          };
+          if (Number.isInteger(index)) {
+            opt.index = index;
+          }
+          opts.push(opt);
+        }
+        func.push(createTabsInOrder(opts).then(restoreTabContainers)
+          .then(requestSaveSession));
       }
+    } else if (isMain) {
+      const opts = [];
       for (const url of data) {
         const opt = {
-          url,
-          windowId
+          url
         };
-        if (Number.isInteger(index)) {
-          opt.index = index;
-        }
         opts.push(opt);
       }
       func.push(createTabsInOrder(opts).then(restoreTabContainers)
@@ -315,31 +327,40 @@ export const openUriList = async (dropTarget, data = []) => {
 export const searchQuery = async (dropTarget, data = '') => {
   const func = [];
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
-      dropTarget.classList.contains(DROP_TARGET) &&
       data && isString(data)) {
-    if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
-        !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
-      const dropTargetId = getSidebarTabId(dropTarget);
-      await searchWithSearchEngine(data, {
-        tabId: dropTargetId
-      });
-      func.push(updateTab(dropTargetId, {
-        active: true
-      }));
-    } else {
-      const { windowId } = JSON.parse(dropTarget.dataset.tab);
-      const dropTargetIndex = getSidebarTabIndex(dropTarget);
-      const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
-      let index;
-      if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
-        index = dropTargetIndex;
-      } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
-                 dropTargetIndex < lastTabIndex) {
-        index = dropTargetIndex + 1;
+    const isMain = dropTarget === document.getElementById(SIDEBAR_MAIN);
+    if (dropTarget.classList.contains(DROP_TARGET)) {
+      if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
+          !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+        const dropTargetId = getSidebarTabId(dropTarget);
+        await searchWithSearchEngine(data, {
+          tabId: dropTargetId
+        });
+        func.push(updateTab(dropTargetId, {
+          active: true
+        }));
+      } else {
+        const { windowId } = JSON.parse(dropTarget.dataset.tab);
+        const dropTargetIndex = getSidebarTabIndex(dropTarget);
+        const lastTabIndex = document.querySelectorAll(TAB_QUERY).length - 1;
+        let index;
+        if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+          index = dropTargetIndex;
+        } else if (dropTarget.classList.contains(DROP_TARGET_AFTER) &&
+                   dropTargetIndex < lastTabIndex) {
+          index = dropTargetIndex + 1;
+        }
+        const tab = await createTab({
+          index,
+          windowId,
+          active: true
+        });
+        func.push(searchWithSearchEngine(data, {
+          tabId: tab.id
+        }).then(restoreTabContainers).then(requestSaveSession));
       }
+    } else if (isMain) {
       const tab = await createTab({
-        index,
-        windowId,
         active: true
       });
       func.push(searchWithSearchEngine(data, {
@@ -359,42 +380,59 @@ export const searchQuery = async (dropTarget, data = '') => {
 export const handleDrop = evt => {
   const { currentTarget, dataTransfer, shiftKey, type } = evt;
   let func;
-  if (type === 'drop') {
-    const dropTarget = getSidebarTab(currentTarget);
-    if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
-      const uriList = dataTransfer.getData(MIME_URI).split('\n')
-        .filter(i => i && !i.startsWith('#')).reverse();
-      const data = dataTransfer.getData(MIME_PLAIN);
-      // dropped uri list
-      if (uriList.length) {
-        func = openUriList(dropTarget, uriList).catch(throwErr);
-        evt.preventDefault();
-      } else if (data) {
-        let item;
-        try {
-          item = JSON.parse(data);
-        } catch (e) {
-          item = data;
-        }
-        // dropped tab
-        if (isObjectNotEmpty(item)) {
-          const { windowId } = JSON.parse(dropTarget.dataset.tab);
-          const keyOpt = {
-            shiftKey
-          };
-          item.dropWindowId = windowId;
-          func = extractDroppedTabs(dropTarget, item, keyOpt)
-            .then(restoreTabContainers).then(requestSaveSession)
-            .catch(throwErr);
-          evt.preventDefault();
-        // dropped search query
-        } else if (isString(item)) {
-          func = searchQuery(dropTarget, item).catch(throwErr);
-          evt.preventDefault();
-        }
+  if (type !== 'drop') {
+    return;
+  }
+  const dropTarget = getSidebarTab(currentTarget);
+  const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
+  const uriList = dataTransfer.getData(MIME_URI).split('\n')
+     .filter(i => i && !i.startsWith('#')).reverse();
+  const data = dataTransfer.getData(MIME_PLAIN);
+  if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
+    // dropped uri list
+    if (uriList.length) {
+      func = openUriList(dropTarget, uriList).catch(throwErr);
+      evt.preventDefault();
+      evt.stopPropagation();
+    } else if (data) {
+      let item;
+      try {
+        item = JSON.parse(data);
+      } catch (e) {
+        item = data;
       }
-      dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-        DROP_TARGET_BEFORE);
+      // dropped tab
+      if (isObjectNotEmpty(item)) {
+        const { windowId } = JSON.parse(dropTarget.dataset.tab);
+        const keyOpt = {
+          shiftKey
+        };
+        item.dropWindowId = windowId;
+        func = extractDroppedTabs(dropTarget, item, keyOpt)
+          .then(restoreTabContainers).then(requestSaveSession)
+          .catch(throwErr);
+        evt.preventDefault();
+        evt.stopPropagation();
+      // dropped search query
+      } else if (isString(item)) {
+        func = searchQuery(dropTarget, item).catch(throwErr);
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+    }
+    dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+      DROP_TARGET_BEFORE);
+  } else if (isMain) {
+    // dropped uri list
+    if (uriList.length) {
+      func = openUriList(currentTarget, uriList).catch(throwErr);
+      evt.preventDefault();
+      evt.stopPropagation();
+    // dropped search query
+    } else if (data) {
+      func = searchQuery(currentTarget, data).catch(throwErr);
+      evt.preventDefault();
+      evt.stopPropagation();
     }
   }
   return func || null;
@@ -445,10 +483,11 @@ export const handleDragOver = evt => {
     return;
   }
   const dropTarget = getSidebarTab(currentTarget);
+  const data = dataTransfer.getData(MIME_PLAIN);
+  const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
   if (dropTarget) {
     const { bottom, top } = dropTarget.getBoundingClientRect();
     const isPinned = dropTarget.classList.contains(PINNED);
-    const data = dataTransfer.getData(MIME_PLAIN);
     if (data) {
       let pinned;
       try {
@@ -489,11 +528,10 @@ export const handleDragOver = evt => {
     }
     evt.preventDefault();
     evt.stopPropagation();
-  } else {
-    const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
-    if (isMain) {
-      dataTransfer.dropEffect = 'none';
-    }
+  } else if (isMain && !data) {
+    dataTransfer.dropEffect = 'move';
+    evt.preventDefault();
+    evt.stopPropagation();
   }
 };
 

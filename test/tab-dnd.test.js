@@ -1731,6 +1731,50 @@ describe('dnd', () => {
       assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
+
+    it('should call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      main.id = SIDEBAR_MAIN;
+      main.appendChild(parent);
+      body.appendChild(main);
+      const res = await func(main, [
+        'https://example.com',
+        'https://www.example.com'
+      ]);
+      assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
   });
 
   describe('search dropped query', () => {
@@ -1883,15 +1927,15 @@ describe('dnd', () => {
       const i = browser.tabs.create.callCount;
       const j = browser.search.search.withArgs({
         query: 'foo',
-        tabId: 1
+        tabId: 3
       }).callCount;
       const k = browser.tabs.update.callCount;
       browser.tabs.create.resolves({
-        id: 2
+        id: 3
       });
       browser.search.search.withArgs({
         query: 'foo',
-        tabId: 2
+        tabId: 3
       }).resolves(undefined);
       const stubCurrentWin = browser.windows.getCurrent.resolves({
         id: 1,
@@ -1913,8 +1957,8 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT
       });
       elm2.classList.add(TAB);
-      elm.dataset.tabId = '3';
-      elm.dataset.tab = JSON.stringify({
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
         windowId: browser.windows.WINDOW_ID_CURRENT
       });
       parent.classList.add(CLASS_TAB_CONTAINER);
@@ -1925,7 +1969,64 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
-        tabId: 2
+        tabId: 3
+      }).callCount, j + 1, 'called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.search.search.withArgs({
+        query: 'foo',
+        tabId: 3
+      }).callCount;
+      const k = browser.tabs.update.callCount;
+      browser.tabs.create.resolves({
+        id: 3
+      });
+      browser.search.search.withArgs({
+        query: 'foo',
+        tabId: 3
+      }).resolves(undefined);
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      main.id = SIDEBAR_MAIN;
+      main.appendChild(parent);
+      body.appendChild(main);
+      const res = await func(main, 'foo');
+      assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
+      assert.strictEqual(browser.search.search.withArgs({
+        query: 'foo',
+        tabId: 3
       }).callCount, j + 1, 'called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
@@ -1947,42 +2048,12 @@ describe('dnd', () => {
       assert.throws(() => func());
     });
 
-    it('should get null', () => {
+    it('should get undefined', () => {
       const evt = {
-        type: 'click'
-      };
-      const res = func(evt);
-      assert.isNull(res, 'result');
-    });
-
-    it('should not call function', async () => {
-      const i = browser.tabs.create.callCount;
-      const j = browser.tabs.move.callCount;
-      const k = browser.tabs.update.callCount;
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
-        id: 1,
-        incognito: false
-      });
-      const portId = `${SIDEBAR}_1`;
-      const port = mockPort({
-        name: portId
-      });
-      port.postMessage.resolves({});
-      mjs.ports.set(portId, port);
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      body.appendChild(elm);
-      const evt = {
-        currentTarget: elm,
         type: 'foo'
       };
-      const res = await func(evt);
-      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
-      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
-      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      const res = func(evt);
+      assert.isUndefined(res, 'result');
     });
 
     it('should not call function', async () => {
@@ -2002,8 +2073,18 @@ describe('dnd', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
+        dataTransfer: {
+          getData
+        },
         type: 'drop'
       };
       const res = await func(evt);
@@ -2036,8 +2117,18 @@ describe('dnd', () => {
       elm.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
+        dataTransfer: {
+          getData
+        },
         type: 'drop'
       };
       const res = await func(evt);
@@ -2076,7 +2167,11 @@ describe('dnd', () => {
       const getData = sinon.stub();
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
@@ -2122,12 +2217,14 @@ describe('dnd', () => {
       getData.withArgs(MIME_URI).returns('https://example.com');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
         },
-        preventDefault,
         type: 'drop'
       };
       const res = await func(evt);
@@ -2172,12 +2269,14 @@ describe('dnd', () => {
         .returns('https://example.com\n# comment\nhttps://www.example.com');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
         },
-        preventDefault,
         type: 'drop'
       };
       const res = await func(evt);
@@ -2191,7 +2290,7 @@ describe('dnd', () => {
       assert.deepEqual(res, [{}], 'result');
     });
 
-    it('should not call function', async () => {
+    it('should call function', async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
       const k = browser.tabs.update.callCount;
@@ -2220,12 +2319,14 @@ describe('dnd', () => {
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns(JSON.stringify({}));
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
         },
-        preventDefault,
         type: 'drop'
       };
       const res = await func(evt);
@@ -2270,12 +2371,14 @@ describe('dnd', () => {
         foo: 'bar'
       }));
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
         },
-        preventDefault,
         shiftKey: true,
         type: 'drop'
       };
@@ -2325,12 +2428,14 @@ describe('dnd', () => {
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
         },
-        preventDefault,
         type: 'drop'
       };
       const res = await func(evt);
@@ -2384,12 +2489,132 @@ describe('dnd', () => {
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
       const evt = {
+        preventDefault,
+        stopPropagation,
         currentTarget: elm,
         dataTransfer: {
           getData
         },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
+      assert.strictEqual(browser.search.search.withArgs({
+        query: 'foo',
+        tabId: 2
+      }).callCount, j + 1, 'called');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isTrue(preventDefault.calledOnce, 'called');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: '1'
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      main.id = SIDEBAR_MAIN;
+      main.appendChild(parent);
+      body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI)
+        .returns('https://example.com\n# comment\nhttps://www.example.com');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
         preventDefault,
+        stopPropagation,
+        currentTarget: main,
+        dataTransfer: {
+          getData
+        },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isTrue(preventDefault.calledOnce, 'called');
+      assert.isTrue(stopPropagation.calledOnce, 'called');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.search.search.withArgs({
+        query: 'foo',
+        tabId: 1
+      }).callCount;
+      browser.tabs.create.resolves({
+        id: 2
+      });
+      browser.search.search.withArgs({
+        query: 'foo',
+        tabId: 2
+      }).resolves(undefined);
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      main.id = SIDEBAR_MAIN;
+      main.appendChild(parent);
+      body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: main,
+        dataTransfer: {
+          getData
+        },
         type: 'drop'
       };
       const res = await func(evt);
@@ -3067,9 +3292,9 @@ describe('dnd', () => {
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.strictEqual(preventDefault.callCount, i, 'called');
-      assert.strictEqual(stopPropagation.callCount, j, 'not called');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
   });
 
