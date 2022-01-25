@@ -2002,6 +2002,7 @@ describe('main', () => {
     });
 
     it('should not set class', async () => {
+      const i = browser.tabs.get.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -2032,6 +2033,7 @@ describe('main', () => {
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
       await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
@@ -2043,6 +2045,7 @@ describe('main', () => {
     });
 
     it('should not set class', async () => {
+      const i = browser.tabs.get.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -2073,6 +2076,7 @@ describe('main', () => {
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
       await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
@@ -2084,6 +2088,7 @@ describe('main', () => {
     });
 
     it('should not set class', async () => {
+      const i = browser.tabs.get.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -2114,6 +2119,7 @@ describe('main', () => {
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
       await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
@@ -2125,6 +2131,7 @@ describe('main', () => {
     });
 
     it('should not set class', async () => {
+      const i = browser.tabs.get.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -2155,6 +2162,7 @@ describe('main', () => {
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
       await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
       assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
@@ -2166,6 +2174,7 @@ describe('main', () => {
     });
 
     it('should set class', async () => {
+      const i = browser.tabs.get.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -2177,6 +2186,7 @@ describe('main', () => {
         tabId: 1,
         windowId: 1
       };
+      browser.tabs.get.withArgs(1).resolves({});
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
@@ -2196,6 +2206,8 @@ describe('main', () => {
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
       await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
+      assert.strictEqual(elm.dataset.tab, '{}', 'dataset');
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
       assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
       assert.isTrue(elm.classList.contains(ACTIVE), 'add class');
@@ -2207,6 +2219,7 @@ describe('main', () => {
     });
 
     it('should set class', async () => {
+      const i = browser.tabs.get.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const heading = document.createElement('h1');
@@ -2218,6 +2231,7 @@ describe('main', () => {
         tabId: 1,
         windowId: 1
       };
+      browser.tabs.get.withArgs(1).resolves({});
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
@@ -2238,6 +2252,8 @@ describe('main', () => {
       body.appendChild(parent2);
       mjs.sidebar.windowId = 1;
       await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
+      assert.strictEqual(elm.dataset.tab, '{}', 'dataset');
       assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
       assert.isTrue(heading.classList.contains(ACTIVE), 'add class');
       assert.isTrue(elm.classList.contains(ACTIVE), 'add class');
@@ -2539,6 +2555,7 @@ describe('main', () => {
           muted: false
         }
       };
+      browser.tabs.get.withArgs(1).resolves(tabsTab);
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
@@ -5713,6 +5730,7 @@ describe('main', () => {
         status: 'loading'
       };
       const tabsTab = {
+        active: true,
         discarded: false,
         id: 1,
         mutedInfo: {
@@ -5755,6 +5773,7 @@ describe('main', () => {
         status: 'complete'
       };
       const tabsTab = {
+        active: true,
         discarded: false,
         id: 1,
         mutedInfo: {
@@ -5771,6 +5790,7 @@ describe('main', () => {
         active: true,
         windowType: 'normal'
       }).resolves([tabsTab]);
+      browser.tabs.get.withArgs(1).resolves(tabsTab);
       const res = await func(1, info, tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');

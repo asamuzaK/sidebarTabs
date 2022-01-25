@@ -519,6 +519,7 @@ export const handleActivatedTab = async info => {
       const items = document.querySelectorAll(
         `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
       );
+      const tabsTab = await getTab(tabId);
       for (const item of items) {
         const {
           classList: oldClass, parentNode: oldParent
@@ -534,6 +535,7 @@ export const handleActivatedTab = async info => {
         newHeading.classList.add(ACTIVE);
       newClass.add(ACTIVE);
       newClass.add(HIGHLIGHTED);
+      tab.dataset.tab = JSON.stringify(tabsTab);
       sidebar.firstSelectedTab = tab;
     }
   }
