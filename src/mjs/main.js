@@ -2224,6 +2224,7 @@ export const setMain = async () => {
   main.addEventListener('dblclick', handleCreateNewTab);
   main.addEventListener('wheel', handleWheelEvt);
   main.addEventListener('dragover', handleDragOver);
+  main.addEventListener('drop', handleDrop);
   newTab.addEventListener('click', handleCreateNewTab);
 };
 
