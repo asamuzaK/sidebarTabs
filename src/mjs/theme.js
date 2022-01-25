@@ -10,8 +10,9 @@ import {
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
 import {
-  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_THEME_CUSTOM,
-  CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM, COLOR_SCHEME_DARK,
+  CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
+  CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
+  COLOR_SCHEME_DARK,
   CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
   CSS_VAR_BG_FIELD_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
@@ -32,6 +33,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED,
+  NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
@@ -858,6 +860,38 @@ export const setTabGroupColorBarWidth = async narrow => {
   }
 };
 
+/* new tab */
+/**
+ * get new tab separator
+ *
+ * @returns {boolean} - result
+ */
+export const getNewTabSeparator = async () => {
+  const data = await getStorage(NEW_TAB_SEPARATOR_SHOW);
+  let show;
+  if (isObjectNotEmpty(data)) {
+    const { checked } = data[NEW_TAB_SEPARATOR_SHOW];
+    show = checked;
+  }
+  return !!show;
+};
+
+/**
+ * set new tab separator
+ *
+ * @param {boolean} show - show separator
+ * @returns {void}
+ */
+export const setNewTabSeparator = async show => {
+  const elm = document.querySelector(`#${NEW_TAB} > .${TAB}.${NEW_TAB}`);
+  const { classList } = elm;
+  if (show) {
+    classList.add(CLASS_SEPARATOR_SHOW);
+  } else {
+    classList.remove(CLASS_SEPARATOR_SHOW);
+  }
+};
+
 /**
  * apply CSS
  *
@@ -879,5 +913,6 @@ export const setSidebarTheme = async () => Promise.all([
   applyTheme(),
   getTabHeight().then(setTabHeight),
   getScrollbarWidth().then(setScrollbarWidth),
-  getTabGroupColorBarWidth().then(setTabGroupColorBarWidth)
+  getTabGroupColorBarWidth().then(setTabGroupColorBarWidth),
+  getNewTabSeparator().then(setNewTabSeparator)
 ]).then(applyCss);

@@ -438,7 +438,7 @@ main {
   z-index: 6;
 }
 
-.tab.newtab {
+.tab.newtab.show-separator {
   border-top: 1px solid var(--background-hover-shadow);
 }
 
