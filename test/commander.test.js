@@ -301,6 +301,7 @@ describe('copy library files and save package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        type: 'module',
         files: [
           {
             file: 'foo',
@@ -324,6 +325,7 @@ describe('copy library files and save package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        type: 'module',
         files: [
           {
             file: 'LICENSE',
@@ -355,6 +357,7 @@ describe('copy library files and save package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        type: 'module',
         files: [
           {
             file: 'LICENSE',
@@ -388,6 +391,7 @@ describe('copy library files and save package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        type: 'module',
         files: [
           {
             file: 'LICENSE',

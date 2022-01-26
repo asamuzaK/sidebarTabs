@@ -83,6 +83,7 @@ export const copyLibraryFiles = async (lib, info) => {
   const {
     name: moduleName,
     origin: originUrl,
+    type,
     files
   } = value;
   const libPath = path.resolve(DIR_CWD, PATH_LIB, key);
@@ -122,7 +123,7 @@ export const copyLibraryFiles = async (lib, info) => {
     author,
     license,
     homepage,
-    type: 'module',
+    type,
     version,
     origins
   }, null, INDENT);
@@ -146,6 +147,7 @@ export const includeLibraries = async (cmdOpts = {}) => {
     tldts: {
       name: 'tldts-experimental',
       origin: 'https://unpkg.com/tldts-experimental',
+      type: 'module',
       files: [
         {
           file: 'LICENSE',
