@@ -386,7 +386,7 @@ export const handleDrop = evt => {
   const dropTarget = getSidebarTab(currentTarget);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
   const uriList = dataTransfer.getData(MIME_URI).split('\n')
-     .filter(i => i && !i.startsWith('#')).reverse();
+    .filter(i => i && !i.startsWith('#')).reverse();
   const data = dataTransfer.getData(MIME_PLAIN);
   if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
     // dropped uri list
