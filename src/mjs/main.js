@@ -77,7 +77,7 @@ import {
   TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-  TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL,
+  TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
@@ -97,6 +97,7 @@ const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
 export const sidebar = {
+  alwaysSwitchTabByScrolling: false,
   closeTabsByDoubleClick: false,
   context: null,
   contextualIds: null,
@@ -136,16 +137,20 @@ export const setSidebar = async () => {
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_NEW_TAB_AT_END,
     TAB_SKIP_COLLAPSED,
-    TAB_SWITCH_SCROLL
+    TAB_SWITCH_SCROLL,
+    TAB_SWITCH_SCROLL_ALWAYS
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
     const {
-      closeTabsByDoubleClick, enableTabGroup, invertScrollDirection,
-      readBrowserSettings, showNewTabSeparator, skipCollapsed,
-      switchTabByScrolling, tabGroupOnExpandCollapseOther,
+      alwaysSwitchTabByScrolling, closeTabsByDoubleClick, enableTabGroup,
+      invertScrollDirection, readBrowserSettings, showNewTabSeparator,
+      skipCollapsed, switchTabByScrolling, tabGroupOnExpandCollapseOther,
       tabGroupPutNewTabAtTheEnd
     } = store;
+    sidebar.alwaysSwitchTabByScrolling = alwaysSwitchTabByScrolling
+      ? !!alwaysSwitchTabByScrolling.checked
+      : false;
     sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
       ? !!closeTabsByDoubleClick.checked
       : false;
@@ -174,6 +179,7 @@ export const setSidebar = async () => {
       sidebar.enableTabGroup = true;
     }
   } else {
+    sidebar.alwaysSwitchTabByScrolling = false;
     sidebar.closeTabsByDoubleClick = false;
     sidebar.enableTabGroup = true;
     sidebar.invertScrollDirection = false;
@@ -1916,13 +1922,17 @@ export const handleContextmenuEvt = evt => {
 export const handleWheelEvt = evt => {
   const { deltaY } = evt;
   const {
-    invertScrollDirection, skipCollapsed, switchTabByScrolling, windowId
+    alwaysSwitchTabByScrolling, invertScrollDirection, skipCollapsed,
+    switchTabByScrolling, windowId
   } = sidebar;
   const main = document.getElementById(SIDEBAR_MAIN);
+  const enableSwitchTab = main && switchTabByScrolling && (
+    main.scrollHeight === main.clientHeight || alwaysSwitchTabByScrolling
+  );
   let func;
-  if (switchTabByScrolling && Number.isFinite(deltaY) && deltaY !== 0 &&
-      main && main.scrollHeight === main.clientHeight) {
+  if (enableSwitchTab && Number.isFinite(deltaY) && deltaY !== 0) {
     evt.preventDefault();
+    alwaysSwitchTabByScrolling && evt.stopPropagation();
     func = switchTab({
       skipCollapsed,
       windowId,
