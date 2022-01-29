@@ -427,6 +427,12 @@
       }
     }
   },
+  "optionsAlwaysSwitchTabByScrolling": {
+    "message": "Always switch tab with mouse wheel"
+  },
+  "optionsAlwaysSwitchTabByScrollingDetail": {
+    "message": "Always switch to the next / previous tab, regardless of whether the scroll bar is visible or not."
+  },
   "optionsAutoLabel": {
     "message": "Auto"
   },

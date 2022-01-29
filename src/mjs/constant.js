@@ -157,6 +157,7 @@ export const TAB_RELOAD = 'reloadTab';
 export const TAB_REOPEN_CONTAINER = 'reopenTabInContainer';
 export const TAB_SKIP_COLLAPSED = 'skipCollapsed';
 export const TAB_SWITCH_SCROLL = 'switchTabByScrolling';
+export const TAB_SWITCH_SCROLL_ALWAYS = 'alwaysSwitchTabByScrolling';
 export const TABS_BOOKMARK = 'bookmarkTabs';
 export const TABS_CLOSE = 'closeTabs';
 export const TABS_CLOSE_MULTIPLE = 'closeMultipleTabs';

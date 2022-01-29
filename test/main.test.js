@@ -39,7 +39,7 @@ import {
   TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_NEW,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TAB_SKIP_COLLAPSED,
-  TAB_SWITCH_SCROLL,
+  TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
@@ -88,6 +88,7 @@ describe('main', () => {
     for (const key of globalKeys) {
       global[key] = window[key];
     }
+    mjs.sidebar.alwaysSwitchTabByScrolling = false;
     mjs.sidebar.closeTabsByDoubleClick = false;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
@@ -116,6 +117,7 @@ describe('main', () => {
       delete global[key];
     }
     browser._sandbox.reset();
+    mjs.sidebar.alwaysSwitchTabByScrolling = false;
     mjs.sidebar.closeTabsByDoubleClick = false;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
@@ -150,7 +152,8 @@ describe('main', () => {
       TAB_GROUP_EXPAND_COLLAPSE_OTHER,
       TAB_GROUP_NEW_TAB_AT_END,
       TAB_SKIP_COLLAPSED,
-      TAB_SWITCH_SCROLL
+      TAB_SWITCH_SCROLL,
+      TAB_SWITCH_SCROLL_ALWAYS
     ];
 
     it('should set value', async () => {
@@ -170,6 +173,9 @@ describe('main', () => {
         incognito: true
       });
       getStorage.resolves({
+        alwaysSwitchTabByScrolling: {
+          checked: true
+        },
         closeTabsByDoubleClick: {
           checked: true
         },
@@ -202,6 +208,7 @@ describe('main', () => {
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.alwaysSwitchTabByScrolling, 'alwaysSwitchTab');
       assert.isTrue(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isFalse(sidebar.enableTabGroup, 'enableTabGroup');
       assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
@@ -469,6 +476,46 @@ describe('main', () => {
         incognito: true
       });
       getStorage.resolves({
+        alwaysSwitchTabByScrolling: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
+      assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
+      assert.isTrue(sidebar.alwaysSwitchTabByScrolling, 'alwaysSwitchTab');
+      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
+      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
+      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+        'tabGroupCollapseOther');
+      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+        'tabGroupPutNewTabAtTheEnd');
+      assert.isTrue(sidebar.incognito, 'incognito');
+      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'mac'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: true
+      });
+      getStorage.resolves({
         invertScrollDirection: {
           checked: true
         }
@@ -479,7 +526,6 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
       assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
-      assert.isFalse(sidebar.switchTabByScrolling, 'switchTab');
       assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
       assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
@@ -10359,10 +10405,12 @@ describe('main', () => {
       main.clientHeight = 120;
       const evt = {
         deltaY: 3,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = func(evt);
       assert.isTrue(evt.preventDefault.notCalled, 'not called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -10375,10 +10423,12 @@ describe('main', () => {
       main.clientHeight = 120;
       const evt = {
         deltaY: 3,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = func(evt);
       assert.isTrue(evt.preventDefault.notCalled, 'not called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -10391,10 +10441,12 @@ describe('main', () => {
       main.clientHeight = 120;
       mjs.sidebar.switchTabByScrolling = true;
       const evt = {
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = await func(evt);
       assert.isTrue(evt.preventDefault.notCalled, 'not called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -10408,10 +10460,12 @@ describe('main', () => {
       mjs.sidebar.switchTabByScrolling = true;
       const evt = {
         deltaY: 0,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = await func(evt);
-      assert.isFalse(evt.preventDefault.called, 'not called');
+      assert.isTrue(evt.preventDefault.notCalled, 'not called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -10439,11 +10493,13 @@ describe('main', () => {
       browser.tabs.query.resolves([{ id: 2 }]);
       const evt = {
         deltaY: 3,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
       assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isTrue(browser.tabs.query.calledOnce, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -10473,11 +10529,13 @@ describe('main', () => {
       browser.tabs.query.resolves([{ id: 2 }]);
       const evt = {
         deltaY: 3,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
       assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isTrue(browser.tabs.query.calledOnce, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -10506,11 +10564,13 @@ describe('main', () => {
       browser.tabs.query.resolves([{ id: 2 }]);
       const evt = {
         deltaY: -3.1,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
       assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
       assert.isTrue(browser.tabs.query.calledOnce, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -10540,11 +10600,121 @@ describe('main', () => {
       browser.tabs.query.resolves([{ id: 2 }]);
       const evt = {
         deltaY: -3.1,
-        preventDefault: sinon.stub()
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
       assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
+      assert.isTrue(browser.tabs.query.calledOnce, 'called');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(1, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const main = document.createElement('main');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 200;
+      main.clientHeight = 120;
+      mjs.sidebar.alwaysSwitchTabByScrolling = false;
+      mjs.sidebar.switchTabByScrolling = true;
+      browser.tabs.query.resolves([{ id: 2 }]);
+      const evt = {
+        deltaY: -3.1,
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
+      };
+      const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i, 'not called');
+      assert.isTrue(evt.preventDefault.notCalled, 'not called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
+      assert.isTrue(browser.tabs.query.notCalled, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(1, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const main = document.createElement('main');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 200;
+      main.clientHeight = 120;
+      mjs.sidebar.alwaysSwitchTabByScrolling = true;
+      mjs.sidebar.switchTabByScrolling = false;
+      browser.tabs.query.resolves([{ id: 2 }]);
+      const evt = {
+        deltaY: -3.1,
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
+      };
+      const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i, 'not called');
+      assert.isTrue(evt.preventDefault.notCalled, 'not called');
+      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
+      assert.isTrue(browser.tabs.query.notCalled, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const stubActivate = browser.tabs.update.withArgs(1, {
+        active: true
+      });
+      const i = stubActivate.callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const main = document.createElement('main');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      elm3.dataset.tabId = '3';
+      main.appendChild(elm);
+      main.appendChild(elm2);
+      main.appendChild(elm3);
+      body.appendChild(main);
+      main.id = SIDEBAR_MAIN;
+      main.scrollHeight = 200;
+      main.clientHeight = 120;
+      mjs.sidebar.alwaysSwitchTabByScrolling = true;
+      mjs.sidebar.switchTabByScrolling = true;
+      browser.tabs.query.resolves([{ id: 2 }]);
+      const evt = {
+        deltaY: -3.1,
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub()
+      };
+      const res = await func(evt);
+      assert.strictEqual(stubActivate.callCount, i + 1, 'called');
+      assert.isTrue(evt.preventDefault.calledOnce, 'called');
+      assert.isTrue(evt.stopPropagation.calledOnce, 'called');
       assert.isTrue(browser.tabs.query.calledOnce, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -11133,6 +11303,32 @@ describe('main', () => {
       mjs.sidebar.tabGroupPutNewTabAtTheEnd = true;
       const res = await func(TAB_GROUP_NEW_TAB_AT_END, { checked: false });
       assert.isFalse(mjs.sidebar.tabGroupPutNewTabAtTheEnd, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(TAB_SWITCH_SCROLL, { checked: true });
+      assert.isTrue(mjs.sidebar.switchTabByScrolling, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      mjs.sidebar.switchTabByScrolling = true;
+      const res = await func(TAB_SWITCH_SCROLL, { checked: false });
+      assert.isFalse(mjs.sidebar.switchTabByScrolling, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(TAB_SWITCH_SCROLL_ALWAYS, { checked: true });
+      assert.isTrue(mjs.sidebar.alwaysSwitchTabByScrolling, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      mjs.sidebar.alwaysSwitchTabByScrolling = true;
+      const res = await func(TAB_SWITCH_SCROLL_ALWAYS, { checked: false });
+      assert.isFalse(mjs.sidebar.alwaysSwitchTabByScrolling, 'set');
       assert.deepEqual(res, [], 'result');
     });
 
