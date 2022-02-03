@@ -5,8 +5,8 @@
 /* api */
 import { getType, isString } from './common.js';
 import { createFile, fetchText, isFile, readFile } from './file-util.js';
+import { program as commander } from 'commander';
 import { promisify } from 'util';
-import commander from 'commander';
 import copyfiles from 'copyfiles';
 import path from 'path';
 import process from 'process';
