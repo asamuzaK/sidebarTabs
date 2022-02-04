@@ -604,61 +604,46 @@ describe('browser-tabs', () => {
 
     it('should call function', async () => {
       browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        url: 'https://example.com'
+        active: true,
+        index: 0
       });
-      browser.tabs.create.withArgs({
-        url: 'https://example.com',
-        windowId: 1,
-        index: 1,
-        openerTabId: 1
+      browser.tabs.duplicate.withArgs(1, {
+        active: true,
+        index: 1
       }).resolves({});
       const i = browser.tabs.get.withArgs(1).callCount;
-      const j = browser.tabs.create.withArgs({
-        url: 'https://example.com',
-        windowId: 1,
-        index: 1,
-        openerTabId: 1
+      const j = browser.tabs.duplicate.withArgs(1, {
+        active: true,
+        index: 1
       }).callCount;
-      const res = await func(1, 1);
+      const res = await func(1);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called get');
-      assert.strictEqual(browser.tabs.create.withArgs({
-        url: 'https://example.com',
-        windowId: 1,
-        index: 1,
-        openerTabId: 1
-      }).callCount, j + 1, 'called create');
+      assert.strictEqual(browser.tabs.duplicate.withArgs(1, {
+        active: true,
+        index: 1
+      }).callCount, j + 1, 'called duplicate');
       assert.deepEqual(res, {}, 'result');
     });
 
     it('should call function', async () => {
       browser.tabs.get.withArgs(1).resolves({
-        index: 0,
-        url: 'https://example.com'
+        active: false,
+        index: 0
       });
-      browser.tabs.create.withArgs({
-        url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        index: 1,
-        openerTabId: 1
+      browser.tabs.duplicate.withArgs(1, {
+        active: true
       }).resolves({});
       const i = browser.tabs.get.withArgs(1).callCount;
-      const j = browser.tabs.create.withArgs({
-        url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        index: 1,
-        openerTabId: 1
+      const j = browser.tabs.duplicate.withArgs(1, {
+        active: true
       }).callCount;
-      const res = await func(1);
+      const res = await func(1, 1);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called get');
-      assert.strictEqual(browser.tabs.create.withArgs({
-        url: 'https://example.com',
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        index: 1,
-        openerTabId: 1
-      }).callCount, j + 1, 'called create');
+      assert.strictEqual(browser.tabs.duplicate.withArgs(1, {
+        active: true
+      }).callCount, j + 1, 'called duplicate');
       assert.deepEqual(res, {}, 'result');
     });
   });

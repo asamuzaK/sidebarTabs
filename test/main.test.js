@@ -6984,6 +6984,7 @@ describe('main', () => {
       sect.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(ACTIVE);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(HIGHLIGHTED);
@@ -6996,16 +6997,22 @@ describe('main', () => {
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
       mjs.sidebar.windowId = 1;
-      browser.tabs.get.withArgs(1).resolves({});
-      browser.tabs.get.withArgs(2).resolves({});
-      browser.tabs.create.resolves({});
+      browser.tabs.get.withArgs(1).resolves({
+        active: true,
+        index: 0
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        active: false,
+        index: 1
+      });
+      browser.tabs.duplicate.resolves({});
       const info = {
         menuItemId: TABS_DUPE
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 3, 'called get');
-      assert.strictEqual(browser.tabs.create.callCount, j + 2,
-        'called create');
+      assert.strictEqual(browser.tabs.duplicate.callCount, j + 2,
+        'called duplicate');
       assert.deepEqual(res, [[{}, {}]], 'result');
     });
 
@@ -7021,6 +7028,7 @@ describe('main', () => {
       pinned.id = PINNED;
       sect.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
+      elm.classList.add(ACTIVE);
       elm.classList.add(HIGHLIGHTED);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
@@ -7034,16 +7042,19 @@ describe('main', () => {
       body.appendChild(newTab);
       mjs.sidebar.context = elm;
       mjs.sidebar.windowId = 1;
-      browser.tabs.get.withArgs(1).resolves({});
+      browser.tabs.get.withArgs(1).resolves({
+        active: true,
+        index: 0
+      });
       browser.tabs.get.withArgs(2).resolves({});
-      browser.tabs.create.resolves({});
+      browser.tabs.duplicate.resolves({});
       const info = {
         menuItemId: TAB_DUPE
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called get');
-      assert.strictEqual(browser.tabs.create.callCount, j + 1,
-        'called create');
+      assert.strictEqual(browser.tabs.duplicate.callCount, j + 1,
+        'called duplicate');
       assert.deepEqual(res, [[{}]], 'result');
     });
 

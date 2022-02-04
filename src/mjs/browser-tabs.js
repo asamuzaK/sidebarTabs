@@ -5,8 +5,9 @@
 /* shared */
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
-  createNewWindow, createTab, getActiveTab, getNewTabPositionValue, getTab,
-  highlightTab, moveTab, reloadTab, removeTab, updateTab
+  createNewWindow, createTab, duplicateTab, getActiveTab,
+  getNewTabPositionValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
+  updateTab
 } from './browser.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
@@ -197,26 +198,26 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
  * duplicate tab
  *
  * @param {number} tabId - tab ID
- * @param {number} windowId - window ID
  * @returns {?Function} - createTab()
  */
-export const dupeTab = async (tabId, windowId) => {
+export const dupeTab = async tabId => {
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
   const tabsTab = await getTab(tabId);
   let func;
   if (tabsTab) {
-    const { index, url } = tabsTab;
-    if (!Number.isInteger(windowId)) {
-      windowId = windows.WINDOW_ID_CURRENT;
+    const { active, index } = tabsTab;
+    if (active) {
+      func = duplicateTab(tabId, {
+        active,
+        index: index + 1
+      });
+    } else {
+      func = duplicateTab(tabId, {
+        active: true
+      });
     }
-    func = createTab({
-      url,
-      windowId,
-      index: index + 1,
-      openerTabId: tabId
-    });
   }
   return func || null;
 };
@@ -225,10 +226,9 @@ export const dupeTab = async (tabId, windowId) => {
  * duplicate tabs
  *
  * @param {Array} nodes - array of node
- * @param {number} windowId - window ID
  * @returns {Promise.<Array>} - results of each handler
  */
-export const dupeTabs = async (nodes, windowId) => {
+export const dupeTabs = async nodes => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
@@ -236,7 +236,7 @@ export const dupeTabs = async (nodes, windowId) => {
   for (const item of nodes) {
     const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {
-      func.push(dupeTab(itemId, windowId));
+      func.push(dupeTab(itemId));
     }
   }
   return Promise.all(func);
