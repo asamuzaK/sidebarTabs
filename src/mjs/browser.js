@@ -689,6 +689,21 @@ export const createTab = async (opt = {}) => {
 };
 
 /**
+ * duplicate tab
+ *
+ * @param {number} tabId - tab ID
+ * @param {object} opt - options
+ * @returns {object} - tabs.Tab
+ */
+export const duplicateTab = async (tabId, opt) => {
+  if (!Number.isInteger(tabId)) {
+    throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
+  }
+  const tab = await tabs.duplicate(tabId, isObjectNotEmpty(opt) ? opt : null);
+  return tab;
+};
+
+/**
  * query tabs
  *
  * @param {object} opt - options

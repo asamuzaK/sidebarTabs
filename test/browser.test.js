@@ -1385,6 +1385,32 @@ describe('browser', () => {
     });
   });
 
+  describe('duplicate tab', () => {
+    const func = mjs.duplicateTab;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.');
+      });
+    });
+
+    it('should get object', async () => {
+      browser.tabs.duplicate.withArgs(1, null).resolves({});
+      const res = await func(1);
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should get object', async () => {
+      const opt = {
+        active: true
+      };
+      browser.tabs.duplicate.withArgs(1, opt).resolves({});
+      const res = await func(1, opt);
+      assert.deepEqual(res, {}, 'result');
+    });
+  });
+
   describe('query tabs', async () => {
     const func = mjs.queryTabs;
 
