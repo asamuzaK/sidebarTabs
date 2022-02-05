@@ -1028,7 +1028,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
       if (tab) {
         const tabIndex = getSidebarTabIndex(tab);
         if (tabIndex !== index) {
-          console.log(`${tabId}: from ${tabIndex} to ${index}`);
           func.push(handleMovedTab(tabId, {
             windowId,
             fromIndex: tabIndex,
