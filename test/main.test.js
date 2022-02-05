@@ -3321,6 +3321,62 @@ describe('main', () => {
 
     it('should create element', async () => {
       const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 0,
+        openerTabId: 3,
+        pinned: false,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const parent = document.createElement('section');
+      const child = document.createElement('div');
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      const child2 = document.createElement('div');
+      const body = document.querySelector('body');
+      const newTab = document.getElementById(NEW_TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_COLLAPSED);
+      span.appendChild(img);
+      child.classList.add(TAB);
+      child.dataset.tabId = '2';
+      child.appendChild(span);
+      child2.classList.add(TAB);
+      child2.dataset.tabId = '3';
+      parent.appendChild(child);
+      parent.appendChild(child2);
+      body.insertBefore(parent, newTab);
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(3).resolves({
+        index: 1
+      });
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.parentNode.nextElementSibling === parent, 'parent');
+      assert.isTrue(parent.classList.contains(CLASS_TAB_COLLAPSED),
+        'collapsed');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
       const j = browser.tabs.move.callCount;
       const tabsTab = {
         active: false,
@@ -3505,7 +3561,7 @@ describe('main', () => {
         cookieStoreId: COOKIE_STORE_DEFAULT,
         id: 1,
         index: 2,
-        openerTabId: 2,
+        openerTabId: 3,
         pinned: false,
         status: 'complete',
         title: 'foo',
@@ -5573,6 +5629,7 @@ describe('main', () => {
       };
       const tabsTab = {
         discarded: false,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5616,6 +5673,7 @@ describe('main', () => {
       };
       const tabsTab = {
         discarded: true,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5655,6 +5713,7 @@ describe('main', () => {
       };
       const tabsTab = {
         discarded: false,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5690,6 +5749,7 @@ describe('main', () => {
       };
       const tabsTab = {
         discarded: true,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5728,6 +5788,7 @@ describe('main', () => {
       };
       const tabsTab = {
         discarded: false,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5768,6 +5829,7 @@ describe('main', () => {
       const tabsTab = {
         discarded: false,
         id: 1,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5800,6 +5862,7 @@ describe('main', () => {
       const tabsTab = {
         discarded: false,
         id: 1,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5834,6 +5897,7 @@ describe('main', () => {
         active: true,
         discarded: false,
         id: 1,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5881,6 +5945,7 @@ describe('main', () => {
         active: true,
         discarded: false,
         id: 1,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5917,6 +5982,71 @@ describe('main', () => {
     });
 
     it('should update, call function', async () => {
+      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const i = browser.tabs.query.callCount;
+      const info = {
+        status: 'complete'
+      };
+      const tabsTab = {
+        active: true,
+        discarded: false,
+        id: 1,
+        index: 1,
+        mutedInfo: {
+          muted: false
+        },
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1
+      };
+      mjs.sidebar.windowId = 1;
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).resolves([tabsTab]);
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        highlighted: true,
+        windowType: 'normal'
+      }).resolves([1]);
+      browser.tabs.get.withArgs(1).resolves(tabsTab);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const elm = document.querySelector('[data-tab-id="1"]');
+      elm.getBoundingClientRect.returns({
+        top: 100,
+        bottom: 200
+      });
+      elm.dataset.tab = JSON.stringify(tabsTab);
+      const tab = document.createElement('div');
+      tab.classList.add('tab');
+      tab.dataset.tabId = '2';
+      tab.dataset.tab = '';
+      elm.parentNode.appendChild(tab);
+      elm.parentNode.classList.add(CLASS_TAB_GROUP);
+      const res = await func(1, info, tabsTab);
+      assert.isTrue(elm.classList.contains(ACTIVE), 'class');
+      assert.strictEqual(browser.tabs.query.callCount, i + 2, 'called');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
+      assert.isTrue(stubWin.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledTwice, 'called');
+      assert.deepEqual(res, [{}, undefined, {}], 'result');
+    });
+
+    it('should update, call function', async () => {
       const stubCurrentWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
@@ -5933,6 +6063,7 @@ describe('main', () => {
       const tabsTab = {
         discarded: false,
         id: 1,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -5980,6 +6111,7 @@ describe('main', () => {
       const tabsTab = {
         discarded: false,
         id: 1,
+        index: 0,
         mutedInfo: {
           muted: false
         },
@@ -6013,6 +6145,7 @@ describe('main', () => {
       const tabsTab = {
         discarded: false,
         id: 1,
+        index: 0,
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
@@ -6044,6 +6177,7 @@ describe('main', () => {
       const tabsTab = {
         discarded: false,
         id: 1,
+        index: 0,
         status: 'complete',
         title: 'foo',
         url: 'https://example.com',
