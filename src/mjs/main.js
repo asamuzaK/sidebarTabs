@@ -869,6 +869,7 @@ export const handleMovedTab = async (tabId, info) => {
     const { index, pinned } = tabsTab;
     const { group, restore } = tab.dataset;
     let setSession;
+    tab.dataset.tab = JSON.stringify(tabsTab);
     if (tabIndex !== index) {
       const { pinnedTabsWaitingToMove, tabsWaitingToMove } = sidebar;
       if (toIndex !== index) {

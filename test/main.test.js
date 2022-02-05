@@ -4309,6 +4309,10 @@ describe('main', () => {
         windowId: 1
       });
       assert.strictEqual(elm.dataset.restore, '', 'restore');
+      assert.deepEqual(elm.dataset.tab, JSON.stringify({
+        index: 0,
+        pinned: false
+      }), 'tabsTab');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, {}, 'result');
@@ -4339,7 +4343,8 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({
         index: 0,
-        pinned: false
+        pinned: false,
+        url: 'https://example.com'
       });
       const res = await func(1, {
         fromIndex: 1,
@@ -4347,6 +4352,11 @@ describe('main', () => {
         windowId: 1
       });
       assert.strictEqual(elm.dataset.group, '', 'restore');
+      assert.deepEqual(elm.dataset.tab, JSON.stringify({
+        index: 0,
+        pinned: false,
+        url: 'https://example.com'
+      }), 'tabsTab');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
