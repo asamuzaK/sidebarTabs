@@ -2754,7 +2754,7 @@ describe('dnd', () => {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: true
           })),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'foo'
       };
@@ -2762,8 +2762,7 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
@@ -2795,7 +2794,7 @@ describe('dnd', () => {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: true
           })),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
@@ -2835,7 +2834,7 @@ describe('dnd', () => {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: true
           })),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
@@ -2844,6 +2843,178 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        ctrlKey: true,
+        currentTarget: elm,
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true
+          })),
+          dropEffect: 'none'
+        },
+        type: 'dragover'
+      };
+      await func(evt, {
+        isMac: false
+      });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'copy', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        altKey: true,
+        clientY: 40,
+        currentTarget: elm,
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true
+          })),
+          dropEffect: 'none'
+        },
+        type: 'dragover'
+      };
+      await func(evt, {
+        isMac: true
+      });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'copy', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 20,
+        ctrlKey: true,
+        currentTarget: elm,
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true
+          })),
+          dropEffect: 'none'
+        },
+        type: 'dragover'
+      };
+      await func(evt, {
+        isMac: false
+      });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'copy', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        altKey: true,
+        clientY: 20,
+        currentTarget: elm,
+        dataTransfer: {
+          getData: sinon.stub().returns(JSON.stringify({
+            pinned: true
+          })),
+          dropEffect: 'none'
+        },
+        type: 'dragover'
+      };
+      await func(evt, {
+        isMac: true
+      });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'copy', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
@@ -2875,7 +3046,7 @@ describe('dnd', () => {
           getData: sinon.stub().returns(JSON.stringify({
             pinned: false
           })),
-          dropEffect: 'uninitialized'
+          dropEffect: 'move'
         },
         type: 'dragover'
       };
@@ -2913,7 +3084,7 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns('pinned'),
-          dropEffect: 'uninitialized'
+          dropEffect: 'move'
         },
         type: 'dragover'
       };
@@ -2949,7 +3120,7 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns('pinned'),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
@@ -2985,7 +3156,7 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns('pinned'),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
@@ -3021,13 +3192,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -3058,13 +3228,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -3095,13 +3264,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -3134,13 +3302,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -3173,13 +3340,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -3212,13 +3378,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -3251,13 +3416,12 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'uninitialized',
-        'drop effect');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
@@ -3287,7 +3451,7 @@ describe('dnd', () => {
         currentTarget: main,
         dataTransfer: {
           getData: sinon.stub().returns(''),
-          dropEffect: 'uninitialized'
+          dropEffect: 'none'
         },
         type: 'dragover'
       };

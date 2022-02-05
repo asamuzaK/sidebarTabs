@@ -475,13 +475,15 @@ export const handleDragLeave = evt => {
  * handle dragover
  *
  * @param {!object} evt - event
+ * @param {object} opt - options
  * @returns {void}
  */
-export const handleDragOver = evt => {
-  const { clientY, currentTarget, dataTransfer, type } = evt;
+export const handleDragOver = (evt, opt = {}) => {
+  const { altKey, clientY, ctrlKey, currentTarget, dataTransfer, type } = evt;
   if (type !== 'dragover') {
     return;
   }
+  const { isMac } = opt;
   const dropTarget = getSidebarTab(currentTarget);
   const data = dataTransfer.getData(MIME_PLAIN);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
@@ -496,8 +498,17 @@ export const handleDragOver = evt => {
       } catch (e) {
         pinned = false;
       }
-      if ((isPinned && pinned) || !(isPinned || pinned)) {
-        const { bottom, top } = dropTarget.getBoundingClientRect();
+      const { bottom, top } = dropTarget.getBoundingClientRect();
+      if ((!isMac && ctrlKey) || (isMac && altKey)) {
+        if (clientY > (bottom - top) * HALF + top) {
+          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+          dropTarget.classList.remove(DROP_TARGET_BEFORE);
+        } else {
+          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+          dropTarget.classList.remove(DROP_TARGET_AFTER);
+        }
+        dataTransfer.dropEffect = 'copy';
+      } else if ((isPinned && pinned) || !(isPinned || pinned)) {
         if (clientY > (bottom - top) * HALF + top) {
           dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
           dropTarget.classList.remove(DROP_TARGET_BEFORE);
