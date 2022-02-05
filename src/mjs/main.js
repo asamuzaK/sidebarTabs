@@ -693,6 +693,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
       const openerTab = Number.isInteger(openerTabId) &&
         document.querySelector(`[data-tab-id="${openerTabId}"]`);
       if (openerTab && !openerTab.classList.contains(PINNED)) {
+        const openerTabIndex = getSidebarTabIndex(openerTab);
         const container = openerTab.parentNode;
         const {
           lastElementChild: lastChildTab,
@@ -703,6 +704,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         const { index: lastChildTabIndex } = lastChildTabsTab;
         if (tabList.length === index && nextContainer !== newTab) {
           await createSidebarTab(tab);
+        } else if (index !== openerTabIndex + 1 && !tabGroupPutNewTabAtTheEnd) {
+          await createSidebarTab(tab, insertTarget);
         } else {
           if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
             if (index < lastChildTabIndex) {
@@ -1017,10 +1020,20 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
   }
   const func = [];
   if (isObjectNotEmpty(info) && isObjectNotEmpty(tabsTab)) {
-    const { audible, discarded, mutedInfo: { muted }, windowId } = tabsTab;
+    const {
+      audible, discarded, index, mutedInfo: { muted }, windowId
+    } = tabsTab;
     if (windowId === sidebar.windowId) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (tab) {
+        const tabIndex = getSidebarTabIndex(tab);
+        if (tabIndex !== index) {
+          func.push(handleMovedTab(tabId, {
+            windowId,
+            fromIndex: tabIndex,
+            toIndex: index
+          }));
+        }
         await setTabContent(tab, tabsTab);
         if (Object.prototype.hasOwnProperty.call(info, 'audible') ||
             Object.prototype.hasOwnProperty.call(info, 'mutedInfo')) {
