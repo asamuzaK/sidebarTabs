@@ -2237,6 +2237,7 @@ describe('main', () => {
         windowId: 1
       };
       browser.tabs.get.withArgs(1).resolves({});
+      browser.tabs.query.resolves([1]);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
@@ -2283,6 +2284,7 @@ describe('main', () => {
         windowId: 1
       };
       browser.tabs.get.withArgs(1).resolves({});
+      browser.tabs.query.resolves([1]);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
@@ -2608,6 +2610,7 @@ describe('main', () => {
         }
       };
       browser.tabs.get.withArgs(1).resolves(tabsTab);
+      browser.tabs.query.resolves([1]);
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
@@ -5882,6 +5885,11 @@ describe('main', () => {
         active: true,
         windowType: 'normal'
       }).resolves([tabsTab]);
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        highlighted: true,
+        windowType: 'normal'
+      }).resolves([1]);
       browser.tabs.get.withArgs(1).resolves(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       elm.getBoundingClientRect.returns({
@@ -5891,7 +5899,7 @@ describe('main', () => {
       elm.dataset.tab = JSON.stringify(tabsTab);
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');
-      assert.strictEqual(browser.tabs.query.callCount, i + 1, 'called');
+      assert.strictEqual(browser.tabs.query.callCount, i + 2, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
       assert.isTrue(stubWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');

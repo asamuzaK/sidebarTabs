@@ -527,13 +527,20 @@ export const handleActivatedTab = async info => {
         `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
       );
       const tabsTab = await getTab(tabId);
+      const highlightedTabs = await getHighlightedTab(windowId);
+      const highlightedTabIds = [];
+      for (const item of highlightedTabs) {
+        const { id } = item;
+        highlightedTabIds.push(id);
+      }
       for (const item of items) {
         const {
           classList: oldClass, parentNode: oldParent
         } = item;
         const oldHeading = oldParent.querySelector(`.${CLASS_HEADING}`);
+        const oldTabId = item.dataset.tabId * 1;
+        !highlightedTabIds.includes(oldTabId) && oldClass.remove(HIGHLIGHTED);
         oldClass.remove(ACTIVE);
-        oldClass.remove(HIGHLIGHTED);
         oldHeading.classList.remove(ACTIVE);
         oldParent.classList.remove(ACTIVE);
       }
