@@ -838,10 +838,11 @@ describe('main', () => {
         type: 'dragstart'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
         pinned: false,
         tabIds: [1],
+        dragTabId: 1,
         dragWindowId: 1
       }, 'data');
     });

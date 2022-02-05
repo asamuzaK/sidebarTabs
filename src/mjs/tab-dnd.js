@@ -582,7 +582,9 @@ export const handleDragStart = (evt, opt = {}) => {
   const { classList } = currentTarget;
   const { isMac, windowId } = opt;
   const container = getSidebarTabContainer(currentTarget);
+  const dragTabId = getSidebarTabId(currentTarget);
   const data = {
+    dragTabId,
     dragWindowId: windowId || windows.WINDOW_ID_CURRENT,
     pinned: classList.contains(PINNED)
   };
@@ -617,7 +619,7 @@ export const handleDragStart = (evt, opt = {}) => {
       data.tabIds = [tabId];
     }
   }
-  dataTransfer.effectAllowed = 'move';
+  dataTransfer.effectAllowed = 'copyMove';
   dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
 };
 

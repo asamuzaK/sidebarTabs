@@ -3583,8 +3583,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 1,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [1],
@@ -3633,8 +3634,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 1,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [1, 2],
@@ -3686,8 +3688,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 1,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [1, 2],
@@ -3740,8 +3743,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [2]
@@ -3791,8 +3795,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 3,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: false,
         pinnedTabIds: [1],
@@ -3842,8 +3847,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [2]
@@ -3889,8 +3895,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 3,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: false,
         tabIds: [3]
@@ -3938,8 +3945,9 @@ describe('dnd', () => {
         type: 'dragstart'
       };
       await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        dragTabId: 1,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [1],
