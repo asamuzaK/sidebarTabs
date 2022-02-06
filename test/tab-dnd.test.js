@@ -2060,7 +2060,7 @@ describe('dnd', () => {
       const evt = {
         type: 'drop'
       };
-      assert.throws(() => func());
+      assert.throws(() => func(evt));
     });
 
     it('should not call function', async () => {
@@ -3911,41 +3911,39 @@ describe('dnd', () => {
   describe('handle dragstart', () => {
     const func = mjs.handleDragStart;
 
-    it('should not set value', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const setData = sinon.stub();
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          setData,
-          effectAllowed: 'uninitialized'
-        },
+    it('should throw', async () => {
+      assert.throws(() => func());
+    });
+
+    it('should get undefined', async () => {
+      const res = await func({
         type: 'foo'
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
-        'effect');
-      assert.isFalse(setData.called, 'data');
+      });
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should get empty array', async () => {
+      const res = await func({
+        type: 'dragstart'
+      });
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
       const body = document.querySelector('body');
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.classList.add(CLASS_TAB_GROUP);
       parent.classList.add(PINNED);
       parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(TAB);
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
@@ -3954,11 +3952,73 @@ describe('dnd', () => {
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const opt = {
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        currentTarget: elm,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 1,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: true,
+        pinnedTabIds: [1],
+        tabIds: []
+      }, 'data');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
@@ -3967,38 +4027,44 @@ describe('dnd', () => {
       };
       let parsedData;
       const evt = {
-        currentTarget: elm,
+        currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
           effectAllowed: 'uninitialized'
         },
-        ctrlKey: true,
         type: 'dragstart'
       };
-      await func(evt, opt);
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
-        dragTabId: 1,
+        dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
-        pinnedTabIds: [1],
-        tabIds: [3]
+        pinnedTabIds: [2],
+        tabIds: []
       }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
       const body = document.querySelector('body');
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.classList.add(CLASS_TAB_GROUP);
       parent.classList.add(PINNED);
       parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
@@ -4008,50 +4074,184 @@ describe('dnd', () => {
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
       let parsedData;
       const evt = {
-        currentTarget: elm,
+        currentTarget: elm3,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
           effectAllowed: 'uninitialized'
         },
-        ctrlKey: true,
         type: 'dragstart'
       };
-      await func(evt, opt);
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
-        dragTabId: 1,
+        dragTabId: 3,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3]
+      }, 'data');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 0
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        ctrlKey: true,
+        currentTarget: elm2,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [1, 2],
         tabIds: []
       }, 'data');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'class');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
       const body = document.querySelector('body');
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.classList.add(CLASS_TAB_GROUP);
       parent.classList.add(PINNED);
       parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
@@ -4061,54 +4261,194 @@ describe('dnd', () => {
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
       body.appendChild(parent);
       body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 2
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        ctrlKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3, 4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 1
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        ctrlKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [2],
+        tabIds: [4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 0
+      }]);
       const opt = {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
       let parsedData;
       const evt = {
-        currentTarget: elm,
+        altKey: true,
+        currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
             parsedData = JSON.parse(data);
           },
           effectAllowed: 'uninitialized'
         },
-        metaKey: true,
         type: 'dragstart'
       };
-      await func(evt, opt);
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
-        dragTabId: 1,
+        dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
         pinnedTabIds: [1, 2],
         tabIds: []
       }, 'data');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'class');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
       const body = document.querySelector('body');
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.classList.add(CLASS_TAB_GROUP);
       parent.classList.add(PINNED);
       parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
-      elm.classList.add(HIGHLIGHTED);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
@@ -4116,17 +4456,155 @@ describe('dnd', () => {
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
       body.appendChild(parent);
       body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 2
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: true
+      };
+      let parsedData;
+      const evt = {
+        altKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3, 4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 1
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: true
+      };
+      let parsedData;
+      const evt = {
+        altKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [2],
+        tabIds: [4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 0
+      }]);
       const opt = {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
       let parsedData;
       const evt = {
+        ctrlKey: true,
+        shiftKey: true,
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
@@ -4134,220 +4612,350 @@ describe('dnd', () => {
           },
           effectAllowed: 'uninitialized'
         },
-        ctrlKey: false,
         type: 'dragstart'
       };
-      await func(evt, opt);
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
         dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinned: true,
-        pinnedTabIds: [2]
-      }, 'data');
-    });
-
-    it('should set value', async () => {
-      const parent = document.createElement('div');
-      const parent2 = document.createElement('div');
-      const elm = document.createElement('p');
-      const elm2 = document.createElement('p');
-      const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(PINNED);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = '1';
-      elm2.classList.add(TAB);
-      elm2.classList.add(PINNED);
-      elm2.dataset.tabId = '2';
-      elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = '3';
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      const opt = {
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        isMac: false
-      };
-      let parsedData;
-      const evt = {
-        currentTarget: elm3,
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-          effectAllowed: 'uninitialized'
-        },
-        ctrlKey: false,
-        type: 'dragstart'
-      };
-      await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(parsedData, {
-        dragTabId: 3,
-        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: false,
-        pinnedTabIds: [1],
-        tabIds: [3]
-      }, 'data');
-    });
-
-    it('should set value', async () => {
-      const parent = document.createElement('div');
-      const parent2 = document.createElement('div');
-      const elm = document.createElement('p');
-      const elm2 = document.createElement('p');
-      const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(PINNED);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = '1';
-      elm2.classList.add(TAB);
-      elm2.classList.add(PINNED);
-      elm2.dataset.tabId = '2';
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = '3';
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      const opt = {
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        isMac: false
-      };
-      let parsedData;
-      const evt = {
-        currentTarget: elm2,
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-          effectAllowed: 'uninitialized'
-        },
-        ctrlKey: false,
-        type: 'dragstart'
-      };
-      await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(parsedData, {
-        dragTabId: 2,
-        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: true,
-        pinnedTabIds: [2]
-      }, 'data');
-    });
-
-    it('should set value', async () => {
-      const parent = document.createElement('div');
-      const parent2 = document.createElement('div');
-      const elm = document.createElement('p');
-      const elm2 = document.createElement('p');
-      const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = '1';
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = '2';
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = '3';
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      const opt = {
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        isMac: false
-      };
-      let parsedData;
-      const evt = {
-        currentTarget: elm3,
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-          effectAllowed: 'uninitialized'
-        },
-        ctrlKey: false,
-        type: 'dragstart'
-      };
-      await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(parsedData, {
-        dragTabId: 3,
-        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: false,
-        tabIds: [3]
-      }, 'data');
-    });
-
-    it('should set value', async () => {
-      const parent = document.createElement('div');
-      const parent2 = document.createElement('div');
-      const elm = document.createElement('p');
-      const elm2 = document.createElement('p');
-      const elm3 = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(CLASS_TAB_GROUP);
-      parent.classList.add(PINNED);
-      parent2.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.classList.add(HIGHLIGHTED);
-      elm.dataset.tabId = '1';
-      elm2.classList.add(TAB);
-      elm2.dataset.tabId = '2';
-      elm3.classList.add(TAB);
-      elm3.dataset.tabId = '3';
-      parent.appendChild(elm);
-      parent.appendChild(elm2);
-      parent2.appendChild(elm3);
-      body.appendChild(parent);
-      body.appendChild(parent2);
-      const opt = {
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-        isMac: false
-      };
-      let parsedData;
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
-          effectAllowed: 'uninitialized'
-        },
-        ctrlKey: false,
-        type: 'dragstart'
-      };
-      await func(evt, opt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(parsedData, {
-        dragTabId: 1,
-        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: true,
-        pinnedTabIds: [1],
+        pinnedTabIds: [1, 2],
         tabIds: []
       }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 2
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        ctrlKey: true,
+        shiftKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3, 4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 1
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: false
+      };
+      let parsedData;
+      const evt = {
+        ctrlKey: true,
+        shiftKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3, 4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 0
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: true
+      };
+      let parsedData;
+      const evt = {
+        metaKey: true,
+        shiftKey: true,
+        currentTarget: elm2,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 2,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: true,
+        pinnedTabIds: [1, 2],
+        tabIds: []
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 2
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: true
+      };
+      let parsedData;
+      const evt = {
+        metaKey: true,
+        shiftKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3, 4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.query.resolves([{
+        index: 1
+      }]);
+      const opt = {
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        isMac: true
+      };
+      let parsedData;
+      const evt = {
+        metaKey: true,
+        shiftKey: true,
+        currentTarget: elm4,
+        dataTransfer: {
+          setData: (type, data) => {
+            parsedData = JSON.parse(data);
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(parsedData, {
+        dragTabId: 4,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinned: false,
+        pinnedTabIds: [],
+        tabIds: [3, 4]
+      }, 'data');
+      assert.deepEqual(res, [undefined], 'result');
     });
   });
 });

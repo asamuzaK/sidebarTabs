@@ -811,11 +811,12 @@ describe('main', () => {
           effectAllowed: 'uninitialized'
         }
       };
-      await func(evt);
+      const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
       assert.isTrue(setData.notCalled, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
         'effect');
+      assert.isNull(res, 'result');
     });
 
     it('should not call function', async () => {
@@ -841,11 +842,12 @@ describe('main', () => {
         },
         type: 'foo'
       };
-      await func(evt);
+      const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
       assert.isTrue(setData.notCalled, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
         'effect');
+      assert.isNull(res, 'result');
     });
 
     it('should call function', async () => {
@@ -871,10 +873,11 @@ describe('main', () => {
         },
         type: 'dragstart'
       };
-      await func(evt);
+      const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
       assert.isTrue(setData.calledOnce, 'called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should call function', async () => {
@@ -904,10 +907,11 @@ describe('main', () => {
         },
         type: 'dragover'
       };
-      await func(evt);
+      const res = await func(evt);
       assert.isTrue(getData.calledOnce, 'called');
       assert.isTrue(setData.notCalled, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.isNull(res, 'result');
     });
   });
 

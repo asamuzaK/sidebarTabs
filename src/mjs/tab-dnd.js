@@ -7,10 +7,12 @@ import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   createTab, moveTab, searchWithSearchEngine, updateTab
 } from './browser.js';
-import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
-  getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
-  getTemplate, requestSaveSession
+  createTabsInOrder, highlightTabs, moveTabsInOrder
+} from './browser-tabs.js';
+import {
+  activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate,
+  requestSaveSession
 } from './util.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
@@ -483,7 +485,9 @@ export const handleDragLeave = evt => {
  * @returns {void}
  */
 export const handleDragOver = (evt, opt = {}) => {
-  const { altKey, clientY, ctrlKey, currentTarget, dataTransfer, type } = evt;
+  const {
+    altKey, clientY, ctrlKey, currentTarget, dataTransfer, shiftKey, type
+  } = evt;
   if (type !== 'dragover') {
     return;
   }
@@ -503,7 +507,7 @@ export const handleDragOver = (evt, opt = {}) => {
         pinned = false;
       }
       const { bottom, top } = dropTarget.getBoundingClientRect();
-      if ((!isMac && ctrlKey) || (isMac && altKey)) {
+      if (!shiftKey && ((isMac && altKey) || (!isMac && ctrlKey))) {
         if (clientY > (bottom - top) * HALF + top) {
           dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
           dropTarget.classList.remove(DROP_TARGET_BEFORE);
@@ -587,55 +591,58 @@ export const handleDragEnter = evt => {
  *
  * @param {!object} evt - event
  * @param {object} opt - options
- * @returns {void}
+ * @returns {Promise.<Array>} - result of each handler
  */
 export const handleDragStart = (evt, opt = {}) => {
-  const { ctrlKey, currentTarget, dataTransfer, metaKey, type } = evt;
+  const {
+    altKey, ctrlKey, currentTarget, dataTransfer, metaKey, shiftKey, type
+  } = evt;
   if (type !== 'dragstart') {
     return;
   }
-  const { classList } = currentTarget;
   const { isMac, windowId } = opt;
-  const container = getSidebarTabContainer(currentTarget);
-  const dragTabId = getSidebarTabId(currentTarget);
-  const data = {
-    dragTabId,
-    dragWindowId: windowId || windows.WINDOW_ID_CURRENT,
-    pinned: classList.contains(PINNED)
-  };
-  let items;
-  if (classList.contains(HIGHLIGHTED)) {
-    items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-  } else if ((container && container.classList.contains(CLASS_TAB_GROUP)) &&
-             ((isMac && metaKey) || (!isMac && ctrlKey))) {
-    items = container.querySelectorAll(TAB_QUERY);
-    for (const item of items) {
-      item.classList.add(HIGHLIGHTED);
+  const tab = getSidebarTab(currentTarget);
+  const func = [];
+  if (tab) {
+    const dragTabId = getSidebarTabId(tab);
+    const container = tab.parentNode;
+    const data = {
+      dragTabId,
+      dragWindowId: windowId || windows.WINDOW_ID_CURRENT,
+      pinned: tab.classList.contains(PINNED),
+      pinnedTabIds: [],
+      tabIds: []
+    };
+    const highlightedTabs =
+      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+    let items;
+    if (tab.classList.contains(HIGHLIGHTED)) {
+      items = Array.from(highlightedTabs);
+    } else if (container && container.classList.contains(CLASS_TAB_GROUP) &&
+               shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
+      items = Array.from(container.querySelectorAll(TAB_QUERY));
+      func.push(highlightTabs(items, windowId));
+    } else if ((isMac && altKey) || (!isMac && ctrlKey)) {
+      const tabList = new Set(Array.from(highlightedTabs));
+      tabList.add(tab);
+      items = Array.from(tabList);
+      func.push(highlightTabs(items, windowId));
+    } else {
+      items = [tab];
+      func.push(activateTab(tab));
     }
-  }
-  if (items && items.length) {
-    const pinnedTabIds = [];
-    const tabIds = [];
     for (const item of items) {
       const tabId = getSidebarTabId(item);
       if (item.parentNode.classList.contains(PINNED)) {
-        pinnedTabIds.push(tabId);
+        data.pinnedTabIds.push(tabId);
       } else {
-        tabIds.push(tabId);
+        data.tabIds.push(tabId);
       }
     }
-    data.pinnedTabIds = pinnedTabIds;
-    data.tabIds = tabIds;
-  } else {
-    const tabId = getSidebarTabId(currentTarget);
-    if (currentTarget.parentNode.classList.contains(PINNED)) {
-      data.pinnedTabIds = [tabId];
-    } else {
-      data.tabIds = [tabId];
-    }
+    dataTransfer.effectAllowed = 'copyMove';
+    dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
   }
-  dataTransfer.effectAllowed = 'copyMove';
-  dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
+  return Promise.all(func).catch(throwErr);
 };
 
 // For test
