@@ -2056,6 +2056,13 @@ describe('dnd', () => {
       assert.isUndefined(res, 'result');
     });
 
+    it('should throw', () => {
+      const evt = {
+        type: 'drop'
+      };
+      assert.throws(() => func());
+    });
+
     it('should not call function', async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
@@ -2083,7 +2090,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2127,7 +2135,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2174,7 +2183,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2184,6 +2194,110 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      browser.tabs.update.resolves({});
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: '1'
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI).returns('https://example.com');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'none'
+        },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isTrue(preventDefault.notCalled, 'not called');
+      assert.isTrue(stubCurrentWin.notCalled, 'not called');
+      assert.isTrue(port.postMessage.notCalled, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      browser.tabs.update.resolves({});
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: '1'
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI).returns('https://example.com');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'link'
+        },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isTrue(preventDefault.notCalled, 'not called');
+      assert.isTrue(stubCurrentWin.notCalled, 'not called');
+      assert.isTrue(port.postMessage.notCalled, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -2223,7 +2337,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2275,7 +2390,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2325,7 +2441,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2377,7 +2494,62 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'copy'
+        },
+        shiftKey: true,
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isTrue(preventDefault.calledOnce, 'called');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called');
+      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_BEFORE);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+        foo: 'bar'
+      }));
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move'
         },
         shiftKey: true,
         type: 'drop'
@@ -2434,7 +2606,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2495,7 +2668,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2510,6 +2684,61 @@ describe('dnd', () => {
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: '1'
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      main.id = SIDEBAR_MAIN;
+      main.appendChild(parent);
+      body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_URI)
+        .returns('https://example.com\n# comment\nhttps://www.example.com');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: main,
+        dataTransfer: {
+          getData,
+          dropEffect: 'none'
+        },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isTrue(preventDefault.notCalled, 'not called');
+      assert.isTrue(stopPropagation.notCalled, 'not called');
+      assert.isTrue(stubCurrentWin.notCalled, 'not called');
+      assert.isTrue(port.postMessage.notCalled, 'not called');
+      assert.isNull(res, 'result');
     });
 
     it('should call function', async () => {
@@ -2551,7 +2780,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: main,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };
@@ -2613,7 +2843,8 @@ describe('dnd', () => {
         stopPropagation,
         currentTarget: main,
         dataTransfer: {
-          getData
+          getData,
+          dropEffect: 'move'
         },
         type: 'drop'
       };

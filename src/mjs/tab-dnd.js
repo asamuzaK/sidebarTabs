@@ -379,50 +379,54 @@ export const searchQuery = async (dropTarget, data = '') => {
  */
 export const handleDrop = evt => {
   const { currentTarget, dataTransfer, shiftKey, type } = evt;
-  let func;
   if (type !== 'drop') {
     return;
   }
+  const { dropEffect } = dataTransfer;
   const dropTarget = getSidebarTab(currentTarget);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
   const uriList = dataTransfer.getData(MIME_URI).split('\n')
     .filter(i => i && !i.startsWith('#')).reverse();
   const data = dataTransfer.getData(MIME_PLAIN);
+  let func;
   if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
-    // dropped uri list
-    if (uriList.length) {
-      func = openUriList(dropTarget, uriList).catch(throwErr);
-      evt.preventDefault();
-      evt.stopPropagation();
-    } else if (data) {
-      let item;
-      try {
-        item = JSON.parse(data);
-      } catch (e) {
-        item = data;
-      }
-      // dropped tab
-      if (isObjectNotEmpty(item)) {
-        const { windowId } = JSON.parse(dropTarget.dataset.tab);
-        const keyOpt = {
-          shiftKey
-        };
-        item.dropWindowId = windowId;
-        func = extractDroppedTabs(dropTarget, item, keyOpt)
-          .then(restoreTabContainers).then(requestSaveSession)
-          .catch(throwErr);
+    if (dropEffect === 'copy' || dropEffect === 'move') {
+      // dropped uri list
+      if (uriList.length && dropEffect === 'move') {
+        func = openUriList(dropTarget, uriList).catch(throwErr);
         evt.preventDefault();
         evt.stopPropagation();
-      // dropped search query
-      } else if (isString(item)) {
-        func = searchQuery(dropTarget, item).catch(throwErr);
-        evt.preventDefault();
-        evt.stopPropagation();
+      } else if (data) {
+        let item;
+        try {
+          item = JSON.parse(data);
+        } catch (e) {
+          item = data;
+        }
+        // dropped tab
+        if (isObjectNotEmpty(item)) {
+          const { windowId } = JSON.parse(dropTarget.dataset.tab);
+          const keyOpt = {
+            shiftKey
+          };
+          item.dropEffect = dropEffect;
+          item.dropWindowId = windowId;
+          func = extractDroppedTabs(dropTarget, item, keyOpt)
+            .then(restoreTabContainers).then(requestSaveSession)
+            .catch(throwErr);
+          evt.preventDefault();
+          evt.stopPropagation();
+        // dropped search query
+        } else if (isString(item) && dropEffect === 'move') {
+          func = searchQuery(dropTarget, item).catch(throwErr);
+          evt.preventDefault();
+          evt.stopPropagation();
+        }
       }
     }
     dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
       DROP_TARGET_BEFORE);
-  } else if (isMain) {
+  } else if (isMain && dropEffect === 'move') {
     // dropped uri list
     if (uriList.length) {
       func = openUriList(currentTarget, uriList).catch(throwErr);
