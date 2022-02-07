@@ -1047,7 +1047,8 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm, {
-        dragWindowId: browser.windows.WINDOW_ID_NONE
+        dragWindowId: browser.windows.WINDOW_ID_NONE,
+        dropEffect: 'move'
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -1076,9 +1077,46 @@ describe('dnd', () => {
       }
       const res = await func(elm2, {
         dragWindowId,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [],
         tabIds: []
+      });
+      assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.move.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      let dragWindowId = browser.windows.WINDOW_ID_CURRENT + 1;
+      if (dragWindowId === browser.windows.WINDOW_ID_NONE) {
+        dragWindowId++;
+      }
+      const res = await func(elm2, {
+        dragWindowId,
+        dropEffect: 'none',
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [],
+        tabIds: [10]
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -1111,6 +1149,7 @@ describe('dnd', () => {
       }
       const res = await func(elm2, {
         dragWindowId,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [],
         tabIds: [10]
@@ -1152,6 +1191,7 @@ describe('dnd', () => {
       }
       const res = await func(elm2, {
         dragWindowId,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [10],
         tabIds: []
@@ -1200,6 +1240,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm2, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: []
@@ -1245,6 +1286,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [2],
         tabIds: []
@@ -1290,6 +1332,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm2, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: [4]
@@ -1337,6 +1380,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm3, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [],
         tabIds: [4]
@@ -1382,6 +1426,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm4, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [],
         tabIds: [3]
@@ -1427,6 +1472,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm3, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: [4]
@@ -1476,6 +1522,7 @@ describe('dnd', () => {
       body.appendChild(parent3);
       const res = await func(elm4, {
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: [3]
@@ -1489,6 +1536,216 @@ describe('dnd', () => {
       assert.isFalse(elm.parentNode === elm4.parentNode, 'parent');
       assert.isTrue(elm4.parentNode === elm3.parentNode, 'parent');
       assert.deepEqual(res, [[null], [null]], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.duplicate.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(elm2, {
+        dragTabId: 1,
+        dropEffect: 'copy',
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [1],
+        tabIds: []
+      });
+      assert.strictEqual(browser.tabs.duplicate.callCount, i + 1, 'called');
+      assert.isTrue(browser.tabs.duplicate.withArgs(1, {
+        index: 2,
+        active: false
+      }).calledOnce, 'called');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.duplicate.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, DROP_TARGET, DROP_TARGET_BEFORE);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(elm2, {
+        dragTabId: 3,
+        dropEffect: 'copy',
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [],
+        tabIds: [3]
+      });
+      assert.strictEqual(browser.tabs.duplicate.callCount, i + 1, 'called');
+      assert.isTrue(browser.tabs.duplicate.withArgs(3, {
+        index: 1,
+        active: false
+      }).calledOnce, 'called');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.duplicate.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(elm, {
+        dragTabId: 2,
+        dropEffect: 'copy',
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [],
+        tabIds: [2, 3]
+      });
+      assert.strictEqual(browser.tabs.duplicate.callCount, i + 2, 'called');
+      assert.isTrue(browser.tabs.duplicate.withArgs(2, {
+        index: 1,
+        active: false
+      }).calledOnce, 'called');
+      assert.isTrue(browser.tabs.duplicate.withArgs(3, {
+        index: 1,
+        active: false
+      }).calledOnce, 'called');
+      assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.duplicate.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = await func(elm2, {
+        dragTabId: 3,
+        dropEffect: 'copy',
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [1],
+        tabIds: [3]
+      });
+      assert.strictEqual(browser.tabs.duplicate.callCount, i + 2, 'called');
+      assert.isTrue(browser.tabs.duplicate.withArgs(1, {
+        index: 2,
+        active: false
+      }).calledOnce, 'called');
+      assert.isTrue(browser.tabs.duplicate.withArgs(3, {
+        index: 2,
+        active: false
+      }).calledOnce, 'called');
+      assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.duplicate.callCount;
+      const j = browser.tabs.move.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      browser.tabs.duplicate.withArgs(4, {
+        active: false
+      }).resolves({
+        id: 7
+      });
+      browser.tabs.duplicate.withArgs(5, {
+        active: false
+      }).resolves({
+        id: 8
+      });
+      browser.tabs.duplicate.withArgs(6, {
+        active: false
+      }).resolves({
+        id: 9
+      });
+      const res = await func(elm2, {
+        dragTabId: 4,
+        dropEffect: 'copy',
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT + 2,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        pinnedTabIds: [4, 5],
+        tabIds: [6]
+      });
+      assert.strictEqual(browser.tabs.duplicate.callCount, i + 3, 'called');
+      assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called');
+      assert.isTrue(browser.tabs.move.withArgs([7, 8, 9], {
+        index: 2,
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      }).calledOnce, 'called');
+      assert.deepEqual(res, [null], 'result');
     });
   });
 
