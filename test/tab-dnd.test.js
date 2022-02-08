@@ -343,7 +343,7 @@ describe('dnd', () => {
       const res = await func(elm3, [1, 4], {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        isGrouped: true
+        beGrouped: true
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -388,7 +388,7 @@ describe('dnd', () => {
       const res = await func(elm3, [1, 4], {
         dropAfter: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        isGrouped: true
+        beGrouped: true
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -1471,13 +1471,12 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       const res = await func(elm3, {
+        beGrouped: true,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: [4]
-      }, {
-        shiftKey: true
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -1521,13 +1520,12 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       const res = await func(elm4, {
+        beGrouped: true,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
         dropEffect: 'move',
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         pinnedTabIds: [1],
         tabIds: [3]
-      }, {
-        shiftKey: true
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -2754,7 +2752,6 @@ describe('dnd', () => {
           getData,
           dropEffect: 'copy'
         },
-        shiftKey: true,
         type: 'drop'
       };
       const res = await func(evt);
@@ -2808,7 +2805,6 @@ describe('dnd', () => {
           getData,
           dropEffect: 'move'
         },
-        shiftKey: true,
         type: 'drop'
       };
       const res = await func(evt);
@@ -4237,8 +4233,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 1,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: true,
         pinnedTabIds: [1],
         tabIds: []
@@ -4291,6 +4289,7 @@ describe('dnd', () => {
           },
           effectAllowed: 'uninitialized'
         },
+        shiftKey: true,
         type: 'dragstart'
       };
       const res = await func(evt, opt);
@@ -4298,8 +4297,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: true,
         pinnedTabIds: [2],
         tabIds: []
@@ -4352,6 +4353,7 @@ describe('dnd', () => {
           },
           effectAllowed: 'uninitialized'
         },
+        shiftKey: true,
         type: 'dragstart'
       };
       const res = await func(evt, opt);
@@ -4359,8 +4361,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: true,
         dragTabId: 3,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3]
@@ -4420,8 +4424,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [4]
@@ -4485,8 +4491,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: true,
         pinnedTabIds: [1, 2],
         tabIds: []
@@ -4550,8 +4558,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3, 4]
@@ -4615,8 +4625,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: false,
         pinnedTabIds: [2],
         tabIds: [4]
@@ -4680,8 +4692,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: true,
         pinnedTabIds: [1, 2],
         tabIds: []
@@ -4745,8 +4759,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3, 4]
@@ -4810,8 +4826,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: false,
         pinned: false,
         pinnedTabIds: [2],
         tabIds: [4]
@@ -4876,8 +4894,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true,
         pinned: true,
         pinnedTabIds: [1, 2],
         tabIds: []
@@ -4942,8 +4962,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3, 4]
@@ -5008,8 +5030,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3, 4]
@@ -5074,8 +5098,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 2,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true,
         pinned: true,
         pinnedTabIds: [1, 2],
         tabIds: []
@@ -5140,8 +5166,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3, 4]
@@ -5206,8 +5234,10 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(parsedData, {
+        beGrouped: false,
         dragTabId: 4,
         dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true,
         pinned: false,
         pinnedTabIds: [],
         tabIds: [3, 4]
