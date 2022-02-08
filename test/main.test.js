@@ -787,9 +787,10 @@ describe('main', () => {
     });
   });
 
-  describe('create DnD data', () => {
-    const func = mjs.createDnDData;
-    it('should not set data', async () => {
+  describe('trigger DnD handler', () => {
+    const func = mjs.triggerDndHandler;
+
+    it('should not call function', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -800,21 +801,25 @@ describe('main', () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       mjs.sidebar.windowId = 1;
+      const getData = sinon.stub();
       const setData = sinon.stub();
       const evt = {
         currentTarget: elm,
         dataTransfer: {
+          getData,
           setData,
           effectAllowed: 'uninitialized'
         }
       };
-      await func(evt);
-      assert.isFalse(setData.called, 'data');
+      const res = await func(evt);
+      assert.isTrue(getData.notCalled, 'not called');
+      assert.isTrue(setData.notCalled, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
         'effect');
+      assert.isNull(res, 'result');
     });
 
-    it('should set data', async () => {
+    it('should not call function', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -826,24 +831,86 @@ describe('main', () => {
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
       mjs.sidebar.windowId = 1;
-      let parsedData;
+      const getData = sinon.stub();
+      const setData = sinon.stub();
       const evt = {
         currentTarget: elm,
         dataTransfer: {
-          setData: (type, data) => {
-            parsedData = JSON.parse(data);
-          },
+          getData,
+          setData,
+          effectAllowed: 'uninitialized'
+        },
+        type: 'foo'
+      };
+      const res = await func(evt);
+      assert.isTrue(getData.notCalled, 'not called');
+      assert.isTrue(setData.notCalled, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
+        'effect');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.draggable = true;
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      mjs.sidebar.windowId = 1;
+      const getData = sinon.stub();
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          setData,
           effectAllowed: 'uninitialized'
         },
         type: 'dragstart'
       };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'move', 'effect');
-      assert.deepEqual(parsedData, {
-        pinned: false,
-        tabIds: [1],
-        dragWindowId: 1
-      }, 'data');
+      const res = await func(evt);
+      assert.isTrue(getData.notCalled, 'not called');
+      assert.isTrue(setData.calledOnce, 'called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.draggable = true;
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      mjs.sidebar.windowId = 1;
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          getData,
+          setData,
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragover'
+      };
+      const res = await func(evt);
+      assert.isTrue(getData.calledOnce, 'called');
+      assert.isTrue(setData.notCalled, 'not called');
+      assert.isNull(res, 'result');
     });
   });
 

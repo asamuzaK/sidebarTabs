@@ -5,12 +5,14 @@
 /* shared */
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
-  createTab, moveTab, searchWithSearchEngine, updateTab
+  createTab, duplicateTab, moveTab, searchWithSearchEngine, updateTab
 } from './browser.js';
-import { createTabsInOrder, moveTabsInOrder } from './browser-tabs.js';
 import {
-  getSidebarTab, getSidebarTabId, getSidebarTabIndex, getSidebarTabContainer,
-  getTemplate, requestSaveSession
+  createTabsInOrder, highlightTabs, moveTabsInOrder
+} from './browser-tabs.js';
+import {
+  activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate,
+  requestSaveSession
 } from './util.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
@@ -39,7 +41,10 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
   const func = [];
   const target = getSidebarTab(dropTarget);
   if (target && Array.isArray(draggedIds) && isObjectNotEmpty(opt)) {
-    const { dropAfter, dropBefore, isGrouped, isPinned, windowId } = opt;
+    // TODO: add moving tab group handler
+    const {
+      beGrouped, dropAfter, dropBefore, /* grouped, */ isPinned, windowId
+    } = opt;
     const targetParent = target.parentNode;
     const moveArr = (dropAfter && draggedIds.reverse()) || draggedIds;
     const arr = [];
@@ -62,7 +67,7 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
               tabId: itemId
             });
           }
-        } else if (isGrouped) {
+        } else if (beGrouped) {
           if (dropBefore) {
             targetParent.insertBefore(item, target);
           } else {
@@ -182,72 +187,135 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
  *
  * @param {object} dropTarget - target element
  * @param {object} data - dragged data
- * @param {object} keyOpt - key options
  * @returns {Promise.<Array>} - results of each handler
  */
-export const extractDroppedTabs = async (dropTarget, data, keyOpt = {}) => {
+export const extractDroppedTabs = async (dropTarget, data) => {
   const func = [];
   if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
       dropTarget.classList.contains(DROP_TARGET) && isObjectNotEmpty(data)) {
-    const { dragWindowId, dropWindowId, pinnedTabIds, tabIds } = data;
+    const {
+      beGrouped, dragTabId, dragWindowId, dropEffect, dropWindowId, grouped,
+      pinnedTabIds, tabIds
+    } = data;
     if (Number.isInteger(dragWindowId) && dragWindowId !== WINDOW_ID_NONE) {
-      if (dragWindowId === dropWindowId) {
-        const { shiftKey } = keyOpt;
-        if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
-          const target = getTargetForDraggedTabs(dropTarget, {
-            isPinnedTabIds: true
-          });
-          const opt = {
-            dropAfter: true,
-            dropBefore: false,
-            isPinned: true,
-            windowId: dropWindowId
-          };
-          if (target === dropTarget &&
-              dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
-            opt.dropAfter = false;
-            opt.dropBefore = true;
+      if (dropEffect === 'move') {
+        if (dragWindowId === dropWindowId) {
+          if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
+            const target = getTargetForDraggedTabs(dropTarget, {
+              isPinnedTabIds: true
+            });
+            const opt = {
+              dropAfter: true,
+              dropBefore: false,
+              isPinned: true,
+              windowId: dropWindowId
+            };
+            if (target === dropTarget &&
+                dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+              opt.dropAfter = false;
+              opt.dropBefore = true;
+            }
+            func.push(moveDroppedTabs(target, pinnedTabIds, opt));
           }
-          func.push(moveDroppedTabs(target, pinnedTabIds, opt));
-        }
-        if (Array.isArray(tabIds) && tabIds.length) {
-          const target = getTargetForDraggedTabs(dropTarget, {
-            isPinnedTabIds: false
-          });
-          const targetParent = target.parentNode;
-          const opt = {
-            dropAfter: false,
-            dropBefore: true,
-            isGrouped: targetParent.classList.contains(CLASS_TAB_GROUP) ||
-                       shiftKey,
-            windowId: dropWindowId
-          };
-          if (target === dropTarget &&
-              dropTarget.classList.contains(DROP_TARGET_AFTER)) {
-            opt.dropAfter = true;
-            opt.dropBefore = false;
+          if (Array.isArray(tabIds) && tabIds.length) {
+            const target = getTargetForDraggedTabs(dropTarget, {
+              isPinnedTabIds: false
+            });
+            const targetParent = target.parentNode;
+            const opt = {
+              grouped,
+              beGrouped: beGrouped ||
+                         targetParent.classList.contains(CLASS_TAB_GROUP),
+              dropAfter: false,
+              dropBefore: true,
+              windowId: dropWindowId
+            };
+            if (target === dropTarget &&
+                dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+              opt.dropAfter = true;
+              opt.dropBefore = false;
+            }
+            func.push(moveDroppedTabs(target, tabIds, opt));
           }
-          func.push(moveDroppedTabs(target, tabIds, opt));
+        // dragged from other window
+        } else {
+          if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
+            const index = getDropIndexForDraggedTabs(dropTarget, {
+              isPinnedTabIds: true
+            });
+            Number.isInteger(index) && func.push(moveTab(pinnedTabIds, {
+              index,
+              windowId: dropWindowId
+            }));
+          }
+          if (Array.isArray(tabIds) && tabIds.length) {
+            const index = getDropIndexForDraggedTabs(dropTarget, {
+              isPinnedTabIds: false
+            });
+            // TODO: add grouped case and beGrouped case handlers
+            Number.isInteger(index) && func.push(moveTab(tabIds, {
+              index,
+              windowId: dropWindowId
+            }));
+          }
         }
-      // dragged from other window
-      } else {
-        if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
-          const index = getDropIndexForDraggedTabs(dropTarget, {
-            isPinnedTabIds: true
-          });
-          Number.isInteger(index) && func.push(moveTab(pinnedTabIds, {
-            index,
-            windowId: dropWindowId
-          }));
-        }
-        if (Array.isArray(tabIds) && tabIds.length) {
-          const index = getDropIndexForDraggedTabs(dropTarget, {
-            isPinnedTabIds: false
-          });
-          Number.isInteger(index) && func.push(moveTab(tabIds, {
-            index,
-            windowId: dropWindowId
-          }));
+      } else if (dropEffect === 'copy') {
+        const index = getDropIndexForDraggedTabs(dropTarget, {
+          isPinnedTabIds: false
+        });
+        if (Number.isInteger(index)) {
+          if (dragWindowId === dropWindowId) {
+            func.push(duplicateTab(dragTabId, {
+              index,
+              active: false
+            }));
+            if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
+              for (const tabId of pinnedTabIds) {
+                tabId !== dragTabId && func.push(duplicateTab(tabId, {
+                  index,
+                  active: false
+                }));
+              }
+            }
+            if (Array.isArray(tabIds) && tabIds.length) {
+              for (const tabId of tabIds) {
+                tabId !== dragTabId && func.push(duplicateTab(tabId, {
+                  index,
+                  active: false
+                }));
+              }
+            }
+          // dragged from other window
+          } else {
+            const arr = [];
+            arr.push(duplicateTab(dragTabId, {
+              active: false
+            }));
+            if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
+              for (const tabId of pinnedTabIds) {
+                tabId !== dragTabId && arr.push(duplicateTab(tabId, {
+                  active: false
+                }));
+              }
+            }
+            if (Array.isArray(tabIds) && tabIds.length) {
+              for (const tabId of tabIds) {
+                tabId !== dragTabId && arr.push(duplicateTab(tabId, {
+                  active: false
+                }));
+              }
+            }
+            const dupedTabs = await Promise.all(arr);
+            const dupedTabIds = [];
+            for (const dupedTab of dupedTabs) {
+              const { id } = dupedTab;
+              dupedTabIds.push(id);
+            }
+            func.push(moveTab(dupedTabIds, {
+              index,
+              windowId: dropWindowId
+            }));
+          }
         }
       }
     }
@@ -378,51 +446,52 @@ export const searchQuery = async (dropTarget, data = '') => {
  * @returns {?(Function|Error)} - promise chain
  */
 export const handleDrop = evt => {
-  const { currentTarget, dataTransfer, shiftKey, type } = evt;
-  let func;
+  const { currentTarget, dataTransfer, type } = evt;
   if (type !== 'drop') {
     return;
   }
+  const { dropEffect } = dataTransfer;
   const dropTarget = getSidebarTab(currentTarget);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
   const uriList = dataTransfer.getData(MIME_URI).split('\n')
     .filter(i => i && !i.startsWith('#')).reverse();
   const data = dataTransfer.getData(MIME_PLAIN);
+  let func;
   if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
-    // dropped uri list
-    if (uriList.length) {
-      func = openUriList(dropTarget, uriList).catch(throwErr);
-      evt.preventDefault();
-      evt.stopPropagation();
-    } else if (data) {
-      let item;
-      try {
-        item = JSON.parse(data);
-      } catch (e) {
-        item = data;
-      }
-      // dropped tab
-      if (isObjectNotEmpty(item)) {
-        const { windowId } = JSON.parse(dropTarget.dataset.tab);
-        const keyOpt = {
-          shiftKey
-        };
-        item.dropWindowId = windowId;
-        func = extractDroppedTabs(dropTarget, item, keyOpt)
-          .then(restoreTabContainers).then(requestSaveSession)
-          .catch(throwErr);
+    if (dropEffect === 'copy' || dropEffect === 'move') {
+      // dropped uri list
+      if (uriList.length && dropEffect === 'move') {
+        func = openUriList(dropTarget, uriList).catch(throwErr);
         evt.preventDefault();
         evt.stopPropagation();
-      // dropped search query
-      } else if (isString(item)) {
-        func = searchQuery(dropTarget, item).catch(throwErr);
-        evt.preventDefault();
-        evt.stopPropagation();
+      } else if (data) {
+        let item;
+        try {
+          item = JSON.parse(data);
+        } catch (e) {
+          item = data;
+        }
+        // dropped tab
+        if (isObjectNotEmpty(item)) {
+          const { windowId } = JSON.parse(dropTarget.dataset.tab);
+          item.dropEffect = dropEffect;
+          item.dropWindowId = windowId;
+          func = extractDroppedTabs(dropTarget, item)
+            .then(restoreTabContainers).then(requestSaveSession)
+            .catch(throwErr);
+          evt.preventDefault();
+          evt.stopPropagation();
+        // dropped search query
+        } else if (isString(item) && dropEffect === 'move') {
+          func = searchQuery(dropTarget, item).catch(throwErr);
+          evt.preventDefault();
+          evt.stopPropagation();
+        }
       }
     }
     dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
       DROP_TARGET_BEFORE);
-  } else if (isMain) {
+  } else if (isMain && dropEffect === 'move') {
     // dropped uri list
     if (uriList.length) {
       func = openUriList(currentTarget, uriList).catch(throwErr);
@@ -475,13 +544,17 @@ export const handleDragLeave = evt => {
  * handle dragover
  *
  * @param {!object} evt - event
+ * @param {object} opt - options
  * @returns {void}
  */
-export const handleDragOver = evt => {
-  const { clientY, currentTarget, dataTransfer, type } = evt;
+export const handleDragOver = (evt, opt = {}) => {
+  const {
+    altKey, clientY, ctrlKey, currentTarget, dataTransfer, shiftKey, type
+  } = evt;
   if (type !== 'dragover') {
     return;
   }
+  const { isMac } = opt;
   const dropTarget = getSidebarTab(currentTarget);
   const data = dataTransfer.getData(MIME_PLAIN);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
@@ -496,8 +569,17 @@ export const handleDragOver = evt => {
       } catch (e) {
         pinned = false;
       }
-      if ((isPinned && pinned) || !(isPinned || pinned)) {
-        const { bottom, top } = dropTarget.getBoundingClientRect();
+      const { bottom, top } = dropTarget.getBoundingClientRect();
+      if (!shiftKey && ((isMac && altKey) || (!isMac && ctrlKey))) {
+        if (clientY > (bottom - top) * HALF + top) {
+          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+          dropTarget.classList.remove(DROP_TARGET_BEFORE);
+        } else {
+          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+          dropTarget.classList.remove(DROP_TARGET_AFTER);
+        }
+        dataTransfer.dropEffect = 'copy';
+      } else if ((isPinned && pinned) || !(isPinned || pinned)) {
         if (clientY > (bottom - top) * HALF + top) {
           dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
           dropTarget.classList.remove(DROP_TARGET_BEFORE);
@@ -572,53 +654,62 @@ export const handleDragEnter = evt => {
  *
  * @param {!object} evt - event
  * @param {object} opt - options
- * @returns {void}
+ * @returns {Promise.<Array>} - result of each handler
  */
 export const handleDragStart = (evt, opt = {}) => {
-  const { ctrlKey, currentTarget, dataTransfer, metaKey, type } = evt;
+  const {
+    altKey, ctrlKey, currentTarget, dataTransfer, metaKey, shiftKey, type
+  } = evt;
   if (type !== 'dragstart') {
     return;
   }
-  const { classList } = currentTarget;
   const { isMac, windowId } = opt;
-  const container = getSidebarTabContainer(currentTarget);
-  const data = {
-    dragWindowId: windowId || windows.WINDOW_ID_CURRENT,
-    pinned: classList.contains(PINNED)
-  };
-  let items;
-  if (classList.contains(HIGHLIGHTED)) {
-    items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-  } else if ((container && container.classList.contains(CLASS_TAB_GROUP)) &&
-             ((isMac && metaKey) || (!isMac && ctrlKey))) {
-    items = container.querySelectorAll(TAB_QUERY);
-    for (const item of items) {
-      item.classList.add(HIGHLIGHTED);
+  const tab = getSidebarTab(currentTarget);
+  const func = [];
+  if (tab) {
+    const dragTabId = getSidebarTabId(tab);
+    const container = tab.parentNode;
+    const pinned = tab.classList.contains(PINNED);
+    const data = {
+      dragTabId,
+      pinned,
+      beGrouped: !pinned && !(altKey || ctrlKey || metaKey) && !!shiftKey,
+      dragWindowId: windowId || windows.WINDOW_ID_CURRENT,
+      grouped: false,
+      pinnedTabIds: [],
+      tabIds: []
+    };
+    const highlightedTabs =
+      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
+    let items;
+    if (tab.classList.contains(HIGHLIGHTED)) {
+      items = Array.from(highlightedTabs);
+    } else if (container && container.classList.contains(CLASS_TAB_GROUP) &&
+               shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
+      items = Array.from(container.querySelectorAll(TAB_QUERY));
+      data.grouped = true;
+      func.push(highlightTabs(items, windowId));
+    } else if ((isMac && altKey) || (!isMac && ctrlKey)) {
+      const tabList = new Set(Array.from(highlightedTabs));
+      tabList.add(tab);
+      items = Array.from(tabList);
+      func.push(highlightTabs(items, windowId));
+    } else {
+      items = [tab];
+      func.push(activateTab(tab));
     }
-  }
-  if (items && items.length) {
-    const pinnedTabIds = [];
-    const tabIds = [];
     for (const item of items) {
       const tabId = getSidebarTabId(item);
       if (item.parentNode.classList.contains(PINNED)) {
-        pinnedTabIds.push(tabId);
+        data.pinnedTabIds.push(tabId);
       } else {
-        tabIds.push(tabId);
+        data.tabIds.push(tabId);
       }
     }
-    data.pinnedTabIds = pinnedTabIds;
-    data.tabIds = tabIds;
-  } else {
-    const tabId = getSidebarTabId(currentTarget);
-    if (currentTarget.parentNode.classList.contains(PINNED)) {
-      data.pinnedTabIds = [tabId];
-    } else {
-      data.tabIds = [tabId];
-    }
+    dataTransfer.effectAllowed = 'copyMove';
+    dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
   }
-  dataTransfer.effectAllowed = 'move';
-  dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
+  return Promise.all(func).catch(throwErr);
 };
 
 // For test

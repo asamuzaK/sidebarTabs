@@ -294,17 +294,19 @@ export const undoCloseTab = async () => {
 
 /* DnD */
 /**
- * create DnD data
+ * trigger DnD handler
  *
  * @param {!object} evt - event
- * @returns {?Function} - handleDragStart()
+ * @returns {?Function} - handleDragStart() / handleDragOver()
  */
-export const createDnDData = evt => {
-  const { currentTarget } = evt;
+export const triggerDndHandler = evt => {
+  const { currentTarget, type } = evt;
   const { isMac, windowId } = sidebar;
   let func;
-  if (currentTarget.draggable) {
+  if (currentTarget.draggable && type === 'dragstart') {
     func = handleDragStart(evt, { isMac, windowId });
+  } else if (type === 'dragover') {
+    func = handleDragOver(evt, { isMac });
   }
   return func || null;
 };
@@ -490,9 +492,9 @@ export const triggerTabWarmup = evt => {
  */
 export const addTabEventListeners = async elm => {
   if (elm && elm.nodeType === Node.ELEMENT_NODE) {
-    elm.draggable && elm.addEventListener('dragstart', createDnDData);
+    elm.draggable && elm.addEventListener('dragstart', triggerDndHandler);
     elm.addEventListener('dragenter', handleDragEnter);
-    elm.addEventListener('dragover', handleDragOver);
+    elm.addEventListener('dragover', triggerDndHandler);
     elm.addEventListener('dragleave', handleDragLeave);
     elm.addEventListener('dragend', handleDragEnd);
     elm.addEventListener('drop', handleDrop);
