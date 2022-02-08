@@ -903,14 +903,13 @@ describe('main', () => {
         dataTransfer: {
           getData,
           setData,
-          effectAllowed: 'copyMove'
+          effectAllowed: 'uninitialized'
         },
         type: 'dragover'
       };
       const res = await func(evt);
       assert.isTrue(getData.calledOnce, 'called');
       assert.isTrue(setData.notCalled, 'not called');
-      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.isNull(res, 'result');
     });
   });
