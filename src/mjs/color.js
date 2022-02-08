@@ -428,10 +428,10 @@ export const numberToHexString = async value => {
   if (Number.isNaN(Number(value))) {
     throw new TypeError(`${getType(value)} is not a Number.`);
   }
-  if (value < 0 || value > NUM_MAX) {
+  let hex = Math.round(value).toString(HEX);
+  if (hex < 0 || hex > NUM_MAX) {
     throw new RangeError(`${value} is not between 0 and ${NUM_MAX}.`);
   }
-  let hex = Math.round(value).toString(HEX);
   if (hex.length === 1) {
     hex = `0${hex}`;
   }
