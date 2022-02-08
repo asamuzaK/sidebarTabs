@@ -41,7 +41,10 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
   const func = [];
   const target = getSidebarTab(dropTarget);
   if (target && Array.isArray(draggedIds) && isObjectNotEmpty(opt)) {
-    const { dropAfter, dropBefore, beGrouped, isPinned, windowId } = opt;
+    // TODO: add moving tab group handler
+    const {
+      beGrouped, dropAfter, dropBefore, /* grouped, */ isPinned, windowId
+    } = opt;
     const targetParent = target.parentNode;
     const moveArr = (dropAfter && draggedIds.reverse()) || draggedIds;
     const arr = [];
@@ -249,7 +252,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             const index = getDropIndexForDraggedTabs(dropTarget, {
               isPinnedTabIds: false
             });
-            // TODO: add grouped and beGrouped case handlers
+            // TODO: add grouped case and beGrouped case handlers
             Number.isInteger(index) && func.push(moveTab(tabIds, {
               index,
               windowId: dropWindowId
