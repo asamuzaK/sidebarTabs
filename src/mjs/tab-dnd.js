@@ -41,20 +41,38 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
   const func = [];
   const target = getSidebarTab(dropTarget);
   if (target && Array.isArray(draggedIds) && isObjectNotEmpty(opt)) {
-    // TODO: add moving tab group handler
     const {
-      beGrouped, dropAfter, dropBefore, /* grouped, */ isPinned, windowId
+      beGrouped, dropAfter, dropBefore, grouped, pinned, windowId
     } = opt;
     const targetParent = target.parentNode;
-    const moveArr = (dropAfter && draggedIds.reverse()) || draggedIds;
+    let groupContainer;
+    if (grouped && !pinned) {
+      const [tabId] = draggedIds;
+      const item = document.querySelector(`[data-tab-id="${tabId}"]`);
+      if (item) {
+        groupContainer = item.parentNode;
+        if (dropBefore) {
+          targetParent.parentNode.insertBefore(groupContainer, targetParent);
+        } else {
+          targetParent.parentNode
+            .insertBefore(groupContainer, targetParent.nextElementSibling);
+        }
+      }
+    }
     const arr = [];
+    const moveArr = (dropAfter && draggedIds.reverse()) || draggedIds;
     const l = moveArr.length;
     let i = 0;
     while (i < l) {
       const itemId = moveArr[i];
       const item = document.querySelector(`[data-tab-id="${itemId}"]`);
       if (item) {
-        if (isPinned) {
+        if (groupContainer) {
+          arr.push({
+            index: getSidebarTabIndex(item),
+            tabId: itemId
+          });
+        } else if (pinned) {
           if (targetParent.classList.contains(PINNED) &&
               item.classList.contains(PINNED)) {
             if (dropBefore) {
@@ -207,7 +225,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             const opt = {
               dropAfter: true,
               dropBefore: false,
-              isPinned: true,
+              pinned: true,
               windowId: dropWindowId
             };
             if (target === dropTarget &&
@@ -682,13 +700,13 @@ export const handleDragStart = (evt, opt = {}) => {
     const highlightedTabs =
       document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     let items;
-    if (tab.classList.contains(HIGHLIGHTED)) {
-      items = Array.from(highlightedTabs);
-    } else if (container && container.classList.contains(CLASS_TAB_GROUP) &&
-               shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
+    if (container && container.classList.contains(CLASS_TAB_GROUP) &&
+        shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
       items = Array.from(container.querySelectorAll(TAB_QUERY));
       data.grouped = true;
       func.push(highlightTabs(items, windowId));
+    } else if (tab.classList.contains(HIGHLIGHTED)) {
+      items = Array.from(highlightedTabs);
     } else if ((isMac && altKey) || (!isMac && ctrlKey)) {
       const tabList = new Set(Array.from(highlightedTabs));
       tabList.add(tab);

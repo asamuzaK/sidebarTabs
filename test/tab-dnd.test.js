@@ -307,7 +307,98 @@ describe('dnd', () => {
       assert.deepEqual(res, [null], 'result');
     });
 
-    // grouped tab
+    // grouped
+    it('should call function', async () => {
+      const i = browser.tabs.move.callCount;
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent3 = document.createElement('div');
+      const parent4 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent3.appendChild(elm3);
+      parent4.appendChild(elm4);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent3);
+      body.appendChild(parent4);
+      const res = await func(elm3, [1, 2], {
+        dropAfter: true,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true
+      });
+      const items = document.querySelectorAll(`.${TAB}`);
+      assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
+      assert.deepEqual(Array.from(items), [elm3, elm, elm2, elm4], 'move');
+      assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
+      assert.isFalse(elm.parentNode === elm3.parentNode, 'parent');
+      assert.isFalse(elm.parentNode === elm4.parentNode, 'parent');
+      assert.deepEqual(res, [null], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.move.callCount;
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent3 = document.createElement('div');
+      const parent4 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent3.appendChild(elm3);
+      parent4.appendChild(elm4);
+      body.appendChild(tmpl);
+      body.appendChild(parent);
+      body.appendChild(parent3);
+      body.appendChild(parent4);
+      const res = await func(elm4, [1, 2], {
+        dropBefore: true,
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        grouped: true
+      });
+      const items = document.querySelectorAll(`.${TAB}`);
+      assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
+      assert.deepEqual(Array.from(items), [elm3, elm, elm2, elm4], 'move');
+      assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
+      assert.isFalse(elm.parentNode === elm3.parentNode, 'parent');
+      assert.isFalse(elm.parentNode === elm4.parentNode, 'parent');
+      assert.deepEqual(res, [null], 'result');
+    });
+
+    // be grouped
     it('should call function', async () => {
       const i = browser.tabs.move.callCount;
       const tmpl = document.createElement('template');
@@ -398,7 +489,7 @@ describe('dnd', () => {
       assert.deepEqual(res, [null], 'result');
     });
 
-    // pinned tab
+    // pinned
     it('should not call function', async () => {
       const i = browser.tabs.move.callCount;
       const parent = document.createElement('div');
@@ -423,7 +514,7 @@ describe('dnd', () => {
       const res = await func(elm3, [1, 4], {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        isPinned: true
+        pinned: true
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -454,7 +545,7 @@ describe('dnd', () => {
       const res = await func(elm3, [1, 4], {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        isPinned: true
+        pinned: true
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -485,7 +576,7 @@ describe('dnd', () => {
       const res = await func(elm3, [1, 4], {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        isPinned: true
+        pinned: true
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -520,7 +611,7 @@ describe('dnd', () => {
       const res = await func(elm3, [1, 4], {
         dropAfter: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        isPinned: true
+        pinned: true
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
