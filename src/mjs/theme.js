@@ -766,7 +766,7 @@ export const setTheme = async info => {
  * @returns {Function} - promise chain
  */
 export const applyTheme = async () =>
-  setCurrentThemeValue().then(getTheme).then(setTheme);
+  setCurrentThemeValue().then(getTheme).then(setTheme).then(sendCurrentTheme);
 
 /* tab height */
 /**

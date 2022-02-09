@@ -1971,10 +1971,14 @@ describe('theme', () => {
       const i = browser.storage.local.set.withArgs({
         [THEME]: [THEME_AUTO, false]
       }).callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      mjs.currentTheme.set(THEME_CURRENT, {});
       await func();
       assert.strictEqual(browser.storage.local.set.withArgs({
         [THEME]: [THEME_AUTO, false]
       }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
     });
   });
 
