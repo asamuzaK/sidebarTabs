@@ -1023,7 +1023,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
   const func = [];
   if (isObjectNotEmpty(info) && isObjectNotEmpty(tabsTab)) {
     const {
-      audible, discarded, index, mutedInfo: { muted }, windowId
+      audible, discarded, highlighted, index, mutedInfo: { muted }, windowId
     } = tabsTab;
     if (windowId === sidebar.windowId) {
       const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
@@ -1041,8 +1041,11 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             Object.prototype.hasOwnProperty.call(info, 'mutedInfo')) {
           const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
           const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
+          const items =
+            document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
           const opt = {
             audible,
+            highlighted,
             muted
           };
           if (audible || muted) {
@@ -1051,7 +1054,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             tabAudio.classList.remove(AUDIBLE);
           }
           func.push(
-            setTabAudio(tabAudio, opt),
+            setTabAudio(tabAudio, opt, items.length),
             setTabAudioIcon(tabAudioIcon, opt)
           );
         }
