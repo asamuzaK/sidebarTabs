@@ -9,7 +9,7 @@ import { browser, createJsdom } from './mocha/setup.js';
 import sinon from 'sinon';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
-  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -392,13 +392,17 @@ describe('options-main', () => {
     const func = mjs.setCustomThemeValue;
 
     it('should not set value if argument not given', async () => {
+      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
+      themeId.id = THEME_ID;
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#ffffff';
+      body.appendChild(themeId);
       body.appendChild(elm);
       await func();
+      assert.strictEqual(themeId.value, '', 'value');
       assert.strictEqual(elm.value, '#ffffff', 'value');
     });
 
@@ -410,34 +414,50 @@ describe('options-main', () => {
       elm.value = '#ffffff';
       body.appendChild(elm);
       await func({
-        bar: '#1234AB'
+        id: 'foobar',
+        values: {
+          bar: '#1234AB'
+        }
       });
       assert.strictEqual(elm.value, '#ffffff', 'value');
     });
 
-    it('should not set value if type does not match', async () => {
+    it('should not set value', async () => {
+      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
+      themeId.id = THEME_ID;
       elm.id = 'foo';
       elm.type = 'text';
       elm.value = 'baz';
+      body.appendChild(themeId);
       body.appendChild(elm);
       await func({
-        foo: '#1234AB'
+        values: {
+          foo: '#1234AB'
+        }
       });
+      assert.strictEqual(themeId.value, '', 'value');
       assert.strictEqual(elm.value, 'baz', 'value');
     });
 
     it('should set color value', async () => {
+      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
+      themeId.id = THEME_ID;
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#ffffff';
+      body.appendChild(themeId);
       body.appendChild(elm);
       await func({
-        foo: '#1234AB'
+        id: 'foobar',
+        values: {
+          foo: '#1234AB'
+        }
       });
+      assert.strictEqual(themeId.value, 'foobar', 'value');
       assert.strictEqual(elm.value, '#1234ab', 'value');
     });
   });

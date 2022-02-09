@@ -1090,22 +1090,35 @@ describe('theme', () => {
       mjs.currentTheme.clear();
     });
 
-    it('it should get null', async () => {
+    it('it should not call function', async () => {
       const res = await func();
+      assert.isTrue(browser.runtime.sendMessage.notCalled, 'not called');
       assert.isNull(res, 'result');
     });
 
-    it('it should get null', async () => {
+    it('it should call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       mjs.currentTheme.set(THEME_CURRENT, {
-        foo: 'bar'
+        bar: 'baz'
       });
       const res = await func();
+      assert.isTrue(browser.runtime.sendMessage.calledOnce, 'called');
       assert.deepEqual(res, [
         null,
         {
           [THEME_CUSTOM_SETTING]: {
-            foo: 'bar'
+            id: 'foo',
+            values: {
+              bar: 'baz'
+            }
           }
         },
         null
@@ -1309,6 +1322,14 @@ describe('theme', () => {
     });
 
     it('should not call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       const i = browser.runtime.sendMessage.callCount;
       const res = await func();
@@ -1318,6 +1339,14 @@ describe('theme', () => {
     });
 
     it('should not call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
@@ -1334,6 +1363,14 @@ describe('theme', () => {
     });
 
     it('should not call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
@@ -1350,6 +1387,14 @@ describe('theme', () => {
     });
 
     it('should not call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
@@ -1364,6 +1409,14 @@ describe('theme', () => {
     });
 
     it('should call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       browser.storage.local.get.resolves({});
       const i = browser.runtime.sendMessage.callCount;
@@ -1382,13 +1435,24 @@ describe('theme', () => {
       assert.deepEqual(res, [
         null,
         {
-          [THEME_CUSTOM_SETTING]: currentTheme
+          [THEME_CUSTOM_SETTING]: {
+            id: 'foo',
+            values: currentTheme
+          }
         },
         null
       ], 'result');
     });
 
     it('should call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
       browser.storage.local.get.resolves({});
       const i = browser.runtime.sendMessage.callCount;
@@ -1407,7 +1471,10 @@ describe('theme', () => {
       assert.deepEqual(res, [
         null,
         {
-          [THEME_CUSTOM_SETTING]: currentTheme
+          [THEME_CUSTOM_SETTING]: {
+            id: 'foo',
+            values: currentTheme
+          }
         },
         null
       ], 'result');

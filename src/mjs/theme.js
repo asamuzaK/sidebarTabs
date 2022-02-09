@@ -521,11 +521,15 @@ export const setCurrentThemeValue = async () => {
  * @returns {?Function} - sendMessage()
  */
 export const sendCurrentTheme = async () => {
-  const obj = currentTheme.get(THEME_CURRENT);
+  const values = currentTheme.get(THEME_CURRENT);
   let func;
-  if (obj) {
+  if (values) {
+    const id = await getThemeId();
     const msg = {
-      [THEME_CUSTOM_SETTING]: obj
+      [THEME_CUSTOM_SETTING]: {
+        id,
+        values
+      }
     };
     func = sendMessage(null, msg);
   }

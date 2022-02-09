@@ -12,7 +12,7 @@ import { getFolderMap } from './bookmark.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
-  THEME_RADIO
+  THEME_ID, THEME_RADIO
 } from './constant.js';
 
 /**
@@ -177,7 +177,12 @@ export const addCustomThemeListener = async () => {
  */
 export const setCustomThemeValue = async (obj = {}) => {
   if (isObjectNotEmpty(obj)) {
-    const items = Object.entries(obj);
+    const { id, values } = obj;
+    const themeId = document.getElementById(THEME_ID);
+    if (themeId) {
+      themeId.value = id || '';
+    }
+    const items = Object.entries(values);
     for (const [key, value] of items) {
       const elm = document.getElementById(key);
       if (elm) {
