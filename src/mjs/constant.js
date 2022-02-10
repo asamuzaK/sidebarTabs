@@ -190,6 +190,7 @@ export const THEME_DARK_ID = 'firefox-compact-dark@mozilla.org';
 export const THEME_ID = 'themeId';
 export const THEME_LIGHT = 'lightTheme';
 export const THEME_LIGHT_ID = 'firefox-compact-light@mozilla.org';
+export const THEME_LIST = 'themeList';
 export const THEME_SYSTEM = 'systemTheme';
 export const THEME_SYSTEM_ID = 'default-theme@mozilla.org';
 export const THEME_RADIO = 'themeRadio';

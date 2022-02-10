@@ -5,14 +5,14 @@
 /* shared */
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
-  clearContextMenuOnMouseup, getAllStorage, removePermission,
+  clearContextMenuOnMouseup, getAllStorage, getStorage, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
-  THEME_ID, THEME_RADIO
+  THEME_ID, THEME_LIST, THEME_RADIO
 } from './constant.js';
 
 /**
@@ -76,6 +76,37 @@ export const requestCustomTheme = async (bool = false) => {
 };
 
 /**
+ * store custom theme values
+ *
+ * @returns {object} - custom theme data
+ */
+export const storeCustomTheme = async () => {
+  const themeId = document.getElementById(THEME_ID);
+  const storeId = themeId && themeId.value;
+  let data;
+  if (storeId) {
+    const items = document.querySelectorAll('[type=color]');
+    const themeValues = {};
+    for (const item of items) {
+      const { id, value } = item;
+      themeValues[id] = value;
+    }
+    let { themeList } = await getStorage(THEME_LIST);
+    if (!themeList) {
+      themeList = {};
+    }
+    themeList[storeId] = {
+      id: storeId,
+      values: themeValues
+    };
+    data = {
+      [THEME_LIST]: themeList
+    };
+  }
+  return data || null;
+};
+
+/**
  * create pref
  *
  * @param {object} elm - element
@@ -109,6 +140,8 @@ export const storePref = async evt => {
     for (const node of nodes) {
       func.push(createPref(node).then(setStorage));
     }
+  } else if (type === 'color') {
+    func.push(storeCustomTheme().then(setStorage));
   } else {
     switch (id) {
       case BROWSER_SETTINGS_READ:

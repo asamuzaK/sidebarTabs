@@ -47,8 +47,9 @@ import {
 import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
 import {
-  initCustomTheme, sendCurrentTheme, setNewTabSeparator, setScrollbarWidth,
-  setTabGroupColorBarWidth, setTabHeight, setTheme, updateCustomThemeCss
+  applyTheme, initCustomTheme, sendCurrentTheme, setNewTabSeparator,
+  setScrollbarWidth, setTabGroupColorBarWidth, setTabHeight, setTheme,
+  updateCustomThemeCss
 } from './theme.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -82,7 +83,7 @@ import {
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_DARK, THEME_LIGHT,
+  THEME_DARK, THEME_LIGHT, THEME_LIST,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
 
@@ -2073,6 +2074,9 @@ export const setVar = async (item, obj, changed = false) => {
       case THEME_DARK:
       case THEME_LIGHT:
         changed && checked && func.push(setTheme([item, !!checked]));
+        break;
+      case THEME_LIST:
+        changed && func.push(applyTheme());
         break;
       case THEME_UI_SCROLLBAR_NARROW:
         changed && func.push(setScrollbarWidth(!!checked));
