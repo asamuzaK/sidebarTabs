@@ -36,7 +36,7 @@ import {
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_LIST,
   THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
 } from './constant.js';
@@ -443,11 +443,14 @@ export const getCurrentThemeBaseValues = async () => {
 /**
  * get base value
  *
+ * @param {string} id - id
  * @returns {object} - values
  */
-export const getBaseValues = async () => {
+export const getBaseValues = async id => {
+  if (!isString(id)) {
+    throw new TypeError(`Expected String but got ${getType(id)}.`);
+  }
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
-  const id = await getThemeId();
   let values;
   switch (id) {
     case THEME_ALPEN_ID:
@@ -501,15 +504,31 @@ export const getBaseValues = async () => {
  */
 export const setCurrentThemeValue = async () => {
   const values = {};
-  const store = await getAllStorage();
-  const baseValues = await getBaseValues();
+  const themeId = await getThemeId();
+  const baseValues = await getBaseValues(themeId);
   const items = Object.entries(baseValues);
-  for (const [key, val] of items) {
-    const { value } = store[key] || {};
-    if (value) {
-      values[key] = value;
-    } else {
-      values[key] = val;
+  const { themeList } = await getStorage(THEME_LIST);
+  if (isObjectNotEmpty(themeList) &&
+      Object.prototype.hasOwnProperty.call(themeList, themeId)) {
+    const { values: themeValues } = themeList[themeId];
+    for (const [key, value] of items) {
+      const customValue = themeValues[key];
+      if (customValue) {
+        values[key] = customValue;
+      } else {
+        values[key] = value;
+      }
+    }
+  // NOTE: for migration, remove later
+  } else {
+    const store = await getAllStorage();
+    for (const [key, value] of items) {
+      const { value: customValue } = store[key] || {};
+      if (customValue) {
+        values[key] = customValue;
+      } else {
+        values[key] = value;
+      }
     }
   }
   currentTheme.set(THEME_CURRENT, values);
@@ -521,11 +540,15 @@ export const setCurrentThemeValue = async () => {
  * @returns {?Function} - sendMessage()
  */
 export const sendCurrentTheme = async () => {
-  const obj = currentTheme.get(THEME_CURRENT);
+  const values = currentTheme.get(THEME_CURRENT);
   let func;
-  if (obj) {
+  if (values) {
+    const id = await getThemeId();
     const msg = {
-      [THEME_CUSTOM_SETTING]: obj
+      [THEME_CUSTOM_SETTING]: {
+        id,
+        values
+      }
     };
     func = sendMessage(null, msg);
   }
@@ -620,12 +643,27 @@ export const initCustomTheme = async (rem = false) => {
   let func;
   if (elm && obj) {
     if (rem) {
-      const items = Object.keys(obj);
-      const arr = [];
-      for (const key of items) {
-        arr.push(key);
+      const { themeList } = await getStorage(THEME_LIST);
+      if (isObjectNotEmpty(themeList)) {
+        const themeId = await getThemeId();
+        Object.prototype.hasOwnProperty.call(themeList, themeId) &&
+          delete themeList[themeId];
+        if (isObjectNotEmpty(themeList)) {
+          await setStorage({
+            [THEME_LIST]: themeList
+          });
+        } else {
+          await removeStorage([THEME_LIST]);
+        }
+      // NOTE: For migration, remove later
+      } else {
+        const items = Object.keys(obj);
+        const arr = [];
+        for (const key of items) {
+          arr.push(key);
+        }
+        await removeStorage(arr);
       }
-      await removeStorage(arr);
     }
     currentThemeColors.clear();
     currentTheme.clear();
@@ -762,7 +800,7 @@ export const setTheme = async info => {
  * @returns {Function} - promise chain
  */
 export const applyTheme = async () =>
-  setCurrentThemeValue().then(getTheme).then(setTheme);
+  setCurrentThemeValue().then(getTheme).then(setTheme).then(sendCurrentTheme);
 
 /* tab height */
 /**

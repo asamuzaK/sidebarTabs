@@ -9,7 +9,8 @@ import { browser, createJsdom } from './mocha/setup.js';
 import sinon from 'sinon';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
-  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_RADIO
+  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_ID, THEME_LIST,
+  THEME_RADIO
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -126,6 +127,81 @@ describe('options-main', () => {
     });
   });
 
+  describe('store custom theme values', () => {
+    const func = mjs.storeCustomTheme;
+
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null if value is falsy', async () => {
+      const themeId = document.createElement('input');
+      themeId.id = THEME_ID;
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get result', async () => {
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      themeId.value = 'foo';
+      elm.id = 'bar';
+      elm.type = 'color';
+      elm.value = '#123456';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
+      const res = await func();
+      assert.deepEqual(res, {
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            values: {
+              bar: '#123456'
+            }
+          }
+        }
+      }, 'result');
+    });
+
+    it('should get result', async () => {
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      themeId.value = 'foo';
+      elm.id = 'bar';
+      elm.type = 'color';
+      elm.value = '#123456';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            values: {
+              bar: '#000000'
+            }
+          }
+        }
+      });
+      const res = await func();
+      assert.deepEqual(res, {
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            values: {
+              bar: '#123456'
+            }
+          }
+        }
+      }, 'result');
+    });
+  });
+
   describe('create pref', () => {
     const func = mjs.createPref;
 
@@ -190,6 +266,37 @@ describe('options-main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 2, 'called');
       assert.strictEqual(res.length, 2, 'array length');
       assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const elm2 = document.createElement('input');
+      const body = document.querySelector('body');
+      const evt = {
+        target: {
+          id: 'foo',
+          name: 'bar',
+          type: 'color'
+        }
+      };
+      themeId.id = THEME_ID;
+      themeId.value = 'foobar';
+      elm.id = 'foo';
+      elm.type = 'color';
+      elm.value = '#000000';
+      elm2.id = 'baz';
+      elm2.type = 'color';
+      elm.value = '#ffffff';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
+      const res = await func(evt);
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(res.length, 1, 'array length');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should get array', async () => {
@@ -392,13 +499,17 @@ describe('options-main', () => {
     const func = mjs.setCustomThemeValue;
 
     it('should not set value if argument not given', async () => {
+      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
+      themeId.id = THEME_ID;
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#ffffff';
+      body.appendChild(themeId);
       body.appendChild(elm);
       await func();
+      assert.strictEqual(themeId.value, '', 'value');
       assert.strictEqual(elm.value, '#ffffff', 'value');
     });
 
@@ -410,34 +521,50 @@ describe('options-main', () => {
       elm.value = '#ffffff';
       body.appendChild(elm);
       await func({
-        bar: '#1234AB'
+        id: 'foobar',
+        values: {
+          bar: '#1234AB'
+        }
       });
       assert.strictEqual(elm.value, '#ffffff', 'value');
     });
 
-    it('should not set value if type does not match', async () => {
+    it('should not set value', async () => {
+      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
+      themeId.id = THEME_ID;
       elm.id = 'foo';
       elm.type = 'text';
       elm.value = 'baz';
+      body.appendChild(themeId);
       body.appendChild(elm);
       await func({
-        foo: '#1234AB'
+        values: {
+          foo: '#1234AB'
+        }
       });
+      assert.strictEqual(themeId.value, '', 'value');
       assert.strictEqual(elm.value, 'baz', 'value');
     });
 
     it('should set color value', async () => {
+      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
+      themeId.id = THEME_ID;
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#ffffff';
+      body.appendChild(themeId);
       body.appendChild(elm);
       await func({
-        foo: '#1234AB'
+        id: 'foobar',
+        values: {
+          foo: '#1234AB'
+        }
       });
+      assert.strictEqual(themeId.value, 'foobar', 'value');
       assert.strictEqual(elm.value, '#1234ab', 'value');
     });
   });
