@@ -10,8 +10,8 @@ import util from 'util';
 
 /* test */
 import {
-  commander, copyLibraryFiles, includeLibraries, saveThemeManifest,
-  updateManifests, parseCommand
+  commander, copyLibraryFiles, extractLibraries, extractManifests,
+  includeLibraries, saveThemeManifest, updateManifests, parseCommand
 } from '../modules/commander.js';
 
 const BASE_URL = 'https://hg.mozilla.org';
@@ -160,6 +160,108 @@ describe('save theme manifest file', () => {
   });
 });
 
+describe('extract manifests', () => {
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        status: 'resolved'
+      },
+      {
+        reason: new Error('error'),
+        status: 'rejected'
+      },
+      {
+        status: 'resolved'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    await extractManifests();
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i + 1, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+
+  it('should not call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        status: 'resolved'
+      },
+      {
+        status: 'resolved'
+      },
+      {
+        status: 'resolved'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    await extractManifests();
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        reason: new Error('error'),
+        status: 'rejected'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    const opt = {
+      dir: 'alpenglow'
+    };
+    await extractManifests(opt);
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i + 1, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+
+  it('should not call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        status: 'resolved'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    const opt = {
+      dir: 'alpenglow'
+    };
+    await extractManifests(opt);
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+});
+
 describe('update manifests', () => {
   it('should call function', async () => {
     const stubWrite = sinon.stub(fsPromise, 'writeFile');
@@ -178,7 +280,7 @@ describe('update manifests', () => {
     const stubTrace = sinon.stub(console, 'trace');
     const i = stubTrace.callCount;
     const j = stubWrite.callCount;
-    await updateManifests();
+    const res = await updateManifests();
     const { callCount: traceCallCount } = stubTrace;
     const { callCount: writeCallCount } = stubWrite;
     stubAll.restore();
@@ -186,79 +288,7 @@ describe('update manifests', () => {
     stubWrite.restore();
     assert.strictEqual(traceCallCount, i + 1, 'trace');
     assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should not call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        status: 'resolved'
-      },
-      {
-        status: 'resolved'
-      },
-      {
-        status: 'resolved'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    await updateManifests();
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        reason: new Error('error'),
-        status: 'rejected'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    const opt = {
-      dir: 'alpenglow'
-    };
-    await updateManifests(opt);
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i + 1, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should not call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        status: 'resolved'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    const opt = {
-      dir: 'alpenglow'
-    };
-    await updateManifests(opt);
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
+    assert.isUndefined(res, 'result');
   });
 });
 
@@ -419,6 +449,96 @@ describe('copy library files and save package info', () => {
   });
 });
 
+describe('extract libraries', () => {
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        reason: new Error('error'),
+        status: 'rejected'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    await extractLibraries();
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i + 1, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+
+  it('should not call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        status: 'resolved'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    await extractLibraries();
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+
+  it('should call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        reason: new Error('error'),
+        status: 'rejected'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    const opt = {
+      dir: 'tldts'
+    };
+    await extractLibraries(opt);
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i + 1, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+
+  it('should not call function', async () => {
+    const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
+      {
+        status: 'resolved'
+      }
+    ]);
+    const stubTrace = sinon.stub(console, 'trace');
+    const i = stubTrace.callCount;
+    const j = stubWrite.callCount;
+    const opt = {
+      dir: 'tldts'
+    };
+    await extractLibraries(opt);
+    const { callCount: traceCallCount } = stubTrace;
+    const { callCount: writeCallCount } = stubWrite;
+    stubAll.restore();
+    stubTrace.restore();
+    stubWrite.restore();
+    assert.strictEqual(traceCallCount, i, 'trace');
+    assert.strictEqual(writeCallCount, j, 'write');
+  });
+});
+
 describe('include libraries', () => {
   it('should call function', async () => {
     const stubWrite = sinon.stub(fsPromise, 'writeFile');
@@ -431,7 +551,7 @@ describe('include libraries', () => {
     const stubTrace = sinon.stub(console, 'trace');
     const i = stubTrace.callCount;
     const j = stubWrite.callCount;
-    await includeLibraries();
+    const res = await includeLibraries();
     const { callCount: traceCallCount } = stubTrace;
     const { callCount: writeCallCount } = stubWrite;
     stubAll.restore();
@@ -439,73 +559,7 @@ describe('include libraries', () => {
     stubWrite.restore();
     assert.strictEqual(traceCallCount, i + 1, 'trace');
     assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should not call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        status: 'resolved'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    await includeLibraries();
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        reason: new Error('error'),
-        status: 'rejected'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    const opt = {
-      dir: 'tldts'
-    };
-    await includeLibraries(opt);
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i + 1, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should not call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        status: 'resolved'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    const opt = {
-      dir: 'tldts'
-    };
-    await includeLibraries(opt);
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
+    assert.isUndefined(res, 'result');
   });
 });
 

@@ -3,7 +3,7 @@
  */
 
 /* api */
-import { getType, isString } from './common.js';
+import { getType, isString, throwErr } from './common.js';
 import { createFile, fetchText, isFile, readFile } from './file-util.js';
 import { program as commander } from 'commander';
 import { promisify } from 'util';
@@ -42,12 +42,12 @@ export const saveThemeManifest = async (dir, info) => {
 };
 
 /**
- * update theme manifests
+ * extract manifests
  *
  * @param {object} cmdOpts - command options
  * @returns {void}
  */
-export const updateManifests = async (cmdOpts = {}) => {
+export const extractManifests = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const func = [];
   if (dir) {
@@ -67,6 +67,15 @@ export const updateManifests = async (cmdOpts = {}) => {
     }
   }
 };
+
+/**
+ * update manifests
+ *
+ * @param {object} cmdOpts - command options
+ * @returns {Promise.<Array>} - promise chain
+ */
+export const updateManifests = cmdOpts =>
+  extractManifests(cmdOpts).catch(throwErr);
 
 /**
  * copy library files and save package info
@@ -136,12 +145,12 @@ export const copyLibraryFiles = async (lib, info) => {
 };
 
 /**
- * include libraries
+ * extract libraries
  *
  * @param {object} cmdOpts - command options
  * @returns {void}
  */
-export const includeLibraries = async (cmdOpts = {}) => {
+export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const libraries = {
     tldts: {
@@ -183,6 +192,15 @@ export const includeLibraries = async (cmdOpts = {}) => {
 };
 
 /**
+ * include libraries
+ *
+ * @param {object} cmdOpts - command options
+ * @returns {Promise.<Array>} - promise chain
+ */
+export const includeLibraries = cmdOpts =>
+  extractLibraries(cmdOpts).catch(throwErr);
+
+/**
  * parse command
  *
  * @param {Array} args - process.argv
@@ -198,7 +216,7 @@ export const parseCommand = args => {
       .option('-i, --info', 'console info')
       .action(updateManifests);
     commander.command('include').alias('i')
-      .description('include library package.json')
+      .description('include library packages')
       .option('-d, --dir <name>', 'specify library directory')
       .option('-i, --info', 'console info')
       .action(includeLibraries);
