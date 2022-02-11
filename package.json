@@ -38,7 +38,8 @@
     "copyfiles": "^2.4.1",
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.0",
-    "tldts-experimental": "^5.7.61"
+    "tldts-experimental": "^5.7.61",
+    "webext-schema": "^2.1.0"
   },
   "devDependencies": {
     "addons-linter": "^4.9.0",
@@ -58,8 +59,7 @@
     "npm-run-all": "^4.1.5",
     "sinon": "^13.0.1",
     "stylelint": "^14.5.0",
-    "stylelint-config-standard": "^25.0.0",
-    "webext-schema": "^2.1.0"
+    "stylelint-config-standard": "^25.0.0"
   },
   "version": "7.0.0"
 }
