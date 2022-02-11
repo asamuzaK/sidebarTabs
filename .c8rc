@@ -1,4 +1,4 @@
 {
-  "exclude": ["src/lib/*", "test/*"],
+  "exclude": ["src/mjs/browser.js", "src/lib/*", "test/*"],
   "reporter": "text"
 }
