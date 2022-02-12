@@ -348,8 +348,13 @@ describe('copy library files and save package info', () => {
   });
 
   it('should throw', async () => {
-    const stubPromise =
-      sinon.stub(util, 'promisify').rejects(new Error('error'));
+    const stubLog = sinon.stub(console, 'log');
+    const stubCopy = sinon.stub(fs, 'copyFile').callsFake((...args) => {
+      (() => args.pop())();
+    });
+    const stubPromise = sinon.stub(util, 'promisify').callsFake(() => {
+      throw new Error('error');
+    });
     await copyLibraryFiles([
       'tldts',
       {
@@ -375,11 +380,17 @@ describe('copy library files and save package info', () => {
       assert.instanceOf(e, Error);
       assert.strictEqual(e.message, 'error');
     });
+    stubLog.restore();
+    stubCopy.restore();
     stubPromise.restore();
   });
 
   it('should call function', async () => {
-    const stubPromise = sinon.stub(util, 'promisify').resolves(undefined);
+    const stubLog = sinon.stub(console, 'log');
+    const stubCopy = sinon.stub(fs, 'copyFile').callsFake((...args) => {
+      (() => args.pop())();
+    });
+    const stubPromise = sinon.stub(util, 'promisify').callsFake(() => {});
     const stubWrite = sinon.stub(fsPromise, 'writeFile');
     const filePath = path.resolve(DIR_CWD, PATH_LIB, 'tldts', 'package.json');
     const res = await copyLibraryFiles([
@@ -405,6 +416,8 @@ describe('copy library files and save package info', () => {
       }
     ]);
     const { calledOnce: writeCalled } = stubWrite;
+    stubLog.restore();
+    stubCopy.restore();
     stubPromise.restore();
     stubWrite.restore();
     assert.isTrue(writeCalled, 'called');
@@ -412,7 +425,11 @@ describe('copy library files and save package info', () => {
   });
 
   it('should call function', async () => {
-    const stubPromise = sinon.stub(util, 'promisify').resolves(undefined);
+    const stubLog = sinon.stub(console, 'log');
+    const stubCopy = sinon.stub(fs, 'copyFile').callsFake((...args) => {
+      (() => args.pop())();
+    });
+    const stubPromise = sinon.stub(util, 'promisify').callsFake(() => {});
     const stubWrite = sinon.stub(fsPromise, 'writeFile');
     const stubInfo = sinon.stub(console, 'info');
     const filePath = path.resolve(DIR_CWD, PATH_LIB, 'tldts', 'package.json');
@@ -440,6 +457,8 @@ describe('copy library files and save package info', () => {
     ], true);
     const { calledOnce: writeCalled } = stubWrite;
     const { calledOnce: infoCalled } = stubInfo;
+    stubLog.restore();
+    stubCopy.restore();
     stubPromise.restore();
     stubWrite.restore();
     stubInfo.restore();

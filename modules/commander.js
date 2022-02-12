@@ -33,12 +33,14 @@ export const saveThemeManifest = async (dir, info) => {
   }
   const manifestUrl = `${BASE_URL}${dir}/manifest.json`;
   const manifest = await fetchText(manifestUrl);
-  const filePath = path.resolve(DIR_CWD, 'resource', `${dir}-manifest.json`);
-  const file = await createFile(filePath, manifest);
-  if (file && info) {
-    console.info(`Created: ${file}`);
+  const filePath = await createFile(
+    path.resolve(DIR_CWD, 'resource', `${dir}-manifest.json`),
+    manifest
+  );
+  if (filePath && info) {
+    console.info(`Created: ${filePath}`);
   }
-  return file;
+  return filePath;
 };
 
 /**
@@ -72,7 +74,7 @@ export const extractManifests = async (cmdOpts = {}) => {
  * update manifests
  *
  * @param {object} cmdOpts - command options
- * @returns {Promise.<Array>} - promise chain
+ * @returns {Function} - promise chain
  */
 export const updateManifests = cmdOpts =>
   extractManifests(cmdOpts).catch(throwErr);
@@ -136,12 +138,12 @@ export const copyLibraryFiles = async (lib, info) => {
     version,
     origins
   }, null, INDENT);
-  const filePath = path.resolve(libPath, 'package.json');
-  const libPkg = await createFile(filePath, content + '\n');
-  if (libPkg && info) {
-    console.info(`Created: ${libPkg}`);
+  const filePath =
+    await createFile(path.resolve(libPath, 'package.json'), content + '\n');
+  if (filePath && info) {
+    console.info(`Created: ${filePath}`);
   }
-  return libPkg;
+  return filePath;
 };
 
 /**
@@ -195,7 +197,7 @@ export const extractLibraries = async (cmdOpts = {}) => {
  * include libraries
  *
  * @param {object} cmdOpts - command options
- * @returns {Promise.<Array>} - promise chain
+ * @returns {Function} - promise chain
  */
 export const includeLibraries = cmdOpts =>
   extractLibraries(cmdOpts).catch(throwErr);
