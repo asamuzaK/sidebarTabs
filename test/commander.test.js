@@ -6,12 +6,11 @@ import nock from 'nock';
 import path from 'path';
 import process from 'process';
 import sinon from 'sinon';
-import util from 'util';
 
 /* test */
 import {
-  commander, copyLibraryFiles, extractLibraries, extractManifests,
-  includeLibraries, saveThemeManifest, updateManifests, parseCommand
+  commander, extractLibraries, extractManifests, includeLibraries,
+  saveLibraryPackage, saveThemeManifest, updateManifests, parseCommand
 } from '../modules/commander.js';
 
 const BASE_URL = 'https://hg.mozilla.org';
@@ -292,22 +291,22 @@ describe('update manifests', () => {
   });
 });
 
-describe('copy library files and save package info', () => {
+describe('save library package info', () => {
   it('should throw', async () => {
-    await copyLibraryFiles().catch(e => {
+    await saveLibraryPackage().catch(e => {
       assert.instanceOf(e, TypeError);
       assert.strictEqual(e.message, 'Expected Array but got Undefined.');
     });
   });
 
   it('should throw', async () => {
-    await copyLibraryFiles([]).catch(e => {
+    await saveLibraryPackage([]).catch(e => {
       assert.instanceOf(e, Error);
     });
   });
 
   it('should throw', async () => {
-    await copyLibraryFiles([
+    await saveLibraryPackage([
       'foo'
     ]).catch(e => {
       assert.instanceOf(e, Error);
@@ -315,7 +314,7 @@ describe('copy library files and save package info', () => {
   });
 
   it('should throw', async () => {
-    await copyLibraryFiles([
+    await saveLibraryPackage([
       'foo',
       {
         name: 'foo'
@@ -326,7 +325,7 @@ describe('copy library files and save package info', () => {
   });
 
   it('should throw', async () => {
-    await copyLibraryFiles([
+    await saveLibraryPackage([
       'tldts',
       {
         name: 'tldts-experimental',
@@ -348,14 +347,7 @@ describe('copy library files and save package info', () => {
   });
 
   it('should throw', async () => {
-    const stubLog = sinon.stub(console, 'log');
-    const stubCopy = sinon.stub(fs, 'copyFile').callsFake((...args) => {
-      (() => args.pop())();
-    });
-    const stubPromise = sinon.stub(util, 'promisify').callsFake(() => {
-      throw new Error('error');
-    });
-    await copyLibraryFiles([
+    await saveLibraryPackage([
       'tldts',
       {
         name: 'tldts-experimental',
@@ -363,37 +355,23 @@ describe('copy library files and save package info', () => {
         type: 'module',
         files: [
           {
-            file: 'LICENSE',
+            file: 'foo',
             path: 'LICENSE'
-          },
-          {
-            file: 'index.esm.min.js',
-            path: 'dist/index.esm.min.js'
-          },
-          {
-            file: 'index.esm.min.js.map',
-            path: 'dist/index.esm.min.js.map'
           }
         ]
       }
     ]).catch(e => {
+      const filePath = path.resolve(DIR_CWD, PATH_LIB, 'tldts', 'foo');
       assert.instanceOf(e, Error);
-      assert.strictEqual(e.message, 'error');
+      assert.strictEqual(e.message, `${filePath} is not a file.`);
     });
-    stubLog.restore();
-    stubCopy.restore();
-    stubPromise.restore();
   });
 
   it('should call function', async () => {
-    const stubLog = sinon.stub(console, 'log');
-    const stubCopy = sinon.stub(fs, 'copyFile').callsFake((...args) => {
-      (() => args.pop())();
-    });
-    const stubPromise = sinon.stub(util, 'promisify').callsFake(() => {});
     const stubWrite = sinon.stub(fsPromise, 'writeFile');
+    const stubInfo = sinon.stub(console, 'info');
     const filePath = path.resolve(DIR_CWD, PATH_LIB, 'tldts', 'package.json');
-    const res = await copyLibraryFiles([
+    const res = await saveLibraryPackage([
       'tldts',
       {
         name: 'tldts-experimental',
@@ -415,25 +393,20 @@ describe('copy library files and save package info', () => {
         ]
       }
     ]);
+    const { called: infoCalled } = stubInfo;
     const { calledOnce: writeCalled } = stubWrite;
-    stubLog.restore();
-    stubCopy.restore();
-    stubPromise.restore();
+    stubInfo.restore();
     stubWrite.restore();
     assert.isTrue(writeCalled, 'called');
+    assert.isFalse(infoCalled, 'not called');
     assert.strictEqual(res, filePath, 'result');
   });
 
   it('should call function', async () => {
-    const stubLog = sinon.stub(console, 'log');
-    const stubCopy = sinon.stub(fs, 'copyFile').callsFake((...args) => {
-      (() => args.pop())();
-    });
-    const stubPromise = sinon.stub(util, 'promisify').callsFake(() => {});
     const stubWrite = sinon.stub(fsPromise, 'writeFile');
     const stubInfo = sinon.stub(console, 'info');
     const filePath = path.resolve(DIR_CWD, PATH_LIB, 'tldts', 'package.json');
-    const res = await copyLibraryFiles([
+    const res = await saveLibraryPackage([
       'tldts',
       {
         name: 'tldts-experimental',
@@ -457,9 +430,6 @@ describe('copy library files and save package info', () => {
     ], true);
     const { calledOnce: writeCalled } = stubWrite;
     const { calledOnce: infoCalled } = stubInfo;
-    stubLog.restore();
-    stubCopy.restore();
-    stubPromise.restore();
     stubWrite.restore();
     stubInfo.restore();
     assert.isTrue(writeCalled, 'called');

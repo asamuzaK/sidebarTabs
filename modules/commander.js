@@ -6,8 +6,6 @@
 import { getType, isString, throwErr } from './common.js';
 import { createFile, fetchText, isFile, readFile } from './file-util.js';
 import { program as commander } from 'commander';
-import { promisify } from 'util';
-import copyfiles from 'copyfiles';
 import path from 'path';
 import process from 'process';
 
@@ -80,13 +78,13 @@ export const updateManifests = cmdOpts =>
   extractManifests(cmdOpts).catch(throwErr);
 
 /**
- * copy library files and save package info
+ * save library package info
  *
  * @param {Array} lib - library
  * @param {boolean} info - console info
  * @returns {string} - package.json file path
  */
-export const copyLibraryFiles = async (lib, info) => {
+export const saveLibraryPackage = async (lib, info) => {
   if (!Array.isArray(lib)) {
     throw new TypeError(`Expected Array but got ${getType(lib)}.`);
   }
@@ -104,8 +102,6 @@ export const copyLibraryFiles = async (lib, info) => {
   const {
     author, description, homepage, license, name, version
   } = JSON.parse(pkgJson);
-  const copyLibFiles = promisify(copyfiles);
-  const libFiles = [];
   const origins = [];
   for (const item of files) {
     const {
@@ -116,18 +112,15 @@ export const copyLibraryFiles = async (lib, info) => {
     if (!isFile(itemFile)) {
       throw new Error(`${itemFile} is not a file.`);
     }
-    libFiles.push(itemFile);
+    const libFile = path.resolve(libPath, file);
+    if (!isFile(libFile)) {
+      throw new Error(`${libFile} is not a file.`);
+    }
     origins.push({
       file,
       url: `${originUrl}@${version}/${itemPath}`
     });
   }
-  libFiles.push(libPath);
-  await copyLibFiles(libFiles, {
-    error: true,
-    up: true,
-    verbose: !!info
-  });
   const content = JSON.stringify({
     name,
     description,
@@ -177,11 +170,11 @@ export const extractLibraries = async (cmdOpts = {}) => {
   };
   const func = [];
   if (dir) {
-    func.push(copyLibraryFiles([dir, libraries[dir]], info));
+    func.push(saveLibraryPackage([dir, libraries[dir]], info));
   } else {
     const items = Object.entries(libraries);
     for (const [key, value] of items) {
-      func.push(copyLibraryFiles([key, value], info));
+      func.push(saveLibraryPackage([key, value], info));
     }
   }
   const arr = await Promise.allSettled(func);

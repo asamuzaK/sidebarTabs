@@ -15,7 +15,7 @@
   "scripts": {
     "include": "npm-run-all -s include:*",
     "include:browser": "copyfiles -u 3 --verbose node_modules/webext-schema/modules/browser.js src/mjs",
-    "include:tldts": "node index include -d tldts -i",
+    "include:tldts": "copyfiles -f --verbose node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts && node index include -d tldts -i",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
     "lint:eslint": "eslint --fix .",
