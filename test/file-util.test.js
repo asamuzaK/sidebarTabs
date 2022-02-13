@@ -17,7 +17,7 @@ const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
 
 describe('getStat', () => {
   it('should be an object', () => {
-    const p = path.resolve(path.join('test', 'file', 'test.txt'));
+    const p = path.resolve('test', 'file', 'test.txt');
     assert.property(getStat(p), 'mode');
   });
 
@@ -26,19 +26,19 @@ describe('getStat', () => {
   });
 
   it('should get null if file does not exist', () => {
-    const p = path.resolve(path.join('test', 'file', 'foo.txt'));
+    const p = path.resolve('test', 'file', 'foo.txt');
     assert.isNull(getStat(p));
   });
 });
 
 describe('isFile', () => {
   it('should get true if file exists', () => {
-    const p = path.resolve(path.join('test', 'file', 'test.txt'));
+    const p = path.resolve('test', 'file', 'test.txt');
     assert.isTrue(isFile(p));
   });
 
   it('should get false if file does not exist', () => {
-    const p = path.resolve(path.join('test', 'file', 'foo.txt'));
+    const p = path.resolve('test', 'file', 'foo.txt');
     assert.isFalse(isFile(p));
   });
 });
@@ -51,7 +51,7 @@ describe('readFile', () => {
   });
 
   it('should get file', async () => {
-    const p = path.resolve(path.join('test', 'file', 'test.txt'));
+    const p = path.resolve('test', 'file', 'test.txt');
     const opt = { encoding: 'utf8', flag: 'r' };
     const file = await readFile(p, opt);
     assert.strictEqual(file, 'test file\n');
