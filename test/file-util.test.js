@@ -1,6 +1,6 @@
 /* api */
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
+import { afterEach, beforeEach, describe, it } from 'mocha';
 import fs from 'fs';
 import nock from 'nock';
 import os from 'os';
@@ -59,15 +59,20 @@ describe('readFile', () => {
 });
 
 describe('createFile', () => {
+  const dirPath = path.join(TMPDIR, 'sidebartabs');
+  beforeEach(() => {
+    fs.rmSync(dirPath, { force: true, recursive: true });
+  });
+  afterEach(() => {
+    fs.rmSync(dirPath, { force: true, recursive: true });
+  });
+
   it('should get string', async () => {
-    const dirPath = path.join(TMPDIR, 'sidebartabs');
     fs.mkdirSync(dirPath);
     const filePath = path.join(dirPath, 'test.txt');
     const value = 'test file.\n';
     const file = await createFile(filePath, value);
     assert.strictEqual(file, filePath);
-    fs.unlinkSync(file);
-    fs.rmdirSync(dirPath);
   });
 
   it('should throw if first argument is not a string', () => {
@@ -76,14 +81,12 @@ describe('createFile', () => {
     });
   });
 
-  it(
-    'should throw if second argument is not a string', () => {
-      const file = path.join(TMPDIR, 'sidebartabs', 'test.txt');
-      createFile(file).catch(e => {
-        assert.strictEqual(e.message, 'Expected String but got Undefined.');
-      });
-    }
-  );
+  it('should throw if second argument is not a string', () => {
+    const file = path.join(dirPath, 'test.txt');
+    createFile(file).catch(e => {
+      assert.strictEqual(e.message, 'Expected String but got Undefined.');
+    });
+  });
 });
 
 describe('fetch text', () => {
