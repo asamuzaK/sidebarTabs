@@ -12,12 +12,12 @@ import psl from 'psl';
 import sinon from 'sinon';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
-  CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
-  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
-  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
-  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ITEMS, CLASS_TAB_TITLE,
-  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM, CLASS_THEME_DARK,
+  CLASS_COLLAPSE_AUTO, CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL,
+  CLASS_HEADING_LABEL_EDIT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
+  CLASS_SEPARATOR_SHOW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ITEMS,
+  CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM, CLASS_THEME_DARK,
   CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
@@ -35,8 +35,8 @@ import {
   TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
   TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP,
+  TAB_GROUP_EXPAND_EXCLUDE_PINNED, TAB_GROUP_LABEL_SHOW,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE, TAB_NEW,
   TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER, TAB_SKIP_COLLAPSED,
   TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
@@ -103,6 +103,7 @@ describe('main', () => {
     mjs.sidebar.skipCollapsed = false;
     mjs.sidebar.switchTabByScrolling = false;
     mjs.sidebar.tabGroupOnExpandCollapseOther = false;
+    mjs.sidebar.tabGroupOnExpandExcludePinned = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
     mjs.sidebar.windowId = null;
@@ -132,6 +133,7 @@ describe('main', () => {
     mjs.sidebar.skipCollapsed = false;
     mjs.sidebar.switchTabByScrolling = false;
     mjs.sidebar.tabGroupOnExpandCollapseOther = false;
+    mjs.sidebar.tabGroupOnExpandExcludePinned = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
     mjs.sidebar.windowId = null;
@@ -150,11 +152,58 @@ describe('main', () => {
       TAB_CLOSE_DBLCLICK,
       TAB_GROUP_ENABLE,
       TAB_GROUP_EXPAND_COLLAPSE_OTHER,
+      TAB_GROUP_EXPAND_EXCLUDE_PINNED,
       TAB_GROUP_NEW_TAB_AT_END,
       TAB_SKIP_COLLAPSED,
       TAB_SWITCH_SCROLL,
       TAB_SWITCH_SCROLL_ALWAYS
     ];
+    const trueValues = [
+      'enableTabGroup'
+    ];
+    const nullValues = [
+      'context',
+      'contextualIds',
+      'firstSelectedTab',
+      'lastClosedTab',
+      'pinnedTabsWaitingToMove',
+      'tabsWaitingToMove'
+    ];
+
+    it('should get default values', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves(undefined);
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      const items = Object.entries(sidebar);
+      for (const [key, value] of items) {
+        if (key === 'windowId') {
+          assert.strictEqual(value, 1, `${key}`);
+        } else if (trueValues.includes(key)) {
+          assert.isTrue(value, `${key}`);
+        } else if (nullValues.includes(key)) {
+          assert.isNull(value, `${key}`);
+        } else {
+          assert.isFalse(value, `${key}`);
+        }
+      }
+    });
 
     it('should set value', async () => {
       const { sidebar } = mjs;
@@ -200,6 +249,9 @@ describe('main', () => {
         tabGroupOnExpandCollapseOther: {
           checked: true
         },
+        tabGroupOnExpandExcludePinned: {
+          checked: true
+        },
         tabGroupPutNewTabAtTheEnd: {
           checked: true
         }
@@ -218,6 +270,8 @@ describe('main', () => {
       assert.isTrue(sidebar.switchTabByScrolling, 'switchTab');
       assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
+      assert.isTrue(sidebar.tabGroupOnExpandExcludePinned,
+        'tabGroupOnExpandExcludePinned');
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
         'tabGroupPutNewTabAtTheEnd');
       assert.isTrue(sidebar.incognito, 'incognito');
@@ -232,17 +286,17 @@ describe('main', () => {
       });
       const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
+        os: 'win'
       });
       const i = getCurrent.callCount;
       const j = getStorage.callCount;
       const k = getOs.callCount;
       getCurrent.resolves({
         id: 1,
-        incognito: true
+        incognito: false
       });
       getStorage.resolves({
-        tabGroupOnExpandCollapseOther: {
+        alwaysSwitchTabByScrolling: {
           checked: true
         }
       });
@@ -250,16 +304,9 @@ describe('main', () => {
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.isTrue(sidebar.alwaysSwitchTabByScrolling, 'alwaysSwitchTab');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
 
@@ -270,93 +317,14 @@ describe('main', () => {
       });
       const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
+        os: 'win'
       });
       const i = getCurrent.callCount;
       const j = getStorage.callCount;
       const k = getOs.callCount;
       getCurrent.resolves({
         id: 1,
-        incognito: true
-      });
-      getStorage.resolves({
-        enableTabGroup: {
-          checked: true
-        },
-        tabGroupPutNewTabAtTheEnd: {
-          checked: true
-        }
-      });
-      await func();
-      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
-      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
-      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
-      assert.strictEqual(sidebar.windowId, 1, 'windowId');
-    });
-
-    it('should set value', async () => {
-      const { sidebar } = mjs;
-      const getCurrent = browser.windows.getCurrent.withArgs({
-        populate: true
-      });
-      const getStorage = browser.storage.local.get.withArgs(args);
-      const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
-      });
-      const i = getCurrent.callCount;
-      const j = getStorage.callCount;
-      const k = getOs.callCount;
-      getCurrent.resolves({
-        id: 1,
-        incognito: true
-      });
-      getStorage.resolves({
-        readBrowserSettings: {
-          checked: true
-        }
-      });
-      await func();
-      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
-      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
-      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isTrue(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
-      assert.strictEqual(sidebar.windowId, 1, 'windowId');
-    });
-
-    it('should set value', async () => {
-      const { sidebar } = mjs;
-      const getCurrent = browser.windows.getCurrent.withArgs({
-        populate: true
-      });
-      const getStorage = browser.storage.local.get.withArgs(args);
-      const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
-      });
-      const i = getCurrent.callCount;
-      const j = getStorage.callCount;
-      const k = getOs.callCount;
-      getCurrent.resolves({
-        id: 1,
-        incognito: true
+        incognito: false
       });
       getStorage.resolves({
         closeTabsByDoubleClick: {
@@ -368,15 +336,8 @@ describe('main', () => {
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isTrue(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
 
@@ -387,35 +348,27 @@ describe('main', () => {
       });
       const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
+        os: 'win'
       });
       const i = getCurrent.callCount;
       const j = getStorage.callCount;
       const k = getOs.callCount;
       getCurrent.resolves({
         id: 1,
-        incognito: true
+        incognito: false
       });
       getStorage.resolves({
-        skipCollapsed: {
-          checked: true
+        enableTabGroup: {
+          checked: false
         }
       });
       await func();
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isTrue(sidebar.skipCollapsed, 'skipCollapsed');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.isFalse(sidebar.enableTabGroup, 'enableTabGroup');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
 
@@ -426,94 +379,14 @@ describe('main', () => {
       });
       const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
+        os: 'win'
       });
       const i = getCurrent.callCount;
       const j = getStorage.callCount;
       const k = getOs.callCount;
       getCurrent.resolves({
         id: 1,
-        incognito: true
-      });
-      getStorage.resolves({
-        switchTabByScrolling: {
-          checked: true
-        }
-      });
-      await func();
-      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
-      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
-      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
-      assert.isTrue(sidebar.switchTabByScrolling, 'switchTab');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
-      assert.strictEqual(sidebar.windowId, 1, 'windowId');
-    });
-
-    it('should set value', async () => {
-      const { sidebar } = mjs;
-      const getCurrent = browser.windows.getCurrent.withArgs({
-        populate: true
-      });
-      const getStorage = browser.storage.local.get.withArgs(args);
-      const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
-      });
-      const i = getCurrent.callCount;
-      const j = getStorage.callCount;
-      const k = getOs.callCount;
-      getCurrent.resolves({
-        id: 1,
-        incognito: true
-      });
-      getStorage.resolves({
-        alwaysSwitchTabByScrolling: {
-          checked: true
-        }
-      });
-      await func();
-      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
-      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
-      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
-      assert.isTrue(sidebar.alwaysSwitchTabByScrolling, 'alwaysSwitchTab');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
-      assert.strictEqual(sidebar.windowId, 1, 'windowId');
-    });
-
-    it('should set value', async () => {
-      const { sidebar } = mjs;
-      const getCurrent = browser.windows.getCurrent.withArgs({
-        populate: true
-      });
-      const getStorage = browser.storage.local.get.withArgs(args);
-      const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
-      });
-      const i = getCurrent.callCount;
-      const j = getStorage.callCount;
-      const k = getOs.callCount;
-      getCurrent.resolves({
-        id: 1,
-        incognito: true
+        incognito: false
       });
       getStorage.resolves({
         invertScrollDirection: {
@@ -524,17 +397,9 @@ describe('main', () => {
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isFalse(sidebar.skipCollapsed, 'skipCollapsed');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
       assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
 
@@ -545,14 +410,45 @@ describe('main', () => {
       });
       const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
+        os: 'win'
       });
       const i = getCurrent.callCount;
       const j = getStorage.callCount;
       const k = getOs.callCount;
       getCurrent.resolves({
         id: 1,
-        incognito: true
+        incognito: false
+      });
+      getStorage.resolves({
+        readBrowserSettings: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.readBrowserSettings, 'readBrowserSettings');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
       });
       getStorage.resolves({
         showNewTabSeparator: {
@@ -563,16 +459,9 @@ describe('main', () => {
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isFalse(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isTrue(sidebar.showNewTabSeparator, 'showNewTabSeparator');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
-        'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
-        'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
 
@@ -583,29 +472,154 @@ describe('main', () => {
       });
       const getStorage = browser.storage.local.get.withArgs(args);
       const getOs = browser.runtime.getPlatformInfo.resolves({
-        os: 'mac'
+        os: 'win'
       });
       const i = getCurrent.callCount;
       const j = getStorage.callCount;
       const k = getOs.callCount;
       getCurrent.resolves({
         id: 1,
-        incognito: true
+        incognito: false
       });
-      getStorage.resolves(undefined);
+      getStorage.resolves({
+        skipCollapsed: {
+          checked: true
+        }
+      });
       await func();
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
-      assert.isTrue(sidebar.enableTabGroup, 'enableTabGroup');
-      assert.isFalse(sidebar.invertScrollDirection, 'invertScrollDirection');
-      assert.isFalse(sidebar.readBrowserSettings, 'readBrowserSettings');
-      assert.isFalse(sidebar.tabGroupOnExpandCollapseOther,
+      assert.isTrue(sidebar.skipCollapsed, 'skipCollapsed');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves({
+        switchTabByScrolling: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.switchTabByScrolling, 'switchTab');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves({
+        tabGroupOnExpandCollapseOther: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.tabGroupOnExpandCollapseOther,
         'tabGroupCollapseOther');
-      assert.isFalse(sidebar.tabGroupPutNewTabAtTheEnd,
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves({
+        tabGroupOnExpandExcludePinned: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.tabGroupOnExpandExcludePinned,
+        'tabGroupOnExpandExcludePinned');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves({
+        tabGroupPutNewTabAtTheEnd: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
         'tabGroupPutNewTabAtTheEnd');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
   });
@@ -11564,6 +11578,54 @@ describe('main', () => {
         await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: true }, true);
       assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, 'set');
       assert.deepEqual(res, [[]], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: true });
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: false });
+      assert.isFalse(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: true }, true);
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: false }, true);
+      assert.isFalse(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {

@@ -16,9 +16,9 @@ import {
 } from './util.js';
 import {
   ACTIVE,
-  CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
-  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
-  CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
+  CLASS_COLLAPSE_AUTO, CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL,
+  CLASS_HEADING_LABEL_EDIT, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTEXT, CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, CLASS_UNGROUP,
   HIGHLIGHTED, NEW_TAB, PINNED, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND, TAB_GROUP_LABEL_EDIT, TAB_QUERY
 } from './constant.js';
@@ -190,11 +190,16 @@ export const toggleTabGroupsCollapsedState = async elm => {
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
       for (const item of items) {
+        const { classList } = item;
         if (item === container) {
           func.push(toggleTabGroupCollapsedState(item, true));
-        } else {
-          !item.classList.contains(CLASS_TAB_COLLAPSED) &&
+        } else if (!classList.contains(CLASS_TAB_COLLAPSED)) {
+          if (classList.contains(PINNED)) {
+            classList.contains(CLASS_COLLAPSE_AUTO) &&
+              func.push(toggleTabGroupCollapsedState(item, false));
+          } else {
             func.push(toggleTabGroupCollapsedState(item, false));
+          }
         }
       }
     }
@@ -491,6 +496,23 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
     }
   }
   return Promise.all(func);
+};
+
+/**
+ * toggle auto collapse pinned tabs
+ *
+ * @param {boolean} auto - enable auto collapse
+ * @returns {void}
+ */
+export const toggleAutoCollapsePinnedTabs = async auto => {
+  const pinned = document.querySelector(`.${CLASS_TAB_CONTAINER}.${PINNED}`);
+  if (pinned) {
+    if (auto) {
+      pinned.classList.add(CLASS_COLLAPSE_AUTO);
+    } else {
+      pinned.classList.remove(CLASS_COLLAPSE_AUTO);
+    }
+  }
 };
 
 /**
