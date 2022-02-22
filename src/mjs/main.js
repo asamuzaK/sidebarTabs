@@ -74,8 +74,8 @@ import {
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
   TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP,
+  TAB_GROUP_EXPAND_EXCLUDE_PINNED, TAB_GROUP_LABEL_SHOW,
+  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
@@ -114,6 +114,7 @@ export const sidebar = {
   skipCollapsed: false,
   switchTabByScrolling: false,
   tabGroupOnExpandCollapseOther: false,
+  tabGroupOnExpandExcludePinned: false,
   tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
   windowId: null
@@ -136,6 +137,7 @@ export const setSidebar = async () => {
     TAB_CLOSE_DBLCLICK,
     TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
+    TAB_GROUP_EXPAND_EXCLUDE_PINNED,
     TAB_GROUP_NEW_TAB_AT_END,
     TAB_SKIP_COLLAPSED,
     TAB_SWITCH_SCROLL,
@@ -147,7 +149,7 @@ export const setSidebar = async () => {
       alwaysSwitchTabByScrolling, closeTabsByDoubleClick, enableTabGroup,
       invertScrollDirection, readBrowserSettings, showNewTabSeparator,
       skipCollapsed, switchTabByScrolling, tabGroupOnExpandCollapseOther,
-      tabGroupPutNewTabAtTheEnd
+      tabGroupOnExpandExcludePinned, tabGroupPutNewTabAtTheEnd
     } = store;
     sidebar.alwaysSwitchTabByScrolling = alwaysSwitchTabByScrolling
       ? !!alwaysSwitchTabByScrolling.checked
@@ -155,6 +157,9 @@ export const setSidebar = async () => {
     sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
       ? !!closeTabsByDoubleClick.checked
       : false;
+    sidebar.enableTabGroup = enableTabGroup
+      ? !!enableTabGroup.checked
+      : true;
     sidebar.invertScrollDirection = invertScrollDirection
       ? !!invertScrollDirection.checked
       : false;
@@ -171,14 +176,12 @@ export const setSidebar = async () => {
     sidebar.tabGroupOnExpandCollapseOther = tabGroupOnExpandCollapseOther
       ? !!tabGroupOnExpandCollapseOther.checked
       : false;
+    sidebar.tabGroupOnExpandExcludePinned = tabGroupOnExpandExcludePinned
+      ? !!tabGroupOnExpandExcludePinned.checked
+      : false;
     sidebar.tabGroupPutNewTabAtTheEnd = tabGroupPutNewTabAtTheEnd
       ? !!tabGroupPutNewTabAtTheEnd.checked
       : false;
-    if (enableTabGroup) {
-      sidebar.enableTabGroup = !!enableTabGroup.checked;
-    } else {
-      sidebar.enableTabGroup = true;
-    }
   } else {
     sidebar.alwaysSwitchTabByScrolling = false;
     sidebar.closeTabsByDoubleClick = false;
@@ -189,6 +192,7 @@ export const setSidebar = async () => {
     sidebar.skipCollapsed = false;
     sidebar.switchTabByScrolling = false;
     sidebar.tabGroupOnExpandCollapseOther = false;
+    sidebar.tabGroupOnExpandExcludePinned = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
   }
   sidebar.incognito = incognito;

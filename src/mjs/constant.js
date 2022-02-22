@@ -136,6 +136,7 @@ export const TAB_GROUP_DOMAIN = 'groupSameDomainTabs';
 export const TAB_GROUP_ENABLE = 'enableTabGroup';
 export const TAB_GROUP_EXPAND = 'expandTabGroup';
 export const TAB_GROUP_EXPAND_COLLAPSE_OTHER = 'tabGroupOnExpandCollapseOther';
+export const TAB_GROUP_EXPAND_EXCLUDE_PINNED = 'tabGroupOnExpandExcludePinned';
 export const TAB_GROUP_LABEL_EDIT = 'editTabGroupLabel';
 export const TAB_GROUP_LABEL_HIDE = 'hideTabGroupLabel';
 export const TAB_GROUP_LABEL_SHOW = 'showTabGroupLabel';
