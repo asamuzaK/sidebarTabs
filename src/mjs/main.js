@@ -40,7 +40,8 @@ import {
   addListenersToHeadingItems, addTabContextClickListener, bookmarkTabGroup,
   collapseTabGroups, detachTabsFromGroup, getTabGroupHeading,
   groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
-  replaceTabContextClickListener, restoreTabContainers, toggleTabGrouping,
+  replaceTabContextClickListener, restoreTabContainers,
+  toggleAutoCollapsePinnedTabs, toggleTabGrouping,
   toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState,
   toggleTabGroupHeadingState, ungroupTabs
 } from './tab-group.js';
@@ -2072,6 +2073,10 @@ export const setVar = async (item, obj, changed = false) => {
       case TAB_GROUP_EXPAND_COLLAPSE_OTHER:
         sidebar[item] = !!checked;
         changed && func.push(replaceTabContextClickListener(!!checked));
+        break;
+      case TAB_GROUP_EXPAND_EXCLUDE_PINNED:
+        sidebar[item] = !!checked;
+        func.push(toggleAutoCollapsePinnedTabs(!checked));
         break;
       case THEME_AUTO:
       case THEME_CUSTOM:

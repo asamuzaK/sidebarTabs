@@ -12,12 +12,12 @@ import psl from 'psl';
 import sinon from 'sinon';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
-  CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT,
-  CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
-  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
-  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
-  CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ITEMS, CLASS_TAB_TITLE,
-  CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM, CLASS_THEME_DARK,
+  CLASS_COLLAPSE_AUTO, CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL,
+  CLASS_HEADING_LABEL_EDIT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
+  CLASS_SEPARATOR_SHOW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ITEMS,
+  CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM, CLASS_THEME_DARK,
   CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
   COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
@@ -11578,6 +11578,54 @@ describe('main', () => {
         await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: true }, true);
       assert.isTrue(mjs.sidebar.tabGroupOnExpandCollapseOther, 'set');
       assert.deepEqual(res, [[]], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: true });
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: false });
+      assert.isFalse(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: true }, true);
+      assert.isTrue(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
+      body.appendChild(elm);
+      const res =
+        await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: false }, true);
+      assert.isFalse(mjs.sidebar.tabGroupOnExpandExcludePinned, 'set');
+      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
