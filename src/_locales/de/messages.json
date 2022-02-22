@@ -523,6 +523,12 @@
   "optionsTabGroupOnExpandCollapseOtherDetail": {
     "message": "Expanding a tab group collapses other previously expanded tab groups."
   },
+  "optionsTabGroupOnExpandExcludePinned": {
+    "message": "Exclude pinned tabs"
+  },
+  "optionsTabGroupOnExpandExcludePinnedDetail": {
+    "message": "Leave pinned tabs expanded."
+  },
   "optionsTabGroupPutNewTabAtTheEnd": {
     "message": "Always put the newly opened grouped tab at the end of the group"
   },

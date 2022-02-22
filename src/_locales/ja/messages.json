@@ -523,6 +523,12 @@
   "optionsTabGroupOnExpandCollapseOtherDetail": {
     "message": "タブグループを展開すると、それまで展開していた他のタブグループは折りたたまれます。"
   },
+  "optionsTabGroupOnExpandExcludePinned": {
+    "message": "ピン留めされたタブは除外する"
+  },
+  "optionsTabGroupOnExpandExcludePinnedDetail": {
+    "message": "ピン留めされたタブは展開されたままにします。"
+  },
   "optionsTabGroupPutNewTabAtTheEnd": {
     "message": "グループ内で新たに開いたタブは常にグループの末尾に置く"
   },
