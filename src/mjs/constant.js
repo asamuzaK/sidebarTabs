@@ -7,6 +7,7 @@ export const AUDIBLE = 'audible';
 export const BOOKMARK_FOLDER_MSG = 'bookmarkFolderMessage';
 export const BOOKMARK_LOCATION = 'bookmarkLocation';
 export const BROWSER_SETTINGS_READ = 'readBrowserSettings';
+export const CLASS_COLLAPSE_AUTO = 'auto-collapse';
 export const CLASS_COMPACT = 'compact';
 export const CLASS_GROUP = 'group';
 export const CLASS_HEADING = 'heading';
