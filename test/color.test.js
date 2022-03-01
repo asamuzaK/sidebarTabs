@@ -696,6 +696,16 @@ describe('color', () => {
       assert.strictEqual(res, '#a1bfde', 'result');
     });
 
+    it('should get value', async () => {
+      const res = await func('#6699cc66', '#6699cc99');
+      assert.strictEqual(res, '#6699ccc2', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#6699cc99', '#6699cc66');
+      assert.strictEqual(res, '#6699ccc2', 'result');
+    });
+
     // active tab border mixed color of the default theme
     it('should get value', async () => {
       const res = await func('rgba(128,128,142,0.4)', '#fff');

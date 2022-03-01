@@ -23,6 +23,7 @@
   --border-discarded-color: transparent;
   --border-field-color: transparent;
   --border-field-active-color: #053e94;
+  --focus-outline-color: #0061e066;
   --foreground-color: #15141a;
   --foreground-active-color: #15141a;
   --foreground-discarded-color: #15141a;
@@ -600,6 +601,17 @@ main {
   height: var(--icon-medium-size);
 }
 
+/* focus outline */
+:is(.tab.highlighted.multi, .heading.highlighted.multi) > .tab-items {
+  outline: 1px solid var(--focus-outline-color);
+  outline-offset: -1px;
+}
+
+:is(.tab.highlighted.multi.active, .heading.highlighted.multi.active) > .tab-items {
+  outline-width: 2px;
+  outline-offset: -2px;
+}
+
 /* tab group */
 .tab-group.tab-collapsed > :not([hidden]) ~ .tab {
   margin-top: 0;
@@ -754,6 +766,7 @@ main {
   --border-active-color: transparent;
   --border-field-color: transparent;
   --border-field-active-color: #aaf2ff;
+  --focus-outline-color: #0df6;
   --foreground-color: #f9f9fa;
   --foreground-active-color: #fbfbfe;
   --foreground-discarded-color: #f9f9fa;
