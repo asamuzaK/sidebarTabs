@@ -351,60 +351,25 @@ describe('theme', () => {
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
-    it('should get values', async () => {
+    it('should not set values', async () => {
       mjs.currentThemeColors.set('sidebar_highlight_text', '#0000ff');
       mjs.currentThemeColors.set('sidebar_highlight', '#ff0000');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
-      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
-      for (const [key, value] of items) {
-        if (key === CUSTOM_BG_SELECT) {
-          assert.strictEqual(value, '#ff0000', `${key}`);
-        } else if (key === CUSTOM_COLOR_SELECT ||
-                   key === CUSTOM_COLOR_SELECT_HOVER) {
-          assert.strictEqual(value, '#0000ff', `${key}`);
-        } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e5001a', `${key}`);
-        } else {
-          assert.strictEqual(value, obj[key], `${key}`);
-        }
-      }
+      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
-    it('should get values', async () => {
+    it('should not set values', async () => {
       mjs.currentThemeColors.set('sidebar_highlight_text', 'currentColor');
       mjs.currentThemeColors.set('sidebar_highlight', '#ff0000');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
-      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
-      for (const [key, value] of items) {
-        if (key === CUSTOM_BG_SELECT) {
-          assert.strictEqual(value, '#ff0000', `${key}`);
-        } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e70203', `${key}`);
-        } else {
-          assert.strictEqual(value, obj[key], `${key}`);
-        }
-      }
+      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
-    it('should get values', async () => {
+    it('should not set values', async () => {
       mjs.currentThemeColors.set('sidebar_highlight_text', '#0000ff');
       mjs.currentThemeColors.set('sidebar_highlight', 'currentColor');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
-      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
-      for (const [key, value] of items) {
-        if (key === CUSTOM_BG_SELECT || key === CUSTOM_BG_SELECT_HOVER ||
-            key === CUSTOM_COLOR_SELECT || key === CUSTOM_COLOR_SELECT_HOVER) {
-          assert.strictEqual(value, '#0000ff', `${key}`);
-        } else {
-          assert.strictEqual(value, obj[key], `${key}`);
-        }
-      }
+      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
     it('should not set values if sidebar is not set', async () => {

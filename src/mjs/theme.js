@@ -78,8 +78,8 @@ export const themeMap = {
     [CUSTOM_BG_FIELD_ACTIVE]: '#20123bf5',
     [CUSTOM_BG_HOVER]: '#dbd9e1',
     [CUSTOM_BG_HOVER_SHADOW]: '#20123b1a',
-    [CUSTOM_BG_SELECT]: '#ac70ff',
-    [CUSTOM_BG_SELECT_HOVER]: '#b47fff',
+    [CUSTOM_BG_SELECT]: '#ffffff',
+    [CUSTOM_BG_SELECT_HOVER]: '#e8e7eb',
     [CUSTOM_BORDER_ACTIVE]: '#ac70ff',
     [CUSTOM_BORDER_FIELD]: '#f0f0f4', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#ac70ff',
@@ -89,8 +89,8 @@ export const themeMap = {
     [CUSTOM_COLOR_FIELD]: '#20123b',
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
     [CUSTOM_COLOR_HOVER]: '#20123b',
-    [CUSTOM_COLOR_SELECT]: '#ffffff',
-    [CUSTOM_COLOR_SELECT_HOVER]: '#ffffff',
+    [CUSTOM_COLOR_SELECT]: '#20123b',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#20123b',
     [CUSTOM_HEADING_TEXT_GROUP_1]: '#874436',
     [CUSTOM_HEADING_TEXT_GROUP_2]: '#2b6355',
     [CUSTOM_HEADING_TEXT_GROUP_3]: '#874473',
@@ -105,8 +105,8 @@ export const themeMap = {
     [CUSTOM_BG_FIELD_ACTIVE]: '#2d245bfa',
     [CUSTOM_BG_HOVER]: '#40376c',
     [CUSTOM_BG_HOVER_SHADOW]: '#e8e0ff1a',
-    [CUSTOM_BG_SELECT]: '#7643e5',
-    [CUSTOM_BG_SELECT_HOVER]: '#8456e8',
+    [CUSTOM_BG_SELECT]: '#3c1f7b',
+    [CUSTOM_BG_SELECT_HOVER]: '#4e3388',
     [CUSTOM_BORDER_ACTIVE]: '#ac70ff',
     [CUSTOM_BORDER_FIELD]: '#2d245b', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#ac70ff',
@@ -116,8 +116,8 @@ export const themeMap = {
     [CUSTOM_COLOR_FIELD]: '#e8e0ff',
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
     [CUSTOM_COLOR_HOVER]: '#e8e0ff',
-    [CUSTOM_COLOR_SELECT]: '#ffffff',
-    [CUSTOM_COLOR_SELECT_HOVER]: '#ffffff',
+    [CUSTOM_COLOR_SELECT]: '#e8e0ff',
+    [CUSTOM_COLOR_SELECT_HOVER]: '#e8e0ff',
     [CUSTOM_HEADING_TEXT_GROUP_1]: '#d79785',
     [CUSTOM_HEADING_TEXT_GROUP_2]: '#7bb5a3',
     [CUSTOM_HEADING_TEXT_GROUP_3]: '#d797c2',
@@ -271,10 +271,8 @@ export const getCurrentThemeBaseValues = async () => {
         break;
       }
       case CUSTOM_BG_SELECT: {
-        const valueA = currentThemeColors.has('sidebar_highlight_text') &&
-          currentThemeColors.get('sidebar_highlight');
-        const valueB = currentThemeColors.get('tab_selected');
-        values[key] = valueA || valueB || baseValues[key];
+        const valueA = currentThemeColors.get('tab_selected');
+        values[key] = valueA || baseValues[key];
         /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
@@ -330,11 +328,9 @@ export const getCurrentThemeBaseValues = async () => {
         break;
       }
       case CUSTOM_COLOR_SELECT: {
-        const valueA = currentThemeColors.has('sidebar_highlight') &&
-          currentThemeColors.get('sidebar_highlight_text');
-        const valueB = currentThemeColors.get('tab_text');
-        const valueC = currentThemeColors.get('bookmark_text');
-        values[key] = valueA || valueB || valueC || baseValues[key];
+        const valueA = currentThemeColors.get('tab_text');
+        const valueB = currentThemeColors.get('bookmark_text');
+        values[key] = valueA || valueB || baseValues[key];
         if (/^currentColor$/i.test(values[key])) {
           values[key] = baseValues[CUSTOM_COLOR];
         }
@@ -371,9 +367,7 @@ export const getCurrentThemeBaseValues = async () => {
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
-  if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame') ||
-      (currentThemeColors.has('sidebar_highlight_text') &&
-       currentThemeColors.has('sidebar_highlight'))) {
+  if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame')) {
     const base = values[CUSTOM_BG];
     const color = await convertColorToHex(values[CUSTOM_COLOR]);
     const hoverBlend = `${color}1a`;
