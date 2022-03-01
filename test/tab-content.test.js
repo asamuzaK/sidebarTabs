@@ -11,8 +11,8 @@ import path from 'path';
 import process from 'process';
 import sinon from 'sinon';
 import {
-  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
-  CLASS_TAB_TITLE,
+  CLASS_MULTI, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT,
+  CLASS_TAB_ICON, CLASS_TAB_TITLE,
   HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE, TAB_MUTE_UNMUTE, TABS_CLOSE,
   TABS_MUTE, TABS_MUTE_UNMUTE,
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
@@ -1241,6 +1241,31 @@ describe('tab-content', () => {
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
       assert.isTrue(elm.classList.contains(HIGHLIGHTED));
+      assert.isFalse(elm.classList.contains(CLASS_MULTI));
+      assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+
+    it('should add class', async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        audible: true,
+        mutedInfo: {
+          muted: false
+        }
+      });
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('img');
+      const elm3 = document.createElement('button');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm.appendChild(elm2);
+      elm.appendChild(elm3);
+      body.appendChild(elm);
+      const res = await func(elm, 2);
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+        'called');
+      assert.isTrue(elm.classList.contains(HIGHLIGHTED));
+      assert.isTrue(elm.classList.contains(CLASS_MULTI));
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
@@ -1366,7 +1391,7 @@ describe('tab-content', () => {
       const elm2 = document.createElement('img');
       const elm3 = document.createElement('button');
       const body = document.querySelector('body');
-      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(HIGHLIGHTED, CLASS_MULTI);
       elm.dataset.tabId = '1';
       elm.appendChild(elm2);
       elm.appendChild(elm3);
@@ -1375,6 +1400,7 @@ describe('tab-content', () => {
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
       assert.isFalse(elm.classList.contains(HIGHLIGHTED));
+      assert.isFalse(elm.classList.contains(CLASS_MULTI));
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });

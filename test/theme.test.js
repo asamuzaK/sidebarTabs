@@ -21,7 +21,7 @@ import {
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
-  CUSTOM_HEADING_TEXT_PINNED,
+  CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
@@ -561,6 +561,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_BORDER_FIELD_ACTIVE) {
           assert.strictEqual(value, '#ff0000', `${key}`);
+        } else if (key === CUSTOM_OUTLINE_FOCUS) {
+          assert.strictEqual(value, '#ff000066', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -591,6 +593,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_BORDER_FIELD_ACTIVE) {
           assert.strictEqual(value, '#15141a', `${key}`);
+        } else if (key === CUSTOM_OUTLINE_FOCUS) {
+          assert.strictEqual(value, '#15141a66', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -756,6 +760,78 @@ describe('theme', () => {
 
     it('should get values', async () => {
       mjs.currentThemeColors.set('toolbar_field_text_focus', 'currentColor');
+      const res = await func();
+      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
+    });
+
+    it('should get values', async () => {
+      mjs.currentThemeColors.set('focus_outline', '#ff0000');
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
+      for (const [key, value] of items) {
+        if (key === CUSTOM_OUTLINE_FOCUS) {
+          assert.strictEqual(value, '#ff000066', `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it('should get values', async () => {
+      mjs.currentThemeColors.set('focus_outline', 'currentColor');
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
+      for (const [key, value] of items) {
+        if (key === CUSTOM_OUTLINE_FOCUS) {
+          assert.strictEqual(value, '#15141a66', `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it('should get values', async () => {
+      mjs.currentThemeColors.set('focus_outline', 'transparent');
+      const res = await func();
+      assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
+    });
+
+    it('should get values', async () => {
+      mjs.currentThemeColors.set('button_primary', '#ff0000');
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
+      for (const [key, value] of items) {
+        if (key === CUSTOM_OUTLINE_FOCUS) {
+          assert.strictEqual(value, '#ff000066', `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it('should get values', async () => {
+      mjs.currentThemeColors.set('button_primary', 'currentColor');
+      const res = await func();
+      const obj = themeMap[THEME_LIGHT];
+      const items = Object.entries(res);
+      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
+      for (const [key, value] of items) {
+        if (key === CUSTOM_OUTLINE_FOCUS) {
+          assert.strictEqual(value, '#15141a66', `${key}`);
+        } else {
+          assert.strictEqual(value, obj[key], `${key}`);
+        }
+      }
+    });
+
+    it('should get values', async () => {
+      mjs.currentThemeColors.set('button_primary', 'transparent');
       const res = await func();
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });

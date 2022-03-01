@@ -10,8 +10,8 @@ import { getTab, updateTab } from './browser.js';
 import { closeTabs, muteTabs } from './browser-tabs.js';
 import { getSidebarTab, getSidebarTabId } from './util.js';
 import {
-  CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT, CLASS_TAB_ICON,
-  CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,
+  CLASS_MULTI, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT,
+  CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,
   TAB_MUTE_UNMUTE, TABS_CLOSE, TABS_MUTE, TABS_MUTE_UNMUTE, URL_AUDIO_MUTED,
   URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER, URL_SPACER
 } from './constant.js';
@@ -369,6 +369,11 @@ export const addHighlight = async (elm, num) => {
     const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
     const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
     elm.classList.add(HIGHLIGHTED);
+    if (num > 1) {
+      elm.classList.add(CLASS_MULTI);
+    } else {
+      elm.classList.remove(CLASS_MULTI);
+    }
     func.push(
       setCloseTab(closeElm, true, num),
       setTabAudio(muteElm, {
@@ -422,7 +427,7 @@ export const removeHighlight = async elm => {
     const { audible, mutedInfo: { muted } } = tab;
     const closeElm = elm.querySelector(`.${CLASS_TAB_CLOSE}`);
     const muteElm = elm.querySelector(`.${CLASS_TAB_AUDIO}`);
-    elm.classList.remove(HIGHLIGHTED);
+    elm.classList.remove(HIGHLIGHTED, CLASS_MULTI);
     func.push(
       setCloseTab(closeElm, false),
       setTabAudio(muteElm, {
