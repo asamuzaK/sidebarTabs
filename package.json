@@ -36,9 +36,9 @@
     "camelize": "^1.0.0",
     "commander": "^9.0.0",
     "decamelize": "^6.0.0",
-    "node-fetch": "^3.2.1",
-    "tldts-experimental": "^5.7.67",
-    "webext-schema": "^2.1.0"
+    "node-fetch": "^3.2.2",
+    "tldts-experimental": "^5.7.69",
+    "webext-schema": "^2.1.2"
   },
   "devDependencies": {
     "addons-linter": "^4.12.0",
@@ -48,7 +48,7 @@
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^37.9.5",
+    "eslint-plugin-jsdoc": "^37.9.7",
     "eslint-plugin-no-unsanitized": "^4.0.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
@@ -61,5 +61,5 @@
     "stylelint": "^14.5.3",
     "stylelint-config-standard": "^25.0.0"
   },
-  "version": "7.0.0"
+  "version": "7.1.0"
 }
