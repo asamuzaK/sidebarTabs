@@ -267,14 +267,6 @@ export const getCurrentThemeBaseValues = async () => {
         /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
         break;
       }
-      case CUSTOM_BG_HOVER_SHADOW: {
-        let valueA = currentThemeColors.get('tab_background_text');
-        if (valueA) {
-          valueA = await convertColorToHex(valueA);
-        }
-        values[key] = (valueA && `${valueA}1a`) || baseValues[key];
-        break;
-      }
       case CUSTOM_BG_SELECT: {
         const valueA = currentThemeColors.get('tab_selected');
         values[key] = valueA || baseValues[key];
@@ -341,27 +333,6 @@ export const getCurrentThemeBaseValues = async () => {
         }
         break;
       }
-      case CUSTOM_OUTLINE_FOCUS: {
-        const valueA = currentThemeColors.get('focus_outline');
-        const valueB = currentThemeColors.get('toolbar_field_border_focus');
-        const valueC = currentThemeColors.get('button_primary');
-        let value = valueA || valueB || valueC;
-        if (value) {
-          if (/^currentColor$/i.test(value)) {
-            value = baseValues[CUSTOM_COLOR];
-          }
-          value = await convertColorToHex(value);
-          if (value && /^#[\da-f]{6}$/.test(value)) {
-            value = `${value}66`;
-          } else {
-            value = baseValues[key];
-          }
-        } else {
-          value = baseValues[key];
-        }
-        values[key] = value;
-        break;
-      }
       default:
         values[key] = baseValues[key];
     }
@@ -392,6 +363,14 @@ export const getCurrentThemeBaseValues = async () => {
       }
     }
   }
+  // override CUSTOM_BG_HOVER_SHADOW color
+  if (currentThemeColors.has('tab_background_text')) {
+    const value =
+      await convertColorToHex(currentThemeColors.get('tab_background_text'));
+    if (value) {
+      values[CUSTOM_BG_HOVER_SHADOW] = `${value}1a`;
+    }
+  }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
   if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame')) {
     const base = values[CUSTOM_BG];
@@ -402,20 +381,15 @@ export const getCurrentThemeBaseValues = async () => {
     const selectColor = await convertColorToHex(values[CUSTOM_COLOR_SELECT]);
     const selectBlend = `${selectColor}1a`;
     const selectValue = await blendColors(selectBlend, selectBase);
-    const groupColors = [
-      [CUSTOM_HEADING_TEXT_GROUP_1, '#cc663399'],
-      [CUSTOM_HEADING_TEXT_GROUP_2, '#33996699'],
-      [CUSTOM_HEADING_TEXT_GROUP_3, '#cc669999'],
-      [CUSTOM_HEADING_TEXT_GROUP_4, '#6699cc99'],
-      [CUSTOM_HEADING_TEXT_PINNED, '#66669999']
-    ];
-    for (const [key, value] of groupColors) {
-      values[key] = await blendColors(value, color);
-    }
     values[CUSTOM_BG_HOVER] = hoverValue;
     values[CUSTOM_COLOR_HOVER] = values[CUSTOM_COLOR];
     values[CUSTOM_BG_SELECT_HOVER] = selectValue;
     values[CUSTOM_COLOR_SELECT_HOVER] = values[CUSTOM_COLOR_SELECT];
+    values[CUSTOM_HEADING_TEXT_GROUP_1] = await blendColors('#cc663399', color);
+    values[CUSTOM_HEADING_TEXT_GROUP_2] = await blendColors('#33996699', color);
+    values[CUSTOM_HEADING_TEXT_GROUP_3] = await blendColors('#cc669999', color);
+    values[CUSTOM_HEADING_TEXT_GROUP_4] = await blendColors('#6699cc99', color);
+    values[CUSTOM_HEADING_TEXT_PINNED] = await blendColors('#66669999', color);
   }
   // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
@@ -456,6 +430,21 @@ export const getCurrentThemeBaseValues = async () => {
       value = await blendColors(border, base);
     }
     values[CUSTOM_BORDER_FIELD_ACTIVE] = value;
+  }
+  // override CUSTOM_OUTLINE_FOCUS color
+  if (currentThemeColors.has('focus_outline') ||
+      currentThemeColors.has('toolbar_field_border_focus') ||
+      currentThemeColors.has('button_primary')) {
+    let value = currentThemeColors.get('focus_outline') ||
+                currentThemeColors.get('toolbar_field_border_focus') ||
+                currentThemeColors.get('button_primary');
+    if (/^currentColor$/i.test(value)) {
+      value = values[CUSTOM_COLOR];
+    }
+    value = await convertColorToHex(value);
+    if (value) {
+      values[CUSTOM_OUTLINE_FOCUS] = `${value}66`;
+    }
   }
   return values;
 };

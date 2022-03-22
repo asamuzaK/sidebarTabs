@@ -6311,6 +6311,7 @@ describe('main', () => {
         const info = {
           menuItemId: item
         };
+        // eslint-disable-next-line no-await-in-loop
         const res = await func(info);
         assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
         assert.deepEqual(res, [], 'result');
