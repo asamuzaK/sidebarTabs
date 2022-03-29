@@ -89,10 +89,10 @@ window.matchMedia(COLOR_SCHEME_DARK).addEventListener('change', () =>
 
 /* start up */
 document.addEventListener('DOMContentLoaded', () => Promise.all([
-  localizeHtml(),
-  setContextualIds(),
   addPort().then(setSidebar).then(setMain).then(applyUserStyle)
     .then(requestSidebarStateUpdate),
+  localizeHtml(),
+  setContextualIds(),
   setSidebarTheme()
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)
