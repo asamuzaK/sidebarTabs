@@ -27,7 +27,8 @@ import {
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_LIST,
   THEME_SYSTEM, THEME_SYSTEM_ID,
-  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
+  USER_CSS_ID
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -2150,6 +2151,48 @@ describe('theme', () => {
       }).callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
+    });
+  });
+
+  describe('set user CSS', () => {
+    const func = mjs.setUserCss;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'message');
+      });
+    });
+
+    it('should not set CSS', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      elm.textContent = 'body { color: red }';
+      head.appendChild(elm);
+      await func('');
+      assert.strictEqual(elm.textContent, '', 'content');
+    });
+
+    it('should not set CSS', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      elm.textContent = 'body { color: red }';
+      head.appendChild(elm);
+      await func('body { color }');
+      assert.strictEqual(elm.textContent, '', 'content');
+    });
+
+    it('should set CSS', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      head.appendChild(elm);
+      await func('body { color : red }\nmain { background: blue }');
+      assert.strictEqual(elm.textContent,
+        'body { color : red }\nmain { background: blue }', 'content');
     });
   });
 

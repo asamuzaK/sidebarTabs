@@ -50,7 +50,7 @@ import menuItems from './menu-items.js';
 import {
   applyTheme, initCustomTheme, sendCurrentTheme, setNewTabSeparator,
   setScrollbarWidth, setTabGroupColorBarWidth, setTabHeight, setTheme,
-  updateCustomThemeCss
+  setUserCss, updateCustomThemeCss
 } from './theme.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -85,7 +85,8 @@ import {
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
   THEME_DARK, THEME_LIGHT, THEME_LIST,
-  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
+  USER_CSS, USER_CSS_USE
 } from './constant.js';
 
 /* api */
@@ -118,6 +119,7 @@ export const sidebar = {
   tabGroupOnExpandExcludePinned: false,
   tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
+  useUserCSS: false,
   windowId: null
 };
 
@@ -142,7 +144,8 @@ export const setSidebar = async () => {
     TAB_GROUP_NEW_TAB_AT_END,
     TAB_SKIP_COLLAPSED,
     TAB_SWITCH_SCROLL,
-    TAB_SWITCH_SCROLL_ALWAYS
+    TAB_SWITCH_SCROLL_ALWAYS,
+    USER_CSS_USE
   ]);
   const os = await getOs();
   if (isObjectNotEmpty(store)) {
@@ -150,7 +153,7 @@ export const setSidebar = async () => {
       alwaysSwitchTabByScrolling, closeTabsByDoubleClick, enableTabGroup,
       invertScrollDirection, readBrowserSettings, showNewTabSeparator,
       skipCollapsed, switchTabByScrolling, tabGroupOnExpandCollapseOther,
-      tabGroupOnExpandExcludePinned, tabGroupPutNewTabAtTheEnd
+      tabGroupOnExpandExcludePinned, tabGroupPutNewTabAtTheEnd, useUserCSS
     } = store;
     sidebar.alwaysSwitchTabByScrolling = alwaysSwitchTabByScrolling
       ? !!alwaysSwitchTabByScrolling.checked
@@ -183,6 +186,9 @@ export const setSidebar = async () => {
     sidebar.tabGroupPutNewTabAtTheEnd = tabGroupPutNewTabAtTheEnd
       ? !!tabGroupPutNewTabAtTheEnd.checked
       : false;
+    sidebar.useUserCSS = useUserCSS
+      ? !!useUserCSS.checked
+      : false;
   } else {
     sidebar.alwaysSwitchTabByScrolling = false;
     sidebar.closeTabsByDoubleClick = false;
@@ -195,6 +201,7 @@ export const setSidebar = async () => {
     sidebar.tabGroupOnExpandCollapseOther = false;
     sidebar.tabGroupOnExpandExcludePinned = false;
     sidebar.tabGroupPutNewTabAtTheEnd = false;
+    sidebar.useUserCSS = false;
   }
   sidebar.incognito = incognito;
   sidebar.isMac = os === 'mac';
@@ -296,6 +303,26 @@ export const undoCloseTab = async () => {
     func = restoreSession(sessionId);
   }
   return func || null;
+};
+
+/**
+ * apply user style
+ *
+ * @returns {Function} - setUserCSS()
+ */
+export const applyUserStyle = async () => {
+  const { useUserCSS } = sidebar;
+  let css;
+  if (useUserCSS) {
+    const res = await getStorage(USER_CSS);
+    if (res) {
+      const { userCSS } = res;
+      if (userCSS) {
+        css = userCSS.value;
+      }
+    }
+  }
+  return setUserCss(css || '');
 };
 
 /* DnD */
@@ -2039,6 +2066,10 @@ export const setVar = async (item, obj, changed = false) => {
   if (item && obj) {
     const { checked, value } = obj;
     switch (item) {
+      case BROWSER_SETTINGS_READ:
+        sidebar[item] = !!checked;
+        changed && func.push(storeCloseTabsByDoubleClickValue(!!checked));
+        break;
       case CUSTOM_BG:
       case CUSTOM_BG_ACTIVE:
       case CUSTOM_BG_HOVER:
@@ -2053,10 +2084,6 @@ export const setVar = async (item, obj, changed = false) => {
         changed && func.push(
           updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value)
         );
-        break;
-      case BROWSER_SETTINGS_READ:
-        sidebar[item] = !!checked;
-        changed && func.push(storeCloseTabsByDoubleClickValue(!!checked));
         break;
       case NEW_TAB_SEPARATOR_SHOW:
         sidebar[item] = !!checked;
@@ -2095,6 +2122,13 @@ export const setVar = async (item, obj, changed = false) => {
         break;
       case THEME_UI_TAB_GROUP_NARROW:
         changed && func.push(setTabGroupColorBarWidth(!!checked));
+        break;
+      case USER_CSS:
+        changed && func.push(applyUserStyle());
+        break;
+      case USER_CSS_USE:
+        sidebar[item] = !!checked;
+        changed && func.push(applyUserStyle());
         break;
       default:
         if (Object.prototype.hasOwnProperty.call(sidebar, item)) {

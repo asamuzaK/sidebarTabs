@@ -9,6 +9,7 @@ import {
   sendMessage, setStorage
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
+import cssParser from '../lib/css/css-parser.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -38,7 +39,8 @@ import {
   THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
   THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_LIST,
   THEME_SYSTEM, THEME_SYSTEM_ID,
-  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
+  USER_CSS_ID
 } from './constant.js';
 
 /* theme map */
@@ -810,6 +812,31 @@ export const setTheme = async info => {
  */
 export const applyTheme = async () =>
   setCurrentThemeValue().then(getTheme).then(setTheme).then(sendCurrentTheme);
+
+/* user CSS */
+/**
+ * set user CSS
+ *
+ * @param {string} css - css text
+ * @returns {void}
+ */
+export const setUserCss = async css => {
+  if (!isString(css)) {
+    throw new TypeError(`Expected String but got ${getType(css)}.`);
+  }
+  const usrCss = document.getElementById(USER_CSS_ID);
+  if (usrCss) {
+    const { stylesheet: { parsingErrors, rules } } = cssParser(css, {
+      silent: true
+    });
+    if (Array.isArray(parsingErrors) && parsingErrors.length === 0 &&
+        Array.isArray(rules) && rules.length) {
+      usrCss.textContent = css;
+    } else {
+      usrCss.textContent = '';
+    }
+  }
+};
 
 /* tab height */
 /**

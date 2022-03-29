@@ -7,7 +7,7 @@ import { throwErr } from './common.js';
 import { localizeHtml } from './localize.js';
 import {
   addBookmarkLocations, addCustomThemeListener, addInitCustomThemeListener,
-  addInitExtensionListener, addInputChangeListener,
+  addInitExtensionListener, addInputChangeListener, addUserCssListener,
   handleMsg, requestCustomTheme, setValuesFromStorage
 } from './options-main.js';
 
@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => Promise.all([
   addInitCustomThemeListener(),
   addInitExtensionListener(),
   addInputChangeListener(),
+  addUserCssListener(),
   localizeHtml(),
   requestCustomTheme(true)
 ]).catch(throwErr));

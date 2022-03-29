@@ -10,7 +10,7 @@ import sinon from 'sinon';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_ID, THEME_LIST,
-  THEME_RADIO
+  THEME_RADIO, USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -766,6 +766,159 @@ describe('options-main', () => {
     });
   });
 
+  describe('save user CSS', () => {
+    const func = mjs.saveUserCss;
+
+    it('should not call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      body.appendChild(elm);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const elm2 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      elm2.id = USER_CSS_WARN;
+      elm2.hidden = true;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isTrue(elm2.hidden);
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const elm2 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      elm.value = 'foo';
+      elm2.id = USER_CSS_WARN;
+      elm2.hidden = true;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isFalse(elm2.hidden, 'hidden');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const elm2 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      elm.value = 'body { color: red; }';
+      elm2.id = USER_CSS_WARN;
+      elm2.hidden = true;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isTrue(elm2.hidden);
+      assert.deepEqual(res, [undefined], 'result');
+    });
+  });
+
+  describe('add event listener to save user CSS', () => {
+    const func = mjs.addUserCssListener;
+
+    it('should not set listener', async () => {
+      const elm = document.createElement('button');
+      const body = document.querySelector('body');
+      const spy = sinon.spy(elm, 'addEventListener');
+      body.appendChild(elm);
+      await func();
+      assert.isTrue(spy.notCalled, 'not called');
+      elm.addEventListener.restore();
+    });
+
+    it('should set listener', async () => {
+      const elm = document.createElement('button');
+      const body = document.querySelector('body');
+      const spy = sinon.spy(elm, 'addEventListener');
+      elm.id = USER_CSS_SAVE;
+      body.appendChild(elm);
+      await func();
+      assert.isTrue(spy.calledOnce, 'called');
+      elm.addEventListener.restore();
+    });
+  });
+
+  describe('toggle sub items', () => {
+    const func = mjs.toggleSubItems;
+
+    it('should throw', () => {
+      assert.throws(() => func());
+    });
+
+    it('should not remove attribute', async () => {
+      const elm = document.createElement('span');
+      const elm2 = document.createElement('span');
+      const elm3 = document.createElement('span');
+      const elm4 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      elm2.dataset.subItemOf = 'foo';
+      elm3.dataset.subItemOf = 'foo';
+      elm4.dataset.subItemOf = 'bar';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      await func({
+        target: elm
+      });
+      assert.isTrue(elm2.hasAttribute('disabled'), 'set attr');
+      assert.isTrue(elm3.hasAttribute('disabled'), 'set attr');
+      assert.isFalse(elm4.hasAttribute('disabled'), 'set attr');
+    });
+
+    it('should remove attribute', async () => {
+      const elm = document.createElement('span');
+      const elm2 = document.createElement('span');
+      const elm3 = document.createElement('span');
+      const elm4 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      elm.checked = true;
+      elm2.setAttribute('disabled', 'disabled');
+      elm2.dataset.subItemOf = 'foo';
+      elm3.setAttribute('disabled', 'disabled');
+      elm3.dataset.subItemOf = 'foo';
+      elm4.setAttribute('disabled', 'disabled');
+      elm4.dataset.subItemOf = 'bar';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      await func({
+        target: elm
+      });
+      assert.isFalse(elm2.hasAttribute('disabled'), 'set attr');
+      assert.isFalse(elm3.hasAttribute('disabled'), 'set attr');
+      assert.isTrue(elm4.hasAttribute('disabled'), 'set attr');
+    });
+  });
+
   describe('handle input change', () => {
     const func = mjs.handleInputChange;
 
@@ -794,6 +947,17 @@ describe('options-main', () => {
       body.appendChild(elm);
       await func();
       assert.isTrue(spy.calledOnce, 'called');
+      elm.addEventListener.restore();
+    });
+
+    it('should add listener', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      const spy = sinon.spy(elm, 'addEventListener');
+      elm.id = USER_CSS_USE;
+      body.appendChild(elm);
+      await func();
+      assert.isTrue(spy.calledTwice, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -869,6 +1033,36 @@ describe('options-main', () => {
       });
       assert.strictEqual(elm.checked, false, 'checked');
       assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set checkbox value', async () => {
+      const elm = document.createElement('input');
+      const elm2 = document.createElement('span');
+      const elm3 = document.createElement('span');
+      const elm4 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.type = 'checkbox';
+      elm.id = USER_CSS_USE;
+      elm.checked = true;
+      elm2.setAttribute('disabled', 'disabled');
+      elm2.dataset.subItemOf = USER_CSS_USE;
+      elm3.setAttribute('disabled', 'disabled');
+      elm3.dataset.subItemOf = USER_CSS_USE;
+      elm4.setAttribute('disabled', 'disabled');
+      elm4.dataset.subItemOf = 'foo';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func({
+        id: USER_CSS_USE,
+        checked: true
+      });
+      assert.strictEqual(elm.checked, true, 'checked');
+      assert.isFalse(elm2.hasAttribute('disabled'), 'set attr');
+      assert.isFalse(elm3.hasAttribute('disabled'), 'set attr');
+      assert.isTrue(elm4.hasAttribute('disabled'), 'set attr');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set radio value', async () => {
@@ -999,6 +1193,31 @@ describe('options-main', () => {
       assert.isFalse(child.hasAttribute('selected'), 'attr');
       assert.isTrue(child2.hasAttribute('selected'), 'attr');
       assert.isFalse(child3.hasAttribute('selected'), 'attr');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set value attribute', async () => {
+      const elm = document.createElement('textarea');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      body.appendChild(elm);
+      const res = await func({
+        id: USER_CSS
+      });
+      assert.strictEqual(elm.value, '', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set value attribute', async () => {
+      const elm = document.createElement('textarea');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      body.appendChild(elm);
+      const res = await func({
+        id: USER_CSS,
+        value: 'body: { color: red; }'
+      });
+      assert.strictEqual(elm.value, 'body: { color: red; }', 'value');
       assert.deepEqual(res, [], 'result');
     });
   });

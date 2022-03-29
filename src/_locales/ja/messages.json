@@ -490,6 +490,9 @@
   "optionsReadBrowserSettingsDetail": {
     "message": "拡張機能がブラウザ設定から特定の値を読み込んだり変更することを許可するアクセス権を追加します。ブラウザの組み込み動作との互換性を高めるために、このオプションを有効にすることをお勧めします。"
   },
+  "optionsSaveUserCSS": {
+    "message": "保存"
+  },
   "optionsShowMenuOnMouseup": {
     "message": "マウスアップでコンテキストメニューを表示"
   },
@@ -582,6 +585,22 @@
   },
   "optionsTitle": {
     "message": "サイドバータブ - 設定"
+  },
+  "optionsUseUserCSS": {
+    "message": "ユーザーCSSを使用する"
+  },
+  "optionsUseUserCSSDetail": {
+    "message": "テーマのスタイルをユーザーCSSで上書きします。"
+  },
+  "optionsUserCSS": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "optionsUserCSS_placeholder": {
+    "message": "CSSを入力"
+  },
+  "optionsWarnUserCSS": {
+    "message": "有効なCSSではありません。"
   },
   "pinTab_menu": {
     "message": "タブをピン留め$KEY$",
