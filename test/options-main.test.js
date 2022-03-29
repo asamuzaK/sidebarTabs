@@ -937,7 +937,7 @@ describe('options-main', () => {
       body.appendChild(sub);
       const res = await func();
       assert.isTrue(sub.hasAttribute('disabled'), 'sub');
-      assert.isUndefined(res, 'result');
+      assert.isNull(res, 'result');
     });
   });
 
