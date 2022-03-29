@@ -20,11 +20,11 @@ runtime.onMessage.addListener((msg, sender) =>
 
 /* startup */
 document.addEventListener('DOMContentLoaded', () => Promise.all([
-  addBookmarkLocations().then(setValuesFromStorage),
   addCustomThemeListener(),
   addInitCustomThemeListener(),
   addInitExtensionListener(),
-  addInputChangeListener(),
+  addInputChangeListener().then(addBookmarkLocations)
+    .then(setValuesFromStorage),
   addUserCssListener(),
   localizeHtml(),
   requestCustomTheme(true)

@@ -952,12 +952,16 @@ describe('options-main', () => {
 
     it('should add listener', async () => {
       const elm = document.createElement('input');
+      const sub = document.createElement('input');
       const body = document.querySelector('body');
       const spy = sinon.spy(elm, 'addEventListener');
       elm.id = USER_CSS_USE;
+      sub.dataset.subItemOf = USER_CSS_USE;
       body.appendChild(elm);
+      body.appendChild(sub);
       await func();
       assert.isTrue(spy.calledTwice, 'called');
+      assert.isTrue(sub.hasAttribute('disabled'), 'sub');
       elm.addEventListener.restore();
     });
   });

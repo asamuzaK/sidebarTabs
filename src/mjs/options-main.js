@@ -386,11 +386,17 @@ export const handleInputChange = evt => storePref(evt).catch(throwErr);
  */
 export const addInputChangeListener = async () => {
   const nodes = document.querySelectorAll('input, select');
+  const func = [];
   for (const node of nodes) {
     node.addEventListener('change', handleInputChange);
-    node.id === USER_CSS_USE &&
+    if (node.id === USER_CSS_USE) {
       node.addEventListener('change', toggleSubItems);
+      func.push(toggleSubItems({
+        target: node
+      }));
+    }
   }
+  await Promise.all(func);
 };
 
 /**
