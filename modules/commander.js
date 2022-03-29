@@ -100,7 +100,7 @@ export const saveLibraryPackage = async (lib, info) => {
   const pkgJsonPath = path.resolve(modulePath, 'package.json');
   const pkgJson = await readFile(pkgJsonPath, { encoding: CHAR, flag: 'r' });
   const {
-    author, description, homepage, license, name, version
+    author, description, homepage, license, name, repository, version
   } = JSON.parse(pkgJson);
   const origins = [];
   for (const item of files) {
@@ -127,6 +127,7 @@ export const saveLibraryPackage = async (lib, info) => {
     author,
     license,
     homepage,
+    repository,
     type,
     version,
     origins
@@ -148,6 +149,21 @@ export const saveLibraryPackage = async (lib, info) => {
 export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const libraries = {
+    css: {
+      name: 'css',
+      origin: 'https://unpkg.com/css',
+      type: 'module',
+      files: [
+        {
+          file: 'LICENSE',
+          path: 'LICENSE'
+        },
+        {
+          file: 'css-parser.js',
+          path: 'lib/parse/index.js'
+        }
+      ]
+    },
     tldts: {
       name: 'tldts-experimental',
       origin: 'https://unpkg.com/tldts-experimental',
