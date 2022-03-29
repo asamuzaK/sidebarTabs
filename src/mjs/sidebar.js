@@ -7,11 +7,13 @@ import { throwErr } from './common.js';
 import { addPort } from './port.js';
 import { requestSaveSession } from './util.js';
 import {
-  emulateTabs, getLastClosedTab, handleActivatedTab, handleAttachedTab,
-  handleClickedMenu, handleContextmenuEvt, handleCreatedTab, handleDetachedTab,
-  handleEvt, handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleUpdatedTab, requestSidebarStateUpdate, restoreHighlightedTabs,
-  restoreTabGroups, setContextualIds, setMain, setSidebar, setVars
+  applyUserStyle, emulateTabs, getLastClosedTab,
+  handleActivatedTab, handleAttachedTab, handleClickedMenu,
+  handleContextmenuEvt, handleCreatedTab, handleDetachedTab, handleEvt,
+  handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
+  handleUpdatedTab,
+  requestSidebarStateUpdate, restoreHighlightedTabs, restoreTabGroups,
+  setContextualIds, setMain, setSidebar, setVars
 } from './main.js';
 import {
   expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
@@ -89,7 +91,8 @@ window.matchMedia(COLOR_SCHEME_DARK).addEventListener('change', () =>
 document.addEventListener('DOMContentLoaded', () => Promise.all([
   localizeHtml(),
   setContextualIds(),
-  addPort().then(setSidebar).then(setMain).then(requestSidebarStateUpdate),
+  addPort().then(setSidebar).then(setMain).then(applyUserStyle)
+    .then(requestSidebarStateUpdate),
   setSidebarTheme()
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)

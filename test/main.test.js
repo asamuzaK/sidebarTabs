@@ -44,7 +44,8 @@ import {
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME, THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
   THEME_DARK, THEME_LIGHT, THEME_LIST,
-  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW
+  THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
+  USER_CSS, USER_CSS_USE, USER_CSS_ID
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -106,6 +107,7 @@ describe('main', () => {
     mjs.sidebar.tabGroupOnExpandExcludePinned = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
+    mjs.sidebar.useUserCSS = false;
     mjs.sidebar.windowId = null;
   });
   afterEach(() => {
@@ -136,6 +138,7 @@ describe('main', () => {
     mjs.sidebar.tabGroupOnExpandExcludePinned = false;
     mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
+    mjs.sidebar.useUserCSS = false;
     mjs.sidebar.windowId = null;
   });
 
@@ -156,7 +159,8 @@ describe('main', () => {
       TAB_GROUP_NEW_TAB_AT_END,
       TAB_SKIP_COLLAPSED,
       TAB_SWITCH_SCROLL,
-      TAB_SWITCH_SCROLL_ALWAYS
+      TAB_SWITCH_SCROLL_ALWAYS,
+      USER_CSS_USE
     ];
     const trueValues = [
       'enableTabGroup'
@@ -254,6 +258,9 @@ describe('main', () => {
         },
         tabGroupPutNewTabAtTheEnd: {
           checked: true
+        },
+        useUserCSS: {
+          checked: true
         }
       });
       await func();
@@ -274,6 +281,7 @@ describe('main', () => {
         'tabGroupOnExpandExcludePinned');
       assert.isTrue(sidebar.tabGroupPutNewTabAtTheEnd,
         'tabGroupPutNewTabAtTheEnd');
+      assert.isTrue(sidebar.useUserCSS, 'useUserCSS');
       assert.isTrue(sidebar.incognito, 'incognito');
       assert.isTrue(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
@@ -622,6 +630,37 @@ describe('main', () => {
       assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves({
+        useUserCSS: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isTrue(sidebar.useUserCSS, 'useUserCSS');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
   });
 
   describe('set context', () => {
@@ -798,6 +837,64 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(restore.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
+    });
+  });
+
+  describe('apply user style', () => {
+    const func = mjs.applyUserStyle;
+
+    it('should not apply user style', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      head.appendChild(elm);
+      const res = await func();
+      assert.strictEqual(elm.textContent, '', 'content');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should not apply user style', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      head.appendChild(elm);
+      mjs.sidebar.useUserCSS = true;
+      browser.storage.local.get.resolves(undefined);
+      const res = await func();
+      assert.strictEqual(elm.textContent, '', 'content');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should not apply user style', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      head.appendChild(elm);
+      mjs.sidebar.useUserCSS = true;
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: ''
+        }
+      });
+      const res = await func();
+      assert.strictEqual(elm.textContent, '', 'content');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should not apply user style', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      head.appendChild(elm);
+      mjs.sidebar.useUserCSS = true;
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: 'body { color: red; }'
+        }
+      });
+      const res = await func();
+      assert.strictEqual(elm.textContent, 'body { color: red; }', 'content');
+      assert.isUndefined(res, 'result');
     });
   });
 
@@ -11394,6 +11491,72 @@ describe('main', () => {
       const res =
         await func(THEME_UI_TAB_GROUP_NARROW, { checked: true }, true);
       assert.isTrue(body.classList.contains(CLASS_NARROW_TAB_GROUP), 'set');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should not call function', async () => {
+      mjs.sidebar.useUserCSS = true;
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: 'body { color: red; }'
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func(USER_CSS, { value: 'body { color: red; }' });
+      assert.strictEqual(browser.storage.local.get.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      mjs.sidebar.useUserCSS = true;
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: 'body { color: red; }'
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func(USER_CSS, { value: 'body { color: red; }' }, true);
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should not call function', async () => {
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: 'body { color: red; }'
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func(USER_CSS_USE, { checked: true });
+      assert.strictEqual(browser.storage.local.get.callCount, i, 'not called');
+      assert.isTrue(mjs.sidebar.useUserCSS, 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: 'body { color: red; }'
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      mjs.sidebar.useUserCSS = true;
+      const res = await func(USER_CSS_USE, { checked: false }, true);
+      assert.strictEqual(browser.storage.local.get.callCount, i, 'not called');
+      assert.isFalse(mjs.sidebar.useUserCSS, 'value');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.resolves({
+        [USER_CSS]: {
+          value: 'body { color: red; }'
+        }
+      });
+      const i = browser.storage.local.get.callCount;
+      const res = await func(USER_CSS_USE, { checked: true }, true);
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.isTrue(mjs.sidebar.useUserCSS, 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
 
