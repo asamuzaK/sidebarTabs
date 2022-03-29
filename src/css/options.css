@@ -138,6 +138,7 @@ input[type="url"] {
 }
 
 textarea {
+  display: block;
   min-width: 15rem;
   max-width: calc(100% - 1rem);
   vertical-align: top;

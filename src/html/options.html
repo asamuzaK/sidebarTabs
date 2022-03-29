@@ -243,6 +243,38 @@
               </div>
             </details>
           </div>
+          <div>
+            <p>
+              <span class="browser-style">
+                <input type="checkbox" id="useUserCSS" />
+                <label for="useUserCSS" class="checkboxLabel"
+                       data-i18n="optionsUseUserCSS"
+                       aria-details="useUserCSSDetail">
+                  Use user CSS
+                </label>
+              </span>
+              <span class="sub-item">
+                <textarea id="userCSS" class="browser-style"
+                          placeholder="Enter CSS"
+                          data-sub-item-of="useUserCSS"
+                          data-i18n="optionsUserCSS"></textarea>
+                <button id="saveUserCSS" class="browser-style" type="button"
+                        data-sub-item-of="useUserCSS"
+                        data-i18n="optionsSaveUserCSS">Save</button>
+                <span id="warnUserCSS" class="browser-style warn" hidden
+                      data-i18n="optionsWarnUserCSS">
+                  Not valid CSS.
+                </span>
+              </span>
+            </p>
+            <details id="useUserCSSDetail">
+              <div>
+                <p data-i18n="optionsUseCustomCSSDetail">
+                  Override theme styles with user CSS.
+                </p>
+              </div>
+            </details>
+          </div>
         </fieldset>
         <fieldset>
           <legend data-i18n="optionsTabGroup">
