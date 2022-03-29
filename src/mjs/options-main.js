@@ -372,6 +372,22 @@ export const toggleSubItems = evt => {
 };
 
 /**
+ * toggle user CSS sub items
+ *
+ * @returns {?Function} - toggleSubItems()
+ */
+export const toggleUserCssSubItems = async () => {
+  const target = document.getElementById(USER_CSS_USE);
+  let func;
+  if (target) {
+    func = toggleSubItems({
+      target
+    });
+  }
+  return func || null;
+};
+
+/**
  * handle input change
  *
  * @param {!object} evt - Event
@@ -389,12 +405,8 @@ export const addInputChangeListener = async () => {
   const func = [];
   for (const node of nodes) {
     node.addEventListener('change', handleInputChange);
-    if (node.id === USER_CSS_USE) {
+    node.id === USER_CSS_USE &&
       node.addEventListener('change', toggleSubItems);
-      func.push(toggleSubItems({
-        target: node
-      }));
-    }
   }
   await Promise.all(func);
 };

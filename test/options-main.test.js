@@ -919,6 +919,28 @@ describe('options-main', () => {
     });
   });
 
+  describe('toggle user CSS sub items', () => {
+    const func = mjs.toggleUserCssSubItems;
+
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should set attribute', async () => {
+      const elm = document.createElement('input');
+      const sub = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS_USE;
+      sub.dataset.subItemOf = USER_CSS_USE;
+      body.appendChild(elm);
+      body.appendChild(sub);
+      const res = await func();
+      assert.isTrue(sub.hasAttribute('disabled'), 'sub');
+      assert.isUndefined(res, 'result');
+    });
+  });
+
   describe('handle input change', () => {
     const func = mjs.handleInputChange;
 
@@ -952,16 +974,12 @@ describe('options-main', () => {
 
     it('should add listener', async () => {
       const elm = document.createElement('input');
-      const sub = document.createElement('input');
       const body = document.querySelector('body');
       const spy = sinon.spy(elm, 'addEventListener');
       elm.id = USER_CSS_USE;
-      sub.dataset.subItemOf = USER_CSS_USE;
       body.appendChild(elm);
-      body.appendChild(sub);
       await func();
       assert.isTrue(spy.calledTwice, 'called');
-      assert.isTrue(sub.hasAttribute('disabled'), 'sub');
       elm.addEventListener.restore();
     });
   });

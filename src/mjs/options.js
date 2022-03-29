@@ -8,7 +8,7 @@ import { localizeHtml } from './localize.js';
 import {
   addBookmarkLocations, addCustomThemeListener, addInitCustomThemeListener,
   addInitExtensionListener, addInputChangeListener, addUserCssListener,
-  handleMsg, requestCustomTheme, setValuesFromStorage
+  handleMsg, requestCustomTheme, setValuesFromStorage, toggleUserCssSubItems
 } from './options-main.js';
 
 /* api */
@@ -20,11 +20,11 @@ runtime.onMessage.addListener((msg, sender) =>
 
 /* startup */
 document.addEventListener('DOMContentLoaded', () => Promise.all([
+  addBookmarkLocations().then(toggleUserCssSubItems).then(setValuesFromStorage),
   addCustomThemeListener(),
   addInitCustomThemeListener(),
   addInitExtensionListener(),
-  addInputChangeListener().then(addBookmarkLocations)
-    .then(setValuesFromStorage),
+  addInputChangeListener(),
   addUserCssListener(),
   localizeHtml(),
   requestCustomTheme(true)
