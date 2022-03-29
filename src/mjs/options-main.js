@@ -9,10 +9,12 @@ import {
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
+import cssParser from '../lib/css/css-parser.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
-  THEME_ID, THEME_LIST, THEME_RADIO
+  THEME_ID, THEME_LIST, THEME_RADIO,
+  USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from './constant.js';
 
 /**
@@ -308,8 +310,64 @@ export const handleInitExtClick = evt => {
  */
 export const addInitExtensionListener = async () => {
   const elm = document.getElementById(EXT_INIT);
-  if (elm) {
-    elm.addEventListener('click', handleInitExtClick);
+  elm && elm.addEventListener('click', handleInitExtClick);
+};
+
+/**
+ *
+ * save user CSS
+ *
+ * @returns {?Function} - storePref()
+ */
+export const saveUserCss = () => {
+  const css = document.getElementById(USER_CSS);
+  const msg = document.getElementById(USER_CSS_WARN);
+  let func;
+  if (css && msg) {
+    const { value } = css;
+    const { stylesheet: { parsingErrors } } = cssParser(value, {
+      silent: true
+    });
+    if (Array.isArray(parsingErrors)) {
+      if (parsingErrors.length) {
+        msg.removeAttribute('hidden');
+      } else {
+        msg.setAttribute('hidden', 'hidden');
+        func = storePref({
+          target: css
+        }).catch(throwErr);
+      }
+    }
+  }
+  return func || null;
+};
+
+/**
+ * add event listener to save user CSS
+ *
+ * @returns {void}
+ */
+export const addUserCssListener = async () => {
+  const elm = document.getElementById(USER_CSS_SAVE);
+  elm && elm.addEventListener('click', saveUserCss);
+};
+
+/**
+ * toggle sub items
+ *
+ * @param {!object} evt - Event
+ * @returns {void}
+ */
+export const toggleSubItems = evt => {
+  const { target } = evt;
+  const { checked, id } = target;
+  const items = document.querySelectorAll(`[data-sub-item-of=${id}]`);
+  for (const item of items) {
+    if (checked) {
+      item.removeAttribute('disabled');
+    } else {
+      item.setAttribute('disabled', 'disabled');
+    }
   }
 };
 
@@ -330,6 +388,8 @@ export const addInputChangeListener = async () => {
   const nodes = document.querySelectorAll('input, select');
   for (const node of nodes) {
     node.addEventListener('change', handleInputChange);
+    node.id === USER_CSS_USE &&
+      node.addEventListener('change', toggleSubItems);
   }
 };
 
@@ -355,6 +415,12 @@ export const setHtmlInputValue = async (data = {}) => {
               checked, id
             }
           }));
+        } else if (id === USER_CSS_USE) {
+          func.push(toggleSubItems({
+            target: {
+              checked, id
+            }
+          }));
         }
         break;
       }
@@ -368,6 +434,9 @@ export const setHtmlInputValue = async (data = {}) => {
         if (localName === 'select' && id === BOOKMARK_LOCATION && value) {
           const child = elm.querySelector(`#${value}`);
           child && child.setAttribute('selected', 'selected');
+        } else if (localName === 'textarea' && id === USER_CSS) {
+          const css = document.getElementById(USER_CSS);
+          css.value = isString(value) ? value : '';
         }
       }
     }
