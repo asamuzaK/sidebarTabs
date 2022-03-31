@@ -587,10 +587,10 @@
     "message": "サイドバータブ - 設定"
   },
   "optionsUseUserCSS": {
-    "message": "ユーザーCSSを使用する"
+    "message": "ユーザースタイルシートを適用する"
   },
   "optionsUseUserCSSDetail": {
-    "message": "テーマのスタイルをユーザーCSSで上書きします。"
+    "message": "テーマのスタイルをユーザースタイルシートで上書きします。"
   },
   "optionsUserCSS": {
     "message": "",

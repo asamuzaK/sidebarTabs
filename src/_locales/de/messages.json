@@ -587,10 +587,10 @@
     "message": "Sidebar Tabs - Options"
   },
   "optionsUseUserCSS": {
-    "message": "Use user CSS"
+    "message": "Apply user stylesheet"
   },
   "optionsUseUserCSSDetail": {
-    "message": "Override theme styles with user CSS."
+    "message": "Override theme styles with user stylesheet."
   },
   "optionsUserCSS": {
     "message": "",
