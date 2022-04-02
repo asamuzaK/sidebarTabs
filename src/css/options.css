@@ -138,7 +138,6 @@ input[type="url"] {
 }
 
 textarea {
-  display: block;
   min-width: 15rem;
   max-width: calc(100% - 1rem);
   vertical-align: top;
@@ -233,6 +232,14 @@ pre > code {
   padding: 0.25rem;
   text-align: center;
   vertical-align: middle;
+}
+
+#userCSS {
+  display: block;
+}
+
+#userCSS[hidden] {
+  display: none;
 }
 
 @media (prefers-color-scheme: dark) {

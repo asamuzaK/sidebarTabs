@@ -450,10 +450,71 @@ describe('options-main', () => {
     });
   });
 
+  describe('toggle sub items', () => {
+    const func = mjs.toggleSubItems;
+
+    it('should throw', () => {
+      assert.throws(() => func());
+    });
+
+    it('should not remove attribute', async () => {
+      const elm = document.createElement('span');
+      const elm2 = document.createElement('span');
+      const elm3 = document.createElement('span');
+      const elm4 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      elm2.dataset.subItemOf = 'foo';
+      elm3.dataset.subItemOf = 'foo';
+      elm4.dataset.subItemOf = 'bar';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      await func({
+        target: elm
+      });
+      assert.isTrue(elm2.hasAttribute('hidden'), 'set attr');
+      assert.isTrue(elm3.hasAttribute('hidden'), 'set attr');
+      assert.isFalse(elm4.hasAttribute('hidden'), 'set attr');
+    });
+
+    it('should remove attribute', async () => {
+      const elm = document.createElement('span');
+      const elm2 = document.createElement('span');
+      const elm3 = document.createElement('span');
+      const elm4 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      elm.checked = true;
+      elm2.setAttribute('hidden', 'hidden');
+      elm2.dataset.subItemOf = 'foo';
+      elm3.setAttribute('hidden', 'hidden');
+      elm3.dataset.subItemOf = 'foo';
+      elm4.setAttribute('hidden', 'hidden');
+      elm4.dataset.subItemOf = 'bar';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      await func({
+        target: elm
+      });
+      assert.isFalse(elm2.hasAttribute('hidden'), 'set attr');
+      assert.isFalse(elm3.hasAttribute('hidden'), 'set attr');
+      assert.isTrue(elm4.hasAttribute('hidden'), 'set attr');
+    });
+  });
+
   describe('toggle custom theme settings', () => {
     const func = mjs.toggleCustomThemeSettings;
 
-    it('should remove attribute', async () => {
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should not remove attribute', async () => {
       const elm = document.createElement('input');
       const elm2 = document.createElement('p');
       const body = document.querySelector('body');
@@ -464,14 +525,26 @@ describe('options-main', () => {
       elm2.setAttribute('hidden', 'hidden');
       body.appendChild(elm);
       body.appendChild(elm2);
-      const evt = {
-        target: {
-          id: elm.id,
-          checked: elm.checked
-        }
-      };
-      await func(evt);
+      const res = await func();
+      assert.isTrue(elm2.hasAttribute('hidden'), 'attr');
+      assert.isNull(res, 'result');
+    });
+
+    it('should remove attribute', async () => {
+      const elm = document.createElement('input');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM;
+      elm.type = 'radio';
+      elm.checked = true;
+      elm2.id = THEME_CUSTOM_SETTING;
+      elm2.setAttribute('hidden', 'hidden');
+      elm2.dataset.subItemOf = THEME_CUSTOM;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
       assert.isFalse(elm2.hasAttribute('hidden'), 'attr');
+      assert.isNull(res, 'result');
     });
 
     it('should add attribute', async () => {
@@ -482,16 +555,12 @@ describe('options-main', () => {
       elm.type = 'radio';
       elm.checked = false;
       elm2.id = THEME_CUSTOM_SETTING;
+      elm2.dataset.subItemOf = THEME_CUSTOM;
       body.appendChild(elm);
       body.appendChild(elm2);
-      const evt = {
-        target: {
-          id: elm.id,
-          checked: elm.checked
-        }
-      };
-      await func(evt);
+      const res = await func();
       assert.isTrue(elm2.hasAttribute('hidden'), 'attr');
+      assert.isNull(res, 'result');
     });
   });
 
@@ -863,84 +932,6 @@ describe('options-main', () => {
     });
   });
 
-  describe('toggle sub items', () => {
-    const func = mjs.toggleSubItems;
-
-    it('should throw', () => {
-      assert.throws(() => func());
-    });
-
-    it('should not remove attribute', async () => {
-      const elm = document.createElement('span');
-      const elm2 = document.createElement('span');
-      const elm3 = document.createElement('span');
-      const elm4 = document.createElement('span');
-      const body = document.querySelector('body');
-      elm.id = 'foo';
-      elm2.dataset.subItemOf = 'foo';
-      elm3.dataset.subItemOf = 'foo';
-      elm4.dataset.subItemOf = 'bar';
-      body.appendChild(elm);
-      body.appendChild(elm2);
-      body.appendChild(elm3);
-      body.appendChild(elm4);
-      await func({
-        target: elm
-      });
-      assert.isTrue(elm2.hasAttribute('disabled'), 'set attr');
-      assert.isTrue(elm3.hasAttribute('disabled'), 'set attr');
-      assert.isFalse(elm4.hasAttribute('disabled'), 'set attr');
-    });
-
-    it('should remove attribute', async () => {
-      const elm = document.createElement('span');
-      const elm2 = document.createElement('span');
-      const elm3 = document.createElement('span');
-      const elm4 = document.createElement('span');
-      const body = document.querySelector('body');
-      elm.id = 'foo';
-      elm.checked = true;
-      elm2.setAttribute('disabled', 'disabled');
-      elm2.dataset.subItemOf = 'foo';
-      elm3.setAttribute('disabled', 'disabled');
-      elm3.dataset.subItemOf = 'foo';
-      elm4.setAttribute('disabled', 'disabled');
-      elm4.dataset.subItemOf = 'bar';
-      body.appendChild(elm);
-      body.appendChild(elm2);
-      body.appendChild(elm3);
-      body.appendChild(elm4);
-      await func({
-        target: elm
-      });
-      assert.isFalse(elm2.hasAttribute('disabled'), 'set attr');
-      assert.isFalse(elm3.hasAttribute('disabled'), 'set attr');
-      assert.isTrue(elm4.hasAttribute('disabled'), 'set attr');
-    });
-  });
-
-  describe('toggle user CSS sub items', () => {
-    const func = mjs.toggleUserCssSubItems;
-
-    it('should get null', async () => {
-      const res = await func();
-      assert.isNull(res, 'result');
-    });
-
-    it('should set attribute', async () => {
-      const elm = document.createElement('input');
-      const sub = document.createElement('input');
-      const body = document.querySelector('body');
-      elm.id = USER_CSS_USE;
-      sub.dataset.subItemOf = USER_CSS_USE;
-      body.appendChild(elm);
-      body.appendChild(sub);
-      const res = await func();
-      assert.isTrue(sub.hasAttribute('disabled'), 'sub');
-      assert.isNull(res, 'result');
-    });
-  });
-
   describe('handle input change', () => {
     const func = mjs.handleInputChange;
 
@@ -1066,11 +1057,11 @@ describe('options-main', () => {
       elm.type = 'checkbox';
       elm.id = USER_CSS_USE;
       elm.checked = true;
-      elm2.setAttribute('disabled', 'disabled');
+      elm2.setAttribute('hidden', 'hidden');
       elm2.dataset.subItemOf = USER_CSS_USE;
-      elm3.setAttribute('disabled', 'disabled');
+      elm3.setAttribute('hidden', 'hidden');
       elm3.dataset.subItemOf = USER_CSS_USE;
-      elm4.setAttribute('disabled', 'disabled');
+      elm4.setAttribute('hidden', 'hidden');
       elm4.dataset.subItemOf = 'foo';
       body.appendChild(elm);
       body.appendChild(elm2);
@@ -1081,9 +1072,9 @@ describe('options-main', () => {
         checked: true
       });
       assert.strictEqual(elm.checked, true, 'checked');
-      assert.isFalse(elm2.hasAttribute('disabled'), 'set attr');
-      assert.isFalse(elm3.hasAttribute('disabled'), 'set attr');
-      assert.isTrue(elm4.hasAttribute('disabled'), 'set attr');
+      assert.isFalse(elm2.hasAttribute('hidden'), 'set attr');
+      assert.isFalse(elm3.hasAttribute('hidden'), 'set attr');
+      assert.isTrue(elm4.hasAttribute('hidden'), 'set attr');
       assert.deepEqual(res, [undefined], 'result');
     });
 

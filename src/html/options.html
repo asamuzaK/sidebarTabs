@@ -48,7 +48,8 @@
                 </p>
               </div>
             </details>
-            <table id="customThemeSettings" border="1" hidden>
+            <table id="customThemeSettings" border="1"
+                   data-sub-item-of="customTheme" hidden>
               <caption>
                 <span  data-i18n="optionsThemeCustomCaption">
                   Customize Theme
@@ -257,10 +258,10 @@
                 <textarea id="userCSS" class="browser-style"
                           placeholder="Enter CSS"
                           data-sub-item-of="useUserCSS"
-                          data-i18n="optionsUserCSS"></textarea>
+                          data-i18n="optionsUserCSS" hidden></textarea>
                 <button id="saveUserCSS" class="browser-style" type="button"
                         data-sub-item-of="useUserCSS"
-                        data-i18n="optionsSaveUserCSS">Save</button>
+                        data-i18n="optionsSaveUserCSS" hidden>Save</button>
                 <span id="warnUserCSS" class="browser-style warn" hidden
                       data-i18n="optionsWarnUserCSS">
                   Not valid CSS.

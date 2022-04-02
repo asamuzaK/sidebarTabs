@@ -172,24 +172,40 @@ export const storePref = async evt => {
   return Promise.all(func);
 };
 
+/**
+ * toggle sub items
+ *
+ * @param {!object} evt - Event
+ * @returns {void}
+ */
+export const toggleSubItems = evt => {
+  const { target } = evt;
+  const { checked, id } = target;
+  const items = document.querySelectorAll(`[data-sub-item-of=${id}]`);
+  for (const item of items) {
+    if (checked) {
+      item.removeAttribute('hidden');
+    } else {
+      item.setAttribute('hidden', 'hidden');
+    }
+  }
+};
+
 /* custom theme */
 /**
  * toggle custom theme settings
  *
- * @param {!object} evt - event
- * @returns {void}
+ * @returns {?Function} - toggleSubItems()
  */
-export const toggleCustomThemeSettings = evt => {
-  const { target } = evt;
-  const elm = document.getElementById(THEME_CUSTOM_SETTING);
-  if (elm) {
-    const { checked, id } = target;
-    if (id === THEME_CUSTOM && checked) {
-      elm.removeAttribute('hidden');
-    } else {
-      elm.setAttribute('hidden', 'hidden');
-    }
+export const toggleCustomThemeSettings = () => {
+  const target = document.getElementById(THEME_CUSTOM);
+  let func;
+  if (target) {
+    func = toggleSubItems({
+      target
+    });
   }
+  return func || null;
 };
 
 /**
@@ -353,41 +369,6 @@ export const addUserCssListener = async () => {
 };
 
 /**
- * toggle sub items
- *
- * @param {!object} evt - Event
- * @returns {void}
- */
-export const toggleSubItems = evt => {
-  const { target } = evt;
-  const { checked, id } = target;
-  const items = document.querySelectorAll(`[data-sub-item-of=${id}]`);
-  for (const item of items) {
-    if (checked) {
-      item.removeAttribute('disabled');
-    } else {
-      item.setAttribute('disabled', 'disabled');
-    }
-  }
-};
-
-/**
- * toggle user CSS sub items
- *
- * @returns {?Function} - toggleSubItems()
- */
-export const toggleUserCssSubItems = async () => {
-  const target = document.getElementById(USER_CSS_USE);
-  let func;
-  if (target) {
-    func = toggleSubItems({
-      target
-    });
-  }
-  return func || null;
-};
-
-/**
  * handle input change
  *
  * @param {!object} evt - Event
@@ -427,13 +408,7 @@ export const setHtmlInputValue = async (data = {}) => {
       case 'checkbox':
       case 'radio': {
         elm.checked = !!checked;
-        if (id === THEME_CUSTOM) {
-          func.push(toggleCustomThemeSettings({
-            target: {
-              checked, id
-            }
-          }));
-        } else if (id === USER_CSS_USE) {
+        if (id === THEME_CUSTOM || id === USER_CSS_USE) {
           func.push(toggleSubItems({
             target: {
               checked, id
