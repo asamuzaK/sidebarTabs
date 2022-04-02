@@ -3,13 +3,13 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, isString, logErr, throwErr } from './common.js';
+import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   clearContextMenuOnMouseup, getAllStorage, getStorage, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
-import { parse as cssParser } from '../lib/css/csstree.esm.js';
+import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
@@ -341,19 +341,16 @@ export const saveUserCss = () => {
   let func;
   if (css && msg) {
     const { value } = css;
-    try {
-      cssParser(value, {
-        onParseError(e) {
-          throw e;
-        }
-      });
-      msg.setAttribute('hidden', 'hidden');
-      func = storePref({
-        target: css
-      }).catch(throwErr);
-    } catch (e) {
-      msg.removeAttribute('hidden');
-      func = logErr(e);
+    const errors = cssValidator(value);
+    if (Array.isArray(errors)) {
+      if (errors.length) {
+        msg.removeAttribute('hidden');
+      } else {
+        msg.setAttribute('hidden', 'hidden');
+        func = storePref({
+          target: css
+        }).catch(throwErr);
+      }
     }
   }
   return func || null;

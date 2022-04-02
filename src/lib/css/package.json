@@ -1,18 +1,18 @@
 {
-  "name": "css-tree",
-  "description": "A tool set for CSS: fast detailed parser (CSS → AST), walker (AST traversal), generator (AST → CSS) and lexer (validation and matching) based on specs and browser implementations",
-  "author": "Roman Dvornov <rdvornov@gmail.com> (https://github.com/lahmatiy)",
+  "name": "csstree-validator",
+  "description": "CSS validator built on csstree",
+  "author": "Roman Dvornov <rdvornov@gmail.com>",
   "license": "MIT",
   "type": "module",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "origins": [
     {
       "file": "LICENSE",
-      "url": "https://unpkg.com/css-tree@2.1.0/LICENSE"
+      "url": "https://unpkg.com/csstree-validator@3.0.0/LICENSE"
     },
     {
-      "file": "csstree.esm.js",
-      "url": "https://unpkg.com/css-tree@2.1.0/dist/csstree.esm.js"
+      "file": "csstree-validator.esm.js",
+      "url": "https://unpkg.com/csstree-validator@3.0.0/dist/csstree-validator.esm.js"
     }
   ]
 }

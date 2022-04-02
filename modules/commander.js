@@ -149,8 +149,8 @@ export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const libraries = {
     css: {
-      name: 'css-tree',
-      origin: 'https://unpkg.com/css-tree',
+      name: 'csstree-validator',
+      origin: 'https://unpkg.com/csstree-validator',
       type: 'module',
       files: [
         {
@@ -158,8 +158,8 @@ export const extractLibraries = async (cmdOpts = {}) => {
           path: 'LICENSE'
         },
         {
-          file: 'csstree.esm.js',
-          path: 'dist/csstree.esm.js'
+          file: 'csstree-validator.esm.js',
+          path: 'dist/csstree-validator.esm.js'
         }
       ]
     },

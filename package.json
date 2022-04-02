@@ -15,7 +15,7 @@
   "scripts": {
     "include": "npm-run-all -s include:*",
     "include:browser": "copyfiles --up=3 --verbose node_modules/webext-schema/modules/browser.js src/mjs",
-    "include:css": "copyfiles -f --verbose node_modules/css-tree/LICENSE node_modules/css-tree/dist/csstree.esm.js src/lib/css && node index include --dir=css -i",
+    "include:css": "copyfiles -f --verbose node_modules/csstree-validator/LICENSE node_modules/csstree-validator/dist/csstree-validator.esm.js src/lib/css && node index include --dir=css -i",
     "include:tldts": "copyfiles -f --verbose node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts && node index include --dir=tldts -i",
     "lint": "npm-run-all -s lint:*",
     "lint:addons-linter": "addons-linter src",
@@ -36,7 +36,7 @@
   "dependencies": {
     "camelize": "^1.0.0",
     "commander": "^9.1.0",
-    "css-tree": "^2.1.0",
+    "csstree-validator": "^3.0.0",
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.3",
     "tldts-experimental": "^5.7.73",

@@ -846,22 +846,17 @@ describe('options-main', () => {
     });
 
     it('should not call function', async () => {
-      const stubErr = sinon.stub(console, 'error');
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
       const body = document.querySelector('body');
       elm.id = USER_CSS;
       body.appendChild(elm);
       const res = await func();
-      const { called: errCalled } = stubErr;
-      stubErr.restore();
-      assert.isFalse(errCalled, 'error not called');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.isNull(res, 'result');
     });
 
     it('should call function', async () => {
-      const stubErr = sinon.stub(console, 'error');
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
       const elm2 = document.createElement('span');
@@ -872,16 +867,12 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       const res = await func();
-      const { called: errCalled } = stubErr;
-      stubErr.restore();
-      assert.isFalse(errCalled, 'error not called');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should log error', async () => {
-      const stubErr = sinon.stub(console, 'error');
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
       const elm2 = document.createElement('span');
@@ -893,16 +884,12 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       const res = await func();
-      const { calledOnce: errCalled } = stubErr;
-      stubErr.restore();
-      assert.isTrue(errCalled, 'error called');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.isFalse(elm2.hidden, 'hidden');
       assert.isNull(res, 'result');
     });
 
     it('should call function', async () => {
-      const stubErr = sinon.stub(console, 'error');
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
       const elm2 = document.createElement('span');
@@ -914,16 +901,12 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       const res = await func();
-      const { called: errCalled } = stubErr;
-      stubErr.restore();
-      assert.isFalse(errCalled, 'error not called');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should call function', async () => {
-      const stubErr = sinon.stub(console, 'error');
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
       const elm2 = document.createElement('span');
@@ -935,9 +918,6 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       const res = await func();
-      const { called: errCalled } = stubErr;
-      stubErr.restore();
-      assert.isFalse(errCalled, 'error not called');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
       assert.deepEqual(res, [undefined], 'result');
