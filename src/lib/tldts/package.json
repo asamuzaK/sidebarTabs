@@ -6,10 +6,6 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/remusao/tldts#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/remusao/tldts.git"
-  },
   "type": "module",
   "version": "5.7.73",
   "origins": [

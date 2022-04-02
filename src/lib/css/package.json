@@ -1,22 +1,18 @@
 {
-  "name": "css",
-  "description": "CSS parser / stringifier",
-  "author": "TJ Holowaychuk <tj@vision-media.ca>",
+  "name": "css-tree",
+  "description": "A tool set for CSS: fast detailed parser (CSS → AST), walker (AST traversal), generator (AST → CSS) and lexer (validation and matching) based on specs and browser implementations",
+  "author": "Roman Dvornov <rdvornov@gmail.com> (https://github.com/lahmatiy)",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/reworkcss/css.git"
-  },
   "type": "module",
-  "version": "3.0.0",
+  "version": "2.1.0",
   "origins": [
     {
       "file": "LICENSE",
-      "url": "https://unpkg.com/css@3.0.0/LICENSE"
+      "url": "https://unpkg.com/css-tree@2.1.0/LICENSE"
     },
     {
-      "file": "css-parser.js",
-      "url": "https://unpkg.com/css@3.0.0/lib/parse/index.js"
+      "file": "csstree.esm.js",
+      "url": "https://unpkg.com/css-tree@2.1.0/dist/csstree.esm.js"
     }
   ]
 }

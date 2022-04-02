@@ -3,13 +3,13 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, isString, throwErr } from './common.js';
+import { isObjectNotEmpty, isString, logErr, throwErr } from './common.js';
 import {
   clearContextMenuOnMouseup, getAllStorage, getStorage, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
-import cssParser from '../lib/css/css-parser.js';
+import { parse as cssParser }from '../lib/css/csstree.esm.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
@@ -333,7 +333,7 @@ export const addInitExtensionListener = async () => {
  *
  * save user CSS
  *
- * @returns {?Function} - storePref()
+ * @returns {?Function} - storePref() / logErr()
  */
 export const saveUserCss = () => {
   const css = document.getElementById(USER_CSS);
@@ -341,18 +341,19 @@ export const saveUserCss = () => {
   let func;
   if (css && msg) {
     const { value } = css;
-    const { stylesheet: { parsingErrors } } = cssParser(value, {
-      silent: true
-    });
-    if (Array.isArray(parsingErrors)) {
-      if (parsingErrors.length) {
-        msg.removeAttribute('hidden');
-      } else {
-        msg.setAttribute('hidden', 'hidden');
-        func = storePref({
-          target: css
-        }).catch(throwErr);
-      }
+    try {
+      cssParser(value, {
+        onParseError(e) {
+          throw e;
+        }
+      });
+      msg.setAttribute('hidden', 'hidden');
+      func = storePref({
+        target: css
+      }).catch(throwErr);
+    } catch (e) {
+      msg.removeAttribute('hidden');
+      func = logErr(e);
     }
   }
   return func || null;

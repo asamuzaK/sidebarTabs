@@ -2185,6 +2185,15 @@ describe('theme', () => {
       assert.strictEqual(elm.textContent, '', 'content');
     });
 
+    it('should not set CSS', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
+      head.appendChild(elm);
+      await func('');
+      assert.strictEqual(elm.textContent, '', 'content');
+    });
+
     it('should set CSS', async () => {
       const elm = document.createElement('style');
       const head = document.querySelector('head');

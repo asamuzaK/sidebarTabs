@@ -9,7 +9,7 @@ import {
   sendMessage, setStorage
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
-import cssParser from '../lib/css/css-parser.js';
+import { parse as cssParser }from '../lib/css/csstree.esm.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -826,13 +826,18 @@ export const setUserCss = async css => {
   }
   const usrCss = document.getElementById(USER_CSS_ID);
   if (usrCss) {
-    const { stylesheet: { parsingErrors, rules } } = cssParser(css, {
-      silent: true
-    });
-    if (Array.isArray(parsingErrors) && parsingErrors.length === 0 &&
-        Array.isArray(rules) && rules.length) {
-      usrCss.textContent = css;
-    } else {
+    try {
+      const { children: { head, tail } } = cssParser(css, {
+        onParseError(e) {
+          throw e;
+        }
+      });
+      if (head && tail && css) {
+        usrCss.textContent = css;
+      } else {
+        usrCss.textContent = '';
+      }
+    } catch (e) {
       usrCss.textContent = '';
     }
   }
