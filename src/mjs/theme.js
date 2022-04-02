@@ -9,7 +9,7 @@ import {
   sendMessage, setStorage
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
-import { parse as cssParser }from '../lib/css/csstree.esm.js';
+import { parse as cssParser } from '../lib/css/csstree.esm.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,

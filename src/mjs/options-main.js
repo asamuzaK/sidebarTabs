@@ -9,7 +9,7 @@ import {
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
-import { parse as cssParser }from '../lib/css/csstree.esm.js';
+import { parse as cssParser } from '../lib/css/csstree.esm.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
