@@ -7,19 +7,19 @@
   "license": "MIT",
   "homepage": "https://github.com/remusao/tldts#readme",
   "type": "module",
-  "version": "5.7.74",
+  "version": "5.7.75",
   "origins": [
     {
       "file": "LICENSE",
-      "url": "https://unpkg.com/tldts-experimental@5.7.74/LICENSE"
+      "url": "https://unpkg.com/tldts-experimental@5.7.75/LICENSE"
     },
     {
       "file": "index.esm.min.js",
-      "url": "https://unpkg.com/tldts-experimental@5.7.74/dist/index.esm.min.js"
+      "url": "https://unpkg.com/tldts-experimental@5.7.75/dist/index.esm.min.js"
     },
     {
       "file": "index.esm.min.js.map",
-      "url": "https://unpkg.com/tldts-experimental@5.7.74/dist/index.esm.min.js.map"
+      "url": "https://unpkg.com/tldts-experimental@5.7.75/dist/index.esm.min.js.map"
     }
   ]
 }
