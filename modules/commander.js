@@ -92,6 +92,7 @@ export const saveLibraryPackage = async (lib, info) => {
   const {
     name: moduleName,
     origin: originUrl,
+    repository,
     type,
     files
   } = value;
@@ -127,6 +128,7 @@ export const saveLibraryPackage = async (lib, info) => {
     author,
     license,
     homepage,
+    repository,
     type,
     version,
     origins
@@ -151,6 +153,10 @@ export const extractLibraries = async (cmdOpts = {}) => {
     css: {
       name: 'csstree-validator',
       origin: 'https://unpkg.com/csstree-validator',
+      repository: {
+        type: 'git',
+        url: 'git+https://github.com/csstree/validator.git'
+      },
       type: 'module',
       files: [
         {
@@ -166,6 +172,10 @@ export const extractLibraries = async (cmdOpts = {}) => {
     tldts: {
       name: 'tldts-experimental',
       origin: 'https://unpkg.com/tldts-experimental',
+      repository: {
+        type: 'git',
+        url: 'git+ssh://git@github.com/remusao/tldts.git'
+      },
       type: 'module',
       files: [
         {

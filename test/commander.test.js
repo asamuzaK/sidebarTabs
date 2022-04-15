@@ -352,6 +352,10 @@ describe('save library package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        repository: {
+          type: 'git',
+          url: 'git+ssh://git@github.com/remusao/tldts.git'
+        },
         type: 'module',
         files: [
           {
@@ -376,6 +380,10 @@ describe('save library package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        repository: {
+          type: 'git',
+          url: 'git+ssh://git@github.com/remusao/tldts.git'
+        },
         type: 'module',
         files: [
           {
@@ -411,6 +419,10 @@ describe('save library package info', () => {
       {
         name: 'tldts-experimental',
         origin: 'https://unpkg.com/tldts-experimental',
+        repository: {
+          type: 'git',
+          url: 'git+ssh://git@github.com/remusao/tldts.git'
+        },
         type: 'module',
         files: [
           {

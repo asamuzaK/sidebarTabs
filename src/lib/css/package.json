@@ -3,6 +3,10 @@
   "description": "CSS validator built on csstree",
   "author": "Roman Dvornov <rdvornov@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csstree/validator.git"
+  },
   "type": "module",
   "version": "3.0.0",
   "origins": [
