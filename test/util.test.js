@@ -6,7 +6,6 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
-import psl from 'psl';
 import sinon from 'sinon';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
@@ -23,7 +22,6 @@ describe('util', () => {
   beforeEach(() => {
     const dom = createJsdom();
     window = dom && dom.window;
-    window.psl = psl;
     document = window && window.document;
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
