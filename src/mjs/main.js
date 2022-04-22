@@ -753,7 +753,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         const { index: lastChildTabIndex } = lastChildTabsTab;
         if (tabList.length === index && nextContainer !== newTab) {
           await createSidebarTab(tab);
-        } else if (index !== openerTabIndex + 1 && !tabGroupPutNewTabAtTheEnd) {
+        } else if (index !== openerTabIndex + 1 && !tabGroupPutNewTabAtTheEnd &&
+                   insertTarget) {
           await createSidebarTab(tab, insertTarget);
         } else {
           if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
