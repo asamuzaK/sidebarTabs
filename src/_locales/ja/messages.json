@@ -484,6 +484,12 @@
   "optionsOptionalSettings": {
     "message": "オプション設定"
   },
+  "optionsPreventCloseTabsByMiddleClick": {
+    "message": "中クリックでタブを閉じないようにする"
+  },
+  "optionsPreventCloseTabsByMiddleClickDetail": {
+    "message": "マウスの中クリックでタブを閉じる動作を抑止します。"
+  },
   "optionsReadBrowserSettings": {
     "message": "拡張機能がブラウザの設定を読み込んだり変更することを許可する"
   },

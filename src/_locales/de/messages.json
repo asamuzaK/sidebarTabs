@@ -484,6 +484,12 @@
   "optionsOptionalSettings": {
     "message": "Optional Settings"
   },
+  "optionsPreventCloseTabsByMiddleClick": {
+    "message": "Prevent close tab by middle click"
+  },
+  "optionsPreventCloseTabsByMiddleClickDetail": {
+    "message": "Suppress the action of closing tab with a middle mouse click."
+  },
   "optionsReadBrowserSettings": {
     "message": "Allow extension to read and modify browser settings"
   },

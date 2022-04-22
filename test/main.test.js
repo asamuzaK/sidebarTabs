@@ -8,7 +8,6 @@ import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import os from 'os';
-import psl from 'psl';
 import sinon from 'sinon';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -30,8 +29,8 @@ import {
   OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
-  TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER,
-  TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK_PREVENT,
+  TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
   TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND_COLLAPSE_OTHER,
@@ -78,7 +77,6 @@ describe('main', () => {
       }
     });
     window = dom && dom.window;
-    window.psl = psl;
     document = window && window.document;
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
@@ -91,6 +89,7 @@ describe('main', () => {
     }
     mjs.sidebar.alwaysSwitchTabByScrolling = false;
     mjs.sidebar.closeTabsByDoubleClick = false;
+    mjs.sidebar.closeTabsByMiddleClick = true;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
     mjs.sidebar.enableTabGroup = true;
@@ -122,6 +121,7 @@ describe('main', () => {
     browser._sandbox.reset();
     mjs.sidebar.alwaysSwitchTabByScrolling = false;
     mjs.sidebar.closeTabsByDoubleClick = false;
+    mjs.sidebar.closeTabsByMiddleClick = true;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
     mjs.sidebar.enableTabGroup = true;
@@ -153,6 +153,7 @@ describe('main', () => {
       NEW_TAB_SEPARATOR_SHOW,
       SCROLL_DIR_INVERT,
       TAB_CLOSE_DBLCLICK,
+      TAB_CLOSE_MDLCLICK_PREVENT,
       TAB_GROUP_ENABLE,
       TAB_GROUP_EXPAND_COLLAPSE_OTHER,
       TAB_GROUP_EXPAND_EXCLUDE_PINNED,
@@ -163,6 +164,7 @@ describe('main', () => {
       USER_CSS_USE
     ];
     const trueValues = [
+      'closeTabsByMiddleClick',
       'enableTabGroup'
     ];
     const nullValues = [
@@ -232,6 +234,9 @@ describe('main', () => {
         closeTabsByDoubleClick: {
           checked: true
         },
+        preventCloseTabsByMiddleClick: {
+          checked: true
+        },
         invertScrollDirection: {
           checked: true
         },
@@ -269,6 +274,7 @@ describe('main', () => {
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isTrue(sidebar.alwaysSwitchTabByScrolling, 'alwaysSwitchTab');
       assert.isTrue(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
+      assert.isFalse(sidebar.closeTabsByMiddleClick, 'closeTabsByMiddleClick');
       assert.isFalse(sidebar.enableTabGroup, 'enableTabGroup');
       assert.isTrue(sidebar.invertScrollDirection, 'invertScrollDirection');
       assert.isTrue(sidebar.readBrowserSettings, 'readBrowserSettings');
@@ -344,6 +350,37 @@ describe('main', () => {
       assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
       assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
       assert.isTrue(sidebar.closeTabsByDoubleClick, 'closeTabsByDoubleClick');
+      assert.isFalse(sidebar.incognito, 'incognito');
+      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.windowId, 1, 'windowId');
+    });
+
+    it('should set value', async () => {
+      const { sidebar } = mjs;
+      const getCurrent = browser.windows.getCurrent.withArgs({
+        populate: true
+      });
+      const getStorage = browser.storage.local.get.withArgs(args);
+      const getOs = browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      const i = getCurrent.callCount;
+      const j = getStorage.callCount;
+      const k = getOs.callCount;
+      getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      getStorage.resolves({
+        preventCloseTabsByMiddleClick: {
+          checked: true
+        }
+      });
+      await func();
+      assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
+      assert.strictEqual(getStorage.callCount, j + 1, 'getStorage called');
+      assert.strictEqual(getOs.callCount, k + 1, 'getOs called');
+      assert.isFalse(sidebar.closeTabsByMiddleClick, 'closeTabsByMiddleClick');
       assert.isFalse(sidebar.incognito, 'incognito');
       assert.isFalse(sidebar.isMac, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
@@ -1808,6 +1845,87 @@ describe('main', () => {
       assert.isTrue(preventDefault.calledOnce, 'event prevented');
       assert.isTrue(stopPropagation.calledOnce, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const { remove } = browser.tabs;
+      const i = remove.callCount;
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.closeTabsByMiddleClick = true;
+      mjs.sidebar.switchTabByScrolling = true;
+      mjs.sidebar.windowId = 1;
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        button: 1,
+        target: elm,
+        type: 'mousedown'
+      };
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i + 1, 'called remove');
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const { remove } = browser.tabs;
+      const i = remove.callCount;
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.closeTabsByMiddleClick = false;
+      mjs.sidebar.switchTabByScrolling = false;
+      mjs.sidebar.windowId = 1;
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        button: 1,
+        target: elm,
+        type: 'mousedown'
+      };
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i + 1, 'called remove');
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should not call function', async () => {
+      const { remove } = browser.tabs;
+      const i = remove.callCount;
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      body.appendChild(elm);
+      mjs.sidebar.closeTabsByMiddleClick = false;
+      mjs.sidebar.switchTabByScrolling = true;
+      mjs.sidebar.windowId = 1;
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        button: 1,
+        target: elm,
+        type: 'mousedown'
+      };
+      const res = await func(evt);
+      assert.strictEqual(remove.callCount, i, 'not called remove');
+      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.isFalse(stopPropagation.called, 'event not stopped');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should call function', async () => {
@@ -11702,6 +11820,26 @@ describe('main', () => {
       const res = await func(TAB_CLOSE_DBLCLICK, { checked: true }, true);
       assert.isTrue(mjs.sidebar.closeTabsByDoubleClick, 'set');
       assert.deepEqual(res, [[]], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(TAB_CLOSE_MDLCLICK_PREVENT, { checked: true });
+      assert.isFalse(mjs.sidebar.closeTabsByMiddleClick, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      mjs.sidebar.tabGroupCollapseOther = true;
+      const res = await func(TAB_CLOSE_MDLCLICK_PREVENT, { checked: false });
+      assert.isTrue(mjs.sidebar.closeTabsByMiddleClick, 'set');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res =
+        await func(TAB_CLOSE_MDLCLICK_PREVENT, { checked: true }, true);
+      assert.isFalse(mjs.sidebar.closeTabsByMiddleClick, 'set');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should set variable', async () => {
