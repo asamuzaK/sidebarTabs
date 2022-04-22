@@ -75,6 +75,15 @@
   "closeTab": {
     "message": "Close Tab"
   },
+  "closeTabGroup_menu": {
+    "message": "&Close Tab Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
   "closeTab_menu": {
     "message": "&Close Tab",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
@@ -228,11 +237,11 @@
     "message": "Expand grouped tabs"
   },
   "groupSameContainerTabs_menu": {
-    "message": "Group Same &Container Tabs",
+    "message": "Group Same Contai&ner Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&C)"
+        "example": "(&N)"
       }
     }
   },

@@ -7,10 +7,11 @@ import {
   NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD,
   TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER,
   TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
-  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
-  TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND, TAB_GROUP_LABEL_HIDE,
-  TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
+  TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
+  TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND,
+  TAB_GROUP_LABEL_HIDE, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED,
+  TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_MUTE_UNMUTE, TAB_NEW, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD,
   TAB_REOPEN_CONTAINER,
@@ -368,7 +369,7 @@ export default {
       },
       [TAB_GROUP_CONTAINER]: {
         id: TAB_GROUP_CONTAINER,
-        title: i18n.getMessage(`${TAB_GROUP_CONTAINER}_menu`, '(&C)'),
+        title: i18n.getMessage(`${TAB_GROUP_CONTAINER}_menu`, '(&N)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -405,6 +406,21 @@ export default {
       [TAB_GROUP_UNGROUP]: {
         id: TAB_GROUP_UNGROUP,
         title: i18n.getMessage(`${TAB_GROUP_UNGROUP}_menu`, '(&U)'),
+        type: 'normal',
+        contexts: ['tab'],
+        viewTypes: ['sidebar'],
+        enabled: false,
+        visible: true
+      },
+      'sepTabGroup-3': {
+        id: 'sepTabGroup-3',
+        type: 'separator',
+        contexts: ['tab'],
+        viewTypes: ['sidebar']
+      },
+      [TAB_GROUP_CLOSE]: {
+        id: TAB_GROUP_CLOSE,
+        title: i18n.getMessage(`${TAB_GROUP_CLOSE}_menu`, '(&C)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],

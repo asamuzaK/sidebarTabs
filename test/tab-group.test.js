@@ -2749,6 +2749,61 @@ describe('tab-group', () => {
     });
   });
 
+  describe('close tab group', () => {
+    const func = mjs.closeTabGroup;
+
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.remove.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      label.classList.add(CLASS_HEADING_LABEL);
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      body.appendChild(sect);
+      const res = await func(label);
+      assert.strictEqual(browser.tabs.remove.callCount, i, 'not called remove');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.remove.callCount;
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called remove');
+      assert.isUndefined(res, 'result');
+    });
+  });
+
   describe('detach tabs from tab group', () => {
     const func = mjs.detachTabsFromGroup;
 

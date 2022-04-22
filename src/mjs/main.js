@@ -38,7 +38,7 @@ import {
 } from './tab-dnd.js';
 import {
   addListenersToHeadingItems, addTabContextClickListener, bookmarkTabGroup,
-  collapseTabGroups, detachTabsFromGroup, getTabGroupHeading,
+  closeTabGroup, collapseTabGroups, detachTabsFromGroup, getTabGroupHeading,
   groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
   replaceTabContextClickListener, restoreTabContainers,
   toggleAutoCollapsePinnedTabs, toggleTabGrouping,
@@ -73,11 +73,12 @@ import {
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
   TAB_DUPE,
-  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
-  TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-  TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-  TAB_GROUP_EXPAND_EXCLUDE_PINNED, TAB_GROUP_LABEL_SHOW,
-  TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
+  TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
+  TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_EXPAND_EXCLUDE_PINNED,
+  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
+  TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
@@ -1226,6 +1227,9 @@ export const handleClickedMenu = async info => {
     case TAB_GROUP_BOOKMARK:
       func.push(bookmarkTabGroup(tab || heading));
       break;
+    case TAB_GROUP_CLOSE:
+      func.push(closeTabGroup(tab || heading));
+      break;
     case TAB_GROUP_COLLAPSE:
       if (tab) {
         if (enableTabGroup && tabGroupOnExpandCollapseOther) {
@@ -1509,11 +1513,11 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
     const tabGroups =
       document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
     const tabGroupKeys = [
-      TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
-      TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
-      TAB_GROUP_DOMAIN, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED,
-      TAB_GROUP_UNGROUP,
-      'sepTabGroup-1', 'sepTabGroup-2'
+      TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
+      TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
+      TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_LABEL_SHOW,
+      TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+      'sepTabGroup-1', 'sepTabGroup-2', 'sepTabGroup-3'
     ];
     func.push(updateContextMenu(tabGroupMenu.id, {
       enabled: true,
@@ -1526,6 +1530,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       const data = {};
       switch (itemKey) {
         case TAB_GROUP_BOOKMARK:
+        case TAB_GROUP_CLOSE:
           data.enabled = parentClass.contains(CLASS_TAB_GROUP);
           data.title = title;
           data.visible = true;

@@ -133,6 +133,7 @@ export const TAB_CLOSE_UNDO = 'undoCloseTab';
 export const TAB_DUPE = 'dupeTab';
 export const TAB_GROUP = 'tabGroup';
 export const TAB_GROUP_BOOKMARK = 'bookmarkTabGroup';
+export const TAB_GROUP_CLOSE = 'closeTabGroup';
 export const TAB_GROUP_COLLAPSE = 'collapseTabGroup';
 export const TAB_GROUP_COLLAPSE_OTHER = 'collapseOtherTabGroups';
 export const TAB_GROUP_CONTAINER = 'groupSameContainerTabs';
