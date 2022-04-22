@@ -8,7 +8,7 @@ import {
   removeElementContentEditable, throwErr
 } from './common.js';
 import { getStorage, getTab, queryTabs } from './browser.js';
-import { moveTabsInOrder } from './browser-tabs.js';
+import { closeTabs, moveTabsInOrder } from './browser-tabs.js';
 import { bookmarkTabs } from './bookmark.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
@@ -529,6 +529,24 @@ export const bookmarkTabGroup = async node => {
     const items = container.querySelectorAll(TAB_QUERY);
     if (label && items.length) {
       func = bookmarkTabs(Array.from(items), label.textContent.trim());
+    }
+  }
+  return func || null;
+};
+
+/**
+ * close tab group
+ *
+ * @param {object} node - node
+ * @returns {?Function} - closeTabs()
+ */
+export const closeTabGroup = async node => {
+  const container = getSidebarTabContainer(node);
+  let func;
+  if (container) {
+    const items = container.querySelectorAll(TAB_QUERY);
+    if (items.length) {
+      func = closeTabs(Array.from(items));
     }
   }
   return func || null;
