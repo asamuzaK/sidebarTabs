@@ -70,8 +70,9 @@ import {
   OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START,
-  TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
+  TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
+  TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER,
   TAB_GROUP_CONTAINER, TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS,
   TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND_COLLAPSE_OTHER,
@@ -102,6 +103,7 @@ const MOUSE_BUTTON_RIGHT = 2;
 export const sidebar = {
   alwaysSwitchTabByScrolling: false,
   closeTabsByDoubleClick: false,
+  closeTabsByMiddleClick: true,
   context: null,
   contextualIds: null,
   enableTabGroup: true,
@@ -138,6 +140,7 @@ export const setSidebar = async () => {
     NEW_TAB_SEPARATOR_SHOW,
     SCROLL_DIR_INVERT,
     TAB_CLOSE_DBLCLICK,
+    TAB_CLOSE_MDLCLICK_PREVENT,
     TAB_GROUP_ENABLE,
     TAB_GROUP_EXPAND_COLLAPSE_OTHER,
     TAB_GROUP_EXPAND_EXCLUDE_PINNED,
@@ -151,9 +154,10 @@ export const setSidebar = async () => {
   if (isObjectNotEmpty(store)) {
     const {
       alwaysSwitchTabByScrolling, closeTabsByDoubleClick, enableTabGroup,
-      invertScrollDirection, readBrowserSettings, showNewTabSeparator,
-      skipCollapsed, switchTabByScrolling, tabGroupOnExpandCollapseOther,
-      tabGroupOnExpandExcludePinned, tabGroupPutNewTabAtTheEnd, useUserCSS
+      invertScrollDirection, preventCloseTabsByMiddleClick, readBrowserSettings,
+      showNewTabSeparator, skipCollapsed, switchTabByScrolling,
+      tabGroupOnExpandCollapseOther, tabGroupOnExpandExcludePinned,
+      tabGroupPutNewTabAtTheEnd, useUserCSS
     } = store;
     sidebar.alwaysSwitchTabByScrolling = alwaysSwitchTabByScrolling
       ? !!alwaysSwitchTabByScrolling.checked
@@ -161,6 +165,9 @@ export const setSidebar = async () => {
     sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
       ? !!closeTabsByDoubleClick.checked
       : false;
+    sidebar.closeTabsByMiddleClick = preventCloseTabsByMiddleClick
+      ? !preventCloseTabsByMiddleClick.checked
+      : true;
     sidebar.enableTabGroup = enableTabGroup
       ? !!enableTabGroup.checked
       : true;
@@ -192,6 +199,7 @@ export const setSidebar = async () => {
   } else {
     sidebar.alwaysSwitchTabByScrolling = false;
     sidebar.closeTabsByDoubleClick = false;
+    sidebar.closeTabsByMiddleClick = true;
     sidebar.enableTabGroup = true;
     sidebar.invertScrollDirection = false;
     sidebar.readBrowserSettings = false;
@@ -398,13 +406,18 @@ export const activateClickedTab = async elm => {
  */
 export const handleClickedTab = evt => {
   const { button, ctrlKey, detail, metaKey, shiftKey, target, type } = evt;
-  const { closeTabsByDoubleClick, firstSelectedTab, isMac, windowId } = sidebar;
+  const {
+    closeTabsByDoubleClick, closeTabsByMiddleClick, firstSelectedTab, isMac,
+    switchTabByScrolling, windowId
+  } = sidebar;
   const tab = getSidebarTab(target);
   const func = [];
   if (button === MOUSE_BUTTON_MIDDLE && type === 'mousedown' && tab) {
-    func.push(closeTabs([tab]));
-    evt.stopPropagation();
-    evt.preventDefault();
+    if (!switchTabByScrolling || closeTabsByMiddleClick) {
+      func.push(closeTabs([tab]));
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
   } else if (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
              closeTabsByDoubleClick && tab) {
     const { classList } = tab;
@@ -2092,6 +2105,9 @@ export const setVar = async (item, obj, changed = false) => {
       case TAB_CLOSE_DBLCLICK:
         sidebar[item] = !!checked;
         changed && func.push(replaceTabDblClickListeners(!!checked));
+        break;
+      case TAB_CLOSE_MDLCLICK_PREVENT:
+        sidebar[TAB_CLOSE_MDLCLICK] = !checked;
         break;
       case TAB_GROUP_ENABLE:
         sidebar[item] = !!checked;
