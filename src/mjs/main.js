@@ -708,13 +708,15 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     await addTabEventListeners(tab);
     if (!incognito && cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
       const ident = await getContextualId(cookieStoreId);
-      const { color, icon, name } = ident;
-      const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
-      func.push(setContextualIdentitiesIcon(identIcon, {
-        color,
-        icon,
-        name
-      }));
+      if (isObjectNotEmpty(ident)) {
+        const { color, icon, name } = ident;
+        const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
+        func.push(setContextualIdentitiesIcon(identIcon, {
+          color,
+          icon,
+          name
+        }));
+      }
     }
     if (pinned) {
       const container = document.getElementById(PINNED);
