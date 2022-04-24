@@ -36,9 +36,9 @@ import {
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
-  THEME_CURRENT, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_SETTING,
-  THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_LIST,
-  THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_ID,
+  THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
+  THEME_LIST, THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS_ID
 } from './constant.js';
@@ -458,33 +458,32 @@ export const getCurrentThemeBaseValues = async () => {
  * @returns {object} - values
  */
 export const getBaseValues = async id => {
-  if (!isString(id)) {
-    throw new TypeError(`Expected String but got ${getType(id)}.`);
-  }
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
-  switch (id) {
-    case THEME_ALPEN_ID:
-      if (dark) {
-        values = themeMap[THEME_ALPEN_DARK];
-      } else {
-        values = themeMap[THEME_ALPEN];
-      }
-      break;
-    case THEME_DARK_ID:
-      values = themeMap[THEME_DARK];
-      break;
-    case THEME_LIGHT_ID:
-      values = themeMap[THEME_LIGHT];
-      break;
-    case THEME_SYSTEM_ID:
-      if (dark) {
+  if (id && isString(id)) {
+    switch (id) {
+      case THEME_ALPEN_ID:
+        if (dark) {
+          values = themeMap[THEME_ALPEN_DARK];
+        } else {
+          values = themeMap[THEME_ALPEN];
+        }
+        break;
+      case THEME_DARK_ID:
         values = themeMap[THEME_DARK];
-      } else {
+        break;
+      case THEME_LIGHT_ID:
         values = themeMap[THEME_LIGHT];
-      }
-      break;
-    default:
+        break;
+      case THEME_SYSTEM_ID:
+        if (dark) {
+          values = themeMap[THEME_DARK];
+        } else {
+          values = themeMap[THEME_LIGHT];
+        }
+        break;
+      default:
+    }
   }
   if (!values) {
     const appliedTheme = await getCurrentTheme();
@@ -542,6 +541,7 @@ export const setCurrentThemeValue = async () => {
       }
     }
   }
+  currentTheme.set(THEME_CURRENT_ID, themeId);
   currentTheme.set(THEME_CURRENT, values);
 };
 
@@ -554,7 +554,10 @@ export const sendCurrentTheme = async () => {
   const values = currentTheme.get(THEME_CURRENT);
   let func;
   if (values) {
-    const id = await getThemeId();
+    let id = currentTheme.get(THEME_CURRENT_ID);
+    if (!id) {
+      id = await getThemeId();
+    }
     const msg = {
       [THEME_CUSTOM_SETTING]: {
         id,
@@ -656,7 +659,10 @@ export const initCustomTheme = async (rem = false) => {
     if (rem) {
       const { themeList } = await getStorage(THEME_LIST);
       if (isObjectNotEmpty(themeList)) {
-        const themeId = await getThemeId();
+        let themeId = currentTheme.get(THEME_CURRENT_ID);
+        if (!themeId) {
+          themeId = await getThemeId();
+        }
         Object.prototype.hasOwnProperty.call(themeList, themeId) &&
           delete themeList[themeId];
         if (isObjectNotEmpty(themeList)) {
