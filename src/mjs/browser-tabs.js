@@ -533,7 +533,7 @@ export const createNewTab = async (windowId, opt = {}) => {
     for (const [key, value] of items) {
       switch (key) {
         case 'index':
-          if (Number.isInteger(value) && value > 0 && pos) {
+          if (Number.isInteger(value) && value > 0 && isObjectNotEmpty(pos)) {
             const { value: posValue } = pos;
             if (posValue === 'afterCurrent' ||
                 posValue === 'relatedAfterCurrent') {
