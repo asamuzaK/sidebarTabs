@@ -254,9 +254,11 @@ export const getEnabledTheme = async () => {
     const { management } = browser;
     try {
       const arr = await management.getAll();
-      res = arr.filter(info =>
-        info.type && info.type === 'theme' && info.enabled && info
-      );
+      if (Array.isArray(arr) && arr.length) {
+        res = arr.filter(info =>
+          info.type && info.type === 'theme' && info.enabled && info
+        );
+      }
     } catch (e) {
       logErr(e);
     }
@@ -299,7 +301,10 @@ export const getExternalExtensions = async () => {
     const { management } = browser;
     try {
       const arr = await management.getAll();
-      res = arr.filter(info => info.type && info.type === 'extension' && info);
+      if (Array.isArray(arr) && arr.length) {
+        res =
+          arr.filter(info => info.type && info.type === 'extension' && info);
+      }
     } catch (e) {
       logErr(e);
     }
