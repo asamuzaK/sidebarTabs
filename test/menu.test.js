@@ -283,15 +283,19 @@ describe('menu', () => {
       assert.strictEqual(browser.menus.update.callCount, i, 'not called');
     });
 
-    it('should not call function if argument is empty object', async () => {
+    it('should not call function', async () => {
       const i = browser.menus.update.callCount;
-      await func({});
+      await func({
+        foo: {}
+      });
       assert.strictEqual(browser.menus.update.callCount, i, 'not called');
     });
 
     it('should throw if color not contained', async () => {
       await func({
-        foo: 'bar'
+        contextualIdentity: {
+          foo: 'bar'
+        }
       }).catch(e => {
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'throw');
@@ -300,7 +304,9 @@ describe('menu', () => {
 
     it('should throw if cookieStoreId not contained', async () => {
       await func({
-        color: 'red'
+        contextualIdentity: {
+          color: 'red'
+        }
       }).catch(e => {
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'throw');
@@ -309,8 +315,10 @@ describe('menu', () => {
 
     it('should throw if icon not contained', async () => {
       await func({
-        color: 'red',
-        cookieStoreId: 'foo'
+        contextualIdentity: {
+          color: 'red',
+          cookieStoreId: 'foo'
+        }
       }).catch(e => {
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'throw');
@@ -319,9 +327,11 @@ describe('menu', () => {
 
     it('should throw if name not contained', async () => {
       await func({
-        color: 'red',
-        cookieStoreId: 'foo',
-        icon: 'fingerprint'
+        contextualIdentity: {
+          color: 'red',
+          cookieStoreId: 'foo',
+          icon: 'fingerprint'
+        }
       }).catch(e => {
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'throw');
@@ -331,10 +341,12 @@ describe('menu', () => {
     it('should call function', async () => {
       const i = browser.menus.update.callCount;
       const res = await func({
-        color: 'red',
-        cookieStoreId: 'foo',
-        icon: 'fingerprint',
-        name: 'bar'
+        contextualIdentity: {
+          color: 'red',
+          cookieStoreId: 'foo',
+          icon: 'fingerprint',
+          name: 'bar'
+        }
       });
       assert.strictEqual(browser.menus.update.callCount, i + 2, 'called');
       assert.deepEqual(res, [undefined, undefined], 'result');

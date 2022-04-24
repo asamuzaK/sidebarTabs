@@ -182,10 +182,11 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
  * @param {object} info - contextual identities info
  * @returns {Promise.<Array>} - results of each handler
  */
-export const updateContextualIdentitiesMenu = async info => {
+export const updateContextualIdentitiesMenu = async (info = {}) => {
+  const { contextualIdentity } = info;
   const func = [];
-  if (isObjectNotEmpty(info)) {
-    const { color, cookieStoreId, icon, name } = info;
+  if (isObjectNotEmpty(contextualIdentity)) {
+    const { color, cookieStoreId, icon, name } = contextualIdentity;
     if (!isString(color)) {
       throw new TypeError(`Expected String but got ${getType(color)}.`);
     }
