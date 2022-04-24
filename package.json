@@ -40,14 +40,14 @@
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.3",
     "tldts-experimental": "^5.7.76",
-    "webext-schema": "^2.2.2"
+    "webext-schema": "^2.3.0"
   },
   "devDependencies": {
     "addons-linter": "^5.0.0",
     "c8": "^7.11.2",
     "chai": "^4.3.6",
     "copyfiles": "^2.4.1",
-    "eslint": "^8.13.0",
+    "eslint": "^8.14.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^39.2.7",

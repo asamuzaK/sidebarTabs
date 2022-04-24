@@ -252,11 +252,13 @@ export const getEnabledTheme = async () => {
   let res;
   if (isGranted) {
     const { management } = browser;
-    const arr = await management.getAll();
-    if (Array.isArray(arr)) {
+    try {
+      const arr = await management.getAll();
       res = arr.filter(info =>
         info.type && info.type === 'theme' && info.enabled && info
       );
+    } catch (e) {
+      logErr(e);
     }
   }
   return res || null;
