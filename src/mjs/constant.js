@@ -188,6 +188,7 @@ export const THEME_ALPEN_ID = 'firefox-alpenglow@mozilla.org';
 export const THEME_AUTO = 'autoTheme';
 export const THEME_CURRENT = 'currentTheme';
 export const THEME_CURRENT_COLOR = 'currentThemeColors';
+export const THEME_CURRENT_ID = 'currentThemeId';
 export const THEME_CUSTOM = 'customTheme';
 export const THEME_CUSTOM_ID = 'custom-theme-style';
 export const THEME_CUSTOM_INIT = 'initCustomTheme';
