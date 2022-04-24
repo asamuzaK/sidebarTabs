@@ -3,7 +3,7 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString } from './common.js';
+import { getType, isObjectNotEmpty, isString, logErr } from './common.js';
 import { createBookmark, getBookmarkTreeNode, getStorage } from './browser.js';
 import { BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION } from './constant.js';
 
@@ -79,7 +79,7 @@ export const getBookmarkLocationId = async () => {
           id = treeId;
         }
       } catch (e) {
-        // fail through
+        logErr(e);
       }
     }
   }

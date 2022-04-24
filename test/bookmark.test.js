@@ -9,6 +9,7 @@ import { browser, createJsdom } from './mocha/setup.js';
 import {
   BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION, HIGHLIGHTED, TAB
 } from '../src/mjs/constant.js';
+import sinon from 'sinon';
 
 /* test */
 import * as mjs from '../src/mjs/bookmark.js';
@@ -308,14 +309,20 @@ describe('bookmark', () => {
     });
 
     it('should get null', async () => {
+      let msg;
+      const e = new Error('error');
+      const stub = sinon.stub(console, 'error').callsFake(m => {
+        msg = (m && m.message) || m;
+      });
       browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves({
         [BOOKMARK_LOCATION]: {
           value: 'foobar'
         }
       });
-      browser.bookmarks.getSubTree.withArgs('foobar')
-        .rejects(new Error('error'));
+      browser.bookmarks.getSubTree.rejects(e);
       const res = await func();
+      stub.restore();
+      assert.strictEqual(msg, 'error', 'log');
       assert.isNull(res, 'result');
     });
 
