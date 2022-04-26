@@ -404,7 +404,7 @@ export const requestSaveSession = async windowId => {
       func = port.postMessage({
         [SESSION_SAVE]: {
           windowId,
-          domString: `${doctype}\n${dom}`
+          domString: `${doctype}${dom}`
         }
       });
     }
