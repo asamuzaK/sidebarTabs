@@ -396,13 +396,15 @@ export const requestSaveSession = async windowId => {
     const cloneBody = document.body.cloneNode(true);
     const items =
       cloneBody.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);
-    if (items.length) {
-      const frag = document.createDocumentFragment();
-      frag.append(...items);
+    const frag = document.createDocumentFragment();
+    frag.append(...items);
+    if (frag.childElementCount) {
+      const doctype = new XMLSerializer().serializeToString(document.doctype);
+      const dom = new XMLSerializer().serializeToString(frag);
       func = port.postMessage({
         [SESSION_SAVE]: {
           windowId,
-          domString: new XMLSerializer().serializeToString(frag)
+          domString: `${doctype}\n${dom}`
         }
       });
     }
