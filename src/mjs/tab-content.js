@@ -169,7 +169,7 @@ export const handleClickedTabAudio = async elm => {
       const { classList } = tab;
       if (classList.contains(HIGHLIGHTED)) {
         const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-        func = muteTabs(Array.from(selectedTabs), !muted);
+        func = muteTabs([...selectedTabs], !muted);
       } else {
         func = updateTab(tabId, { muted: !muted });
       }
@@ -296,7 +296,7 @@ export const tabCloseOnClick = evt => {
     const { classList } = tab;
     if (classList.contains(HIGHLIGHTED)) {
       const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-      func = closeTabs(Array.from(selectedTabs)).catch(throwErr);
+      func = closeTabs([...selectedTabs]).catch(throwErr);
     } else {
       func = closeTabs([tab]).catch(throwErr);
     }

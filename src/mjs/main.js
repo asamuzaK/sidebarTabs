@@ -453,7 +453,7 @@ export const handleClickedTab = evt => {
           }
         }
         highlights.size &&
-          func.push(highlightTab(Array.from(highlights), windowId));
+          func.push(highlightTab([...highlights], windowId));
       }
     } else {
       tab && detail === 1 && func.push(activateClickedTab(tab));
@@ -888,8 +888,8 @@ export const handleHighlightedTab = async info => {
       }
     }
     func.push(
-      addHighlightToTabs(Array.from(addHighlights)),
-      removeHighlightFromTabs(Array.from(remHighlights))
+      addHighlightToTabs([...addHighlights]),
+      removeHighlightFromTabs([...remHighlights])
     );
   }
   return Promise.all(func);
@@ -1198,13 +1198,13 @@ export const handleClickedMenu = async info => {
       func.push(runtime.openOptionsPage());
       break;
     case TAB_ALL_BOOKMARK:
-      func.push(bookmarkTabs(Array.from(allTabs)));
+      func.push(bookmarkTabs([...allTabs]));
       break;
     case TAB_ALL_RELOAD:
-      func.push(reloadTabs(Array.from(allTabs)));
+      func.push(reloadTabs([...allTabs]));
       break;
     case TAB_ALL_SELECT:
-      func.push(highlightTabs(Array.from(allTabs), windowId));
+      func.push(highlightTabs([...allTabs], windowId));
       break;
     case TAB_BOOKMARK:
       func.push(bookmarkTabs([tab]));
@@ -1266,7 +1266,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_DETACH_TABS:
       func.push(
-        detachTabsFromGroup(Array.from(selectedTabs), windowId)
+        detachTabsFromGroup([...selectedTabs], windowId)
           .then(restoreTabContainers).then(requestSaveSession)
       );
       break;
@@ -1336,48 +1336,48 @@ export const handleClickedMenu = async info => {
       func.push(reloadTabs([tab]));
       break;
     case TABS_BOOKMARK:
-      func.push(bookmarkTabs(Array.from(selectedTabs)));
+      func.push(bookmarkTabs([...selectedTabs]));
       break;
     case TABS_CLOSE:
-      func.push(closeTabs(Array.from(selectedTabs)));
+      func.push(closeTabs([...selectedTabs]));
       break;
     case TABS_DUPE:
-      func.push(dupeTabs(Array.from(selectedTabs).reverse(), windowId));
+      func.push(dupeTabs([...selectedTabs].reverse(), windowId));
       break;
     case TABS_MOVE_END:
-      func.push(moveTabsToEnd(Array.from(selectedTabs), tabId, windowId));
+      func.push(moveTabsToEnd([...selectedTabs], tabId, windowId));
       break;
     case TABS_MOVE_START:
-      func.push(moveTabsToStart(Array.from(selectedTabs), tabId, windowId));
+      func.push(moveTabsToStart([...selectedTabs], tabId, windowId));
       break;
     case TABS_MOVE_WIN:
-      func.push(moveTabsToNewWindow(Array.from(selectedTabs)));
+      func.push(moveTabsToNewWindow([...selectedTabs]));
       break;
     case TABS_MUTE:
       if (tabsTab) {
         const { mutedInfo: { muted } } = tabsTab;
-        func.push(muteTabs(Array.from(selectedTabs), !muted));
+        func.push(muteTabs([...selectedTabs], !muted));
       }
       break;
     case TABS_PIN:
       if (tabsTab) {
         const { pinned } = tabsTab;
-        func.push(pinTabs(Array.from(selectedTabs), !pinned));
+        func.push(pinTabs([...selectedTabs], !pinned));
       }
       break;
     case TABS_RELOAD:
-      func.push(reloadTabs(Array.from(selectedTabs)));
+      func.push(reloadTabs([...selectedTabs]));
       break;
     default: {
       if (Array.isArray(contextualIds)) {
         if (menuItemId.endsWith('Reopen')) {
           const itemId = menuItemId.replace(/Reopen$/, '');
           if (contextualIds.includes(itemId)) {
-            let arr;
+            const arr = [];
             if (selectedTabs.length) {
-              arr = Array.from(selectedTabs);
+              arr.push(...selectedTabs);
             } else {
-              arr = [tab];
+              arr.push(tab);
             }
             func.push(reopenTabsInContainer(arr, itemId, windowId));
           }
@@ -1960,7 +1960,7 @@ export const handleEvt = evt => {
   // select all tabs
   if (((isMac && metaKey) || (!isMac && ctrlKey)) && key === 'a') {
     const allTabs = document.querySelectorAll(TAB_QUERY);
-    func.push(highlightTabs(Array.from(allTabs), windowId));
+    func.push(highlightTabs([...allTabs], windowId));
     evt.stopPropagation();
     evt.preventDefault();
   // context menu

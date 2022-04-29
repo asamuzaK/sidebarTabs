@@ -699,21 +699,19 @@ export const handleDragStart = (evt, opt = {}) => {
     };
     const highlightedTabs =
       document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
-    let items;
+    const items = [];
     if (container && container.classList.contains(CLASS_TAB_GROUP) &&
         shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
-      items = Array.from(container.querySelectorAll(TAB_QUERY));
+      items.push(...container.querySelectorAll(TAB_QUERY));
       data.grouped = true;
       func.push(highlightTabs(items, windowId));
     } else if (tab.classList.contains(HIGHLIGHTED)) {
-      items = Array.from(highlightedTabs);
+      items.push(...highlightedTabs);
     } else if ((isMac && altKey) || (!isMac && ctrlKey)) {
-      const tabList = new Set(Array.from(highlightedTabs));
-      tabList.add(tab);
-      items = Array.from(tabList);
+      items.push(...highlightedTabs, tab);
       func.push(highlightTabs(items, windowId));
     } else {
-      items = [tab];
+      items.push(tab);
       func.push(activateTab(tab));
     }
     for (const item of items) {

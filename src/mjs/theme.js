@@ -726,7 +726,7 @@ export const getTheme = async () => {
         themes.set(THEME_AUTO, false);
     }
   }
-  const [res] = Array.from(themes);
+  const [res] = [...themes];
   return res;
 };
 
