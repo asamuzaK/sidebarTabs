@@ -1240,8 +1240,15 @@ export const handleClickedMenu = async info => {
             toggleTabGroupsCollapsedState(tab).then(requestSaveSession)
           );
         } else {
+          let activate;
+          for (const selectedTab of selectedTabs) {
+            if (selectedTab.parentNode === tab.parentNode) {
+              activate = true;
+              break;
+            }
+          }
           func.push(
-            toggleTabGroupCollapsedState(tab, true).then(requestSaveSession)
+            toggleTabGroupCollapsedState(tab, activate).then(requestSaveSession)
           );
         }
       }

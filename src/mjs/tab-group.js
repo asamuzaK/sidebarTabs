@@ -254,15 +254,30 @@ export const handleTabGroupCollapsedState = evt => {
   const { target } = evt;
   const heading = getTabGroupHeading(target);
   const tab = getSidebarTab(target);
+  const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   let func;
   if (heading && !heading.hidden) {
+    let activate;
+    for (const selectedTab of selectedTabs) {
+      if (selectedTab.parentNode === heading.parentNode) {
+        activate = true;
+        break;
+      }
+    }
     func =
-      toggleTabGroupCollapsedState(heading, true).then(requestSaveSession)
+      toggleTabGroupCollapsedState(heading, activate).then(requestSaveSession)
         .catch(throwErr);
     evt.stopPropagation();
     evt.preventDefault();
   } else if (tab) {
-    func = toggleTabGroupCollapsedState(tab, true).then(requestSaveSession)
+    let activate;
+    for (const selectedTab of selectedTabs) {
+      if (selectedTab.parentNode === tab.parentNode) {
+        activate = true;
+        break;
+      }
+    }
+    func = toggleTabGroupCollapsedState(tab, activate).then(requestSaveSession)
       .catch(throwErr);
     evt.stopPropagation();
     evt.preventDefault();

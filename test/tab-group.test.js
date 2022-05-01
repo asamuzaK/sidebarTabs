@@ -1181,11 +1181,90 @@ describe('tab-group', () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
-      elm.classList.add(TAB);
+      elm.classList.add(TAB, HIGHLIGHTED);
       elm.dataset.tabId = '1';
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      elm2.classList.add(TAB, HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.appendChild(elm2);
+      body.appendChild(parent);
+      body.appendChild(parent2);
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -1223,15 +1302,65 @@ describe('tab-group', () => {
       elm.hidden = false;
       child.appendChild(img);
       elm.appendChild(child);
-      elm2.classList.add(TAB);
+      elm2.classList.add(TAB, HIGHLIGHTED);
       elm2.dataset.tabId = '1';
       elm3.classList.add(TAB);
-      elm3.dataset.tabId = '1';
+      elm3.dataset.tabId = '2';
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.classList.add(CLASS_TAB_GROUP);
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent.appendChild(elm3);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        target: elm
+      };
+      const res = await func(evt);
+      assert.isTrue(preventDefault.calledOnce, 'event prevented');
+      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const child = document.createElement('span');
+      const img = document.createElement('img');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(CLASS_HEADING);
+      elm.hidden = false;
+      child.appendChild(img);
+      elm.appendChild(child);
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '1';
+      elm3.classList.add(TAB, HIGHLIGHTED);
+      elm3.dataset.tabId = '2';
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
       body.appendChild(parent);
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
