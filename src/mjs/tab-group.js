@@ -277,7 +277,6 @@ export const handleTabGroupCollapsedState = evt => {
         break;
       }
     }
-    console.log(activate)
     func = toggleTabGroupCollapsedState(tab, activate).then(requestSaveSession)
       .catch(throwErr);
     evt.stopPropagation();
