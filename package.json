@@ -39,8 +39,8 @@
     "csstree-validator": "^3.0.0",
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.4",
-    "tldts-experimental": "^5.7.76",
-    "webext-schema": "^2.3.3"
+    "tldts-experimental": "^5.7.77",
+    "webext-schema": "^2.3.4"
   },
   "devDependencies": {
     "addons-linter": "^5.1.0",
@@ -56,7 +56,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "html-validate": "^6.9.1",
     "jsdom": "^19.0.0",
-    "mocha": "^9.2.2",
+    "mocha": "^10.0.0",
     "nock": "^13.2.4",
     "npm-run-all": "^4.1.5",
     "sinon": "^13.0.2",
