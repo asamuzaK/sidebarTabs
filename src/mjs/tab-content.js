@@ -81,7 +81,7 @@ export const tabIconFallback = evt => {
  * @returns {void}
  */
 export const addTabIconErrorListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img') {
+  if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img') {
     elm.addEventListener('error', tabIconFallback);
   }
 };
@@ -94,7 +94,7 @@ export const addTabIconErrorListener = async elm => {
  * @returns {void}
  */
 export const setTabIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img' &&
+  if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
       isObjectNotEmpty(info)) {
     const { favIconUrl, status, title, url } = info;
     if (status === 'loading') {
@@ -139,7 +139,7 @@ export const setTabIcon = async (elm, info) => {
  * @returns {void}
  */
 export const setTabContent = async (tab, tabsTab) => {
-  if (tab && tab.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(tabsTab)) {
+  if (tab?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(tabsTab)) {
     const { favIconUrl, status, title, url } = tabsTab;
     const tabContent = tab.querySelector(`.${CLASS_TAB_CONTENT}`);
     const tabTitle = tab.querySelector(`.${CLASS_TAB_TITLE}`);
@@ -160,7 +160,7 @@ export const setTabContent = async (tab, tabsTab) => {
  */
 export const handleClickedTabAudio = async elm => {
   let func;
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     const tab = getSidebarTab(elm);
     const tabId = getSidebarTabId(tab);
     if (Number.isInteger(tabId)) {
@@ -203,8 +203,8 @@ export const tabAudioOnClick = evt => {
  * @returns {void}
  */
 export const addTabAudioClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_AUDIO)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_AUDIO)) {
     elm.addEventListener('click', tabAudioOnClick);
   }
 };
@@ -218,7 +218,7 @@ export const addTabAudioClickListener = async elm => {
  * @returns {void}
  */
 export const setTabAudio = async (elm, info, num) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(info)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(info)) {
     const { audible, muted, highlighted } = info;
     if (muted) {
       if (highlighted && Number.isInteger(num) && num > 1) {
@@ -246,7 +246,7 @@ export const setTabAudio = async (elm, info, num) => {
  * @returns {void}
  */
 export const setTabAudioIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img' &&
+  if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
       isObjectNotEmpty(info)) {
     const { audible, muted } = info;
     if (muted) {
@@ -272,8 +272,8 @@ export const setTabAudioIcon = async (elm, info) => {
  * @returns {void}
  */
 export const setCloseTab = async (elm, highlighted, num) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_CLOSE)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_CLOSE)) {
     if (highlighted && Number.isInteger(num) && num > 1) {
       elm.title = i18n.getMessage(`${TABS_CLOSE}_tooltip`, `${num}`);
     } else {
@@ -323,8 +323,8 @@ export const preventDefaultEvent = evt => {
  * @returns {void}
  */
 export const addTabCloseClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_CLOSE)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_CLOSE)) {
     elm.addEventListener('mousedown', preventDefaultEvent);
     elm.addEventListener('click', tabCloseOnClick);
   }
@@ -339,7 +339,7 @@ export const addTabCloseClickListener = async elm => {
  * @returns {void}
  */
 export const setContextualIdentitiesIcon = async (elm, info) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && elm.localName === 'img' &&
+  if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
       isObjectNotEmpty(info)) {
     const { color, icon, name } = info;
     if (contextualIdentitiesIconColor.has(color) &&

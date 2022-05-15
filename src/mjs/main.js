@@ -224,7 +224,7 @@ export const setSidebar = async () => {
  * @returns {void}
  */
 export const setContext = elm => {
-  sidebar.context = elm && elm.nodeType === Node.ELEMENT_NODE ? elm : null;
+  sidebar.context = elm?.nodeType === Node.ELEMENT_NODE ? elm : null;
 };
 
 /**
@@ -469,8 +469,8 @@ export const handleClickedTab = evt => {
  * @returns {void}
  */
 export const addTabClickListener = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_ITEMS)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_ITEMS)) {
     elm.addEventListener('click', handleClickedTab);
     elm.addEventListener('mousedown', handleClickedTab);
   }
@@ -484,8 +484,8 @@ export const addTabClickListener = async elm => {
  * @returns {void}
  */
 export const toggleTabDblClickListener = async (elm, bool) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_CONTENT)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_CONTENT)) {
     if (bool) {
       elm.addEventListener('dblclick', handleClickedTab);
     } else {
@@ -538,7 +538,7 @@ export const triggerTabWarmup = evt => {
  * @returns {void}
  */
 export const addTabEventListeners = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     elm.draggable && elm.addEventListener('dragstart', triggerDndHandler);
     elm.addEventListener('dragenter', handleDragEnter);
     elm.addEventListener('dragover', triggerDndHandler);
@@ -721,7 +721,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     if (pinned) {
       const container = document.getElementById(PINNED);
       tab.classList.add(PINNED);
-      if (targetTab && targetTab.parentNode === container) {
+      if (targetTab?.parentNode === container) {
         container.insertBefore(tab, targetTab);
       } else {
         container.appendChild(tab);
@@ -855,7 +855,7 @@ export const handleDetachedTab = async (tabId, info) => {
   }
   if (oldWindowId === windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-    tab && tab.parentNode.removeChild(tab);
+    tab?.parentNode.removeChild(tab);
   }
 };
 
@@ -932,11 +932,11 @@ export const handleMovedTab = async (tabId, info) => {
           index, tabId, toIndex
         };
         if (pinned) {
-          const arr = pinnedTabsWaitingToMove || [];
+          const arr = pinnedTabsWaitingToMove ?? [];
           arr[index] = obj;
           await setPinnedTabsWaitingToMove(arr);
         } else {
-          const arr = tabsWaitingToMove || [];
+          const arr = tabsWaitingToMove ?? [];
           arr[index] = obj;
           await setTabsWaitingToMove(arr);
         }
@@ -1054,7 +1054,7 @@ export const handleRemovedTab = async (tabId, info) => {
   }
   if (windowId === sidebar.windowId && !isWindowClosing) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
-    tab && tab.parentNode.removeChild(tab);
+    tab?.parentNode.removeChild(tab);
   }
 };
 
@@ -1514,7 +1514,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
   const func = [];
   const { enableTabGroup, incognito } = sidebar;
   const tabGroupMenu = menuItems[TAB_GROUP];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(opt) &&
+  if (elm?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(opt) &&
       enableTabGroup) {
     const { classList: tabClass, parentNode } = elm;
     const { classList: parentClass } = parentNode;
@@ -1665,12 +1665,10 @@ export const prepareTabMenuItems = async elm => {
   const { nextElementSibling: firstUnpinnedContainer } = pinnedContainer;
   const firstUnpinnedTab = firstUnpinnedContainer.querySelector(TAB_QUERY);
   const multiTabsSelected = !!(
-    tab && tab.classList.contains(HIGHLIGHTED) &&
-    selectedTabs && selectedTabs.length > 1
+    tab?.classList.contains(HIGHLIGHTED) && selectedTabs?.length > 1
   );
   const allTabsSelected = !!(
-    selectedTabs && selectedTabs.length > 1 &&
-    allTabs && selectedTabs.length === allTabs.length
+    selectedTabs?.length > 1 && selectedTabs?.length === allTabs?.length
   );
   if (tab) {
     const { parentNode } = tab;

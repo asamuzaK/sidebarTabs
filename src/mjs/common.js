@@ -13,7 +13,7 @@ const TYPE_TO = -1;
  * @returns {boolean} - false
  */
 export const logErr = e => {
-  if (e && e.message) {
+  if (e?.message) {
     console.error(e.message);
   } else {
     console.error(e);
@@ -83,7 +83,7 @@ export const isString = o => typeof o === 'string' || o instanceof String;
  */
 export const isObjectNotEmpty = o => {
   const items = /Object/i.test(getType(o)) && Object.keys(o);
-  return !!(items && items.length);
+  return !!(items?.length);
 };
 
 /**
@@ -115,7 +115,7 @@ export const sleep = (msec = 0, doReject = false) => {
  * @returns {object} elm - Element
  */
 export const addElementContentEditable = (elm, focus) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     elm.setAttribute('contenteditable', 'true');
     focus && elm.focus();
   }
@@ -129,7 +129,7 @@ export const addElementContentEditable = (elm, focus) => {
  * @returns {object} elm - Element
  */
 export const removeElementContentEditable = elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     elm.removeAttribute('contenteditable');
   }
   return elm || null;
@@ -144,7 +144,7 @@ export const removeElementContentEditable = elm => {
  * @returns {object} - Element
  */
 export const setElementDataset = (elm, key, value) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
       isString(key) && isString(value)) {
     elm.dataset[key] = value;
   }

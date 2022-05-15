@@ -67,8 +67,8 @@ export const restoreTabContainers = async () => {
  */
 export const collapseTabGroup = async (elm, activate) => {
   const body = document.querySelector('body');
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_GROUP) &&
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_GROUP) &&
       !body.classList.contains(CLASS_UNGROUP)) {
     const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
     const controller = heading || elm.querySelector(TAB_QUERY);
@@ -94,14 +94,14 @@ export const collapseTabGroup = async (elm, activate) => {
  * @returns {void}
  */
 export const expandTabGroup = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE &&
-      elm.classList.contains(CLASS_TAB_GROUP)) {
+  if (elm?.nodeType === Node.ELEMENT_NODE &&
+      elm?.classList.contains(CLASS_TAB_GROUP)) {
     const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
     const controller = heading || elm.querySelector(TAB_QUERY);
     const { firstElementChild: context } = controller;
     const { firstElementChild: toggleIcon } = context;
     elm.classList.remove(CLASS_TAB_COLLAPSED);
-    heading && heading.classList.remove(ACTIVE);
+    heading?.classList.remove(ACTIVE);
     context.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
     toggleIcon.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
   }
@@ -153,9 +153,9 @@ export const toggleTabGrouping = async () => {
  */
 export const toggleTabGroupCollapsedState = async (elm, activate) => {
   const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     const container = getSidebarTabContainer(elm);
-    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+    if (container?.classList.contains(CLASS_TAB_GROUP)) {
       const firstTab = container.querySelector(TAB_QUERY);
       if (container.classList.contains(CLASS_TAB_COLLAPSED)) {
         func.push(expandTabGroup(container));
@@ -184,9 +184,9 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
  */
 export const toggleTabGroupsCollapsedState = async elm => {
   const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     const container = getSidebarTabContainer(elm);
-    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+    if (container?.classList.contains(CLASS_TAB_GROUP)) {
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
       for (const item of items) {
@@ -215,9 +215,9 @@ export const toggleTabGroupsCollapsedState = async elm => {
  */
 export const collapseTabGroups = async elm => {
   const func = [];
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     const container = getSidebarTabContainer(elm);
-    if (container && container.classList.contains(CLASS_TAB_GROUP)) {
+    if (container?.classList.contains(CLASS_TAB_GROUP)) {
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
       for (const item of items) {
@@ -312,7 +312,7 @@ export const handleTabGroupsCollapsedState = evt => {
  * @returns {void}
  */
 export const addTabContextClickListener = (elm, multi) => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     if (elm.classList.contains(CLASS_TAB_CONTEXT)) {
       if (multi) {
         elm.addEventListener('click', handleTabGroupsCollapsedState);
@@ -383,7 +383,7 @@ export const finishGroupLabelEdit = evt => {
   if (type === 'blur' ||
       (type === 'keydown' && !isComposing && key === 'Enter')) {
     const heading = getTabGroupHeading(target);
-    const label = heading && heading.querySelector(`.${CLASS_HEADING_LABEL}`);
+    const label = heading?.querySelector(`.${CLASS_HEADING_LABEL}`);
     if (label) {
       removeElementContentEditable(label);
       label.removeEventListener('keydown', finishGroupLabelEdit);
@@ -466,7 +466,7 @@ export const addListenersToHeadingItems = async (node, multi) => {
  */
 export const removeListenersFromHeadingItems = async node => {
   const heading = getTabGroupHeading(node);
-  if (heading && heading.hidden) {
+  if (heading?.hidden) {
     const context = heading.querySelector(`.${CLASS_TAB_CONTEXT}`);
     const label = heading.querySelector(`.${CLASS_HEADING_LABEL}`);
     const button = heading.querySelector(`.${CLASS_HEADING_LABEL_EDIT}`);
@@ -480,7 +480,7 @@ export const removeListenersFromHeadingItems = async node => {
       context.removeEventListener('click', handleTabGroupsCollapsedState);
       context.removeEventListener('click', handleTabGroupCollapsedState);
     }
-    button && button.removeEventListener('click', enableGroupLabelEdit);
+    button?.removeEventListener('click', enableGroupLabelEdit);
   }
 };
 
@@ -787,7 +787,7 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
  * @returns {void}
  */
 export const ungroupTabs = async node => {
-  if (node && node.nodeType === Node.ELEMENT_NODE) {
+  if (node?.nodeType === Node.ELEMENT_NODE) {
     const { id, classList, parentNode } = node;
     if (id !== PINNED && classList.contains(CLASS_TAB_GROUP)) {
       const items = node.querySelectorAll(TAB_QUERY);

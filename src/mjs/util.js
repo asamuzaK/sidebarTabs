@@ -61,7 +61,7 @@ export const getSidebarTabContainer = node => {
  * @returns {void}
  */
 export const restoreTabContainer = container => {
-  if (container && container.nodeType === Node.ELEMENT_NODE) {
+  if (container?.nodeType === Node.ELEMENT_NODE) {
     const { childElementCount, classList, parentNode } = container;
     switch (childElementCount) {
       case 0:
@@ -84,7 +84,7 @@ export const restoreTabContainer = container => {
  */
 export const createSidebarTab = (node, target) => {
   let tab;
-  if (node && node.nodeType === Node.ELEMENT_NODE) {
+  if (node?.nodeType === Node.ELEMENT_NODE) {
     const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
     tab = node;
     container.appendChild(tab);
@@ -436,7 +436,7 @@ export const activateTab = async elm => {
  * @returns {void}
  */
 export const scrollTabIntoView = async elm => {
-  if (elm && elm.nodeType === Node.ELEMENT_NODE) {
+  if (elm?.nodeType === Node.ELEMENT_NODE) {
     const tabsTab = elm.dataset.tab;
     if (tabsTab) {
       const { active } = JSON.parse(tabsTab);

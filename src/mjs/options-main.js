@@ -84,7 +84,7 @@ export const requestCustomTheme = async (bool = false) => {
  */
 export const storeCustomTheme = async () => {
   const themeId = document.getElementById(THEME_ID);
-  const storeId = themeId && themeId.value;
+  const storeId = themeId?.value;
   let data;
   if (storeId) {
     const items = document.querySelectorAll('[type=color]');
@@ -121,7 +121,7 @@ export const createPref = async (elm = {}) => {
       id,
       checked: !!elm.checked,
       value: elm.value || '',
-      subItemOf: (dataset && dataset.subItemOf) || null
+      subItemOf: dataset?.subItemOf || null
     }
   };
   return data || null;
@@ -300,9 +300,7 @@ export const handleInitCustomThemeClick = evt => {
  */
 export const addInitCustomThemeListener = async () => {
   const elm = document.getElementById(THEME_CUSTOM_INIT);
-  if (elm) {
-    elm.addEventListener('click', handleInitCustomThemeClick);
-  }
+  elm?.addEventListener('click', handleInitCustomThemeClick);
 };
 
 /* html */
@@ -326,7 +324,7 @@ export const handleInitExtClick = evt => {
  */
 export const addInitExtensionListener = async () => {
   const elm = document.getElementById(EXT_INIT);
-  elm && elm.addEventListener('click', handleInitExtClick);
+  elm?.addEventListener('click', handleInitExtClick);
 };
 
 /**
@@ -363,7 +361,7 @@ export const saveUserCss = () => {
  */
 export const addUserCssListener = async () => {
   const elm = document.getElementById(USER_CSS_SAVE);
-  elm && elm.addEventListener('click', saveUserCss);
+  elm?.addEventListener('click', saveUserCss);
 };
 
 /**
@@ -424,7 +422,7 @@ export const setHtmlInputValue = async (data = {}) => {
       default: {
         if (localName === 'select' && id === BOOKMARK_LOCATION && value) {
           const child = elm.querySelector(`#${value}`);
-          child && child.setAttribute('selected', 'selected');
+          child?.setAttribute('selected', 'selected');
         } else if (localName === 'textarea' && id === USER_CSS) {
           const css = document.getElementById(USER_CSS);
           css.value = isString(value) ? value : '';

@@ -533,7 +533,7 @@ export const setCurrentThemeValue = async () => {
   } else {
     const store = await getAllStorage();
     for (const [key, value] of items) {
-      const { value: customValue } = store[key] || {};
+      const { value: customValue } = store[key] ?? {};
       if (customValue) {
         values[key] = customValue;
       } else {
@@ -583,7 +583,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
   }
   const elm = document.getElementById(THEME_CUSTOM_ID);
   const customTheme = currentTheme.get(THEME_CURRENT);
-  if (elm && elm.sheet && isObjectNotEmpty(customTheme)) {
+  if (elm?.sheet && isObjectNotEmpty(customTheme)) {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
     const propKeys = themeMap[THEME_CUSTOM];
@@ -626,7 +626,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
  */
 export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
   const elm = document.getElementById(THEME_CUSTOM_ID);
-  if (elm && elm.sheet) {
+  if (elm?.sheet) {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
     if (l) {

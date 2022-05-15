@@ -133,8 +133,8 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
  */
 export const getTargetForDraggedTabs = (dropTarget, opt) => {
   let target;
-  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
-      dropTarget.classList.contains(DROP_TARGET) && isObjectNotEmpty(opt)) {
+  if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
+      dropTarget?.classList.contains(DROP_TARGET) && isObjectNotEmpty(opt)) {
     const { isPinnedTabIds } = opt;
     const dropParent = dropTarget.parentNode;
     const pinnedContainer = document.getElementById(PINNED);
@@ -167,8 +167,8 @@ export const getTargetForDraggedTabs = (dropTarget, opt) => {
  */
 export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
   let index;
-  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
-      dropTarget.classList.contains(DROP_TARGET) && isObjectNotEmpty(opt)) {
+  if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
+      dropTarget?.classList.contains(DROP_TARGET) && isObjectNotEmpty(opt)) {
     const { isPinnedTabIds } = opt;
     const dropTargetIndex = getSidebarTabIndex(dropTarget);
     const dropParent = dropTarget.parentNode;
@@ -209,8 +209,8 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
  */
 export const extractDroppedTabs = async (dropTarget, data) => {
   const func = [];
-  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
-      dropTarget.classList.contains(DROP_TARGET) && isObjectNotEmpty(data)) {
+  if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
+      dropTarget?.classList.contains(DROP_TARGET) && isObjectNotEmpty(data)) {
     const {
       beGrouped, dragTabId, dragWindowId, dropEffect, dropWindowId, grouped,
       pinnedTabIds, tabIds
@@ -350,7 +350,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
  */
 export const openUriList = async (dropTarget, data = []) => {
   const func = [];
-  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
+  if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
       Array.isArray(data) && data.length) {
     const isMain = dropTarget === document.getElementById(SIDEBAR_MAIN);
     if (dropTarget.classList.contains(DROP_TARGET)) {
@@ -412,7 +412,7 @@ export const openUriList = async (dropTarget, data = []) => {
  */
 export const searchQuery = async (dropTarget, data = '') => {
   const func = [];
-  if (dropTarget && dropTarget.nodeType === Node.ELEMENT_NODE &&
+  if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
       data && isString(data)) {
     const isMain = dropTarget === document.getElementById(SIDEBAR_MAIN);
     if (dropTarget.classList.contains(DROP_TARGET)) {
@@ -475,7 +475,7 @@ export const handleDrop = evt => {
     .filter(i => i && !i.startsWith('#')).reverse();
   const data = dataTransfer.getData(MIME_PLAIN);
   let func;
-  if (dropTarget && dropTarget.classList.contains(DROP_TARGET)) {
+  if (dropTarget?.classList.contains(DROP_TARGET)) {
     if (dropEffect === 'copy' || dropEffect === 'move') {
       // dropped uri list
       if (uriList.length && dropEffect === 'move') {
@@ -554,8 +554,9 @@ export const handleDragLeave = evt => {
     return;
   }
   const dropTarget = getSidebarTab(currentTarget);
-  dropTarget && dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-    DROP_TARGET_BEFORE);
+  dropTarget?.classList.remove(
+    DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE
+  );
 };
 
 /**
@@ -700,7 +701,7 @@ export const handleDragStart = (evt, opt = {}) => {
     const highlightedTabs =
       document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     const items = [];
-    if (container && container.classList.contains(CLASS_TAB_GROUP) &&
+    if (container?.classList.contains(CLASS_TAB_GROUP) &&
         shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
       items.push(...container.querySelectorAll(TAB_QUERY));
       data.grouped = true;
