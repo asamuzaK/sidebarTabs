@@ -529,7 +529,7 @@ export const setCurrentThemeValue = async () => {
         values[key] = value;
       }
     }
-  // NOTE: for migration, remove later
+  // TODO: for migration, remove later
   } else {
     const store = await getAllStorage();
     for (const [key, value] of items) {
@@ -672,7 +672,7 @@ export const initCustomTheme = async (rem = false) => {
         } else {
           await removeStorage([THEME_LIST]);
         }
-      // NOTE: For migration, remove later
+      // TODO: For migration, remove later
       } else {
         const items = Object.keys(obj);
         const arr = [];
