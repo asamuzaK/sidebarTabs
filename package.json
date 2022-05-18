@@ -39,12 +39,12 @@
     "csstree-validator": "^3.0.0",
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.4",
-    "tldts-experimental": "^5.7.78",
+    "tldts-experimental": "^5.7.79",
     "webext-schema": "^3.0.1"
   },
   "devDependencies": {
-    "addons-linter": "^5.2.0",
-    "c8": "^7.11.2",
+    "addons-linter": "^5.3.0",
+    "c8": "^7.11.3",
     "chai": "^4.3.6",
     "copyfiles": "^2.4.1",
     "eslint": "^8.15.0",
