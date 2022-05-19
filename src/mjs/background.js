@@ -35,17 +35,14 @@ contextualIdentities.onUpdated.addListener(info =>
 runtime.onConnect.addListener(port =>
   handleConnectedPort(port).catch(throwErr)
 );
+runtime.onInstalled.addListener(() => restoreContextMenu().catch(throwErr));
 runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
 );
+runtime.onStartup.addListener(() => restoreContextMenu().catch(throwErr));
 windows.onFocusChanged.addListener(windowId =>
   setSidebarState(windowId).catch(throwErr)
 );
 windows.onRemoved.addListener(windowId =>
   removeSidebarState(windowId).catch(throwErr)
-);
-
-/* startup */
-document.addEventListener('DOMContentLoaded', () =>
-  restoreContextMenu().catch(throwErr)
 );
