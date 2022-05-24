@@ -26,6 +26,7 @@ describe('util', () => {
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);
+    browser.runtime.connect.callsFake(mockPort);
     global.browser = browser;
     global.window = window;
     global.document = document;
@@ -1373,7 +1374,7 @@ describe('util', () => {
       });
       mjs.ports.set(portId, port);
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(stubCurrentWin.callCount, 2, 'called current window');
       assert.isFalse(stubWin.called, 'not called window');
       assert.isFalse(port.postMessage.called, 'not called message');
       assert.isNull(res, 'result');

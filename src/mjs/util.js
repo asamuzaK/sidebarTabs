@@ -8,7 +8,7 @@ import {
   getActiveTabId, getCloseTabsByDoubleClickValue, getCurrentWindow,
   getSessionWindowValue, getWindow, setSessionWindowValue, setStorage, updateTab
 } from './browser.js';
-import { ports } from './port.js';
+import { getPort } from './port.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
@@ -391,7 +391,7 @@ export const requestSaveSession = async windowId => {
     win = await getCurrentWindow();
     windowId = win.id;
   }
-  const port = ports.get(`${SIDEBAR}_${windowId}`);
+  const port = await getPort(`${SIDEBAR}_${windowId}`, true);
   if (port && win && !win.incognito) {
     const cloneBody = document.body.cloneNode(true);
     const items =
@@ -547,4 +547,4 @@ export const storeCloseTabsByDoubleClickValue = async bool => {
 };
 
 // For test
-export { ports };
+export { ports } from './port.js';
