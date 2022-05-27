@@ -42,10 +42,7 @@ export const portOnDisconnect = (port = {}) => {
  * @returns {object} - runtime.Port
  */
 export const addPort = async portId => {
-  const win = await getCurrentWindow({
-    populate: true
-  });
-  const { id: windowId } = win;
+  const { id: windowId } = await getCurrentWindow();
   let port;
   if (windowId !== WINDOW_ID_NONE) {
     portId ??= `${SIDEBAR}_${windowId}`;
