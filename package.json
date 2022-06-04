@@ -40,7 +40,7 @@
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.5",
     "tldts-experimental": "^5.7.80",
-    "webext-schema": "^3.0.3"
+    "webext-schema": "^4.0.0"
   },
   "devDependencies": {
     "addons-linter": "^5.6.0",
