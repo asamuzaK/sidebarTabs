@@ -223,6 +223,50 @@ describe('common', () => {
     });
   });
 
+  describe('is URI', () => {
+    const func = mjs.isUri;
+
+    it('should get false', () => {
+      const res = func();
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get false', () => {
+      const res = func('foo');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('https://example.com');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('https://example.com:8000/#foo?bar=baz');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('https://127.0.0.1');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('https://[::1]/');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('file:///C:/Users/Foo/');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('mailto:foo@example.com');
+      assert.isTrue(res, 'result');
+    });
+  });
+
   describe('sleep', () => {
     const func = mjs.sleep;
 
