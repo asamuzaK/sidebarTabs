@@ -236,6 +236,11 @@ describe('common', () => {
       assert.isFalse(res, 'result');
     });
 
+    it('should get false', () => {
+      const res = func('foo:bar');
+      assert.isFalse(res, 'result');
+    });
+
     it('should get true', () => {
       const res = func('https://example.com');
       assert.isTrue(res, 'result');
