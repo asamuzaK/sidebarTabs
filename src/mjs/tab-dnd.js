@@ -3,7 +3,7 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, isString, throwErr } from './common.js';
+import { isObjectNotEmpty, isString, isUri, throwErr } from './common.js';
 import {
   createTab, duplicateTab, moveTab, searchWithSearchEngine, updateTab
 } from './browser.js';
@@ -499,9 +499,13 @@ export const handleDrop = evt => {
             .catch(throwErr);
           evt.preventDefault();
           evt.stopPropagation();
-        // dropped search query
+        // dropped query string
         } else if (isString(item) && dropEffect === 'move') {
-          func = searchQuery(dropTarget, item).catch(throwErr);
+          if (isUri(item)) {
+            func = openUriList(dropTarget, [item]).catch(throwErr);
+          } else {
+            func = searchQuery(dropTarget, item).catch(throwErr);
+          }
           evt.preventDefault();
           evt.stopPropagation();
         }
@@ -515,9 +519,13 @@ export const handleDrop = evt => {
       func = openUriList(currentTarget, uriList).catch(throwErr);
       evt.preventDefault();
       evt.stopPropagation();
-    // dropped search query
+    // dropped query string
     } else if (data) {
-      func = searchQuery(currentTarget, data).catch(throwErr);
+      if (isUri(data)) {
+        func = openUriList(currentTarget, [data]).catch(throwErr);
+      } else {
+        func = searchQuery(currentTarget, data).catch(throwErr);
+      }
       evt.preventDefault();
       evt.stopPropagation();
     }
