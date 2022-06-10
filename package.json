@@ -38,12 +38,12 @@
     "commander": "^9.3.0",
     "csstree-validator": "^3.0.0",
     "decamelize": "^6.0.0",
-    "node-fetch": "^3.2.5",
-    "tldts-experimental": "^5.7.80",
+    "node-fetch": "^3.2.6",
+    "tldts-experimental": "^5.7.81",
     "webext-schema": "^4.0.0"
   },
   "devDependencies": {
-    "addons-linter": "^5.6.0",
+    "addons-linter": "^5.7.0",
     "c8": "^7.11.3",
     "chai": "^4.3.6",
     "copyfiles": "^2.4.1",
@@ -60,8 +60,8 @@
     "nock": "^13.2.6",
     "npm-run-all": "^4.1.5",
     "sinon": "^14.0.0",
-    "stylelint": "^14.8.5",
-    "stylelint-config-standard": "^25.0.0"
+    "stylelint": "^14.9.0",
+    "stylelint-config-standard": "^26.0.0"
   },
   "version": "7.3.3"
 }
