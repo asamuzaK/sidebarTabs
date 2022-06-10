@@ -251,6 +251,11 @@ describe('common', () => {
       assert.isTrue(res, 'result');
     });
 
+    it('should get false', () => {
+      const res = func('https://example.com foo');
+      assert.isFalse(res, 'result');
+    });
+
     it('should get true', () => {
       const res = func('https://127.0.0.1');
       assert.isTrue(res, 'result');
@@ -269,6 +274,21 @@ describe('common', () => {
     it('should get true', () => {
       const res = func('mailto:foo@example.com');
       assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('web+foo://example.com/');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
+      const res = func('git+https://example.com/');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get false', () => {
+      const res = func('foo+https://example.com/');
+      assert.isFalse(res, 'result');
     });
   });
 
