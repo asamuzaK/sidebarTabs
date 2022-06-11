@@ -6,8 +6,8 @@
  * uri scheme
  *
  * @see {@link https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml}
- *      - Historical schemes omitted.
- *      - Added 'moz-extension' scheme.
+ *      - Historical schemes omitted
+ *      - Added 'moz-extension' scheme
  */
 export default [
   'aaa',
@@ -283,7 +283,6 @@ export default [
   'sftp',
   'sgn',
   'shc',
-  'shttp (OBSOLETE)',
   'sieve',
   'simpleledger',
   'simplex',
