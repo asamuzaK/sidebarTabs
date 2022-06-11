@@ -155,6 +155,7 @@ export default [
   'mms',
   'mongodb',
   'moz',
+  'moz-extension',
   'ms-access',
   'ms-appinstaller',
   'ms-browser-extension',
