@@ -277,6 +277,11 @@ describe('common', () => {
     });
 
     it('should get true', () => {
+      const res = func('ext+foo://example.com/');
+      assert.isTrue(res, 'result');
+    });
+
+    it('should get true', () => {
       const res = func('web+foo://example.com/');
       assert.isTrue(res, 'result');
     });
