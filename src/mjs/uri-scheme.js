@@ -2,7 +2,13 @@
  * uri-scheme.js
  */
 
-/* uri scheme */
+/**
+ * uri scheme
+ *
+ * @see {@link https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml}
+ *      - Historical schemes omitted.
+ *      - Added 'moz-extension' scheme.
+ */
 export default [
   'aaa',
   'aaas',
