@@ -295,6 +295,11 @@ describe('common', () => {
       const res = func('foo+https://example.com/');
       assert.isFalse(res, 'result');
     });
+
+    it('should get false', () => {
+      const res = func('git+foo://example.com/');
+      assert.isFalse(res, 'result');
+    });
   });
 
   describe('sleep', () => {
