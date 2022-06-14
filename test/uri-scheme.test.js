@@ -11,10 +11,10 @@ import uriSchemes from '../src/mjs/uri-scheme.js';
 
 describe('uri-scheme', () => {
   it('should get string', () => {
-    const items = Object.keys(uriSchemes);
     assert.isArray(uriSchemes);
-    for (const key of items) {
-      assert.isString(key);
+    for (const scheme of uriSchemes) {
+      assert.isString(scheme);
+      assert.isTrue(/^[a-z][a-z0-9+\-.]*$/.test(scheme));
     }
   });
 });
