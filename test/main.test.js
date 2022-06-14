@@ -14146,4 +14146,61 @@ describe('main', () => {
       main.addEventListener.restore();
     });
   });
+
+  describe('startup', () => {
+    const func = mjs.startup;
+    beforeEach(() => {
+      mjs.ports.clear();
+    });
+    afterEach(() => {
+      mjs.ports.clear();
+    });
+
+    it('should call function', async () => {
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.callsFake(msg => msg);
+      mjs.ports.set(portId, port);
+      browser.tabs.query.resolves([]);
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.sessions.getRecentlyClosed.resolves([]);
+      browser.storage.local.get.resolves({});
+      browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const main = document.createElement('main');
+      const pinned = document.createElement('section');
+      const newTab = document.createElement('section');
+      const newTabElm = document.createElement('p');
+      const button = document.createElement('button');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      button.id = NEW_TAB_BUTTON;
+      newTabElm.classList.add(TAB, NEW_TAB);
+      newTabElm.appendChild(button);
+      newTab.appendChild(newTabElm);
+      main.appendChild(pinned);
+      main.appendChild(newTab);
+      body.appendChild(main);
+      const res = await func();
+      assert.isTrue(browser.sessions.getRecentlyClosed.called,
+        'called session');
+      assert.isNull(res, 'result');
+    });
+  });
 });

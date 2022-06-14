@@ -4,22 +4,17 @@
 
 /* shared */
 import { throwErr } from './common.js';
-import { addPort } from './port.js';
 import { requestSaveSession } from './util.js';
 import {
-  applyUserStyle, emulateTabs, getLastClosedTab,
-  handleActivatedTab, handleAttachedTab, handleClickedMenu,
+  getLastClosedTab, handleActivatedTab, handleAttachedTab, handleClickedMenu,
   handleContextmenuEvt, handleCreatedTab, handleDetachedTab, handleEvt,
   handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleUpdatedTab,
-  requestSidebarStateUpdate, restoreHighlightedTabs, restoreTabGroups,
-  setContextualIds, setMain, setSidebar, setVars
+  handleUpdatedTab, restoreHighlightedTabs, setContextualIds, setVars, startup
 } from './main.js';
 import {
-  expandActivatedCollapsedTab, restoreTabContainers, toggleTabGrouping
+  expandActivatedCollapsedTab, restoreTabContainers
 } from './tab-group.js';
-import { localizeHtml } from './localize.js';
-import { applyTheme, setSidebarTheme } from './theme.js';
+import { applyTheme } from './theme.js';
 import { COLOR_SCHEME_DARK } from './constant.js';
 
 /* api */
@@ -86,15 +81,4 @@ window.addEventListener('contextmenu', handleContextmenuEvt);
 window.matchMedia(COLOR_SCHEME_DARK).addEventListener('change', () =>
   applyTheme().catch(throwErr)
 );
-
-/* start up */
-document.addEventListener('DOMContentLoaded', () => Promise.all([
-  addPort().then(setSidebar).then(setMain).then(applyUserStyle)
-    .then(requestSidebarStateUpdate),
-  localizeHtml(),
-  setContextualIds(),
-  setSidebarTheme()
-]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
-  .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)
-  .then(getLastClosedTab).catch(throwErr)
-);
+document.addEventListener('DOMContentLoaded', startup);

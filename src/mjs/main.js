@@ -12,7 +12,8 @@ import {
   getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
   restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
-import { ports } from './port.js';
+import { addPort, ports } from './port.js';
+import { localizeHtml } from './localize.js';
 import {
   activateTab, createSidebarTab, getSessionTabList, getSidebarTab,
   getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex, getTabsInRange,
@@ -49,8 +50,8 @@ import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
 import {
   applyTheme, initCustomTheme, sendCurrentTheme, setNewTabSeparator,
-  setScrollbarWidth, setTabGroupColorBarWidth, setTabHeight, setTheme,
-  setUserCss, updateCustomThemeCss
+  setScrollbarWidth, setSidebarTheme, setTabGroupColorBarWidth, setTabHeight,
+  setTheme, setUserCss, updateCustomThemeCss
 } from './theme.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -2339,6 +2340,21 @@ export const setMain = async () => {
   main.addEventListener('drop', handleDrop);
   newTab.addEventListener('click', handleCreateNewTab);
 };
+
+/**
+ * startup
+ *
+ * @returns {Function} - promise chain
+ */
+export const startup = () => Promise.all([
+  addPort().then(setSidebar).then(setMain).then(applyUserStyle)
+    .then(requestSidebarStateUpdate),
+  localizeHtml(),
+  setContextualIds(),
+  setSidebarTheme()
+]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
+  .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)
+  .then(getLastClosedTab).catch(throwErr);
 
 // For test
 export { ports };
