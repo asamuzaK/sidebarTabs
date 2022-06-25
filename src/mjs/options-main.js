@@ -157,7 +157,9 @@ export const storePref = async evt => {
       case MENU_SHOW_MOUSEUP: {
         if (checked) {
           const res = await setContextMenuOnMouseup();
-          !res && window.alert('Failed to modify value.');
+          if (!res) {
+            window.alert('Failed to modify value.');
+          }
           target.checked = res;
         } else {
           await clearContextMenuOnMouseup();
@@ -382,8 +384,9 @@ export const addInputChangeListener = async () => {
   const func = [];
   for (const node of nodes) {
     node.addEventListener('change', handleInputChange);
-    node.id === USER_CSS_USE &&
+    if (node.id === USER_CSS_USE) {
       node.addEventListener('change', toggleSubItems);
+    }
   }
   await Promise.all(func);
 };

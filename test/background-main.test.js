@@ -908,14 +908,16 @@ describe('background-main', () => {
   describe('port on message', () => {
     const func = mjs.portOnMessage;
 
-    it('should get undefined', async () => {
-      const res = await func();
-      assert.isUndefined(res, 'result');
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, Error, 'error');
+      });
     });
 
-    it('should get null', async () => {
-      const res = await func(null);
-      assert.isNull(res, 'result');
+    it('should throw', async () => {
+      await func(null).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+      });
     });
 
     it('should get empty array', async () => {
@@ -1296,14 +1298,16 @@ describe('background-main', () => {
   describe('port on disconnect', () => {
     const func = mjs.portOnDisconnect;
 
-    it('should get undefined', async () => {
-      const res = await func();
-      assert.isUndefined(res, 'result');
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, Error, 'error');
+      });
     });
 
-    it('should get null', async () => {
-      const res = await func(null);
-      assert.isNull(res, 'result');
+    it('should throw', async () => {
+      await func(null).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+      });
     });
 
     it('should call function', async () => {

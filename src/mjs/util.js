@@ -453,8 +453,8 @@ export const scrollTabIntoView = async elm => {
             behavior: 'smooth',
             block: pinnedTop === pinnedBottom ? 'start' : 'center'
           });
-        } else {
-          tabBottom > newTabTop && elm.scrollIntoView({
+        } else if (tabBottom > newTabTop) {
+          elm.scrollIntoView({
             behavior: 'smooth',
             block: 'center'
           });

@@ -261,20 +261,24 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             const index = getDropIndexForDraggedTabs(dropTarget, {
               isPinnedTabIds: true
             });
-            Number.isInteger(index) && func.push(moveTab(pinnedTabIds, {
-              index,
-              windowId: dropWindowId
-            }));
+            if (Number.isInteger(index)) {
+              func.push(moveTab(pinnedTabIds, {
+                index,
+                windowId: dropWindowId
+              }));
+            }
           }
           if (Array.isArray(tabIds) && tabIds.length) {
             const index = getDropIndexForDraggedTabs(dropTarget, {
               isPinnedTabIds: false
             });
             // TODO: add grouped case and beGrouped case handlers
-            Number.isInteger(index) && func.push(moveTab(tabIds, {
-              index,
-              windowId: dropWindowId
-            }));
+            if (Number.isInteger(index)) {
+              func.push(moveTab(tabIds, {
+                index,
+                windowId: dropWindowId
+              }));
+            }
           }
         }
       } else if (dropEffect === 'copy') {
@@ -289,18 +293,22 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             }));
             if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
               for (const tabId of pinnedTabIds) {
-                tabId !== dragTabId && func.push(duplicateTab(tabId, {
-                  index,
-                  active: false
-                }));
+                if (tabId !== dragTabId) {
+                  func.push(duplicateTab(tabId, {
+                    index,
+                    active: false
+                  }));
+                }
               }
             }
             if (Array.isArray(tabIds) && tabIds.length) {
               for (const tabId of tabIds) {
-                tabId !== dragTabId && func.push(duplicateTab(tabId, {
-                  index,
-                  active: false
-                }));
+                if (tabId !== dragTabId) {
+                  func.push(duplicateTab(tabId, {
+                    index,
+                    active: false
+                  }));
+                }
               }
             }
           // dragged from other window
@@ -311,16 +319,20 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             }));
             if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
               for (const tabId of pinnedTabIds) {
-                tabId !== dragTabId && arr.push(duplicateTab(tabId, {
-                  active: false
-                }));
+                if (tabId !== dragTabId) {
+                  arr.push(duplicateTab(tabId, {
+                    active: false
+                  }));
+                }
               }
             }
             if (Array.isArray(tabIds) && tabIds.length) {
               for (const tabId of tabIds) {
-                tabId !== dragTabId && arr.push(duplicateTab(tabId, {
-                  active: false
-                }));
+                if (tabId !== dragTabId) {
+                  arr.push(duplicateTab(tabId, {
+                    active: false
+                  }));
+                }
               }
             }
             const dupedTabs = await Promise.all(arr);

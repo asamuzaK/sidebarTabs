@@ -146,7 +146,9 @@ export const sleep = (msec = 0, doReject = false) => {
 export const addElementContentEditable = (elm, focus) => {
   if (elm?.nodeType === Node.ELEMENT_NODE) {
     elm.setAttribute('contenteditable', 'true');
-    focus && elm.focus();
+    if (focus) {
+      elm.focus();
+    }
   }
   return elm || null;
 };

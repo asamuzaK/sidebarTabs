@@ -41,7 +41,9 @@ export const restoreTabContainers = async () => {
     const tabLength = item.querySelectorAll(TAB_QUERY).length;
     switch (tabLength) {
       case 0:
-        id !== PINNED && parentNode.removeChild(item);
+        if (id !== PINNED) {
+          parentNode.removeChild(item);
+        }
         break;
       case 1:
         classList.remove(CLASS_TAB_GROUP);
@@ -169,7 +171,9 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
         }
       } else {
         func.push(collapseTabGroup(container, activate));
-        activate && func.push(activateTab(firstTab));
+        if (activate) {
+          func.push(activateTab(firstTab));
+        }
       }
     }
   }
@@ -221,8 +225,10 @@ export const collapseTabGroups = async elm => {
       const items =
         document.querySelectorAll(`.${CLASS_TAB_CONTAINER}.${CLASS_TAB_GROUP}`);
       for (const item of items) {
-        item !== container && !item.classList.contains(CLASS_TAB_COLLAPSED) &&
+        if (item !== container &&
+            !item.classList.contains(CLASS_TAB_COLLAPSED)) {
           func.push(toggleTabGroupCollapsedState(item, false));
+        }
       }
     }
   }
@@ -452,9 +458,15 @@ export const addListenersToHeadingItems = async (node, multi) => {
     } else {
       delete heading.dataset.multi;
     }
-    context && addTabContextClickListener(context, !!multi);
-    label && addTabContextClickListener(label, !!multi);
-    button && button.addEventListener('click', enableGroupLabelEdit);
+    if (context) {
+      addTabContextClickListener(context, !!multi);
+    }
+    if (label) {
+      addTabContextClickListener(label, !!multi);
+    }
+    if (button) {
+      button.addEventListener('click', enableGroupLabelEdit);
+    }
   }
 };
 
@@ -600,10 +612,12 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
         container.appendChild(item);
         container.removeAttribute('hidden');
         parentNode.parentNode.insertBefore(container, parentNextSibling);
-        move && arr.push({
-          index: itemIndex,
-          tabId: itemId
-        });
+        if (move) {
+          arr.push({
+            index: itemIndex,
+            tabId: itemId
+          });
+        }
       }
     }
   }

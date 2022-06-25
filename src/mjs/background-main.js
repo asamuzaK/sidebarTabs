@@ -108,7 +108,9 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
         if (sessionValue !== domString) {
           res = await handleSaveSessionRequest(sessionValue, windowId);
         }
-        res && remove && await removeSidebarState(windowId);
+        if (res && remove) {
+          await removeSidebarState(windowId);
+        }
       }
     }
   }
@@ -128,8 +130,9 @@ export const handleMsg = async msg => {
     switch (key) {
       case SESSION_SAVE: {
         const { domString, windowId } = value;
-        isString(domString) && Number.isInteger(windowId) &&
+        if (isString(domString) && Number.isInteger(windowId)) {
           func.push(handleSaveSessionRequest(domString, windowId));
+        }
         break;
       }
       case SIDEBAR_STATE_UPDATE: {
@@ -149,17 +152,19 @@ export const handleMsg = async msg => {
  * @param {object} msg - message
  * @returns {Function} - promise chain
  */
-export const portOnMessage = msg => msg && handleMsg(msg).catch(throwErr);
+export const portOnMessage = msg => handleMsg(msg).catch(throwErr);
 
 /**
  * handle disconnected port
  *
- * @param {object} port - port
+ * @param {object} port - runtime.Port
  * @returns {void}
  */
 export const handleDisconnectedPort = async (port = {}) => {
   const { error, name: portId } = port;
-  error && logErr(error);
+  if (error) {
+    logErr(error);
+  }
   if (isString(portId) && REG_PORT.test(portId)) {
     const [, winId] = REG_PORT.exec(portId);
     const windowId = winId * 1;
@@ -175,22 +180,24 @@ export const handleDisconnectedPort = async (port = {}) => {
       }
     }
   }
-  ports.has(portId) && await removePort(portId);
+  if (ports.has(portId)) {
+    await removePort(portId);
+  }
 };
 
 /**
  * port on disconnect
  *
- * @param {object} port - port
+ * @param {object} port - runtime.Port
  * @returns {Function} - promise chain
  */
 export const portOnDisconnect = port =>
-  port && handleDisconnectedPort(port).catch(throwErr);
+  handleDisconnectedPort(port).catch(throwErr);
 
 /**
  * handle connected port
  *
- * @param {object} port - port
+ * @param {object} port - runtime.Port
  * @returns {void}
  */
 export const handleConnectedPort = async (port = {}) => {
@@ -210,7 +217,7 @@ export const handleConnectedPort = async (port = {}) => {
 /**
  * handle command
  *
- * @param {!string} cmd - command
+ * @param {string} cmd - command
  * @returns {?Function} - promise chain
  */
 export const handleCmd = async cmd => {

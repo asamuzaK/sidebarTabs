@@ -226,7 +226,9 @@ export const setCurrentThemeColors = async (key, value) => {
     currentThemeColors.set(key, value);
   } else {
     const hexValue = await convertColorToHex(value, true);
-    hexValue && currentThemeColors.set(key, hexValue);
+    if (hexValue) {
+      currentThemeColors.set(key, hexValue);
+    }
   }
 };
 
@@ -248,31 +250,41 @@ export const getCurrentThemeBaseValues = async () => {
         const valueA = currentThemeColors.get('sidebar');
         const valueB = currentThemeColors.get('frame');
         values[key] = valueA || valueB || baseValues[key];
-        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
+        if (/^currentColor$/i.test(values[key])) {
+          currentColorKeys.add(key);
+        }
         break;
       }
       case CUSTOM_BG_ACTIVE: {
         const valueA = currentThemeColors.get('tab_selected');
         values[key] = valueA || baseValues[key];
-        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
+        if (/^currentColor$/i.test(values[key])) {
+          currentColorKeys.add(key);
+        }
         break;
       }
       case CUSTOM_BG_FIELD: {
         const valueA = currentThemeColors.get('toolbar_field');
         values[key] = valueA || baseValues[key];
-        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
+        if (/^currentColor$/i.test(values[key])) {
+          currentColorKeys.add(key);
+        }
         break;
       }
       case CUSTOM_BG_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_focus');
         values[key] = valueA || baseValues[key];
-        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
+        if (/^currentColor$/i.test(values[key])) {
+          currentColorKeys.add(key);
+        }
         break;
       }
       case CUSTOM_BG_SELECT: {
         const valueA = currentThemeColors.get('tab_selected');
         values[key] = valueA || baseValues[key];
-        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
+        if (/^currentColor$/i.test(values[key])) {
+          currentColorKeys.add(key);
+        }
         break;
       }
       case CUSTOM_BORDER_ACTIVE: {
@@ -323,7 +335,9 @@ export const getCurrentThemeBaseValues = async () => {
       case CUSTOM_COLOR_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_text_focus');
         values[key] = valueA || baseValues[key];
-        /^currentColor$/i.test(values[key]) && currentColorKeys.add(key);
+        if (/^currentColor$/i.test(values[key])) {
+          currentColorKeys.add(key);
+        }
         break;
       }
       case CUSTOM_COLOR_SELECT: {
@@ -493,7 +507,9 @@ export const getBaseValues = async id => {
         const colorsItems = Object.entries(colors);
         const func = [];
         for (const [key, value] of colorsItems) {
-          value && func.push(setCurrentThemeColors(key, value));
+          if (value) {
+            func.push(setCurrentThemeColors(key, value));
+          }
         }
         await Promise.all(func);
         values = await getCurrentThemeBaseValues();
@@ -633,7 +649,9 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
       const arr = [];
       let i = 0;
       while (i < l) {
-        sheet.cssRules[i].selectorText === sel && arr.unshift(i);
+        if (sheet.cssRules[i].selectorText === sel) {
+          arr.unshift(i);
+        }
         i++;
       }
       if (arr.length) {
@@ -663,8 +681,9 @@ export const initCustomTheme = async (rem = false) => {
         if (!themeId) {
           themeId = await getThemeId();
         }
-        Object.prototype.hasOwnProperty.call(themeList, themeId) &&
+        if (Object.prototype.hasOwnProperty.call(themeList, themeId)) {
           delete themeList[themeId];
+        }
         if (isObjectNotEmpty(themeList)) {
           await setStorage({
             [THEME_LIST]: themeList

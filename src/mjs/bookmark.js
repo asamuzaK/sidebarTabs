@@ -24,13 +24,15 @@ export const createFolderMap = async (node, recurse = false) => {
   if (isObjectNotEmpty(node)) {
     const { children, id, parentId, title, type } = node;
     if (id && type === 'folder') {
-      !folderMap.has(id) && folderMap.set(id, {
-        children: new Set(),
-        id,
-        parentId,
-        title,
-        type
-      });
+      if (!folderMap.has(id)) {
+        folderMap.set(id, {
+          children: new Set(),
+          id,
+          parentId,
+          title,
+          type
+        });
+      }
       if (parentId && folderMap.has(parentId)) {
         const parent = folderMap.get(parentId);
         parent.children.add(id);
