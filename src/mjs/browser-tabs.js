@@ -180,12 +180,20 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
   }
   for (const item of arr) {
     const { index, url } = item;
-    opt.push({
-      url,
-      windowId,
-      cookieStoreId: cookieId,
-      index: index + 1
-    });
+    if (url === 'about:newtab') {
+      opt.push({
+        windowId,
+        cookieStoreId: cookieId,
+        index: index + 1
+      });
+    } else {
+      opt.push({
+        url,
+        windowId,
+        cookieStoreId: cookieId,
+        index: index + 1
+      });
+    }
   }
   if (opt.length) {
     func = createTabsInOrder(opt.reverse());

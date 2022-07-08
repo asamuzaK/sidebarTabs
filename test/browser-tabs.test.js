@@ -583,6 +583,54 @@ describe('browser-tabs', () => {
       }).callCount, l + 1, 'called');
       assert.isUndefined(res, 'result');
     });
+
+    it('should call function', async () => {
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        url: 'about:newtab'
+      });
+      browser.tabs.get.withArgs(2).resolves({
+        index: 1,
+        url: 'about:blank'
+      });
+      const i = browser.tabs.get.withArgs(1).callCount;
+      const j = browser.tabs.get.withArgs(2).callCount;
+      const k = browser.tabs.create.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: 'bar',
+        index: 1
+      }).callCount;
+      const l = browser.tabs.create.withArgs({
+        url: 'about:blank',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: 'bar',
+        index: 2
+      }).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.dataset.tabId = '1';
+      elm2.dataset.tabId = '2';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func([elm, elm2], 'bar');
+      assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
+        'called');
+      assert.strictEqual(browser.tabs.get.withArgs(2).callCount, j + 1,
+        'called');
+      assert.strictEqual(browser.tabs.create.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: 'bar',
+        index: 1
+      }).callCount, k + 1, 'called');
+      assert.strictEqual(browser.tabs.create.withArgs({
+        url: 'about:blank',
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        cookieStoreId: 'bar',
+        index: 2
+      }).callCount, l + 1, 'called');
+      assert.isUndefined(res, 'result');
+    });
   });
 
   describe('duplicate tab', () => {
