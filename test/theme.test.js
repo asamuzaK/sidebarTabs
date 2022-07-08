@@ -1190,7 +1190,6 @@ describe('theme', () => {
       assert.isFalse(browser.management.getAll.called, 'not called');
       assert.isTrue(browser.runtime.sendMessage.calledOnce, 'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1221,7 +1220,6 @@ describe('theme', () => {
       assert.isTrue(browser.management.getAll.called, 'called');
       assert.isTrue(browser.runtime.sendMessage.calledOnce, 'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1572,7 +1570,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1616,7 +1613,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1660,7 +1656,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1704,7 +1699,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1752,7 +1746,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1800,7 +1793,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 2,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1849,7 +1841,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
@@ -1898,7 +1889,6 @@ describe('theme', () => {
       assert.strictEqual(browser.management.getAll.callCount, l + 2,
         'called');
       assert.deepEqual(res, [
-        null,
         {
           [THEME_CUSTOM_SETTING]: {
             id: 'foo',
