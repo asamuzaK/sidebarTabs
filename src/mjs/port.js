@@ -31,8 +31,12 @@ export const removePort = async portId => ports.delete(portId);
  */
 export const portOnDisconnect = (port = {}) => {
   const { error, name: portId } = port;
-  error && logErr(error);
-  return removePort(portId).catch(throwErr);
+  const func = [];
+  if (error) {
+    func.push(logErr(error));
+  }
+  func.push(removePort(portId));
+  return Promise.all(func).catch(throwErr);
 };
 
 /**

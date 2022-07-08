@@ -70,21 +70,21 @@ describe('port', () => {
       mjs.ports.clear();
     });
 
-    it('should get false', async () => {
+    it('should get result', async () => {
       const res = await func();
-      assert.isFalse(res, 'result');
+      assert.deepEqual(res, [false], 'result');
     });
 
-    it('should get false', async () => {
+    it('should get result', async () => {
       mjs.ports.set('foo', {});
       const res = await func({
         name: 'bar'
       });
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isFalse(res, 'result');
+      assert.deepEqual(res, [false], 'result');
     });
 
-    it('should get true', async () => {
+    it('should get result', async () => {
       const stubError = sinon.stub(console, 'error');
       mjs.ports.set('foo', {});
       const res = await func({
@@ -94,7 +94,7 @@ describe('port', () => {
       stubError.restore();
       assert.isFalse(errCalled, 'error called');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isTrue(res, 'result');
+      assert.deepEqual(res, [true], 'result');
     });
 
     it('should log error', async () => {
@@ -108,7 +108,7 @@ describe('port', () => {
       stubError.restore();
       assert.isTrue(errCalled, 'error called');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isTrue(res, 'result');
+      assert.deepEqual(res, [false, true], 'result');
     });
   });
 
