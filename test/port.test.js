@@ -108,7 +108,7 @@ describe('port', () => {
       stubError.restore();
       assert.isTrue(errCalled, 'error called');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.deepEqual(res, [false, true], 'result');
+      assert.deepEqual(res, [true, false], 'result');
     });
   });
 
