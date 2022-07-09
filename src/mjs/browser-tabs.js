@@ -165,7 +165,7 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
   if (!isString(cookieId)) {
     throw new TypeError(`Expected String but got ${getType(cookieId)}.`);
   }
-  const opt = [];
+  const opts = [];
   let func;
   let arr = [];
   for (const item of nodes) {
@@ -180,23 +180,18 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
   }
   for (const item of arr) {
     const { index, url } = item;
-    if (url === 'about:newtab') {
-      opt.push({
-        windowId,
-        cookieStoreId: cookieId,
-        index: index + 1
-      });
-    } else {
-      opt.push({
-        url,
-        windowId,
-        cookieStoreId: cookieId,
-        index: index + 1
-      });
+    const opt = {
+      windowId,
+      cookieStoreId: cookieId,
+      index: index + 1
+    };
+    if (url !== 'about:newtab') {
+      opt.url = url;
     }
+    opts.push(opt);
   }
-  if (opt.length) {
-    func = createTabsInOrder(opt.reverse());
+  if (opts.length) {
+    func = createTabsInOrder(opts.reverse());
   }
   return func || null;
 };
