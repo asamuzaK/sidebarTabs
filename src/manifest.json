@@ -1,6 +1,7 @@
 {
   "background": {
-    "page": "html/background.html"
+    "page": "html/background.html",
+    "persistent": false
   },
   "browser_action": {
     "browser_style": true,
@@ -22,7 +23,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "sidebarTabs@asamuzak.jp",
-      "strict_min_version": "89.0a1"
+      "strict_min_version": "101.0"
     }
   },
   "commands": {
@@ -68,5 +69,5 @@
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "7.4.0"
+  "version": "8.0.0"
 }
