@@ -1,0 +1,808 @@
+{
+  "extensionLocale": {
+    "message": "en"
+  },
+  "extensionDescription": {
+    "message": "تب ها را به صورت افقی نشان میدهد. همچنین، میتوانید تب ها را گروه بندی کنید و گروه ها را جمع/باز کنید."
+  },
+  "extensionName": {
+    "message": "تب های افقی"
+  },
+  "extensionShortName": {
+    "message": "تب ها"
+  },
+  "bookmarkAllTabs_menu": {
+    "message": "&Bookmark All Tabs…",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkFolderMessage": {
+    "message": "Folder Name"
+  },
+  "bookmarkTab_menu": {
+    "message": "&Bookmark Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkTabGroup_menu": {
+    "message": "&Bookmark Tab Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkTabs_menu": {
+    "message": "&Bookmark Tabs…",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "closeMultipleTabs_menu": {
+    "message": "Close &Multiple Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "closeOtherTabs_menu": {
+    "message": "Cl&ose Other Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
+  "closeTab": {
+    "message": "Close Tab"
+  },
+  "closeTabGroup_menu": {
+    "message": "&Close Tab Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTab_menu": {
+    "message": "&Close Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTab_tooltip": {
+    "message": "Close tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "closeTabs_menu": {
+    "message": "&Close $NUM$ Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      },
+      "key": {
+        "content": "$2",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTabs_tooltip": {
+    "message": "Close $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "closeTabsToTheEnd_menu": {
+    "message": "Close Tabs to &Bottom",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "closeTabsToTheStart_menu": {
+    "message": "Close &Tabs to Top",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "collapseOtherTabGroups_menu": {
+    "message": "C&ollapse Other Tab Groups",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
+  "collapseTabGroup": {
+    "message": "Collapse Tab Group"
+  },
+  "collapseTabGroup_menu": {
+    "message": "Collaps&e Tab Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "collapseTabGroup_tooltip": {
+    "message": "Collapse grouped tabs"
+  },
+  "connecting": {
+    "message": "connecting..."
+  },
+  "darkTheme": {
+    "message": "Dark Theme"
+  },
+  "detachTabFromGroup_menu": {
+    "message": "De&tach Tab from Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "detachTabsFromGroup_menu": {
+    "message": "De&tach Tabs from Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "dupeTab_menu": {
+    "message": "&Duplicate Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
+  "dupeTabs_menu": {
+    "message": "&Duplicate Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
+  "editTabGroupLabel": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "editTabGroupLabel_title": {
+    "message": "Edit label"
+  },
+  "expandTabGroup": {
+    "message": "Expand Tab Group"
+  },
+  "expandTabGroup_menu": {
+    "message": "&Expand Tab Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "expandTabGroup_tooltip": {
+    "message": "Expand grouped tabs"
+  },
+  "groupSameContainerTabs_menu": {
+    "message": "Group Same Contai&ner Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      }
+    }
+  },
+  "groupSameDomainTabs_menu": {
+    "message": "Group Same &Domain Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
+  "groupSelectedTabs_menu": {
+    "message": "Group &Selected Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "hideTabGroupLabel_menu": {
+    "message": "Hide Group &Label",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
+  "lightTheme": {
+    "message": "Light Theme"
+  },
+  "moveTab_menu": {
+    "message": "Mo&ve Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&V)"
+      }
+    }
+  },
+  "moveTabToEnd_menu": {
+    "message": "Mov&e to End",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "moveTabToNewWindow_menu": {
+    "message": "Move to New &Window",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "moveTabToStart_menu": {
+    "message": "Move to &Start",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "moveTabs_menu": {
+    "message": "Mo&ve Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&V)"
+      }
+    }
+  },
+  "moveTabsToEnd_menu": {
+    "message": "Mov&e to End",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "moveTabsToNewWindow_menu": {
+    "message": "Move to New &Window",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "moveTabsToStart_menu": {
+    "message": "Move to &Start",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "muteTab": {
+    "message": "Mute Tab"
+  },
+  "muteTab_menu": {
+    "message": "&Mute Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "muteTab_tooltip": {
+    "message": "Mute tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "muteTabs_menu": {
+    "message": "&Mute Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "muteTabs_tooltip": {
+    "message": "Mute $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "newTab_menu": {
+    "message": "Ne&w Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "newTabButton": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "newTabButton_alt": {
+    "message": "New Tab"
+  },
+  "newTabButton_title": {
+    "message": "Open a new tab"
+  },
+  "openNewTabInContainer_menu": {
+    "message": "Op&en New Container Tab",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "openOptions_menu": {
+    "message": "Op&tions",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "optionsAlwaysSwitchTabByScrolling": {
+    "message": "همیشه با اسکرول موس بین تب ها جابجا شو"
+  },
+  "optionsAlwaysSwitchTabByScrollingDetail": {
+    "message": "حتی اگر نوار اسکرول پنهان است باز هم با اسکرول موس بین تب پیشین/بعدی جابجا شو."
+  },
+  "optionsAutoLabel": {
+    "message": "خودکار"
+  },
+  "optionsBookmarkLocation": {
+    "message": "بوک مارک ها را در اینجا ذخیره کن:"
+  },
+  "optionsBookmarkLocationDetail": {
+    "message": "بوک مارک ها و پوشه ها را در مکان انتخاب شده ذخیره میکند."
+  },
+  "optionsCompactTab": {
+    "message": "ارتفاع تب ها را کم کن"
+  },
+  "optionsCompactTabDetail": {
+    "message": "Reduce the height of the tab to display more tabs."
+  },
+  "optionsEnableTabGroup": {
+    "message": "تب های گروهی را فعّال کن"
+  },
+  "optionsEnableTabGroupDetail": {
+    "message": "قابلیت گروه بندی کردن تب ها را فعّال میکند."
+  },
+  "optionsInit": {
+    "message": "راه اندازی دوباره"
+  },
+  "optionsInitSidebar": {
+    "message": "راه اندازی دوباره تب های افقی"
+  },
+  "optionsInitSidebarDetail": {
+    "message": "تب های افقی را دوباره راه اندازی کن. همه تنظیماتی که انجام داده اید حذف خواهند شد."
+  },
+  "optionsInvertScrollDirection": {
+    "message": "جهت اسکرول را وارونه کن"
+  },
+  "optionsInvertScrollDirectionDetail": {
+    "message": "اسکرول به سمت بالا باعث رفتن به تب پایینی و اسکرول به سمت پایین باعث رفتن به تب بالایی میشود."
+  },
+  "optionsNarrowScrollbar": {
+    "message": "پهنای نوار اسکرول را کم کن"
+  },
+  "optionsNarrowScrollbarDetail": {
+    "message": "پهنای نوار اسکرول را کم میکند"
+  },
+  "optionsNarrowTabGroupColorBar": {
+    "message": "پهنای نواررنگی تب های گروهی را کم کن"
+  },
+  "optionsNarrowTabGroupColorBarDetail": {
+    "message": "پهنای نواررنگی تب های گروهی را کم میکند."
+  },
+  "optionsOptionalSettings": {
+    "message": "تنظیمات اختیاری"
+  },
+  "optionsPreventCloseTabsByMiddleClick": {
+    "message": "جلوی بسته شدن تب با کلیک وسط موس را بگیر"
+  },
+  "optionsPreventCloseTabsByMiddleClickDetail": {
+    "message": "جلوی بسته شدن تب با کلیک وسط موس را میگیرد."
+  },
+  "optionsReadBrowserSettings": {
+    "message": "به افزونه دسترسی خواندن و تغییر تنظیمات مرورگر را بده"
+  },
+  "optionsReadBrowserSettingsDetail": {
+    "message": "دسترسی خواندن و تغییر برخی مقادیر در تنظیمات مرورگر را به افزونه میدهد. برای افزایش سازگاری افزونه با سازوکار و تنظیمات داخلی مرورگر، پیشنهاد میشود که این گزینه را فعّال کنید."
+  },
+  "optionsSaveUserCSS": {
+    "message": "ذخیره"
+  },
+  "optionsShowMenuOnMouseup": {
+    "message": "منوی راست کلیک را هنگامی که کلیک راست را کامل انجام دادم نشان بده"
+  },
+  "optionsShowMenuOnMouseupDetail": {
+    "message": "منوی راست کلیک را هنگامی که راست کلیک کامل انجام بشود انجام میدهد و نه به محض راست کلیک کردن. این گزینه فقط برای مک و گنو/لینوکس میباشد و در ویندوز هیچ اثری ندارد."
+  },
+  "optionsShowNewTabSeparator": {
+    "message": "بالای دکمه تب جدید، خط جداکننده نشان بده"
+  },
+  "optionsShowNewTabSeparatorDetail": {
+    "message": "دکمه تب جدید را با مرزی از تب ها جدا میکند."
+  },
+  "optionsSkipCollapsed": {
+    "message": "از روی تب های جمع شده رد شو"
+  },
+  "optionsSkipCollapsedDetail": {
+    "message": "هنگام انتخاب تب پیشین/بعدی، تب های جمع شده را نادیده میگیرد."
+  },
+  "optionsSwitchTabByScrolling": {
+    "message": "با اسکرول کردن موس بین تب ها جابجا شو"
+  },
+  "optionsSwitchTabByScrollingDetail": {
+    "message": "اسکرول کردن موس باعث رفتن به تب پیشین/بعدی میشود."
+  },
+  "optionsTabGroup": {
+    "message": "تب های گروهی"
+  },
+  "optionsTabGroupOnExpandCollapseOther": {
+    "message": "وقتی یک تب گروهی را باز میکنم تب های گروهی دیگر را جمع کن"
+  },
+  "optionsTabGroupOnExpandCollapseOtherDetail": {
+    "message": "باز کردن یک تب گروه بندی شده باعث جمع شدن تب های گروهی باز شدهٔ قبلی میشود."
+  },
+  "optionsTabGroupOnExpandExcludePinned": {
+    "message": "از تب های گروهی سنجاق شده صرف نظر کن"
+  },
+  "optionsTabGroupOnExpandExcludePinnedDetail": {
+    "message": "تب های سنجاقی باز شده میمانند."
+  },
+  "optionsTabGroupPutNewTabAtTheEnd": {
+    "message": "در تب های گروه بندی شده، تب جدید را همیشه در آخر گروه باز کن"
+  },
+  "optionsTabGroupPutNewTabAtTheEndDetail": {
+    "message": "اگر تب جدیدی را از بین تب های گروه بندی شده باز کنید، آن تب در آخر گروه باز میشود و نه در زیر تب فعّال."
+  },
+  "optionsTheme": {
+    "message": "پوسته تب های افقی"
+  },
+  "optionsThemeCustomLabel": {
+    "message": "پوسته دلخواه"
+  },
+  "optionsThemeCustomBackground": {
+    "message": "پس زمینه"
+  },
+  "optionsThemeCustomBody": {
+    "message": "بدنه"
+  },
+  "optionsThemeCustomBorder": {
+    "message": "مرز بندی"
+  },
+  "optionsThemeCustomCaption": {
+    "message": "شخصی سازی پوسته"
+  },
+  "optionsThemeCustomTabActive": {
+    "message": "تب فعّال"
+  },
+  "optionsThemeCustomTabDiscarded": {
+    "message": "Discarded Tab"
+  },
+  "optionsThemeCustomTabHover": {
+    "message": "نگه داشتن موس روی یک تب"
+  },
+  "optionsThemeCustomTabSelected": {
+    "message": "تب انتخاب شده"
+  },
+  "c": {
+    "message": "نگه داشتن موس روی تب انتخاب شده"
+  },
+  "optionsThemeCustomText": {
+    "message": "متن"
+  },
+  "optionsThemeDarkLabel": {
+    "message": "پوسته تاریک"
+  },
+  "optionsThemeDetail": {
+    "message": "پوسته ای را انتخاب کنید."
+  },
+  "optionsThemeLightLabel": {
+    "message": "پوسته روشن"
+  },
+  "optionsTitle": {
+    "message": "تب های افقی - تنظیمات"
+  },
+  "optionsUseUserCSS": {
+    "message": "استایل شیت (سبک نمایش) دلخواه من را اعمال کن"
+  },
+  "optionsUseUserCSSDetail": {
+    "message": "پوسته کنونی را به کمک استایل شیتِ (سبک نمایش) دلخواه دستکاری کنید."
+  },
+  "optionsUserCSS": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "optionsUserCSS_placeholder": {
+    "message": "کد CSS وارد کنید"
+  },
+  "optionsWarnUserCSS": {
+    "message": "کد CSS نادرست است."
+  },
+  "pinTab_menu": {
+    "message": "&Pin Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "pinTabs_menu": {
+    "message": "&Pin Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "pinnedTabsLabel": {
+    "message": "Pinned Tabs"
+  },
+  "reloadAllTabs_menu": {
+    "message": "Re&load All Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
+  "reloadTab_menu": {
+    "message": "&Reload Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&R)"
+      }
+    }
+  },
+  "reloadTabs_menu": {
+    "message": "&Reload Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&R)"
+      }
+    }
+  },
+  "reopenTabInContainer_menu": {
+    "message": "Op&en in New Container Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "reopenTabsInContainer_menu": {
+    "message": "Op&en in New Container Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "selectAllTabs_menu": {
+    "message": "&Select All Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "showTabGroupLabel_menu": {
+    "message": "Show Group &Label",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
+  "tab": {
+    "message": "Tab"
+  },
+  "tabGroup_menu": {
+    "message": "Tab &Group",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&G)"
+      }
+    }
+  },
+  "toggleOpenCloseState": {
+    "message": "Toggle open/close state"
+  },
+  "undoCloseTab_menu": {
+    "message": "Re&open Closed Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
+  "ungroupTabs_menu": {
+    "message": "&Ungroup Tabs",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&U)"
+      }
+    }
+  },
+  "unmuteTab": {
+    "message": "Unmute Tab"
+  },
+  "unmuteTab_menu": {
+    "message": "Un&mute Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "unmuteTab_tooltip": {
+    "message": "Unmute tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unmuteTabs_menu": {
+    "message": "Un&mute Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "unmuteTabs_tooltip": {
+    "message": "Unmute $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unpinTab_menu": {
+    "message": "Un&pin Tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "unpinTabs_menu": {
+    "message": "Un&pin Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  }
+}
