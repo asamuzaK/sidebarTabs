@@ -24,6 +24,34 @@ Experimental features are used, so you need to activate the following.
 
 * set `svg.context-properties.content.enabled` to `true`.
 
+## Hide the native tabs
+For now, extensions can't hide the native browser tabs due to lack of an API. See: https://github.com/asamuzaK/sidebarTabs/issues/5
+
+**Enable Custom CSS**
+
+1. Visit `about:config` and click `Accept the risk and Continue`.
+2. Search for `toolkit.legacyUserProfileCustomizations.stylesheets`.
+3. Toggle it, making the value "true".
+
+**Create userChrome.css**
+
+1. Visit `about:support`.
+2. To the right of `Profile Directory`, press the button `Open Directory`.
+3. Create a new folder named `chrome`.
+4. Open the `chrome` folder and create a new file named `userChrome.css`.
+5. The contents of `userChrome.css` should be the following:
+
+```css
+/* Hides the native tabs */
+#TabsToolbar {
+  visibility: collapse;
+}
+```
+
+Restart the browser to see the changes.
+
+More details: https://superuser.com/questions/1424478/can-i-hide-native-tabs-at-the-top-of-firefox
+
 ## Tab groups
 
 * Select tabs by "Shift + left click" or "Ctrl + left click" ("Cmd + left click" on Mac) on each tab.
