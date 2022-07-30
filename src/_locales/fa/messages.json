@@ -1,0 +1,808 @@
+{
+  "extensionLocale": {
+    "message": "fa"
+  },
+  "extensionDescription": {
+    "message": "زبانه ها را به صورت افقی نشان میدهد. همچنین، میتوانید زبانه ها را گروه بندی کنید و گروه ها را جمع/باز کنید."
+  },
+  "extensionName": {
+    "message": "زبانه های افقی"
+  },
+  "extensionShortName": {
+    "message": "زبانه ها"
+  },
+  "bookmarkAllTabs_menu": {
+    "message": "نشانک‌گذاری همه زبانه‌ها $KEY$...",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkFolderMessage": {
+    "message": "نام پوشه"
+  },
+  "bookmarkTab_menu": {
+    "message": "نشانک‌گذاری زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkTabGroup_menu": {
+    "message": "نشانک‌گذاری گروه زبانه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "bookmarkTabs_menu": {
+    "message": "نشانک‌گذاری زبانه‌ها (&K)…",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "closeMultipleTabs_menu": {
+    "message": "بستن چندین زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "closeOtherTabs_menu": {
+    "message": "بستن زبانه های دیگر $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
+  "closeTab": {
+    "message": "بستن زبانه"
+  },
+  "closeTabGroup_menu": {
+    "message": "بستن گروه زبانه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTab_menu": {
+    "message": "بستن زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTab_tooltip": {
+    "message": "بستن زبانه",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "closeTabs_menu": {
+    "message": "بستن $NUM$ زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      },
+      "key": {
+        "content": "$2",
+        "example": "(&C)"
+      }
+    }
+  },
+  "closeTabs_tooltip": {
+    "message": "&بستن $NUM$ زبانه",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "closeTabsToTheEnd_menu": {
+    "message": "بستن زبانه ها رو به پایین $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&B)"
+      }
+    }
+  },
+  "closeTabsToTheStart_menu": {
+    "message": "بستن زبانه ها رو به بالا $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "collapseOtherTabGroups_menu": {
+    "message": "گروه زبانه های دیگر را جمع کن $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
+  "collapseTabGroup": {
+    "message": "گروه زبانه را جمع کن"
+  },
+  "collapseTabGroup_menu": {
+    "message": "گروه زبانه را جمع کن $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "collapseTabGroup_tooltip": {
+    "message": "زبانه های گروه شده را جمع میکند"
+  },
+  "connecting": {
+    "message": "در حال اتصال..."
+  },
+  "darkTheme": {
+    "message": "پوسته تاریک"
+  },
+  "detachTabFromGroup_menu": {
+    "message": "جدا کردن این زبانه از گروه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "detachTabsFromGroup_menu": {
+    "message": "جدا کردن این زبانه ها از گروه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "dupeTab_menu": {
+    "message": "تکرار کردن زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
+  "dupeTabs_menu": {
+    "message": "زبانه های تکراری $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
+  "editTabGroupLabel": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "editTabGroupLabel_title": {
+    "message": "ویرایش نام گروه"
+  },
+  "expandTabGroup": {
+    "message": "باز کردن گروه زبانه"
+  },
+  "expandTabGroup_menu": {
+    "message": "باز کردن گروه زبانه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "expandTabGroup_tooltip": {
+    "message": "زبانه های گروه شده را باز میکند"
+  },
+  "groupSameContainerTabs_menu": {
+    "message": "گروه کردن زبانه های در محفظه یکسان $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      }
+    }
+  },
+  "groupSameDomainTabs_menu": {
+    "message": "گروه کردن زبانه های با دامنه یکسان $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&D)"
+      }
+    }
+  },
+  "groupSelectedTabs_menu": {
+    "message": "گروه کردن زبانه های انتخاب شده $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "hideTabGroupLabel_menu": {
+    "message": "پنهان کردن نام گروه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
+  "lightTheme": {
+    "message": "پوسته روشن"
+  },
+  "moveTab_menu": {
+    "message": "جابجایی زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&V)"
+      }
+    }
+  },
+  "moveTabToEnd_menu": {
+    "message": "جابجایی به انتها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "moveTabToNewWindow_menu": {
+    "message": "جابجایی به پنجره جدید $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "moveTabToStart_menu": {
+    "message": "جابجایی به ابتدا $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "moveTabs_menu": {
+    "message": "جابجایی زبانه ها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&V)"
+      }
+    }
+  },
+  "moveTabsToEnd_menu": {
+    "message": "جابجایی به انتها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "moveTabsToNewWindow_menu": {
+    "message": "جابجایی به پنجره جدید $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "moveTabsToStart_menu": {
+    "message": "جابجایی به ابتدا $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "muteTab": {
+    "message": "بیصدا کردن زبانه"
+  },
+  "muteTab_menu": {
+    "message": "بیصدا کردن زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "muteTab_tooltip": {
+    "message": "بیصدا کردن زبانه",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "muteTabs_menu": {
+    "message": "بیصدا کردن زبانه ها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "muteTabs_tooltip": {
+    "message": "بیصدا کردن $NUM$ زبانه",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "newTab_menu": {
+    "message": "زبانه جدید $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&W)"
+      }
+    }
+  },
+  "newTabButton": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "newTabButton_alt": {
+    "message": "زبانه جدید"
+  },
+  "newTabButton_title": {
+    "message": "باز کردن یک زبانه جدید"
+  },
+  "openNewTabInContainer_menu": {
+    "message": "باز کردن یک زبانه محفظه ای $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "openOptions_menu": {
+    "message": "گزینه ها $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&T)"
+      }
+    }
+  },
+  "optionsAlwaysSwitchTabByScrolling": {
+    "message": "همیشه با اسکرول موس بین زبانه ها جابجا شو"
+  },
+  "optionsAlwaysSwitchTabByScrollingDetail": {
+    "message": "حتی اگر نوار اسکرول پنهان است باز هم با اسکرول موس بین زبانه پیشین/بعدی جابجا شو."
+  },
+  "optionsAutoLabel": {
+    "message": "خودکار"
+  },
+  "optionsBookmarkLocation": {
+    "message": "بوک مارک ها را در اینجا ذخیره کن:"
+  },
+  "optionsBookmarkLocationDetail": {
+    "message": "بوک مارک ها و پوشه ها را در مکان انتخاب شده ذخیره میکند."
+  },
+  "optionsCompactTab": {
+    "message": "ارتفاع زبانه ها را کم کن"
+  },
+  "optionsCompactTabDetail": {
+    "message": "ارتفاع زبانه ها را کم میکند تا جا برای نمایش دادن زبانه های بیشتری باز بشود."
+  },
+  "optionsEnableTabGroup": {
+    "message": "زبانه های گروهی را فعّال کن"
+  },
+  "optionsEnableTabGroupDetail": {
+    "message": "قابلیت گروه بندی کردن زبانه ها را فعّال میکند."
+  },
+  "optionsInit": {
+    "message": "راه اندازی دوباره"
+  },
+  "optionsInitSidebar": {
+    "message": "راه اندازی دوباره زبانه های افقی"
+  },
+  "optionsInitSidebarDetail": {
+    "message": "زبانه های افقی را دوباره راه اندازی کن. همه تنظیماتی که انجام داده اید حذف خواهند شد."
+  },
+  "optionsInvertScrollDirection": {
+    "message": "جهت اسکرول را وارونه کن"
+  },
+  "optionsInvertScrollDirectionDetail": {
+    "message": "اسکرول به سمت بالا باعث رفتن به زبانه پایینی و اسکرول به سمت پایین باعث رفتن به زبانه بالایی میشود."
+  },
+  "optionsNarrowScrollbar": {
+    "message": "پهنای نوار اسکرول را کم کن"
+  },
+  "optionsNarrowScrollbarDetail": {
+    "message": "پهنای نوار اسکرول را کم میکند"
+  },
+  "optionsNarrowTabGroupColorBar": {
+    "message": "پهنای نواررنگی زبانه های گروهی را کم کن"
+  },
+  "optionsNarrowTabGroupColorBarDetail": {
+    "message": "پهنای نواررنگی زبانه های گروهی را کم میکند."
+  },
+  "optionsOptionalSettings": {
+    "message": "تنظیمات اختیاری"
+  },
+  "optionsPreventCloseTabsByMiddleClick": {
+    "message": "جلوی بسته شدن زبانه با کلیک وسط موس را بگیر"
+  },
+  "optionsPreventCloseTabsByMiddleClickDetail": {
+    "message": "جلوی بسته شدن زبانه با کلیک وسط موس را میگیرد."
+  },
+  "optionsReadBrowserSettings": {
+    "message": "به افزونه دسترسی خواندن و تغییر تنظیمات مرورگر را بده"
+  },
+  "optionsReadBrowserSettingsDetail": {
+    "message": "دسترسی خواندن و تغییر برخی مقادیر در تنظیمات مرورگر را به افزونه میدهد. برای افزایش سازگاری افزونه با سازوکار و تنظیمات داخلی مرورگر، پیشنهاد میشود که این گزینه را فعّال کنید."
+  },
+  "optionsSaveUserCSS": {
+    "message": "ذخیره"
+  },
+  "optionsShowMenuOnMouseup": {
+    "message": "منوی راست کلیک را هنگامی که کلیک راست را کامل انجام دادم نشان بده"
+  },
+  "optionsShowMenuOnMouseupDetail": {
+    "message": "منوی راست کلیک را هنگامی که راست کلیک کامل انجام بشود انجام میدهد و نه به محض راست کلیک کردن. این گزینه فقط برای مک و گنو/لینوکس میباشد و در ویندوز هیچ اثری ندارد."
+  },
+  "optionsShowNewTabSeparator": {
+    "message": "بالای دکمه زبانه جدید، خط جداکننده نشان بده"
+  },
+  "optionsShowNewTabSeparatorDetail": {
+    "message": "دکمه زبانه جدید را با مرزی از زبانه ها جدا میکند."
+  },
+  "optionsSkipCollapsed": {
+    "message": "از روی زبانه های جمع شده رد شو"
+  },
+  "optionsSkipCollapsedDetail": {
+    "message": "هنگام انتخاب زبانه پیشین/بعدی، زبانه های جمع شده را نادیده میگیرد."
+  },
+  "optionsSwitchTabByScrolling": {
+    "message": "با اسکرول کردن موس بین زبانه ها جابجا شو"
+  },
+  "optionsSwitchTabByScrollingDetail": {
+    "message": "اسکرول کردن موس باعث رفتن به زبانه پیشین/بعدی میشود."
+  },
+  "optionsTabGroup": {
+    "message": "زبانه های گروهی"
+  },
+  "optionsTabGroupOnExpandCollapseOther": {
+    "message": "وقتی یک زبانه گروهی را باز میکنم زبانه های گروهی دیگر را جمع کن"
+  },
+  "optionsTabGroupOnExpandCollapseOtherDetail": {
+    "message": "باز کردن یک زبانه گروه بندی شده باعث جمع شدن زبانه های گروهی باز شدهٔ قبلی میشود."
+  },
+  "optionsTabGroupOnExpandExcludePinned": {
+    "message": "از زبانه های گروهی سنجاق شده صرف نظر کن"
+  },
+  "optionsTabGroupOnExpandExcludePinnedDetail": {
+    "message": "زبانه های سنجاقی باز شده میمانند."
+  },
+  "optionsTabGroupPutNewTabAtTheEnd": {
+    "message": "در زبانه های گروه بندی شده، زبانه جدید را همیشه در آخر گروه باز کن"
+  },
+  "optionsTabGroupPutNewTabAtTheEndDetail": {
+    "message": "اگر زبانه جدیدی را از بین زبانه های گروه بندی شده باز کنید، آن زبانه در آخر گروه باز میشود و نه در زیر زبانه فعّال."
+  },
+  "optionsTheme": {
+    "message": "پوسته زبانه های افقی"
+  },
+  "optionsThemeCustomLabel": {
+    "message": "پوسته دلخواه"
+  },
+  "optionsThemeCustomBackground": {
+    "message": "پس زمینه"
+  },
+  "optionsThemeCustomBody": {
+    "message": "بدنه"
+  },
+  "optionsThemeCustomBorder": {
+    "message": "مرز بندی"
+  },
+  "optionsThemeCustomCaption": {
+    "message": "شخصی سازی پوسته"
+  },
+  "optionsThemeCustomTabActive": {
+    "message": "زبانه فعّال"
+  },
+  "optionsThemeCustomTabDiscarded": {
+    "message": "زبانه بدون مصرف منابع"
+  },
+  "optionsThemeCustomTabHover": {
+    "message": "نگه داشتن موس روی یک زبانه"
+  },
+  "optionsThemeCustomTabSelected": {
+    "message": "زبانه انتخاب شده"
+  },
+  "c": {
+    "message": "نگه داشتن موس روی زبانه انتخاب شده"
+  },
+  "optionsThemeCustomText": {
+    "message": "متن"
+  },
+  "optionsThemeDarkLabel": {
+    "message": "پوسته تاریک"
+  },
+  "optionsThemeDetail": {
+    "message": "پوسته ای را انتخاب کنید."
+  },
+  "optionsThemeLightLabel": {
+    "message": "پوسته روشن"
+  },
+  "optionsTitle": {
+    "message": "زبانه های افقی - تنظیمات"
+  },
+  "optionsUseUserCSS": {
+    "message": "استایل شیت (سبک نمایش) دلخواه من را اعمال کن"
+  },
+  "optionsUseUserCSSDetail": {
+    "message": "پوسته کنونی را به کمک استایل شیتِ (سبک نمایش) دلخواه دستکاری کنید."
+  },
+  "optionsUserCSS": {
+    "message": "",
+    "description": "Leave empty"
+  },
+  "optionsUserCSS_placeholder": {
+    "message": "کد CSS وارد کنید"
+  },
+  "optionsWarnUserCSS": {
+    "message": "کد CSS نادرست است."
+  },
+  "pinTab_menu": {
+    "message": "سنجاق کردن زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "pinTabs_menu": {
+    "message": "سنجاق کردن زبانه ها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "pinnedTabsLabel": {
+    "message": "زبانه های سنجاق شده"
+  },
+  "reloadAllTabs_menu": {
+    "message": "بازآوری همه زبانه ها $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
+  "reloadTab_menu": {
+    "message": "بازآوری زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&R)"
+      }
+    }
+  },
+  "reloadTabs_menu": {
+    "message": "بازآوری زبانه ها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&R)"
+      }
+    }
+  },
+  "reopenTabInContainer_menu": {
+    "message": "باز کردن در زبانه های محفظه ای جدید $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "reopenTabsInContainer_menu": {
+    "message": "باز کردن در یک زبانه محفظه ای جدید $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
+  "selectAllTabs_menu": {
+    "message": "انتخاب همه زبانه ها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "showTabGroupLabel_menu": {
+    "message": "نمایش نام گروه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&L)"
+      }
+    }
+  },
+  "tab": {
+    "message": "زبانه"
+  },
+  "tabGroup_menu": {
+    "message": "گروه زبانه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&G)"
+      }
+    }
+  },
+  "toggleOpenCloseState": {
+    "message": "تغییر دادن وضعیت باز/بسته"
+  },
+  "undoCloseTab_menu": {
+    "message": "باز کردن زبانه های بسته شده $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&O)"
+      }
+    }
+  },
+  "ungroupTabs_menu": {
+    "message": "خارج کردن زبانه ها از گروه $KEY$",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&U)"
+      }
+    }
+  },
+  "unmuteTab": {
+    "message": "باصدا کردن زبانه"
+  },
+  "unmuteTab_menu": {
+    "message": "باصدا کردن زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "unmuteTab_tooltip": {
+    "message": "باصدا کردن زبانه",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unmuteTabs_menu": {
+    "message": "باصدا کردن زبانه ها $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&M)"
+      }
+    }
+  },
+  "unmuteTabs_tooltip": {
+    "message": "باصدا کردن $NUM$ زبانه",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unpinTab_menu": {
+    "message": "حذف سنجاق زبانه $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  },
+  "unpinTabs_menu": {
+    "message": "حذف سنجاق زبانه‌ها (&B)",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&P)"
+      }
+    }
+  }
+}
