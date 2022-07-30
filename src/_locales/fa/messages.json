@@ -12,7 +12,7 @@
     "message": "زبانه ها"
   },
   "bookmarkAllTabs_menu": {
-    "message": "نشانک‌گذاری همه زبانه‌ها $KEY$",
+    "message": "نشانک‌گذاری همه زبانه‌ها $KEY$...",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -48,7 +48,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&K)"
+        "example": "(&B)"
       }
     }
   },
@@ -68,7 +68,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&ب)"
+        "example": "(&O)"
       }
     }
   },
@@ -114,7 +114,7 @@
       },
       "key": {
         "content": "$2",
-        "example": "(&ز)"
+        "example": "(&C)"
       }
     }
   },
@@ -623,7 +623,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&س)"
+        "example": "(&P)"
       }
     }
   },
@@ -801,7 +801,7 @@
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&B)"
+        "example": "(&P)"
       }
     }
   }
