@@ -170,9 +170,6 @@
   "collapseTabGroup_tooltip": {
     "message": "グループのタブを折りたたみます"
   },
-  "connecting": {
-    "message": "接続中..."
-  },
   "darkTheme": {
     "message": "暗いテーマ"
   },
