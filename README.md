@@ -41,6 +41,5 @@ This can also improve dark theme ([Issue #154](https://github.com/asamuzaK/sideb
 
 * The extension can't hide the browser native tab bars because there is no API for that in WebExtensions. But you can hide them manually.
   [Issue #5](https://github.com/asamuzaK/sidebarTabs/issues/5 "Add ability to \"hide native tab bars\" · Issue #5 · asamuzaK/sidebarTabs")
-
 * The context menu item of the original tab "Send tab to device" is not implemented because there is no API for that in WebExtensions.
   [Issue #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "Add \"Send tab to device\" functionalty · Issue #7 · asamuzaK/sidebarTabs")

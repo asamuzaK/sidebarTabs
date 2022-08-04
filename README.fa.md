@@ -1,4 +1,4 @@
-[EN](./README.md) | [JA](./README.ja.md) | [پارسی](./README.fa.md)
+[EN](./README.md) | [JA](./README.ja.md) | پارسی
 
 [![build](https://github.com/asamuzaK/sidebarTabs/workflows/build/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3Abuild)
 [![CodeQL](https://github.com/asamuzaK/sidebarTabs/workflows/CodeQL/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3ACodeQL)
@@ -39,6 +39,5 @@
 ## مشکلات موجود
 * امکان پنهان کردن زبانه های خود مرورگر وجود ندارد زیرا API (واسط برنامه‌نویسی) برای این کار در افزونه ها تعبیه نشده است اما شما میتوانید به صورت دستی این کار را انجام بدهید.
   [مشکل #5](https://github.com/asamuzaK/sidebarTabs/issues/5 "افزودن قابلیت \"پنهان کردن زبانه های خود مرورگر\" · مشکل #5 · asamuzaK/sidebarTabs")
-  
 * گزینه "فرستادن زبانه به دستگاه دیگر" از فهرست راست کلیک اصلی در این افزونه تعبیه نشده است زیرا API (واسط برنامه‌نویسی) برای آن در افزونه ها وجود ندارد.
   [مشکل #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "افزودن قابلیت \"فرستادن زبانه به دستگاه دیگر\" · Issue #7 · asamuzaK/sidebarTabs")

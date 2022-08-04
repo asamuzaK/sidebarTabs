@@ -1,4 +1,4 @@
-[EN](./README.md) | JA
+[EN](./README.md) | JA | [پارسی](./README.fa.md)
 
 [![build](https://github.com/asamuzaK/sidebarTabs/workflows/build/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3Abuild)
 [![CodeQL](https://github.com/asamuzaK/sidebarTabs/workflows/CodeQL/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3ACodeQL)
@@ -24,6 +24,8 @@ Firefox用の拡張機能。
 
 * `svg.context-properties.content.enabled`を`true`にセットする。
 
+これにより、暗いテーマも改善できます（[Issue #154](https://github.com/asamuzaK/sidebarTabs/issues/154)）。
+
 ## タブグループ
 
 * 「Shift + 左クリック」または「Ctrl + 左クリック」（Macでは「Cmd + 左クリック」）でグループ化したいタブを選択状態にします。
@@ -37,5 +39,7 @@ Firefox用の拡張機能。
 
 ## 既知の問題
 
+* WebExtensionsにAPIがないため、ブラウザの本来のタブバーを非表示にすることはできません。ただし、手動で非表示にすることはできます。
+  [Issue #5](https://github.com/asamuzaK/sidebarTabs/issues/5 "Add ability to \"hide native tab bars\" · Issue #5 · asamuzaK/sidebarTabs")
 * 本来のタブのコンテキストメニューにある「タブを端末に送る」の項目は、WebExtensionsにAPIがないため実装していません。
   [Issue #7](https://github.com/asamuzaK/sidebarTabs/issues/7 "Add \"Send tab to device\" functionalty · Issue #7 · asamuzaK/sidebarTabs")
