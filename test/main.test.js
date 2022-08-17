@@ -743,10 +743,8 @@ describe('main', () => {
       assert.deepEqual(sidebar.contextualIds, ['foo', 'bar', 'baz'], 'ids');
     });
 
-    it('should set value', async () => {
-      const { sidebar } = mjs;
+    it('should throw', async () => {
       const query = browser.contextualIdentities.query.withArgs({});
-      const i = query.callCount;
       query.rejects('error');
       await func().catch(e => {
         assert.instanceOf(e, Error, 'error');
