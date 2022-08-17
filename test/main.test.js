@@ -746,15 +746,11 @@ describe('main', () => {
     it('should set value', async () => {
       const { sidebar } = mjs;
       const query = browser.contextualIdentities.query.withArgs({});
-      const stub = sinon.stub(console, 'error');
       const i = query.callCount;
       query.rejects('error');
-      await func();
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.strictEqual(query.callCount, i + 1, 'query called');
-      assert.isTrue(calledOnce, 'log error called');
-      assert.isNull(sidebar.contextualIds, 'ids');
+      await func().catch(e => {
+        assert.instanceOf(e, Error, 'error');
+      });
     });
   });
 
