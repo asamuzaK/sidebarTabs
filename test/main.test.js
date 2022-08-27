@@ -12189,10 +12189,32 @@ describe('main', () => {
       assert.deepEqual(res, [], 'result');
     });
 
+    it('should not set variables', async () => {
+      const res = await func({
+        tabGroupPutNewTabAtTheEnd: {
+          checked: true
+        }
+      }, 'foo');
+      assert.isFalse(mjs.sidebar.tabGroupPutNewTabAtTheEnd, 'not set');
+      assert.deepEqual(res, [], 'result');
+    });
+
     it('should set variables', async () => {
       const res = await func({
         tabGroupPutNewTabAtTheEnd: {
           checked: true
+        }
+      });
+      assert.isTrue(mjs.sidebar.tabGroupPutNewTabAtTheEnd, 'set');
+      assert.deepEqual(res, [[]], 'result');
+    });
+
+    it('should set variables', async () => {
+      const res = await func({
+        tabGroupPutNewTabAtTheEnd: {
+          newValue: {
+            checked: true
+          }
         }
       });
       assert.isTrue(mjs.sidebar.tabGroupPutNewTabAtTheEnd, 'set');

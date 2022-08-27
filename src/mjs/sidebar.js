@@ -34,7 +34,9 @@ menus.onClicked.addListener(info => handleClickedMenu(info).catch(throwErr));
 runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
 );
-storage.onChanged.addListener(data => setVars(data).catch(throwErr));
+storage.onChanged.addListener((data, area) =>
+  setVars(data, area).catch(throwErr)
+);
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab)
     .then(requestSaveSession).catch(throwErr)
