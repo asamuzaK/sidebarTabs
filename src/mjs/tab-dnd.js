@@ -3,7 +3,7 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, isString, isUri, throwErr } from './common.js';
+import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   createTab, duplicateTab, moveTab, searchWithSearchEngine, updateTab
 } from './browser.js';
@@ -15,6 +15,7 @@ import {
   requestSaveSession
 } from './util.js';
 import { restoreTabContainers } from './tab-group.js';
+import { isUri } from './uri-scheme.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
