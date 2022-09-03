@@ -9,7 +9,8 @@ import {
   getLastClosedTab, handleActivatedTab, handleAttachedTab, handleClickedMenu,
   handleContextmenuEvt, handleCreatedTab, handleDetachedTab, handleEvt,
   handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleUpdatedTab, restoreHighlightedTabs, setContextualIds, setVars, startup
+  handleStorage, handleUpdatedTab, restoreHighlightedTabs, setContextualIds,
+  startup
 } from './main.js';
 import {
   expandActivatedCollapsedTab, restoreTabContainers
@@ -35,7 +36,7 @@ runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
 );
 storage.onChanged.addListener((data, area) =>
-  setVars(data, area).catch(throwErr)
+  handleStorage(data, area).catch(throwErr)
 );
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab)

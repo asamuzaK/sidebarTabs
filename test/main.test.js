@@ -12181,8 +12181,8 @@ describe('main', () => {
     });
   });
 
-  describe('set variables', () => {
-    const func = mjs.setVars;
+  describe('handle storage', () => {
+    const func = mjs.handleStorage;
 
     it('should not set variables', async () => {
       const res = await func();
