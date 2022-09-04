@@ -104,6 +104,7 @@ const MOUSE_BUTTON_RIGHT = 2;
 /* user options */
 export const userOpts = new Map();
 
+/* user options keys */
 export const userOptsKeys = new Set([
   BROWSER_SETTINGS_READ,
   NEW_TAB_SEPARATOR_SHOW,
@@ -149,27 +150,14 @@ export const setUserOpts = async (opt = {}) => {
 
 /* sidebar */
 export const sidebar = {
-  alwaysSwitchTabByScrolling: false,
-  closeTabsByDoubleClick: false,
-  closeTabsByMiddleClick: true,
   context: null,
   contextualIds: null,
-  enableTabGroup: true,
   firstSelectedTab: null,
   incognito: false,
-  invertScrollDirection: false,
   isMac: false,
   lastClosedTab: null,
   pinnedTabsWaitingToMove: null,
-  readBrowserSettings: false,
-  showNewTabSeparator: false,
-  skipCollapsed: false,
-  switchTabByScrolling: false,
-  tabGroupOnExpandCollapseOther: false,
-  tabGroupOnExpandExcludePinned: false,
-  tabGroupPutNewTabAtTheEnd: false,
   tabsWaitingToMove: null,
-  useUserCSS: false,
   windowId: null
 };
 

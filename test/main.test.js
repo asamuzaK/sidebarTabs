@@ -86,26 +86,14 @@ describe('main', () => {
     for (const key of globalKeys) {
       global[key] = window[key];
     }
-    mjs.sidebar.alwaysSwitchTabByScrolling = false;
-    mjs.sidebar.closeTabsByDoubleClick = false;
-    mjs.sidebar.closeTabsByMiddleClick = true;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
-    mjs.sidebar.enableTabGroup = true;
+    mjs.sidebar.firstSelectedTab = null;
     mjs.sidebar.incognito = false;
-    mjs.sidebar.invertScrollDirection = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
-    mjs.sidebar.readBrowserSettings = false;
-    mjs.sidebar.showNewTabSeparator = false;
-    mjs.sidebar.skipCollapsed = false;
-    mjs.sidebar.switchTabByScrolling = false;
-    mjs.sidebar.tabGroupOnExpandCollapseOther = false;
-    mjs.sidebar.tabGroupOnExpandExcludePinned = false;
-    mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
-    mjs.sidebar.useUserCSS = false;
     mjs.sidebar.windowId = null;
   });
   afterEach(() => {
@@ -118,26 +106,14 @@ describe('main', () => {
       delete global[key];
     }
     browser._sandbox.reset();
-    mjs.sidebar.alwaysSwitchTabByScrolling = false;
-    mjs.sidebar.closeTabsByDoubleClick = false;
-    mjs.sidebar.closeTabsByMiddleClick = true;
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
-    mjs.sidebar.enableTabGroup = true;
+    mjs.sidebar.firstSelectedTab = null;
     mjs.sidebar.incognito = false;
-    mjs.sidebar.invertScrollDirection = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
-    mjs.sidebar.readBrowserSettings = false;
-    mjs.sidebar.showNewTabSeparator = false;
-    mjs.sidebar.skipCollapsed = false;
-    mjs.sidebar.switchTabByScrolling = false;
-    mjs.sidebar.tabGroupOnExpandCollapseOther = false;
-    mjs.sidebar.tabGroupOnExpandExcludePinned = false;
-    mjs.sidebar.tabGroupPutNewTabAtTheEnd = false;
     mjs.sidebar.tabsWaitingToMove = null;
-    mjs.sidebar.useUserCSS = false;
     mjs.sidebar.windowId = null;
   });
 
