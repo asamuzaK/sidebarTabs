@@ -101,6 +101,52 @@ const MOUSE_BUTTON_LEFT = 0;
 const MOUSE_BUTTON_MIDDLE = 1;
 const MOUSE_BUTTON_RIGHT = 2;
 
+/* user options */
+export const userOpts = new Map();
+
+export const userOptsKeys = new Set([
+  BROWSER_SETTINGS_READ,
+  NEW_TAB_SEPARATOR_SHOW,
+  SCROLL_DIR_INVERT,
+  TAB_CLOSE_DBLCLICK,
+  TAB_CLOSE_MDLCLICK_PREVENT,
+  TAB_GROUP_ENABLE,
+  TAB_GROUP_EXPAND_COLLAPSE_OTHER,
+  TAB_GROUP_EXPAND_EXCLUDE_PINNED,
+  TAB_GROUP_NEW_TAB_AT_END,
+  TAB_SKIP_COLLAPSED,
+  TAB_SWITCH_SCROLL,
+  TAB_SWITCH_SCROLL_ALWAYS,
+  USER_CSS_USE
+]);
+
+/**
+ * set user options
+ *
+ * @param {object} opt - user option
+ * @returns {object} - userOpts
+ */
+export const setUserOpts = async (opt = {}) => {
+  let opts;
+  if (isObjectNotEmpty(opt)) {
+    opts = opt;
+  } else {
+    userOpts.set(TAB_CLOSE_MDLCLICK, true);
+    userOpts.set(TAB_GROUP_ENABLE, true);
+    opts = await getStorage(userOptsKeys);
+  }
+  const items = Object.entries(opts);
+  for (const [key, value] of items) {
+    const { checked } = value;
+    if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
+      userOpts.set(TAB_CLOSE_MDLCLICK, !checked);
+    } else {
+      userOpts.set(key, !!checked);
+    }
+  }
+  return userOpts;
+};
+
 /* sidebar */
 export const sidebar = {
   alwaysSwitchTabByScrolling: false,
@@ -133,89 +179,27 @@ export const sidebar = {
  * @returns {void}
  */
 export const setSidebar = async () => {
+  const os = await getOs();
   const win = await getCurrentWindow({
     populate: true
   });
   const { id: windowId, incognito } = win;
-  const store = await getStorage([
-    BROWSER_SETTINGS_READ,
-    NEW_TAB_SEPARATOR_SHOW,
-    SCROLL_DIR_INVERT,
-    TAB_CLOSE_DBLCLICK,
-    TAB_CLOSE_MDLCLICK_PREVENT,
-    TAB_GROUP_ENABLE,
-    TAB_GROUP_EXPAND_COLLAPSE_OTHER,
-    TAB_GROUP_EXPAND_EXCLUDE_PINNED,
-    TAB_GROUP_NEW_TAB_AT_END,
-    TAB_SKIP_COLLAPSED,
-    TAB_SWITCH_SCROLL,
-    TAB_SWITCH_SCROLL_ALWAYS,
-    USER_CSS_USE
-  ]);
-  const os = await getOs();
-  if (isObjectNotEmpty(store)) {
-    const {
-      alwaysSwitchTabByScrolling, closeTabsByDoubleClick, enableTabGroup,
-      invertScrollDirection, preventCloseTabsByMiddleClick, readBrowserSettings,
-      showNewTabSeparator, skipCollapsed, switchTabByScrolling,
-      tabGroupOnExpandCollapseOther, tabGroupOnExpandExcludePinned,
-      tabGroupPutNewTabAtTheEnd, useUserCSS
-    } = store;
-    sidebar.alwaysSwitchTabByScrolling = alwaysSwitchTabByScrolling
-      ? !!alwaysSwitchTabByScrolling.checked
-      : false;
-    sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
-      ? !!closeTabsByDoubleClick.checked
-      : false;
-    sidebar.closeTabsByMiddleClick = preventCloseTabsByMiddleClick
-      ? !preventCloseTabsByMiddleClick.checked
-      : true;
-    sidebar.enableTabGroup = enableTabGroup
-      ? !!enableTabGroup.checked
-      : true;
-    sidebar.invertScrollDirection = invertScrollDirection
-      ? !!invertScrollDirection.checked
-      : false;
-    sidebar.readBrowserSettings = readBrowserSettings
-      ? !!readBrowserSettings.checked
-      : false;
-    sidebar.showNewTabSeparator = showNewTabSeparator
-      ? !!showNewTabSeparator.checked
-      : false;
-    sidebar.skipCollapsed = skipCollapsed ? !!skipCollapsed.checked : false;
-    sidebar.switchTabByScrolling = switchTabByScrolling
-      ? !!switchTabByScrolling.checked
-      : false;
-    sidebar.tabGroupOnExpandCollapseOther = tabGroupOnExpandCollapseOther
-      ? !!tabGroupOnExpandCollapseOther.checked
-      : false;
-    sidebar.tabGroupOnExpandExcludePinned = tabGroupOnExpandExcludePinned
-      ? !!tabGroupOnExpandExcludePinned.checked
-      : false;
-    sidebar.tabGroupPutNewTabAtTheEnd = tabGroupPutNewTabAtTheEnd
-      ? !!tabGroupPutNewTabAtTheEnd.checked
-      : false;
-    sidebar.useUserCSS = useUserCSS
-      ? !!useUserCSS.checked
-      : false;
-  } else {
-    sidebar.alwaysSwitchTabByScrolling = false;
-    sidebar.closeTabsByDoubleClick = false;
-    sidebar.closeTabsByMiddleClick = true;
-    sidebar.enableTabGroup = true;
-    sidebar.invertScrollDirection = false;
-    sidebar.readBrowserSettings = false;
-    sidebar.showNewTabSeparator = false;
-    sidebar.skipCollapsed = false;
-    sidebar.switchTabByScrolling = false;
-    sidebar.tabGroupOnExpandCollapseOther = false;
-    sidebar.tabGroupOnExpandExcludePinned = false;
-    sidebar.tabGroupPutNewTabAtTheEnd = false;
-    sidebar.useUserCSS = false;
-  }
   sidebar.incognito = incognito;
   sidebar.isMac = os === 'mac';
   sidebar.windowId = windowId;
+};
+
+/**
+ * init sidebar
+ *
+ * @param {boolean} bool - bypass cache
+ * @returns {void}
+ */
+export const initSidebar = async (bool = false) => {
+  const { windowId } = sidebar;
+  await setSessionWindowValue(TAB_LIST, null, windowId);
+  await clearStorage();
+  window.location.reload(bool);
 };
 
 /**
@@ -252,40 +236,11 @@ export const setContextualIds = async () => {
  * @returns {void}
  */
 export const setLastClosedTab = async tab => {
-  sidebar.lastClosedTab = isObjectNotEmpty(tab) ? tab : null;
-};
-
-/**
- * set pinned tabs waiting to move
- *
- * @param {?Array} arr - array of tabs
- * @returns {void}
- */
-export const setPinnedTabsWaitingToMove = async arr => {
-  sidebar.pinnedTabsWaitingToMove = Array.isArray(arr) ? arr : null;
-};
-
-/**
- * set tabs waiting to move
- *
- * @param {?Array} arr - array of tabs
- * @returns {void}
- */
-export const setTabsWaitingToMove = async arr => {
-  sidebar.tabsWaitingToMove = Array.isArray(arr) ? arr : null;
-};
-
-/**
- * init sidebar
- *
- * @param {boolean} bool - bypass cache
- * @returns {void}
- */
-export const initSidebar = async (bool = false) => {
-  const { windowId } = sidebar;
-  await setSessionWindowValue(TAB_LIST, null, windowId);
-  await clearStorage();
-  window.location.reload(bool);
+  sidebar.lastClosedTab =
+    isObjectNotEmpty(tab) &&
+    Object.prototype.hasOwnProperty.call(tab, 'windowId')
+      ? tab
+      : null;
 };
 
 /**
@@ -316,14 +271,35 @@ export const undoCloseTab = async () => {
 };
 
 /**
+ * set pinned tabs waiting to move
+ *
+ * @param {?Array} arr - array of tabs
+ * @returns {void}
+ */
+export const setPinnedTabsWaitingToMove = async arr => {
+  sidebar.pinnedTabsWaitingToMove =
+    Array.isArray(arr) && arr.length ? arr : null;
+};
+
+/**
+ * set tabs waiting to move
+ *
+ * @param {?Array} arr - array of tabs
+ * @returns {void}
+ */
+export const setTabsWaitingToMove = async arr => {
+  sidebar.tabsWaitingToMove =
+    Array.isArray(arr) && arr.length ? arr : null;
+};
+
+/**
  * apply user style
  *
  * @returns {Function} - setUserCSS()
  */
 export const applyUserStyle = async () => {
-  const { useUserCSS } = sidebar;
   let css;
-  if (useUserCSS) {
+  if (userOpts.get(USER_CSS_USE)) {
     const res = await getStorage(USER_CSS);
     if (res) {
       const { userCSS } = res;
@@ -386,8 +362,7 @@ export const activateClickedTab = async elm => {
   const tabId = getSidebarTabId(elm);
   let func;
   if (Number.isInteger(tabId)) {
-    const { closeTabsByDoubleClick } = sidebar;
-    if (closeTabsByDoubleClick) {
+    if (userOpts.get(TAB_CLOSE_DBLCLICK)) {
       await sleep(300);
     }
     try {
@@ -410,20 +385,20 @@ export const activateClickedTab = async elm => {
  */
 export const handleClickedTab = evt => {
   const { button, ctrlKey, detail, metaKey, shiftKey, target, type } = evt;
-  const {
-    closeTabsByDoubleClick, closeTabsByMiddleClick, firstSelectedTab, isMac,
-    switchTabByScrolling, windowId
-  } = sidebar;
+  const { firstSelectedTab, isMac, windowId } = sidebar;
+  const closeByDblClick = userOpts.get(TAB_CLOSE_DBLCLICK);
+  const closeByMdlClick = userOpts.get(TAB_CLOSE_MDLCLICK);
+  const switchByScroll = userOpts.get(TAB_SWITCH_SCROLL);
   const tab = getSidebarTab(target);
   const func = [];
   if (button === MOUSE_BUTTON_MIDDLE && type === 'mousedown' && tab) {
-    if (!switchTabByScrolling || closeTabsByMiddleClick) {
+    if (!switchByScroll || closeByMdlClick) {
       func.push(closeTabs([tab]));
       evt.stopPropagation();
       evt.preventDefault();
     }
   } else if (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
-             closeTabsByDoubleClick && tab) {
+             closeByDblClick && tab) {
     const { classList } = tab;
     if (classList.contains(ACTIVE)) {
       func.push(closeTabs([tab]));
@@ -639,10 +614,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
   if (!Number.isInteger(tabWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(tabWindowId)}.`);
   }
-  const {
-    closeTabsByDoubleClick, enableTabGroup, incognito,
-    tabGroupOnExpandCollapseOther, tabGroupPutNewTabAtTheEnd, windowId
-  } = sidebar;
+  const { incognito, windowId } = sidebar;
   const func = [];
   if (tabWindowId === windowId && id !== TAB_ID_NONE) {
     const { attached, emulate } = opt;
@@ -658,8 +630,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     const tabList = document.querySelectorAll(TAB_QUERY);
     const targetTab = tabList[index];
     const targetTabPrev = index > 0 && tabList[index - 1];
-    const insertTarget = tabList.length !== index && targetTab &&
-      targetTab.parentNode;
+    const insertTarget =
+      tabList.length !== index && targetTab && targetTab.parentNode;
     const inGroup = tabList.length !== index && targetTab && targetTabPrev &&
       targetTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
       targetTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
@@ -668,15 +640,15 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     for (const item of items) {
       const { classList } = item;
       if (classList.contains(CLASS_TAB_CONTEXT)) {
+        const userOpt = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
         item.title = i18n.getMessage(`${TAB_GROUP_COLLAPSE}_tooltip`);
-        func.push(
-          addTabContextClickListener(item, !!tabGroupOnExpandCollapseOther)
-        );
+        func.push(addTabContextClickListener(item, !!userOpt));
       } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
         item.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
+        const userOpt = userOpts.get(TAB_CLOSE_DBLCLICK);
         item.title = title;
-        func.push(toggleTabDblClickListener(item, !!closeTabsByDoubleClick));
+        func.push(toggleTabDblClickListener(item, !!userOpt));
       } else if (classList.contains(CLASS_TAB_TITLE)) {
         item.textContent = title;
       } else if (classList.contains(CLASS_TAB_AUDIO)) {
@@ -768,13 +740,15 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         const lastChildTabId = getSidebarTabId(lastChildTab);
         const lastChildTabsTab = await getTab(lastChildTabId);
         const { index: lastChildTabIndex } = lastChildTabsTab;
+        const newTabAtEnd = userOpts.get(TAB_GROUP_NEW_TAB_AT_END);
         if (tabList.length === index && nextContainer !== newTab) {
           await createSidebarTab(tab);
-        } else if (index !== openerTabIndex + 1 && !tabGroupPutNewTabAtTheEnd &&
+        } else if (index !== openerTabIndex + 1 && !newTabAtEnd &&
                    insertTarget) {
           await createSidebarTab(tab, insertTarget);
         } else {
-          if (enableTabGroup && tabGroupPutNewTabAtTheEnd) {
+          const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
+          if (enableTabGroup && newTabAtEnd) {
             if (index < lastChildTabIndex) {
               await moveTab(id, {
                 windowId,
@@ -1199,16 +1173,14 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
  */
 export const handleClickedMenu = async info => {
   const { menuItemId } = info;
-  const {
-    context, contextualIds, enableTabGroup, tabGroupOnExpandCollapseOther,
-    windowId
-  } = sidebar;
+  const { context, contextualIds, windowId } = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
   const tabId = getSidebarTabId(tab);
   const tabIndex = getSidebarTabIndex(tab);
   const heading = getTabGroupHeading(context);
+  const collapseOther = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
   const func = [];
   let tabsTab;
   if (Number.isInteger(tabId)) {
@@ -1256,7 +1228,8 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_COLLAPSE:
       if (tab) {
-        if (enableTabGroup && tabGroupOnExpandCollapseOther) {
+        const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
+        if (enableTabGroup && collapseOther) {
           func.push(
             toggleTabGroupsCollapsedState(tab).then(requestSaveSession)
           );
@@ -1310,9 +1283,7 @@ export const handleClickedMenu = async info => {
       break;
     case TAB_GROUP_LABEL_SHOW:
       if (heading) {
-        func.push(
-          toggleTabGroupHeadingState(heading, tabGroupOnExpandCollapseOther)
-        );
+        func.push(toggleTabGroupHeadingState(heading, collapseOther));
       }
       break;
     case TAB_GROUP_SELECTED:
@@ -1540,10 +1511,10 @@ export const preparePageMenuItems = async opt => {
  */
 export const prepareTabGroupMenuItems = async (elm, opt) => {
   const func = [];
-  const { enableTabGroup, incognito } = sidebar;
+  const { incognito } = sidebar;
   const tabGroupMenu = menuItems[TAB_GROUP];
   if (elm?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(opt) &&
-      enableTabGroup) {
+      userOpts.get(TAB_GROUP_ENABLE)) {
     const { classList: tabClass, parentNode } = elm;
     const { classList: parentClass } = parentNode;
     const { headingShown, multiTabsSelected, pinned } = opt;
@@ -1670,7 +1641,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
  */
 export const prepareTabMenuItems = async elm => {
   const func = [];
-  const { contextualIds, enableTabGroup, incognito } = sidebar;
+  const { contextualIds, incognito } = sidebar;
   const tab = getSidebarTab(elm);
   const heading = getTabGroupHeading(elm);
   const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
@@ -1709,6 +1680,7 @@ export const prepareTabMenuItems = async elm => {
     const lastTab = allTabs[allTabs.length - 1];
     const tabsTab = await getTab(tabId);
     const { index, mutedInfo: { muted }, pinned } = tabsTab;
+    const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
     for (const itemKey of tabKeys) {
       const item = menuItems[itemKey];
       const { id, title, toggleTitle } = item;
@@ -2034,24 +2006,25 @@ export const handleContextmenuEvt = evt => {
  */
 export const handleWheelEvt = evt => {
   const { deltaY } = evt;
-  const {
-    alwaysSwitchTabByScrolling, invertScrollDirection, skipCollapsed,
-    switchTabByScrolling, windowId
-  } = sidebar;
+  const { windowId } = sidebar;
+  const alwaysSwitchByScroll = userOpts.get(TAB_SWITCH_SCROLL_ALWAYS);
+  const switchByScroll = userOpts.get(TAB_SWITCH_SCROLL);
   const main = document.getElementById(SIDEBAR_MAIN);
-  const enableSwitchTab = main && switchTabByScrolling && (
-    main.scrollHeight === main.clientHeight || alwaysSwitchTabByScrolling
+  const enableSwitchTab = main && switchByScroll && (
+    main.scrollHeight === main.clientHeight || alwaysSwitchByScroll
   );
   let func;
   if (enableSwitchTab && Number.isFinite(deltaY) && deltaY !== 0) {
+    const invertDir = userOpts.get(SCROLL_DIR_INVERT);
+    const skipCollapsed = userOpts.get(TAB_SKIP_COLLAPSED);
     evt.preventDefault();
-    if (alwaysSwitchTabByScrolling) {
+    if (alwaysSwitchByScroll) {
       evt.stopPropagation();
     }
     func = switchTab({
       skipCollapsed,
       windowId,
-      deltaY: invertScrollDirection ? deltaY * -1 : deltaY
+      deltaY: invertDir ? deltaY * -1 : deltaY
     }).catch(throwErr);
   }
   return func || null;
@@ -2123,13 +2096,17 @@ export const requestSidebarStateUpdate = async () => {
  * @param {boolean} changed - changed
  * @returns {Promise.<Array>} - results of each handler
  */
-export const setVar = async (item, obj, changed = false) => {
+export const setStorageValue = async (item, obj, changed = false) => {
   const func = [];
   if (item && obj) {
     const { checked, value } = obj;
     switch (item) {
       case BROWSER_SETTINGS_READ:
-        sidebar[item] = !!checked;
+        func.push(setUserOpts({
+          [item]: {
+            checked
+          }
+        }));
         if (changed) {
           func.push(storeCloseTabsByDoubleClickValue(!!checked));
         }
@@ -2152,35 +2129,54 @@ export const setVar = async (item, obj, changed = false) => {
         }
         break;
       case NEW_TAB_SEPARATOR_SHOW:
-        sidebar[item] = !!checked;
+        func.push(setUserOpts({
+          [item]: {
+            checked
+          }
+        }));
         if (changed) {
           func.push(setNewTabSeparator(!!checked));
         }
         break;
       case TAB_CLOSE_DBLCLICK:
-        sidebar[item] = !!checked;
+        func.push(setUserOpts({
+          [item]: {
+            checked
+          }
+        }));
         if (changed) {
           func.push(replaceTabDblClickListeners(!!checked));
         }
         break;
-      case TAB_CLOSE_MDLCLICK_PREVENT:
-        sidebar[TAB_CLOSE_MDLCLICK] = !checked;
-        break;
       case TAB_GROUP_ENABLE:
-        sidebar[item] = !!checked;
+        func.push(setUserOpts({
+          [item]: {
+            checked
+          }
+        }));
         if (changed) {
           func.push(toggleTabGrouping());
         }
         break;
       case TAB_GROUP_EXPAND_COLLAPSE_OTHER:
-        sidebar[item] = !!checked;
+        func.push(setUserOpts({
+          [item]: {
+            checked
+          }
+        }));
         if (changed) {
           func.push(replaceTabContextClickListener(!!checked));
         }
         break;
       case TAB_GROUP_EXPAND_EXCLUDE_PINNED:
-        sidebar[item] = !!checked;
-        func.push(toggleAutoCollapsePinnedTabs(!checked));
+        func.push(
+          setUserOpts({
+            [item]: {
+              checked
+            }
+          }),
+          toggleAutoCollapsePinnedTabs(!checked)
+        );
         break;
       case THEME_AUTO:
       case THEME_CUSTOM:
@@ -2216,14 +2212,22 @@ export const setVar = async (item, obj, changed = false) => {
         }
         break;
       case USER_CSS_USE:
-        sidebar[item] = !!checked;
+        func.push(setUserOpts({
+          [item]: {
+            checked
+          }
+        }));
         if (changed) {
           func.push(applyUserStyle());
         }
         break;
       default:
-        if (Object.prototype.hasOwnProperty.call(sidebar, item)) {
-          sidebar[item] = !!checked;
+        if (userOptsKeys.has(item)) {
+          func.push(setUserOpts({
+            [item]: {
+              checked
+            }
+          }));
         }
     }
   }
@@ -2244,7 +2248,7 @@ export const handleStorage = async (data = {}, area = 'local') => {
     for (const item of items) {
       const [key, value] = item;
       const { newValue } = value;
-      func.push(setVar(key, newValue || value, !!newValue));
+      func.push(setStorageValue(key, newValue || value, !!newValue));
     }
   }
   return Promise.all(func);
@@ -2281,7 +2285,7 @@ export const restoreHighlightedTabs = async () => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const restoreTabGroups = async () => {
-  const { tabGroupOnExpandCollapseOther: multi, windowId } = sidebar;
+  const { windowId } = sidebar;
   const tabList = await getSessionTabList(TAB_LIST, windowId);
   const func = [];
   if (isObjectNotEmpty(tabList)) {
@@ -2298,6 +2302,7 @@ export const restoreTabGroups = async () => {
         listItemIndexes.set(url, [index * 1]);
       }
     }
+    const multi = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
     const items = document.querySelectorAll(TAB_QUERY);
     const l = items.length;
     let i = 0;
@@ -2321,7 +2326,7 @@ export const restoreTabGroups = async () => {
         }
         headingLabel.textContent = headingLabelTextContent || '';
         heading.hidden = !headingShown;
-        func.push(addListenersToHeadingItems(heading, multi));
+        func.push(addListenersToHeadingItems(heading, !!multi));
       } else if (i && listItemIndexes.has(itemUrl)) {
         const prevItem = items[i - 1];
         const { dataset: { tab: prevItemTab } } = prevItem;
@@ -2350,7 +2355,7 @@ export const restoreTabGroups = async () => {
             }
             headingLabel.textContent = headingLabelTextContent || '';
             heading.hidden = !headingShown;
-            func.push(addListenersToHeadingItems(heading, multi));
+            func.push(addListenersToHeadingItems(heading, !!multi));
             break;
           }
         }
@@ -2415,8 +2420,8 @@ export const setMain = async () => {
  * @returns {Function} - promise chain
  */
 export const startup = () => Promise.all([
-  addPort().then(setSidebar).then(setMain).then(applyUserStyle)
-    .then(requestSidebarStateUpdate),
+  addPort().then(setSidebar).then(setUserOpts).then(setMain)
+    .then(applyUserStyle).then(requestSidebarStateUpdate),
   localizeHtml(),
   setContextualIds(),
   setSidebarTheme()
