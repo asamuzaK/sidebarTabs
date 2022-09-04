@@ -276,8 +276,7 @@ export const setPinnedTabsWaitingToMove = async arr => {
  * @returns {void}
  */
 export const setTabsWaitingToMove = async arr => {
-  sidebar.tabsWaitingToMove =
-    Array.isArray(arr) && arr.length ? arr : null;
+  sidebar.tabsWaitingToMove = Array.isArray(arr) && arr.length ? arr : null;
 };
 
 /**
