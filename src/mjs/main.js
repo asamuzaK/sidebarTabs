@@ -134,7 +134,7 @@ export const setUserOpts = async (opt = {}) => {
   } else {
     userOpts.set(TAB_CLOSE_MDLCLICK, true);
     userOpts.set(TAB_GROUP_ENABLE, true);
-    opts = await getStorage(userOptsKeys);
+    opts = await getStorage([...userOptsKeys]);
   }
   const items = Object.entries(opts);
   for (const [key, value] of items) {
