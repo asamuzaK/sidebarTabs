@@ -7,7 +7,6 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
-import os from 'os';
 import sinon from 'sinon';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -50,9 +49,6 @@ import {
 
 /* test */
 import * as mjs from '../src/mjs/main.js';
-
-/* constant */
-const IS_WIN = os.platform() === 'win32';
 
 describe('main', () => {
   const globalKeys = ['DOMParser', 'Node', 'XMLSerializer'];
@@ -14009,11 +14005,8 @@ describe('main', () => {
       ];
       await func(arr);
       const items = document.querySelectorAll(TAB_QUERY);
-      // NOTE: temporary skipping assertation in travis. Bug in JSDOM?
-      if (IS_WIN) {
-        assert.strictEqual(items.length, 2, 'created');
-        assert.strictEqual(items[1].textContent, 'bar', 'title');
-      }
+      assert.strictEqual(items.length, 2, 'created');
+      assert.strictEqual(items[1].textContent, 'bar', 'title');
       assert.strictEqual(items[0].textContent, 'foo', 'title');
     });
   });
