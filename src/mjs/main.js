@@ -3,14 +3,14 @@
  */
 
 /* shared */
-import { Sidebar } from './sidebar-class.js';
 import {
   getType, isObjectNotEmpty, isString, sleep, throwErr
 } from './common.js';
 import {
-  getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
-  getContextualId, getCurrentWindow, getHighlightedTab, getRecentlyClosedTab,
-  getStorage, getTab, highlightTab, moveTab, restoreSession, warmupTab
+  clearStorage, getActiveTab, getAllContextualIdentities,
+  getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
+  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
+  restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { addPort, ports } from './port.js';
 import { localizeHtml } from './localize.js';
@@ -68,7 +68,8 @@ import {
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, HIGHLIGHTED,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
-  OPTIONS_OPEN, PINNED, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
@@ -77,9 +78,11 @@ import {
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_EXPAND_EXCLUDE_PINNED,
-  TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
+  TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+  TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
@@ -99,14 +102,131 @@ const MOUSE_BUTTON_MIDDLE = 1;
 const MOUSE_BUTTON_RIGHT = 2;
 
 /* sidebar */
-export const sidebar = new Sidebar();
+export const sidebar = {
+  alwaysSwitchTabByScrolling: false,
+  closeTabsByDoubleClick: false,
+  closeTabsByMiddleClick: true,
+  context: null,
+  contextualIds: null,
+  enableTabGroup: true,
+  firstSelectedTab: null,
+  incognito: false,
+  invertScrollDirection: false,
+  isMac: false,
+  lastClosedTab: null,
+  pinnedTabsWaitingToMove: null,
+  readBrowserSettings: false,
+  showNewTabSeparator: false,
+  skipCollapsed: false,
+  switchTabByScrolling: false,
+  tabGroupOnExpandCollapseOther: false,
+  tabGroupOnExpandExcludePinned: false,
+  tabGroupPutNewTabAtTheEnd: false,
+  tabsWaitingToMove: null,
+  useUserCSS: false,
+  windowId: null
+};
 
 /**
  * set sidebar
  *
- * @returns {Function} - sidebar.setup()
+ * @returns {void}
  */
-export const setSidebar = async () => sidebar.setup();
+export const setSidebar = async () => {
+  const win = await getCurrentWindow({
+    populate: true
+  });
+  const { id: windowId, incognito } = win;
+  const store = await getStorage([
+    BROWSER_SETTINGS_READ,
+    NEW_TAB_SEPARATOR_SHOW,
+    SCROLL_DIR_INVERT,
+    TAB_CLOSE_DBLCLICK,
+    TAB_CLOSE_MDLCLICK_PREVENT,
+    TAB_GROUP_ENABLE,
+    TAB_GROUP_EXPAND_COLLAPSE_OTHER,
+    TAB_GROUP_EXPAND_EXCLUDE_PINNED,
+    TAB_GROUP_NEW_TAB_AT_END,
+    TAB_SKIP_COLLAPSED,
+    TAB_SWITCH_SCROLL,
+    TAB_SWITCH_SCROLL_ALWAYS,
+    USER_CSS_USE
+  ]);
+  const os = await getOs();
+  if (isObjectNotEmpty(store)) {
+    const {
+      alwaysSwitchTabByScrolling, closeTabsByDoubleClick, enableTabGroup,
+      invertScrollDirection, preventCloseTabsByMiddleClick, readBrowserSettings,
+      showNewTabSeparator, skipCollapsed, switchTabByScrolling,
+      tabGroupOnExpandCollapseOther, tabGroupOnExpandExcludePinned,
+      tabGroupPutNewTabAtTheEnd, useUserCSS
+    } = store;
+    sidebar.alwaysSwitchTabByScrolling = alwaysSwitchTabByScrolling
+      ? !!alwaysSwitchTabByScrolling.checked
+      : false;
+    sidebar.closeTabsByDoubleClick = closeTabsByDoubleClick
+      ? !!closeTabsByDoubleClick.checked
+      : false;
+    sidebar.closeTabsByMiddleClick = preventCloseTabsByMiddleClick
+      ? !preventCloseTabsByMiddleClick.checked
+      : true;
+    sidebar.enableTabGroup = enableTabGroup
+      ? !!enableTabGroup.checked
+      : true;
+    sidebar.invertScrollDirection = invertScrollDirection
+      ? !!invertScrollDirection.checked
+      : false;
+    sidebar.readBrowserSettings = readBrowserSettings
+      ? !!readBrowserSettings.checked
+      : false;
+    sidebar.showNewTabSeparator = showNewTabSeparator
+      ? !!showNewTabSeparator.checked
+      : false;
+    sidebar.skipCollapsed = skipCollapsed ? !!skipCollapsed.checked : false;
+    sidebar.switchTabByScrolling = switchTabByScrolling
+      ? !!switchTabByScrolling.checked
+      : false;
+    sidebar.tabGroupOnExpandCollapseOther = tabGroupOnExpandCollapseOther
+      ? !!tabGroupOnExpandCollapseOther.checked
+      : false;
+    sidebar.tabGroupOnExpandExcludePinned = tabGroupOnExpandExcludePinned
+      ? !!tabGroupOnExpandExcludePinned.checked
+      : false;
+    sidebar.tabGroupPutNewTabAtTheEnd = tabGroupPutNewTabAtTheEnd
+      ? !!tabGroupPutNewTabAtTheEnd.checked
+      : false;
+    sidebar.useUserCSS = useUserCSS
+      ? !!useUserCSS.checked
+      : false;
+  } else {
+    sidebar.alwaysSwitchTabByScrolling = false;
+    sidebar.closeTabsByDoubleClick = false;
+    sidebar.closeTabsByMiddleClick = true;
+    sidebar.enableTabGroup = true;
+    sidebar.invertScrollDirection = false;
+    sidebar.readBrowserSettings = false;
+    sidebar.showNewTabSeparator = false;
+    sidebar.skipCollapsed = false;
+    sidebar.switchTabByScrolling = false;
+    sidebar.tabGroupOnExpandCollapseOther = false;
+    sidebar.tabGroupOnExpandExcludePinned = false;
+    sidebar.tabGroupPutNewTabAtTheEnd = false;
+    sidebar.useUserCSS = false;
+  }
+  sidebar.incognito = incognito;
+  sidebar.isMac = os === 'mac';
+  sidebar.windowId = windowId;
+};
+
+/**
+ * set context
+ *
+ * @param {object} elm - Element
+ * @returns {void}
+ */
+export const setContext = elm => {
+  sidebar.context = elm?.nodeType === Node.ELEMENT_NODE ? elm : null;
+};
 
 /**
  * set contextual identities cookieStoreIds
@@ -122,7 +242,50 @@ export const setContextualIds = async () => {
       arr.push(cookieStoreId);
     }
   }
-  sidebar.contextualIds = arr;
+  sidebar.contextualIds = arr.length ? arr : null;
+};
+
+/**
+ * set last closed tab
+ *
+ * @param {object} tab - tabs.Tab
+ * @returns {void}
+ */
+export const setLastClosedTab = async tab => {
+  sidebar.lastClosedTab = isObjectNotEmpty(tab) ? tab : null;
+};
+
+/**
+ * set pinned tabs waiting to move
+ *
+ * @param {?Array} arr - array of tabs
+ * @returns {void}
+ */
+export const setPinnedTabsWaitingToMove = async arr => {
+  sidebar.pinnedTabsWaitingToMove = Array.isArray(arr) ? arr : null;
+};
+
+/**
+ * set tabs waiting to move
+ *
+ * @param {?Array} arr - array of tabs
+ * @returns {void}
+ */
+export const setTabsWaitingToMove = async arr => {
+  sidebar.tabsWaitingToMove = Array.isArray(arr) ? arr : null;
+};
+
+/**
+ * init sidebar
+ *
+ * @param {boolean} bool - bypass cache
+ * @returns {void}
+ */
+export const initSidebar = async (bool = false) => {
+  const { windowId } = sidebar;
+  await setSessionWindowValue(TAB_LIST, null, windowId);
+  await clearStorage();
+  window.location.reload(bool);
 };
 
 /**
@@ -131,8 +294,9 @@ export const setContextualIds = async () => {
  * @returns {object} - tabs.Tab
  */
 export const getLastClosedTab = async () => {
-  const tab = await getRecentlyClosedTab(sidebar.windowId);
-  sidebar.lastClosedTab = tab;
+  const { windowId } = sidebar;
+  const tab = await getRecentlyClosedTab(windowId);
+  await setLastClosedTab(tab);
   return tab || null;
 };
 
@@ -157,8 +321,9 @@ export const undoCloseTab = async () => {
  * @returns {Function} - setUserCSS()
  */
 export const applyUserStyle = async () => {
+  const { useUserCSS } = sidebar;
   let css;
-  if (sidebar.useUserCSS) {
+  if (useUserCSS) {
     const res = await getStorage(USER_CSS);
     if (res) {
       const { userCSS } = res;
@@ -205,7 +370,8 @@ export const handleCreateNewTab = evt => {
       (((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
         (button === MOUSE_BUTTON_LEFT && type === 'dblclick')) &&
        target === main)) {
-    func = createNewTab(sidebar.windowId).catch(throwErr);
+    const { windowId } = sidebar;
+    func = createNewTab(windowId).catch(throwErr);
   }
   return func || null;
 };
@@ -220,7 +386,8 @@ export const activateClickedTab = async elm => {
   const tabId = getSidebarTabId(elm);
   let func;
   if (Number.isInteger(tabId)) {
-    if (sidebar.closeTabsByDoubleClick) {
+    const { closeTabsByDoubleClick } = sidebar;
+    if (closeTabsByDoubleClick) {
       await sleep(300);
     }
     try {
@@ -667,6 +834,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
  */
 export const handleAttachedTab = async (tabId, info) => {
   const { newPosition, newWindowId } = info;
+  const { windowId } = sidebar;
   let func;
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
@@ -677,7 +845,7 @@ export const handleAttachedTab = async (tabId, info) => {
   if (!Number.isInteger(newWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(newWindowId)}.`);
   }
-  if (tabId !== TAB_ID_NONE && newWindowId === sidebar.windowId) {
+  if (tabId !== TAB_ID_NONE && newWindowId === windowId) {
     const tabsTab = await getTab(tabId);
     const opt = {
       attached: true
@@ -697,13 +865,14 @@ export const handleAttachedTab = async (tabId, info) => {
  */
 export const handleDetachedTab = async (tabId, info) => {
   const { oldWindowId } = info;
+  const { windowId } = sidebar;
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
   if (!Number.isInteger(oldWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(oldWindowId)}.`);
   }
-  if (oldWindowId === sidebar.windowId) {
+  if (oldWindowId === windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     tab?.parentNode.removeChild(tab);
   }
@@ -784,11 +953,11 @@ export const handleMovedTab = async (tabId, info) => {
         if (pinned) {
           const arr = pinnedTabsWaitingToMove ?? [];
           arr[index] = obj;
-          sidebar.pinnedTabsWaitingToMove = arr;
+          await setPinnedTabsWaitingToMove(arr);
         } else {
           const arr = tabsWaitingToMove ?? [];
           arr[index] = obj;
-          sidebar.tabsWaitingToMove = arr;
+          await setTabsWaitingToMove(arr);
         }
       } else if (pinned) {
         const container = document.getElementById(PINNED);
@@ -807,7 +976,7 @@ export const handleMovedTab = async (tabId, info) => {
               document.querySelector(`[data-tab-id="${itemTabId}"]`);
             container.insertBefore(itemTab, tab);
           }
-          sidebar.pinnedTabsWaitingToMove = null;
+          await setPinnedTabsWaitingToMove(null);
         }
         setSession = true;
       } else if (group) {
@@ -822,7 +991,7 @@ export const handleMovedTab = async (tabId, info) => {
               document.querySelector(`[data-tab-id="${itemTabId}"]`);
             container.insertBefore(itemTab, tab);
           }
-          sidebar.tabsWaitingToMove = null;
+          await setTabsWaitingToMove(null);
         }
         setSession = true;
       } else {
@@ -844,7 +1013,7 @@ export const handleMovedTab = async (tabId, info) => {
                 document.querySelector(`[data-tab-id="${itemTabId}"]`);
               container.insertBefore(itemTab, tab);
             }
-            sidebar.tabsWaitingToMove = null;
+            await setTabsWaitingToMove(null);
           }
         } else {
           const container = getTemplate(CLASS_TAB_CONTAINER_TMPL);
@@ -867,7 +1036,7 @@ export const handleMovedTab = async (tabId, info) => {
               itemContainer.removeAttribute('hidden');
               container.parentNode.insertBefore(itemContainer, container);
             }
-            sidebar.tabsWaitingToMove = null;
+            await setTabsWaitingToMove(null);
           }
         }
         setSession = true;
@@ -1332,6 +1501,7 @@ export const preparePageMenuItems = async opt => {
   const func = [];
   if (isObjectNotEmpty(opt)) {
     const { allTabsLength, allTabsSelected, isTabContext } = opt;
+    const { lastClosedTab } = sidebar;
     const pageKeys = [TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_CLOSE_UNDO];
     for (const itemKey of pageKeys) {
       const item = menuItems[itemKey];
@@ -1350,7 +1520,7 @@ export const preparePageMenuItems = async opt => {
           data.visible = true;
           break;
         case TAB_CLOSE_UNDO:
-          data.enabled = !!sidebar.lastClosedTab;
+          data.enabled = !!lastClosedTab;
           data.visible = true;
           break;
         default:
@@ -1369,10 +1539,11 @@ export const preparePageMenuItems = async opt => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const prepareTabGroupMenuItems = async (elm, opt) => {
-  const tabGroupMenu = menuItems[TAB_GROUP];
   const func = [];
+  const { enableTabGroup, incognito } = sidebar;
+  const tabGroupMenu = menuItems[TAB_GROUP];
   if (elm?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(opt) &&
-      sidebar.enableTabGroup) {
+      enableTabGroup) {
     const { classList: tabClass, parentNode } = elm;
     const { classList: parentClass } = parentNode;
     const { headingShown, multiTabsSelected, pinned } = opt;
@@ -1423,7 +1594,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
         case TAB_GROUP_CONTAINER:
           data.enabled = hasTabId && !(pinned || multiTabsSelected);
           data.title = title;
-          data.visible = !sidebar.incognito;
+          data.visible = !incognito;
           break;
         case TAB_GROUP_DOMAIN:
           data.enabled = hasTabId && !(pinned || multiTabsSelected);
@@ -1723,7 +1894,7 @@ export const prepareTabMenuItems = async elm => {
         }));
       }
     }
-    sidebar.context = tab;
+    setContext(tab);
     func.push(updateContextMenu(bookmarkMenu.id, {
       visible: false
     }));
@@ -1740,7 +1911,7 @@ export const prepareTabMenuItems = async elm => {
         visible: false
       }));
     }
-    sidebar.context = heading;
+    setContext(heading);
     for (const sep of sepKeys) {
       if (sep === 'sep-4') {
         func.push(updateContextMenu(sep, {
@@ -1785,7 +1956,7 @@ export const prepareTabMenuItems = async elm => {
         visible: false
       }));
     }
-    sidebar.context = elm;
+    setContext(elm);
     func.push(
       updateContextMenu(tabGroupMenu.id, {
         visible: false
@@ -1900,7 +2071,7 @@ export const handleMsg = async msg => {
     switch (key) {
       case EXT_INIT:
         if (value) {
-          func.push(sidebar.init(value));
+          func.push(initSidebar(value));
         }
         break;
       case THEME_CUSTOM_INIT:
@@ -1945,14 +2116,14 @@ export const requestSidebarStateUpdate = async () => {
 
 /* storage */
 /**
- * set storage value
+ * set variable
  *
  * @param {string} item - item
  * @param {object} obj - value object
  * @param {boolean} changed - changed
  * @returns {Promise.<Array>} - results of each handler
  */
-export const setStorageValue = async (item, obj, changed = false) => {
+export const setVar = async (item, obj, changed = false) => {
   const func = [];
   if (item && obj) {
     const { checked, value } = obj;
@@ -2051,7 +2222,7 @@ export const setStorageValue = async (item, obj, changed = false) => {
         }
         break;
       default:
-        if (typeof sidebar[item] === 'boolean') {
+        if (Object.prototype.hasOwnProperty.call(sidebar, item)) {
           sidebar[item] = !!checked;
         }
     }
@@ -2073,7 +2244,7 @@ export const handleStorage = async (data = {}, area = 'local') => {
     for (const item of items) {
       const [key, value] = item;
       const { newValue } = value;
-      func.push(setStorageValue(key, newValue || value, !!newValue));
+      func.push(setVar(key, newValue || value, !!newValue));
     }
   }
   return Promise.all(func);
@@ -2086,8 +2257,9 @@ export const handleStorage = async (data = {}, area = 'local') => {
  * @returns {void}
  */
 export const restoreHighlightedTabs = async () => {
+  const { windowId } = sidebar;
   const allTabs = document.querySelectorAll(TAB_QUERY);
-  const items = await getHighlightedTab(sidebar.windowId);
+  const items = await getHighlightedTab(windowId);
   const tabIds = new Set();
   for (const item of items) {
     const { id } = item;
