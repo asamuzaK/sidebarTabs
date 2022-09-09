@@ -2226,16 +2226,22 @@ export const setStorageValue = async (item, obj, changed = false) => {
  *
  * @param {object} data - data
  * @param {string} area - storage area
+ * @param {boolean} changed - storage changed
  * @returns {Promise.<Array>} - results of each handler
  */
-export const handleStorage = async (data = {}, area = 'local') => {
-  const items = Object.entries(data);
+export const handleStorage = async (data, area = 'local', changed = false) => {
   const func = [];
-  if (items.length && area === 'local') {
-    for (const item of items) {
-      const [key, value] = item;
-      const { newValue } = value;
-      func.push(setStorageValue(key, newValue || value, !!newValue));
+  if (isObjectNotEmpty(data) && area === 'local') {
+    const items = Object.entries(data);
+    if (items.length) {
+      if (changed && !userOpts.size) {
+        await setUserOpts();
+      }
+      for (const item of items) {
+        const [key, value] = item;
+        const { newValue } = value;
+        func.push(setStorageValue(key, newValue || value, !!newValue));
+      }
     }
   }
   return Promise.all(func);

@@ -159,6 +159,8 @@ describe('main', () => {
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 2, 'size');
+      assert.isTrue(res.has(TAB_CLOSE_MDLCLICK), 'default option');
+      assert.isTrue(res.has(TAB_GROUP_ENABLE), 'default option');
     });
 
     it('should call function', async () => {
@@ -11835,12 +11837,38 @@ describe('main', () => {
     it('should set variables', async () => {
       const res = await func({
         [TAB_GROUP_NEW_TAB_AT_END]: {
+          checked: true
+        }
+      }, 'local');
+      assert.strictEqual(mjs.userOpts.size, 1, 'size');
+      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.deepEqual(res, [[mjs.userOpts]], 'result');
+    });
+
+    it('should set variables', async () => {
+      const res = await func({
+        [TAB_GROUP_NEW_TAB_AT_END]: {
           newValue: {
             checked: true
           }
         }
       });
       assert.strictEqual(mjs.userOpts.size, 1, 'size');
+      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.deepEqual(res, [[mjs.userOpts]], 'result');
+    });
+
+    it('should set variables', async () => {
+      const res = await func({
+        [TAB_GROUP_NEW_TAB_AT_END]: {
+          newValue: {
+            checked: true
+          }
+        }
+      }, 'local', true);
+      assert.strictEqual(mjs.userOpts.size, 3, 'size');
+      assert.isTrue(mjs.userOpts.has(TAB_CLOSE_MDLCLICK), 'default option');
+      assert.isTrue(mjs.userOpts.has(TAB_GROUP_ENABLE), 'default option');
       assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
       assert.deepEqual(res, [[mjs.userOpts]], 'result');
     });

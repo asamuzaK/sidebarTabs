@@ -36,7 +36,7 @@ runtime.onMessage.addListener((msg, sender) =>
   handleMsg(msg, sender).catch(throwErr)
 );
 storage.onChanged.addListener((data, area) =>
-  handleStorage(data, area).catch(throwErr)
+  handleStorage(data, area, true).catch(throwErr)
 );
 tabs.onActivated.addListener(info =>
   handleActivatedTab(info).then(expandActivatedCollapsedTab)
