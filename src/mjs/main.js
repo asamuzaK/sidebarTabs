@@ -2076,7 +2076,7 @@ export const requestSidebarStateUpdate = async () => {
 
 /* storage */
 /**
- * set variable
+ * set storage value
  *
  * @param {string} item - item
  * @param {object} obj - value object
