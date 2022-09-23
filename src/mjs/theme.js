@@ -238,7 +238,7 @@ export const setCurrentThemeColors = async (key, value) => {
  * @returns {object} - values
  */
 export const getCurrentThemeBaseValues = async () => {
-  const values = {};
+  const values = new Map();
   const currentColorKeys = new Set();
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const baseValues = (dark && themeMap[THEME_DARK]) || themeMap[THEME_LIGHT];
@@ -249,40 +249,45 @@ export const getCurrentThemeBaseValues = async () => {
       case CUSTOM_BG_DISCARDED: {
         const valueA = currentThemeColors.get('sidebar');
         const valueB = currentThemeColors.get('frame');
-        values[key] = valueA || valueB || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
+        const value = valueA || valueB || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
         break;
       }
       case CUSTOM_BG_ACTIVE: {
         const valueA = currentThemeColors.get('tab_selected');
-        values[key] = valueA || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
+        const value = valueA || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
         break;
       }
       case CUSTOM_BG_FIELD: {
         const valueA = currentThemeColors.get('toolbar_field');
-        values[key] = valueA || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
+        const value = valueA || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
         break;
       }
       case CUSTOM_BG_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_focus');
-        values[key] = valueA || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
+        const value = valueA || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
         break;
       }
       case CUSTOM_BG_SELECT: {
         const valueA = currentThemeColors.get('tab_selected');
-        values[key] = valueA || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
+        const value = valueA || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
         break;
@@ -290,17 +295,20 @@ export const getCurrentThemeBaseValues = async () => {
       case CUSTOM_BORDER_ACTIVE: {
         const valueA = currentThemeColors.get('tab_line');
         const valueB = currentThemeColors.get('tab_text');
-        values[key] = valueA || valueB || baseValues[key];
+        const value = valueA || valueB || baseValues[key];
+        values.set(key, value);
         break;
       }
       case CUSTOM_BORDER_FIELD: {
         const valueA = currentThemeColors.get('toolbar_field_border');
-        values[key] = valueA || baseValues[key];
+        const value = valueA || baseValues[key];
+        values.set(key, value);
         break;
       }
       case CUSTOM_BORDER_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_border_focus');
-        values[key] = valueA || baseValues[key];
+        const value = valueA || baseValues[key];
+        values.set(key, value);
         break;
       }
       case CUSTOM_COLOR:
@@ -308,9 +316,11 @@ export const getCurrentThemeBaseValues = async () => {
         const valueA = currentThemeColors.has('sidebar') &&
           currentThemeColors.get('sidebar_text');
         const valueB = currentThemeColors.get('tab_background_text');
-        values[key] = valueA || valueB || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
-          values[key] = baseValues[CUSTOM_COLOR];
+        const value = valueA || valueB || baseValues[key];
+        if (/^currentColor$/i.test(value)) {
+          values.set(key, baseValues[CUSTOM_COLOR]);
+        } else {
+          values.set(key, value);
         }
         break;
       }
@@ -318,24 +328,29 @@ export const getCurrentThemeBaseValues = async () => {
         const valueA = currentThemeColors.get('tab_text');
         const valueB = currentThemeColors.get('bookmark_text');
         const valueC = currentThemeColors.get('tab_background_text');
-        values[key] = valueA || valueB || valueC || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
-          values[key] = baseValues[CUSTOM_COLOR];
+        const value = valueA || valueB || valueC || baseValues[key];
+        if (/^currentColor$/i.test(value)) {
+          values.set(key, baseValues[CUSTOM_COLOR]);
+        } else {
+          values.set(key, value);
         }
         break;
       }
       case CUSTOM_COLOR_FIELD: {
         const valueA = currentThemeColors.get('toolbar_field_text');
-        values[key] = valueA || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
-          values[key] = baseValues[CUSTOM_COLOR];
+        const value = valueA || baseValues[key];
+        if (/^currentColor$/i.test(value)) {
+          values.set(key, baseValues[CUSTOM_COLOR]);
+        } else {
+          values.set(key, value);
         }
         break;
       }
       case CUSTOM_COLOR_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_text_focus');
-        values[key] = valueA || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
+        const value = valueA || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
         break;
@@ -343,40 +358,45 @@ export const getCurrentThemeBaseValues = async () => {
       case CUSTOM_COLOR_SELECT: {
         const valueA = currentThemeColors.get('tab_text');
         const valueB = currentThemeColors.get('bookmark_text');
-        values[key] = valueA || valueB || baseValues[key];
-        if (/^currentColor$/i.test(values[key])) {
-          values[key] = baseValues[CUSTOM_COLOR];
+        const value = valueA || valueB || baseValues[key];
+        if (/^currentColor$/i.test(value)) {
+          values.set(key, baseValues[CUSTOM_COLOR]);
+        } else {
+          values.set(key, value);
         }
         break;
       }
       default:
-        values[key] = baseValues[key];
+        values.set(key, baseValues[key]);
     }
   }
   // replace currentColor keywords to color values
   if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
-    values[CUSTOM_COLOR_FIELD_ACTIVE] = values[CUSTOM_COLOR_FIELD];
+    const value = values.get(CUSTOM_COLOR_FIELD);
+    values.set(CUSTOM_COLOR_FIELD_ACTIVE, value);
     currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
   }
   if (currentColorKeys.size) {
     const keys = currentColorKeys.keys();
     for (const key of keys) {
+      let value;
       switch (key) {
         case CUSTOM_BG_ACTIVE:
-          values[key] = values[CUSTOM_COLOR_ACTIVE];
+          value = values.get(CUSTOM_COLOR_ACTIVE);
           break;
         case CUSTOM_BG_FIELD:
-          values[key] = values[CUSTOM_COLOR_FIELD];
+          value = values.get(CUSTOM_COLOR_FIELD);
           break;
         case CUSTOM_BG_FIELD_ACTIVE:
-          values[key] = values[CUSTOM_COLOR_FIELD_ACTIVE];
+          value = values.get(CUSTOM_COLOR_FIELD_ACTIVE);
           break;
         case CUSTOM_BG_SELECT:
-          values[key] = values[CUSTOM_COLOR_SELECT];
+          value = values.get(CUSTOM_COLOR_SELECT);
           break;
         default:
-          values[key] = values[CUSTOM_COLOR];
+          value = values.get(CUSTOM_COLOR);
       }
+      values.set(key, value);
     }
   }
   // override CUSTOM_BG_HOVER_SHADOW color
@@ -384,68 +404,74 @@ export const getCurrentThemeBaseValues = async () => {
     const value =
       await convertColorToHex(currentThemeColors.get('tab_background_text'));
     if (value) {
-      values[CUSTOM_BG_HOVER_SHADOW] = `${value}1a`;
+      values.set(CUSTOM_BG_HOVER_SHADOW, `${value}1a`);
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
   if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame')) {
-    const base = values[CUSTOM_BG];
-    const color = await convertColorToHex(values[CUSTOM_COLOR]);
+    const base = values.get(CUSTOM_BG);
+    const color = await convertColorToHex(values.get(CUSTOM_COLOR));
     const hoverBlend = `${color}1a`;
     const hoverValue = await blendColors(hoverBlend, base);
-    const selectBase = values[CUSTOM_BG_SELECT];
-    const selectColor = await convertColorToHex(values[CUSTOM_COLOR_SELECT]);
+    const selectBase = values.get(CUSTOM_BG_SELECT);
+    const selectColor =
+      await convertColorToHex(values.get(CUSTOM_COLOR_SELECT));
     const selectBlend = `${selectColor}1a`;
     const selectValue = await blendColors(selectBlend, selectBase);
-    values[CUSTOM_BG_HOVER] = hoverValue;
-    values[CUSTOM_COLOR_HOVER] = values[CUSTOM_COLOR];
-    values[CUSTOM_BG_SELECT_HOVER] = selectValue;
-    values[CUSTOM_COLOR_SELECT_HOVER] = values[CUSTOM_COLOR_SELECT];
-    values[CUSTOM_HEADING_TEXT_GROUP_1] = await blendColors('#cc663399', color);
-    values[CUSTOM_HEADING_TEXT_GROUP_2] = await blendColors('#33996699', color);
-    values[CUSTOM_HEADING_TEXT_GROUP_3] = await blendColors('#cc669999', color);
-    values[CUSTOM_HEADING_TEXT_GROUP_4] = await blendColors('#6699cc99', color);
-    values[CUSTOM_HEADING_TEXT_PINNED] = await blendColors('#66669999', color);
+    const heading1 = await blendColors('#cc663399', color);
+    const heading2 = await blendColors('#33996699', color);
+    const heading3 = await blendColors('#cc669999', color);
+    const heading4 = await blendColors('#6699cc99', color);
+    const headingPinned = await blendColors('#66669999', color);
+    values.set(CUSTOM_BG_HOVER, hoverValue);
+    values.set(CUSTOM_COLOR_HOVER, values.get(CUSTOM_COLOR));
+    values.set(CUSTOM_BG_SELECT_HOVER, selectValue);
+    values.set(CUSTOM_COLOR_SELECT_HOVER, values.get(CUSTOM_COLOR_SELECT));
+    values.set(CUSTOM_HEADING_TEXT_GROUP_1, heading1);
+    values.set(CUSTOM_HEADING_TEXT_GROUP_2, heading2);
+    values.set(CUSTOM_HEADING_TEXT_GROUP_3, heading3);
+    values.set(CUSTOM_HEADING_TEXT_GROUP_4, heading4);
+    values.set(CUSTOM_HEADING_TEXT_PINNED, headingPinned);
   }
   // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
-    const base = values[CUSTOM_BG];
+    const base = values.get(CUSTOM_BG);
     const border = currentThemeColors.get('tab_line');
     let value;
     if (border === 'transparent') {
-      value = values[CUSTOM_BG_HOVER];
+      value = values.get(CUSTOM_BG_HOVER);
     } else if (/^currentColor$/i.test(border)) {
-      value = await blendColors(values[CUSTOM_COLOR_ACTIVE], base);
+      value = await blendColors(values.get(CUSTOM_COLOR_ACTIVE), base);
     } else {
       value = await blendColors(border, base);
     }
-    values[CUSTOM_BORDER_ACTIVE] = value;
+    values.set(CUSTOM_BORDER_ACTIVE, value);
   }
   if (currentThemeColors.has('toolbar_field_border')) {
-    const base = values[CUSTOM_BG];
+    const base = values.get(CUSTOM_BG);
     const border = currentThemeColors.get('toolbar_field_border');
     let value;
     if (border === 'transparent') {
       value = base;
     } else if (/^currentColor$/i.test(border)) {
-      value = await blendColors(values[CUSTOM_COLOR_FIELD], base);
+      value = await blendColors(values.get(CUSTOM_COLOR_FIELD), base);
     } else {
       value = await blendColors(border, base);
     }
-    values[CUSTOM_BORDER_FIELD] = value;
+    values.set(CUSTOM_BORDER_FIELD, value);
   }
   if (currentThemeColors.has('toolbar_field_border_focus')) {
-    const base = values[CUSTOM_BG];
+    const base = values.get(CUSTOM_BG);
     const border = currentThemeColors.get('toolbar_field_border_focus');
     let value;
     if (border === 'transparent') {
       value = base;
     } else if (/^currentColor$/i.test(border)) {
-      value = await blendColors(values[CUSTOM_COLOR_FIELD_ACTIVE], base);
+      value = await blendColors(values.get(CUSTOM_COLOR_FIELD_ACTIVE), base);
     } else {
       value = await blendColors(border, base);
     }
-    values[CUSTOM_BORDER_FIELD_ACTIVE] = value;
+    values.set(CUSTOM_BORDER_FIELD_ACTIVE, value);
   }
   // override CUSTOM_OUTLINE_FOCUS color
   if (currentThemeColors.has('focus_outline') ||
@@ -455,14 +481,14 @@ export const getCurrentThemeBaseValues = async () => {
                 currentThemeColors.get('toolbar_field_border_focus') ||
                 currentThemeColors.get('button_primary');
     if (/^currentColor$/i.test(value)) {
-      value = values[CUSTOM_COLOR];
+      value = values.get(CUSTOM_COLOR);
     }
     value = await convertColorToHex(value);
     if (value) {
-      values[CUSTOM_OUTLINE_FOCUS] = `${value}66`;
+      values.set(CUSTOM_OUTLINE_FOCUS, `${value}66`);
     }
   }
-  return values;
+  return Object.fromEntries(values);
 };
 
 /**
@@ -529,7 +555,7 @@ export const getBaseValues = async id => {
  * @returns {void}
  */
 export const setCurrentThemeValue = async () => {
-  const values = {};
+  const values = new Map();
   const themeId = await getThemeId();
   const baseValues = await getBaseValues(themeId);
   const items = Object.entries(baseValues);
@@ -540,9 +566,9 @@ export const setCurrentThemeValue = async () => {
     for (const [key, value] of items) {
       const customValue = themeValues[key];
       if (customValue) {
-        values[key] = customValue;
+        values.set(key, customValue);
       } else {
-        values[key] = value;
+        values.set(key, value);
       }
     }
   // TODO: for migration, remove later
@@ -551,14 +577,14 @@ export const setCurrentThemeValue = async () => {
     for (const [key, value] of items) {
       const { value: customValue } = store[key] ?? {};
       if (customValue) {
-        values[key] = customValue;
+        values.set(key, customValue);
       } else {
-        values[key] = value;
+        values.set(key, value);
       }
     }
   }
   currentTheme.set(THEME_CURRENT_ID, themeId);
-  currentTheme.set(THEME_CURRENT, values);
+  currentTheme.set(THEME_CURRENT, Object.fromEntries(values));
 };
 
 /**
