@@ -5,8 +5,8 @@
 /* shared */
 import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
-  getAllStorage, getCurrentTheme, getEnabledTheme, getStorage, removeStorage,
-  sendMessage, setStorage
+  getCurrentTheme, getEnabledTheme, getStorage, removeStorage, sendMessage,
+  setStorage
 } from './browser.js';
 import { blendColors, convertColorToHex } from './color.js';
 import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
