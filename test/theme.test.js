@@ -1064,7 +1064,7 @@ describe('theme', () => {
         'id value');
     });
 
-    it('should set theme', async () => {
+    it('should not set old custom theme value', async () => {
       browser.theme.getCurrent.resolves({});
       browser.management.getAll.resolves([
         {
@@ -1086,7 +1086,7 @@ describe('theme', () => {
         'id value');
       assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
       assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#ff0000', 'value');
+        '#f0f0f4', 'value');
     });
 
     it('should set theme', async () => {

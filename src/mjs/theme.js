@@ -584,16 +584,9 @@ export const setCurrentThemeValue = async (info = {}) => {
         values.set(key, value);
       }
     }
-  // TODO: for migration, remove later
   } else {
-    const store = await getAllStorage();
     for (const [key, value] of items) {
-      const { value: customValue } = store[key] ?? {};
-      if (customValue) {
-        values.set(key, customValue);
-      } else {
-        values.set(key, value);
-      }
+      values.set(key, value);
     }
   }
   currentTheme.set(THEME_CURRENT_ID, themeId);
