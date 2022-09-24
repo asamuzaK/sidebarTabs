@@ -872,8 +872,9 @@ export const setTheme = async (info, isTemp = false) => {
  */
 export const applyTheme = async (info = {}) => {
   const { isTemp, theme: updatedTheme } = info;
-  const themeInfo = await setCurrentThemeValue(updatedTheme).then(getTheme);
-  return setTheme(themeInfo, !!isTemp).then(sendCurrentTheme);
+  const [key, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
+  const themeKey = isTemp ? '' : key;
+  return setTheme([themeKey, value], !!isTemp).then(sendCurrentTheme);
 };
 
 /* user CSS */
