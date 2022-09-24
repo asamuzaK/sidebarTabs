@@ -717,14 +717,6 @@ export const initCustomTheme = async (rem = false) => {
         } else {
           await removeStorage([THEME_LIST]);
         }
-      // TODO: For migration, remove later
-      } else {
-        const items = Object.keys(obj);
-        const arr = [];
-        for (const key of items) {
-          arr.push(key);
-        }
-        await removeStorage(arr);
       }
     }
     currentThemeColors.clear();
