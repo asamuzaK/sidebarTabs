@@ -552,14 +552,16 @@ export const getBaseValues = async id => {
 /**
  * set current theme value
  *
+ * @param {object} info - update theme info
  * @returns {void}
  */
-export const setCurrentThemeValue = async () => {
+export const setCurrentThemeValue = async (info = {}) => {
   const values = new Map();
+  const { colors } = info;
+  const { themeList } = await getStorage(THEME_LIST);
   const themeId = await getThemeId();
   const baseValues = await getBaseValues(themeId);
   const items = Object.entries(baseValues);
-  const { themeList } = await getStorage(THEME_LIST);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
     const { values: themeValues } = themeList[themeId];
@@ -732,7 +734,7 @@ export const initCustomTheme = async (rem = false) => {
 /**
  * get theme
  *
- * @returns {Array} - theme class list
+ * @returns {Array} - theme info
  */
 export const getTheme = async () => {
   const themes = new Map();
@@ -771,9 +773,10 @@ export const getTheme = async () => {
  * set theme
  *
  * @param {Array} info - theme info
+ * @param {boolean} isTemp - is local temporary theme
  * @returns {void}
  */
-export const setTheme = async info => {
+export const setTheme = async (info, isTemp = false) => {
   if (!Array.isArray(info)) {
     throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
@@ -843,18 +846,24 @@ export const setTheme = async info => {
     }
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
-  await setStorage({
-    [THEME]: [item, !!value]
-  });
+  if (!isTemp) {
+    await setStorage({
+      [THEME]: [item, !!value]
+    });
+  }
 };
 
 /**
  * apply theme
  *
+ * @param {object} info - update info
  * @returns {Function} - promise chain
  */
-export const applyTheme = async () =>
-  setCurrentThemeValue().then(getTheme).then(setTheme).then(sendCurrentTheme);
+export const applyTheme = async (info = {}) => {
+  const { isTemp, theme: updatedTheme } = info;
+  const themeInfo = await setCurrentThemeValue(updatedTheme).then(getTheme);
+  return setTheme(themeInfo, !!isTemp).then(sendCurrentTheme);
+};
 
 /* user CSS */
 /**

@@ -10135,7 +10135,7 @@ describe('main', () => {
         theme: {},
         windowId: 1
       });
-      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
       assert.isNull(res, 'result');

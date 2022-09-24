@@ -2044,6 +2044,19 @@ describe('theme', () => {
       assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
 
+    it('should not save storage', async () => {
+      const i = browser.storage.local.set.callCount;
+      const body = document.querySelector('body');
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func(['foo'], true);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
     it('should set auto dark theme', async () => {
       window.matchMedia().matches = true;
       const stubStorage = browser.storage.local.set.withArgs({
