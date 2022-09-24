@@ -552,14 +552,27 @@ export const getBaseValues = async id => {
 /**
  * set current theme value
  *
+ * @param {object} info - updated theme info
  * @returns {void}
  */
-export const setCurrentThemeValue = async () => {
+export const setCurrentThemeValue = async (info = {}) => {
   const values = new Map();
-  const themeId = await getThemeId();
-  const baseValues = await getBaseValues(themeId);
-  const items = Object.entries(baseValues);
+  const { colors } = info;
   const { themeList } = await getStorage(THEME_LIST);
+  const themeId = await getThemeId();
+  let baseValues = await getBaseValues(themeId);
+  if (isObjectNotEmpty(colors)) {
+    const colorsItems = Object.entries(colors);
+    const func = [];
+    for (const [key, value] of colorsItems) {
+      if (value) {
+        func.push(setCurrentThemeColors(key, value));
+      }
+    }
+    await Promise.all(func);
+    baseValues = await getCurrentThemeBaseValues();
+  }
+  const items = Object.entries(baseValues);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
     const { values: themeValues } = themeList[themeId];
@@ -717,14 +730,6 @@ export const initCustomTheme = async (rem = false) => {
         } else {
           await removeStorage([THEME_LIST]);
         }
-      // TODO: For migration, remove later
-      } else {
-        const items = Object.keys(obj);
-        const arr = [];
-        for (const key of items) {
-          arr.push(key);
-        }
-        await removeStorage(arr);
       }
     }
     currentThemeColors.clear();
@@ -740,7 +745,7 @@ export const initCustomTheme = async (rem = false) => {
 /**
  * get theme
  *
- * @returns {Array} - theme class list
+ * @returns {Array} - theme info
  */
 export const getTheme = async () => {
   const themes = new Map();
@@ -779,9 +784,10 @@ export const getTheme = async () => {
  * set theme
  *
  * @param {Array} info - theme info
+ * @param {boolean} isTemp - is local temporary theme
  * @returns {void}
  */
-export const setTheme = async info => {
+export const setTheme = async (info, isTemp = false) => {
   if (!Array.isArray(info)) {
     throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
@@ -851,18 +857,25 @@ export const setTheme = async info => {
     }
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
-  await setStorage({
-    [THEME]: [item, !!value]
-  });
+  if (!isTemp) {
+    await setStorage({
+      [THEME]: [item, !!value]
+    });
+  }
 };
 
 /**
  * apply theme
  *
+ * @param {object} info - update info
  * @returns {Function} - promise chain
  */
-export const applyTheme = async () =>
-  setCurrentThemeValue().then(getTheme).then(setTheme).then(sendCurrentTheme);
+export const applyTheme = async (info = {}) => {
+  const { isTemp, theme: updatedTheme } = info;
+  const [key, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
+  const themeKey = isTemp ? '' : key;
+  return setTheme([themeKey, value], !!isTemp).then(sendCurrentTheme);
+};
 
 /* user CSS */
 /**

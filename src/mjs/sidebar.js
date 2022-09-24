@@ -9,13 +9,12 @@ import {
   getLastClosedTab, handleActivatedTab, handleAttachedTab, handleClickedMenu,
   handleContextmenuEvt, handleCreatedTab, handleDetachedTab, handleEvt,
   handleHighlightedTab, handleMovedTab, handleMsg, handleRemovedTab,
-  handleStorage, handleUpdatedTab, restoreHighlightedTabs, setContextualIds,
-  startup
+  handleStorage, handleUpdatedTab, handleUpdatedTheme, restoreHighlightedTabs,
+  setContextualIds, startup
 } from './main.js';
 import {
   expandActivatedCollapsedTab, restoreTabContainers
 } from './tab-group.js';
-import { applyTheme } from './theme.js';
 import { COLOR_SCHEME_DARK } from './constant.js';
 
 /* api */
@@ -76,12 +75,12 @@ tabs.onUpdated.addListener(
     ]
   }
 );
-theme.onUpdated.addListener(info => applyTheme(info).catch(throwErr));
+theme.onUpdated.addListener(info => handleUpdatedTheme(info).catch(throwErr));
 
 window.addEventListener('keydown', handleEvt, true);
 window.addEventListener('mousedown', handleEvt, true);
 window.addEventListener('contextmenu', handleContextmenuEvt);
 window.matchMedia(COLOR_SCHEME_DARK).addEventListener('change', () =>
-  applyTheme().catch(throwErr)
+  handleUpdatedTheme().catch(throwErr)
 );
 document.addEventListener('DOMContentLoaded', startup);

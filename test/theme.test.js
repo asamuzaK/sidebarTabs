@@ -1161,6 +1161,40 @@ describe('theme', () => {
       assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
         '#ff0000', 'value');
     });
+
+    it('should set theme', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            values: {}
+          }
+        }
+      });
+      await func({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
+        'id value');
+      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
+        '#0000ff', 'value');
+    });
   });
 
   describe('send current theme values', () => {
@@ -1566,140 +1600,11 @@ describe('theme', () => {
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func();
+      const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j,
         'not called');
-      assert.strictEqual(browser.storage.local.set.callCount, k,
-        'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
-      assert.deepEqual(res, [
-        {
-          [THEME_CUSTOM_SETTING]: {
-            id: 'foo',
-            values: currentTheme
-          }
-        },
-        null
-      ], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
-      const i = browser.runtime.sendMessage.callCount;
-      const j = browser.storage.local.remove.callCount;
-      const k = browser.storage.local.set.callCount;
-      const l = browser.management.getAll.callCount;
-      const currentTheme = mjs.themeMap[THEME_LIGHT];
-      const elm = document.createElement('style');
-      const body = document.querySelector('body');
-      elm.id = THEME_CUSTOM_ID;
-      body.appendChild(elm);
-      mjs.currentTheme.set(THEME_CURRENT_ID, null);
-      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func();
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.remove.callCount, j,
-        'not called');
-      assert.strictEqual(browser.storage.local.set.callCount, k,
-        'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
-      assert.deepEqual(res, [
-        {
-          [THEME_CUSTOM_SETTING]: {
-            id: 'foo',
-            values: currentTheme
-          }
-        },
-        null
-      ], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
-      const i = browser.runtime.sendMessage.callCount;
-      const j = browser.storage.local.remove.callCount;
-      const k = browser.storage.local.set.callCount;
-      const l = browser.management.getAll.callCount;
-      const currentTheme = mjs.themeMap[THEME_LIGHT];
-      const elm = document.createElement('style');
-      const body = document.querySelector('body');
-      elm.id = THEME_CUSTOM_ID;
-      body.appendChild(elm);
-      mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
-      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.set.callCount, k,
-        'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
-      assert.deepEqual(res, [
-        {
-          [THEME_CUSTOM_SETTING]: {
-            id: 'foo',
-            values: currentTheme
-          }
-        },
-        null
-      ], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
-      const i = browser.runtime.sendMessage.callCount;
-      const j = browser.storage.local.remove.callCount;
-      const k = browser.storage.local.set.callCount;
-      const l = browser.management.getAll.callCount;
-      const currentTheme = mjs.themeMap[THEME_LIGHT];
-      const elm = document.createElement('style');
-      const body = document.querySelector('body');
-      elm.id = THEME_CUSTOM_ID;
-      body.appendChild(elm);
-      mjs.currentTheme.set(THEME_CURRENT_ID, null);
-      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
-        'called');
       assert.strictEqual(browser.storage.local.set.callCount, k,
         'not called');
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
@@ -2167,6 +2072,19 @@ describe('theme', () => {
       body.classList.remove(CLASS_THEME_LIGHT);
       await func(['foo']);
       assert.strictEqual(stubStorage.callCount, i + 1, 'called');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should not save storage', async () => {
+      const i = browser.storage.local.set.callCount;
+      const body = document.querySelector('body');
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func(['foo'], true);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
