@@ -1938,6 +1938,36 @@ export const prepareTabMenuItems = async elm => {
   return Promise.all(func);
 };
 
+/* theme */
+/**
+ * handle updated theme
+ *
+ * @param {object} info - update info
+ * @returns {?Function} - applyTheme()
+ */
+export const handleUpdatedTheme = async info => {
+  let func;
+  if (isObjectNotEmpty(info)) {
+    const { theme, windowId: themeWindowId } = info;
+    if (Number.isInteger(themeWindowId)) {
+      const { windowId } = sidebar;
+      if (themeWindowId === windowId) {
+        func = applyTheme({
+          theme,
+          local: true
+        });
+      }
+    } else {
+      func = applyTheme({
+        theme
+      });
+    }
+  } else {
+    func = applyTheme();
+  }
+  return func || null;
+};
+
 /* events */
 /**
  * handle event
