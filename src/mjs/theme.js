@@ -552,7 +552,7 @@ export const getBaseValues = async id => {
 /**
  * set current theme value
  *
- * @param {object} info - update theme info
+ * @param {object} info - updated theme info
  * @returns {void}
  */
 export const setCurrentThemeValue = async (info = {}) => {
@@ -560,7 +560,18 @@ export const setCurrentThemeValue = async (info = {}) => {
   const { colors } = info;
   const { themeList } = await getStorage(THEME_LIST);
   const themeId = await getThemeId();
-  const baseValues = await getBaseValues(themeId);
+  let baseValues = await getBaseValues(themeId);
+  if (isObjectNotEmpty(colors)) {
+    const colorsItems = Object.entries(colors);
+    const func = [];
+    for (const [key, value] of colorsItems) {
+      if (value) {
+        func.push(setCurrentThemeColors(key, value));
+      }
+    }
+    await Promise.all(func);
+    baseValues = await getCurrentThemeBaseValues();
+  }
   const items = Object.entries(baseValues);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
