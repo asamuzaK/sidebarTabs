@@ -1954,7 +1954,7 @@ export const handleUpdatedTheme = async info => {
       if (themeWindowId === windowId) {
         func = applyTheme({
           theme,
-          isTemp: true
+          local: true
         });
       }
     } else {
@@ -2447,7 +2447,9 @@ export const startup = () => Promise.all([
     .then(applyUserStyle).then(requestSidebarStateUpdate),
   localizeHtml(),
   setContextualIds(),
-  setSidebarTheme()
+  setSidebarTheme({
+    startup: true
+  })
 ]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
   .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)
   .then(getLastClosedTab).catch(throwErr);

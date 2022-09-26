@@ -3,7 +3,7 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString } from './common.js';
+import { getType, isObjectNotEmpty, isString, sleep } from './common.js';
 import {
   getCurrentTheme, getEnabledTheme, getStorage, removeStorage, sendMessage,
   setStorage
@@ -495,9 +495,10 @@ export const getCurrentThemeBaseValues = async () => {
  * get base value
  *
  * @param {string} id - id
+ * @param {boolean} skipSystem - skip system theme
  * @returns {object} - values
  */
-export const getBaseValues = async id => {
+export const getBaseValues = async (id, skipSystem = false) => {
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
   if (id && isString(id)) {
@@ -516,10 +517,12 @@ export const getBaseValues = async id => {
         values = themeMap[THEME_LIGHT];
         break;
       case THEME_SYSTEM_ID:
-        if (dark) {
-          values = themeMap[THEME_DARK];
-        } else {
-          values = themeMap[THEME_LIGHT];
+        if (!skipSystem) {
+          if (dark) {
+            values = themeMap[THEME_DARK];
+          } else {
+            values = themeMap[THEME_LIGHT];
+          }
         }
         break;
       default:
@@ -539,9 +542,13 @@ export const getBaseValues = async id => {
         }
         await Promise.all(func);
         values = await getCurrentThemeBaseValues();
+      } else if (dark) {
+        values = themeMap[THEME_DARK];
       } else {
         values = themeMap[THEME_LIGHT];
       }
+    } else if (dark) {
+      values = themeMap[THEME_DARK];
     } else {
       values = themeMap[THEME_LIGHT];
     }
@@ -552,26 +559,16 @@ export const getBaseValues = async id => {
 /**
  * set current theme value
  *
- * @param {object} info - updated theme info
+ * @param {object} opt - options
  * @returns {void}
  */
-export const setCurrentThemeValue = async (info = {}) => {
+export const setCurrentThemeValue = async (opt = {}) => {
   const values = new Map();
-  const { colors } = info;
+  const { colors, startup } = opt;
   const { themeList } = await getStorage(THEME_LIST);
   const themeId = await getThemeId();
-  let baseValues = await getBaseValues(themeId);
-  if (isObjectNotEmpty(colors)) {
-    const colorsItems = Object.entries(colors);
-    const func = [];
-    for (const [key, value] of colorsItems) {
-      if (value) {
-        func.push(setCurrentThemeColors(key, value));
-      }
-    }
-    await Promise.all(func);
-    baseValues = await getCurrentThemeBaseValues();
-  }
+  const baseValues =
+    await getBaseValues(themeId, !!startup || !!isObjectNotEmpty(colors));
   const items = Object.entries(baseValues);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
@@ -777,10 +774,10 @@ export const getTheme = async () => {
  * set theme
  *
  * @param {Array} info - theme info
- * @param {boolean} isTemp - is local temporary theme
+ * @param {boolean} local - is local temporary theme
  * @returns {void}
  */
-export const setTheme = async (info, isTemp = false) => {
+export const setTheme = async (info, local = false) => {
   if (!Array.isArray(info)) {
     throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
@@ -850,24 +847,40 @@ export const setTheme = async (info, isTemp = false) => {
     }
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
-  if (!isTemp) {
+  if (!local) {
     await setStorage({
       [THEME]: [item, !!value]
     });
   }
 };
 
+/* temporary theme */
+export const tmpTheme = new Map();
+
 /**
  * apply theme
  *
- * @param {object} info - update info
- * @returns {Function} - promise chain
+ * @param {object} opt - options
+ * @returns {?Function} - promise chain
  */
-export const applyTheme = async (info = {}) => {
-  const { isTemp, theme: updatedTheme } = info;
-  const [key, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
-  const themeKey = isTemp ? '' : key;
-  return setTheme([themeKey, value], !!isTemp).then(sendCurrentTheme);
+export const applyTheme = async (opt = {}) => {
+  const { local, startup, theme: updatedTheme } = opt;
+  let func;
+  if (local) {
+    const t = window.performance.now();
+    tmpTheme.set('time', t);
+    await sleep(300);
+    if (tmpTheme.get('time') === t) {
+      const [, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
+      func = setTheme(['', value], !!local).then(sendCurrentTheme);
+      tmpTheme.clear();
+    }
+  } else {
+    func = setCurrentThemeValue({
+      startup
+    }).then(getTheme).then(setTheme).then(sendCurrentTheme);
+  }
+  return func || null;
 };
 
 /* user CSS */
@@ -1035,10 +1048,11 @@ export const applyCss = async () => {
 /**
  * set sidebar theme
  *
+ * @param {object} opt - options
  * @returns {void}
  */
-export const setSidebarTheme = async () => Promise.all([
-  applyTheme(),
+export const setSidebarTheme = async (opt = {}) => Promise.all([
+  applyTheme(opt),
   getTabHeight().then(setTabHeight),
   getScrollbarWidth().then(setScrollbarWidth),
   getTabGroupColorBarWidth().then(setTabGroupColorBarWidth),
