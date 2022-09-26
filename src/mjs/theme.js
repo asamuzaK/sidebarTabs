@@ -495,10 +495,10 @@ export const getCurrentThemeBaseValues = async () => {
  * get base value
  *
  * @param {string} id - id
- * @param {boolean} startup - startup
+ * @param {boolean} skipSystem - skip system theme
  * @returns {object} - values
  */
-export const getBaseValues = async (id, startup = false) => {
+export const getBaseValues = async (id, skipSystem = false) => {
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
   if (id && isString(id)) {
@@ -517,7 +517,7 @@ export const getBaseValues = async (id, startup = false) => {
         values = themeMap[THEME_LIGHT];
         break;
       case THEME_SYSTEM_ID:
-        if (!startup) {
+        if (!skipSystem) {
           if (dark) {
             values = themeMap[THEME_DARK];
           } else {
@@ -567,18 +567,8 @@ export const setCurrentThemeValue = async (opt = {}) => {
   const { colors, startup } = opt;
   const { themeList } = await getStorage(THEME_LIST);
   const themeId = await getThemeId();
-  let baseValues = await getBaseValues(themeId, !!startup);
-  if (isObjectNotEmpty(colors)) {
-    const colorsItems = Object.entries(colors);
-    const func = [];
-    for (const [key, value] of colorsItems) {
-      if (value) {
-        func.push(setCurrentThemeColors(key, value));
-      }
-    }
-    await Promise.all(func);
-    baseValues = await getCurrentThemeBaseValues();
-  }
+  const baseValues =
+    await getBaseValues(themeId, !!startup || !!isObjectNotEmpty(colors));
   const items = Object.entries(baseValues);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {

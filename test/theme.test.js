@@ -1211,7 +1211,12 @@ describe('theme', () => {
     });
 
     it('should set theme', async () => {
-      browser.theme.getCurrent.resolves({});
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
       browser.management.getAll.resolves([
         {
           id: 'foo',
@@ -1233,6 +1238,42 @@ describe('theme', () => {
           frame: 'red',
           sidebar: 'blue'
         }
+      });
+      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
+        'id value');
+      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
+        '#0000ff', 'value');
+    });
+
+    it('should set theme', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            values: {}
+          }
+        }
+      });
+      await func({
+        startup: true
       });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
