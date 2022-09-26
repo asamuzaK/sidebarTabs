@@ -855,6 +855,13 @@ describe('theme', () => {
     });
 
     it('should get fallback values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      const res = await func();
+      assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+    });
+
+    it('should get fallback values', async () => {
       browser.theme.getCurrent.resolves({});
       const res = await func('foo');
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
@@ -896,6 +903,46 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({});
       const res = await func(THEME_SYSTEM_ID);
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      const res = await func(THEME_SYSTEM_ID, true);
+      assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red'
+        }
+      });
+      const res = await func(THEME_SYSTEM_ID, true);
+      assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+      assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      const res = await func(THEME_SYSTEM_ID, true);
+      assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red'
+        }
+      });
+      const res = await func(THEME_SYSTEM_ID, true);
+      assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+      assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
     });
 
     it('should get fallback values', async () => {
