@@ -3,7 +3,7 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString } from './common.js';
+import { getType, isObjectNotEmpty, isString, sleep } from './common.js';
 import {
   getCurrentTheme, getEnabledTheme, getStorage, removeStorage, sendMessage,
   setStorage
@@ -777,10 +777,10 @@ export const getTheme = async () => {
  * set theme
  *
  * @param {Array} info - theme info
- * @param {boolean} isTemp - is local temporary theme
+ * @param {boolean} local - is local temporary theme
  * @returns {void}
  */
-export const setTheme = async (info, isTemp = false) => {
+export const setTheme = async (info, local = false) => {
   if (!Array.isArray(info)) {
     throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
@@ -850,24 +850,40 @@ export const setTheme = async (info, isTemp = false) => {
     }
   }
   await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
-  if (!isTemp) {
+  if (!local) {
     await setStorage({
       [THEME]: [item, !!value]
     });
   }
 };
 
+/* temporary theme */
+export const tmpTheme = new Map();
+
 /**
  * apply theme
  *
  * @param {object} info - update info
- * @returns {Function} - promise chain
+ * @returns {?Function} - promise chain
  */
 export const applyTheme = async (info = {}) => {
-  const { isTemp, theme: updatedTheme } = info;
-  const [key, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
-  const themeKey = isTemp ? '' : key;
-  return setTheme([themeKey, value], !!isTemp).then(sendCurrentTheme);
+  const { local, theme: updatedTheme } = info;
+  let func;
+  if (local) {
+    const t = window.performance.now();
+    tmpTheme.set('time', t);
+    await sleep(300);
+    if (tmpTheme.get('time') === t) {
+      const [, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
+      console.log(value);
+      func = setTheme(['', value], !!local).then(sendCurrentTheme);
+      tmpTheme.clear();
+    }
+  } else {
+    func = setCurrentThemeValue().then(getTheme).then(setTheme)
+      .then(sendCurrentTheme);
+  }
+  return func || null;
 };
 
 /* user CSS */

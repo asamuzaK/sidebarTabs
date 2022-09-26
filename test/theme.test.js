@@ -9,6 +9,7 @@ import { browser, createJsdom } from './mocha/setup.js';
 import { fileURLToPath } from 'url';
 import { promises as fsPromise } from 'fs';
 import path from 'path';
+import { sleep } from '../src/mjs/common.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -2302,6 +2303,9 @@ describe('theme', () => {
     });
 
     it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      browser.runtime.sendMessage.resolves({});
       browser.storage.local.get.resolves({});
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
@@ -2311,17 +2315,63 @@ describe('theme', () => {
           enabled: true
         }
       ]);
-      const i = browser.storage.local.set.withArgs({
-        [THEME]: [THEME_AUTO, false]
-      }).callCount;
-      const j = browser.runtime.sendMessage.callCount;
       mjs.currentTheme.set(THEME_CURRENT, {});
-      await func();
-      assert.strictEqual(browser.storage.local.set.withArgs({
-        [THEME]: [THEME_AUTO, false]
-      }).callCount, i + 1, 'called');
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      browser.runtime.sendMessage.resolves({});
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await func({
+        local: true
+      });
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function once', async () => {
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      browser.runtime.sendMessage.resolves({});
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await Promise.all([
+        func({
+          local: true
+        }),
+        sleep(100).then(() => func({
+          local: true
+        }))
+      ]);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.deepEqual(res, [null, {}], 'result');
     });
   });
 
