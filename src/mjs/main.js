@@ -87,7 +87,7 @@ import {
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
   THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_DARK, THEME_LIGHT, THEME_LIST,
+  THEME_DARK, THEME_FRAME_COLOR_USE, THEME_LIGHT, THEME_LIST,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS, USER_CSS_USE
 } from './constant.js';
@@ -118,6 +118,7 @@ export const userOptsKeys = new Set([
   TAB_SKIP_COLLAPSED,
   TAB_SWITCH_SCROLL,
   TAB_SWITCH_SCROLL_ALWAYS,
+  THEME_FRAME_COLOR_USE,
   USER_CSS_USE
 ]);
 
@@ -1950,9 +1951,7 @@ export const handleUpdatedTheme = async info => {
   if (isObjectNotEmpty(info)) {
     const { theme, windowId: themeWindowId } = info;
     const { windowId } = sidebar;
-    // FIXME: set value from user option
-    const useFrame = themeWindowId === windowId && isObjectNotEmpty(theme) &&
-                     Object.prototype.hasOwnProperty.call(theme, 'colors');
+    const useFrame = userOpts.get(THEME_FRAME_COLOR_USE);
     if (Number.isInteger(themeWindowId)) {
       const local = themeWindowId === windowId;
       if (local) {
