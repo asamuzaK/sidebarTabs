@@ -249,21 +249,6 @@ describe('theme', () => {
     it('should get values', async () => {
       mjs.currentThemeColors.set('bookmark_text', '#ff0000');
       const res = await func();
-      const obj = themeMap[THEME_LIGHT];
-      const items = Object.entries(res);
-      assert.notDeepEqual(res, themeMap[THEME_LIGHT], 'result');
-      for (const [key, value] of items) {
-        if (key === CUSTOM_COLOR_ACTIVE || key === CUSTOM_COLOR_SELECT) {
-          assert.strictEqual(value, '#ff0000', `${key}`);
-        } else {
-          assert.strictEqual(value, obj[key], `${key}`);
-        }
-      }
-    });
-
-    it('should get values', async () => {
-      mjs.currentThemeColors.set('bookmark_text', 'currentColor');
-      const res = await func();
       assert.deepEqual(res, themeMap[THEME_LIGHT], 'result');
     });
 
@@ -909,7 +894,9 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {}
       });
-      const res = await func(THEME_SYSTEM_ID, true);
+      const res = await func(THEME_SYSTEM_ID, {
+        startup: true
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
@@ -919,7 +906,9 @@ describe('theme', () => {
           frame: 'red'
         }
       });
-      const res = await func(THEME_SYSTEM_ID, true);
+      const res = await func(THEME_SYSTEM_ID, {
+        startup: true
+      });
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
     });
@@ -929,7 +918,9 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {}
       });
-      const res = await func(THEME_SYSTEM_ID, true);
+      const res = await func(THEME_SYSTEM_ID, {
+        startup: true
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
     });
 
@@ -940,9 +931,90 @@ describe('theme', () => {
           frame: 'red'
         }
       });
-      const res = await func(THEME_SYSTEM_ID, true);
+      const res = await func(THEME_SYSTEM_ID, {
+        startup: true
+      });
       assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      const res = await func('foo', {
+        useFrame: true
+      });
+      assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      const res = await func('foo', {
+        useFrame: true
+      });
+      assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+      assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
+    });
+
+    it('should get values', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      const res = await func('foo', {
+        useFrame: false
+      });
+      assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
+      assert.strictEqual(res[CUSTOM_BG], '#0000ff', 'color');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      const res = await func('foo', {
+        useFrame: true
+      });
+      assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      const res = await func('foo', {
+        useFrame: true
+      });
+      assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+      assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
+    });
+
+    it('should get values', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      const res = await func('foo', {
+        useFrame: false
+      });
+      assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
+      assert.strictEqual(res[CUSTOM_BG], '#0000ff', 'color');
     });
 
     it('should get fallback values', async () => {
@@ -2452,7 +2524,7 @@ describe('theme', () => {
         func({
           local: true
         }),
-        sleep(100).then(() => func({
+        sleep(Math.floor(1000 / 60)).then(() => func({
           local: true
         }))
       ]);

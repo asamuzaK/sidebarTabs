@@ -235,9 +235,10 @@ export const setCurrentThemeColors = async (key, value) => {
 /**
  * get current theme base values
  *
+ * @param {boolean} useFrame - use frame color
  * @returns {object} - values
  */
-export const getCurrentThemeBaseValues = async () => {
+export const getCurrentThemeBaseValues = async (useFrame = false) => {
   const values = new Map();
   const currentColorKeys = new Set();
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
@@ -247,7 +248,7 @@ export const getCurrentThemeBaseValues = async () => {
     switch (key) {
       case CUSTOM_BG:
       case CUSTOM_BG_DISCARDED: {
-        const valueA = currentThemeColors.get('sidebar');
+        const valueA = !useFrame && currentThemeColors.get('sidebar');
         const valueB = currentThemeColors.get('frame');
         const value = valueA || valueB || baseValues[key];
         values.set(key, value);
@@ -313,7 +314,7 @@ export const getCurrentThemeBaseValues = async () => {
       }
       case CUSTOM_COLOR:
       case CUSTOM_COLOR_DISCARDED: {
-        const valueA = currentThemeColors.has('sidebar') &&
+        const valueA = !useFrame && currentThemeColors.has('sidebar') &&
           currentThemeColors.get('sidebar_text');
         const valueB = currentThemeColors.get('tab_background_text');
         const value = valueA || valueB || baseValues[key];
@@ -326,9 +327,8 @@ export const getCurrentThemeBaseValues = async () => {
       }
       case CUSTOM_COLOR_ACTIVE: {
         const valueA = currentThemeColors.get('tab_text');
-        const valueB = currentThemeColors.get('bookmark_text');
-        const valueC = currentThemeColors.get('tab_background_text');
-        const value = valueA || valueB || valueC || baseValues[key];
+        const valueB = currentThemeColors.get('tab_background_text');
+        const value = valueA || valueB || baseValues[key];
         if (/^currentColor$/i.test(value)) {
           values.set(key, baseValues[CUSTOM_COLOR]);
         } else {
@@ -357,8 +357,7 @@ export const getCurrentThemeBaseValues = async () => {
       }
       case CUSTOM_COLOR_SELECT: {
         const valueA = currentThemeColors.get('tab_text');
-        const valueB = currentThemeColors.get('bookmark_text');
-        const value = valueA || valueB || baseValues[key];
+        const value = valueA || baseValues[key];
         if (/^currentColor$/i.test(value)) {
           values.set(key, baseValues[CUSTOM_COLOR]);
         } else {
@@ -408,7 +407,8 @@ export const getCurrentThemeBaseValues = async () => {
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
-  if (currentThemeColors.has('sidebar') || currentThemeColors.has('frame')) {
+  if ((!useFrame && currentThemeColors.has('sidebar')) ||
+      currentThemeColors.has('frame')) {
     const base = values.get(CUSTOM_BG);
     const color = await convertColorToHex(values.get(CUSTOM_COLOR));
     const hoverBlend = `${color}1a`;
@@ -438,10 +438,10 @@ export const getCurrentThemeBaseValues = async () => {
     const base = values.get(CUSTOM_BG);
     const border = currentThemeColors.get('tab_line');
     let value;
-    if (border === 'transparent') {
-      value = values.get(CUSTOM_BG_HOVER);
-    } else if (/^currentColor$/i.test(border)) {
+    if (/^currentColor$/i.test(border)) {
       value = await blendColors(values.get(CUSTOM_COLOR_ACTIVE), base);
+    } else if (border === 'transparent' || border === '#00000000') {
+      value = values.get(CUSTOM_BG_HOVER);
     } else {
       value = await blendColors(border, base);
     }
@@ -451,10 +451,10 @@ export const getCurrentThemeBaseValues = async () => {
     const base = values.get(CUSTOM_BG);
     const border = currentThemeColors.get('toolbar_field_border');
     let value;
-    if (border === 'transparent') {
-      value = base;
-    } else if (/^currentColor$/i.test(border)) {
+    if (/^currentColor$/i.test(border)) {
       value = await blendColors(values.get(CUSTOM_COLOR_FIELD), base);
+    } else if (border === 'transparent' || border === '#00000000') {
+      value = base;
     } else {
       value = await blendColors(border, base);
     }
@@ -464,10 +464,10 @@ export const getCurrentThemeBaseValues = async () => {
     const base = values.get(CUSTOM_BG);
     const border = currentThemeColors.get('toolbar_field_border_focus');
     let value;
-    if (border === 'transparent') {
-      value = base;
-    } else if (/^currentColor$/i.test(border)) {
+    if (/^currentColor$/i.test(border)) {
       value = await blendColors(values.get(CUSTOM_COLOR_FIELD_ACTIVE), base);
+    } else if (border === 'transparent' || border === '#00000000') {
+      value = base;
     } else {
       value = await blendColors(border, base);
     }
@@ -495,10 +495,11 @@ export const getCurrentThemeBaseValues = async () => {
  * get base value
  *
  * @param {string} id - id
- * @param {boolean} skipSystem - skip system theme
+ * @param {object} opt - options
  * @returns {object} - values
  */
-export const getBaseValues = async (id, skipSystem = false) => {
+export const getBaseValues = async (id, opt = {}) => {
+  const { startup, useFrame } = opt;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
   if (id && isString(id)) {
@@ -517,7 +518,7 @@ export const getBaseValues = async (id, skipSystem = false) => {
         values = themeMap[THEME_LIGHT];
         break;
       case THEME_SYSTEM_ID:
-        if (!skipSystem) {
+        if (!startup && !useFrame) {
           if (dark) {
             values = themeMap[THEME_DARK];
           } else {
@@ -541,7 +542,7 @@ export const getBaseValues = async (id, skipSystem = false) => {
           }
         }
         await Promise.all(func);
-        values = await getCurrentThemeBaseValues();
+        values = await getCurrentThemeBaseValues(!!useFrame);
       } else if (dark) {
         values = themeMap[THEME_DARK];
       } else {
@@ -564,11 +565,13 @@ export const getBaseValues = async (id, skipSystem = false) => {
  */
 export const setCurrentThemeValue = async (opt = {}) => {
   const values = new Map();
-  const { colors, startup } = opt;
+  const { startup, useFrame } = opt;
   const { themeList } = await getStorage(THEME_LIST);
   const themeId = await getThemeId();
-  const baseValues =
-    await getBaseValues(themeId, !!startup || !!isObjectNotEmpty(colors));
+  const baseValues = await getBaseValues(themeId, {
+    startup,
+    useFrame
+  });
   const items = Object.entries(baseValues);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
@@ -864,20 +867,24 @@ export const tmpTheme = new Map();
  * @returns {?Function} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
-  const { local, startup, theme: updatedTheme } = opt;
+  const { local, startup, useFrame } = opt;
   let func;
   if (local) {
     const t = window.performance.now();
     tmpTheme.set('time', t);
-    await sleep(300);
+    await sleep(Math.floor(1000 / 30));
     if (tmpTheme.get('time') === t) {
-      const [, value] = await setCurrentThemeValue(updatedTheme).then(getTheme);
+      const [, value] = await setCurrentThemeValue({
+        local,
+        useFrame
+      }).then(getTheme);
       func = setTheme(['', value], !!local).then(sendCurrentTheme);
       tmpTheme.clear();
     }
   } else {
     func = setCurrentThemeValue({
-      startup
+      startup,
+      useFrame
     }).then(getTheme).then(setTheme).then(sendCurrentTheme);
   }
   return func || null;
