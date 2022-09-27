@@ -1949,13 +1949,12 @@ export const handleUpdatedTheme = async info => {
   let func;
   if (isObjectNotEmpty(info)) {
     const { theme, windowId: themeWindowId } = info;
-    const { windowId } = sidebar;
-    // FIXME: set value from user option
-    const useFrame = themeWindowId === windowId && isObjectNotEmpty(theme) &&
-                     Object.prototype.hasOwnProperty.call(theme, 'colors');
     if (Number.isInteger(themeWindowId)) {
+      const { windowId } = sidebar;
       const local = themeWindowId === windowId;
       if (local) {
+        const useFrame = isObjectNotEmpty(theme) &&
+                         Object.prototype.hasOwnProperty.call(theme, 'colors');
         func = applyTheme({
           local,
           theme,
@@ -1964,8 +1963,7 @@ export const handleUpdatedTheme = async info => {
       }
     } else {
       func = applyTheme({
-        theme,
-        useFrame
+        theme
       });
     }
   } else {
