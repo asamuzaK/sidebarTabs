@@ -1950,9 +1950,9 @@ export const handleUpdatedTheme = async info => {
   let func;
   if (isObjectNotEmpty(info)) {
     const { theme, windowId: themeWindowId } = info;
-    const { windowId } = sidebar;
     const useFrame = userOpts.get(THEME_FRAME_COLOR_USE);
     if (Number.isInteger(themeWindowId)) {
+      const { windowId } = sidebar;
       const local = themeWindowId === windowId;
       if (local) {
         func = applyTheme({
