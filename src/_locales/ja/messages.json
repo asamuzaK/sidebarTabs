@@ -598,12 +598,6 @@
   "optionsTitle": {
     "message": "サイドバータブ - 設定"
   },
-  "optionsUseThemeFrameColor": {
-    "message": "タブの背景色をサイドバーの背景色として適用する"
-  },
-  "optionsUseThemeFrameColorDetail": {
-    "message": "テーマによって設定されたサイドバーの背景色を上書きして、タブの背景色を適用します。"
-  },
   "optionsUseUserCSS": {
     "message": "ユーザースタイルシートを適用する"
   },

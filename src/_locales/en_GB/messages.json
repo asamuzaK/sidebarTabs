@@ -10,11 +10,5 @@
   },
   "optionsReadBrowserSettingsDetail": {
     "message": "Adds permissions that allow the extension to read and modify certain values from browser settings. It is recommended to enable this option for better compatibility with built-in browser behaviours."
-  },
-  "optionsUseThemeFrameColor": {
-    "message": "Apply tab background colour as sidebar background colour"
-  },
-  "optionsUseThemeFrameColorDetail": {
-    "message": "Override the sidebar background colour set by the theme and apply a tab background colour."
   }
 }

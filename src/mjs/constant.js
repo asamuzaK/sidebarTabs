@@ -196,7 +196,6 @@ export const THEME_CUSTOM_REQ = 'requestCustomTheme';
 export const THEME_CUSTOM_SETTING = 'customThemeSettings';
 export const THEME_DARK = 'darkTheme';
 export const THEME_DARK_ID = 'firefox-compact-dark@mozilla.org';
-export const THEME_FRAME_COLOR_USE = 'useThemeFrameColor';
 export const THEME_ID = 'themeId';
 export const THEME_LIGHT = 'lightTheme';
 export const THEME_LIGHT_ID = 'firefox-compact-light@mozilla.org';
