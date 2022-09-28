@@ -1956,7 +1956,8 @@ export const handleUpdatedTheme = async info => {
       if (local) {
         func = applyTheme({
           local,
-          theme
+          theme,
+          windowId
         });
       }
     } else {

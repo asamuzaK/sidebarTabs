@@ -499,7 +499,7 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
  * @returns {object} - values
  */
 export const getBaseValues = async (id, opt = {}) => {
-  const { startup, useFrame } = opt;
+  const { startup, useFrame, windowId } = opt;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
   if (id && isString(id)) {
@@ -530,7 +530,8 @@ export const getBaseValues = async (id, opt = {}) => {
     }
   }
   if (!values) {
-    const appliedTheme = await getCurrentTheme();
+    const appliedTheme =
+      await getCurrentTheme(Number.isInteger(windowId) ? windowId : null);
     if (isObjectNotEmpty(appliedTheme)) {
       const { colors } = appliedTheme;
       if (isObjectNotEmpty(colors)) {
@@ -563,15 +564,11 @@ export const getBaseValues = async (id, opt = {}) => {
  * @param {object} opt - options
  * @returns {void}
  */
-export const setCurrentThemeValue = async (opt = {}) => {
+export const setCurrentThemeValue = async opt => {
   const values = new Map();
-  const { startup, useFrame } = opt;
   const { themeList } = await getStorage(THEME_LIST);
   const themeId = await getThemeId();
-  const baseValues = await getBaseValues(themeId, {
-    startup,
-    useFrame
-  });
+  const baseValues = await getBaseValues(themeId, opt);
   const items = Object.entries(baseValues);
   if (isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
@@ -867,18 +864,20 @@ export const timeStamp = new Map();
  * @returns {?Function} - recurse applyLocalTheme()
  */
 export const applyLocalTheme = async (opt = {}) => {
-  const { local, theme: appliedTheme } = opt;
+  const { local, theme: appliedTheme, windowId } = opt;
   let func;
-  if (local && Object.prototype.hasOwnProperty.call(appliedTheme, 'colors')) {
+  if (local && Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
+      Number.isInteger(windowId)) {
     const t = window.performance.now();
     timeStamp.set('time', t);
     await sleep(Math.floor(1000 / 30));
     if (timeStamp.get('time') === t) {
       const [, value] = await setCurrentThemeValue({
-        useFrame: true
+        useFrame: true,
+        windowId
       }).then(getTheme);
       await setTheme(['', value], !!local);
-      const currentTheme = await getCurrentTheme();
+      const currentTheme = await getCurrentTheme(windowId);
       if (Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
         const { colors: appliedColors } = appliedTheme;
         const { colors: currentColors } = currentTheme;
@@ -890,6 +889,7 @@ export const applyLocalTheme = async (opt = {}) => {
         } else {
           func = applyLocalTheme({
             local,
+            windowId,
             theme: {
               colors: currentColors
             }
@@ -908,12 +908,14 @@ export const applyLocalTheme = async (opt = {}) => {
  * @returns {Function} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
-  const { local, startup, theme } = opt;
+  const { local, startup, theme, windowId } = opt;
   let func;
-  if (local && Object.prototype.hasOwnProperty.call(theme, 'colors')) {
+  if (local && Object.prototype.hasOwnProperty.call(theme, 'colors') &&
+      Number.isInteger(windowId)) {
     func = applyLocalTheme({
       local,
-      theme
+      theme,
+      windowId
     });
   } else {
     func = setCurrentThemeValue({

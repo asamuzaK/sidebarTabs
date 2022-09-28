@@ -2534,7 +2534,8 @@ describe('theme', () => {
             frame: 'red',
             tab_background_text: 'white'
           }
-        }
+        },
+        windowId: 1
       });
       assert.strictEqual(browser.theme.getCurrent.callCount, i + 2, 'called');
       assert.strictEqual(mjs.timeStamp.size, 0, 'size');
@@ -2578,7 +2579,8 @@ describe('theme', () => {
             frame: 'red',
             tab_background_text: 'white'
           }
-        }
+        },
+        windowId: 1
       });
       assert.strictEqual(browser.theme.getCurrent.callCount, i + 6, 'called');
       assert.strictEqual(mjs.timeStamp.size, 0, 'size');
@@ -2623,7 +2625,8 @@ describe('theme', () => {
               frame: 'red',
               tab_background_text: 'white'
             }
-          }
+          },
+          windowId: 1
         }),
         await sleep(Math.floor(1000/60)).then(() => func({
           local: true,
@@ -2632,7 +2635,8 @@ describe('theme', () => {
               frame: 'yellow',
               tab_background_text: 'black'
             }
-          }
+          },
+          windowId: 1
         }))
       ]);
       assert.strictEqual(browser.theme.getCurrent.callCount, i + 6, 'called');
@@ -2700,7 +2704,8 @@ describe('theme', () => {
             frame: 'red',
             tab_background_text: 'white'
           }
-        }
+        },
+        windowId: 1
       });
       assert.strictEqual(browser.theme.getCurrent.callCount, i + 2, 'called');
       assert.strictEqual(mjs.timeStamp.size, 0, 'size');
