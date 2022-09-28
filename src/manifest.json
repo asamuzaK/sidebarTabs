@@ -69,5 +69,5 @@
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "8.2.0a2"
+  "version": "8.2.0a3"
 }
