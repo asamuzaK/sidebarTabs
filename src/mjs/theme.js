@@ -857,37 +857,70 @@ export const setTheme = async (info, local = false) => {
   }
 };
 
-/* temporary theme */
-export const tmpTheme = new Map();
+/* time stamp */
+export const timeStamp = new Map();
+
+/**
+ * apply local theme
+ *
+ * @param {object} opt - options
+ * @returns {?Function} - recurse applyLocalTheme()
+ */
+export const applyLocalTheme = async (opt = {}) => {
+  const { local, theme: appliedTheme } = opt;
+  let func;
+  if (local && Object.prototype.hasOwnProperty.call(appliedTheme, 'colors')) {
+    const t = window.performance.now();
+    timeStamp.set('time', t);
+    await sleep(Math.floor(1000 / 30));
+    if (timeStamp.get('time') === t) {
+      const [, value] = await setCurrentThemeValue({
+        useFrame: true
+      }).then(getTheme);
+      await setTheme(['', value], !!local);
+      const currentTheme = await getCurrentTheme();
+      if (Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
+        const { colors: appliedColors } = appliedTheme;
+        const { colors: currentColors } = currentTheme;
+        const frame = 'frame';
+        const text = 'tab_background_text';
+        if (appliedColors[frame] === currentColors[frame] &&
+            appliedColors[text] === currentColors[text]) {
+          timeStamp.clear();
+        } else {
+          func = applyLocalTheme({
+            local,
+            theme: {
+              colors: currentColors
+            }
+          });
+        }
+      }
+    }
+  }
+  return func || null;
+};
 
 /**
  * apply theme
  *
  * @param {object} opt - options
- * @returns {?Function} - promise chain
+ * @returns {Function} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
-  const { local, startup, useFrame } = opt;
+  const { local, startup, theme } = opt;
   let func;
-  if (local) {
-    const t = window.performance.now();
-    tmpTheme.set('time', t);
-    await sleep(Math.floor(1000 / 30));
-    if (tmpTheme.get('time') === t) {
-      const [, value] = await setCurrentThemeValue({
-        local,
-        useFrame
-      }).then(getTheme);
-      func = setTheme(['', value], !!local).then(sendCurrentTheme);
-      tmpTheme.clear();
-    }
+  if (local && Object.prototype.hasOwnProperty.call(theme, 'colors')) {
+    func = applyLocalTheme({
+      local,
+      theme
+    });
   } else {
     func = setCurrentThemeValue({
-      startup,
-      useFrame
+      startup
     }).then(getTheme).then(setTheme).then(sendCurrentTheme);
   }
-  return func || null;
+  return func;
 };
 
 /* user CSS */

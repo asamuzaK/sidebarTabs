@@ -2451,15 +2451,207 @@ describe('theme', () => {
     });
   });
 
+  describe('apply local theme', () => {
+    const func = mjs.applyLocalTheme;
+    beforeEach(() => {
+      mjs.currentTheme.clear();
+      mjs.currentThemeColors.clear();
+      mjs.timeStamp.clear();
+    });
+    afterEach(() => {
+      mjs.currentTheme.clear();
+      mjs.currentThemeColors.clear();
+      mjs.timeStamp.clear();
+    });
+
+    it('should not call function', async () => {
+      const i = browser.theme.getCurrent.callCount;
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await func();
+      assert.strictEqual(browser.theme.getCurrent.callCount, i, 'not called');
+      assert.strictEqual(mjs.timeStamp.size, 0, 'size');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.theme.getCurrent.callCount;
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await func({
+        local: true,
+        theme: {}
+      });
+      assert.strictEqual(browser.theme.getCurrent.callCount, i, 'not called');
+      assert.strictEqual(mjs.timeStamp.size, 0, 'size');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.theme.getCurrent.callCount;
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'white'
+        }
+      });
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await func({
+        local: true,
+        theme: {
+          colors: {
+            frame: 'red',
+            tab_background_text: 'white'
+          }
+        }
+      });
+      assert.strictEqual(browser.theme.getCurrent.callCount, i + 2, 'called');
+      assert.strictEqual(mjs.timeStamp.size, 0, 'size');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.theme.getCurrent.callCount;
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'white'
+        }
+      });
+      browser.theme.getCurrent.onCall(0).resolves({
+        colors: {
+          frame: 'blue',
+          tab_background_text: 'white'
+        }
+      });
+      browser.theme.getCurrent.onCall(1).resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'black'
+        }
+      });
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await func({
+        local: true,
+        theme: {
+          colors: {
+            frame: 'red',
+            tab_background_text: 'white'
+          }
+        }
+      });
+      assert.strictEqual(browser.theme.getCurrent.callCount, i + 6, 'called');
+      assert.strictEqual(mjs.timeStamp.size, 0, 'size');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.theme.getCurrent.callCount;
+      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs(THEME).resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'white'
+        }
+      });
+      browser.theme.getCurrent.onCall(0).resolves({
+        colors: {
+          frame: 'blue',
+          tab_background_text: 'white'
+        }
+      });
+      browser.theme.getCurrent.onCall(1).resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'black'
+        }
+      });
+      mjs.currentTheme.set(THEME_CURRENT, {});
+      const res = await Promise.all([
+        func({
+          local: true,
+          theme: {
+            colors: {
+              frame: 'red',
+              tab_background_text: 'white'
+            }
+          }
+        }),
+        await sleep(Math.floor(1000/60)).then(() => func({
+          local: true,
+          theme: {
+            colors: {
+              frame: 'yellow',
+              tab_background_text: 'black'
+            }
+          }
+        }))
+      ]);
+      assert.strictEqual(browser.theme.getCurrent.callCount, i + 6, 'called');
+      assert.strictEqual(mjs.timeStamp.size, 0, 'size');
+      assert.deepEqual(res, [null, null], 'result');
+    });
+  });
+
   describe('apply theme', () => {
     const func = mjs.applyTheme;
     beforeEach(() => {
       mjs.currentTheme.clear();
       mjs.currentThemeColors.clear();
+      mjs.timeStamp.clear();
     });
     afterEach(() => {
       mjs.currentTheme.clear();
       mjs.currentThemeColors.clear();
+      mjs.timeStamp.clear();
     });
 
     it('should call function', async () => {
@@ -2484,11 +2676,9 @@ describe('theme', () => {
     });
 
     it('should call function', async () => {
-      const i = browser.storage.local.set.callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      browser.runtime.sendMessage.resolves({});
+      const i = browser.theme.getCurrent.callCount;
       browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
           id: 'foo',
@@ -2496,42 +2686,25 @@ describe('theme', () => {
           enabled: true
         }
       ]);
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'white'
+        }
+      });
       mjs.currentTheme.set(THEME_CURRENT, {});
       const res = await func({
-        local: true
-      });
-      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
-        'called');
-      assert.deepEqual(res, {}, 'result');
-    });
-
-    it('should call function once', async () => {
-      const i = browser.storage.local.set.callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      browser.runtime.sendMessage.resolves({});
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
+        local: true,
+        theme: {
+          colors: {
+            frame: 'red',
+            tab_background_text: 'white'
+          }
         }
-      ]);
-      mjs.currentTheme.set(THEME_CURRENT, {});
-      const res = await Promise.all([
-        func({
-          local: true
-        }),
-        sleep(Math.floor(1000 / 60)).then(() => func({
-          local: true
-        }))
-      ]);
-      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
-        'called');
-      assert.deepEqual(res, [null, {}], 'result');
+      });
+      assert.strictEqual(browser.theme.getCurrent.callCount, i + 2, 'called');
+      assert.strictEqual(mjs.timeStamp.size, 0, 'size');
+      assert.isNull(res, 'result');
     });
   });
 
