@@ -10119,7 +10119,7 @@ describe('main', () => {
       assert.isNull(res, 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       browser.storage.local.get.resolves({});
       browser.management.getAll.resolves([
         {
@@ -10128,16 +10128,21 @@ describe('main', () => {
           enabled: true
         }
       ]);
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
       mjs.sidebar.windowId = 1;
       const i = browser.storage.local.set.callCount;
       const j = browser.runtime.sendMessage.callCount;
+      const k = browser.theme.getCurrent.callCount;
       const res = await func({
         theme: {},
         windowId: 1
       });
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
-        'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -10150,9 +10155,13 @@ describe('main', () => {
           enabled: true
         }
       ]);
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
       mjs.sidebar.windowId = 1;
       const i = browser.storage.local.set.callCount;
       const j = browser.runtime.sendMessage.callCount;
+      const k = browser.theme.getCurrent.callCount;
       const res = await func({
         theme: {},
         windowId: 2
@@ -10160,6 +10169,65 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
+      assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      mjs.sidebar.windowId = 1;
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const k = browser.theme.getCurrent.callCount;
+      const res = await func({
+        theme: {
+          colors: {}
+        },
+        windowId: 1
+      });
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.strictEqual(browser.theme.getCurrent.callCount, k + 2, 'called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      browser.storage.local.get.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.theme.getCurrent.resolves({
+        colors: {}
+      });
+      mjs.sidebar.windowId = 1;
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const k = browser.theme.getCurrent.callCount;
+      const res = await func({
+        theme: {
+          colors: {}
+        },
+        windowId: 2
+      });
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
       assert.isNull(res, 'result');
     });
   });

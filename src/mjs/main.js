@@ -1951,10 +1951,13 @@ export const handleUpdatedTheme = async info => {
     const { theme, windowId: themeWindowId } = info;
     if (Number.isInteger(themeWindowId)) {
       const { windowId } = sidebar;
-      if (themeWindowId === windowId) {
+      const local = themeWindowId === windowId &&
+                    Object.prototype.hasOwnProperty.call(theme, 'colors');
+      if (local) {
         func = applyTheme({
+          local,
           theme,
-          local: true
+          windowId
         });
       }
     } else {
