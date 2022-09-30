@@ -848,54 +848,69 @@ describe('theme', () => {
 
     it('should get fallback values', async () => {
       browser.theme.getCurrent.resolves({});
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({});
-      const res = await func(THEME_ALPEN_ID);
+      const res = await func({
+        themeId: THEME_ALPEN_ID
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_ALPEN], 'result');
     });
 
     it('should get values', async () => {
       window.matchMedia().matches = true;
       browser.theme.getCurrent.resolves({});
-      const res = await func(THEME_ALPEN_ID);
+      const res = await func({
+        themeId: THEME_ALPEN_ID
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_ALPEN_DARK], 'result');
     });
 
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({});
-      const res = await func(THEME_DARK_ID);
+      const res = await func({
+        themeId: THEME_DARK_ID
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
     });
 
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({});
-      const res = await func(THEME_LIGHT_ID);
+      const res = await func({
+        themeId: THEME_LIGHT_ID
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({});
-      const res = await func(THEME_SYSTEM_ID);
+      const res = await func({
+        themeId: THEME_SYSTEM_ID
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
     it('should get values', async () => {
       window.matchMedia().matches = true;
       browser.theme.getCurrent.resolves({});
-      const res = await func(THEME_SYSTEM_ID);
+      const res = await func({
+        themeId: THEME_SYSTEM_ID
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
     });
 
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({
-        colors: {}
+        colors: null
       });
-      const res = await func(THEME_SYSTEM_ID, {
-        startup: true
+      const res = await func({
+        startup: true,
+        themeId: THEME_SYSTEM_ID
       });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
@@ -906,8 +921,9 @@ describe('theme', () => {
           frame: 'red'
         }
       });
-      const res = await func(THEME_SYSTEM_ID, {
-        startup: true
+      const res = await func({
+        startup: true,
+        themeId: THEME_SYSTEM_ID
       });
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
@@ -918,8 +934,9 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {}
       });
-      const res = await func(THEME_SYSTEM_ID, {
-        startup: true
+      const res = await func({
+        startup: true,
+        themeId: THEME_SYSTEM_ID
       });
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
     });
@@ -931,8 +948,9 @@ describe('theme', () => {
           frame: 'red'
         }
       });
-      const res = await func(THEME_SYSTEM_ID, {
-        startup: true
+      const res = await func({
+        startup: true,
+        themeId: THEME_SYSTEM_ID
       });
       assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
@@ -942,7 +960,8 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {}
       });
-      const res = await func('foo', {
+      const res = await func({
+        themeId: 'foo',
         useFrame: true
       });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
@@ -955,7 +974,8 @@ describe('theme', () => {
           sidebar: 'blue'
         }
       });
-      const res = await func('foo', {
+      const res = await func({
+        themeId: 'foo',
         useFrame: true
       });
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
@@ -969,7 +989,8 @@ describe('theme', () => {
           sidebar: 'blue'
         }
       });
-      const res = await func('foo', {
+      const res = await func({
+        themeId: 'foo',
         useFrame: false
       });
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
@@ -981,7 +1002,8 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {}
       });
-      const res = await func('foo', {
+      const res = await func({
+        themeId: 'foo',
         useFrame: true
       });
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
@@ -995,7 +1017,8 @@ describe('theme', () => {
           sidebar: 'blue'
         }
       });
-      const res = await func('foo', {
+      const res = await func({
+        themeId: 'foo',
         useFrame: true
       });
       assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
@@ -1010,7 +1033,8 @@ describe('theme', () => {
           sidebar: 'blue'
         }
       });
-      const res = await func('foo', {
+      const res = await func({
+        themeId: 'foo',
         useFrame: false
       });
       assert.notDeepEqual(res, mjs.themeMap[THEME_DARK], 'result');
@@ -1021,7 +1045,9 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         foo: 'bar'
       });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
@@ -1029,18 +1055,21 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {}
       });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
 
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({
         colors: {
-          frame: 'red',
-          icons: undefined
+          frame: 'red'
         }
       });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#ff0000', 'color');
     });
@@ -1049,11 +1078,12 @@ describe('theme', () => {
       browser.theme.getCurrent.resolves({
         colors: {
           frame: 'red',
-          sidebar: 'blue',
-          icons: undefined
+          sidebar: 'blue'
         }
       });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       assert.strictEqual(res[CUSTOM_BG], '#0000ff', 'color');
     });
@@ -1077,7 +1107,9 @@ describe('theme', () => {
         }
       } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(id, THEME_ALPEN_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_ALPEN], 'result');
     });
@@ -1102,7 +1134,9 @@ describe('theme', () => {
         }
       } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(id, THEME_ALPEN_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_ALPEN_DARK], 'result');
     });
@@ -1127,7 +1161,9 @@ describe('theme', () => {
         }
       } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(id, THEME_DARK_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_DARK], 'result');
     });
@@ -1151,7 +1187,9 @@ describe('theme', () => {
         }
       } = JSON.parse(file);
       browser.theme.getCurrent.resolves({ colors });
-      const res = await func('foo');
+      const res = await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(id, THEME_LIGHT_ID, 'id');
       assert.deepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
     });
@@ -1176,7 +1214,9 @@ describe('theme', () => {
         }
       ]);
       browser.storage.local.get.resolves({});
-      await func();
+      await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
@@ -1198,7 +1238,9 @@ describe('theme', () => {
           value: '#ff0000'
         }
       });
-      await func();
+      await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
@@ -1220,7 +1262,9 @@ describe('theme', () => {
       ]);
       browser.storage.local.get.resolves({});
       browser.storage.local.get.withArgs(THEME_LIST).resolves({});
-      await func();
+      await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
@@ -1243,7 +1287,9 @@ describe('theme', () => {
           bar: {}
         }
       });
-      await func();
+      await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
@@ -1271,7 +1317,9 @@ describe('theme', () => {
           }
         }
       });
-      await func();
+      await func({
+        themeId: 'foo'
+      });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
@@ -1306,10 +1354,7 @@ describe('theme', () => {
         }
       });
       await func({
-        colors: {
-          frame: 'red',
-          sidebar: 'blue'
-        }
+        themeId: 'foo'
       });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
@@ -1345,7 +1390,8 @@ describe('theme', () => {
         }
       });
       await func({
-        startup: true
+        startup: true,
+        themeId: 'foo'
       });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
@@ -1388,6 +1434,36 @@ describe('theme', () => {
         bar: 'baz'
       });
       const res = await func();
+      assert.isFalse(browser.management.getAll.called, 'not called');
+      assert.isTrue(browser.runtime.sendMessage.calledOnce, 'called');
+      assert.deepEqual(res, [
+        {
+          [THEME_CUSTOM_SETTING]: {
+            id: 'foo',
+            values: {
+              bar: 'baz'
+            }
+          }
+        },
+        null
+      ], 'result');
+    });
+
+    it('it should call function', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'qux',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.runtime.sendMessage.callsFake((...args) => args);
+      mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
+      mjs.currentTheme.set(THEME_CURRENT, {
+        bar: 'baz'
+      });
+      const res = await func('foo');
       assert.isFalse(browser.management.getAll.called, 'not called');
       assert.isTrue(browser.runtime.sendMessage.calledOnce, 'called');
       assert.deepEqual(res, [
@@ -1768,8 +1844,8 @@ describe('theme', () => {
         'not called');
       assert.strictEqual(browser.storage.local.set.callCount, k,
         'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
+      assert.strictEqual(browser.management.getAll.callCount, l,
+        'not called');
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
@@ -1815,8 +1891,8 @@ describe('theme', () => {
         'called');
       assert.strictEqual(browser.storage.local.set.callCount, k,
         'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
+      assert.strictEqual(browser.management.getAll.callCount, l,
+        'not called');
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
@@ -1862,7 +1938,7 @@ describe('theme', () => {
         'called');
       assert.strictEqual(browser.storage.local.set.callCount, k,
         'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 2,
+      assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
         {
@@ -1910,8 +1986,8 @@ describe('theme', () => {
         'not called');
       assert.strictEqual(browser.storage.local.set.callCount, k + 1,
         'called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
+      assert.strictEqual(browser.management.getAll.callCount, l,
+        'not called');
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
@@ -1958,7 +2034,7 @@ describe('theme', () => {
         'not called');
       assert.strictEqual(browser.storage.local.set.callCount, k + 1,
         'called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 2,
+      assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
         {
@@ -2148,7 +2224,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
     it('should get system theme', async () => {
@@ -2166,7 +2242,7 @@ describe('theme', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(browser.management.getAll.callCount, j + 1, 'called');
-      assert.deepEqual(res, [THEME_SYSTEM, false], 'result');
+      assert.deepEqual(res, [THEME_AUTO, false], 'result');
     });
 
     it('should get auto theme', async () => {
@@ -2303,7 +2379,9 @@ describe('theme', () => {
     });
 
     it('should set system light theme', async () => {
-      browser.theme.getCurrent.resolves({});
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: null
+      });
       browser.management.getAll.resolves([
         {
           id: THEME_SYSTEM_ID,
@@ -2311,6 +2389,10 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'foo'
+      });
       const stubStorage = browser.storage.local.set.withArgs({
         [THEME]: [THEME_SYSTEM, false]
       });
@@ -2326,9 +2408,10 @@ describe('theme', () => {
       assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
     });
 
-    it('should set system dark theme', async () => {
-      window.matchMedia().matches = true;
-      browser.theme.getCurrent.resolves({});
+    it('should set system light theme', async () => {
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: null
+      });
       browser.management.getAll.resolves([
         {
           id: THEME_SYSTEM_ID,
@@ -2336,6 +2419,10 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
       const stubStorage = browser.storage.local.set.withArgs({
         [THEME]: [THEME_SYSTEM, false]
       });
@@ -2346,6 +2433,165 @@ describe('theme', () => {
       await func([THEME_AUTO]);
       assert.strictEqual(stubStorage.callCount, i + 1, 'called');
       assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system light theme', async () => {
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: {
+          frame: '#f0f0f4',
+          tab_background_text: 'rgb(21,20,26)'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
+      const body = document.querySelector('body');
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system light theme', async () => {
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'white'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
+      const i = browser.storage.local.set.callCount;
+      const body = document.querySelector('body');
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system dark theme', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: null
+      });
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
+      const body = document.querySelector('body');
+      body.classList.add(CLASS_THEME_DARK);
+      body.classList.remove(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set system dark theme', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: {
+          frame: '#1c1b22',
+          tab_background_text: '#fbfbfe'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_SYSTEM, false]
+      });
+      const i = stubStorage.callCount;
+      const body = document.querySelector('body');
+      body.classList.remove(CLASS_THEME_DARK);
+      body.classList.add(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
+      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set custom theme', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.withArgs(1).resolves({
+        colors: {
+          frame: 'red',
+          tab_background_text: 'white'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: THEME_SYSTEM_ID,
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
+      const i = browser.storage.local.set.callCount;
+      const body = document.querySelector('body');
+      body.classList.remove(CLASS_THEME_DARK);
+      body.classList.add(CLASS_THEME_LIGHT);
+      await func([THEME_AUTO]);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
       assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'dark');
       assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'light');
       assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
@@ -2628,7 +2874,7 @@ describe('theme', () => {
           },
           windowId: 1
         }),
-        await sleep(Math.floor(1000/60)).then(() => func({
+        await sleep(Math.floor(1000 / 60)).then(() => func({
           local: true,
           theme: {
             colors: {
@@ -2666,11 +2912,15 @@ describe('theme', () => {
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
         {
-          id: 'foo',
+          id: THEME_SYSTEM_ID,
           type: 'theme',
           enabled: true
         }
       ]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
+      });
       mjs.currentTheme.set(THEME_CURRENT, {});
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
@@ -2685,7 +2935,7 @@ describe('theme', () => {
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
-          id: 'foo',
+          id: THEME_SYSTEM_ID,
           type: 'theme',
           enabled: true
         }
@@ -2695,6 +2945,10 @@ describe('theme', () => {
           frame: 'red',
           tab_background_text: 'white'
         }
+      });
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        type: 'normal'
       });
       mjs.currentTheme.set(THEME_CURRENT, {});
       const res = await func({
