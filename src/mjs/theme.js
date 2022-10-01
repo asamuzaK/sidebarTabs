@@ -748,25 +748,29 @@ export const initCustomTheme = async (rem = false) => {
 };
 
 /**
- * get theme
+ * get theme info
  *
+ * @param {string} themeId - theme ID
  * @returns {Array} - theme info
  */
-export const getTheme = async () => {
+export const getThemeInfo = async themeId => {
   const themes = new Map();
   const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
     const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
       const [key, value] = storedTheme;
-      if (isString(key) && key !== THEME_AUTO && value) {
+      if (isString(key) && key !== THEME_AUTO && key !== THEME_SYSTEM &&
+          value) {
         themes.set(key, !!value);
       }
     }
   }
   if (!themes.size) {
-    const id = await getThemeId();
-    switch (id) {
+    if (!themeId) {
+      themeId = await getThemeId();
+    }
+    switch (themeId) {
       case THEME_DARK_ID:
         themes.set(THEME_DARK, false);
         break;
@@ -785,21 +789,24 @@ export const getTheme = async () => {
  * set theme
  *
  * @param {Array} info - theme info
- * @param {boolean} local - is local theme
+ * @param {object} opt - options
  * @returns {void}
  */
-export const setTheme = async (info, local = false) => {
+export const setTheme = async (info, opt = {}) => {
   if (!Array.isArray(info)) {
     throw new TypeError(`Expected Array but got ${getType(info)}.`);
   }
   const [key, value] = info;
+  let { local, themeId } = opt;
   const elm = document.querySelector('body');
   const { classList } = elm;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let item;
   if (key === THEME_AUTO) {
-    const id = await getThemeId();
-    if (id === THEME_SYSTEM_ID) {
+    if (!isString(themeId)) {
+      themeId = await getThemeId();
+    }
+    if (themeId === THEME_SYSTEM_ID) {
       const win = await getCurrentWindow();
       const { id: windowId, type } = win;
       if (type === 'normal') {
@@ -912,12 +919,15 @@ export const applyLocalTheme = async (opt = {}) => {
     timeStamp.set('time', t);
     await sleep(Math.floor(1000 / 30));
     if (timeStamp.get('time') === t) {
-      const [, value] = await setCurrentThemeValue({
+      await setCurrentThemeValue({
         themeId,
         windowId,
         useFrame: true
-      }).then(getTheme);
-      await setTheme(['', value], !!local);
+      });
+      await setTheme(['', false], {
+        local,
+        themeId
+      });
       const currentTheme = await getCurrentTheme(windowId);
       if (isObjectNotEmpty(currentTheme) &&
           Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
@@ -961,10 +971,14 @@ export const applyTheme = async (opt = {}) => {
       windowId
     });
   } else {
-    func = setCurrentThemeValue({
+    const themeInfo = await getThemeInfo(themeId);
+    await setCurrentThemeValue({
       startup,
       themeId
-    }).then(getTheme).then(setTheme).then(sendCurrentTheme);
+    });
+    func = setTheme(themeInfo, {
+      themeId
+    }).then(sendCurrentTheme);
   }
   return func;
 };
