@@ -2736,6 +2736,22 @@ describe('theme', () => {
     });
 
     it('should set custom theme', async () => {
+      const stubStorage = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      });
+      const i = stubStorage.callCount;
+      const body = document.querySelector('body');
+      body.classList.remove(CLASS_THEME_DARK);
+      body.classList.add(CLASS_THEME_LIGHT);
+      await func([]);
+      assert.strictEqual(stubStorage.callCount, i + 1, 'called');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'custom');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'dark');
+      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'light');
+      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'system');
+    });
+
+    it('should set custom theme', async () => {
       window.matchMedia().matches = true;
       const stubStorage = browser.storage.local.set.withArgs({
         [THEME]: [THEME_AUTO, false]
