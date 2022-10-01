@@ -842,6 +842,9 @@ export const setTheme = async (info, opt = {}) => {
   } else {
     item = key;
   }
+  if (!item) {
+    item = THEME_AUTO;
+  }
   switch (item) {
     case THEME_CUSTOM: {
       classList.add(CLASS_THEME_CUSTOM);
