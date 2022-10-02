@@ -598,6 +598,12 @@
   "optionsTitle": {
     "message": "Sidebar Tabs - Options"
   },
+  "optionsUseFrameColor": {
+    "message": "Use tab color for sidebar background"
+  },
+  "optionsUseFrameColorDetail": {
+    "message": "Override the background color of the sidebar with the background color of the inactive tab."
+  },
   "optionsUseUserCSS": {
     "message": "Apply user stylesheet"
   },
