@@ -3,7 +3,9 @@
  */
 
 /* shared */
-import { getType, isString, logErr, throwErr } from './common.js';
+import {
+  getType, isObjectNotEmpty, isString, logErr, throwErr
+} from './common.js';
 import { getCurrentWindow, getWindow } from './browser.js';
 import { ports, removePort } from './port.js';
 import { saveSessionTabList } from './util.js';
@@ -120,27 +122,29 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
 /**
  * handle runtime message
  *
- * @param {!object} msg - message
+ * @param {object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {
-  const items = Object.entries(msg);
   const func = [];
-  for (const [key, value] of items) {
-    switch (key) {
-      case SESSION_SAVE: {
-        const { domString, windowId } = value;
-        if (isString(domString) && Number.isInteger(windowId)) {
-          func.push(handleSaveSessionRequest(domString, windowId));
+  if (isObjectNotEmpty(msg)) {
+    const items = Object.entries(msg);
+    for (const [key, value] of items) {
+      switch (key) {
+        case SESSION_SAVE: {
+          const { domString, windowId } = value;
+          if (isString(domString) && Number.isInteger(windowId)) {
+            func.push(handleSaveSessionRequest(domString, windowId));
+          }
+          break;
         }
-        break;
+        case SIDEBAR_STATE_UPDATE: {
+          const { windowId } = value;
+          func.push(setSidebarState(windowId));
+          break;
+        }
+        default:
       }
-      case SIDEBAR_STATE_UPDATE: {
-        const { windowId } = value;
-        func.push(setSidebarState(windowId));
-        break;
-      }
-      default:
     }
   }
   return Promise.all(func);

@@ -908,16 +908,9 @@ describe('background-main', () => {
   describe('port on message', () => {
     const func = mjs.portOnMessage;
 
-    it('should throw', async () => {
-      await func().catch(e => {
-        assert.instanceOf(e, Error, 'error');
-      });
-    });
-
-    it('should throw', async () => {
-      await func(null).catch(e => {
-        assert.instanceOf(e, Error, 'error');
-      });
+    it('should get empty array', async () => {
+      const res = await func();
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should get empty array', async () => {
@@ -1299,15 +1292,13 @@ describe('background-main', () => {
     const func = mjs.portOnDisconnect;
 
     it('should throw', async () => {
-      await func().catch(e => {
-        assert.instanceOf(e, Error, 'error');
-      });
-    });
-
-    it('should throw', async () => {
+      const stubErr = sinon.stub(console, 'error');
       await func(null).catch(e => {
         assert.instanceOf(e, Error, 'error');
       });
+      const { calledOnce } = stubErr;
+      stubErr.restore();
+      assert.isTrue(calledOnce, 'called');
     });
 
     it('should call function', async () => {
