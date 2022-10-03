@@ -40,8 +40,8 @@ import {
   TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  THEME, THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_DARK, THEME_LIGHT, THEME_LIST,
+  THEME, THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT, THEME_LIST,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS, USER_CSS_USE, USER_CSS_ID
 } from '../src/mjs/constant.js';
@@ -10226,6 +10226,53 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
+      assert.isNull(res, 'result');
+    });
+  });
+
+  describe('handle init custom theme request', () => {
+    const func = mjs.handleInitCustomThemeRequest;
+    beforeEach(() => {
+      mjs.userOpts.clear();
+    });
+    afterEach(() => {
+      mjs.userOpts.clear();
+    });
+
+    it('should not call function', async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+        'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+        'called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      mjs.userOpts.set(FRAME_COLOR_USE, true);
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+        'called');
       assert.isNull(res, 'result');
     });
   });

@@ -1977,6 +1977,24 @@ export const handleUpdatedTheme = async info => {
   return func || null;
 };
 
+/**
+ * handle init custom theme request
+ *
+ * @param {boolean} remove - remove
+ * @returns {?Function} - initCustomTheme()
+ */
+export const handleInitCustomThemeRequest = async (remove = false) => {
+  let func;
+  if (remove) {
+    const useFrame = userOpts.get(FRAME_COLOR_USE);
+    func = initCustomTheme({
+      remove,
+      useFrame
+    });
+  }
+  return func || null;
+};
+
 /* events */
 /**
  * handle event
@@ -2075,7 +2093,7 @@ export const handleMsg = async msg => {
         break;
       case THEME_CUSTOM_INIT:
         if (value) {
-          func.push(initCustomTheme(value));
+          func.push(handleInitCustomThemeRequest(value));
         }
         break;
       case THEME_CUSTOM_REQ:

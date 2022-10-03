@@ -1183,8 +1183,8 @@ describe('theme', () => {
     it('should get values', async () => {
       browser.theme.getCurrent.resolves({
         colors: {
-          'sidebar': 'red',
-          'sidebar_text': 'white'
+          sidebar: 'red',
+          sidebar_text: 'white'
         }
       });
       const res = await func();
@@ -1197,8 +1197,8 @@ describe('theme', () => {
       window.matchMedia().matches = true;
       browser.theme.getCurrent.resolves({
         colors: {
-          'sidebar': 'red',
-          'sidebar_text': 'white'
+          sidebar: 'red',
+          sidebar_text: 'white'
         }
       });
       const res = await func();
@@ -2080,7 +2080,10 @@ describe('theme', () => {
       const body = document.querySelector('body');
       elm.id = THEME_CUSTOM_ID;
       body.appendChild(elm);
-      const res = await func(true);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
         'not called');
       assert.strictEqual(browser.storage.local.remove.callCount, j,
@@ -2144,7 +2147,10 @@ describe('theme', () => {
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j,
@@ -2191,7 +2197,10 @@ describe('theme', () => {
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
@@ -2238,7 +2247,10 @@ describe('theme', () => {
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT_ID, null);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
@@ -2286,7 +2298,10 @@ describe('theme', () => {
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j,
@@ -2334,7 +2349,10 @@ describe('theme', () => {
       body.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT_ID, null);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func(true);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j,

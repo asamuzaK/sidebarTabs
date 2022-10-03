@@ -34,7 +34,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
-  FRAME_COLOR_USE, NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
+  NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_ID,
   THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
@@ -778,20 +778,20 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
 /**
  * init custom theme
  *
- * @param {boolean} rem - remove storage
+ * @param {object} opt - options
  * @returns {?Function} - sendCurrentTheme()
  */
-export const initCustomTheme = async (rem = false) => {
+export const initCustomTheme = async (opt = {}) => {
   const elm = document.getElementById(THEME_CUSTOM_ID);
   const obj = currentTheme.get(THEME_CURRENT);
   let func;
   if (elm && obj) {
-    const useFrame = await getStorage(FRAME_COLOR_USE);
+    const { remove, useFrame } = opt;
     let themeId = currentTheme.get(THEME_CURRENT_ID);
     if (!themeId) {
       themeId = await getThemeId();
     }
-    if (rem) {
+    if (remove) {
       const { themeList } = await getStorage(THEME_LIST);
       if (isObjectNotEmpty(themeList)) {
         if (Object.prototype.hasOwnProperty.call(themeList, themeId)) {
