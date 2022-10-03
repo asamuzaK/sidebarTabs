@@ -15,15 +15,13 @@ import {
   CLASS_SEPARATOR_SHOW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
   CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
   CLASS_TAB_CONTENT, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ITEMS,
-  CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON, CLASS_THEME_CUSTOM, CLASS_THEME_DARK,
-  CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
-  COOKIE_STORE_DEFAULT,
+  CLASS_TAB_TITLE, CLASS_TAB_TOGGLE_ICON, COOKIE_STORE_DEFAULT,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
   CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, HIGHLIGHTED,
+  DISCARDED, EXT_INIT, FRAME_COLOR_USE, HIGHLIGHTED,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
   OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN,
@@ -42,8 +40,8 @@ import {
   TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE_END, TABS_MOVE_START,
   TABS_MOVE_WIN, TABS_MUTE, TABS_PIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  THEME, THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_DARK, THEME_LIGHT, THEME_LIST,
+  THEME, THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_ID, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_REQ, THEME_DARK, THEME_LIGHT, THEME_LIST,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS, USER_CSS_USE, USER_CSS_ID
 } from '../src/mjs/constant.js';
@@ -10198,7 +10196,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
-      assert.strictEqual(browser.theme.getCurrent.callCount, k + 2, 'called');
+      assert.strictEqual(browser.theme.getCurrent.callCount, k + 1, 'called');
       assert.isNull(res, 'result');
     });
 
@@ -10228,6 +10226,53 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
+      assert.isNull(res, 'result');
+    });
+  });
+
+  describe('handle init custom theme request', () => {
+    const func = mjs.handleInitCustomThemeRequest;
+    beforeEach(() => {
+      mjs.userOpts.clear();
+    });
+    afterEach(() => {
+      mjs.userOpts.clear();
+    });
+
+    it('should not call function', async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func();
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i,
+        'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+        'called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.runtime.sendMessage.callCount;
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      mjs.userOpts.set(FRAME_COLOR_USE, true);
+      const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+        'called');
       assert.isNull(res, 'result');
     });
   });
@@ -11608,6 +11653,45 @@ describe('main', () => {
     });
 
     it('should not call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(FRAME_COLOR_USE, {
+        checked: true
+      }, false);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.isTrue(mjs.userOpts.get(FRAME_COLOR_USE), 'opts');
+      assert.deepEqual(res, [mjs.userOpts], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.runtime.sendMessage.resolves({});
+      const i = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(FRAME_COLOR_USE, {
+        checked: true
+      }, true);
+      assert.strictEqual(browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.isTrue(mjs.userOpts.get(FRAME_COLOR_USE), 'opts');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should not call function', async () => {
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
         {
@@ -11648,44 +11732,267 @@ describe('main', () => {
       assert.deepEqual(res, [{}], 'result');
     });
 
-    it('should set variable', async () => {
-      const body = document.querySelector('body');
-      const res = await func(THEME_LIGHT, { checked: true }, true);
-      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'set');
-      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
-      assert.deepEqual(res, [undefined], 'result');
+    it('should not call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_AUTO, {
+        checked: false
+      }, true);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
     });
 
-    it('should set variable', async () => {
-      const body = document.querySelector('body');
-      const res = await func(THEME_DARK, { checked: true }, true);
-      assert.isFalse(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
-      assert.isTrue(body.classList.contains(CLASS_THEME_DARK), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
-      assert.deepEqual(res, [undefined], 'result');
+    it('should not call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_AUTO, {
+        checked: true
+      }, false);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
     });
 
-    it('should set variable', async () => {
-      const body = document.querySelector('body');
-      const res = await func(THEME_CUSTOM, { checked: true }, true);
-      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
-      assert.deepEqual(res, [undefined], 'result');
+    it('should call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.runtime.sendMessage.resolves({});
+      const i = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_AUTO, {
+        checked: true
+      }, true);
+      assert.strictEqual(browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.deepEqual(res, [{}], 'result');
     });
 
-    it('should set variable', async () => {
-      const body = document.querySelector('body');
-      const res = await func(THEME_AUTO, { checked: true }, true);
-      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'set');
-      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'set');
-      assert.isTrue(body.classList.contains(CLASS_THEME_LIGHT), 'set');
-      assert.isTrue(body.classList.contains(CLASS_THEME_SYSTEM), 'set');
-      assert.deepEqual(res, [undefined], 'result');
+    it('should not call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_CUSTOM, {
+        checked: false
+      }, true);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_CUSTOM, {
+        checked: true
+      }, false);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.runtime.sendMessage.resolves({});
+      const i = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_CUSTOM, {
+        checked: true
+      }, true);
+      assert.strictEqual(browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should not call function', async () => {
+      window.matchMedia().matches = true;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_DARK, {
+        checked: false
+      }, true);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function', async () => {
+      window.matchMedia().matches = true;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_DARK, {
+        checked: true
+      }, false);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      window.matchMedia().matches = true;
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.runtime.sendMessage.resolves({});
+      const i = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_DARK, {
+        checked: true
+      }, true);
+      assert.strictEqual(browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.deepEqual(res, [{}], 'result');
+    });
+
+    it('should not call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_LIGHT, {
+        checked: false
+      }, true);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      const i = browser.storage.local.set.callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_LIGHT, {
+        checked: true
+      }, false);
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.withArgs(THEME).resolves(undefined);
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          type: 'theme',
+          enabled: true
+        }
+      ]);
+      browser.runtime.sendMessage.resolves({});
+      const i = browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount;
+      const j = browser.runtime.sendMessage.callCount;
+      const res = await func(THEME_LIGHT, {
+        checked: true
+      }, true);
+      assert.strictEqual(browser.storage.local.set.withArgs({
+        [THEME]: [THEME_AUTO, false]
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
+        'called');
+      assert.deepEqual(res, [{}], 'result');
     });
 
     it('should set variable', async () => {

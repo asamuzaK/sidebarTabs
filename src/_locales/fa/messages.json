@@ -586,17 +586,17 @@
   "optionsThemeCustomText": {
     "message": "متن"
   },
-  "optionsThemeDarkLabel": {
-    "message": "پوسته تاریک"
-  },
   "optionsThemeDetail": {
     "message": "پوسته ای را انتخاب کنید."
   },
-  "optionsThemeLightLabel": {
-    "message": "پوسته روشن"
-  },
   "optionsTitle": {
     "message": "زبانه های افقی - تنظیمات"
+  },
+  "optionsUseFrameColor": {
+    "message": "Use tab color for sidebar background"
+  },
+  "optionsUseFrameColorDetail": {
+    "message": "Override the background color of the sidebar with the background color of the inactive tab."
   },
   "optionsUseUserCSS": {
     "message": "استایل شیت (سبک نمایش) دلخواه من را اعمال کن"

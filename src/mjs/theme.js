@@ -25,12 +25,12 @@ import {
   CSS_VAR_HEADING_TEXT_GROUP_3, CSS_VAR_HEADING_TEXT_GROUP_4,
   CSS_VAR_HEADING_TEXT_PINNED, CSS_VAR_OUTLINE_FOCUS,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
-  CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_HOVER_SHADOW,
-  CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
+  CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_FRAME, CUSTOM_BG_HOVER,
+  CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE, CUSTOM_BORDER_FIELD, CUSTOM_BORDER_FIELD_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_DISCARDED,
-  CUSTOM_COLOR_FIELD, CUSTOM_COLOR_FIELD_ACTIVE, CUSTOM_COLOR_HOVER,
-  CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  CUSTOM_COLOR_FIELD, CUSTOM_COLOR_FIELD_ACTIVE, CUSTOM_COLOR_FRAME,
+  CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
@@ -83,6 +83,7 @@ export const themeMap = {
     [CUSTOM_BG_DISCARDED]: '#f0f0f4',
     [CUSTOM_BG_FIELD]: '#ffffffcc',
     [CUSTOM_BG_FIELD_ACTIVE]: '#20123bf5',
+    [CUSTOM_BG_FRAME]: '#f9f9fb', // NOTE: not applied
     [CUSTOM_BG_HOVER]: '#dbd9e1',
     [CUSTOM_BG_HOVER_SHADOW]: '#20123b1a',
     [CUSTOM_BG_SELECT]: '#ffffff',
@@ -95,6 +96,7 @@ export const themeMap = {
     [CUSTOM_COLOR_DISCARDED]: '#20123b',
     [CUSTOM_COLOR_FIELD]: '#20123b',
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_FRAME]: '#20123b', // NOTE: not applied
     [CUSTOM_COLOR_HOVER]: '#20123b',
     [CUSTOM_COLOR_SELECT]: '#20123b',
     [CUSTOM_COLOR_SELECT_HOVER]: '#20123b',
@@ -111,6 +113,7 @@ export const themeMap = {
     [CUSTOM_BG_DISCARDED]: '#2d245b',
     [CUSTOM_BG_FIELD]: '#2d245b',
     [CUSTOM_BG_FIELD_ACTIVE]: '#2d245bfa',
+    [CUSTOM_BG_FRAME]: '#f9f9fb', // NOTE: not applied
     [CUSTOM_BG_HOVER]: '#40376c',
     [CUSTOM_BG_HOVER_SHADOW]: '#e8e0ff1a',
     [CUSTOM_BG_SELECT]: '#3c1f7b',
@@ -123,6 +126,7 @@ export const themeMap = {
     [CUSTOM_COLOR_DISCARDED]: '#e8e0ff',
     [CUSTOM_COLOR_FIELD]: '#e8e0ff',
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#e8e0ff',
+    [CUSTOM_COLOR_FRAME]: '#e8e0ff', // NOTE: not applied
     [CUSTOM_COLOR_HOVER]: '#e8e0ff',
     [CUSTOM_COLOR_SELECT]: '#e8e0ff',
     [CUSTOM_COLOR_SELECT_HOVER]: '#e8e0ff',
@@ -139,6 +143,7 @@ export const themeMap = {
     [CUSTOM_BG_DISCARDED]: '#38383d',
     [CUSTOM_BG_FIELD]: '#1c1b22',
     [CUSTOM_BG_FIELD_ACTIVE]: '#42414d',
+    [CUSTOM_BG_FRAME]: '#1c1b22',
     [CUSTOM_BG_HOVER]: '#4c4c50',
     [CUSTOM_BG_HOVER_SHADOW]: '#fbfbfe1a',
     [CUSTOM_BG_SELECT]: '#42414d',
@@ -151,6 +156,7 @@ export const themeMap = {
     [CUSTOM_COLOR_DISCARDED]: '#f9f9fa',
     [CUSTOM_COLOR_FIELD]: '#fbfbfe',
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#fbfbfe',
+    [CUSTOM_COLOR_FRAME]: '#fbfbfe',
     [CUSTOM_COLOR_HOVER]: '#f9f9fa',
     [CUSTOM_COLOR_SELECT]: '#fbfbfe',
     [CUSTOM_COLOR_SELECT_HOVER]: '#fbfbfe',
@@ -167,6 +173,7 @@ export const themeMap = {
     [CUSTOM_BG_DISCARDED]: '#f0f0f4',
     [CUSTOM_BG_FIELD]: '#f0f0f4',
     [CUSTOM_BG_FIELD_ACTIVE]: '#ffffff',
+    [CUSTOM_BG_FRAME]: '#f0f0f4',
     [CUSTOM_BG_HOVER]: '#dadade',
     [CUSTOM_BG_HOVER_SHADOW]: '#15141a1a',
     [CUSTOM_BG_SELECT]: '#ffffff',
@@ -179,6 +186,7 @@ export const themeMap = {
     [CUSTOM_COLOR_DISCARDED]: '#15141a',
     [CUSTOM_COLOR_FIELD]: '#15141a',
     [CUSTOM_COLOR_FIELD_ACTIVE]: '#15141a',
+    [CUSTOM_COLOR_FRAME]: '#15141a',
     [CUSTOM_COLOR_HOVER]: '#15141a',
     [CUSTOM_COLOR_SELECT]: '#15141a',
     [CUSTOM_COLOR_SELECT_HOVER]: '#15141a',
@@ -239,22 +247,35 @@ export const setCurrentThemeColors = async (key, value) => {
 /**
  * get current theme base values
  *
- * @param {boolean} useFrame - use frame color
+ * @param {object} opt - options
  * @returns {object} - values
  */
-export const getCurrentThemeBaseValues = async (useFrame = false) => {
+export const getCurrentThemeBaseValues = async (opt = {}) => {
   const values = new Map();
   const currentColorKeys = new Set();
+  const { themeId: id, useFrame } = opt;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const baseValues = (dark && themeMap[THEME_DARK]) || themeMap[THEME_LIGHT];
   const items = Object.keys(baseValues);
+  let themeId;
+  if (id && isString(id)) {
+    themeId = id;
+  } else {
+    themeId = await getThemeId();
+  }
   for (const key of items) {
     switch (key) {
       case CUSTOM_BG:
       case CUSTOM_BG_DISCARDED: {
-        const valueA = !useFrame && currentThemeColors.get('sidebar');
-        const valueB = currentThemeColors.get(FRAME_BG);
-        const value = valueA || valueB || baseValues[key];
+        let value;
+        if (useFrame && themeId !== THEME_ALPEN_ID) {
+          const valueA = currentThemeColors.get(FRAME_BG);
+          value = valueA || baseValues[CUSTOM_BG_FRAME];
+        } else {
+          const valueA = currentThemeColors.get('sidebar');
+          const valueB = currentThemeColors.get(FRAME_BG);
+          value = valueA || valueB || baseValues[key];
+        }
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -282,6 +303,14 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
       case CUSTOM_BG_FIELD_ACTIVE: {
         const valueA = currentThemeColors.get('toolbar_field_focus');
         const value = valueA || baseValues[key];
+        values.set(key, value);
+        if (/^currentColor$/i.test(value)) {
+          currentColorKeys.add(key);
+        }
+        break;
+      }
+      case CUSTOM_BG_FRAME: {
+        const value = currentThemeColors.get(FRAME_BG) || baseValues[key];
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -318,15 +347,23 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
       }
       case CUSTOM_COLOR:
       case CUSTOM_COLOR_DISCARDED: {
-        const valueA = !useFrame && currentThemeColors.has('sidebar') &&
-          currentThemeColors.get('sidebar_text');
-        const valueB = currentThemeColors.get(FRAME_TEXT);
-        const value = valueA || valueB || baseValues[key];
-        if (/^currentColor$/i.test(value)) {
-          values.set(key, baseValues[CUSTOM_COLOR]);
+        let value;
+        if (useFrame && themeId !== THEME_ALPEN_ID) {
+          const valueA = currentThemeColors.get(FRAME_TEXT);
+          value = valueA || baseValues[CUSTOM_COLOR_FRAME];
+          if (/^currentColor$/i.test(value)) {
+            value = baseValues[CUSTOM_COLOR_FRAME];
+          }
         } else {
-          values.set(key, value);
+          const valueA = currentThemeColors.has('sidebar') &&
+            currentThemeColors.get('sidebar_text');
+          const valueB = currentThemeColors.get(FRAME_TEXT);
+          value = valueA || valueB || baseValues[key];
+          if (/^currentColor$/i.test(value)) {
+            value = baseValues[CUSTOM_COLOR];
+          }
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_COLOR_ACTIVE: {
@@ -334,7 +371,11 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
         const valueB = currentThemeColors.get(FRAME_TEXT);
         const value = valueA || valueB || baseValues[key];
         if (/^currentColor$/i.test(value)) {
-          values.set(key, baseValues[CUSTOM_COLOR]);
+          if (useFrame && themeId !== THEME_ALPEN_ID) {
+            values.set(key, baseValues[CUSTOM_COLOR_FRAME]);
+          } else {
+            values.set(key, baseValues[CUSTOM_COLOR]);
+          }
         } else {
           values.set(key, value);
         }
@@ -357,6 +398,18 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
         }
+        break;
+      }
+      case CUSTOM_COLOR_FRAME: {
+        let value = currentThemeColors.get(FRAME_TEXT) || baseValues[key];
+        if (/^currentColor$/i.test(value)) {
+          if (useFrame && themeId !== THEME_ALPEN_ID) {
+            value = baseValues[key];
+          } else {
+            value = baseValues[CUSTOM_COLOR];
+          }
+        }
+        values.set(key, value);
         break;
       }
       case CUSTOM_COLOR_SELECT: {
@@ -397,7 +450,11 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
           value = values.get(CUSTOM_COLOR_SELECT);
           break;
         default:
-          value = values.get(CUSTOM_COLOR);
+          if (useFrame && themeId !== THEME_ALPEN_ID) {
+            value = values.get(CUSTOM_COLOR_FRAME);
+          } else {
+            value = values.get(CUSTOM_COLOR);
+          }
       }
       values.set(key, value);
     }
@@ -410,7 +467,7 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
-  if ((!useFrame && currentThemeColors.has('sidebar')) ||
+  if (useFrame || currentThemeColors.has('sidebar') ||
       currentThemeColors.has(FRAME_BG)) {
     const base = values.get(CUSTOM_BG);
     const color = await convertColorToHex(values.get(CUSTOM_COLOR));
@@ -501,7 +558,7 @@ export const getCurrentThemeBaseValues = async (useFrame = false) => {
  * @returns {object} - values
  */
 export const getBaseValues = async (opt = {}) => {
-  const { startup, themeId, useFrame, windowId } = opt;
+  const { startup, theme, themeId, useFrame, windowId } = opt;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
   if (themeId && isString(themeId)) {
@@ -514,10 +571,14 @@ export const getBaseValues = async (opt = {}) => {
         }
         break;
       case THEME_DARK_ID:
-        values = themeMap[THEME_DARK];
+        if (dark && !startup && !useFrame) {
+          values = themeMap[THEME_DARK];
+        }
         break;
       case THEME_LIGHT_ID:
-        values = themeMap[THEME_LIGHT];
+        if (!dark && !startup && !useFrame) {
+          values = themeMap[THEME_LIGHT];
+        }
         break;
       case THEME_SYSTEM_ID:
         if (!startup && !useFrame) {
@@ -532,8 +593,14 @@ export const getBaseValues = async (opt = {}) => {
     }
   }
   if (!values) {
-    const appliedTheme =
-      await getCurrentTheme(Number.isInteger(windowId) ? windowId : null);
+    let appliedTheme;
+    if (isObjectNotEmpty(theme) &&
+        Object.prototype.hasOwnProperty.call(theme, 'colors')) {
+      appliedTheme = theme;
+    } else {
+      appliedTheme =
+        await getCurrentTheme(Number.isInteger(windowId) ? windowId : null);
+    }
     if (isObjectNotEmpty(appliedTheme) &&
         Object.prototype.hasOwnProperty.call(appliedTheme, 'colors')) {
       const { colors } = appliedTheme;
@@ -548,7 +615,10 @@ export const getBaseValues = async (opt = {}) => {
           }
         }
         await Promise.all(func);
-        values = await getCurrentThemeBaseValues(!!useFrameColor);
+        values = await getCurrentThemeBaseValues({
+          themeId,
+          useFrame: !!useFrameColor
+        });
       } else if (dark) {
         values = themeMap[THEME_DARK];
       } else {
@@ -708,19 +778,20 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
 /**
  * init custom theme
  *
- * @param {boolean} rem - remove storage
+ * @param {object} opt - options
  * @returns {?Function} - sendCurrentTheme()
  */
-export const initCustomTheme = async (rem = false) => {
+export const initCustomTheme = async (opt = {}) => {
   const elm = document.getElementById(THEME_CUSTOM_ID);
   const obj = currentTheme.get(THEME_CURRENT);
   let func;
   if (elm && obj) {
+    const { remove, useFrame } = opt;
     let themeId = currentTheme.get(THEME_CURRENT_ID);
     if (!themeId) {
       themeId = await getThemeId();
     }
-    if (rem) {
+    if (remove) {
       const { themeList } = await getStorage(THEME_LIST);
       if (isObjectNotEmpty(themeList)) {
         if (Object.prototype.hasOwnProperty.call(themeList, themeId)) {
@@ -739,7 +810,8 @@ export const initCustomTheme = async (rem = false) => {
     currentTheme.clear();
     await deleteCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
     await setCurrentThemeValue({
-      themeId
+      themeId,
+      useFrame
     });
     await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
     func = sendCurrentTheme(themeId);
@@ -750,10 +822,10 @@ export const initCustomTheme = async (rem = false) => {
 /**
  * get theme info
  *
- * @param {string} themeId - theme ID
+ * @param {object} opt - options
  * @returns {Array} - theme info
  */
-export const getThemeInfo = async themeId => {
+export const getThemeInfo = async (opt = {}) => {
   const themes = new Map();
   const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
@@ -767,6 +839,7 @@ export const getThemeInfo = async themeId => {
     }
   }
   if (!themes.size) {
+    let { themeId } = opt;
     if (!themeId) {
       themeId = await getThemeId();
     }
@@ -792,15 +865,12 @@ export const getThemeInfo = async themeId => {
  * @param {object} opt - options
  * @returns {void}
  */
-export const setTheme = async (info, opt = {}) => {
-  if (!Array.isArray(info)) {
-    throw new TypeError(`Expected Array but got ${getType(info)}.`);
-  }
+export const setTheme = async (info = [], opt = {}) => {
   const [key, value] = info;
   let { local, themeId } = opt;
+  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const elm = document.querySelector('body');
   const { classList } = elm;
-  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let item;
   if (key === THEME_AUTO) {
     if (!isString(themeId)) {
@@ -842,7 +912,7 @@ export const setTheme = async (info, opt = {}) => {
   } else {
     item = key;
   }
-  if (!item) {
+  if (item === THEME_DARK || item === THEME_LIGHT || !item) {
     item = THEME_AUTO;
   }
   switch (item) {
@@ -850,20 +920,6 @@ export const setTheme = async (info, opt = {}) => {
       classList.add(CLASS_THEME_CUSTOM);
       classList.remove(CLASS_THEME_DARK);
       classList.remove(CLASS_THEME_LIGHT);
-      classList.remove(CLASS_THEME_SYSTEM);
-      break;
-    }
-    case THEME_DARK: {
-      classList.remove(CLASS_THEME_CUSTOM);
-      classList.add(CLASS_THEME_DARK);
-      classList.remove(CLASS_THEME_LIGHT);
-      classList.remove(CLASS_THEME_SYSTEM);
-      break;
-    }
-    case THEME_LIGHT: {
-      classList.remove(CLASS_THEME_CUSTOM);
-      classList.remove(CLASS_THEME_DARK);
-      classList.add(CLASS_THEME_LIGHT);
       classList.remove(CLASS_THEME_SYSTEM);
       break;
     }
@@ -913,7 +969,7 @@ export const timeStamp = new Map();
  * @returns {?Function} - recurse applyLocalTheme()
  */
 export const applyLocalTheme = async (opt = {}) => {
-  const { local, theme: appliedTheme, themeId, windowId } = opt;
+  const { local, theme: appliedTheme, themeId, useFrame, windowId } = opt;
   let func;
   if (local && isObjectNotEmpty(appliedTheme) &&
       Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
@@ -924,8 +980,9 @@ export const applyLocalTheme = async (opt = {}) => {
     if (timeStamp.get('time') === t) {
       await setCurrentThemeValue({
         themeId,
+        useFrame,
         windowId,
-        useFrame: true
+        theme: appliedTheme
       });
       await setTheme(['', false], {
         local,
@@ -942,6 +999,7 @@ export const applyLocalTheme = async (opt = {}) => {
         } else {
           func = applyLocalTheme({
             local,
+            useFrame,
             windowId,
             theme: {
               colors: currentColors
@@ -961,23 +1019,26 @@ export const applyLocalTheme = async (opt = {}) => {
  * @returns {Function} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
-  const { local, startup, theme, windowId } = opt;
+  const { local, startup, theme: appliedTheme, useFrame, windowId } = opt;
   const themeId = await getThemeId();
   let func;
-  if (local && isObjectNotEmpty(theme) &&
-      Object.prototype.hasOwnProperty.call(theme, 'colors') &&
+  if (local && isObjectNotEmpty(appliedTheme) &&
+      Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
       Number.isInteger(windowId)) {
     func = applyLocalTheme({
       local,
-      theme,
       themeId,
-      windowId
+      useFrame,
+      windowId,
+      theme: appliedTheme
     });
   } else {
     const themeInfo = await getThemeInfo(themeId);
     await setCurrentThemeValue({
       startup,
-      themeId
+      themeId,
+      useFrame,
+      theme: appliedTheme
     });
     func = setTheme(themeInfo, {
       themeId

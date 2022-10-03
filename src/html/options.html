@@ -24,16 +24,6 @@
               <label for="autoTheme" data-i18n="optionsAutoLabel">
                 Auto
               </label>
-              <input type="radio" id="lightTheme" name="themeRadio"
-                     value="light-theme" />
-              <label for="lightTheme" data-i18n="optionsThemeLightLabel">
-                Light Theme
-              </label>
-              <input type="radio" id="darkTheme" name="themeRadio"
-                     value="dark-theme" />
-              <label for="darkTheme" data-i18n="optionsThemeDarkLabel">
-                Dark Theme
-              </label>
               <input type="radio" id="customTheme" name="themeRadio"
                      value="custom-theme" aria-controls="customThemeSettings" />
               <label for="customTheme" data-i18n="optionsThemeCustomLabel">
@@ -167,6 +157,25 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div>
+            <p>
+              <span class="browser-style">
+                <input type="checkbox" id="useFrameColor" />
+                <label for="useFrameColor" class="checkboxLabel"
+                       data-i18n="optionsUseFrameColor"
+                       aria-details="useFrameColorDetail">
+                  Use tab color for sidebar background
+                </label>
+              </span>
+            </p>
+            <details id="useFrameColorDetail">
+              <div>
+                <p data-i18n="optionsUseFrameColorDetail">
+                  Override the background color of the sidebar with the background color of the inactive tab.
+                </p>
+              </div>
+            </details>
           </div>
           <div>
             <p>
