@@ -51,7 +51,7 @@ import menuItems from './menu-items.js';
 import {
   applyTheme, initCustomTheme, sendCurrentTheme, setNewTabSeparator,
   setScrollbarWidth, setSidebarTheme, setTabGroupColorBarWidth, setTabHeight,
-  setTheme, setUserCss, updateCustomThemeCss
+  setUserCss, updateCustomThemeCss
 } from './theme.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -66,7 +66,7 @@ import {
   CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, HIGHLIGHTED,
+  DISCARDED, EXT_INIT, FRAME_COLOR_USE, HIGHLIGHTED,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
   OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
@@ -107,6 +107,7 @@ export const userOpts = new Map();
 /* user options keys */
 export const userOptsKeys = new Set([
   BROWSER_SETTINGS_READ,
+  FRAME_COLOR_USE,
   NEW_TAB_SEPARATOR_SHOW,
   SCROLL_DIR_INVERT,
   TAB_CLOSE_DBLCLICK,
@@ -1946,6 +1947,7 @@ export const prepareTabMenuItems = async elm => {
  * @returns {?Function} - applyTheme()
  */
 export const handleUpdatedTheme = async info => {
+  const useFrame = userOpts.get(FRAME_COLOR_USE);
   let func;
   if (isObjectNotEmpty(info)) {
     const { theme, windowId: themeWindowId } = info;
@@ -1957,16 +1959,20 @@ export const handleUpdatedTheme = async info => {
         func = applyTheme({
           local,
           theme,
+          useFrame,
           windowId
         });
       }
     } else {
       func = applyTheme({
-        theme
+        theme,
+        useFrame
       });
     }
   } else {
-    func = applyTheme();
+    func = applyTheme({
+      useFrame
+    });
   }
   return func || null;
 };
@@ -2148,6 +2154,21 @@ export const setStorageValue = async (item, obj, changed = false) => {
           );
         }
         break;
+      case FRAME_COLOR_USE:
+        if (changed) {
+          func.push(setUserOpts({
+            [item]: {
+              checked
+            }
+          }).then(handleUpdatedTheme));
+        } else {
+          func.push(setUserOpts({
+            [item]: {
+              checked
+            }
+          }));
+        }
+        break;
       case NEW_TAB_SEPARATOR_SHOW:
         func.push(setUserOpts({
           [item]: {
@@ -2203,12 +2224,12 @@ export const setStorageValue = async (item, obj, changed = false) => {
       case THEME_DARK:
       case THEME_LIGHT:
         if (changed && checked) {
-          func.push(setTheme([item, !!checked]));
+          func.push(handleUpdatedTheme());
         }
         break;
       case THEME_LIST:
         if (changed) {
-          func.push(applyTheme());
+          func.push(handleUpdatedTheme());
         }
         break;
       case THEME_UI_SCROLLBAR_NARROW:
@@ -2445,17 +2466,20 @@ export const setMain = async () => {
  *
  * @returns {Function} - promise chain
  */
-export const startup = () => Promise.all([
-  addPort().then(setSidebar).then(setUserOpts).then(setMain)
-    .then(applyUserStyle).then(requestSidebarStateUpdate),
-  localizeHtml(),
-  setContextualIds(),
-  setSidebarTheme({
+export const startup = async () => {
+  await Promise.all([
+    addPort().then(setSidebar).then(setUserOpts).then(setMain)
+      .then(applyUserStyle).then(requestSidebarStateUpdate),
+    localizeHtml(),
+    setContextualIds()
+  ]);
+  const useFrame = userOpts.get(FRAME_COLOR_USE);
+  return setSidebarTheme({
+    useFrame,
     startup: true
-  })
-]).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
-  .then(toggleTabGrouping).then(restoreHighlightedTabs).then(requestSaveSession)
-  .then(getLastClosedTab).catch(throwErr);
-
+  }).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
+    .then(toggleTabGrouping).then(restoreHighlightedTabs)
+    .then(requestSaveSession).then(getLastClosedTab);
+};
 // For test
 export { ports };

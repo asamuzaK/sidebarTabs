@@ -103,6 +103,7 @@ export const DROP_TARGET_BEFORE = 'drop-before-target';
 export const EXT_INIT = 'initExtension';
 export const EXT_LOCALE = 'extensionLocale';
 export const EXT_NAME = 'extensionName';
+export const FRAME_COLOR_USE = 'useFrameColor';
 export const HIGHLIGHTED = 'highlighted';
 export const IDENTIFIED = 'identified';
 export const MENU_SHOW_MOUSEUP = 'showMenuOnMouseup';

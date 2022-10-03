@@ -34,7 +34,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
-  NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
+  FRAME_COLOR_USE, NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_ID,
   THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
@@ -558,7 +558,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
  * @returns {object} - values
  */
 export const getBaseValues = async (opt = {}) => {
-  const { startup, themeId, useFrame, windowId } = opt;
+  const { startup, theme, themeId, useFrame, windowId } = opt;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let values;
   if (themeId && isString(themeId)) {
@@ -571,10 +571,14 @@ export const getBaseValues = async (opt = {}) => {
         }
         break;
       case THEME_DARK_ID:
-        values = themeMap[THEME_DARK];
+        if (dark && !startup && !useFrame) {
+          values = themeMap[THEME_DARK];
+        }
         break;
       case THEME_LIGHT_ID:
-        values = themeMap[THEME_LIGHT];
+        if (!dark && !startup && !useFrame) {
+          values = themeMap[THEME_LIGHT];
+        }
         break;
       case THEME_SYSTEM_ID:
         if (!startup && !useFrame) {
@@ -589,13 +593,21 @@ export const getBaseValues = async (opt = {}) => {
     }
   }
   if (!values) {
-    const appliedTheme =
-      await getCurrentTheme(Number.isInteger(windowId) ? windowId : null);
+    let appliedTheme;
+    if (isObjectNotEmpty(theme) &&
+        Object.prototype.hasOwnProperty.call(theme, 'colors')) {
+      appliedTheme = theme;
+    } else {
+      appliedTheme =
+        await getCurrentTheme(Number.isInteger(windowId) ? windowId : null);
+    }
     if (isObjectNotEmpty(appliedTheme) &&
         Object.prototype.hasOwnProperty.call(appliedTheme, 'colors')) {
       const { colors } = appliedTheme;
       if (isObjectNotEmpty(colors)) {
         const colorsItems = Object.entries(colors);
+        const useFrameColor = (startup && themeId === THEME_SYSTEM_ID) ||
+                              useFrame;
         const func = [];
         for (const [key, value] of colorsItems) {
           if (value) {
@@ -605,7 +617,7 @@ export const getBaseValues = async (opt = {}) => {
         await Promise.all(func);
         values = await getCurrentThemeBaseValues({
           themeId,
-          useFrame: (startup && themeId === THEME_SYSTEM_ID) || useFrame
+          useFrame: !!useFrameColor
         });
       } else if (dark) {
         values = themeMap[THEME_DARK];
@@ -774,6 +786,7 @@ export const initCustomTheme = async (rem = false) => {
   const obj = currentTheme.get(THEME_CURRENT);
   let func;
   if (elm && obj) {
+    const useFrame = await getStorage(FRAME_COLOR_USE);
     let themeId = currentTheme.get(THEME_CURRENT_ID);
     if (!themeId) {
       themeId = await getThemeId();
@@ -797,7 +810,8 @@ export const initCustomTheme = async (rem = false) => {
     currentTheme.clear();
     await deleteCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
     await setCurrentThemeValue({
-      themeId
+      themeId,
+      useFrame
     });
     await updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`);
     func = sendCurrentTheme(themeId);
@@ -808,10 +822,10 @@ export const initCustomTheme = async (rem = false) => {
 /**
  * get theme info
  *
- * @param {string} themeId - theme ID
+ * @param {object} opt - options
  * @returns {Array} - theme info
  */
-export const getThemeInfo = async themeId => {
+export const getThemeInfo = async (opt = {}) => {
   const themes = new Map();
   const data = await getStorage(THEME);
   if (isObjectNotEmpty(data)) {
@@ -825,6 +839,7 @@ export const getThemeInfo = async themeId => {
     }
   }
   if (!themes.size) {
+    let { themeId } = opt;
     if (!themeId) {
       themeId = await getThemeId();
     }
@@ -850,15 +865,12 @@ export const getThemeInfo = async themeId => {
  * @param {object} opt - options
  * @returns {void}
  */
-export const setTheme = async (info, opt = {}) => {
-  if (!Array.isArray(info)) {
-    throw new TypeError(`Expected Array but got ${getType(info)}.`);
-  }
+export const setTheme = async (info = [], opt = {}) => {
   const [key, value] = info;
   let { local, themeId } = opt;
+  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   const elm = document.querySelector('body');
   const { classList } = elm;
-  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
   let item;
   if (key === THEME_AUTO) {
     if (!isString(themeId)) {
@@ -900,7 +912,7 @@ export const setTheme = async (info, opt = {}) => {
   } else {
     item = key;
   }
-  if (!item) {
+  if (item === THEME_DARK || item === THEME_LIGHT || !item) {
     item = THEME_AUTO;
   }
   switch (item) {
@@ -908,20 +920,6 @@ export const setTheme = async (info, opt = {}) => {
       classList.add(CLASS_THEME_CUSTOM);
       classList.remove(CLASS_THEME_DARK);
       classList.remove(CLASS_THEME_LIGHT);
-      classList.remove(CLASS_THEME_SYSTEM);
-      break;
-    }
-    case THEME_DARK: {
-      classList.remove(CLASS_THEME_CUSTOM);
-      classList.add(CLASS_THEME_DARK);
-      classList.remove(CLASS_THEME_LIGHT);
-      classList.remove(CLASS_THEME_SYSTEM);
-      break;
-    }
-    case THEME_LIGHT: {
-      classList.remove(CLASS_THEME_CUSTOM);
-      classList.remove(CLASS_THEME_DARK);
-      classList.add(CLASS_THEME_LIGHT);
       classList.remove(CLASS_THEME_SYSTEM);
       break;
     }
@@ -971,7 +969,7 @@ export const timeStamp = new Map();
  * @returns {?Function} - recurse applyLocalTheme()
  */
 export const applyLocalTheme = async (opt = {}) => {
-  const { local, theme: appliedTheme, themeId, windowId } = opt;
+  const { local, theme: appliedTheme, themeId, useFrame, windowId } = opt;
   let func;
   if (local && isObjectNotEmpty(appliedTheme) &&
       Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
@@ -982,8 +980,9 @@ export const applyLocalTheme = async (opt = {}) => {
     if (timeStamp.get('time') === t) {
       await setCurrentThemeValue({
         themeId,
+        useFrame,
         windowId,
-        useFrame: true
+        theme: appliedTheme
       });
       await setTheme(['', false], {
         local,
@@ -1000,6 +999,7 @@ export const applyLocalTheme = async (opt = {}) => {
         } else {
           func = applyLocalTheme({
             local,
+            useFrame,
             windowId,
             theme: {
               colors: currentColors
@@ -1019,23 +1019,26 @@ export const applyLocalTheme = async (opt = {}) => {
  * @returns {Function} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
-  const { local, startup, theme, windowId } = opt;
+  const { local, startup, theme: appliedTheme, useFrame, windowId } = opt;
   const themeId = await getThemeId();
   let func;
-  if (local && isObjectNotEmpty(theme) &&
-      Object.prototype.hasOwnProperty.call(theme, 'colors') &&
+  if (local && isObjectNotEmpty(appliedTheme) &&
+      Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
       Number.isInteger(windowId)) {
     func = applyLocalTheme({
       local,
-      theme,
       themeId,
-      windowId
+      useFrame,
+      windowId,
+      theme: appliedTheme
     });
   } else {
     const themeInfo = await getThemeInfo(themeId);
     await setCurrentThemeValue({
       startup,
-      themeId
+      themeId,
+      useFrame,
+      theme: appliedTheme
     });
     func = setTheme(themeInfo, {
       themeId
