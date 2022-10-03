@@ -586,14 +586,8 @@
   "optionsThemeCustomText": {
     "message": "Text"
   },
-  "optionsThemeDarkLabel": {
-    "message": "Dark Theme"
-  },
   "optionsThemeDetail": {
     "message": "Choose theme."
-  },
-  "optionsThemeLightLabel": {
-    "message": "Light Theme"
   },
   "optionsTitle": {
     "message": "Sidebar Tabs - Options"

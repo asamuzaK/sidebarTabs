@@ -586,14 +586,8 @@
   "optionsThemeCustomText": {
     "message": "متن"
   },
-  "optionsThemeDarkLabel": {
-    "message": "پوسته تاریک"
-  },
   "optionsThemeDetail": {
     "message": "پوسته ای را انتخاب کنید."
-  },
-  "optionsThemeLightLabel": {
-    "message": "پوسته روشن"
   },
   "optionsTitle": {
     "message": "زبانه های افقی - تنظیمات"

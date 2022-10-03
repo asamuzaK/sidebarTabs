@@ -586,14 +586,8 @@
   "optionsThemeCustomText": {
     "message": "テキスト色"
   },
-  "optionsThemeDarkLabel": {
-    "message": "暗いテーマ"
-  },
   "optionsThemeDetail": {
     "message": "テーマを選択してください。"
-  },
-  "optionsThemeLightLabel": {
-    "message": "明るいテーマ"
   },
   "optionsTitle": {
     "message": "サイドバータブ - 設定"
