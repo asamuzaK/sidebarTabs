@@ -659,7 +659,7 @@ export const setCurrentThemeValue = async (opt = {}) => {
       themeValues = lightValues ?? obsValues;
     }
     for (const [key, value] of items) {
-      const customValue = themeValues[key];
+      const customValue = themeValues?.[key];
       if (customValue) {
         values.set(key, customValue);
       } else {
