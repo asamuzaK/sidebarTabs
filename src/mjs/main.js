@@ -126,7 +126,7 @@ export const userOptsKeys = new Set([
  * set user options
  *
  * @param {object} opt - user option
- * @returns {object} - userOpts
+ * @returns {void}
  */
 export const setUserOpts = async (opt = {}) => {
   let opts;
@@ -146,7 +146,6 @@ export const setUserOpts = async (opt = {}) => {
       userOpts.set(key, !!checked);
     }
   }
-  return userOpts;
 };
 
 /* sidebar */
