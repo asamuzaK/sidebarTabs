@@ -647,7 +647,17 @@ export const setCurrentThemeValue = async (opt = {}) => {
   const items = Object.entries(baseValues);
   if (themeId && isObjectNotEmpty(themeList) &&
       Object.prototype.hasOwnProperty.call(themeList, themeId)) {
-    const { values: themeValues } = themeList[themeId];
+    // TODO: for migration, remove obsValues later
+    const {
+      dark: darkValues, light: lightValues, values: obsValues
+    } = themeList[themeId];
+    const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
+    let themeValues;
+    if (dark) {
+      themeValues = darkValues ?? obsValues;
+    } else {
+      themeValues = lightValues ?? obsValues;
+    }
     for (const [key, value] of items) {
       const customValue = themeValues[key];
       if (customValue) {

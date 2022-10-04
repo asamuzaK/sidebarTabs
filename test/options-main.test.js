@@ -159,7 +159,33 @@ describe('options-main', () => {
         [THEME_LIST]: {
           foo: {
             id: 'foo',
-            values: {
+            light: {
+              bar: '#123456'
+            }
+          }
+        }
+      }, 'result');
+    });
+
+    it('should get result', async () => {
+      window.matchMedia().matches = true;
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      themeId.value = 'foo';
+      elm.id = 'bar';
+      elm.type = 'color';
+      elm.value = '#123456';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
+      const res = await func();
+      assert.deepEqual(res, {
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            dark: {
               bar: '#123456'
             }
           }
@@ -193,8 +219,124 @@ describe('options-main', () => {
         [THEME_LIST]: {
           foo: {
             id: 'foo',
-            values: {
+            light: {
               bar: '#123456'
+            }
+          }
+        }
+      }, 'result');
+    });
+
+    it('should get result', async () => {
+      window.matchMedia().matches = true;
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      themeId.value = 'foo';
+      elm.id = 'bar';
+      elm.type = 'color';
+      elm.value = '#123456';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            values: {
+              bar: '#000000'
+            }
+          }
+        }
+      });
+      const res = await func();
+      assert.deepEqual(res, {
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            dark: {
+              bar: '#123456'
+            }
+          }
+        }
+      }, 'result');
+    });
+
+    it('should get result', async () => {
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      themeId.value = 'foo';
+      elm.id = 'bar';
+      elm.type = 'color';
+      elm.value = '#123456';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            dark: {
+              bar: '#ffffff'
+            },
+            light: {
+              bar: '#000000'
+            }
+          }
+        }
+      });
+      const res = await func();
+      assert.deepEqual(res, {
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            dark: {
+              bar: '#ffffff'
+            },
+            light: {
+              bar: '#123456'
+            }
+          }
+        }
+      }, 'result');
+    });
+
+    it('should get result', async () => {
+      window.matchMedia().matches = true;
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      themeId.value = 'foo';
+      elm.id = 'bar';
+      elm.type = 'color';
+      elm.value = '#123456';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      browser.storage.local.get.withArgs(THEME_LIST).resolves({
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            dark: {
+              bar: '#000000'
+            },
+            light: {
+              bar: '#ffffff'
+            }
+          }
+        }
+      });
+      const res = await func();
+      assert.deepEqual(res, {
+        [THEME_LIST]: {
+          foo: {
+            id: 'foo',
+            dark: {
+              bar: '#123456'
+            },
+            light: {
+              bar: '#ffffff'
             }
           }
         }

@@ -11,9 +11,9 @@ import {
 import { getFolderMap } from './bookmark.js';
 import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
-  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
-  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING,
-  THEME_ID, THEME_LIST, THEME_RADIO,
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME_DARK, EXT_INIT,
+  MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
+  THEME_CUSTOM_SETTING, THEME_ID, THEME_LIST, THEME_RADIO,
   USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from './constant.js';
 
@@ -87,20 +87,29 @@ export const storeCustomTheme = async () => {
   const storeId = themeId?.value;
   let data;
   if (storeId) {
+    const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
     const items = document.querySelectorAll('[type=color]');
-    const themeValues = {};
+    const themeValues = new Map();
     for (const item of items) {
       const { id, value } = item;
-      themeValues[id] = value;
+      themeValues.set(id, value);
     }
     let { themeList } = await getStorage(THEME_LIST);
     if (!themeList) {
       themeList = {};
     }
-    themeList[storeId] = {
-      id: storeId,
-      values: themeValues
-    };
+    const storeTheme = themeList[storeId] ?? {};
+    storeTheme.id = storeId;
+    if (dark) {
+      storeTheme.dark = Object.fromEntries(themeValues);
+    } else {
+      storeTheme.light = Object.fromEntries(themeValues);
+    }
+    // TODO: for migration, remove later
+    if (storeTheme.values) {
+      delete storeTheme.values;
+    }
+    themeList[storeId] = storeTheme;
     data = {
       [THEME_LIST]: themeList
     };
