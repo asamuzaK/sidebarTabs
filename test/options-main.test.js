@@ -778,6 +778,74 @@ describe('options-main', () => {
       assert.strictEqual(themeId.value, 'foobar', 'value');
       assert.strictEqual(elm.value, '#1234ab', 'value');
     });
+
+    it('should set color value', async () => {
+      window.matchMedia().matches = true;
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      elm.id = 'foo';
+      elm.type = 'color';
+      elm.value = '#ffffff';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      await func({
+        id: 'foobar',
+        values: {
+          foo: '#1234AB'
+        }
+      });
+      assert.strictEqual(themeId.value, 'foobar', 'value');
+      assert.strictEqual(elm.value, '#1234ab', 'value');
+    });
+
+    it('should set color value', async () => {
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      elm.id = 'foo';
+      elm.type = 'color';
+      elm.value = '#ffffff';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      await func({
+        id: 'foobar',
+        dark: {
+          foo: '#000000'
+        },
+        light: {
+          foo: '#1234AB'
+        }
+      });
+      assert.strictEqual(themeId.value, 'foobar', 'value');
+      assert.strictEqual(elm.value, '#1234ab', 'value');
+    });
+
+    it('should set color value', async () => {
+      window.matchMedia().matches = true;
+      const themeId = document.createElement('input');
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      themeId.id = THEME_ID;
+      elm.id = 'foo';
+      elm.type = 'color';
+      elm.value = '#ffffff';
+      body.appendChild(themeId);
+      body.appendChild(elm);
+      await func({
+        id: 'foobar',
+        dark: {
+          foo: '#1234AB'
+        },
+        light: {
+          foo: '#000000'
+        }
+      });
+      assert.strictEqual(themeId.value, 'foobar', 'value');
+      assert.strictEqual(elm.value, '#1234ab', 'value');
+    });
   });
 
   describe('add bookmark locations', () => {
