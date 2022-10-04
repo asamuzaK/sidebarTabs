@@ -239,20 +239,12 @@ export const addCustomThemeListener = async () => {
  */
 export const setCustomThemeValue = async (obj = {}) => {
   if (isObjectNotEmpty(obj)) {
-    // NOTE: for migration, remove obsValues later
-    const { id, dark: darkValues, light: lightValues, values: obsValues } = obj;
-    const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
+    const { id, values } = obj;
     const themeId = document.getElementById(THEME_ID);
     if (themeId) {
       themeId.value = id || '';
     }
-    let themeValues;
-    if (dark) {
-      themeValues = darkValues ?? obsValues;
-    } else {
-      themeValues = lightValues ?? obsValues;
-    }
-    const items = Object.entries(themeValues);
+    const items = Object.entries(values);
     for (const [key, value] of items) {
       const elm = document.getElementById(key);
       if (elm) {
