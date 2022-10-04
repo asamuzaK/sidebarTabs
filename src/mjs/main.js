@@ -2172,21 +2172,17 @@ export const setStorageValue = async (item, obj, changed = false) => {
           );
         }
         break;
-      case FRAME_COLOR_USE:
+      case FRAME_COLOR_USE: {
+        await setUserOpts({
+          [item]: {
+            checked
+          }
+        });
         if (changed) {
-          func.push(setUserOpts({
-            [item]: {
-              checked
-            }
-          }).then(handleUpdatedTheme));
-        } else {
-          func.push(setUserOpts({
-            [item]: {
-              checked
-            }
-          }));
+          func.push(handleUpdatedTheme());
         }
         break;
+      }
       case NEW_TAB_SEPARATOR_SHOW:
         func.push(setUserOpts({
           [item]: {

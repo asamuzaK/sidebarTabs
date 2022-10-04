@@ -11662,7 +11662,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.isTrue(mjs.userOpts.get(FRAME_COLOR_USE), 'opts');
-      assert.deepEqual(res, [mjs.userOpts], 'result');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should call function', async () => {
