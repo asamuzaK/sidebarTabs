@@ -10,9 +10,10 @@ import {
 import { getStorage, getTab, queryTabs } from './browser.js';
 import { closeTabs, moveTabsInOrder } from './browser-tabs.js';
 import { bookmarkTabs } from './bookmark.js';
+import { requestSaveSession } from './session.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTemplate, requestSaveSession
+  getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
 import {
   ACTIVE,
@@ -816,4 +817,4 @@ export const ungroupTabs = async node => {
 };
 
 // For test
-export { ports } from './util.js';
+export { ports } from './session.js';

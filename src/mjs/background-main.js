@@ -8,7 +8,7 @@ import {
 } from './common.js';
 import { getCurrentWindow, getWindow } from './browser.js';
 import { ports, removePort } from './port.js';
-import { saveSessionTabList } from './util.js';
+import { saveSessionTabList } from './session.js';
 import {
   SESSION_SAVE, SIDEBAR, SIDEBAR_STATE_UPDATE, TOGGLE_STATE
 } from './constant.js';

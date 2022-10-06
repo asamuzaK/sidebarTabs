@@ -13,14 +13,15 @@ import {
   restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { addPort, ports } from './port.js';
+import { bookmarkTabs } from './bookmark.js';
+import { getSessionTabList, requestSaveSession } from './session.js';
 import { localizeHtml } from './localize.js';
 import {
-  activateTab, createSidebarTab, getSessionTabList, getSidebarTab,
+  activateTab, createSidebarTab, getSidebarTab,
   getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex, getTabsInRange,
-  getTemplate, isNewTab, requestSaveSession, scrollTabIntoView,
+  getTemplate, isNewTab, scrollTabIntoView,
   storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
-import { bookmarkTabs } from './bookmark.js';
 import {
   closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,

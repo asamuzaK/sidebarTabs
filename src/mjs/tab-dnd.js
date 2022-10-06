@@ -10,12 +10,12 @@ import {
 import {
   createTabsInOrder, highlightTabs, moveTabsInOrder
 } from './browser-tabs.js';
-import {
-  activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate,
-  requestSaveSession
-} from './util.js';
-import { restoreTabContainers } from './tab-group.js';
 import { isUri } from './uri-scheme.js';
+import { requestSaveSession } from './session.js';
+import { restoreTabContainers } from './tab-group.js';
+import {
+  activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
+} from './util.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
@@ -751,4 +751,4 @@ export const handleDragStart = (evt, opt = {}) => {
 };
 
 // For test
-export { ports } from './util.js';
+export { ports } from './session.js';
