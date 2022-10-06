@@ -3,10 +3,10 @@
     "message": "fa"
   },
   "extensionDescription": {
-    "message": "زبانه ها را به صورت افقی نشان میدهد. همچنین، میتوانید زبانه ها را گروه بندی کنید و گروه ها را جمع/باز کنید."
+    "message": "زبانه ها را به صورت کناری نشان میدهد. همچنین، میتوانید زبانه ها را گروه بندی کنید و گروه ها را جمع/باز کنید."
   },
   "extensionName": {
-    "message": "زبانه های افقی"
+    "message": "زبانه های کناری"
   },
   "extensionShortName": {
     "message": "زبانه ها"
@@ -464,10 +464,10 @@
     "message": "راه اندازی دوباره"
   },
   "optionsInitSidebar": {
-    "message": "راه اندازی دوباره زبانه های افقی"
+    "message": "راه اندازی دوباره زبانه های کناری"
   },
   "optionsInitSidebarDetail": {
-    "message": "زبانه های افقی را دوباره راه اندازی کن. همه تنظیماتی که انجام داده اید حذف خواهند شد."
+    "message": "زبانه های کناری را دوباره راه اندازی کن. همه تنظیماتی که انجام داده اید حذف خواهند شد."
   },
   "optionsInvertScrollDirection": {
     "message": "جهت اسکرول را وارونه کن"
@@ -551,7 +551,7 @@
     "message": "اگر زبانه جدیدی را از بین زبانه های گروه بندی شده باز کنید، آن زبانه در آخر گروه باز میشود و نه در زیر زبانه فعّال."
   },
   "optionsTheme": {
-    "message": "پوسته زبانه های افقی"
+    "message": "پوسته زبانه های کناری"
   },
   "optionsThemeCustomLabel": {
     "message": "پوسته دلخواه"
@@ -580,7 +580,7 @@
   "optionsThemeCustomTabSelected": {
     "message": "زبانه انتخاب شده"
   },
-  "c": {
+  "optionsThemeCustomTabSelectedHover": {
     "message": "نگه داشتن موس روی زبانه انتخاب شده"
   },
   "optionsThemeCustomText": {
@@ -590,13 +590,13 @@
     "message": "پوسته ای را انتخاب کنید."
   },
   "optionsTitle": {
-    "message": "زبانه های افقی - تنظیمات"
+    "message": "زبانه های کناری - تنظیمات"
   },
   "optionsUseFrameColor": {
-    "message": "Use tab color for sidebar background"
+    "message": "از رنگ زبانه برای نوار کناری استفاده کن"
   },
   "optionsUseFrameColorDetail": {
-    "message": "Override the background color of the sidebar with the background color of the inactive tab."
+    "message": "رنگ پس‌زمینه نوار کناری را با رنگ پس‌زمینه زبانه غیرفعّال جایگزین کن"
   },
   "optionsUseUserCSS": {
     "message": "استایل شیت (سبک نمایش) دلخواه من را اعمال کن"
