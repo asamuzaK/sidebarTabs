@@ -593,7 +593,7 @@
     "message": "サイドバータブ - 設定"
   },
   "optionsUseFrameColor": {
-    "message": "サイドバーにタブの色を使用する"
+    "message": "サイドバーにタブの背景色を使用する"
   },
   "optionsUseFrameColorDetail": {
     "message": "サイドバーの背景色を非アクティブなタブの背景色で上書きします。"
