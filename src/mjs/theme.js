@@ -592,7 +592,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       let borderColor;
       if (/currentcolor/i.test(border)) {
         borderColor = border.replace(/currentcolor/img, color);
-      }  else {
+      } else {
         borderColor = border;
       }
       value = await getColorInHex(borderColor);
@@ -614,7 +614,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       let borderColor;
       if (/currentcolor/i.test(border)) {
         borderColor = border.replace(/currentcolor/img, color);
-      }  else {
+      } else {
         borderColor = border;
       }
       value = await getColorInHex(borderColor);
@@ -636,7 +636,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       let borderColor;
       if (/currentcolor/i.test(border)) {
         borderColor = border.replace(/currentcolor/img, color);
-      }  else {
+      } else {
         borderColor = border;
       }
       value = await getColorInHex(borderColor);
