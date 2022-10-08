@@ -565,7 +565,7 @@ export const convertColorMixToHex = async value => {
         throw new RangeError(`${pctB} is not between 0% and 100%.`);
       }
       if (p1 + p2 === 0) {
-        throw new Error(`Invalid function: ${value}`);
+        throw new Error(`Invalid property value: ${value}`);
       }
       pA = p1 / (p1 + p2);
       pB = p2 / (p1 + p2);

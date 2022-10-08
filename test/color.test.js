@@ -617,7 +617,8 @@ describe('color', () => {
       await func('color-mix(in srgb, blue 0%, red 0%)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
-          'Invalid function: color-mix(in srgb, blue 0%, red 0%)', 'message');
+          'Invalid property value: color-mix(in srgb, blue 0%, red 0%)',
+          'message');
       });
     });
 
