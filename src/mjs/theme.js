@@ -8,7 +8,7 @@ import {
   getCurrentTheme, getCurrentWindow, getEnabledTheme, getStorage,
   removeStorage, sendMessage, setStorage
 } from './browser.js';
-import { blendColors, convertColorToHex } from './color.js';
+import { blendColors, getColorInHex } from './color.js';
 import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
@@ -237,7 +237,7 @@ export const setCurrentThemeColors = async (key, value) => {
   if (/^(?:currentcolor|transparent)$/i.test(value)) {
     currentThemeColors.set(key, value);
   } else {
-    const hexValue = await convertColorToHex(value, true);
+    const hexValue = await getColorInHex(value, true);
     if (hexValue) {
       currentThemeColors.set(key, hexValue);
     }
@@ -458,7 +458,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   }
   // override CUSTOM_BG_HOVER_SHADOW color
   if (currentThemeColors.has(FRAME_TEXT)) {
-    const value = await convertColorToHex(currentThemeColors.get(FRAME_TEXT));
+    const value = await getColorInHex(currentThemeColors.get(FRAME_TEXT));
     if (value) {
       values.set(CUSTOM_BG_HOVER_SHADOW, `${value}1a`);
     }
@@ -467,12 +467,11 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   if (useFrame || currentThemeColors.has('sidebar') ||
       currentThemeColors.has(FRAME_BG)) {
     const base = values.get(CUSTOM_BG);
-    const color = await convertColorToHex(values.get(CUSTOM_COLOR));
+    const color = await getColorInHex(values.get(CUSTOM_COLOR));
     const hoverBlend = `${color}1a`;
     const hoverValue = await blendColors(hoverBlend, base);
     const selectBase = values.get(CUSTOM_BG_SELECT);
-    const selectColor =
-      await convertColorToHex(values.get(CUSTOM_COLOR_SELECT));
+    const selectColor = await getColorInHex(values.get(CUSTOM_COLOR_SELECT));
     const selectBlend = `${selectColor}1a`;
     const selectValue = await blendColors(selectBlend, selectBase);
     const heading1 = await blendColors('#cc663399', color);
@@ -540,7 +539,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     if (/^currentColor$/i.test(value)) {
       value = values.get(CUSTOM_COLOR);
     }
-    value = await convertColorToHex(value);
+    value = await getColorInHex(value);
     if (value) {
       values.set(CUSTOM_OUTLINE_FOCUS, `${value}66`);
     }
@@ -893,9 +892,9 @@ export const setTheme = async (info = [], opt = {}) => {
           const { colors: currentColors } = currentTheme;
           if (isObjectNotEmpty(currentColors)) {
             const frameColor =
-              await convertColorToHex(currentColors[FRAME_BG], true);
+              await getColorInHex(currentColors[FRAME_BG], true);
             const textColor =
-              await convertColorToHex(currentColors[FRAME_TEXT], true);
+              await getColorInHex(currentColors[FRAME_TEXT], true);
             if (dark) {
               local = frameColor !== '#1c1b22' || textColor !== '#fbfbfe';
             } else {

@@ -22,6 +22,10 @@ const REG_HSL = `${REG_NUM}(?:${REG_ANGLE})?\\s+${REG_PCT}\\s+${REG_PCT}(?:\\s+\
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:${REG_NUM}\\s+${REG_NUM}\\s+${REG_NUM}|${REG_PCT}\\s+${REG_PCT}\\s+${REG_PCT})(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}\\s*,\\s*${REG_NUM}\\s*,\\s*${REG_NUM}|${REG_PCT}\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_COLORSPACE = '(?:(?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
+const REG_COLOR = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL}|${REG_HSL_LV3})\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
+const REG_COLOR_MIX_PART = `${REG_COLOR}(?:\\s+${REG_PCT})?`;
+const REG_COLOR_MIX = `in\\s+${REG_COLORSPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
 
 export const colorname = {
   aliceblue: '#f0f8ff',
@@ -562,4 +566,91 @@ export const blendColors = async (blend, base) => {
     }
   }
   return hex || null;
+};
+
+/**
+ * parse color-mix() and return mixed color in hex
+ *
+ * @param {string} value - value
+ * @returns {?string} - hex
+ */
+export const parseColorMix = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`^color-mix\\(\\s*${REG_COLOR_MIX}\\s*\\)$`, 'i');
+  let hex;
+  if (reg.test(value)) {
+    const [, colorPartA, colorPartB] = value.match(reg);
+    const pctReg = new RegExp(`\\s+(${REG_PCT})$`);
+    let colorA, pctA, colorB, pctB;
+    if (colorPartA.endsWith('%')) {
+      [, pctA] = colorPartA.match(pctReg);
+      colorA = colorPartA.replace(new RegExp(`${pctA}$`), '').trim();
+    } else {
+      colorA = colorPartA;
+    }
+    if (colorPartB.endsWith('%')) {
+      [, pctB] = colorPartB.match(pctReg);
+      colorB = colorPartB.replace(new RegExp(`${pctB}$`), '').trim();
+    } else {
+      colorB = colorPartB;
+    }
+    // convert color to rgba array
+    const [rA, gA, bA, aA] =
+      await convertColorToHex(colorA, true).then(parseHex);
+    const [rB, gB, bB, aB] =
+      await convertColorToHex(colorB, true).then(parseHex);
+    // normalize percentage
+    let pA, pB, multipler;
+    if (pctA && pctB) {
+      const p1 = parseFloat(pctA) / PCT_MAX;
+      const p2 = parseFloat(pctB) / PCT_MAX;
+      pA = p1 / (p1 + p2);
+      pB = p2 / (p1 + p2);
+      multipler = p1 + p2 < 1 ? p1 + p2 : 1;
+    } else if (pctA) {
+      pA = parseFloat(pctA) / PCT_MAX;
+      pB = 1 - pA;
+      multipler = 1;
+    } else if (pctB) {
+      pB = parseFloat(pctB) / PCT_MAX;
+      pA = 1 - pB;
+      multipler = 1;
+    } else {
+      pA = HALF;
+      pB = HALF;
+      multipler = 1;
+    }
+    const alpha = aA * pA + aB * (1 - pA);
+    const r =
+      (rA / NUM_MAX * aA * pA + rB / NUM_MAX * aB * (1 - pA)) * PCT_MAX / alpha;
+    const g =
+      (gA / NUM_MAX * aA * pA + gB / NUM_MAX * aB * (1 - pA)) * PCT_MAX / alpha;
+    const b =
+      (bA / NUM_MAX * aA * pA + bB / NUM_MAX * aB * (1 - pA)) * PCT_MAX / alpha;
+    const rgb = `rgb(${r}% ${g}% ${b}% / ${alpha * multipler})`;
+    hex = await convertColorToHex(rgb, true);
+  }
+  return hex || null;
+};
+
+/**
+ * get color in hexadecimal color syntax
+ *
+ * @param {string} value - value
+ * @param {boolean} alpha - add alpha channel value
+ * @returns {string} - hex
+ */
+export const getColorInHex = async (value, alpha = false) => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  let func;
+  if (value.startsWith('color-mix')) {
+    func = parseColorMix(value);
+  } else {
+    func = convertColorToHex(value, !!alpha);
+  }
+  return func;
 };

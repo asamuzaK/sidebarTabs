@@ -712,4 +712,108 @@ describe('color', () => {
       assert.strictEqual(res, '#ccccd2', 'result');
     });
   });
+
+  describe('parse color-mix() and return mixed color in hex', () => {
+    const func = mjs.parseColorMix;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should get null', async () => {
+      const res = await func('foo');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, blue, red)');
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, blue, green)');
+      const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, rgba(255, 0, 0, 0.2), red)');
+      const value = await mjs.convertColorToHex('rgba(255, 0, 0, 0.6)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, blue 80%, red 80%)');
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, blue 10%, red)');
+      const value = await mjs.convertColorToHex('rgb(230, 0, 26)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, blue 100%, red)');
+      const value = await mjs.convertColorToHex('rgb(0, 0, 255)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res =
+        await func('color-mix(in srgb, rgba(0, 0, 255, 0.5) 100%, red)');
+      const value = await mjs.convertColorToHex('rgb(0, 0, 255, 0.5)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res =
+        await func('color-mix(in srgb, red, rgba(0, 0, 255, 0.5) 100%)');
+      const value = await mjs.convertColorToHex('rgb(0, 0, 255, 0.5)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, rgb(100% 0% 0% / 0.7) 25%, rgb(0% 100% 0% / 0.2))');
+      const value =
+        await mjs.convertColorToHex('rgb(53.846% 46.154% 0% / 0.325)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, rgb(100% 0% 0% / 0.7) 20%, rgb(0% 100% 0% / 0.2) 60%)');
+      const value =
+        await mjs.convertColorToHex('rgb(53.846% 46.154% 0% / 0.26)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+  });
+
+  describe('get color in hexadecimal color syntax', () => {
+    const func = mjs.getColorInHex;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb, blue, red)');
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('black');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+  });
 });
