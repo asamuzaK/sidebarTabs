@@ -569,12 +569,12 @@ export const blendColors = async (blend, base) => {
 };
 
 /**
- * parse color-mix() and return mixed color in hex
+ * convert color-mix() to hex
  *
  * @param {string} value - value
  * @returns {?string} - hex
  */
-export const parseColorMix = async value => {
+export const convertColorMixToHex = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
@@ -649,7 +649,7 @@ export const getColorInHex = async (value, opt = {}) => {
   const { alpha, prop } = opt;
   let hex;
   if (value.startsWith('color-mix')) {
-    hex = await parseColorMix(value);
+    hex = await convertColorMixToHex(value);
   } else {
     hex = await convertColorToHex(value, !!alpha);
   }

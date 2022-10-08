@@ -713,8 +713,8 @@ describe('color', () => {
     });
   });
 
-  describe('parse color-mix() and return mixed color in hex', () => {
-    const func = mjs.parseColorMix;
+  describe('convert color-mix() to hex', () => {
+    const func = mjs.convertColorMixToHex;
 
     it('should throw', async () => {
       await func().catch(e => {
