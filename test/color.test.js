@@ -729,6 +729,12 @@ describe('color', () => {
       assert.isNull(res, 'result');
     });
 
+    // NOTE: not supported yet
+    it('should get null', async () => {
+      const res = await func('color-mix(in lch, blue, red)');
+      assert.isNull(res, 'result');
+    });
+
     it('should get result', async () => {
       const res = await func('color-mix(in srgb, blue, red)');
       const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
