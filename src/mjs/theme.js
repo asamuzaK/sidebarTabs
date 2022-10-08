@@ -390,7 +390,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
                   baseValues[CUSTOM_COLOR_FRAME];
           if (/currentcolor/i.test(value)) {
             value =
-              value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR_FRAME]);
+              value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR_FRAME]);
           }
         } else {
           const valueA = currentThemeColors.has('sidebar') &&
@@ -398,7 +398,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
           const valueB = currentThemeColors.get(FRAME_TEXT);
           value = valueA || valueB || baseValues[key];
           if (/currentcolor/i.test(value)) {
-            value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+            value = value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR]);
           }
         }
         if (value.startsWith('color-mix')) {
@@ -414,9 +414,9 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         if (/currentcolor/i.test(value)) {
           if (useFrame && themeId !== THEME_ALPEN_ID) {
             value =
-              value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR_FRAME]);
+              value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR_FRAME]);
           } else {
-            value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+            value = value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR]);
           }
         }
         if (value.startsWith('color-mix')) {
@@ -432,7 +432,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
           colorMixKeys.add(key);
         }
         if (/currentcolor/i.test(value)) {
-          value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+          value = value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR]);
         }
         values.set(key, value);
         break;
@@ -456,9 +456,9 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         }
         if (/currentcolor/i.test(value)) {
           if (useFrame && themeId !== THEME_ALPEN_ID) {
-            value = value.replace(/currentcolor/igm, baseValues[key]);
+            value = value.replace(/currentcolor/i, baseValues[key]);
           } else {
-            value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+            value = value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR]);
           }
         }
         values.set(key, value);
@@ -470,7 +470,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
           colorMixKeys.add(key);
         }
         if (/currentcolor/i.test(value)) {
-          value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+          value = value.replace(/currentcolor/i, baseValues[CUSTOM_COLOR]);
         }
         values.set(key, value);
         break;
@@ -482,7 +482,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   // replace currentColor keywords to color values
   if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
     const value = await getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE)
-      .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FIELD)));
+      .replace(/currentcolor/i, values.get(CUSTOM_COLOR_FIELD)));
     values.set(CUSTOM_COLOR_FIELD_ACTIVE, value);
     currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
   }
@@ -494,27 +494,27 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       switch (key) {
         case CUSTOM_BG_ACTIVE:
           value = values.get(key)
-            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_ACTIVE));
+            .replace(/currentcolor/i, values.get(CUSTOM_COLOR_ACTIVE));
           break;
         case CUSTOM_BG_FIELD:
           value = values.get(key)
-            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FIELD));
+            .replace(/currentcolor/i, values.get(CUSTOM_COLOR_FIELD));
           break;
         case CUSTOM_BG_FIELD_ACTIVE:
           value = values.get(key)
-            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FIELD_ACTIVE));
+            .replace(/currentcolor/i, values.get(CUSTOM_COLOR_FIELD_ACTIVE));
           break;
         case CUSTOM_BG_SELECT:
           value = values.get(key)
-            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_SELECT));
+            .replace(/currentcolor/i, values.get(CUSTOM_COLOR_SELECT));
           break;
         default:
           if (useFrame && themeId !== THEME_ALPEN_ID) {
             value = values.get(key)
-              .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FRAME));
+              .replace(/currentcolor/i, values.get(CUSTOM_COLOR_FRAME));
           } else {
             value = values.get(key)
-              .replace(/currentcolor/igm, values.get(CUSTOM_COLOR));
+              .replace(/currentcolor/i, values.get(CUSTOM_COLOR));
           }
       }
       func.push(getColorInHex(value, {
@@ -549,7 +549,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     if (/currentcolor/i.test(value)) {
       const valueA = currentThemeColors.get(CUSTOM_COLOR_FRAME) ||
                      baseValues[CUSTOM_COLOR_FRAME];
-      value = value.replace(/currentcolor/igm, valueA);
+      value = value.replace(/currentcolor/i, valueA);
     }
     if (value) {
       value = await getColorInHex(value);
@@ -657,7 +657,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
                 currentThemeColors.get('toolbar_field_border_focus') ||
                 currentThemeColors.get('button_primary');
     if (/currentcolor/i.test(value)) {
-      value = value.replace(/currentcolor/igm, values.get(CUSTOM_COLOR));
+      value = value.replace(/currentcolor/i, values.get(CUSTOM_COLOR));
     }
     value = await getColorInHex(value);
     if (value) {
