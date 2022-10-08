@@ -269,8 +269,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       case CUSTOM_BG_DISCARDED: {
         let value;
         if (useFrame && themeId !== THEME_ALPEN_ID) {
-          const valueA = currentThemeColors.get(FRAME_BG);
-          value = valueA || baseValues[CUSTOM_BG_FRAME];
+          value = currentThemeColors.get(FRAME_BG) ||
+                  baseValues[CUSTOM_BG_FRAME];
         } else {
           const valueA = currentThemeColors.get('sidebar');
           const valueB = currentThemeColors.get(FRAME_BG);
@@ -283,8 +283,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_BG_ACTIVE: {
-        const valueA = currentThemeColors.get('tab_selected');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('tab_selected') || baseValues[key];
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -292,8 +291,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_BG_FIELD: {
-        const valueA = currentThemeColors.get('toolbar_field');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('toolbar_field') ||
+                      baseValues[key];
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -301,8 +300,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_BG_FIELD_ACTIVE: {
-        const valueA = currentThemeColors.get('toolbar_field_focus');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('toolbar_field_focus') ||
+                      baseValues[key];
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -318,8 +317,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_BG_SELECT: {
-        const valueA = currentThemeColors.get('tab_selected');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('tab_selected') || baseValues[key];
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -334,14 +332,14 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_BORDER_FIELD: {
-        const valueA = currentThemeColors.get('toolbar_field_border');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('toolbar_field_border') ||
+                      baseValues[key];
         values.set(key, value);
         break;
       }
       case CUSTOM_BORDER_FIELD_ACTIVE: {
-        const valueA = currentThemeColors.get('toolbar_field_border_focus');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('toolbar_field_border_focus') ||
+                      baseValues[key];
         values.set(key, value);
         break;
       }
@@ -349,8 +347,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       case CUSTOM_COLOR_DISCARDED: {
         let value;
         if (useFrame && themeId !== THEME_ALPEN_ID) {
-          const valueA = currentThemeColors.get(FRAME_TEXT);
-          value = valueA || baseValues[CUSTOM_COLOR_FRAME];
+          value = currentThemeColors.get(FRAME_TEXT) ||
+                  baseValues[CUSTOM_COLOR_FRAME];
           if (/^currentColor$/i.test(value)) {
             value = baseValues[CUSTOM_COLOR_FRAME];
           }
@@ -382,8 +380,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_COLOR_FIELD: {
-        const valueA = currentThemeColors.get('toolbar_field_text');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('toolbar_field_text') ||
+                      baseValues[key];
         if (/^currentColor$/i.test(value)) {
           values.set(key, baseValues[CUSTOM_COLOR]);
         } else {
@@ -392,8 +390,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_COLOR_FIELD_ACTIVE: {
-        const valueA = currentThemeColors.get('toolbar_field_text_focus');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('toolbar_field_text_focus') ||
+                      baseValues[key];
         values.set(key, value);
         if (/^currentColor$/i.test(value)) {
           currentColorKeys.add(key);
@@ -413,8 +411,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         break;
       }
       case CUSTOM_COLOR_SELECT: {
-        const valueA = currentThemeColors.get('tab_text');
-        const value = valueA || baseValues[key];
+        const value = currentThemeColors.get('tab_text') || baseValues[key];
         if (/^currentColor$/i.test(value)) {
           values.set(key, baseValues[CUSTOM_COLOR]);
         } else {
