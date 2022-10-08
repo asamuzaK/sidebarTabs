@@ -525,6 +525,88 @@ export const convertColorToHex = async (value, alpha = false) => {
 };
 
 /**
+ * convert color-mix() to hex
+ *
+ * @param {string} value - value
+ * @returns {?string} - hex
+ */
+export const convertColorMixToHex = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`^color-mix\\(\\s*${REG_COLOR_MIX}\\s*\\)$`);
+  let hex;
+  value = value.toLowerCase().trim();
+  if (reg.test(value)) {
+    const [, colorSpace, colorPartA, colorPartB] = value.match(reg);
+    const pctReg = new RegExp(`\\s+(${REG_PCT})$`);
+    let colorA, pctA, colorB, pctB;
+    if (colorPartA.endsWith('%')) {
+      [, pctA] = colorPartA.match(pctReg);
+      colorA = colorPartA.replace(new RegExp(`${pctA}$`), '').trim();
+    } else {
+      colorA = colorPartA;
+    }
+    if (colorPartB.endsWith('%')) {
+      [, pctB] = colorPartB.match(pctReg);
+      colorB = colorPartB.replace(new RegExp(`${pctB}$`), '').trim();
+    } else {
+      colorB = colorPartB;
+    }
+    // normalize percentage and set multipler
+    let pA, pB, multipler;
+    if (pctA && pctB) {
+      const p1 = parseFloat(pctA) / PCT_MAX;
+      const p2 = parseFloat(pctB) / PCT_MAX;
+      if (p1 < 0 || p1 > 1) {
+        throw new RangeError(`${pctA} is not between 0% and 100%.`);
+      }
+      if (p2 < 0 || p2 > 1) {
+        throw new RangeError(`${pctB} is not between 0% and 100%.`);
+      }
+      if (p1 + p2 === 0) {
+        throw new Error(`Invalid function: ${value}`);
+      }
+      pA = p1 / (p1 + p2);
+      pB = p2 / (p1 + p2);
+      multipler = p1 + p2 < 1 ? p1 + p2 : 1;
+    } else if (pctA) {
+      pA = parseFloat(pctA) / PCT_MAX;
+      if (pA < 0 || pA > 1) {
+        throw new RangeError(`${pctA} is not between 0% and 100%.`);
+      }
+      pB = 1 - pA;
+      multipler = 1;
+    } else if (pctB) {
+      pB = parseFloat(pctB) / PCT_MAX;
+      if (pB < 0 || pB > 1) {
+        throw new RangeError(`${pctB} is not between 0% and 100%.`);
+      }
+      pA = 1 - pB;
+      multipler = 1;
+    } else {
+      pA = HALF;
+      pB = HALF;
+      multipler = 1;
+    }
+    // in srgb
+    if (colorSpace === 'srgb') {
+      const [rA, gA, bA, aA] =
+        await convertColorToHex(colorA, true).then(parseHex);
+      const [rB, gB, bB, aB] =
+        await convertColorToHex(colorB, true).then(parseHex);
+      const a = aA * pA + aB * pB;
+      const r = (rA * aA * pA / NUM_MAX + rB * aB * pB / NUM_MAX) * PCT_MAX / a;
+      const g = (gA * aA * pA / NUM_MAX + gB * aB * pB / NUM_MAX) * PCT_MAX / a;
+      const b = (bA * aA * pA / NUM_MAX + bB * aB * pB / NUM_MAX) * PCT_MAX / a;
+      const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
+      hex = await convertColorToHex(rgb, true);
+    }
+  }
+  return hex || null;
+};
+
+/**
  * blend two colors
  *
  * @param {string} blend - color to blend
@@ -563,71 +645,6 @@ export const blendColors = async (blend, base) => {
       } else {
         hex = `#${r}${g}${b}${a}`;
       }
-    }
-  }
-  return hex || null;
-};
-
-/**
- * convert color-mix() to hex
- *
- * @param {string} value - value
- * @returns {?string} - hex
- */
-export const convertColorMixToHex = async value => {
-  if (!isString(value)) {
-    throw new TypeError(`Expected String but got ${getType(value)}.`);
-  }
-  const reg = new RegExp(`^color-mix\\(\\s*${REG_COLOR_MIX}\\s*\\)$`, 'i');
-  let hex;
-  if (reg.test(value)) {
-    const [, colorSpace, colorPartA, colorPartB] = value.match(reg);
-    const pctReg = new RegExp(`\\s+(${REG_PCT})$`);
-    let colorA, pctA, colorB, pctB;
-    if (colorPartA.endsWith('%')) {
-      [, pctA] = colorPartA.match(pctReg);
-      colorA = colorPartA.replace(new RegExp(`${pctA}$`), '').trim();
-    } else {
-      colorA = colorPartA;
-    }
-    if (colorPartB.endsWith('%')) {
-      [, pctB] = colorPartB.match(pctReg);
-      colorB = colorPartB.replace(new RegExp(`${pctB}$`), '').trim();
-    } else {
-      colorB = colorPartB;
-    }
-    if (colorSpace === 'srgb') {
-      const [rA, gA, bA, aA] =
-        await convertColorToHex(colorA, true).then(parseHex);
-      const [rB, gB, bB, aB] =
-        await convertColorToHex(colorB, true).then(parseHex);
-      // normalize percentage and set multipler
-      let pA, pB, multipler;
-      if (pctA && pctB) {
-        const p1 = parseFloat(pctA) / PCT_MAX;
-        const p2 = parseFloat(pctB) / PCT_MAX;
-        pA = p1 / (p1 + p2);
-        pB = p2 / (p1 + p2);
-        multipler = p1 + p2 < 1 ? p1 + p2 : 1;
-      } else if (pctA) {
-        pA = parseFloat(pctA) / PCT_MAX;
-        pB = 1 - pA;
-        multipler = 1;
-      } else if (pctB) {
-        pB = parseFloat(pctB) / PCT_MAX;
-        pA = 1 - pB;
-        multipler = 1;
-      } else {
-        pA = HALF;
-        pB = HALF;
-        multipler = 1;
-      }
-      const a = aA * pA + aB * pB;
-      const r = (rA * aA * pA / NUM_MAX + rB * aB * pB / NUM_MAX) * PCT_MAX / a;
-      const g = (gA * aA * pA / NUM_MAX + gB * aB * pB / NUM_MAX) * PCT_MAX / a;
-      const b = (bA * aA * pA / NUM_MAX + bB * aB * pB / NUM_MAX) * PCT_MAX / a;
-      const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
-      hex = await convertColorToHex(rgb, true);
     }
   }
   return hex || null;
