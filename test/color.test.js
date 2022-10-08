@@ -538,15 +538,13 @@ describe('color', () => {
       });
     });
 
-    it('should get null', async () => {
-      const res = await func('foo');
-      assert.isNull(res, 'result');
-    });
-
-    // NOTE: not supported yet
-    it('should get null', async () => {
-      const res = await func('color-mix(in lch, blue, red)');
-      assert.isNull(res, 'result');
+    it('should throw', async() => {
+      await func('color-mix(in srgb, blue)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color-mix(in srgb, blue)',
+          'message');
+      });
     });
 
     it('should throw', async() => {
@@ -620,6 +618,12 @@ describe('color', () => {
           'Invalid property value: color-mix(in srgb, blue 0%, red 0%)',
           'message');
       });
+    });
+
+    // NOTE: not supported yet
+    it('should get null', async () => {
+      const res = await func('color-mix(in lch, blue, red)');
+      assert.isNull(res, 'result');
     });
 
     it('should get result', async () => {
