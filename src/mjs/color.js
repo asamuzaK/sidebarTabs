@@ -639,18 +639,19 @@ export const parseColorMix = async value => {
  * get color in hexadecimal color syntax
  *
  * @param {string} value - value
- * @param {boolean} alpha - add alpha channel value
- * @returns {string} - hex
+ * @param {object} opt - options
+ * @returns {Array|?string} - hex
  */
-export const getColorInHex = async (value, alpha = false) => {
+export const getColorInHex = async (value, opt = {}) => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  let func;
+  const { alpha, prop } = opt;
+  let hex;
   if (value.startsWith('color-mix')) {
-    func = parseColorMix(value);
+    hex = await parseColorMix(value);
   } else {
-    func = convertColorToHex(value, !!alpha);
+    hex = await convertColorToHex(value, !!alpha);
   }
-  return func;
+  return prop ? [prop, hex] : (hex || null);
 };

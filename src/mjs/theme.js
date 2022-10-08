@@ -234,10 +234,12 @@ export const setCurrentThemeColors = async (key, value) => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  if (/^(?:currentcolor|transparent)$/i.test(value)) {
+  if (/currentcolor|transparent/i.test(value)) {
     currentThemeColors.set(key, value);
   } else {
-    const hexValue = await getColorInHex(value, true);
+    const hexValue = await getColorInHex(value, {
+      alpha: true
+    });
     if (hexValue) {
       currentThemeColors.set(key, hexValue);
     }
@@ -252,6 +254,7 @@ export const setCurrentThemeColors = async (key, value) => {
  */
 export const getCurrentThemeBaseValues = async (opt = {}) => {
   const values = new Map();
+  const colorMixKeys = new Set();
   const currentColorKeys = new Set();
   const { themeId: id, useFrame } = opt;
   const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
@@ -276,70 +279,106 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
           const valueB = currentThemeColors.get(FRAME_BG);
           value = valueA || valueB || baseValues[key];
         }
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_BG_ACTIVE: {
         const value = currentThemeColors.get('tab_selected') || baseValues[key];
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_BG_FIELD: {
         const value = currentThemeColors.get('toolbar_field') ||
                       baseValues[key];
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_BG_FIELD_ACTIVE: {
         const value = currentThemeColors.get('toolbar_field_focus') ||
                       baseValues[key];
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_BG_FRAME: {
         const value = currentThemeColors.get(FRAME_BG) || baseValues[key];
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_BG_SELECT: {
         const value = currentThemeColors.get('tab_selected') || baseValues[key];
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_BORDER_ACTIVE: {
         const valueA = currentThemeColors.get('tab_line');
         const valueB = currentThemeColors.get('tab_text');
         const value = valueA || valueB || baseValues[key];
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
+          currentColorKeys.add(key);
+        }
         values.set(key, value);
         break;
       }
       case CUSTOM_BORDER_FIELD: {
         const value = currentThemeColors.get('toolbar_field_border') ||
                       baseValues[key];
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
+          currentColorKeys.add(key);
+        }
         values.set(key, value);
         break;
       }
       case CUSTOM_BORDER_FIELD_ACTIVE: {
         const value = currentThemeColors.get('toolbar_field_border_focus') ||
                       baseValues[key];
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
+          currentColorKeys.add(key);
+        }
         values.set(key, value);
         break;
       }
@@ -349,17 +388,21 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
         if (useFrame && themeId !== THEME_ALPEN_ID) {
           value = currentThemeColors.get(FRAME_TEXT) ||
                   baseValues[CUSTOM_COLOR_FRAME];
-          if (/^currentColor$/i.test(value)) {
-            value = baseValues[CUSTOM_COLOR_FRAME];
+          if (/currentcolor/i.test(value)) {
+            value =
+              value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR_FRAME]);
           }
         } else {
           const valueA = currentThemeColors.has('sidebar') &&
             currentThemeColors.get('sidebar_text');
           const valueB = currentThemeColors.get(FRAME_TEXT);
           value = valueA || valueB || baseValues[key];
-          if (/^currentColor$/i.test(value)) {
-            value = baseValues[CUSTOM_COLOR];
+          if (/currentcolor/i.test(value)) {
+            value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
           }
+        }
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
         }
         values.set(key, value);
         break;
@@ -367,56 +410,69 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       case CUSTOM_COLOR_ACTIVE: {
         const valueA = currentThemeColors.get('tab_text');
         const valueB = currentThemeColors.get(FRAME_TEXT);
-        const value = valueA || valueB || baseValues[key];
-        if (/^currentColor$/i.test(value)) {
+        let value = valueA || valueB || baseValues[key];
+        if (/currentcolor/i.test(value)) {
           if (useFrame && themeId !== THEME_ALPEN_ID) {
-            values.set(key, baseValues[CUSTOM_COLOR_FRAME]);
+            value =
+              value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR_FRAME]);
           } else {
-            values.set(key, baseValues[CUSTOM_COLOR]);
+            value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
           }
-        } else {
-          values.set(key, value);
         }
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        values.set(key, value);
         break;
       }
       case CUSTOM_COLOR_FIELD: {
-        const value = currentThemeColors.get('toolbar_field_text') ||
-                      baseValues[key];
-        if (/^currentColor$/i.test(value)) {
-          values.set(key, baseValues[CUSTOM_COLOR]);
-        } else {
-          values.set(key, value);
+        let value = currentThemeColors.get('toolbar_field_text') ||
+                    baseValues[key];
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
         }
+        if (/currentcolor/i.test(value)) {
+          value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+        }
+        values.set(key, value);
         break;
       }
       case CUSTOM_COLOR_FIELD_ACTIVE: {
         const value = currentThemeColors.get('toolbar_field_text_focus') ||
                       baseValues[key];
-        values.set(key, value);
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           currentColorKeys.add(key);
         }
+        values.set(key, value);
         break;
       }
       case CUSTOM_COLOR_FRAME: {
         let value = currentThemeColors.get(FRAME_TEXT) || baseValues[key];
-        if (/^currentColor$/i.test(value)) {
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
+        }
+        if (/currentcolor/i.test(value)) {
           if (useFrame && themeId !== THEME_ALPEN_ID) {
-            value = baseValues[key];
+            value = value.replace(/currentcolor/igm, baseValues[key]);
           } else {
-            value = baseValues[CUSTOM_COLOR];
+            value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
           }
         }
         values.set(key, value);
         break;
       }
       case CUSTOM_COLOR_SELECT: {
-        const value = currentThemeColors.get('tab_text') || baseValues[key];
-        if (/^currentColor$/i.test(value)) {
-          values.set(key, baseValues[CUSTOM_COLOR]);
-        } else {
-          values.set(key, value);
+        let value = currentThemeColors.get('tab_text') || baseValues[key];
+        if (value.startsWith('color-mix')) {
+          colorMixKeys.add(key);
         }
+        if (/currentcolor/i.test(value)) {
+          value = value.replace(/currentcolor/igm, baseValues[CUSTOM_COLOR]);
+        }
+        values.set(key, value);
         break;
       }
       default:
@@ -425,48 +481,85 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   }
   // replace currentColor keywords to color values
   if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
-    const value = values.get(CUSTOM_COLOR_FIELD);
+    const value = await getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE)
+      .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FIELD)));
     values.set(CUSTOM_COLOR_FIELD_ACTIVE, value);
     currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
   }
   if (currentColorKeys.size) {
     const keys = currentColorKeys.keys();
+    const func = [];
     for (const key of keys) {
       let value;
       switch (key) {
         case CUSTOM_BG_ACTIVE:
-          value = values.get(CUSTOM_COLOR_ACTIVE);
+          value = values.get(key)
+            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_ACTIVE));
           break;
         case CUSTOM_BG_FIELD:
-          value = values.get(CUSTOM_COLOR_FIELD);
+          value = values.get(key)
+            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FIELD));
           break;
         case CUSTOM_BG_FIELD_ACTIVE:
-          value = values.get(CUSTOM_COLOR_FIELD_ACTIVE);
+          value = values.get(key)
+            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FIELD_ACTIVE));
           break;
         case CUSTOM_BG_SELECT:
-          value = values.get(CUSTOM_COLOR_SELECT);
+          value = values.get(key)
+            .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_SELECT));
           break;
         default:
           if (useFrame && themeId !== THEME_ALPEN_ID) {
-            value = values.get(CUSTOM_COLOR_FRAME);
+            value = values.get(key)
+              .replace(/currentcolor/igm, values.get(CUSTOM_COLOR_FRAME));
           } else {
-            value = values.get(CUSTOM_COLOR);
+            value = values.get(key)
+              .replace(/currentcolor/igm, values.get(CUSTOM_COLOR));
           }
       }
+      func.push(getColorInHex(value, {
+        prop: key,
+        alpha: true
+      }));
+    }
+    const hexValues = await Promise.all(func);
+    for (const [key, value] of hexValues) {
+      values.set(key, value);
+    }
+  }
+  if (colorMixKeys.size) {
+    const keys = colorMixKeys.keys();
+    const func = [];
+    for (const key of keys) {
+      const value = values.get(key);
+      if (value.startsWith('color-mix')) {
+        func.push(getColorInHex(value, {
+          prop: key
+        }));
+      }
+    }
+    const hexValues = await Promise.all(func);
+    for (const [key, value] of hexValues) {
       values.set(key, value);
     }
   }
   // override CUSTOM_BG_HOVER_SHADOW color
   if (currentThemeColors.has(FRAME_TEXT)) {
-    const value = await getColorInHex(currentThemeColors.get(FRAME_TEXT));
+    let value = currentThemeColors.get(FRAME_TEXT);
+    if (/currentcolor/i.test(value)) {
+      const valueA = currentThemeColors.get(CUSTOM_COLOR_FRAME) ||
+                     baseValues[CUSTOM_COLOR_FRAME];
+      value = value.replace(/currentcolor/igm, valueA);
+    }
     if (value) {
+      value = await getColorInHex(value);
       values.set(CUSTOM_BG_HOVER_SHADOW, `${value}1a`);
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
   if (useFrame || currentThemeColors.has('sidebar') ||
       currentThemeColors.has(FRAME_BG)) {
-    const base = values.get(CUSTOM_BG);
+    const base = await getColorInHex(values.get(CUSTOM_BG));
     const color = await getColorInHex(values.get(CUSTOM_COLOR));
     const hoverBlend = `${color}1a`;
     const hoverValue = await blendColors(hoverBlend, base);
@@ -480,9 +573,9 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     const heading4 = await blendColors('#6699cc99', color);
     const headingPinned = await blendColors('#66669999', color);
     values.set(CUSTOM_BG_HOVER, hoverValue);
-    values.set(CUSTOM_COLOR_HOVER, values.get(CUSTOM_COLOR));
+    values.set(CUSTOM_COLOR_HOVER, color);
     values.set(CUSTOM_BG_SELECT_HOVER, selectValue);
-    values.set(CUSTOM_COLOR_SELECT_HOVER, values.get(CUSTOM_COLOR_SELECT));
+    values.set(CUSTOM_COLOR_SELECT_HOVER, selectColor);
     values.set(CUSTOM_HEADING_TEXT_GROUP_1, heading1);
     values.set(CUSTOM_HEADING_TEXT_GROUP_2, heading2);
     values.set(CUSTOM_HEADING_TEXT_GROUP_3, heading3);
@@ -491,11 +584,20 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   }
   // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
-    const base = values.get(CUSTOM_BG);
+    const base = await getColorInHex(values.get(CUSTOM_BG));
+    const color = await getColorInHex(values.get(CUSTOM_COLOR_ACTIVE));
     const border = currentThemeColors.get('tab_line');
     let value;
-    if (/^currentColor$/i.test(border)) {
-      value = await blendColors(values.get(CUSTOM_COLOR_ACTIVE), base);
+    if (border.startsWith('color-mix')) {
+      let borderColor;
+      if (/currentcolor/i.test(border)) {
+        borderColor = border.replace(/currentcolor/img, color);
+      }  else {
+        borderColor = border;
+      }
+      value = await getColorInHex(borderColor);
+    } else if (/^currentcolor$/i.test(border)) {
+      value = await blendColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = values.get(CUSTOM_BG_HOVER);
     } else {
@@ -504,11 +606,20 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     values.set(CUSTOM_BORDER_ACTIVE, value);
   }
   if (currentThemeColors.has('toolbar_field_border')) {
-    const base = values.get(CUSTOM_BG);
+    const base = await getColorInHex(values.get(CUSTOM_BG));
+    const color = await getColorInHex(values.get(CUSTOM_COLOR_FIELD));
     const border = currentThemeColors.get('toolbar_field_border');
     let value;
-    if (/^currentColor$/i.test(border)) {
-      value = await blendColors(values.get(CUSTOM_COLOR_FIELD), base);
+    if (border.startsWith('color-mix')) {
+      let borderColor;
+      if (/currentcolor/i.test(border)) {
+        borderColor = border.replace(/currentcolor/img, color);
+      }  else {
+        borderColor = border;
+      }
+      value = await getColorInHex(borderColor);
+    } else if (/^currentcolor$/i.test(border)) {
+      value = await blendColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = base;
     } else {
@@ -517,11 +628,20 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     values.set(CUSTOM_BORDER_FIELD, value);
   }
   if (currentThemeColors.has('toolbar_field_border_focus')) {
-    const base = values.get(CUSTOM_BG);
+    const base = await getColorInHex(values.get(CUSTOM_BG));
+    const color = await getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE));
     const border = currentThemeColors.get('toolbar_field_border_focus');
     let value;
-    if (/^currentColor$/i.test(border)) {
-      value = await blendColors(values.get(CUSTOM_COLOR_FIELD_ACTIVE), base);
+    if (border.startsWith('color-mix')) {
+      let borderColor;
+      if (/currentcolor/i.test(border)) {
+        borderColor = border.replace(/currentcolor/img, color);
+      }  else {
+        borderColor = border;
+      }
+      value = await getColorInHex(borderColor);
+    } else if (/^currentcolor$/i.test(border)) {
+      value = await blendColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = base;
     } else {
@@ -536,8 +656,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     let value = currentThemeColors.get('focus_outline') ||
                 currentThemeColors.get('toolbar_field_border_focus') ||
                 currentThemeColors.get('button_primary');
-    if (/^currentColor$/i.test(value)) {
-      value = values.get(CUSTOM_COLOR);
+    if (/currentcolor/i.test(value)) {
+      value = value.replace(/currentcolor/igm, values.get(CUSTOM_COLOR));
     }
     value = await getColorInHex(value);
     if (value) {
@@ -891,10 +1011,12 @@ export const setTheme = async (info = [], opt = {}) => {
             Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
           const { colors: currentColors } = currentTheme;
           if (isObjectNotEmpty(currentColors)) {
-            const frameColor =
-              await getColorInHex(currentColors[FRAME_BG], true);
-            const textColor =
-              await getColorInHex(currentColors[FRAME_TEXT], true);
+            const frameColor = await getColorInHex(currentColors[FRAME_BG], {
+              alpha: true
+            });
+            const textColor = await getColorInHex(currentColors[FRAME_TEXT], {
+              alpha: true
+            });
             if (dark) {
               local = frameColor !== '#1c1b22' || textColor !== '#fbfbfe';
             } else {

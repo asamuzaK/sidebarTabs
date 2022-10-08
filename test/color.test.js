@@ -805,15 +805,36 @@ describe('color', () => {
       });
     });
 
-    it('should get result', async () => {
-      const res = await func('color-mix(in srgb, blue, red)');
-      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
-      assert.strictEqual(res, value, 'result');
+    it('should get null', async () => {
+      const res = await func('transparent');
+      assert.isNull(res, 'result');
     });
 
     it('should get value', async () => {
       const res = await func('black');
       assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(0 0 0 / 0)', {
+        alpha: true
+      });
+      assert.strictEqual(res, '#00000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color-mix(in srgb, blue, red)');
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get array', async () => {
+      const res = await func('color-mix(in srgb, blue, red)', {
+        alpha: true,
+        prop: 'foo'
+      });
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.deepEqual(res, ['foo', value], 'result');
     });
   });
 });
