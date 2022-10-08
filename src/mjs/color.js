@@ -597,7 +597,6 @@ export const convertColorMixToHex = async value => {
       colorB = colorPartB;
     }
     if (colorSpace === 'srgb') {
-      // convert color to rgba array
       const [rA, gA, bA, aA] =
         await convertColorToHex(colorA, true).then(parseHex);
       const [rB, gB, bB, aB] =
@@ -623,13 +622,10 @@ export const convertColorMixToHex = async value => {
         pB = HALF;
         multipler = 1;
       }
-      const a = aA * pA + aB * (1 - pA);
-      const r =
-        (rA / NUM_MAX * aA * pA + rB / NUM_MAX * aB * (1 - pA)) * PCT_MAX / a;
-      const g =
-        (gA / NUM_MAX * aA * pA + gB / NUM_MAX * aB * (1 - pA)) * PCT_MAX / a;
-      const b =
-        (bA / NUM_MAX * aA * pA + bB / NUM_MAX * aB * (1 - pA)) * PCT_MAX / a;
+      const a = aA * pA + aB * pB;
+      const r = (rA * aA * pA / NUM_MAX + rB * aB * pB / NUM_MAX) * PCT_MAX / a;
+      const g = (gA * aA * pA / NUM_MAX + gB * aB * pB / NUM_MAX) * PCT_MAX / a;
+      const b = (bA * aA * pA / NUM_MAX + bB * aB * pB / NUM_MAX) * PCT_MAX / a;
       const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
       hex = await convertColorToHex(rgb, true);
     }
