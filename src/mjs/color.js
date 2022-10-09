@@ -318,8 +318,7 @@ export const parseHwb = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg =
-    new RegExp(`hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)`);
+  const reg = new RegExp(`hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -352,14 +351,14 @@ export const parseHwb = async value => {
     if (w + b >= 1) {
       const v = (w / (w + b)) * NUM_MAX;
       arr.push(v, v, v, a);
-      console.log(arr);
     } else {
-      let [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
-      rr = (rr / NUM_MAX * (1 - w - b) + w) * NUM_MAX;
-      gg = (gg / NUM_MAX * (1 - w - b) + w) * NUM_MAX;
-      bb = (bb / NUM_MAX * (1 - w - b) + w) * NUM_MAX;
-      arr.push(rr, gg, bb, a);
-      console.log(arr);
+      const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
+      arr.push(
+        (rr * (1 - w - b) / NUM_MAX + w) * NUM_MAX,
+        (gg * (1 - w - b) / NUM_MAX + w) * NUM_MAX,
+        (bb * (1 - w - b) / NUM_MAX + w) * NUM_MAX,
+        a
+      );
     }
   }
   return arr;
