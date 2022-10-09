@@ -276,7 +276,7 @@ describe('color', () => {
         res[i] = Math.round(res[i]);
         i++;
       }
-      assert.deepEqual(res, [1, 178, 1, 1], 'result');
+      assert.deepEqual(res, [1, 179, 1, 1], 'result');
     });
 
     it('should get value', async () => {
