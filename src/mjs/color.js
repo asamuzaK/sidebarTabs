@@ -4,7 +4,7 @@
  */
 
 /* shared */
-import { getType, isString } from './common.js';
+import { getType, isString, logWarn } from './common.js';
 
 /* constants */
 const DEG = 360;
@@ -18,12 +18,12 @@ const PCT_MAX = 100;
 const REG_ANGLE = 'deg|g?rad|turn';
 const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
 const REG_PCT = `${REG_NUM}%`;
-const REG_HSL = `${REG_NUM}(?:${REG_ANGLE})?\\s+${REG_PCT}\\s+${REG_PCT}(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?\\s+${REG_PCT}\\s+${REG_PCT}(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:${REG_NUM}\\s+${REG_NUM}\\s+${REG_NUM}|${REG_PCT}\\s+${REG_PCT}\\s+${REG_PCT})(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}\\s*,\\s*${REG_NUM}\\s*,\\s*${REG_NUM}|${REG_PCT}\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_COLORSPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
-const REG_COLOR = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL}|${REG_HSL_LV3})\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
+const REG_COLOR = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
 const REG_COLOR_MIX_PART = `${REG_COLOR}(?:\\s+${REG_PCT})?`;
 const REG_COLOR_MIX = `in\\s+${REG_COLORSPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
 
@@ -228,11 +228,11 @@ export const parseHsl = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`hsla?\\(\\s*((?:${REG_HSL}|${REG_HSL_LV3}))\\s*\\)`);
+  const reg =
+    new RegExp(`hsla?\\(\\s*((?:${REG_HSL_HWB}|${REG_HSL_LV3}))\\s*\\)`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const arr = [];
   const [, val] = value.match(reg);
   let [h, s, l, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
   h = await convertAngleToDeg(h);
@@ -256,6 +256,7 @@ export const parseHsl = async value => {
   } else {
     a = 1;
   }
+  const arr = [];
   if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(s)) ||
         Number.isNaN(Number(l)) || Number.isNaN(Number(a)))) {
     let max, min, r, g, b;
@@ -308,6 +309,63 @@ export const parseHsl = async value => {
 };
 
 /**
+ * parse hwb()
+ *
+ * @param {string} value - value
+ * @returns {Array} - [r, g, b, a]
+ */
+export const parseHwb = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg =
+    new RegExp(`hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const [, val] = value.match(reg);
+  let [h, w, b, a] = val.replace('/', ' ').split(/\s+/);
+  h = await convertAngleToDeg(h);
+  if (w.startsWith('.')) {
+    w = `0${w}`;
+  }
+  w = Math.min(PCT_MAX, Math.max(parseFloat(w), 0)) / PCT_MAX;
+  if (b.startsWith('.')) {
+    b = `0${b}`;
+  }
+  b = Math.min(PCT_MAX, Math.max(parseFloat(b), 0)) / PCT_MAX;
+  if (isString(a)) {
+    if (a.startsWith('.')) {
+      a = `0${a}`;
+    }
+    if (a.endsWith('%')) {
+      a = parseFloat(a) / PCT_MAX;
+    } else {
+      a = parseFloat(a);
+    }
+  } else {
+    a = 1;
+  }
+  const arr = [];
+  if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(w)) ||
+        Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
+    if (w + b >= 1) {
+      const v = (w / (w + b)) * NUM_MAX;
+      arr.push(v, v, v, a);
+      console.log(arr);
+    } else {
+      let [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
+      rr = (rr / NUM_MAX * (1 - w - b) + w) * NUM_MAX;
+      gg = (gg / NUM_MAX * (1 - w - b) + w) * NUM_MAX;
+      bb = (bb / NUM_MAX * (1 - w - b) + w) * NUM_MAX;
+      arr.push(rr, gg, bb, a);
+      console.log(arr);
+    }
+  }
+  return arr;
+};
+
+/**
  * parse rgb()
  *
  * @param {string} value - value
@@ -321,7 +379,6 @@ export const parseRgb = async value => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const arr = [];
   const [, val] = value.match(reg);
   let [r, g, b, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
   if (r.startsWith('.')) {
@@ -360,12 +417,12 @@ export const parseRgb = async value => {
   } else {
     a = 1;
   }
-  arr.push(
+  const arr = [
     Math.min(NUM_MAX, Math.max(r, 0)),
     Math.min(NUM_MAX, Math.max(g, 0)),
     Math.min(NUM_MAX, Math.max(b, 0)),
     Math.min(1, Math.max(a, 0))
-  );
+  ];
   return arr;
 };
 
@@ -459,10 +516,12 @@ export const convertColorToHex = async (value, alpha = false) => {
   value = value.toLowerCase().trim();
   // named-color
   if (/^[a-z]+$/i.test(value)) {
-    if (value === 'transparent' && alpha) {
-      hex = '#00000000';
-    } else {
+    if (/currentcolor/.test(value)) {
+      logWarn('currentcolor keyword is not supported.');
+    } else if (Object.prototype.hasOwnProperty.call(colorname, value)) {
       hex = colorname[value];
+    } else if (value === 'transparent' && alpha) {
+      hex = '#00000000';
     }
   // hex-color
   } else if (value.startsWith('#')) {
@@ -506,6 +565,23 @@ export const convertColorToHex = async (value, alpha = false) => {
   // hsl()
   } else if (value.startsWith('hsl')) {
     const [r, g, b, a] = await parseHsl(value);
+    if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
+          Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
+      const [rr, gg, bb, aa] = await Promise.all([
+        numberToHexString(r),
+        numberToHexString(g),
+        numberToHexString(b),
+        numberToHexString(a * NUM_MAX)
+      ]);
+      if (!alpha || aa === 'ff') {
+        hex = `#${rr}${gg}${bb}`;
+      } else {
+        hex = `#${rr}${gg}${bb}${aa}`;
+      }
+    }
+  // hwb()
+  } else if (value.startsWith('hwb')) {
+    const [r, g, b, a] = await parseHwb(value);
     if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
           Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
       const [rr, gg, bb, aa] = await Promise.all([

@@ -5,6 +5,7 @@
 /* api */
 import { assert } from 'chai';
 import { describe, it } from 'mocha';
+import sinon from 'sinon';
 
 /* test */
 import * as mjs from '../src/mjs/color.js';
@@ -189,6 +190,126 @@ describe('color', () => {
         i++;
       }
       assert.deepEqual(res, [255, 0, 255, 1], 'result');
+    });
+  });
+
+  describe('parse hwb()', () => {
+    const func = mjs.parseHwb;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('hsw(1, 20%, 30% / 1)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: hsw(1, 20%, 30% / 1)',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 0% 49.8039%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [0, 128, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(0 0% 100%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(0 100% 100%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [128, 128, 128, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 70% 60%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [137, 137, 137, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 20% 30%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [51, 179, 51, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 .2% 30%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [1, 178, 1, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 20% .3%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [51, 254, 51, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(90deg 0% 50% / .5)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [64, 127, 0, 0.5], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(90deg 0% 50% / 70%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.round(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [64, 127, 0, 0.7], 'result');
     });
   });
 
@@ -385,8 +506,12 @@ describe('color', () => {
       assert.isNull(res, 'result');
     });
 
-    it('should get null', async () => {
+    it('should warn', async () => {
+      const stubWarn = sinon.stub(console, 'warn');
       const res = await func('currentColor');
+      const { calledOnce: warnCalled } = stubWarn;
+      stubWarn.restore();
+      assert.isTrue(warnCalled, 'called');
       assert.isNull(res, 'result');
     });
 
@@ -518,6 +643,16 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func('hsla(180,50%,50%,1)', true);
       assert.strictEqual(res, '#40bfbf', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(240 100% 50%)');
+      assert.strictEqual(res, '#aaaaaa', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(110 20% 30% / 40%)', true);
+      assert.strictEqual(res, '#48b33366', 'result');
     });
 
     // active tab border color of the default theme with alpha channel
