@@ -538,7 +538,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
@@ -547,7 +547,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue -10%, red)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
@@ -555,7 +555,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue 110%, red)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
@@ -563,7 +563,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue, red -10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
@@ -571,7 +571,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue, red 110%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
@@ -579,7 +579,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue -10%, red 10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
@@ -587,7 +587,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue 110%, red 10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
@@ -595,7 +595,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue 10%, red -10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
@@ -603,7 +603,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue 10%, red 110%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
@@ -611,7 +611,7 @@ describe('color', () => {
       });
     });
 
-    it('should throw', async() => {
+    it('should throw', async () => {
       await func('color-mix(in srgb, blue 0%, red 0%)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
@@ -691,8 +691,8 @@ describe('color', () => {
     });
   });
 
-  describe('blend two colors', () => {
-    const func = mjs.blendColors;
+  describe('composite two layered colors', () => {
+    const func = mjs.compositeLayeredColors;
 
     it('should throw', async () => {
       await func().catch(e => {

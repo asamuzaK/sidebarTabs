@@ -8,7 +8,7 @@ import {
   getCurrentTheme, getCurrentWindow, getEnabledTheme, getStorage,
   removeStorage, sendMessage, setStorage
 } from './browser.js';
-import { blendColors, getColorInHex } from './color.js';
+import { compositeLayeredColors, getColorInHex } from './color.js';
 import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
@@ -561,17 +561,17 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       currentThemeColors.has(FRAME_BG)) {
     const base = await getColorInHex(values.get(CUSTOM_BG));
     const color = await getColorInHex(values.get(CUSTOM_COLOR));
-    const hoverBlend = `${color}1a`;
-    const hoverValue = await blendColors(hoverBlend, base);
+    const hoverOverlay = `${color}1a`;
+    const hoverValue = await compositeLayeredColors(hoverOverlay, base);
     const selectBase = values.get(CUSTOM_BG_SELECT);
     const selectColor = await getColorInHex(values.get(CUSTOM_COLOR_SELECT));
-    const selectBlend = `${selectColor}1a`;
-    const selectValue = await blendColors(selectBlend, selectBase);
-    const heading1 = await blendColors('#cc663399', color);
-    const heading2 = await blendColors('#33996699', color);
-    const heading3 = await blendColors('#cc669999', color);
-    const heading4 = await blendColors('#6699cc99', color);
-    const headingPinned = await blendColors('#66669999', color);
+    const selectOverlay = `${selectColor}1a`;
+    const selectValue = await compositeLayeredColors(selectOverlay, selectBase);
+    const heading1 = await compositeLayeredColors('#cc663399', color);
+    const heading2 = await compositeLayeredColors('#33996699', color);
+    const heading3 = await compositeLayeredColors('#cc669999', color);
+    const heading4 = await compositeLayeredColors('#6699cc99', color);
+    const headingPinned = await compositeLayeredColors('#66669999', color);
     values.set(CUSTOM_BG_HOVER, hoverValue);
     values.set(CUSTOM_COLOR_HOVER, color);
     values.set(CUSTOM_BG_SELECT_HOVER, selectValue);
@@ -597,11 +597,11 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       }
       value = await getColorInHex(borderColor);
     } else if (/^currentcolor$/i.test(border)) {
-      value = await blendColors(color, base);
+      value = await compositeLayeredColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = values.get(CUSTOM_BG_HOVER);
     } else {
-      value = await blendColors(border, base);
+      value = await compositeLayeredColors(border, base);
     }
     values.set(CUSTOM_BORDER_ACTIVE, value);
   }
@@ -619,11 +619,11 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       }
       value = await getColorInHex(borderColor);
     } else if (/^currentcolor$/i.test(border)) {
-      value = await blendColors(color, base);
+      value = await compositeLayeredColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = base;
     } else {
-      value = await blendColors(border, base);
+      value = await compositeLayeredColors(border, base);
     }
     values.set(CUSTOM_BORDER_FIELD, value);
   }
@@ -641,11 +641,11 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       }
       value = await getColorInHex(borderColor);
     } else if (/^currentcolor$/i.test(border)) {
-      value = await blendColors(color, base);
+      value = await compositeLayeredColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = base;
     } else {
-      value = await blendColors(border, base);
+      value = await compositeLayeredColors(border, base);
     }
     values.set(CUSTOM_BORDER_FIELD_ACTIVE, value);
   }

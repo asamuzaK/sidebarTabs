@@ -607,37 +607,37 @@ export const convertColorMixToHex = async value => {
 };
 
 /**
- * blend two colors
+ * composite two layered colors
  *
- * @param {string} blend - color to blend
+ * @param {string} overlay - overlay color
  * @param {string} base - base color
  * @returns {?string} - hex
  */
-export const blendColors = async (blend, base) => {
-  if (!isString(blend)) {
-    throw new TypeError(`Expected String but got ${getType(blend)}.`);
+export const compositeLayeredColors = async (overlay, base) => {
+  if (!isString(overlay)) {
+    throw new TypeError(`Expected String but got ${getType(overlay)}.`);
   }
   if (!isString(base)) {
     throw new TypeError(`Expected String but got ${getType(base)}.`);
   }
+  const overlayHex = await convertColorToHex(overlay, true);
   const baseHex = await convertColorToHex(base, true);
-  const blendHex = await convertColorToHex(blend, true);
   let hex;
-  if (baseHex && blendHex) {
+  if (overlayHex && baseHex) {
+    const [overlayR, overlayG, overlayB, overlayA] = await parseHex(overlayHex);
     const [baseR, baseG, baseB, baseA] = await parseHex(baseHex);
-    const [blendR, blendG, blendB, blendA] = await parseHex(blendHex);
-    const alpha = 1 - (1 - baseA) * (1 - blendA);
-    if (blendA === 1) {
-      hex = blendHex;
-    } else if (blendA === 0) {
+    const alpha = 1 - (1 - overlayA) * (1 - baseA);
+    if (overlayA === 1) {
+      hex = overlayHex;
+    } else if (overlayA === 0) {
       hex = baseHex;
     } else if (alpha) {
-      const baseAlpha = baseA * (1 - blendA) / alpha;
-      const blendAlpha = blendA / alpha;
+      const overlayAlpha = overlayA / alpha;
+      const baseAlpha = baseA * (1 - overlayA) / alpha;
       const [r, g, b, a] = await Promise.all([
-        numberToHexString(baseR * baseAlpha + blendR * blendAlpha),
-        numberToHexString(baseG * baseAlpha + blendG * blendAlpha),
-        numberToHexString(baseB * baseAlpha + blendB * blendAlpha),
+        numberToHexString(baseR * baseAlpha + overlayR * overlayAlpha),
+        numberToHexString(baseG * baseAlpha + overlayG * overlayAlpha),
+        numberToHexString(baseB * baseAlpha + overlayB * overlayAlpha),
         numberToHexString(alpha * NUM_MAX)
       ]);
       if (a === 'ff') {
