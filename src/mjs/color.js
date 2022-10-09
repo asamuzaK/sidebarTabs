@@ -267,36 +267,37 @@ export const parseHsl = async value => {
       max = NUM_MAX / PCT_MAX * (l + (PCT_MAX - l) * (s / PCT_MAX));
       min = NUM_MAX / PCT_MAX * (l - (PCT_MAX - l) * (s / PCT_MAX));
     }
+    const coef = (max - min) / INTERVAL;
     // < 60
     if (h >= 0 && h < INTERVAL) {
       r = max;
-      g = h / INTERVAL * (max - min) + min;
+      g = h * coef + min;
       b = min;
     // < 120
     } else if (h < INTERVAL * DOUBLE) {
-      r = (INTERVAL * DOUBLE - h) / INTERVAL * (max - min) + min;
+      r = (INTERVAL * DOUBLE - h) * coef + min;
       g = max;
       b = min;
     // < 180
     } else if (h < DEG * HALF) {
       r = min;
       g = max;
-      b = (h - INTERVAL * DOUBLE) / INTERVAL * (max - min) + min;
+      b = (h - INTERVAL * DOUBLE) * coef + min;
     // < 240
     } else if (h < DEG * HALF + INTERVAL) {
       r = min;
-      g = (DEG * HALF + INTERVAL - h) / INTERVAL * (max - min) + min;
+      g = (DEG * HALF + INTERVAL - h) * coef + min;
       b = max;
     // < 300
     } else if (h < DEG - INTERVAL) {
-      r = (h - INTERVAL - DEG * HALF) / INTERVAL * (max - min) + min;
+      r = (h - INTERVAL - DEG * HALF) * coef + min;
       g = min;
       b = max;
     // < 360
     } else if (h < DEG) {
       r = max;
       g = min;
-      b = (DEG - h) / INTERVAL * (max - min) + min;
+      b = (DEG - h) * coef + min;
     }
     arr.push(
       Math.min(NUM_MAX, Math.max(r, 0)),
@@ -353,10 +354,11 @@ export const parseHwb = async value => {
       arr.push(v, v, v, a);
     } else {
       const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
+      const coef = (1 - w - b) / NUM_MAX;
       arr.push(
-        (rr * (1 - w - b) / NUM_MAX + w) * NUM_MAX,
-        (gg * (1 - w - b) / NUM_MAX + w) * NUM_MAX,
-        (bb * (1 - w - b) / NUM_MAX + w) * NUM_MAX,
+        (rr * coef + w) * NUM_MAX,
+        (gg * coef + w) * NUM_MAX,
+        (bb * coef + w) * NUM_MAX,
         a
       );
     }

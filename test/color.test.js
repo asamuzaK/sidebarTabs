@@ -109,7 +109,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [255, 0, 0, 0.4], 'result');
@@ -120,10 +120,10 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
-      assert.deepEqual(res, [128, 127, 127, 1], 'result');
+      assert.deepEqual(res, [128, 128, 128, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -131,10 +131,10 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
-      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+      assert.deepEqual(res, [1, 1, 1, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -142,7 +142,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [255, 255, 0, 0.4], 'result');
@@ -153,7 +153,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [0, 255, 0, 1], 'result');
@@ -164,7 +164,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [0, 255, 255, 1], 'result');
@@ -175,7 +175,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [0, 0, 255, 1], 'result');
@@ -186,7 +186,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [255, 0, 255, 1], 'result');
@@ -214,11 +214,11 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
-      const res = await func('hwb(120 0% 49.8039%)');
+      const res = await func('hwb(120 0% 50%)');
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [0, 128, 0, 1], 'result');
@@ -229,7 +229,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [0, 0, 0, 1], 'result');
@@ -240,7 +240,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [128, 128, 128, 1], 'result');
@@ -251,10 +251,10 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
-      assert.deepEqual(res, [137, 137, 137, 1], 'result');
+      assert.deepEqual(res, [138, 138, 138, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -262,7 +262,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [51, 179, 51, 1], 'result');
@@ -273,7 +273,7 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
       assert.deepEqual(res, [1, 179, 1, 1], 'result');
@@ -284,10 +284,10 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
-      assert.deepEqual(res, [51, 254, 51, 1], 'result');
+      assert.deepEqual(res, [51, 255, 51, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -295,10 +295,10 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
-      assert.deepEqual(res, [64, 127, 0, 0.5], 'result');
+      assert.deepEqual(res, [64, 128, 0, 0.5], 'result');
     });
 
     it('should get value', async () => {
@@ -306,10 +306,10 @@ describe('color', () => {
       const l = 3;
       let i = 0;
       while (i < l) {
-        res[i] = Math.round(res[i]);
+        res[i] = Math.ceil(res[i]);
         i++;
       }
-      assert.deepEqual(res, [64, 127, 0, 0.7], 'result');
+      assert.deepEqual(res, [64, 128, 0, 0.7], 'result');
     });
   });
 
