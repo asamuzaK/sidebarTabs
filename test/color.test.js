@@ -1132,8 +1132,11 @@ describe('color', () => {
       assert.strictEqual(res, value, 'result');
     });
 
-
-
+    it('should get result', async () => {
+      const res =
+        await func('color-mix(in hwb, hwb(0 100% 0%), hwb(0 0% 100%))');
+      assert.strictEqual(res, '#808080', 'result');
+    });
 
     it('should get result', async () => {
       const res =
@@ -1210,8 +1213,6 @@ describe('color', () => {
     it('should get result', async () => {
       const res =
         await func('color-mix(in hwb, hwb(120 10% 20% / .4) 12.5%, hwb(30 30% 40% / .8) 37.5%)');
-      const value =
-        await mjs.convertColorToHex('rgba(121, 114, 69, 0.35)', true);
       assert.strictEqual(res, '#a0954659', 'result');
     });
 
@@ -1220,7 +1221,6 @@ describe('color', () => {
         await func('color-mix(in hwb, hwb(120 10% 20% / .4) 0%, hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#99734dcc', 'result');
     });
-
 
     // NOTE: not supported yet
     it('should get null', async () => {
