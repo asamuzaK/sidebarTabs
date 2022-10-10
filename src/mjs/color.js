@@ -239,11 +239,11 @@ export const parseHsl = async value => {
   if (s.startsWith('.')) {
     s = `0${s}`;
   }
-  s = Math.min(PCT_MAX, Math.max(parseFloat(s), 0));
+  s = Math.min(Math.max(parseFloat(s), 0), PCT_MAX);
   if (l.startsWith('.')) {
     l = `0${l}`;
   }
-  l = Math.min(PCT_MAX, Math.max(parseFloat(l), 0));
+  l = Math.min(Math.max(parseFloat(l), 0), PCT_MAX);
   if (isString(a)) {
     if (a.startsWith('.')) {
       a = `0${a}`;
@@ -261,48 +261,48 @@ export const parseHsl = async value => {
         Number.isNaN(Number(l)) || Number.isNaN(Number(a)))) {
     let max, min, r, g, b;
     if (l < PCT_MAX * HALF) {
-      max = NUM_MAX / PCT_MAX * (l + l * (s / PCT_MAX));
-      min = NUM_MAX / PCT_MAX * (l - l * (s / PCT_MAX));
+      max = (l + l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+      min = (l - l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
     } else {
-      max = NUM_MAX / PCT_MAX * (l + (PCT_MAX - l) * (s / PCT_MAX));
-      min = NUM_MAX / PCT_MAX * (l - (PCT_MAX - l) * (s / PCT_MAX));
+      max = (l + (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+      min = (l - (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
     }
-    const coef = (max - min) / INTERVAL;
+    const factor = (max - min) / INTERVAL;
     // < 60
     if (h >= 0 && h < INTERVAL) {
       r = max;
-      g = h * coef + min;
+      g = h * factor + min;
       b = min;
     // < 120
     } else if (h < INTERVAL * DOUBLE) {
-      r = (INTERVAL * DOUBLE - h) * coef + min;
+      r = (INTERVAL * DOUBLE - h) * factor + min;
       g = max;
       b = min;
     // < 180
     } else if (h < DEG * HALF) {
       r = min;
       g = max;
-      b = (h - INTERVAL * DOUBLE) * coef + min;
+      b = (h - INTERVAL * DOUBLE) * factor + min;
     // < 240
-    } else if (h < DEG * HALF + INTERVAL) {
+    } else if (h < INTERVAL * DOUBLE * DOUBLE) {
       r = min;
-      g = (DEG * HALF + INTERVAL - h) * coef + min;
+      g = (INTERVAL * DOUBLE * DOUBLE - h) * factor + min;
       b = max;
     // < 300
     } else if (h < DEG - INTERVAL) {
-      r = (h - INTERVAL - DEG * HALF) * coef + min;
+      r = (h - (INTERVAL * DOUBLE * DOUBLE)) * factor + min;
       g = min;
       b = max;
     // < 360
     } else if (h < DEG) {
       r = max;
       g = min;
-      b = (DEG - h) * coef + min;
+      b = (DEG - h) * factor + min;
     }
     arr.push(
-      Math.min(NUM_MAX, Math.max(r, 0)),
-      Math.min(NUM_MAX, Math.max(g, 0)),
-      Math.min(NUM_MAX, Math.max(b, 0)),
+      Math.min(Math.max(r, 0), NUM_MAX),
+      Math.min(Math.max(g, 0), NUM_MAX),
+      Math.min(Math.max(b, 0), NUM_MAX),
       a
     );
   }
@@ -329,11 +329,11 @@ export const parseHwb = async value => {
   if (w.startsWith('.')) {
     w = `0${w}`;
   }
-  w = Math.min(PCT_MAX, Math.max(parseFloat(w), 0)) / PCT_MAX;
+  w = Math.min(Math.max(parseFloat(w), 0), PCT_MAX) / PCT_MAX;
   if (b.startsWith('.')) {
     b = `0${b}`;
   }
-  b = Math.min(PCT_MAX, Math.max(parseFloat(b), 0)) / PCT_MAX;
+  b = Math.min(Math.max(parseFloat(b), 0), PCT_MAX) / PCT_MAX;
   if (isString(a)) {
     if (a.startsWith('.')) {
       a = `0${a}`;
@@ -354,11 +354,11 @@ export const parseHwb = async value => {
       arr.push(v, v, v, a);
     } else {
       const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
-      const coef = (1 - w - b) / NUM_MAX;
+      const factor = (1 - w - b) / NUM_MAX;
       arr.push(
-        (rr * coef + w) * NUM_MAX,
-        (gg * coef + w) * NUM_MAX,
-        (bb * coef + w) * NUM_MAX,
+        (rr * factor + w) * NUM_MAX,
+        (gg * factor + w) * NUM_MAX,
+        (bb * factor + w) * NUM_MAX,
         a
       );
     }
@@ -419,9 +419,9 @@ export const parseRgb = async value => {
     a = 1;
   }
   return [
-    Math.min(NUM_MAX, Math.max(r, 0)),
-    Math.min(NUM_MAX, Math.max(g, 0)),
-    Math.min(NUM_MAX, Math.max(b, 0)),
+    Math.min(Math.max(r, 0), NUM_MAX),
+    Math.min(Math.max(g, 0), NUM_MAX),
+    Math.min(Math.max(b, 0), NUM_MAX),
     a
   ];
 };
@@ -740,12 +740,12 @@ export const convertColorMixToHex = async value => {
     const [rA, gA, bA, aA] = await parseHex(colorAHex);
     const [rB, gB, bB, aB] = await parseHex(colorBHex);
     const a = aA * pA + aB * pB;
-    const coef = PCT_MAX / a;
-    const coefA = aA * pA / NUM_MAX;
-    const coefB = aB * pB / NUM_MAX;
-    const r = (rA * coefA + rB * coefB) * coef;
-    const g = (gA * coefA + gB * coefB) * coef;
-    const b = (bA * coefA + bB * coefB) * coef;
+    const factor = PCT_MAX / a;
+    const factorA = aA * pA / NUM_MAX;
+    const factorB = aB * pB / NUM_MAX;
+    const r = (rA * factorA + rB * factorB) * factor;
+    const g = (gA * factorA + gB * factorB) * factor;
+    const b = (bA * factorA + bB * factorB) * factor;
     const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
     hex = await convertColorToHex(rgb, true);
   // in hsl
