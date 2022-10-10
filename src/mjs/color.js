@@ -16,13 +16,13 @@ const INTERVAL = 60;
 const NUM_MAX = 255;
 const PCT_MAX = 100;
 const REG_ANGLE = 'deg|g?rad|turn';
+const REG_COLORSPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
 const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
 const REG_PCT = `${REG_NUM}%`;
 const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?\\s+${REG_PCT}\\s+${REG_PCT}(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:${REG_NUM}\\s+${REG_NUM}\\s+${REG_NUM}|${REG_PCT}\\s+${REG_PCT}\\s+${REG_PCT})(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}\\s*,\\s*${REG_NUM}\\s*,\\s*${REG_NUM}|${REG_PCT}\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_COLORSPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
 const REG_COLOR = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
 const REG_COLOR_MIX_PART = `${REG_COLOR}(?:\\s+${REG_PCT})?`;
 const REG_COLOR_MIX = `in\\s+${REG_COLORSPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
@@ -182,7 +182,7 @@ export const colorname = {
  * convert angle to deg
  *
  * @param {string} angle - angle
- * @returns {number} - deg
+ * @returns {number} - deg 0..360
  */
 export const convertAngleToDeg = async angle => {
   if (!isString(angle)) {
@@ -222,7 +222,7 @@ export const convertAngleToDeg = async angle => {
  * parse hsl()
  *
  * @param {string} value - value
- * @returns {Array} - [r, g, b, a]
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseHsl = async value => {
   if (!isString(value)) {
@@ -313,7 +313,7 @@ export const parseHsl = async value => {
  * parse hwb()
  *
  * @param {string} value - value
- * @returns {Array} - [r, g, b, a]
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseHwb = async value => {
   if (!isString(value)) {
@@ -370,7 +370,7 @@ export const parseHwb = async value => {
  * parse rgb()
  *
  * @param {string} value - value
- * @returns {Array} - [r, g, b, a]
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseRgb = async value => {
   if (!isString(value)) {
@@ -431,7 +431,7 @@ export const parseRgb = async value => {
  * parse hex-color
  *
  * @param {string} value - value
- * @returns {Array} - [r, g, b, a]
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseHex = async value => {
   if (!isString(value)) {
@@ -478,6 +478,46 @@ export const parseHex = async value => {
     );
   }
   return arr;
+};
+
+/**
+ * hex to hsl
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [h, s, l, a] h: 0..360 g|b: 0..100 a: 0..1
+ */
+export const hexToHsl = async value => {
+  const [rr, gg, bb, a] = await parseHex(value);
+  const r = parseFloat(rr) / NUM_MAX;
+  const g = parseFloat(gg) / NUM_MAX;
+  const b = parseFloat(bb) / NUM_MAX;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  const s = (max === min && (max === 1 || max === 0))
+    ? 0
+    : d / (1 - Math.abs(max + min - 1));
+  const l = (max + min) * HALF;
+  let h = 0;
+  if (max !== min) {
+    switch (max) {
+      case r:
+        h = (g - b) / d;
+        break;
+      case g:
+        h = (b - r) / d + DOUBLE;
+        break;
+      case b:
+      default:
+        h = (r - g) / d + DOUBLE * DOUBLE;
+        break;
+    }
+    h = h * INTERVAL % DEG;
+    if (h < 0) {
+      h += DEG;
+    }
+  }
+  return [h, s * PCT_MAX, l * PCT_MAX, a];
 };
 
 /**
@@ -666,13 +706,13 @@ export const convertColorMixToHex = async value => {
     }
     multipler = 1;
   }
+  const colorAHex = await convertColorToHex(colorA, true);
+  const colorBHex = await convertColorToHex(colorB, true);
   let hex;
   // srgb
-  if (colorSpace === 'srgb') {
-    const [rA, gA, bA, aA] =
-      await convertColorToHex(colorA, true).then(parseHex);
-    const [rB, gB, bB, aB] =
-      await convertColorToHex(colorB, true).then(parseHex);
+  if (colorAHex && colorBHex && colorSpace === 'srgb') {
+    const [rA, gA, bA, aA] = await parseHex(colorAHex);
+    const [rB, gB, bB, aB] = await parseHex(colorBHex);
     const a = aA * pA + aB * pB;
     const r = (rA * aA * pA / NUM_MAX + rB * aB * pB / NUM_MAX) * PCT_MAX / a;
     const g = (gA * aA * pA / NUM_MAX + gB * aB * pB / NUM_MAX) * PCT_MAX / a;
@@ -691,12 +731,6 @@ export const convertColorMixToHex = async value => {
  * @returns {?string} - hex
  */
 export const compositeLayeredColors = async (overlay, base) => {
-  if (!isString(overlay)) {
-    throw new TypeError(`Expected String but got ${getType(overlay)}.`);
-  }
-  if (!isString(base)) {
-    throw new TypeError(`Expected String but got ${getType(base)}.`);
-  }
   const overlayHex = await convertColorToHex(overlay, true);
   const baseHex = await convertColorToHex(base, true);
   let hex;

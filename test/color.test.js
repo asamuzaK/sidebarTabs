@@ -453,6 +453,80 @@ describe('color', () => {
     });
   });
 
+  describe('hex to hsl', () => {
+    const func = mjs.hexToHsl;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Invalid property value: foo',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ffffff');
+      assert.deepEqual(res, [0, 0, 100, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#000000');
+      assert.deepEqual(res, [0, 0, 0, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ff0000');
+      assert.deepEqual(res, [0, 100, 50, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#00ff00');
+      assert.deepEqual(res, [120, 100, 50, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#0000ff');
+      assert.deepEqual(res, [240, 100, 50, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ff00ff');
+      assert.deepEqual(res, [300, 100, 50, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ffff00');
+      assert.deepEqual(res, [60, 100, 50, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#00ffff');
+      assert.deepEqual(res, [180, 100, 50, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#008000');
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [120, 100, 25, 1]);
+    });
+
+    it('should get value', async () => {
+      const res = await func('#12345666');
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [210, 65, 20, 0.4]);
+    });
+  });
+
   describe('number to hex string', () => {
     const func = mjs.numberToHexString;
 
@@ -689,7 +763,7 @@ describe('color', () => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
           'Invalid property value: color-mix(in srgb, blue)',
-          'message');
+          'error message');
       });
     });
 
@@ -697,7 +771,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue -10%, red)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -705,7 +779,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue 110%, red)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -713,7 +787,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue, red -10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -721,7 +795,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue, red 110%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -729,7 +803,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue -10%, red 10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -737,7 +811,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue 110%, red 10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -745,7 +819,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue 10%, red -10%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '-10% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -753,7 +827,7 @@ describe('color', () => {
       await func('color-mix(in srgb, blue 10%, red 110%)').catch(e => {
         assert.instanceOf(e, RangeError, 'error');
         assert.strictEqual(e.message, '110% is not between 0% and 100%.',
-          'message');
+          'error message');
       });
     });
 
@@ -762,13 +836,25 @@ describe('color', () => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
           'Invalid property value: color-mix(in srgb, blue 0%, red 0%)',
-          'message');
+          'error message');
       });
     });
 
-    // NOTE: not supported yet
-    it('should get null', async () => {
-      const res = await func('color-mix(in lch, blue, red)');
+    it('should warn', async () => {
+      const stubWarn = sinon.stub(console, 'warn');
+      const res = await func('color-mix(in srgb, currentcolor, red)');
+      const { calledOnce: warnCalled } = stubWarn;
+      stubWarn.restore();
+      assert.isTrue(warnCalled, 'called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should warn', async () => {
+      const stubWarn = sinon.stub(console, 'warn');
+      const res = await func('color-mix(in srgb, blue, currentcolor)');
+      const { calledOnce: warnCalled } = stubWarn;
+      stubWarn.restore();
+      assert.isTrue(warnCalled, 'called');
       assert.isNull(res, 'result');
     });
 
@@ -862,6 +948,12 @@ describe('color', () => {
         await mjs.convertColorToHex('rgb(53.846% 46.154% 0% / 0.26)', true);
       assert.strictEqual(res, value, 'result');
     });
+
+    // NOTE: not supported yet
+    it('should get null', async () => {
+      const res = await func('color-mix(in lch, blue, red)');
+      assert.isNull(res, 'result');
+    });
   });
 
   describe('composite two layered colors', () => {
@@ -884,7 +976,7 @@ describe('color', () => {
     });
 
     it('should get null', async () => {
-      const res = await func('black', 'foo');
+      const res = await func('foo', 'bar');
       assert.isNull(res, 'result');
     });
 
@@ -894,7 +986,7 @@ describe('color', () => {
     });
 
     it('should get null', async () => {
-      const res = await func('foo', 'bar');
+      const res = await func('black', 'foo');
       assert.isNull(res, 'result');
     });
 
