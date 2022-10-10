@@ -535,6 +535,76 @@ describe('color', () => {
     });
   });
 
+  describe('hex to hwb', () => {
+    const func = mjs.hexToHwb;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Invalid property value: foo',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ffffff');
+      assert.deepEqual(res, [0, 100, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#000000');
+      assert.deepEqual(res, [0, 0, 100, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#808080');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [0, 50, 50, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#408000');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [90, 0, 50, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#608040');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [90, 25, 50, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#bfff80');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [90, 50, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#9fbf80');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, [90, 50, 25, 1], 'result');
+    });
+  });
+
   describe('number to hex string', () => {
     const func = mjs.numberToHexString;
 

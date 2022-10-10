@@ -521,6 +521,23 @@ export const hexToHsl = async value => {
 };
 
 /**
+ * hex to hwb
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [h, w, b, a] h: 0..360 w|b: 0..100 a: 0..1
+ */
+export const hexToHwb = async value => {
+  const [rr, gg, bb, a] = await parseHex(value);
+  const r = parseFloat(rr) / NUM_MAX;
+  const g = parseFloat(gg) / NUM_MAX;
+  const b = parseFloat(bb) / NUM_MAX;
+  const [h] = await hexToHsl(value);
+  const w = Math.min(r, g, b);
+  const bk = 1 - Math.max(r, g, b);
+  return [h, w * PCT_MAX, bk * PCT_MAX, a];
+};
+
+/**
  * number to hex string
  *
  * @param {number} value - value
