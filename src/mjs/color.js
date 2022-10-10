@@ -233,8 +233,8 @@ export const parseHsl = async value => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const [, val] = value.match(reg);
-  let [h, s, l, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
+  const [, v] = value.match(reg);
+  let [h, s, l, a] = v.replace(/[,/]/g, ' ').split(/\s+/);
   h = await convertAngleToDeg(h);
   if (s.startsWith('.')) {
     s = `0${s}`;
@@ -418,13 +418,12 @@ export const parseRgb = async value => {
   } else {
     a = 1;
   }
-  const arr = [
+  return [
     Math.min(NUM_MAX, Math.max(r, 0)),
     Math.min(NUM_MAX, Math.max(g, 0)),
     Math.min(NUM_MAX, Math.max(b, 0)),
     a
   ];
-  return arr;
 };
 
 /**
@@ -517,7 +516,12 @@ export const hexToHsl = async value => {
       h += DEG;
     }
   }
-  return [h, s * PCT_MAX, l * PCT_MAX, a];
+  return [
+    h,
+    s * PCT_MAX,
+    l * PCT_MAX,
+    a
+  ];
 };
 
 /**
@@ -534,7 +538,12 @@ export const hexToHwb = async value => {
   const [h] = await hexToHsl(value);
   const w = Math.min(r, g, b);
   const bk = 1 - Math.max(r, g, b);
-  return [h, w * PCT_MAX, bk * PCT_MAX, a];
+  return [
+    h,
+    w * PCT_MAX,
+    bk * PCT_MAX,
+    a
+  ];
 };
 
 /**
@@ -731,16 +740,19 @@ export const convertColorMixToHex = async value => {
     const [rA, gA, bA, aA] = await parseHex(colorAHex);
     const [rB, gB, bB, aB] = await parseHex(colorBHex);
     const a = aA * pA + aB * pB;
-    const r = (rA * aA * pA / NUM_MAX + rB * aB * pB / NUM_MAX) * PCT_MAX / a;
-    const g = (gA * aA * pA / NUM_MAX + gB * aB * pB / NUM_MAX) * PCT_MAX / a;
-    const b = (bA * aA * pA / NUM_MAX + bB * aB * pB / NUM_MAX) * PCT_MAX / a;
+    const coef = PCT_MAX / a;
+    const coefA = aA * pA / NUM_MAX;
+    const coefB = aB * pB / NUM_MAX;
+    const r = (rA * coefA + rB * coefB) * coef;
+    const g = (gA * coefA + gB * coefB) * coef;
+    const b = (bA * coefA + bB * coefB) * coef;
     const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
     hex = await convertColorToHex(rgb, true);
   // in hsl
   } else if (colorAHex && colorBHex && colorSpace === 'hsl') {
     const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
     const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
-    const a = (aA * pA + aB * pB);
+    const a = aA * pA + aB * pB;
     const h = (hA * pA + hB * pB) % DEG;
     const s = (sA * aA * pA + sB * aB * pB) / a;
     const l = (lA * aA * pA + lB * aB * pB) / a;
@@ -750,7 +762,7 @@ export const convertColorMixToHex = async value => {
   } else if (colorAHex && colorBHex && colorSpace === 'hwb') {
     const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
     const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
-    const a = (aA * pA + aB * pB);
+    const a = aA * pA + aB * pB;
     const h = (hA * pA + hB * pB) % DEG;
     const w = (wA * aA * pA + wB * aB * pB) / a;
     const b = (bA * aA * pA + bB * aB * pB) / a;
