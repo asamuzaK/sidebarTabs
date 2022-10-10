@@ -709,7 +709,7 @@ export const convertColorMixToHex = async value => {
   const colorAHex = await convertColorToHex(colorA, true);
   const colorBHex = await convertColorToHex(colorB, true);
   let hex;
-  // srgb
+  // in srgb
   if (colorAHex && colorBHex && colorSpace === 'srgb') {
     const [rA, gA, bA, aA] = await parseHex(colorAHex);
     const [rB, gB, bB, aB] = await parseHex(colorBHex);
@@ -719,6 +719,16 @@ export const convertColorMixToHex = async value => {
     const b = (bA * aA * pA / NUM_MAX + bB * aB * pB / NUM_MAX) * PCT_MAX / a;
     const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
     hex = await convertColorToHex(rgb, true);
+  // in hsl
+  } else if (colorAHex && colorBHex && colorSpace === 'hsl') {
+    const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
+    const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
+    const a = (aA * pA + aB * pB);
+    const h = (hA * pA + hB * pB) % DEG;
+    const s = (sA * aA * pA + sB * aB * pB) / a;
+    const l = (lA * aA * pA + lB * aB * pB) / a;
+    const hsl = `hsl(${h} ${s}% ${l}% / ${a * multipler})`;
+    hex = await convertColorToHex(hsl, true);
   }
   return hex || null;
 };
