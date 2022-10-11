@@ -568,8 +568,9 @@ export const numberToHexString = async value => {
 
 /**
  * convert color to hex
- * NOTE: convertColorToHex('transparent') resolves null
- *       convertColorToHex('transparent', true) resolves #00000000
+ * NOTE: convertColorToHex('transparent') resolve as null
+ *       convertColorToHex('transparent', true) resolve as #00000000
+ *       convertColorToHex('currentColor') warn not supported, resolve as null
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -582,7 +583,7 @@ export const convertColorToHex = async (value, alpha = false) => {
   let hex;
   value = value.toLowerCase().trim();
   // named-color
-  if (/^[a-z]+$/i.test(value)) {
+  if (/^[a-z]+$/.test(value)) {
     if (/currentcolor/.test(value)) {
       logWarn('currentcolor keyword is not supported.');
     } else if (Object.prototype.hasOwnProperty.call(colorname, value)) {
