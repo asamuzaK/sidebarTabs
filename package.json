@@ -34,13 +34,13 @@
     "update-light": "node index update --dir=light -i"
   },
   "dependencies": {
-    "camelize": "^1.0.0",
+    "camelize": "^1.0.1",
     "commander": "^9.4.1",
     "csstree-validator": "^3.0.0",
     "decamelize": "^6.0.0",
     "node-fetch": "^3.2.10",
     "tldts-experimental": "^5.7.95",
-    "webext-schema": "^5.0.4"
+    "webext-schema": "^5.0.5"
   },
   "devDependencies": {
     "addons-linter": "^5.17.0",
