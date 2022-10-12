@@ -1548,6 +1548,8 @@ describe('theme', () => {
           assert.strictEqual(value, obj[CUSTOM_BG_FRAME], `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#333238', `${key}`);
+        } else if (key === CUSTOM_BG_HOVER_SHADOW) {
+          assert.strictEqual(value, '#fbfbfe1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
                    key === CUSTOM_COLOR_HOVER) {
           assert.strictEqual(value, obj[CUSTOM_COLOR_FRAME], `${key}`);
@@ -1582,7 +1584,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#33252b', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
-          assert.strictEqual(value, '#fc7d7d1a', `${key}`);
+          assert.strictEqual(value, '#fd7d7f1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
                    key === CUSTOM_COLOR_HOVER || key === CUSTOM_COLOR_ACTIVE ||
                    key === CUSTOM_COLOR_FRAME) {

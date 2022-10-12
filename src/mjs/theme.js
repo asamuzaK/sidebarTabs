@@ -555,9 +555,15 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       value = currentThemeColors.get(FRAME_TEXT);
     }
     if (/currentcolor/i.test(value)) {
-      const valueA = currentThemeColors.get(CUSTOM_COLOR) ||
-                     baseValues[CUSTOM_COLOR];
-      value = value.replace(/currentcolor/i, valueA);
+      if (useFrame && themeId !== THEME_ALPEN_ID) {
+        const valueA = currentThemeColors.get(CUSTOM_COLOR_FRAME) ||
+                       baseValues[CUSTOM_COLOR_FRAME];
+        value = value.replace(/currentcolor/i, valueA);
+      } else {
+        const valueA = currentThemeColors.get(CUSTOM_COLOR) ||
+                       baseValues[CUSTOM_COLOR];
+        value = value.replace(/currentcolor/i, valueA);
+      }
     }
     if (value) {
       value = await getColorInHex(value);
