@@ -145,7 +145,7 @@ export const themeMap = {
     [CUSTOM_BG_FIELD_ACTIVE]: '#42414d',
     [CUSTOM_BG_FRAME]: '#1c1b22',
     [CUSTOM_BG_HOVER]: '#4c4c50',
-    [CUSTOM_BG_HOVER_SHADOW]: '#fbfbfe1a',
+    [CUSTOM_BG_HOVER_SHADOW]: '#f9f9fa1a',
     [CUSTOM_BG_SELECT]: '#42414d',
     [CUSTOM_BG_SELECT_HOVER]: '#55545f',
     [CUSTOM_BORDER_ACTIVE]: '#4c4c50', // NOTE: 'transparent',
@@ -544,11 +544,19 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     }
   }
   // override CUSTOM_BG_HOVER_SHADOW color
-  if (currentThemeColors.has(FRAME_TEXT)) {
-    let value = currentThemeColors.get(FRAME_TEXT);
+  if ((currentThemeColors.has('sidebar') &&
+       currentThemeColors.has('sidebar_text')) ||
+      currentThemeColors.has(FRAME_TEXT)) {
+    let value;
+    if (!useFrame && currentThemeColors.has('sidebar') &&
+        currentThemeColors.has('sidebar_text')) {
+      value = currentThemeColors.get('sidebar_text');
+    } else {
+      value = currentThemeColors.get(FRAME_TEXT);
+    }
     if (/currentcolor/i.test(value)) {
-      const valueA = currentThemeColors.get(CUSTOM_COLOR_FRAME) ||
-                     baseValues[CUSTOM_COLOR_FRAME];
+      const valueA = currentThemeColors.get(CUSTOM_COLOR) ||
+                     baseValues[CUSTOM_COLOR];
       value = value.replace(/currentcolor/i, valueA);
     }
     if (value) {
