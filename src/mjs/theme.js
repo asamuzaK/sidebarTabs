@@ -554,7 +554,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     } else {
       value = currentThemeColors.get(FRAME_TEXT);
     }
-    if (/currentcolor/i.test(value)) {
+    if (value && /currentcolor/i.test(value)) {
       if (useFrame && themeId !== THEME_ALPEN_ID) {
         const valueA = currentThemeColors.get(CUSTOM_COLOR_FRAME) ||
                        baseValues[CUSTOM_COLOR_FRAME];
