@@ -1,6 +1,6 @@
 /**
  * color.js
- * NOTE: "currentColor" keyword is not supported
+ * NOTE: 'currentColor' keyword is not supported
  */
 
 /* shared */
@@ -16,16 +16,16 @@ const INTERVAL = 60;
 const NUM_MAX = 255;
 const PCT_MAX = 100;
 const REG_ANGLE = 'deg|g?rad|turn';
-const REG_COLORSPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
+const REG_COLOR_SPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
 const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
 const REG_PCT = `${REG_NUM}%`;
 const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?\\s+${REG_PCT}\\s+${REG_PCT}(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:${REG_NUM}\\s+${REG_NUM}\\s+${REG_NUM}|${REG_PCT}\\s+${REG_PCT}\\s+${REG_PCT})(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}\\s*,\\s*${REG_NUM}\\s*,\\s*${REG_NUM}|${REG_PCT}\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_COLOR = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
-const REG_COLOR_MIX_PART = `${REG_COLOR}(?:\\s+${REG_PCT})?`;
-const REG_COLOR_MIX = `in\\s+${REG_COLORSPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
+const REG_COLOR_TYPE = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
+const REG_COLOR_MIX_PART = `${REG_COLOR_TYPE}(?:\\s+${REG_PCT})?`;
+const REG_COLOR_MIX = `in\\s+${REG_COLOR_SPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
 
 export const colorname = {
   aliceblue: '#f0f8ff',
@@ -483,7 +483,7 @@ export const parseHex = async value => {
  * hex to hsl
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [h, s, l, a] h: 0..360 g|b: 0..100 a: 0..1
+ * @returns {Array.<number>} - [h, s, l, a] h: 0..360 s|l: 0..100 a: 0..1
  */
 export const hexToHsl = async value => {
   const [rr, gg, bb, a] = await parseHex(value);
@@ -568,9 +568,10 @@ export const numberToHexString = async value => {
 
 /**
  * convert color to hex
- * NOTE: convertColorToHex('transparent') resolve as null
- *       convertColorToHex('transparent', true) resolve as #00000000
- *       convertColorToHex('currentColor') warn not supported, resolve as null
+ * NOTE: convertColorToHex('transparent') resolves as null
+ *       convertColorToHex('transparent', true) resolves as #00000000
+ *       convertColorToHex('currentColor') warns not supported, resolves as null
+ *       'color()', 'lab()', 'oklab()', 'lch()', 'oklch()' are not yet supported
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -584,12 +585,12 @@ export const convertColorToHex = async (value, alpha = false) => {
   value = value.toLowerCase().trim();
   // named-color
   if (/^[a-z]+$/.test(value)) {
-    if (/currentcolor/.test(value)) {
-      logWarn('currentcolor keyword is not supported.');
-    } else if (Object.prototype.hasOwnProperty.call(colorname, value)) {
+    if (Object.prototype.hasOwnProperty.call(colorname, value)) {
       hex = colorname[value];
     } else if (value === 'transparent' && alpha) {
       hex = '#00000000';
+    } else if (/currentcolor/.test(value)) {
+      await logWarn('currentcolor keyword is not supported.');
     }
   // hex-color
   } else if (value.startsWith('#')) {
@@ -670,6 +671,8 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * convert color-mix() to hex
+ * NOTE: 'lab', 'oklab', 'lch', 'oklch', 'xyz', 'xyz-d50', 'xyz-d65',
+ *       'srgb-linear' colorspaces are not yet supported
  *
  * @param {string} value - value
  * @returns {?string} - hex
@@ -708,12 +711,13 @@ export const convertColorMixToHex = async value => {
     if (p2 < 0 || p2 > 1) {
       throw new RangeError(`${pctB} is not between 0% and 100%.`);
     }
-    if (p1 + p2 === 0) {
+    const factor = p1 + p2;
+    if (factor === 0) {
       throw new Error(`Invalid property value: ${value}`);
     }
-    pA = p1 / (p1 + p2);
-    pB = p2 / (p1 + p2);
-    multipler = p1 + p2 < 1 ? p1 + p2 : 1;
+    pA = p1 / factor;
+    pB = p2 / factor;
+    multipler = factor < 1 ? factor : 1;
   } else {
     if (pctA) {
       pA = parseFloat(pctA) / PCT_MAX;
