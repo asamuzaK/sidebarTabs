@@ -15,6 +15,9 @@ const HEX = 16;
 const INTERVAL = 60;
 const NUM_MAX = 255;
 const PCT_MAX = 100;
+const LINEAR_COEF = 12.92;
+const LINEAR_EXP = 2.4;
+const LINEAR_FIX = 0.055;
 const REG_ANGLE = 'deg|g?rad|turn';
 const REG_COLOR_SPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
 const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
@@ -179,191 +182,212 @@ export const colorname = {
 };
 
 /**
- * convert angle to deg
+ * number to hex string
+ *
+ * @param {number} value - value
+ * @returns {string} - hex
+ */
+export const numberToHexString = async value => {
+  if (typeof value !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(value)}.`);
+  } else if (Number.isNaN(value)) {
+    throw new TypeError(`${value} is not a number.`);
+  }
+  let hex = Math.round(value).toString(HEX);
+  if (hex < 0 || hex > NUM_MAX) {
+    throw new RangeError(`${value} is not between 0 and ${NUM_MAX}.`);
+  }
+  if (hex.length === 1) {
+    hex = `0${hex}`;
+  }
+  return hex;
+};
+
+/**
+ * angle to deg
  *
  * @param {string} angle - angle
  * @returns {number} - deg 0..360
  */
-export const convertAngleToDeg = async angle => {
+export const angleToDeg = async angle => {
   if (!isString(angle)) {
     throw new TypeError(`Expected String but got ${getType(angle)}.`);
   }
   const reg = new RegExp(`^(${REG_NUM})(${REG_ANGLE})?$`);
-  let deg;
-  if (reg.test(angle)) {
-    const [, val, unit] = angle.match(reg);
-    const value = val.startsWith('.') ? `0${val}` : val;
-    switch (unit) {
-      case 'grad':
-        deg = parseFloat(value) * DEG / GRAD;
-        break;
-      case 'rad':
-        deg = parseFloat(value) * DEG / (Math.PI * DOUBLE);
-        break;
-      case 'turn':
-        deg = parseFloat(value) * DEG;
-        break;
-      default:
-        deg = parseFloat(value);
-    }
+  if (!reg.test(angle)) {
+    throw new Error(`Invalid property value: ${angle}`);
   }
-  if (typeof deg === 'number' && !Number.isNaN(deg)) {
-    deg %= DEG;
-    if (deg < 0) {
-      deg += DEG;
-    }
-  } else {
-    deg = Number.NaN;
+  const [, val, unit] = angle.match(reg);
+  const value = val.startsWith('.') ? `0${val}` : val;
+  let deg;
+  switch (unit) {
+    case 'grad':
+      deg = parseFloat(value) * DEG / GRAD;
+      break;
+    case 'rad':
+      deg = parseFloat(value) * DEG / (Math.PI * DOUBLE);
+      break;
+    case 'turn':
+      deg = parseFloat(value) * DEG;
+      break;
+    default:
+      deg = parseFloat(value);
+  }
+  deg %= DEG;
+  if (deg < 0) {
+    deg += DEG;
   }
   return deg;
 };
 
 /**
- * parse hsl()
+ * hex to rgb
  *
  * @param {string} value - value
  * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const parseHsl = async value => {
+export const hexToRgb = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg =
-    new RegExp(`hsla?\\(\\s*((?:${REG_HSL_HWB}|${REG_HSL_LV3}))\\s*\\)`);
-  if (!reg.test(value)) {
+  if (!(/^#[\da-f]{6}$/i.test(value) || /^#[\da-f]{8}$/i.test(value) ||
+        /^#[\da-f]{4}$/i.test(value) || /^#[\da-f]{3}$/i.test(value))) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const [, v] = value.match(reg);
-  let [h, s, l, a] = v.replace(/[,/]/g, ' ').split(/\s+/);
-  h = await convertAngleToDeg(h);
-  if (s.startsWith('.')) {
-    s = `0${s}`;
-  }
-  s = Math.min(Math.max(parseFloat(s), 0), PCT_MAX);
-  if (l.startsWith('.')) {
-    l = `0${l}`;
-  }
-  l = Math.min(Math.max(parseFloat(l), 0), PCT_MAX);
-  if (isString(a)) {
-    if (a.startsWith('.')) {
-      a = `0${a}`;
-    }
-    if (a.endsWith('%')) {
-      a = parseFloat(a) / PCT_MAX;
-    } else {
-      a = parseFloat(a);
-    }
-  } else {
-    a = 1;
-  }
   const arr = [];
-  if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(s)) ||
-        Number.isNaN(Number(l)) || Number.isNaN(Number(a)))) {
-    let max, min, r, g, b;
-    if (l < PCT_MAX * HALF) {
-      max = (l + l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
-      min = (l - l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
-    } else {
-      max = (l + (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
-      min = (l - (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
-    }
-    const factor = (max - min) / INTERVAL;
-    // < 60
-    if (h >= 0 && h < INTERVAL) {
-      r = max;
-      g = h * factor + min;
-      b = min;
-    // < 120
-    } else if (h < INTERVAL * DOUBLE) {
-      r = (INTERVAL * DOUBLE - h) * factor + min;
-      g = max;
-      b = min;
-    // < 180
-    } else if (h < DEG * HALF) {
-      r = min;
-      g = max;
-      b = (h - INTERVAL * DOUBLE) * factor + min;
-    // < 240
-    } else if (h < INTERVAL * DOUBLE * DOUBLE) {
-      r = min;
-      g = (INTERVAL * DOUBLE * DOUBLE - h) * factor + min;
-      b = max;
-    // < 300
-    } else if (h < DEG - INTERVAL) {
-      r = (h - (INTERVAL * DOUBLE * DOUBLE)) * factor + min;
-      g = min;
-      b = max;
-    // < 360
-    } else if (h < DEG) {
-      r = max;
-      g = min;
-      b = (DEG - h) * factor + min;
-    }
+  if (/^#[\da-f]{6}$/.test(value)) {
+    const [, r, g, b] = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
     arr.push(
-      Math.min(Math.max(r, 0), NUM_MAX),
-      Math.min(Math.max(g, 0), NUM_MAX),
-      Math.min(Math.max(b, 0), NUM_MAX),
-      a
+      parseInt(r, HEX),
+      parseInt(g, HEX),
+      parseInt(b, HEX),
+      1
+    );
+  } else if (/^#[\da-f]{8}$/.test(value)) {
+    const [, r, g, b, a] =
+      value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+    arr.push(
+      parseInt(r, HEX),
+      parseInt(g, HEX),
+      parseInt(b, HEX),
+      parseInt(a, HEX) / NUM_MAX
+    );
+  } else if (/^#[\da-f]{4}$/i.test(value)) {
+    const [, r, g, b, a] =
+      value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/i);
+    arr.push(
+      parseInt(`${r}${r}`, HEX),
+      parseInt(`${g}${g}`, HEX),
+      parseInt(`${b}${b}`, HEX),
+      parseInt(`${a}${a}`, HEX) / NUM_MAX
+    );
+  } else if (/^#[\da-f]{3}$/i.test(value)) {
+    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/i);
+    arr.push(
+      parseInt(`${r}${r}`, HEX),
+      parseInt(`${g}${g}`, HEX),
+      parseInt(`${b}${b}`, HEX),
+      1
     );
   }
   return arr;
 };
 
 /**
- * parse hwb()
+ * hex to linear rgb
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b|a: 0..1
  */
-export const parseHwb = async value => {
-  if (!isString(value)) {
-    throw new TypeError(`Expected String but got ${getType(value)}.`);
-  }
-  const reg = new RegExp(`hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)`);
-  if (!reg.test(value)) {
-    throw new Error(`Invalid property value: ${value}`);
-  }
-  const [, val] = value.match(reg);
-  let [h, w, b, a] = val.replace('/', ' ').split(/\s+/);
-  h = await convertAngleToDeg(h);
-  if (w.startsWith('.')) {
-    w = `0${w}`;
-  }
-  w = Math.min(Math.max(parseFloat(w), 0), PCT_MAX) / PCT_MAX;
-  if (b.startsWith('.')) {
-    b = `0${b}`;
-  }
-  b = Math.min(Math.max(parseFloat(b), 0), PCT_MAX) / PCT_MAX;
-  if (isString(a)) {
-    if (a.startsWith('.')) {
-      a = `0${a}`;
-    }
-    if (a.endsWith('%')) {
-      a = parseFloat(a) / PCT_MAX;
-    } else {
-      a = parseFloat(a);
-    }
+export const hexToLinearRgb = async value => {
+  const CONDITION = 0.04045;
+  const [rr, gg, bb, a] = await hexToRgb(value);
+  let r = parseFloat(rr) / NUM_MAX;
+  let g = parseFloat(gg) / NUM_MAX;
+  let b = parseFloat(bb) / NUM_MAX;
+  if (r > CONDITION) {
+    r = Math.pow((r + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
   } else {
-    a = 1;
+    r = (r / LINEAR_COEF);
   }
-  const arr = [];
-  if (!(Number.isNaN(Number(h)) || Number.isNaN(Number(w)) ||
-        Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
-    if (w + b >= 1) {
-      const v = (w / (w + b)) * NUM_MAX;
-      arr.push(v, v, v, a);
-    } else {
-      const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
-      const factor = (1 - w - b) / NUM_MAX;
-      arr.push(
-        (rr * factor + w) * NUM_MAX,
-        (gg * factor + w) * NUM_MAX,
-        (bb * factor + w) * NUM_MAX,
-        a
-      );
+  if (g > CONDITION) {
+    g = Math.pow((g + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
+  } else {
+    g = (g / LINEAR_COEF);
+  }
+  if (b > CONDITION) {
+    b = Math.pow((b + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
+  } else {
+    b = (b / LINEAR_COEF);
+  }
+  return [r, g, b, a];
+};
+
+/**
+ * hex to hsl
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [h, s, l, a] h: 0..360 s|l: 0..100 a: 0..1
+ */
+export const hexToHsl = async value => {
+  const [rr, gg, bb, a] = await hexToRgb(value);
+  const r = parseFloat(rr) / NUM_MAX;
+  const g = parseFloat(gg) / NUM_MAX;
+  const b = parseFloat(bb) / NUM_MAX;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  const s = (max === min && (max === 1 || max === 0))
+    ? 0
+    : d / (1 - Math.abs(max + min - 1));
+  const l = (max + min) * HALF;
+  let h = 0;
+  if (max !== min) {
+    switch (max) {
+      case r:
+        h = (g - b) / d;
+        break;
+      case g:
+        h = (b - r) / d + DOUBLE;
+        break;
+      case b:
+      default:
+        h = (r - g) / d + DOUBLE * DOUBLE;
+        break;
+    }
+    h = h * INTERVAL % DEG;
+    if (h < 0) {
+      h += DEG;
     }
   }
-  return arr;
+  return [
+    h,
+    s * PCT_MAX,
+    l * PCT_MAX,
+    a
+  ];
+};
+
+/**
+ * hex to hwb
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [h, w, b, a] h: 0..360 w|b: 0..100 a: 0..1
+ */
+export const hexToHwb = async value => {
+  const [rr, gg, bb, a] = await hexToRgb(value);
+  const r = parseFloat(rr) / NUM_MAX;
+  const g = parseFloat(gg) / NUM_MAX;
+  const b = parseFloat(bb) / NUM_MAX;
+  const [h] = await hexToHsl(value);
+  const w = Math.min(r, g, b);
+  const bk = 1 - Math.max(r, g, b);
+  return [
+    h,
+    w * PCT_MAX,
+    bk * PCT_MAX,
+    a
+  ];
 };
 
 /**
@@ -427,141 +451,212 @@ export const parseRgb = async value => {
 };
 
 /**
- * parse hex-color
+ * parse hsl()
  *
  * @param {string} value - value
  * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const parseHex = async value => {
+export const parseHsl = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  if (!(/^#[\da-f]{6}$/i.test(value) || /^#[\da-f]{8}$/i.test(value) ||
-        /^#[\da-f]{4}$/i.test(value) || /^#[\da-f]{3}$/i.test(value))) {
+  const reg =
+    new RegExp(`hsla?\\(\\s*((?:${REG_HSL_HWB}|${REG_HSL_LV3}))\\s*\\)`);
+  if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
+  const [, val] = value.match(reg);
+  let [h, s, l, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
+  h = await angleToDeg(h);
+  if (s.startsWith('.')) {
+    s = `0${s}`;
+  }
+  s = Math.min(Math.max(parseFloat(s), 0), PCT_MAX);
+  if (l.startsWith('.')) {
+    l = `0${l}`;
+  }
+  l = Math.min(Math.max(parseFloat(l), 0), PCT_MAX);
+  if (isString(a)) {
+    if (a.startsWith('.')) {
+      a = `0${a}`;
+    }
+    if (a.endsWith('%')) {
+      a = parseFloat(a) / PCT_MAX;
+    } else {
+      a = parseFloat(a);
+    }
+  } else {
+    a = 1;
+  }
+  let max, min;
+  if (l < PCT_MAX * HALF) {
+    max = (l + l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+    min = (l - l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+  } else {
+    max = (l + (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+    min = (l - (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+  }
+  const factor = (max - min) / INTERVAL;
+  let r, g, b;
+  // < 60
+  if (h >= 0 && h < INTERVAL) {
+    r = max;
+    g = h * factor + min;
+    b = min;
+  // < 120
+  } else if (h < INTERVAL * DOUBLE) {
+    r = (INTERVAL * DOUBLE - h) * factor + min;
+    g = max;
+    b = min;
+  // < 180
+  } else if (h < DEG * HALF) {
+    r = min;
+    g = max;
+    b = (h - INTERVAL * DOUBLE) * factor + min;
+  // < 240
+  } else if (h < INTERVAL * DOUBLE * DOUBLE) {
+    r = min;
+    g = (INTERVAL * DOUBLE * DOUBLE - h) * factor + min;
+    b = max;
+  // < 300
+  } else if (h < DEG - INTERVAL) {
+    r = (h - (INTERVAL * DOUBLE * DOUBLE)) * factor + min;
+    g = min;
+    b = max;
+  // < 360
+  } else if (h < DEG) {
+    r = max;
+    g = min;
+    b = (DEG - h) * factor + min;
+  }
+  return [
+    Math.min(Math.max(r, 0), NUM_MAX),
+    Math.min(Math.max(g, 0), NUM_MAX),
+    Math.min(Math.max(b, 0), NUM_MAX),
+    a
+  ];
+};
+
+/**
+ * parse hwb()
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ */
+export const parseHwb = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const [, val] = value.match(reg);
+  let [h, w, b, a] = val.replace('/', ' ').split(/\s+/);
+  h = await angleToDeg(h);
+  if (w.startsWith('.')) {
+    w = `0${w}`;
+  }
+  w = Math.min(Math.max(parseFloat(w), 0), PCT_MAX) / PCT_MAX;
+  if (b.startsWith('.')) {
+    b = `0${b}`;
+  }
+  b = Math.min(Math.max(parseFloat(b), 0), PCT_MAX) / PCT_MAX;
+  if (isString(a)) {
+    if (a.startsWith('.')) {
+      a = `0${a}`;
+    }
+    if (a.endsWith('%')) {
+      a = parseFloat(a) / PCT_MAX;
+    } else {
+      a = parseFloat(a);
+    }
+  } else {
+    a = 1;
+  }
   const arr = [];
-  if (/^#[\da-f]{6}$/.test(value)) {
-    const [, r, g, b] = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+  if (w + b >= 1) {
+    const v = (w / (w + b)) * NUM_MAX;
+    arr.push(v, v, v, a);
+  } else {
+    const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
+    const factor = (1 - w - b) / NUM_MAX;
     arr.push(
-      parseInt(r, HEX),
-      parseInt(g, HEX),
-      parseInt(b, HEX),
-      1
-    );
-  } else if (/^#[\da-f]{8}$/.test(value)) {
-    const [, r, g, b, a] =
-      value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
-    arr.push(
-      parseInt(r, HEX),
-      parseInt(g, HEX),
-      parseInt(b, HEX),
-      parseInt(a, HEX) / NUM_MAX
-    );
-  } else if (/^#[\da-f]{4}$/i.test(value)) {
-    const [, r, g, b, a] =
-      value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/i);
-    arr.push(
-      parseInt(`${r}${r}`, HEX),
-      parseInt(`${g}${g}`, HEX),
-      parseInt(`${b}${b}`, HEX),
-      parseInt(`${a}${a}`, HEX) / NUM_MAX
-    );
-  } else if (/^#[\da-f]{3}$/i.test(value)) {
-    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/i);
-    arr.push(
-      parseInt(`${r}${r}`, HEX),
-      parseInt(`${g}${g}`, HEX),
-      parseInt(`${b}${b}`, HEX),
-      1
+      (rr * factor + w) * NUM_MAX,
+      (gg * factor + w) * NUM_MAX,
+      (bb * factor + w) * NUM_MAX,
+      a
     );
   }
   return arr;
 };
 
 /**
- * hex to hsl
+ * convert linear rgb to hex
  *
- * @param {string} value - value
- * @returns {Array.<number>} - [h, s, l, a] h: 0..360 s|l: 0..100 a: 0..1
- */
-export const hexToHsl = async value => {
-  const [rr, gg, bb, a] = await parseHex(value);
-  const r = parseFloat(rr) / NUM_MAX;
-  const g = parseFloat(gg) / NUM_MAX;
-  const b = parseFloat(bb) / NUM_MAX;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const d = max - min;
-  const s = (max === min && (max === 1 || max === 0))
-    ? 0
-    : d / (1 - Math.abs(max + min - 1));
-  const l = (max + min) * HALF;
-  let h = 0;
-  if (max !== min) {
-    switch (max) {
-      case r:
-        h = (g - b) / d;
-        break;
-      case g:
-        h = (b - r) / d + DOUBLE;
-        break;
-      case b:
-      default:
-        h = (r - g) / d + DOUBLE * DOUBLE;
-        break;
-    }
-    h = h * INTERVAL % DEG;
-    if (h < 0) {
-      h += DEG;
-    }
-  }
-  return [
-    h,
-    s * PCT_MAX,
-    l * PCT_MAX,
-    a
-  ];
-};
-
-/**
- * hex to hwb
- *
- * @param {string} value - value
- * @returns {Array.<number>} - [h, w, b, a] h: 0..360 w|b: 0..100 a: 0..1
- */
-export const hexToHwb = async value => {
-  const [rr, gg, bb, a] = await parseHex(value);
-  const r = parseFloat(rr) / NUM_MAX;
-  const g = parseFloat(gg) / NUM_MAX;
-  const b = parseFloat(bb) / NUM_MAX;
-  const [h] = await hexToHsl(value);
-  const w = Math.min(r, g, b);
-  const bk = 1 - Math.max(r, g, b);
-  return [
-    h,
-    w * PCT_MAX,
-    bk * PCT_MAX,
-    a
-  ];
-};
-
-/**
- * number to hex string
- *
- * @param {number} value - value
+ * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
  * @returns {string} - hex
  */
-export const numberToHexString = async value => {
-  if (Number.isNaN(Number(value))) {
-    throw new TypeError(`${getType(value)} is not a Number.`);
+export const convertLinearRgbToHex = async rgb => {
+  if (!Array.isArray(rgb)) {
+    throw new TypeError(`Expected Array but got ${getType(rgb)}.`);
   }
-  let hex = Math.round(value).toString(HEX);
-  if (hex < 0 || hex > NUM_MAX) {
-    throw new RangeError(`${value} is not between 0 and ${NUM_MAX}.`);
+  let [r, g, b, a] = rgb;
+  if (typeof r !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(r)}.`);
+  } else if (Number.isNaN(r)) {
+    throw new Error(`${r} is not a number.`);
+  } else if (r < 0 || r > 1) {
+    throw new RangeError(`${r} is not between 0 and 1.`);
   }
-  if (hex.length === 1) {
-    hex = `0${hex}`;
+  if (typeof g !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(g)}.`);
+  } else if (Number.isNaN(g)) {
+    throw new Error(`${g} is not a number.`);
+  } else if (g < 0 || g > 1) {
+    throw new RangeError(`${g} is not between 0 and 1.`);
+  }
+  if (typeof b !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(b)}.`);
+  } else if (Number.isNaN(b)) {
+    throw new Error(`${b} is not a number.`);
+  } else if (b < 0 || b > 1) {
+    throw new RangeError(`${b} is not between 0 and 1.`);
+  }
+  if (typeof a !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(a)}.`);
+  } else if (Number.isNaN(a)) {
+    throw new Error(`${a} is not a number.`);
+  } else if (a < 0 || a > 1) {
+    throw new RangeError(`${a} is not between 0 and 1.`);
+  }
+  const CONDITION = 809 / 258400;
+  if (r > CONDITION) {
+    r = Math.pow(r, 1 / LINEAR_EXP) * (1 + LINEAR_FIX) - LINEAR_FIX;
+  } else {
+    r *= LINEAR_COEF;
+  }
+  if (g > CONDITION) {
+    g = Math.pow(g, 1 / LINEAR_EXP) * (1 + LINEAR_FIX) - LINEAR_FIX;
+  } else {
+    g *= LINEAR_COEF;
+  }
+  if (b > CONDITION) {
+    b = Math.pow(b, 1 / LINEAR_EXP) * (1 + LINEAR_FIX) - LINEAR_FIX;
+  } else {
+    b *= LINEAR_COEF;
+  }
+  const [rr, gg, bb, aa] = await Promise.all([
+    numberToHexString(r * NUM_MAX),
+    numberToHexString(g * NUM_MAX),
+    numberToHexString(b * NUM_MAX),
+    numberToHexString(a * NUM_MAX)
+  ]);
+  let hex;
+  if (aa === 'ff') {
+    hex = `#${rr}${gg}${bb}`;
+  } else {
+    hex = `#${rr}${gg}${bb}${aa}`;
   }
   return hex;
 };
@@ -614,45 +709,22 @@ export const convertColorToHex = async (value, alpha = false) => {
       const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
       hex = `#${r}${r}${g}${g}${b}${b}`;
     }
-  // rgb()
-  } else if (value.startsWith('rgb')) {
-    const [r, g, b, a] = await parseRgb(value);
-    if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
-          Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
-      const [rr, gg, bb, aa] = await Promise.all([
-        numberToHexString(r),
-        numberToHexString(g),
-        numberToHexString(b),
-        numberToHexString(a * NUM_MAX)
-      ]);
-      if (!alpha || aa === 'ff') {
-        hex = `#${rr}${gg}${bb}`;
-      } else {
-        hex = `#${rr}${gg}${bb}${aa}`;
-      }
+  } else {
+    let r, g, b, a;
+    // rgb()
+    if (value.startsWith('rgb')) {
+      [r, g, b, a] = await parseRgb(value);
+    // hsl()
+    } else if (value.startsWith('hsl')) {
+      [r, g, b, a] = await parseHsl(value);
+    // hwb()
+    } else if (value.startsWith('hwb')) {
+      [r, g, b, a] = await parseHwb(value);
     }
-  // hsl()
-  } else if (value.startsWith('hsl')) {
-    const [r, g, b, a] = await parseHsl(value);
-    if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
-          Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
-      const [rr, gg, bb, aa] = await Promise.all([
-        numberToHexString(r),
-        numberToHexString(g),
-        numberToHexString(b),
-        numberToHexString(a * NUM_MAX)
-      ]);
-      if (!alpha || aa === 'ff') {
-        hex = `#${rr}${gg}${bb}`;
-      } else {
-        hex = `#${rr}${gg}${bb}${aa}`;
-      }
-    }
-  // hwb()
-  } else if (value.startsWith('hwb')) {
-    const [r, g, b, a] = await parseHwb(value);
-    if (!(Number.isNaN(Number(r)) || Number.isNaN(Number(g)) ||
-          Number.isNaN(Number(b)) || Number.isNaN(Number(a)))) {
+    if (typeof r === 'number' && !Number.isNaN(r) &&
+        typeof g === 'number' && !Number.isNaN(g) &&
+        typeof b === 'number' && !Number.isNaN(b) &&
+        typeof a === 'number' && !Number.isNaN(a)) {
       const [rr, gg, bb, aa] = await Promise.all([
         numberToHexString(r),
         numberToHexString(g),
@@ -700,7 +772,7 @@ export const convertColorMixToHex = async value => {
   } else {
     colorB = colorPartB;
   }
-  // normalize percentage and set multipler
+  // normalize percentages and set multipler
   let pA, pB, multipler;
   if (pctA && pctB) {
     const p1 = parseFloat(pctA) / PCT_MAX;
@@ -742,8 +814,8 @@ export const convertColorMixToHex = async value => {
   let hex;
   // in srgb
   if (colorAHex && colorBHex && colorSpace === 'srgb') {
-    const [rA, gA, bA, aA] = await parseHex(colorAHex);
-    const [rB, gB, bB, aB] = await parseHex(colorBHex);
+    const [rA, gA, bA, aA] = await hexToRgb(colorAHex);
+    const [rB, gB, bB, aB] = await hexToRgb(colorBHex);
     const a = aA * pA + aB * pB;
     const factor = PCT_MAX / a;
     const factorA = aA * pA / NUM_MAX;
@@ -789,8 +861,8 @@ export const compositeLayeredColors = async (overlay, base) => {
   const baseHex = await convertColorToHex(base, true);
   let hex;
   if (overlayHex && baseHex) {
-    const [overlayR, overlayG, overlayB, overlayA] = await parseHex(overlayHex);
-    const [baseR, baseG, baseB, baseA] = await parseHex(baseHex);
+    const [overlayR, overlayG, overlayB, overlayA] = await hexToRgb(overlayHex);
+    const [baseR, baseG, baseB, baseA] = await hexToRgb(baseHex);
     const alpha = 1 - (1 - overlayA) * (1 - baseA);
     if (overlayA === 1) {
       hex = overlayHex;
