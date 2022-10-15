@@ -1271,8 +1271,7 @@ describe('color', () => {
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in srgb, rgb(0 0 255), rgb(0 128 0))');
+      const res = await func('color-mix(in srgb, rgb(0 0 255), rgb(0 128 0))');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
@@ -1365,22 +1364,19 @@ describe('color', () => {
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40%) 75%)');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40%) 75%)');
       const value = await mjs.convertColorToHex('rgb(112, 106, 67)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20%) 30%, hsl(30 30% 40%) 90%)');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20%) 30%, hsl(30 30% 40%) 90%)');
       const value = await mjs.convertColorToHex('rgb(112, 106, 67)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20%) 12.5%, hsl(30 30% 40%) 37.5%)');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20%) 12.5%, hsl(30 30% 40%) 37.5%)');
       const value =
         await mjs.convertColorToHex('rgba(112, 106, 67, 0.5)', true);
       assert.strictEqual(res, value, 'result');
@@ -1394,55 +1390,47 @@ describe('color', () => {
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20% / .4), hsl(30 30% 40% / .8))');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4), hsl(30 30% 40% / .8))');
       const value = await mjs.convertColorToHex('rgba(95, 105, 65, 0.6)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40% / .8))');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40% / .8))');
       const value =
         await mjs.convertColorToHex('rgba(108, 103, 66, 0.85)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20% / .4), hsl(30 30% 40% / .8) 25%)');
-      const value =
-        await mjs.convertColorToHex('rgba(68, 84, 59, 0.5)', true);
+      const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4), hsl(30 30% 40% / .8) 25%)');
+      const value = await mjs.convertColorToHex('rgba(68, 84, 59, 0.5)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20% / .4) 25%, hsl(30 30% 40% / .8) 75%)');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 25%, hsl(30 30% 40% / .8) 75%)');
       const value =
         await mjs.convertColorToHex('rgba(121, 114, 69, 0.7)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20% / .4) 30%, hsl(30 30% 40% / .8) 90%)');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 30%, hsl(30 30% 40% / .8) 90%)');
       const value =
         await mjs.convertColorToHex('rgba(121, 114, 69, 0.7)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20% / .4) 12.5%, hsl(30 30% 40% / .8) 37.5%)');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 12.5%, hsl(30 30% 40% / .8) 37.5%)');
       const value =
         await mjs.convertColorToHex('rgba(121, 114, 69, 0.35)', true);
       assert.strictEqual(res, value, 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hsl, hsl(120 10% 20% / .4) 0%, hsl(30 30% 40% / .8))');
+      const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 0%, hsl(30 30% 40% / .8))');
       const value =
         await mjs.convertColorToHex('rgba(133, 102, 71, 0.8)', true);
       assert.strictEqual(res, value, 'result');
@@ -1473,20 +1461,17 @@ describe('color', () => {
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40%) 75%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40%) 75%)');
       assert.strictEqual(res, '#a69940', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20%) 30%, hwb(30 30% 40%) 90%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20%) 30%, hwb(30 30% 40%) 90%)');
       assert.strictEqual(res, '#a69940', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20%) 12.5%, hwb(30 30% 40%) 37.5%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20%) 12.5%, hwb(30 30% 40%) 37.5%)');
       assert.strictEqual(res, '#a6994080', 'result');
     });
 
@@ -1497,44 +1482,37 @@ describe('color', () => {
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20% / .4), hwb(30 30% 40% / .8))');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4), hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#8faa3c99', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40% / .8))');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#a89b3ed9', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20% / .4), hwb(30 30% 40% / .8) 25%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4), hwb(30 30% 40% / .8) 25%)');
       assert.strictEqual(res, '#62b82e80', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20% / .4) 25%, hwb(30 30% 40% / .8) 75%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 25%, hwb(30 30% 40% / .8) 75%)');
       assert.strictEqual(res, '#a09546b3', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20% / .4) 30%, hwb(30 30% 40% / .8) 90%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 30%, hwb(30 30% 40% / .8) 90%)');
       assert.strictEqual(res, '#a09546b3', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20% / .4) 12.5%, hwb(30 30% 40% / .8) 37.5%)');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 12.5%, hwb(30 30% 40% / .8) 37.5%)');
       assert.strictEqual(res, '#a0954659', 'result');
     });
 
     it('should get result', async () => {
-      const res =
-        await func('color-mix(in hwb, hwb(120 10% 20% / .4) 0%, hwb(30 30% 40% / .8))');
+      const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 0%, hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#99734dcc', 'result');
     });
 
