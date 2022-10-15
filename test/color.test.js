@@ -1538,6 +1538,79 @@ describe('color', () => {
       assert.strictEqual(res, '#99734dcc', 'result');
     });
 
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, blue, red)');
+      assert.strictEqual(res, '#bc00bc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, blue, green)');
+      assert.strictEqual(res, '#005cbc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, #0000ff, #008000)');
+      assert.strictEqual(res, '#005cbc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res =
+        await func('color-mix(in srgb-linear, rgb(0 0 255), rgb(0 128 0))');
+      assert.strictEqual(res, '#005cbc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, hsl(240 100% 50%), hsl(120 100% 25%))');
+      assert.strictEqual(res, '#005cbc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, hwb(240 0% 0%), hwb(120 0% 50%))');
+      assert.strictEqual(res, '#005cbc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, rgba(255, 0, 0, 0.2), red)');
+      assert.strictEqual(res, '#a2000099', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, blue 80%, red 80%)');
+      assert.strictEqual(res, '#bc00bc', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, blue 10%, red)');
+      assert.strictEqual(res, '#f30059', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, blue 100%, red)');
+      assert.strictEqual(res, '#0000ff', 'result');
+    });
+
+    it('should get result', async () => {
+      const res =
+        await func('color-mix(in srgb-linear, rgba(0, 0, 255, 0.5) 100%, red)');
+      assert.strictEqual(res, '#00008980', 'result');
+    });
+
+    it('should get result', async () => {
+      const res =
+        await func('color-mix(in srgb-linear, red, rgba(0, 0, 255, 0.5) 100%)');
+      assert.strictEqual(res, '#00008980', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, rgb(100% 0% 0% / 0.7) 25%, rgb(0% 100% 0% / 0.2))');
+      assert.strictEqual(res, '#443e0053', 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in srgb-linear, rgb(100% 0% 0% / 0.7) 20%, rgb(0% 100% 0% / 0.2) 60%)');
+      assert.strictEqual(res, '#443e0042', 'result');
+    });
+
     // NOTE: not supported yet
     it('should get null', async () => {
       const res = await func('color-mix(in lch, blue, red)');

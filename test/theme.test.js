@@ -1513,12 +1513,12 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED ||
             key === CUSTOM_BG_FRAME) {
-          assert.strictEqual(value, '#fd7d7f', `${key}`);
+          assert.strictEqual(value, '#fd7e7f', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
                    key === CUSTOM_COLOR_HOVER) {
           assert.strictEqual(value, '#fbfbfe', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#fd8a8c', `${key}`);
+          assert.strictEqual(value, '#fd8b8c', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_GROUP_1) {
           assert.strictEqual(value, '#dfa284', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_GROUP_2) {
@@ -1584,21 +1584,21 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#33252b', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
-          assert.strictEqual(value, '#fd7d7f1a', `${key}`);
+          assert.strictEqual(value, '#fd7e7f1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
                    key === CUSTOM_COLOR_HOVER || key === CUSTOM_COLOR_ACTIVE ||
                    key === CUSTOM_COLOR_FRAME) {
-          assert.strictEqual(value, '#fd7d7f', `${key}`);
+          assert.strictEqual(value, '#fd7e7f', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_GROUP_1) {
-          assert.strictEqual(value, '#e06f51', `${key}`);
+          assert.strictEqual(value, '#e07051', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_GROUP_2) {
           assert.strictEqual(value, '#848e70', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_GROUP_3) {
-          assert.strictEqual(value, '#e06f8f', `${key}`);
+          assert.strictEqual(value, '#e0708f', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_GROUP_4) {
           assert.strictEqual(value, '#a28ead', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_PINNED) {
-          assert.strictEqual(value, '#a26f8f', `${key}`);
+          assert.strictEqual(value, '#a2708f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }

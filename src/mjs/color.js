@@ -816,10 +816,10 @@ export const convertColorMixToHex = async value => {
   if (colorAHex && colorBHex && colorSpace === 'srgb') {
     const [rA, gA, bA, aA] = await hexToRgb(colorAHex);
     const [rB, gB, bB, aB] = await hexToRgb(colorBHex);
-    const a = aA * pA + aB * pB;
-    const factor = PCT_MAX / a;
-    const factorA = aA * pA / NUM_MAX;
-    const factorB = aB * pB / NUM_MAX;
+    const factorA = aA * pA;
+    const factorB = aB * pB;
+    const a = (factorA + factorB);
+    const factor = PCT_MAX / (a * NUM_MAX);
     const r = (rA * factorA + rB * factorB) * factor;
     const g = (gA * factorA + gB * factorB) * factor;
     const b = (bA * factorA + bB * factorB) * factor;
@@ -829,22 +829,37 @@ export const convertColorMixToHex = async value => {
   } else if (colorAHex && colorBHex && colorSpace === 'hsl') {
     const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
     const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
-    const a = aA * pA + aB * pB;
+    const factorA = aA * pA;
+    const factorB = aB * pB;
+    const a = (factorA + factorB);
     const h = (hA * pA + hB * pB) % DEG;
-    const s = (sA * aA * pA + sB * aB * pB) / a;
-    const l = (lA * aA * pA + lB * aB * pB) / a;
+    const s = (sA * factorA + sB * factorB) / a;
+    const l = (lA * factorA + lB * factorB) / a;
     const hsl = `hsl(${h} ${s}% ${l}% / ${a * multipler})`;
     hex = await convertColorToHex(hsl, true);
   // in hwb
   } else if (colorAHex && colorBHex && colorSpace === 'hwb') {
     const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
     const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
-    const a = aA * pA + aB * pB;
+    const factorA = aA * pA;
+    const factorB = aB * pB;
+    const a = (factorA + factorB);
     const h = (hA * pA + hB * pB) % DEG;
-    const w = (wA * aA * pA + wB * aB * pB) / a;
-    const b = (bA * aA * pA + bB * aB * pB) / a;
+    const w = (wA * factorA + wB * factorB) / a;
+    const b = (bA * factorA + bB * factorB) / a;
     const hwb = `hwb(${h} ${w}% ${b}% / ${a * multipler})`;
     hex = await convertColorToHex(hwb, true);
+  // in srgb-linear
+  } else if (colorAHex && colorBHex && colorSpace === 'srgb-linear') {
+    const [rA, gA, bA, aA] = await hexToLinearRgb(colorAHex);
+    const [rB, gB, bB, aB] = await hexToLinearRgb(colorBHex);
+    const factorA = aA * pA;
+    const factorB = aB * pB;
+    const a = (factorA + factorB);
+    const r = (rA * factorA + rB * factorB) * a;
+    const g = (gA * factorA + gB * factorB) * a;
+    const b = (bA * factorA + bB * factorB) * a;
+    hex = await convertLinearRgbToHex([r, g, b, a * multipler]);
   }
   return hex || null;
 };
