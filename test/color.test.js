@@ -361,6 +361,196 @@ describe('color', () => {
     });
   });
 
+  describe('hex to xyz', () => {
+    const func = mjs.hexToXyz;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: foo',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ff0000');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.41239, 0.21264, 0.01933, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#008000');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.07719, 0.15438, 0.02573, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#000000');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ffffff');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.95046, 1, 1.08906, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#0a0a0a');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.00288, 0.00304, 0.00331, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#0b0b0b');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.00318, 0.00335, 0.00364, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#01234567');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.01688, 0.01638, 0.05858, 0.40392], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#89abcdef');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.35897, 0.38851, 0.63367, 0.93725], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#7654cd');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.2166, 0.146, 0.59437, 1], 'result');
+    });
+  });
+
+  describe('hex to xyz D50', () => {
+    const func = mjs.hexToXyzD50;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: foo',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ff0000');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.43607, 0.22249, 0.01392, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#008000');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.08314, 0.15475, 0.02096, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#000000');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ffffff');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.9643, 1, 0.8251, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#0a0a0a');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.00293, 0.00304, 0.0025, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#0b0b0b');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.00323, 0.00335, 0.00276, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#01234567');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.01512, 0.01572, 0.04413, 0.40392], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#89abcdef');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.35328, 0.38461, 0.47897, 0.93725], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#7654cd');
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      res[3] = parseFloat(res[3].toFixed(5));
+      assert.deepEqual(res, [0.20049, 0.14087, 0.44708, 1], 'result');
+    });
+  });
+
   describe('hex to hsl', () => {
     const func = mjs.hexToHsl;
 
@@ -966,6 +1156,280 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func([0.25016, 0.40724, 0.6105, 0.93725]);
       assert.deepEqual(res, '#89abcdef', 'result');
+    });
+  });
+
+  describe('convert xyz to hex', () => {
+    const func = mjs.convertXyzToHex;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, 1.1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.41239, 0.21264, 0.01933, 1]);
+      assert.deepEqual(res, '#ff0000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.07719, 0.15438, 0.02573, 1]);
+      assert.deepEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0, 0, 0, 1]);
+      assert.deepEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.95046, 1, 1.08906, 1]);
+      assert.deepEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.00288, 0.00304, 0.00331, 1]);
+      assert.deepEqual(res, '#0a0a0a', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.00318, 0.00335, 0.00364, 1]);
+      assert.deepEqual(res, '#0b0b0b', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.01688, 0.01638, 0.05858, 0.40392]);
+      assert.deepEqual(res, '#01234567', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.35897, 0.38851, 0.63367, 0.93725]);
+      assert.deepEqual(res, '#89abcdef', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.2166, 0.146, 0.59437, 1]);
+      assert.deepEqual(res, '#7654cd', 'result');
+    });
+  });
+
+  describe('convert xyz D50 to hex', () => {
+    const func = mjs.convertXyzD50ToHex;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, 1.1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.43607, 0.22249, 0.01392, 1]);
+      assert.deepEqual(res, '#ff0000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.08314, 0.15475, 0.02096, 1]);
+      assert.deepEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0, 0, 0, 1]);
+      assert.deepEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.9643, 1, 0.8251, 1]);
+      assert.deepEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.00293, 0.00304, 0.0025, 1]);
+      assert.deepEqual(res, '#0a0a0a', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.00323, 0.00335, 0.00276, 1]);
+      assert.deepEqual(res, '#0b0b0b', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.01512, 0.01572, 0.04413, 0.40392]);
+      assert.deepEqual(res, '#01234567', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.35328, 0.38461, 0.47897, 0.93725]);
+      assert.deepEqual(res, '#89abcdef', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.20049, 0.14087, 0.44708, 1]);
+      assert.deepEqual(res, '#7654cd', 'result');
     });
   });
 
@@ -1589,7 +2053,61 @@ describe('color', () => {
       assert.strictEqual(res, '#443e0042', 'result');
     });
 
-    // NOTE: not supported yet
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz, red, green)');
+      const value = await mjs.convertColorToHex('rgb(188, 92, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz, red, green 90%)');
+      const value = await mjs.convertColorToHex('rgb(89, 122, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz, red 90%, green)');
+      const value = await mjs.convertColorToHex('rgb(243, 40, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz-d65, red, green)');
+      const value = await mjs.convertColorToHex('rgb(188, 92, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz-d65, red, green 90%)');
+      const value = await mjs.convertColorToHex('rgb(89, 122, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz-d65, red 90%, green)');
+      const value = await mjs.convertColorToHex('rgb(243, 40, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz-d50, red, green)');
+      const value = await mjs.convertColorToHex('rgb(188, 92, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz-d50, red, green 90%)');
+      const value = await mjs.convertColorToHex('rgb(89, 122, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in xyz-d50, red 90%, green)');
+      const value = await mjs.convertColorToHex('rgb(243, 40, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    // NOTE: not yet supported
     it('should get null', async () => {
       const res = await func('color-mix(in lch, blue, red)');
       assert.isNull(res, 'result');

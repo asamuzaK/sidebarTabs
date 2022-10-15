@@ -18,6 +18,26 @@ const PCT_MAX = 100;
 const LINEAR_COEF = 12.92;
 const LINEAR_EXP = 2.4;
 const LINEAR_FIX = 0.055;
+const MATRIX_RGB_TO_XYZ = [
+  [506752 / 1228815, 87881 / 245763, 12673 / 70218],
+  [87098 / 409605, 175762 / 245763, 12673 / 175545],
+  [7918 / 409605, 87881 / 737289, 1001167 / 1053270]
+];
+const MATRIX_XYZ_TO_RGB = [
+  [12831 / 3959, -329 / 214, -1974 / 3959],
+  [-851781 / 878810, 1648619 / 878810, 36519 / 878810],
+  [705 / 12673, -2585 / 12673, 705 / 667]
+];
+const MATRIX_D65_TO_D50 = [
+  [1.0479298208405488, 0.022946793341019088, -0.05019222954313557],
+  [0.029627815688159344, 0.990434484573249, -0.01707382502938514],
+  [-0.009243058152591178, 0.015055144896577895, 0.7518742899580008]
+];
+const MATRIX_D50_TO_D65 = [
+  [0.9554734527042182, -0.023098536874261423, 0.0632593086610217],
+  [-0.028369706963208136, 1.0099954580058226, 0.021041398966943008],
+  [0.012314001688319899, -0.020507696433477912, 1.3303659366080753]
+];
 const REG_ANGLE = 'deg|g?rad|turn';
 const REG_COLOR_SPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
 const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
@@ -321,6 +341,52 @@ export const hexToLinearRgb = async value => {
     b = (b / LINEAR_COEF);
   }
   return [r, g, b, a];
+};
+
+/**
+ * hex to xyz
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ */
+export const hexToXyz = async value => {
+  const [r, g, b, a] = await hexToLinearRgb(value);
+  const [
+    [r0c0, r0c1, r0c2],
+    [r1c0, r1c1, r1c2],
+    [r2c0, r2c1, r2c2]
+  ] = MATRIX_RGB_TO_XYZ;
+  const x = r0c0 * r + r0c1 * g + r0c2 * b;
+  const y = r1c0 * r + r1c1 * g + r1c2 * b;
+  const z = r2c0 * r + r2c1 * g + r2c2 * b;
+  return [x, y, z, a];
+};
+
+/**
+ * hex to xyz D50
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ */
+export const hexToXyzD50 = async value => {
+  const [r, g, b, a] = await hexToLinearRgb(value);
+  const [
+    [r0c0, r0c1, r0c2],
+    [r1c0, r1c1, r1c2],
+    [r2c0, r2c1, r2c2]
+  ] = MATRIX_RGB_TO_XYZ;
+  const [
+    [d50r0c0, d50r0c1, d50r0c2],
+    [d50r1c0, d50r1c1, d50r1c2],
+    [d50r2c0, d50r2c1, d50r2c2]
+  ] = MATRIX_D65_TO_D50;
+  const x65 = r0c0 * r + r0c1 * g + r0c2 * b;
+  const y65 = r1c0 * r + r1c1 * g + r1c2 * b;
+  const z65 = r2c0 * r + r2c1 * g + r2c2 * b;
+  const x = d50r0c0 * x65 + d50r0c1 * y65 + d50r0c2 * z65;
+  const y = d50r1c0 * x65 + d50r1c1 * y65 + d50r1c2 * z65;
+  const z = d50r2c0 * x65 + d50r2c1 * y65 + d50r2c2 * z65;
+  return [x, y, z, a];
 };
 
 /**
@@ -662,6 +728,114 @@ export const convertLinearRgbToHex = async rgb => {
 };
 
 /**
+ * convert xyz to hex
+ *
+ * @param {Array} xyz - [x, y, z, a] r|g|b: 0..1|>1|<0 a: 0..1
+ * @returns {string} - hex
+ */
+export const convertXyzToHex = async xyz => {
+  if (!Array.isArray(xyz)) {
+    throw new TypeError(`Expected Array but got ${getType(xyz)}.`);
+  }
+  const [x, y, z, a] = xyz;
+  if (typeof x !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(x)}.`);
+  } else if (Number.isNaN(x)) {
+    throw new Error(`${x} is not a number.`);
+  }
+  if (typeof y !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(y)}.`);
+  } else if (Number.isNaN(y)) {
+    throw new Error(`${y} is not a number.`);
+  }
+  if (typeof z !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(z)}.`);
+  } else if (Number.isNaN(z)) {
+    throw new Error(`${z} is not a number.`);
+  }
+  if (typeof a !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(a)}.`);
+  } else if (Number.isNaN(a)) {
+    throw new Error(`${a} is not a number.`);
+  } else if (a < 0 || a > 1) {
+    throw new RangeError(`${a} is not between 0 and 1.`);
+  }
+  const [
+    [r0c0, r0c1, r0c2],
+    [r1c0, r1c1, r1c2],
+    [r2c0, r2c1, r2c2]
+  ] = MATRIX_XYZ_TO_RGB;
+  const r = r0c0 * x + r0c1 * y + r0c2 * z;
+  const g = r1c0 * x + r1c1 * y + r1c2 * z;
+  const b = r2c0 * x + r2c1 * y + r2c2 * z;
+  const hex = await convertLinearRgbToHex([
+    Math.min(Math.max(r, 0), 1),
+    Math.min(Math.max(g, 0), 1),
+    Math.min(Math.max(b, 0), 1),
+    a
+  ]);
+  return hex;
+};
+
+/**
+ * convert xyz D50 to hex
+ *
+ * @param {Array} xyz - [x, y, z, a] r|g|b: 0..1|>1|<0 a: 0..1
+ * @returns {string} - hex
+ */
+export const convertXyzD50ToHex = async xyz => {
+  if (!Array.isArray(xyz)) {
+    throw new TypeError(`Expected Array but got ${getType(xyz)}.`);
+  }
+  const [x, y, z, a] = xyz;
+  if (typeof x !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(x)}.`);
+  } else if (Number.isNaN(x)) {
+    throw new Error(`${x} is not a number.`);
+  }
+  if (typeof y !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(y)}.`);
+  } else if (Number.isNaN(y)) {
+    throw new Error(`${y} is not a number.`);
+  }
+  if (typeof z !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(z)}.`);
+  } else if (Number.isNaN(z)) {
+    throw new Error(`${z} is not a number.`);
+  }
+  if (typeof a !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(a)}.`);
+  } else if (Number.isNaN(a)) {
+    throw new Error(`${a} is not a number.`);
+  } else if (a < 0 || a > 1) {
+    throw new RangeError(`${a} is not between 0 and 1.`);
+  }
+  const [
+    [d65r0c0, d65r0c1, d65r0c2],
+    [d65r1c0, d65r1c1, d65r1c2],
+    [d65r2c0, d65r2c1, d65r2c2]
+  ] = MATRIX_D50_TO_D65;
+  const [
+    [r0c0, r0c1, r0c2],
+    [r1c0, r1c1, r1c2],
+    [r2c0, r2c1, r2c2]
+  ] = MATRIX_XYZ_TO_RGB;
+  const x65 = d65r0c0 * x + d65r0c1 * y + d65r0c2 * z;
+  const y65 = d65r1c0 * x + d65r1c1 * y + d65r1c2 * z;
+  const z65 = d65r2c0 * x + d65r2c1 * y + d65r2c2 * z;
+  const r = r0c0 * x65 + r0c1 * y65 + r0c2 * z65;
+  const g = r1c0 * x65 + r1c1 * y65 + r1c2 * z65;
+  const b = r2c0 * x65 + r2c1 * y65 + r2c2 * z65;
+  const hex = await convertLinearRgbToHex([
+    Math.min(Math.max(r, 0), 1),
+    Math.min(Math.max(g, 0), 1),
+    Math.min(Math.max(b, 0), 1),
+    a
+  ]);
+  return hex;
+};
+
+/**
  * convert color to hex
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
@@ -743,8 +917,7 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * convert color-mix() to hex
- * NOTE: 'lab', 'oklab', 'lch', 'oklch', 'xyz', 'xyz-d50', 'xyz-d65',
- *       'srgb-linear' colorspaces are not yet supported
+ * NOTE: 'lab', 'oklab', 'lch', 'oklch' color spaces are not yet supported
  *
  * @param {string} value - value
  * @returns {?string} - hex
@@ -860,6 +1033,28 @@ export const convertColorMixToHex = async value => {
     const g = (gA * factorA + gB * factorB) * a;
     const b = (bA * factorA + bB * factorB) * a;
     hex = await convertLinearRgbToHex([r, g, b, a * multipler]);
+  // in xyz, xyz-d65
+  } else if (colorAHex && colorBHex && /^xyz(?:-d65)?$/.test(colorSpace)) {
+    const [xA, yA, zA, aA] = await hexToXyz(colorAHex);
+    const [xB, yB, zB, aB] = await hexToXyz(colorBHex);
+    const factorA = aA * pA;
+    const factorB = aB * pB;
+    const a = (factorA + factorB);
+    const r = (xA * factorA + xB * factorB) * a;
+    const g = (yA * factorA + yB * factorB) * a;
+    const b = (zA * factorA + zB * factorB) * a;
+    hex = await convertXyzToHex([r, g, b, a * multipler]);
+  // in xyz-d50
+  } else if (colorAHex && colorBHex && colorSpace === 'xyz-d50') {
+    const [xA, yA, zA, aA] = await hexToXyzD50(colorAHex);
+    const [xB, yB, zB, aB] = await hexToXyzD50(colorBHex);
+    const factorA = aA * pA;
+    const factorB = aB * pB;
+    const a = (factorA + factorB);
+    const r = (xA * factorA + xB * factorB) * a;
+    const g = (yA * factorA + yB * factorB) * a;
+    const b = (zA * factorA + zB * factorB) * a;
+    hex = await convertXyzD50ToHex([r, g, b, a * multipler]);
   }
   return hex || null;
 };
