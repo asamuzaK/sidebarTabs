@@ -1116,9 +1116,10 @@ export const applyLocalTheme = async (opt = {}) => {
   if (local && isObjectNotEmpty(appliedTheme) &&
       Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
       Number.isInteger(windowId)) {
+    const TIMER_MSEC = 100 / 3;
     const t = window.performance.now();
     timeStamp.set('time', t);
-    await sleep(Math.floor(1000 / 30));
+    await sleep(Math.floor(TIMER_MSEC));
     if (timeStamp.get('time') === t) {
       await setCurrentThemeValue({
         themeId,

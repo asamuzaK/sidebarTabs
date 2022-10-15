@@ -352,7 +352,8 @@ export const activateClickedTab = async elm => {
   let func;
   if (Number.isInteger(tabId)) {
     if (userOpts.get(TAB_CLOSE_DBLCLICK)) {
-      await sleep(300);
+      const TIMER_MSEC = 300;
+      await sleep(TIMER_MSEC);
     }
     try {
       const { active } = await getTab(tabId);
