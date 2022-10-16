@@ -27,9 +27,20 @@ const LINEAR_EXP = 2.4;
 const LINEAR_FIX = 0.055;
 const MAX_NUM_RGB = 255;
 const MAX_PCT = 100;
-/* white */
+/* white points */
 const D50 = [0.3457 / 0.3585, 1.00000, (1.0 - 0.3457 - 0.3585) / 0.3585];
-/* matrix */
+const D65 = [0.3127 / 0.3290, 1.00000, (1.0 - 0.3127 - 0.3290) / 0.3290];
+const MATRIX_D50_TO_D65 = [
+  [0.9554734527042182, -0.023098536874261423, 0.0632593086610217],
+  [-0.028369706963208136, 1.0099954580058226, 0.021041398966943008],
+  [0.012314001688319899, -0.020507696433477912, 1.3303659366080753]
+];
+const MATRIX_D65_TO_D50 = [
+  [1.0479298208405488, 0.022946793341019088, -0.05019222954313557],
+  [0.029627815688159344, 0.990434484573249, -0.01707382502938514],
+  [-0.009243058152591178, 0.015055144896577895, 0.7518742899580008]
+];
+/* color spaces */
 const MATRIX_RGB_TO_XYZ = [
   [506752 / 1228815, 87881 / 245763, 12673 / 70218],
   [87098 / 409605, 175762 / 245763, 12673 / 175545],
@@ -40,15 +51,25 @@ const MATRIX_XYZ_TO_RGB = [
   [-851781 / 878810, 1648619 / 878810, 36519 / 878810],
   [705 / 12673, -2585 / 12673, 705 / 667]
 ];
-const MATRIX_D65_TO_D50 = [
-  [1.0479298208405488, 0.022946793341019088, -0.05019222954313557],
-  [0.029627815688159344, 0.990434484573249, -0.01707382502938514],
-  [-0.009243058152591178, 0.015055144896577895, 0.7518742899580008]
+const MATRIX_XYZ_TO_LMS = [
+  [0.8190224432164319, 0.3619062562801221, -0.12887378261216414],
+  [0.0329836671980271, 0.9292868468965546, 0.03614466816999844],
+  [0.048177199566046255, 0.26423952494422764, 0.6335478258136937]
 ];
-const MATRIX_D50_TO_D65 = [
-  [0.9554734527042182, -0.023098536874261423, 0.0632593086610217],
-  [-0.028369706963208136, 1.0099954580058226, 0.021041398966943008],
-  [0.012314001688319899, -0.020507696433477912, 1.3303659366080753]
+const MATRIX_LMS_TO_XYZ = [
+  [1.2268798733741557, -0.5578149965554813, 0.28139105017721583],
+  [-0.04057576262431372, 1.1122868293970594, -0.07171106666151701],
+  [-0.07637294974672142, -0.4214933239627914, 1.5869240244272418]
+];
+const MATRIX_OKLAB_TO_LMS = [
+  [0.9999999984505196, 0.39633779217376774, 0.2158037580607588],
+  [1.0000000088817607, -0.10556134232365633, -0.0638541747717059],
+  [1.0000000546724108, -0.08948418209496574, -1.2914855378640917]
+];
+const MATRIX_LMS_TO_OKLAB = [
+  [0.2104542553, 0.7936177850, -0.0040720468],
+  [1.9779984951, -2.4285922050, 0.4505937099],
+  [0.0259040371, 0.7827717662, -0.8086757660]
 ];
 /* regexp */
 const REG_ANGLE = 'deg|g?rad|turn';
@@ -454,21 +475,21 @@ export const hexToXyz = async value => {
 export const hexToXyzD50 = async value => {
   const [r, g, b, a] = await hexToLinearRgb(value);
   const [
-    [r0c0, r0c1, r0c2],
-    [r1c0, r1c1, r1c2],
-    [r2c0, r2c1, r2c2]
+    [r0c0Xyz, r0c1Xyz, r0c2Xyz],
+    [r1c0Xyz, r1c1Xyz, r1c2Xyz],
+    [r2c0Xyz, r2c1Xyz, r2c2Xyz]
   ] = MATRIX_RGB_TO_XYZ;
   const [
-    [d50r0c0, d50r0c1, d50r0c2],
-    [d50r1c0, d50r1c1, d50r1c2],
-    [d50r2c0, d50r2c1, d50r2c2]
+    [r0c0D50, r0c1D50, r0c2D50],
+    [r1c0D50, r1c1D50, r1c2D50],
+    [r2c0D50, r2c1D50, r2c2D50]
   ] = MATRIX_D65_TO_D50;
-  const x65 = r0c0 * r + r0c1 * g + r0c2 * b;
-  const y65 = r1c0 * r + r1c1 * g + r1c2 * b;
-  const z65 = r2c0 * r + r2c1 * g + r2c2 * b;
-  const x = d50r0c0 * x65 + d50r0c1 * y65 + d50r0c2 * z65;
-  const y = d50r1c0 * x65 + d50r1c1 * y65 + d50r1c2 * z65;
-  const z = d50r2c0 * x65 + d50r2c1 * y65 + d50r2c2 * z65;
+  const x65 = r0c0Xyz * r + r0c1Xyz * g + r0c2Xyz * b;
+  const y65 = r1c0Xyz * r + r1c1Xyz * g + r1c2Xyz * b;
+  const z65 = r2c0Xyz * r + r2c1Xyz * g + r2c2Xyz * b;
+  const x = r0c0D50 * x65 + r0c1D50 * y65 + r0c2D50 * z65;
+  const y = r1c0D50 * x65 + r1c1D50 * y65 + r1c2D50 * z65;
+  const z = r2c0D50 * x65 + r2c1D50 * y65 + r2c2D50 * z65;
   return [x, y, z, a];
 };
 
@@ -491,6 +512,34 @@ export const hexToLab = async value => {
     (f1 - f2) * LAB_FIX_B,
     aa
   ];
+};
+
+/**
+ * hex to oklab
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1
+ */
+export const hexToOklab = async value => {
+  const [xx, yy, zz, aa] = await hexToXyz(value);
+  const [x, y, z] = [xx, yy, zz].map((val, i) => val * D65[i]);
+  const [
+    [r0c0Lms, r0c1Lms, r0c2Lms],
+    [r1c0Lms, r1c1Lms, r1c2Lms],
+    [r2c0Lms, r2c1Lms, r2c2Lms]
+  ] = MATRIX_XYZ_TO_LMS;
+  const [
+    [r0c0Okl, r0c1Okl, r0c2Okl],
+    [r1c0Okl, r1c1Okl, r1c2Okl],
+    [r2c0Okl, r2c1Okl, r2c2Okl]
+  ] = MATRIX_LMS_TO_OKLAB;
+  const xLms = Math.cbrt(r0c0Lms * x + r0c1Lms * y + r0c2Lms * z);
+  const yLms = Math.cbrt(r1c0Lms * x + r1c1Lms * y + r1c2Lms * z);
+  const zLms = Math.cbrt(r2c0Lms * x + r2c1Lms * y + r2c2Lms * z);
+  const l = r0c0Okl * xLms + r0c1Okl * yLms + r0c2Okl * zLms;
+  const a = r1c0Okl * xLms + r1c1Okl * yLms + r1c2Okl * zLms;
+  const b = r2c0Okl * xLms + r2c1Okl * yLms + r2c2Okl * zLms;
+  return [l, a, b, aa];
 };
 
 /**
@@ -760,6 +809,79 @@ export const parseLab = async value => {
 };
 
 /**
+ + parse oklab()
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ */
+export const parseOklab = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`oklab\\(\\s*(${REG_LAB})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const LAB_PCT_STEP = 0.4;
+  const [, val] = value.match(reg);
+  let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
+  if (l.startsWith('.')) {
+    l = `0${l}`;
+  }
+  if (l.endsWith('%')) {
+    l = parseFloat(l) / MAX_PCT;
+  } else {
+    l = parseFloat(l);
+  }
+  if (l < 0) {
+    l = 0;
+  }
+  if (a.startsWith('.')) {
+    a = `0${a}`;
+  }
+  if (a.endsWith('%')) {
+    a = parseFloat(a) * LAB_PCT_STEP / MAX_PCT;
+  } else {
+    a = parseFloat(a);
+  }
+  if (b.endsWith('%')) {
+    b = parseFloat(b) * LAB_PCT_STEP / MAX_PCT;
+  } else {
+    b = parseFloat(b);
+  }
+  if (isString(aa)) {
+    if (aa.startsWith('.')) {
+      aa = `0${aa}`;
+    }
+    if (aa.endsWith('%')) {
+      aa = parseFloat(aa) / MAX_PCT;
+    } else {
+      aa = parseFloat(aa);
+    }
+  } else {
+    aa = 1;
+  }
+  const [
+    [r0c0Lms, r0c1Lms, r0c2Lms],
+    [r1c0Lms, r1c1Lms, r1c2Lms],
+    [r2c0Lms, r2c1Lms, r2c2Lms]
+  ] = MATRIX_OKLAB_TO_LMS;
+  const [
+    [r0c0Xyz, r0c1Xyz, r0c2Xyz],
+    [r1c0Xyz, r1c1Xyz, r1c2Xyz],
+    [r2c0Xyz, r2c1Xyz, r2c2Xyz]
+  ] = MATRIX_LMS_TO_XYZ;
+  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, LAB_EXP);
+  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, LAB_EXP);
+  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, LAB_EXP);
+  const x65 = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
+  const y65 = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
+  const z65 = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
+  const [x, y, z] = [x65, y65, z65].map((val, i) => val / D65[i]);
+  return [x, y, z, aa];
+};
+
+/**
  * convert linear rgb to hex
  *
  * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
@@ -913,21 +1035,21 @@ export const convertXyzD50ToHex = async xyz => {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
   const [
-    [d65r0c0, d65r0c1, d65r0c2],
-    [d65r1c0, d65r1c1, d65r1c2],
-    [d65r2c0, d65r2c1, d65r2c2]
+    [r0c0D65, r0c1D65, r0c2D65],
+    [r1c0D65, r1c1D65, r1c2D65],
+    [r2c0D65, r2c1D65, r2c2D65]
   ] = MATRIX_D50_TO_D65;
   const [
-    [r0c0, r0c1, r0c2],
-    [r1c0, r1c1, r1c2],
-    [r2c0, r2c1, r2c2]
+    [r0c0Rgb, r0c1Rgb, r0c2Rgb],
+    [r1c0Rgb, r1c1Rgb, r1c2Rgb],
+    [r2c0Rgb, r2c1Rgb, r2c2Rgb]
   ] = MATRIX_XYZ_TO_RGB;
-  const x65 = d65r0c0 * x + d65r0c1 * y + d65r0c2 * z;
-  const y65 = d65r1c0 * x + d65r1c1 * y + d65r1c2 * z;
-  const z65 = d65r2c0 * x + d65r2c1 * y + d65r2c2 * z;
-  const r = r0c0 * x65 + r0c1 * y65 + r0c2 * z65;
-  const g = r1c0 * x65 + r1c1 * y65 + r1c2 * z65;
-  const b = r2c0 * x65 + r2c1 * y65 + r2c2 * z65;
+  const x65 = r0c0D65 * x + r0c1D65 * y + r0c2D65 * z;
+  const y65 = r1c0D65 * x + r1c1D65 * y + r1c2D65 * z;
+  const z65 = r2c0D65 * x + r2c1D65 * y + r2c2D65 * z;
+  const r = r0c0Rgb * x65 + r0c1Rgb * y65 + r0c2Rgb * z65;
+  const g = r1c0Rgb * x65 + r1c1Rgb * y65 + r1c2Rgb * z65;
+  const b = r2c0Rgb * x65 + r2c1Rgb * y65 + r2c2Rgb * z65;
   const hex = await convertLinearRgbToHex([
     Math.min(Math.max(r, 0), 1),
     Math.min(Math.max(g, 0), 1),
@@ -942,7 +1064,7 @@ export const convertXyzD50ToHex = async xyz => {
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
  *       convertColorToHex('currentColor') warns not supported, resolves as null
- *       'color()', 'oklab()', 'lch()', 'oklch()' are not yet supported
+ *       'color()', 'lch()', 'oklch()' are not yet supported
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -988,6 +1110,9 @@ export const convertColorToHex = async (value, alpha = false) => {
   // lab()
   } else if (value.startsWith('lab')) {
     hex = await parseLab(value).then(convertXyzD50ToHex);
+  // oklab()
+  } else if (value.startsWith('oklab')) {
+    hex = await parseOklab(value).then(convertXyzToHex);
   } else {
     let r, g, b, a;
     // rgb()
@@ -1022,7 +1147,7 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * convert color-mix() to hex
- * NOTE: 'oklab', 'lch', 'oklch' color spaces are not yet supported
+ * NOTE: 'lch', 'oklch' color spaces are not yet supported
  *
  * @param {string} value - value
  * @returns {?string} - hex
@@ -1171,6 +1296,17 @@ export const convertColorMixToHex = async value => {
     const a = (aA * factorA + aB * factorB) * aa;
     const b = (bA * factorA + bB * factorB) * aa;
     hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * multipler})`);
+  // in oklab
+  } else if (colorAHex && colorBHex && colorSpace === 'oklab') {
+    const [lA, aA, bA, aaA] = await hexToOklab(colorAHex);
+    const [lB, aB, bB, aaB] = await hexToOklab(colorBHex);
+    const factorA = aaA * pA;
+    const factorB = aaB * pB;
+    const aa = (factorA + factorB);
+    const l = (lA * factorA + lB * factorB) * aa;
+    const a = (aA * factorA + aB * factorB) * aa;
+    const b = (bA * factorA + bB * factorB) * aa;
+    hex = await convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * multipler})`);
   }
   return hex || null;
 };
