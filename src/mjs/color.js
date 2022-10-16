@@ -1,5 +1,8 @@
 /**
  * color.js
+ * Ref: CSS Color Module Level 4
+ *      §17. Sample code for Color Conversions
+ *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
  * NOTE: 'currentColor' keyword is not supported
  */
 
@@ -13,11 +16,20 @@ const GRAD = 400;
 const HALF = 0.5;
 const HEX = 16;
 const INTERVAL = 60;
-const NUM_MAX = 255;
-const PCT_MAX = 100;
+const LAB_COEF_EPSILON = 216 / 24389;
+const LAB_COEF_KAPPA = 24389 / 27;
+const LAB_EXP = 3;
+const LAB_FIX_A = 500;
+const LAB_FIX_B = 200;
+const LAB_FIX_L = 116;
 const LINEAR_COEF = 12.92;
 const LINEAR_EXP = 2.4;
 const LINEAR_FIX = 0.055;
+const MAX_NUM_RGB = 255;
+const MAX_PCT = 100;
+/* white */
+const D50 = [0.3457 / 0.3585, 1.00000, (1.0 - 0.3457 - 0.3585) / 0.3585];
+/* matrix */
 const MATRIX_RGB_TO_XYZ = [
   [506752 / 1228815, 87881 / 245763, 12673 / 70218],
   [87098 / 409605, 175762 / 245763, 12673 / 175545],
@@ -38,15 +50,19 @@ const MATRIX_D50_TO_D65 = [
   [-0.028369706963208136, 1.0099954580058226, 0.021041398966943008],
   [0.012314001688319899, -0.020507696433477912, 1.3303659366080753]
 ];
+/* regexp */
 const REG_ANGLE = 'deg|g?rad|turn';
-const REG_COLOR_SPACE = '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
+const REG_COLOR_SPACE =
+  '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
 const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
 const REG_PCT = `${REG_NUM}%`;
-const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?\\s+${REG_PCT}\\s+${REG_PCT}(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_RGB = `(?:${REG_NUM}\\s+${REG_NUM}\\s+${REG_NUM}|${REG_PCT}\\s+${REG_PCT}\\s+${REG_PCT})(?:\\s+\\/\\s+(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_RGB_LV3 = `(?:${REG_NUM}\\s*,\\s*${REG_NUM}\\s*,\\s*${REG_NUM}|${REG_PCT}\\s*,\\s*${REG_PCT}\\s*,\\s*${REG_PCT})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_COLOR_TYPE = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\))`;
+const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s+${REG_PCT}){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s*,\\s*${REG_PCT}){2}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_RGB = `(?:${REG_NUM}(?:\\s+${REG_NUM}){2}|${REG_PCT}(?:\\s+${REG_PCT}){2})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_LAB = `(?:${REG_NUM}|${REG_PCT})(?:\\s+(?:${REG_NUM}|${REG_PCT})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_LCH = `(?:${REG_NUM}|${REG_PCT}\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_COLOR_TYPE = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\))`;
 const REG_COLOR_MIX_PART = `${REG_COLOR_TYPE}(?:\\s+${REG_PCT})?`;
 const REG_COLOR_MIX = `in\\s+${REG_COLOR_SPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
 
@@ -214,8 +230,8 @@ export const numberToHexString = async value => {
     throw new TypeError(`${value} is not a number.`);
   }
   let hex = Math.round(value).toString(HEX);
-  if (hex < 0 || hex > NUM_MAX) {
-    throw new RangeError(`${value} is not between 0 and ${NUM_MAX}.`);
+  if (hex < 0 || hex > MAX_NUM_RGB) {
+    throw new RangeError(`${value} is not between 0 and ${MAX_NUM_RGB}.`);
   }
   if (hex.length === 1) {
     hex = `0${hex}`;
@@ -290,7 +306,7 @@ export const hexToRgb = async value => {
       parseInt(r, HEX),
       parseInt(g, HEX),
       parseInt(b, HEX),
-      parseInt(a, HEX) / NUM_MAX
+      parseInt(a, HEX) / MAX_NUM_RGB
     );
   } else if (/^#[\da-f]{4}$/i.test(value)) {
     const [, r, g, b, a] =
@@ -299,7 +315,7 @@ export const hexToRgb = async value => {
       parseInt(`${r}${r}`, HEX),
       parseInt(`${g}${g}`, HEX),
       parseInt(`${b}${b}`, HEX),
-      parseInt(`${a}${a}`, HEX) / NUM_MAX
+      parseInt(`${a}${a}`, HEX) / MAX_NUM_RGB
     );
   } else if (/^#[\da-f]{3}$/i.test(value)) {
     const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/i);
@@ -314,6 +330,73 @@ export const hexToRgb = async value => {
 };
 
 /**
+ * hex to hsl
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [h, s, l, a] h: 0..360 s|l: 0..100 a: 0..1
+ */
+export const hexToHsl = async value => {
+  const [rr, gg, bb, a] = await hexToRgb(value);
+  const r = parseFloat(rr) / MAX_NUM_RGB;
+  const g = parseFloat(gg) / MAX_NUM_RGB;
+  const b = parseFloat(bb) / MAX_NUM_RGB;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  const s = (max === min && (max === 1 || max === 0))
+    ? 0
+    : d / (1 - Math.abs(max + min - 1));
+  const l = (max + min) * HALF;
+  let h = 0;
+  if (max !== min) {
+    switch (max) {
+      case r:
+        h = (g - b) / d;
+        break;
+      case g:
+        h = (b - r) / d + DOUBLE;
+        break;
+      case b:
+      default:
+        h = (r - g) / d + DOUBLE * DOUBLE;
+        break;
+    }
+    h = h * INTERVAL % DEG;
+    if (h < 0) {
+      h += DEG;
+    }
+  }
+  return [
+    h,
+    s * MAX_PCT,
+    l * MAX_PCT,
+    a
+  ];
+};
+
+/**
+ * hex to hwb
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [h, w, b, a] h: 0..360 w|b: 0..100 a: 0..1
+ */
+export const hexToHwb = async value => {
+  const [rr, gg, bb, a] = await hexToRgb(value);
+  const r = parseFloat(rr) / MAX_NUM_RGB;
+  const g = parseFloat(gg) / MAX_NUM_RGB;
+  const b = parseFloat(bb) / MAX_NUM_RGB;
+  const [h] = await hexToHsl(value);
+  const w = Math.min(r, g, b);
+  const bk = 1 - Math.max(r, g, b);
+  return [
+    h,
+    w * MAX_PCT,
+    bk * MAX_PCT,
+    a
+  ];
+};
+
+/**
  * hex to linear rgb
  *
  * @param {string} value - value
@@ -322,9 +405,9 @@ export const hexToRgb = async value => {
 export const hexToLinearRgb = async value => {
   const CONDITION = 0.04045;
   const [rr, gg, bb, a] = await hexToRgb(value);
-  let r = parseFloat(rr) / NUM_MAX;
-  let g = parseFloat(gg) / NUM_MAX;
-  let b = parseFloat(bb) / NUM_MAX;
+  let r = parseFloat(rr) / MAX_NUM_RGB;
+  let g = parseFloat(gg) / MAX_NUM_RGB;
+  let b = parseFloat(bb) / MAX_NUM_RGB;
   if (r > CONDITION) {
     r = Math.pow((r + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
   } else {
@@ -390,69 +473,23 @@ export const hexToXyzD50 = async value => {
 };
 
 /**
- * hex to hsl
+ * hex to lab
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [h, s, l, a] h: 0..360 s|l: 0..100 a: 0..1
+ * @returns {Array.<number>} - [l, a, b, aa] l: 0..100 aa: 0..1
  */
-export const hexToHsl = async value => {
-  const [rr, gg, bb, a] = await hexToRgb(value);
-  const r = parseFloat(rr) / NUM_MAX;
-  const g = parseFloat(gg) / NUM_MAX;
-  const b = parseFloat(bb) / NUM_MAX;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const d = max - min;
-  const s = (max === min && (max === 1 || max === 0))
-    ? 0
-    : d / (1 - Math.abs(max + min - 1));
-  const l = (max + min) * HALF;
-  let h = 0;
-  if (max !== min) {
-    switch (max) {
-      case r:
-        h = (g - b) / d;
-        break;
-      case g:
-        h = (b - r) / d + DOUBLE;
-        break;
-      case b:
-      default:
-        h = (r - g) / d + DOUBLE * DOUBLE;
-        break;
-    }
-    h = h * INTERVAL % DEG;
-    if (h < 0) {
-      h += DEG;
-    }
-  }
+export const hexToLab = async value => {
+  const [x, y, z, aa] = await hexToXyzD50(value);
+  const xyz = [x, y, z].map((val, i) => val / D50[i]);
+  const [f0, f1, f2] = xyz.map(val => val > LAB_COEF_EPSILON
+    ? Math.cbrt(val)
+    : (val * LAB_COEF_KAPPA + HEX) / LAB_FIX_L
+  );
   return [
-    h,
-    s * PCT_MAX,
-    l * PCT_MAX,
-    a
-  ];
-};
-
-/**
- * hex to hwb
- *
- * @param {string} value - value
- * @returns {Array.<number>} - [h, w, b, a] h: 0..360 w|b: 0..100 a: 0..1
- */
-export const hexToHwb = async value => {
-  const [rr, gg, bb, a] = await hexToRgb(value);
-  const r = parseFloat(rr) / NUM_MAX;
-  const g = parseFloat(gg) / NUM_MAX;
-  const b = parseFloat(bb) / NUM_MAX;
-  const [h] = await hexToHsl(value);
-  const w = Math.min(r, g, b);
-  const bk = 1 - Math.max(r, g, b);
-  return [
-    h,
-    w * PCT_MAX,
-    bk * PCT_MAX,
-    a
+    (LAB_FIX_L * f1) - HEX,
+    (f0 - f1) * LAB_FIX_A,
+    (f1 - f2) * LAB_FIX_B,
+    aa
   ];
 };
 
@@ -476,7 +513,7 @@ export const parseRgb = async value => {
     r = `0${r}`;
   }
   if (r.endsWith('%')) {
-    r = parseFloat(r) * NUM_MAX / PCT_MAX;
+    r = parseFloat(r) * MAX_NUM_RGB / MAX_PCT;
   } else {
     r = parseFloat(r);
   }
@@ -484,7 +521,7 @@ export const parseRgb = async value => {
     g = `0${g}`;
   }
   if (g.endsWith('%')) {
-    g = parseFloat(g) * NUM_MAX / PCT_MAX;
+    g = parseFloat(g) * MAX_NUM_RGB / MAX_PCT;
   } else {
     g = parseFloat(g);
   }
@@ -492,7 +529,7 @@ export const parseRgb = async value => {
     b = `0${b}`;
   }
   if (b.endsWith('%')) {
-    b = parseFloat(b) * NUM_MAX / PCT_MAX;
+    b = parseFloat(b) * MAX_NUM_RGB / MAX_PCT;
   } else {
     b = parseFloat(b);
   }
@@ -501,7 +538,7 @@ export const parseRgb = async value => {
       a = `0${a}`;
     }
     if (a.endsWith('%')) {
-      a = parseFloat(a) / PCT_MAX;
+      a = parseFloat(a) / MAX_PCT;
     } else {
       a = parseFloat(a);
     }
@@ -509,9 +546,9 @@ export const parseRgb = async value => {
     a = 1;
   }
   return [
-    Math.min(Math.max(r, 0), NUM_MAX),
-    Math.min(Math.max(g, 0), NUM_MAX),
-    Math.min(Math.max(b, 0), NUM_MAX),
+    Math.min(Math.max(r, 0), MAX_NUM_RGB),
+    Math.min(Math.max(g, 0), MAX_NUM_RGB),
+    Math.min(Math.max(b, 0), MAX_NUM_RGB),
     a
   ];
 };
@@ -537,17 +574,17 @@ export const parseHsl = async value => {
   if (s.startsWith('.')) {
     s = `0${s}`;
   }
-  s = Math.min(Math.max(parseFloat(s), 0), PCT_MAX);
+  s = Math.min(Math.max(parseFloat(s), 0), MAX_PCT);
   if (l.startsWith('.')) {
     l = `0${l}`;
   }
-  l = Math.min(Math.max(parseFloat(l), 0), PCT_MAX);
+  l = Math.min(Math.max(parseFloat(l), 0), MAX_PCT);
   if (isString(a)) {
     if (a.startsWith('.')) {
       a = `0${a}`;
     }
     if (a.endsWith('%')) {
-      a = parseFloat(a) / PCT_MAX;
+      a = parseFloat(a) / MAX_PCT;
     } else {
       a = parseFloat(a);
     }
@@ -555,12 +592,12 @@ export const parseHsl = async value => {
     a = 1;
   }
   let max, min;
-  if (l < PCT_MAX * HALF) {
-    max = (l + l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
-    min = (l - l * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+  if (l < MAX_PCT * HALF) {
+    max = (l + l * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
+    min = (l - l * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
   } else {
-    max = (l + (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
-    min = (l - (PCT_MAX - l) * (s / PCT_MAX)) * NUM_MAX / PCT_MAX;
+    max = (l + (MAX_PCT - l) * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
+    min = (l - (MAX_PCT - l) * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
   }
   const factor = (max - min) / INTERVAL;
   let r, g, b;
@@ -596,9 +633,9 @@ export const parseHsl = async value => {
     b = (DEG - h) * factor + min;
   }
   return [
-    Math.min(Math.max(r, 0), NUM_MAX),
-    Math.min(Math.max(g, 0), NUM_MAX),
-    Math.min(Math.max(b, 0), NUM_MAX),
+    Math.min(Math.max(r, 0), MAX_NUM_RGB),
+    Math.min(Math.max(g, 0), MAX_NUM_RGB),
+    Math.min(Math.max(b, 0), MAX_NUM_RGB),
     a
   ];
 };
@@ -623,17 +660,17 @@ export const parseHwb = async value => {
   if (w.startsWith('.')) {
     w = `0${w}`;
   }
-  w = Math.min(Math.max(parseFloat(w), 0), PCT_MAX) / PCT_MAX;
+  w = Math.min(Math.max(parseFloat(w), 0), MAX_PCT) / MAX_PCT;
   if (b.startsWith('.')) {
     b = `0${b}`;
   }
-  b = Math.min(Math.max(parseFloat(b), 0), PCT_MAX) / PCT_MAX;
+  b = Math.min(Math.max(parseFloat(b), 0), MAX_PCT) / MAX_PCT;
   if (isString(a)) {
     if (a.startsWith('.')) {
       a = `0${a}`;
     }
     if (a.endsWith('%')) {
-      a = parseFloat(a) / PCT_MAX;
+      a = parseFloat(a) / MAX_PCT;
     } else {
       a = parseFloat(a);
     }
@@ -642,19 +679,84 @@ export const parseHwb = async value => {
   }
   const arr = [];
   if (w + b >= 1) {
-    const v = (w / (w + b)) * NUM_MAX;
+    const v = (w / (w + b)) * MAX_NUM_RGB;
     arr.push(v, v, v, a);
   } else {
     const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
-    const factor = (1 - w - b) / NUM_MAX;
+    const factor = (1 - w - b) / MAX_NUM_RGB;
     arr.push(
-      (rr * factor + w) * NUM_MAX,
-      (gg * factor + w) * NUM_MAX,
-      (bb * factor + w) * NUM_MAX,
+      (rr * factor + w) * MAX_NUM_RGB,
+      (gg * factor + w) * MAX_NUM_RGB,
+      (bb * factor + w) * MAX_NUM_RGB,
       a
     );
   }
   return arr;
+};
+
+/**
+ + parse lab()
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ */
+export const parseLab = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`lab\\(\\s*(${REG_LAB})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const LAB_COEF = 8;
+  const LAB_PCT_STEP = 1.25;
+  const [, val] = value.match(reg);
+  let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
+  if (l.startsWith('.')) {
+    l = `0${l}`;
+  }
+  l = parseFloat(l);
+  if (l < 0) {
+    l = 0;
+  }
+  if (a.startsWith('.')) {
+    a = `0${a}`;
+  }
+  if (a.endsWith('%')) {
+    a = parseFloat(a) * LAB_PCT_STEP;
+  } else {
+    a = parseFloat(a);
+  }
+  if (b.endsWith('%')) {
+    b = parseFloat(b) * LAB_PCT_STEP;
+  } else {
+    b = parseFloat(b);
+  }
+  if (isString(aa)) {
+    if (aa.startsWith('.')) {
+      aa = `0${aa}`;
+    }
+    if (aa.endsWith('%')) {
+      aa = parseFloat(aa) / MAX_PCT;
+    } else {
+      aa = parseFloat(aa);
+    }
+  } else {
+    aa = 1;
+  }
+  const fl = (l + HEX) / LAB_FIX_L;
+  const fa = (a / LAB_FIX_A + fl);
+  const fb = (fl - b / LAB_FIX_B);
+  const powFl = Math.pow(fl, LAB_EXP);
+  const powFa = Math.pow(fa, LAB_EXP);
+  const powFb = Math.pow(fb, LAB_EXP);
+  const xyz = [
+    powFa > LAB_COEF_EPSILON ? powFa : (fa * LAB_FIX_L - HEX) / LAB_COEF_KAPPA,
+    l > LAB_COEF ? powFl : l / LAB_COEF_KAPPA,
+    powFb > LAB_COEF_EPSILON ? powFb : (fb * LAB_FIX_L - HEX) / LAB_COEF_KAPPA
+  ];
+  const [x, y, z] = xyz.map((val, i) => val * D50[i]);
+  return [x, y, z, aa];
 };
 
 /**
@@ -713,10 +815,10 @@ export const convertLinearRgbToHex = async rgb => {
     b *= LINEAR_COEF;
   }
   const [rr, gg, bb, aa] = await Promise.all([
-    numberToHexString(r * NUM_MAX),
-    numberToHexString(g * NUM_MAX),
-    numberToHexString(b * NUM_MAX),
-    numberToHexString(a * NUM_MAX)
+    numberToHexString(r * MAX_NUM_RGB),
+    numberToHexString(g * MAX_NUM_RGB),
+    numberToHexString(b * MAX_NUM_RGB),
+    numberToHexString(a * MAX_NUM_RGB)
   ]);
   let hex;
   if (aa === 'ff') {
@@ -730,7 +832,7 @@ export const convertLinearRgbToHex = async rgb => {
 /**
  * convert xyz to hex
  *
- * @param {Array} xyz - [x, y, z, a] r|g|b: 0..1|>1|<0 a: 0..1
+ * @param {Array} xyz - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
  * @returns {string} - hex
  */
 export const convertXyzToHex = async xyz => {
@@ -780,7 +882,7 @@ export const convertXyzToHex = async xyz => {
 /**
  * convert xyz D50 to hex
  *
- * @param {Array} xyz - [x, y, z, a] r|g|b: 0..1|>1|<0 a: 0..1
+ * @param {Array} xyz - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
  * @returns {string} - hex
  */
 export const convertXyzD50ToHex = async xyz => {
@@ -840,7 +942,7 @@ export const convertXyzD50ToHex = async xyz => {
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
  *       convertColorToHex('currentColor') warns not supported, resolves as null
- *       'color()', 'lab()', 'oklab()', 'lch()', 'oklch()' are not yet supported
+ *       'color()', 'oklab()', 'lch()', 'oklch()' are not yet supported
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -883,6 +985,9 @@ export const convertColorToHex = async (value, alpha = false) => {
       const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
       hex = `#${r}${r}${g}${g}${b}${b}`;
     }
+  // lab()
+  } else if (value.startsWith('lab')) {
+    hex = await parseLab(value).then(convertXyzD50ToHex);
   } else {
     let r, g, b, a;
     // rgb()
@@ -903,7 +1008,7 @@ export const convertColorToHex = async (value, alpha = false) => {
         numberToHexString(r),
         numberToHexString(g),
         numberToHexString(b),
-        numberToHexString(a * NUM_MAX)
+        numberToHexString(a * MAX_NUM_RGB)
       ]);
       if (!alpha || aa === 'ff') {
         hex = `#${rr}${gg}${bb}`;
@@ -917,7 +1022,7 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * convert color-mix() to hex
- * NOTE: 'lab', 'oklab', 'lch', 'oklch' color spaces are not yet supported
+ * NOTE: 'oklab', 'lch', 'oklch' color spaces are not yet supported
  *
  * @param {string} value - value
  * @returns {?string} - hex
@@ -948,8 +1053,8 @@ export const convertColorMixToHex = async value => {
   // normalize percentages and set multipler
   let pA, pB, multipler;
   if (pctA && pctB) {
-    const p1 = parseFloat(pctA) / PCT_MAX;
-    const p2 = parseFloat(pctB) / PCT_MAX;
+    const p1 = parseFloat(pctA) / MAX_PCT;
+    const p2 = parseFloat(pctB) / MAX_PCT;
     if (p1 < 0 || p1 > 1) {
       throw new RangeError(`${pctA} is not between 0% and 100%.`);
     }
@@ -965,13 +1070,13 @@ export const convertColorMixToHex = async value => {
     multipler = factor < 1 ? factor : 1;
   } else {
     if (pctA) {
-      pA = parseFloat(pctA) / PCT_MAX;
+      pA = parseFloat(pctA) / MAX_PCT;
       if (pA < 0 || pA > 1) {
         throw new RangeError(`${pctA} is not between 0% and 100%.`);
       }
       pB = 1 - pA;
     } else if (pctB) {
-      pB = parseFloat(pctB) / PCT_MAX;
+      pB = parseFloat(pctB) / MAX_PCT;
       if (pB < 0 || pB > 1) {
         throw new RangeError(`${pctB} is not between 0% and 100%.`);
       }
@@ -992,7 +1097,7 @@ export const convertColorMixToHex = async value => {
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
-    const factor = PCT_MAX / (a * NUM_MAX);
+    const factor = MAX_PCT / (a * MAX_NUM_RGB);
     const r = (rA * factorA + rB * factorB) * factor;
     const g = (gA * factorA + gB * factorB) * factor;
     const b = (bA * factorA + bB * factorB) * factor;
@@ -1055,6 +1160,17 @@ export const convertColorMixToHex = async value => {
     const g = (yA * factorA + yB * factorB) * a;
     const b = (zA * factorA + zB * factorB) * a;
     hex = await convertXyzD50ToHex([r, g, b, a * multipler]);
+  // in lab
+  } else if (colorAHex && colorBHex && colorSpace === 'lab') {
+    const [lA, aA, bA, aaA] = await hexToLab(colorAHex);
+    const [lB, aB, bB, aaB] = await hexToLab(colorBHex);
+    const factorA = aaA * pA;
+    const factorB = aaB * pB;
+    const aa = (factorA + factorB);
+    const l = (lA * factorA + lB * factorB) * aa;
+    const a = (aA * factorA + aB * factorB) * aa;
+    const b = (bA * factorA + bB * factorB) * aa;
+    hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * multipler})`);
   }
   return hex || null;
 };
@@ -1085,7 +1201,7 @@ export const compositeLayeredColors = async (overlay, base) => {
         numberToHexString(baseR * baseAlpha + overlayR * overlayAlpha),
         numberToHexString(baseG * baseAlpha + overlayG * overlayAlpha),
         numberToHexString(baseB * baseAlpha + overlayB * overlayAlpha),
-        numberToHexString(alpha * NUM_MAX)
+        numberToHexString(alpha * MAX_NUM_RGB)
       ]);
       if (a === 'ff') {
         hex = `#${r}${g}${b}`;
