@@ -22,6 +22,7 @@ const LAB_EXP = 3;
 const LAB_FIX_A = 500;
 const LAB_FIX_B = 200;
 const LAB_FIX_L = 116;
+const LCH_EXP = 2;
 const LINEAR_COEF = 12.92;
 const LINEAR_EXP = 2.4;
 const LINEAR_FIX = 0.055;
@@ -75,14 +76,15 @@ const MATRIX_LMS_TO_OKLAB = [
 const REG_ANGLE = 'deg|g?rad|turn';
 const REG_COLOR_SPACE =
   '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
-const REG_NUM = '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)';
+const REG_NUM =
+  '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)(?:[Ee]-?(?:(?:0|[1-9]\\d*)))?';
 const REG_PCT = `${REG_NUM}%`;
 const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s+${REG_PCT}){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s*,\\s*${REG_PCT}){2}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:${REG_NUM}(?:\\s+${REG_NUM}){2}|${REG_PCT}(?:\\s+${REG_PCT}){2})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LAB = `(?:${REG_NUM}|${REG_PCT})(?:\\s+(?:${REG_NUM}|${REG_PCT})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_LCH = `(?:${REG_NUM}|${REG_PCT}\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT})\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_COLOR_TYPE = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\))`;
 const REG_COLOR_MIX_PART = `${REG_COLOR_TYPE}(?:\\s+${REG_PCT})?`;
 const REG_COLOR_MIX = `in\\s+${REG_COLOR_SPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
@@ -515,6 +517,29 @@ export const hexToLab = async value => {
 };
 
 /**
+ * hex to lch
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [l, c, h, a] l: 0..100 h: 0..360 a: 0..1
+ */
+export const hexToLch = async value => {
+  const [l, a, b, aa] = await hexToLab(value);
+  let c, h;
+  // l = 100 should always be white
+  if (parseFloat(l.toFixed(1)) === 100) {
+    c = 0;
+    h = 0;
+  } else {
+    c = Math.sqrt(Math.pow(a, LCH_EXP) + Math.pow(b, LCH_EXP));
+    h = Math.atan2(b, a) * DEG * HALF / Math.PI;
+    if (h < 0) {
+      h += DEG;
+    }
+  }
+  return [l, c, h, aa];
+};
+
+/**
  * hex to oklab
  *
  * @param {string} value - value
@@ -758,7 +783,7 @@ export const parseLab = async value => {
     throw new Error(`Invalid property value: ${value}`);
   }
   const LAB_COEF = 8;
-  const LAB_PCT_STEP = 1.25;
+  const LAB_PCT_COEF = 1.25;
   const [, val] = value.match(reg);
   let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
   if (l.startsWith('.')) {
@@ -772,12 +797,12 @@ export const parseLab = async value => {
     a = `0${a}`;
   }
   if (a.endsWith('%')) {
-    a = parseFloat(a) * LAB_PCT_STEP;
+    a = parseFloat(a) * LAB_PCT_COEF;
   } else {
     a = parseFloat(a);
   }
   if (b.endsWith('%')) {
-    b = parseFloat(b) * LAB_PCT_STEP;
+    b = parseFloat(b) * LAB_PCT_COEF;
   } else {
     b = parseFloat(b);
   }
@@ -809,6 +834,57 @@ export const parseLab = async value => {
 };
 
 /**
+ + parse lch()
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ */
+export const parseLch = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`lch\\(\\s*(${REG_LCH})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const LCH_PCT_COEF = 1.5;
+  const [, val] = value.match(reg);
+  let [l, c, h, aa] = val.replace('/', ' ').split(/\s+/);
+  if (l.startsWith('.')) {
+    l = `0${l}`;
+  }
+  l = parseFloat(l);
+  if (l < 0) {
+    l = 0;
+  }
+  if (c.startsWith('.')) {
+    c = `0${c}`;
+  }
+  if (c.endsWith('%')) {
+    c = parseFloat(c) * LCH_PCT_COEF;
+  } else {
+    c = parseFloat(c);
+  }
+  h = await angleToDeg(h);
+  if (isString(aa)) {
+    if (aa.startsWith('.')) {
+      aa = `0${aa}`;
+    }
+    if (aa.endsWith('%')) {
+      aa = parseFloat(aa) / MAX_PCT;
+    } else {
+      aa = parseFloat(aa);
+    }
+  } else {
+    aa = 1;
+  }
+  const a = c * Math.cos(h * Math.PI / (DEG * HALF));
+  const b = c * Math.sin(h * Math.PI / (DEG * HALF));
+  const [x, y, z] = await parseLab(`lab(${l} ${a} ${b})`);
+  return [x, y, z, aa];
+};
+
+/**
  + parse oklab()
  *
  * @param {string} value - value
@@ -822,7 +898,7 @@ export const parseOklab = async value => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const LAB_PCT_STEP = 0.4;
+  const LAB_PCT_COEF = 0.4;
   const [, val] = value.match(reg);
   let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
   if (l.startsWith('.')) {
@@ -840,12 +916,12 @@ export const parseOklab = async value => {
     a = `0${a}`;
   }
   if (a.endsWith('%')) {
-    a = parseFloat(a) * LAB_PCT_STEP / MAX_PCT;
+    a = parseFloat(a) * LAB_PCT_COEF / MAX_PCT;
   } else {
     a = parseFloat(a);
   }
   if (b.endsWith('%')) {
-    b = parseFloat(b) * LAB_PCT_STEP / MAX_PCT;
+    b = parseFloat(b) * LAB_PCT_COEF / MAX_PCT;
   } else {
     b = parseFloat(b);
   }
@@ -1064,7 +1140,7 @@ export const convertXyzD50ToHex = async xyz => {
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
  *       convertColorToHex('currentColor') warns not supported, resolves as null
- *       'color()', 'lch()', 'oklch()' are not yet supported
+ *       'color()', 'oklch()' are not yet supported
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -1110,6 +1186,9 @@ export const convertColorToHex = async (value, alpha = false) => {
   // lab()
   } else if (value.startsWith('lab')) {
     hex = await parseLab(value).then(convertXyzD50ToHex);
+  // lch()
+  } else if (value.startsWith('lch')) {
+    hex = await parseLch(value).then(convertXyzD50ToHex);
   // oklab()
   } else if (value.startsWith('oklab')) {
     hex = await parseOklab(value).then(convertXyzToHex);
@@ -1147,7 +1226,7 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * convert color-mix() to hex
- * NOTE: 'lch', 'oklch' color spaces are not yet supported
+ * NOTE: 'oklch' color space is not yet supported
  *
  * @param {string} value - value
  * @returns {?string} - hex
@@ -1296,6 +1375,17 @@ export const convertColorMixToHex = async value => {
     const a = (aA * factorA + aB * factorB) * aa;
     const b = (bA * factorA + bB * factorB) * aa;
     hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * multipler})`);
+  // in lch
+  } else if (colorAHex && colorBHex && colorSpace === 'lch') {
+    const [lA, cA, hA, aaA] = await hexToLch(colorAHex);
+    const [lB, cB, hB, aaB] = await hexToLch(colorBHex);
+    const factorA = aaA * pA;
+    const factorB = aaB * pB;
+    const aa = (factorA + factorB);
+    const l = (lA * factorA + lB * factorB) * aa;
+    const c = (cA * factorA + cB * factorB) * aa;
+    const h = (hA * factorA + hB * factorB) * aa;
+    hex = await convertColorToHex(`lch(${l} ${c} ${h} / ${aa * multipler})`);
   // in oklab
   } else if (colorAHex && colorBHex && colorSpace === 'oklab') {
     const [lA, aA, bA, aaA] = await hexToOklab(colorAHex);

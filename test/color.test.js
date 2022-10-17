@@ -802,6 +802,106 @@ describe('color', () => {
     });
   });
 
+  describe('hex to lch', () => {
+    const func = mjs.hexToLch;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: foo',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('#008000');
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(1));
+      res[2] = parseFloat(res[2].toFixed(1));
+      assert.deepEqual(res, [46.278, 68.0, 134.4, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#000000');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#ffffff');
+      res[0] = parseFloat(Math.round(res[0]));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      assert.deepEqual(res, [100, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const value =
+        await mjs.convertColorToHex('rgb(75.6208% 30.4487% 47.5634%)', true);
+      const res = await func(value);
+      res[0] = parseFloat(Math.round(res[0]));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      assert.deepEqual(res, [50, 50, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const value =
+        await mjs.convertColorToHex('rgb(10.7906% 75.5567% 66.3982%)', true);
+      const res = await func(value);
+      res[0] = parseFloat(Math.round(res[0]));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      assert.deepEqual(res, [70, 45, 180, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const value =
+        await mjs.convertColorToHex('rgb(76.6254% 66.3607% 5.5775%)', true);
+      const res = await func(value);
+      res[0] = parseFloat(Math.round(res[0]));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      assert.deepEqual(res, [70, 70, 90, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const value =
+        await mjs.convertColorToHex('rgb(12.8128% 53.105% 92.7645%)', true);
+      const res = await func(value);
+      res[0] = parseFloat(Math.round(res[0]));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      assert.deepEqual(res, [55, 60, 270, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const value =
+        await mjs.convertColorToHex('rgb(12.8128% 53.105% 92.7645%)', true);
+      const res = await func(value);
+      res[0] = parseFloat(Math.round(res[0]));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      assert.deepEqual(res, [55, 60, 270, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#7654cd');
+      res[0] = parseFloat(res[0].toFixed(2));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(2));
+      assert.deepEqual(res, [44.36, 69.13, 301.43, 1], 'result');
+    });
+  });
+
   describe('hex to oklab', () => {
     const func = mjs.hexToOklab;
 
@@ -1377,6 +1477,237 @@ describe('color', () => {
       val[0] = parseFloat(Math.round(val[0]));
       val[1] = parseFloat(Math.round(val[1]));
       val[2] = parseFloat(Math.round(val[2]));
+      assert.deepEqual(res, val, 'result');
+    });
+  });
+
+  describe('parse lch()', () => {
+    const func = mjs.parseLch;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('lch(100%, 20%, 30% / 1)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: lch(100%, 20%, 30% / 1)',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(46.278% 68.0 134.4)');
+      const val = await mjs.hexToXyzD50('#008000');
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(0% 0 0)');
+      const val = await mjs.hexToXyzD50('#000000');
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(100% 0 0)');
+      const val = await mjs.hexToXyzD50('#ffffff');
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(50% 50 0)');
+      const val =
+        await mjs.convertColorToHex('rgb(75.6208% 30.4487% 47.5634%)', true)
+          .then(mjs.hexToXyzD50);
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(1));
+      res[2] = parseFloat(res[2].toFixed(2));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(1));
+      val[2] = parseFloat(val[2].toFixed(2));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(70% 45 180)');
+      const val =
+        await mjs.convertColorToHex('rgb(10.7906% 75.5567% 66.3982%)', true)
+          .then(mjs.hexToXyzD50);
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(2));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(2));
+      val[2] = parseFloat(val[2].toFixed(2));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(70% 70 90)');
+      const val =
+        await mjs.convertColorToHex('rgb(76.6254% 66.3607% 5.5775%)', true)
+          .then(mjs.hexToXyzD50);
+      res[0] = parseFloat(res[0].toFixed(2));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(3));
+      val[0] = parseFloat(val[0].toFixed(2));
+      val[1] = parseFloat(val[1].toFixed(2));
+      val[2] = parseFloat(val[2].toFixed(3));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(55% 60 270)');
+      const val =
+        await mjs.convertColorToHex('rgb(12.8128% 53.105% 92.7645%)', true)
+          .then(mjs.hexToXyzD50);
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(2));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(2));
+      val[2] = parseFloat(val[2].toFixed(2));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43)');
+      const val = await mjs.hexToXyzD50('#7654cd');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43 / 1)');
+      const val = await mjs.hexToXyzD50('#7654cd');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43 / .5)');
+      const val = await mjs.hexToXyzD50('#7654cd80');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43 / 50%)');
+      const val = await mjs.hexToXyzD50('#7654cd80');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(.5% 20 30)');
+      const val = await mjs.hexToXyzD50('#230000');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(Math.round(res[1]));
+      res[2] = parseFloat(Math.round(res[2]));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(Math.round(val[1]));
+      val[2] = parseFloat(Math.round(val[2]));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(-10% 20 30)');
+      const val = await mjs.hexToXyzD50('#220000');
+      res[0] = parseFloat(res[0].toFixed(0));
+      res[1] = parseFloat(res[1].toFixed(0));
+      res[2] = parseFloat(Math.round(res[2]));
+      val[0] = parseFloat(val[0].toFixed(0));
+      val[1] = parseFloat(val[1].toFixed(0));
+      val[2] = parseFloat(Math.round(val[2]));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(10% .5 30)');
+      const val = await mjs.hexToXyzD50('#1c1b1b');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(10% 20% 30)');
+      const val = await mjs.hexToXyzD50('#3c0602');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(10% 20 -30)');
+      const val = await mjs.hexToXyzD50('#2d1129');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
       assert.deepEqual(res, val, 'result');
     });
   });
@@ -2213,6 +2544,11 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43 / 1)');
+      assert.deepEqual(res, '#7654cd', 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('oklab(0.54166 0.03535 -0.18015 / 1)');
       assert.deepEqual(res, '#7654cd', 'result');
     });
@@ -2756,6 +3092,24 @@ describe('color', () => {
     it('should get result', async () => {
       const res = await func('color-mix(in lab, red 90%, green)');
       const value = await mjs.convertColorToHex('lab(53.4893 67.9692 67.7605)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in lch, red, green)');
+      const value = await mjs.convertColorToHex('lch(50.28% 87.41 87.62)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in lch, red, green 90%)');
+      const value = await mjs.convertColorToHex('lch(47.08% 71.87 125.03)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get result', async () => {
+      const res = await func('color-mix(in lch, red 90%, green)');
+      const value = await mjs.convertColorToHex('lch(53.49 102.95 50.21)');
       assert.strictEqual(res, value, 'result');
     });
 
