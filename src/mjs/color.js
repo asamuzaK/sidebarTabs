@@ -4,30 +4,31 @@
  *      §17. Sample code for Color Conversions
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
  * NOTE: 'currentColor' keyword is not supported
+ *       'color()' functional notation is not yet supported
  */
 
 /* shared */
 import { getType, isString, logWarn } from './common.js';
 
 /* constants */
+const CUBE = 3;
 const DEG = 360;
 const DOUBLE = 2;
-const GRAD = 400;
 const HALF = 0.5;
 const HEX = 16;
 const INTERVAL = 60;
-const LAB_COEF_EPSILON = 216 / 24389;
-const LAB_COEF_KAPPA = 24389 / 27;
-const LAB_EXP = 3;
-const LAB_FIX_A = 500;
-const LAB_FIX_B = 200;
-const LAB_FIX_L = 116;
-const LCH_EXP = 2;
+const LAB_A = 500;
+const LAB_B = 200;
+const LAB_EPSILON = 216 / 24389;
+const LAB_KAPPA = 24389 / 27;
+const LAB_L = 116;
 const LINEAR_COEF = 12.92;
-const LINEAR_EXP = 2.4;
-const LINEAR_FIX = 0.055;
-const MAX_NUM_RGB = 255;
+const LINEAR_OFFSET = 0.055;
+const LINEAR_POW = 2.4;
 const MAX_PCT = 100;
+const MAX_RGB = 255;
+const QUAD = 4;
+const SQUARE = 2;
 /* white points */
 const D50 = [0.3457 / 0.3585, 1.00000, (1.0 - 0.3457 - 0.3585) / 0.3585];
 const D65 = [0.3127 / 0.3290, 1.00000, (1.0 - 0.3127 - 0.3290) / 0.3290];
@@ -253,8 +254,8 @@ export const numberToHexString = async value => {
     throw new TypeError(`${value} is not a number.`);
   }
   let hex = Math.round(value).toString(HEX);
-  if (hex < 0 || hex > MAX_NUM_RGB) {
-    throw new RangeError(`${value} is not between 0 and ${MAX_NUM_RGB}.`);
+  if (hex < 0 || hex > MAX_RGB) {
+    throw new RangeError(`${value} is not between 0 and ${MAX_RGB}.`);
   }
   if (hex.length === 1) {
     hex = `0${hex}`;
@@ -281,7 +282,7 @@ export const angleToDeg = async angle => {
   let deg;
   switch (unit) {
     case 'grad':
-      deg = parseFloat(value) * DEG / GRAD;
+      deg = parseFloat(value) * DEG / (MAX_PCT * QUAD);
       break;
     case 'rad':
       deg = parseFloat(value) * DEG / (Math.PI * DOUBLE);
@@ -329,7 +330,7 @@ export const hexToRgb = async value => {
       parseInt(r, HEX),
       parseInt(g, HEX),
       parseInt(b, HEX),
-      parseInt(a, HEX) / MAX_NUM_RGB
+      parseInt(a, HEX) / MAX_RGB
     );
   } else if (/^#[\da-f]{4}$/i.test(value)) {
     const [, r, g, b, a] =
@@ -338,7 +339,7 @@ export const hexToRgb = async value => {
       parseInt(`${r}${r}`, HEX),
       parseInt(`${g}${g}`, HEX),
       parseInt(`${b}${b}`, HEX),
-      parseInt(`${a}${a}`, HEX) / MAX_NUM_RGB
+      parseInt(`${a}${a}`, HEX) / MAX_RGB
     );
   } else if (/^#[\da-f]{3}$/i.test(value)) {
     const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/i);
@@ -360,9 +361,9 @@ export const hexToRgb = async value => {
  */
 export const hexToHsl = async value => {
   const [rr, gg, bb, a] = await hexToRgb(value);
-  const r = parseFloat(rr) / MAX_NUM_RGB;
-  const g = parseFloat(gg) / MAX_NUM_RGB;
-  const b = parseFloat(bb) / MAX_NUM_RGB;
+  const r = parseFloat(rr) / MAX_RGB;
+  const g = parseFloat(gg) / MAX_RGB;
+  const b = parseFloat(bb) / MAX_RGB;
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const d = max - min;
@@ -381,7 +382,7 @@ export const hexToHsl = async value => {
         break;
       case b:
       default:
-        h = (r - g) / d + DOUBLE * DOUBLE;
+        h = (r - g) / d + QUAD;
         break;
     }
     h = h * INTERVAL % DEG;
@@ -405,9 +406,9 @@ export const hexToHsl = async value => {
  */
 export const hexToHwb = async value => {
   const [rr, gg, bb, a] = await hexToRgb(value);
-  const r = parseFloat(rr) / MAX_NUM_RGB;
-  const g = parseFloat(gg) / MAX_NUM_RGB;
-  const b = parseFloat(bb) / MAX_NUM_RGB;
+  const r = parseFloat(rr) / MAX_RGB;
+  const g = parseFloat(gg) / MAX_RGB;
+  const b = parseFloat(bb) / MAX_RGB;
   const [h] = await hexToHsl(value);
   const w = Math.min(r, g, b);
   const bk = 1 - Math.max(r, g, b);
@@ -426,23 +427,23 @@ export const hexToHwb = async value => {
  * @returns {Array.<number>} - [r, g, b, a] r|g|b|a: 0..1
  */
 export const hexToLinearRgb = async value => {
-  const CONDITION = 0.04045;
+  const COND_POW = 0.04045;
   const [rr, gg, bb, a] = await hexToRgb(value);
-  let r = parseFloat(rr) / MAX_NUM_RGB;
-  let g = parseFloat(gg) / MAX_NUM_RGB;
-  let b = parseFloat(bb) / MAX_NUM_RGB;
-  if (r > CONDITION) {
-    r = Math.pow((r + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
+  let r = parseFloat(rr) / MAX_RGB;
+  let g = parseFloat(gg) / MAX_RGB;
+  let b = parseFloat(bb) / MAX_RGB;
+  if (r > COND_POW) {
+    r = Math.pow((r + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), LINEAR_POW);
   } else {
     r = (r / LINEAR_COEF);
   }
-  if (g > CONDITION) {
-    g = Math.pow((g + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
+  if (g > COND_POW) {
+    g = Math.pow((g + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), LINEAR_POW);
   } else {
     g = (g / LINEAR_COEF);
   }
-  if (b > CONDITION) {
-    b = Math.pow((b + LINEAR_FIX) / (1 + LINEAR_FIX), LINEAR_EXP);
+  if (b > COND_POW) {
+    b = Math.pow((b + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), LINEAR_POW);
   } else {
     b = (b / LINEAR_COEF);
   }
@@ -504,14 +505,14 @@ export const hexToXyzD50 = async value => {
 export const hexToLab = async value => {
   const [x, y, z, aa] = await hexToXyzD50(value);
   const xyz = [x, y, z].map((val, i) => val / D50[i]);
-  const [f0, f1, f2] = xyz.map(val => val > LAB_COEF_EPSILON
+  const [f0, f1, f2] = xyz.map(val => val > LAB_EPSILON
     ? Math.cbrt(val)
-    : (val * LAB_COEF_KAPPA + HEX) / LAB_FIX_L
+    : (val * LAB_KAPPA + HEX) / LAB_L
   );
   return [
-    (LAB_FIX_L * f1) - HEX,
-    (f0 - f1) * LAB_FIX_A,
-    (f1 - f2) * LAB_FIX_B,
+    (LAB_L * f1) - HEX,
+    (f0 - f1) * LAB_A,
+    (f1 - f2) * LAB_B,
     aa
   ];
 };
@@ -530,7 +531,7 @@ export const hexToLch = async value => {
     c = 0;
     h = 0;
   } else {
-    c = Math.sqrt(Math.pow(a, LCH_EXP) + Math.pow(b, LCH_EXP));
+    c = Math.sqrt(Math.pow(a, SQUARE) + Math.pow(b, SQUARE));
     h = Math.atan2(b, a) * DEG * HALF / Math.PI;
     if (h < 0) {
       h += DEG;
@@ -543,11 +544,19 @@ export const hexToLch = async value => {
  * hex to oklab
  *
  * @param {string} value - value
+ * @param {boolean} asis - leave value as is
  * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1
  */
-export const hexToOklab = async value => {
+export const hexToOklab = async (value, asis = false) => {
   const [xx, yy, zz, aa] = await hexToXyz(value);
-  const [x, y, z] = [xx, yy, zz].map((val, i) => val * D65[i]);
+  let x, y, z;
+  if (asis) {
+    x = xx;
+    y = yy;
+    z = zz;
+  } else {
+    [x, y, z] = [xx, yy, zz].map((val, i) => val * D65[i]);
+  }
   const [
     [r0c0Lms, r0c1Lms, r0c2Lms],
     [r1c0Lms, r1c1Lms, r1c2Lms],
@@ -565,6 +574,30 @@ export const hexToOklab = async value => {
   const a = r1c0Okl * xLms + r1c1Okl * yLms + r1c2Okl * zLms;
   const b = r2c0Okl * xLms + r2c1Okl * yLms + r2c2Okl * zLms;
   return [l, a, b, aa];
+};
+
+/**
+ * hex to oklch
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1
+ */
+export const hexToOklch = async value => {
+  const [ll, a, b, aa] = await hexToOklab(value, true);
+  let l, c, h;
+  if (parseFloat(ll.toFixed(1)) === 1) {
+    l = 1;
+    c = 0;
+    h = 0;
+  } else {
+    l = ll;
+    c = Math.sqrt(Math.pow(a, SQUARE) + Math.pow(b, SQUARE));
+    h = Math.atan2(b, a) * DEG * HALF / Math.PI;
+    if (h < 0) {
+      h += DEG;
+    }
+  }
+  return [l, c, h, aa];
 };
 
 /**
@@ -587,7 +620,7 @@ export const parseRgb = async value => {
     r = `0${r}`;
   }
   if (r.endsWith('%')) {
-    r = parseFloat(r) * MAX_NUM_RGB / MAX_PCT;
+    r = parseFloat(r) * MAX_RGB / MAX_PCT;
   } else {
     r = parseFloat(r);
   }
@@ -595,7 +628,7 @@ export const parseRgb = async value => {
     g = `0${g}`;
   }
   if (g.endsWith('%')) {
-    g = parseFloat(g) * MAX_NUM_RGB / MAX_PCT;
+    g = parseFloat(g) * MAX_RGB / MAX_PCT;
   } else {
     g = parseFloat(g);
   }
@@ -603,7 +636,7 @@ export const parseRgb = async value => {
     b = `0${b}`;
   }
   if (b.endsWith('%')) {
-    b = parseFloat(b) * MAX_NUM_RGB / MAX_PCT;
+    b = parseFloat(b) * MAX_RGB / MAX_PCT;
   } else {
     b = parseFloat(b);
   }
@@ -620,9 +653,9 @@ export const parseRgb = async value => {
     a = 1;
   }
   return [
-    Math.min(Math.max(r, 0), MAX_NUM_RGB),
-    Math.min(Math.max(g, 0), MAX_NUM_RGB),
-    Math.min(Math.max(b, 0), MAX_NUM_RGB),
+    Math.min(Math.max(r, 0), MAX_RGB),
+    Math.min(Math.max(g, 0), MAX_RGB),
+    Math.min(Math.max(b, 0), MAX_RGB),
     a
   ];
 };
@@ -667,11 +700,11 @@ export const parseHsl = async value => {
   }
   let max, min;
   if (l < MAX_PCT * HALF) {
-    max = (l + l * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
-    min = (l - l * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
+    max = (l + l * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
+    min = (l - l * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
   } else {
-    max = (l + (MAX_PCT - l) * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
-    min = (l - (MAX_PCT - l) * (s / MAX_PCT)) * MAX_NUM_RGB / MAX_PCT;
+    max = (l + (MAX_PCT - l) * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
+    min = (l - (MAX_PCT - l) * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
   }
   const factor = (max - min) / INTERVAL;
   let r, g, b;
@@ -691,13 +724,13 @@ export const parseHsl = async value => {
     g = max;
     b = (h - INTERVAL * DOUBLE) * factor + min;
   // < 240
-  } else if (h < INTERVAL * DOUBLE * DOUBLE) {
+  } else if (h < INTERVAL * QUAD) {
     r = min;
-    g = (INTERVAL * DOUBLE * DOUBLE - h) * factor + min;
+    g = (INTERVAL * QUAD - h) * factor + min;
     b = max;
   // < 300
   } else if (h < DEG - INTERVAL) {
-    r = (h - (INTERVAL * DOUBLE * DOUBLE)) * factor + min;
+    r = (h - (INTERVAL * QUAD)) * factor + min;
     g = min;
     b = max;
   // < 360
@@ -707,9 +740,9 @@ export const parseHsl = async value => {
     b = (DEG - h) * factor + min;
   }
   return [
-    Math.min(Math.max(r, 0), MAX_NUM_RGB),
-    Math.min(Math.max(g, 0), MAX_NUM_RGB),
-    Math.min(Math.max(b, 0), MAX_NUM_RGB),
+    Math.min(Math.max(r, 0), MAX_RGB),
+    Math.min(Math.max(g, 0), MAX_RGB),
+    Math.min(Math.max(b, 0), MAX_RGB),
     a
   ];
 };
@@ -753,15 +786,15 @@ export const parseHwb = async value => {
   }
   const arr = [];
   if (w + b >= 1) {
-    const v = (w / (w + b)) * MAX_NUM_RGB;
+    const v = (w / (w + b)) * MAX_RGB;
     arr.push(v, v, v, a);
   } else {
     const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
-    const factor = (1 - w - b) / MAX_NUM_RGB;
+    const factor = (1 - w - b) / MAX_RGB;
     arr.push(
-      (rr * factor + w) * MAX_NUM_RGB,
-      (gg * factor + w) * MAX_NUM_RGB,
-      (bb * factor + w) * MAX_NUM_RGB,
+      (rr * factor + w) * MAX_RGB,
+      (gg * factor + w) * MAX_RGB,
+      (bb * factor + w) * MAX_RGB,
       a
     );
   }
@@ -782,8 +815,8 @@ export const parseLab = async value => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const LAB_COEF = 8;
-  const LAB_PCT_COEF = 1.25;
+  const COEF_PCT = 1.25;
+  const COND_POW = 8;
   const [, val] = value.match(reg);
   let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
   if (l.startsWith('.')) {
@@ -797,12 +830,12 @@ export const parseLab = async value => {
     a = `0${a}`;
   }
   if (a.endsWith('%')) {
-    a = parseFloat(a) * LAB_PCT_COEF;
+    a = parseFloat(a) * COEF_PCT;
   } else {
     a = parseFloat(a);
   }
   if (b.endsWith('%')) {
-    b = parseFloat(b) * LAB_PCT_COEF;
+    b = parseFloat(b) * COEF_PCT;
   } else {
     b = parseFloat(b);
   }
@@ -818,16 +851,16 @@ export const parseLab = async value => {
   } else {
     aa = 1;
   }
-  const fl = (l + HEX) / LAB_FIX_L;
-  const fa = (a / LAB_FIX_A + fl);
-  const fb = (fl - b / LAB_FIX_B);
-  const powFl = Math.pow(fl, LAB_EXP);
-  const powFa = Math.pow(fa, LAB_EXP);
-  const powFb = Math.pow(fb, LAB_EXP);
+  const fl = (l + HEX) / LAB_L;
+  const fa = (a / LAB_A + fl);
+  const fb = (fl - b / LAB_B);
+  const powFl = Math.pow(fl, CUBE);
+  const powFa = Math.pow(fa, CUBE);
+  const powFb = Math.pow(fb, CUBE);
   const xyz = [
-    powFa > LAB_COEF_EPSILON ? powFa : (fa * LAB_FIX_L - HEX) / LAB_COEF_KAPPA,
-    l > LAB_COEF ? powFl : l / LAB_COEF_KAPPA,
-    powFb > LAB_COEF_EPSILON ? powFb : (fb * LAB_FIX_L - HEX) / LAB_COEF_KAPPA
+    powFa > LAB_EPSILON ? powFa : (fa * LAB_L - HEX) / LAB_KAPPA,
+    l > COND_POW ? powFl : l / LAB_KAPPA,
+    powFb > LAB_EPSILON ? powFb : (fb * LAB_L - HEX) / LAB_KAPPA
   ];
   const [x, y, z] = xyz.map((val, i) => val * D50[i]);
   return [x, y, z, aa];
@@ -847,7 +880,7 @@ export const parseLch = async value => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const LCH_PCT_COEF = 1.5;
+  const COEF_PCT = 1.5;
   const [, val] = value.match(reg);
   let [l, c, h, aa] = val.replace('/', ' ').split(/\s+/);
   if (l.startsWith('.')) {
@@ -861,7 +894,7 @@ export const parseLch = async value => {
     c = `0${c}`;
   }
   if (c.endsWith('%')) {
-    c = parseFloat(c) * LCH_PCT_COEF;
+    c = parseFloat(c) * COEF_PCT;
   } else {
     c = parseFloat(c);
   }
@@ -898,7 +931,7 @@ export const parseOklab = async value => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const LAB_PCT_COEF = 0.4;
+  const COEF_PCT = 0.4;
   const [, val] = value.match(reg);
   let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
   if (l.startsWith('.')) {
@@ -916,12 +949,12 @@ export const parseOklab = async value => {
     a = `0${a}`;
   }
   if (a.endsWith('%')) {
-    a = parseFloat(a) * LAB_PCT_COEF / MAX_PCT;
+    a = parseFloat(a) * COEF_PCT / MAX_PCT;
   } else {
     a = parseFloat(a);
   }
   if (b.endsWith('%')) {
-    b = parseFloat(b) * LAB_PCT_COEF / MAX_PCT;
+    b = parseFloat(b) * COEF_PCT / MAX_PCT;
   } else {
     b = parseFloat(b);
   }
@@ -947,13 +980,92 @@ export const parseOklab = async value => {
     [r1c0Xyz, r1c1Xyz, r1c2Xyz],
     [r2c0Xyz, r2c1Xyz, r2c2Xyz]
   ] = MATRIX_LMS_TO_XYZ;
-  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, LAB_EXP);
-  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, LAB_EXP);
-  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, LAB_EXP);
+  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, CUBE);
+  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, CUBE);
+  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, CUBE);
   const x65 = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
   const y65 = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
   const z65 = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
   const [x, y, z] = [x65, y65, z65].map((val, i) => val / D65[i]);
+  return [x, y, z, aa];
+};
+
+/**
+ + parse oklab()
+ *
+ * @param {string} value - value
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ */
+export const parseOklch = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`oklch\\(\\s*(${REG_LAB})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const COEF_PCT = 0.4;
+  const [, val] = value.match(reg);
+  let [l, c, h, aa] = val.replace('/', ' ').split(/\s+/);
+  if (l.startsWith('.')) {
+    l = `0${l}`;
+  }
+  if (l.endsWith('%')) {
+    l = parseFloat(l) / MAX_PCT;
+  } else {
+    l = parseFloat(l);
+  }
+  if (l < 0) {
+    l = 0;
+  }
+  if (parseFloat(l.toFixed(1)) === 1) {
+    l = 1;
+    c = 0;
+    h = 0;
+  } else {
+    if (c.startsWith('.')) {
+      c = `0${c}`;
+    }
+    if (c.endsWith('%')) {
+      c = parseFloat(c) * COEF_PCT / MAX_PCT;
+    } else {
+      c = parseFloat(c);
+    }
+    if (c < 0) {
+      c = 0;
+    }
+    h = await angleToDeg(h);
+  }
+  if (isString(aa)) {
+    if (aa.startsWith('.')) {
+      aa = `0${aa}`;
+    }
+    if (aa.endsWith('%')) {
+      aa = parseFloat(aa) / MAX_PCT;
+    } else {
+      aa = parseFloat(aa);
+    }
+  } else {
+    aa = 1;
+  }
+  const [
+    [r0c0Lms, r0c1Lms, r0c2Lms],
+    [r1c0Lms, r1c1Lms, r1c2Lms],
+    [r2c0Lms, r2c1Lms, r2c2Lms]
+  ] = MATRIX_OKLAB_TO_LMS;
+  const [
+    [r0c0Xyz, r0c1Xyz, r0c2Xyz],
+    [r1c0Xyz, r1c1Xyz, r1c2Xyz],
+    [r2c0Xyz, r2c1Xyz, r2c2Xyz]
+  ] = MATRIX_LMS_TO_XYZ;
+  const a = c * Math.cos(h * Math.PI / (DEG * HALF));
+  const b = c * Math.sin(h * Math.PI / (DEG * HALF));
+  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, CUBE);
+  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, CUBE);
+  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, CUBE);
+  const x = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
+  const y = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
+  const z = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
   return [x, y, z, aa];
 };
 
@@ -996,27 +1108,27 @@ export const convertLinearRgbToHex = async rgb => {
   } else if (a < 0 || a > 1) {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
-  const CONDITION = 809 / 258400;
-  if (r > CONDITION) {
-    r = Math.pow(r, 1 / LINEAR_EXP) * (1 + LINEAR_FIX) - LINEAR_FIX;
+  const COND_POW = 809 / 258400;
+  if (r > COND_POW) {
+    r = Math.pow(r, 1 / LINEAR_POW) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
   } else {
     r *= LINEAR_COEF;
   }
-  if (g > CONDITION) {
-    g = Math.pow(g, 1 / LINEAR_EXP) * (1 + LINEAR_FIX) - LINEAR_FIX;
+  if (g > COND_POW) {
+    g = Math.pow(g, 1 / LINEAR_POW) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
   } else {
     g *= LINEAR_COEF;
   }
-  if (b > CONDITION) {
-    b = Math.pow(b, 1 / LINEAR_EXP) * (1 + LINEAR_FIX) - LINEAR_FIX;
+  if (b > COND_POW) {
+    b = Math.pow(b, 1 / LINEAR_POW) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
   } else {
     b *= LINEAR_COEF;
   }
   const [rr, gg, bb, aa] = await Promise.all([
-    numberToHexString(r * MAX_NUM_RGB),
-    numberToHexString(g * MAX_NUM_RGB),
-    numberToHexString(b * MAX_NUM_RGB),
-    numberToHexString(a * MAX_NUM_RGB)
+    numberToHexString(r * MAX_RGB),
+    numberToHexString(g * MAX_RGB),
+    numberToHexString(b * MAX_RGB),
+    numberToHexString(a * MAX_RGB)
   ]);
   let hex;
   if (aa === 'ff') {
@@ -1140,7 +1252,7 @@ export const convertXyzD50ToHex = async xyz => {
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
  *       convertColorToHex('currentColor') warns not supported, resolves as null
- *       'color()', 'oklch()' are not yet supported
+ *       color() functional notation is not yet supported
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -1192,6 +1304,9 @@ export const convertColorToHex = async (value, alpha = false) => {
   // oklab()
   } else if (value.startsWith('oklab')) {
     hex = await parseOklab(value).then(convertXyzToHex);
+  // oklch()
+  } else if (value.startsWith('oklch')) {
+    hex = await parseOklch(value).then(convertXyzToHex);
   } else {
     let r, g, b, a;
     // rgb()
@@ -1212,7 +1327,7 @@ export const convertColorToHex = async (value, alpha = false) => {
         numberToHexString(r),
         numberToHexString(g),
         numberToHexString(b),
-        numberToHexString(a * MAX_NUM_RGB)
+        numberToHexString(a * MAX_RGB)
       ]);
       if (!alpha || aa === 'ff') {
         hex = `#${rr}${gg}${bb}`;
@@ -1226,7 +1341,6 @@ export const convertColorToHex = async (value, alpha = false) => {
 
 /**
  * convert color-mix() to hex
- * NOTE: 'oklch' color space is not yet supported
  *
  * @param {string} value - value
  * @returns {?string} - hex
@@ -1301,7 +1415,7 @@ export const convertColorMixToHex = async value => {
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
-    const factor = MAX_PCT / (a * MAX_NUM_RGB);
+    const factor = MAX_PCT / (a * MAX_RGB);
     const r = (rA * factorA + rB * factorB) * factor;
     const g = (gA * factorA + gB * factorB) * factor;
     const b = (bA * factorA + bB * factorB) * factor;
@@ -1397,6 +1511,17 @@ export const convertColorMixToHex = async value => {
     const a = (aA * factorA + aB * factorB) * aa;
     const b = (bA * factorA + bB * factorB) * aa;
     hex = await convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * multipler})`);
+  // in oklch
+  } else if (colorAHex && colorBHex && colorSpace === 'oklch') {
+    const [lA, cA, hA, aaA] = await hexToOklch(colorAHex);
+    const [lB, cB, hB, aaB] = await hexToOklch(colorBHex);
+    const factorA = aaA * pA;
+    const factorB = aaB * pB;
+    const aa = (factorA + factorB);
+    const l = (lA * factorA + lB * factorB) * aa;
+    const c = (cA * factorA + cB * factorB) * aa;
+    const h = (hA * factorA + hB * factorB) * aa;
+    hex = await convertColorToHex(`oklch(${l} ${c} ${h} / ${aa * multipler})`);
   }
   return hex || null;
 };
@@ -1427,7 +1552,7 @@ export const compositeLayeredColors = async (overlay, base) => {
         numberToHexString(baseR * baseAlpha + overlayR * overlayAlpha),
         numberToHexString(baseG * baseAlpha + overlayG * overlayAlpha),
         numberToHexString(baseB * baseAlpha + overlayB * overlayAlpha),
-        numberToHexString(alpha * MAX_NUM_RGB)
+        numberToHexString(alpha * MAX_RGB)
       ]);
       if (a === 'ff') {
         hex = `#${r}${g}${b}`;
