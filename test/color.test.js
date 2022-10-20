@@ -261,12 +261,28 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('#FF0000');
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('#ff0000ff');
       assert.deepEqual(res, [255, 0, 0, 1], 'result');
     });
 
     it('should get value', async () => {
+      const res = await func('#FF0000FF');
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('#ff00001a');
+      res[3] = parseFloat(res[3].toFixed(1));
+      assert.deepEqual(res, [255, 0, 0, 0.1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#FF00001A');
       res[3] = parseFloat(res[3].toFixed(1));
       assert.deepEqual(res, [255, 0, 0, 0.1], 'result');
     });
@@ -278,7 +294,18 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('#F001');
+      res[3] = parseFloat(res[3].toFixed(1));
+      assert.deepEqual(res, [255, 0, 0, 0.1], 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('#f00');
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#F00');
       assert.deepEqual(res, [255, 0, 0, 1], 'result');
     });
   });

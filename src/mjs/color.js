@@ -310,13 +310,14 @@ export const hexToRgb = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  if (!(/^#[\da-f]{6}$/i.test(value) || /^#[\da-f]{8}$/i.test(value) ||
-        /^#[\da-f]{4}$/i.test(value) || /^#[\da-f]{3}$/i.test(value))) {
+  value = value.toLowerCase().trim();
+  if (!(/^#[\da-f]{6}$/.test(value) || /^#[\da-f]{8}$/.test(value) ||
+        /^#[\da-f]{4}$/.test(value) || /^#[\da-f]{3}$/.test(value))) {
     throw new Error(`Invalid property value: ${value}`);
   }
   const arr = [];
   if (/^#[\da-f]{6}$/.test(value)) {
-    const [, r, g, b] = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+    const [, r, g, b] = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/);
     arr.push(
       parseInt(r, HEX),
       parseInt(g, HEX),
@@ -325,24 +326,24 @@ export const hexToRgb = async value => {
     );
   } else if (/^#[\da-f]{8}$/.test(value)) {
     const [, r, g, b, a] =
-      value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+      value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})$/);
     arr.push(
       parseInt(r, HEX),
       parseInt(g, HEX),
       parseInt(b, HEX),
       parseInt(a, HEX) / MAX_RGB
     );
-  } else if (/^#[\da-f]{4}$/i.test(value)) {
+  } else if (/^#[\da-f]{4}$/.test(value)) {
     const [, r, g, b, a] =
-      value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/i);
+      value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/);
     arr.push(
       parseInt(`${r}${r}`, HEX),
       parseInt(`${g}${g}`, HEX),
       parseInt(`${b}${b}`, HEX),
       parseInt(`${a}${a}`, HEX) / MAX_RGB
     );
-  } else if (/^#[\da-f]{3}$/i.test(value)) {
-    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/i);
+  } else if (/^#[\da-f]{3}$/.test(value)) {
+    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
     arr.push(
       parseInt(`${r}${r}`, HEX),
       parseInt(`${g}${g}`, HEX),
@@ -1285,13 +1286,13 @@ export const convertColorToHex = async (value, alpha = false) => {
           value.match(/^#([\da-f][\da-f])([\da-f][\da-f])([\da-f][\da-f])/);
         hex = `#${r}${g}${b}`;
       }
-    } else if (/^#[\da-f]{4}$/i.test(value)) {
+    } else if (/^#[\da-f]{4}$/.test(value)) {
       const [, r, g, b, a] =
         value.match(/^#([\da-f])([\da-f])([\da-f])([\da-f])$/);
       hex = alpha
         ? `#${r}${r}${g}${g}${b}${b}${a}${a}`
         : `#${r}${r}${g}${g}${b}${b}`;
-    } else if (/^#[\da-f]{3}$/i.test(value)) {
+    } else if (/^#[\da-f]{3}$/.test(value)) {
       const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
       hex = `#${r}${r}${g}${g}${b}${b}`;
     }
