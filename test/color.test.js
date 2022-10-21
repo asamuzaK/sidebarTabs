@@ -1158,7 +1158,7 @@ describe('color', () => {
       await func('hsl(none 100% 50%)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
-          'Invalid property value: none',
+          'Invalid property value: hsl(none 100% 50%)',
           'error message');
       });
     });
