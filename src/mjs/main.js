@@ -735,7 +735,11 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
           await createSidebarTab(tab);
         } else if (index !== openerTabIndex + 1 && !newTabAtEnd &&
                    insertTarget) {
-          await createSidebarTab(tab, insertTarget);
+          if (insertTarget.previousElementSibling === container) {
+            container.appendChild(tab);
+          } else {
+            await createSidebarTab(tab, insertTarget);
+          }
         } else {
           const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
           if (enableTabGroup && newTabAtEnd) {

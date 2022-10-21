@@ -3274,6 +3274,93 @@ describe('main', () => {
 
     it('should create element', async () => {
       const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 1,
+        index: 2,
+        openerTabId: 2,
+        pinned: false,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      const parent = document.createElement('section');
+      const parent2 = document.createElement('section');
+      const child = document.createElement('div');
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      const child2 = document.createElement('div');
+      const span2 = document.createElement('span');
+      const img2 = document.createElement('img');
+      const child3 = document.createElement('div');
+      const span3 = document.createElement('span');
+      const img3 = document.createElement('img');
+      const body = document.querySelector('body');
+      const newTab = document.getElementById(NEW_TAB);
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(CLASS_TAB_COLLAPSED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      span.appendChild(img);
+      child.classList.add(TAB);
+      child.dataset.tabId = '2';
+      child.appendChild(span);
+      span2.appendChild(img2);
+      child2.classList.add(TAB);
+      child2.dataset.tabId = '3';
+      child2.appendChild(span2);
+      span3.appendChild(img3);
+      child3.classList.add(TAB);
+      child3.dataset.tabId = '4';
+      child3.appendChild(span3);
+      parent.appendChild(child);
+      parent.appendChild(child2);
+      parent2.appendChild(child3);
+      body.insertBefore(parent, newTab);
+      body.insertBefore(parent2, newTab);
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(2).resolves({
+        index: 0
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 1
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 2
+      });
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).resolves([tabsTab]);
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        highlighted: true,
+        windowType: 'normal'
+      }).resolves([1]);
+      const res = await func(tabsTab);
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.isTrue(elm.parentNode === parent, 'parent');
+      assert.isTrue(parent.classList.contains(CLASS_TAB_COLLAPSED),
+        'collapsed');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
+      const i = browser.i18n.getMessage.callCount;
       const j = browser.tabs.move.callCount;
       const tabsTab = {
         active: false,
