@@ -4,6 +4,7 @@
  *      §17. Sample code for Color Conversions
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
  * NOTE: 'currentColor' keyword is not supported
+ *       'none' keyword is not yet supported
  *       'color()' functional notation is not yet supported
  */
 
@@ -11,7 +12,6 @@
 import { getType, isString, logWarn } from './common.js';
 
 /* constants */
-const CUBE = 3;
 const DEG = 360;
 const DOUBLE = 2;
 const HALF = 0.5;
@@ -24,11 +24,12 @@ const LAB_KAPPA = 24389 / 27;
 const LAB_L = 116;
 const LINEAR_COEF = 12.92;
 const LINEAR_OFFSET = 0.055;
-const LINEAR_POW = 2.4;
 const MAX_PCT = 100;
 const MAX_RGB = 255;
+const POW_CUBE = 3;
+const POW_LINEAR = 2.4;
+const POW_SQUARE = 2;
 const QUAD = 4;
-const SQUARE = 2;
 /* white points */
 const D50 = [0.3457 / 0.3585, 1.00000, (1.0 - 0.3457 - 0.3585) / 0.3585];
 const D65 = [0.3127 / 0.3290, 1.00000, (1.0 - 0.3127 - 0.3290) / 0.3290];
@@ -245,7 +246,7 @@ export const colorname = {
  * number to hex string
  *
  * @param {number} value - value
- * @returns {string} - hex
+ * @returns {string} - hex string
  */
 export const numberToHexString = async value => {
   if (typeof value !== 'number') {
@@ -311,8 +312,8 @@ export const hexToRgb = async value => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   value = value.toLowerCase().trim();
-  if (!(/^#[\da-f]{6}$/.test(value) || /^#[\da-f]{8}$/.test(value) ||
-        /^#[\da-f]{4}$/.test(value) || /^#[\da-f]{3}$/.test(value))) {
+  if (!(/^#[\da-f]{6}$/.test(value) || /^#[\da-f]{3}$/.test(value) ||
+        /^#[\da-f]{8}$/.test(value) || /^#[\da-f]{4}$/.test(value))) {
     throw new Error(`Invalid property value: ${value}`);
   }
   const arr = [];
@@ -322,6 +323,14 @@ export const hexToRgb = async value => {
       parseInt(r, HEX),
       parseInt(g, HEX),
       parseInt(b, HEX),
+      1
+    );
+  } else if (/^#[\da-f]{3}$/.test(value)) {
+    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
+    arr.push(
+      parseInt(`${r}${r}`, HEX),
+      parseInt(`${g}${g}`, HEX),
+      parseInt(`${b}${b}`, HEX),
       1
     );
   } else if (/^#[\da-f]{8}$/.test(value)) {
@@ -341,14 +350,6 @@ export const hexToRgb = async value => {
       parseInt(`${g}${g}`, HEX),
       parseInt(`${b}${b}`, HEX),
       parseInt(`${a}${a}`, HEX) / MAX_RGB
-    );
-  } else if (/^#[\da-f]{3}$/.test(value)) {
-    const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
-    arr.push(
-      parseInt(`${r}${r}`, HEX),
-      parseInt(`${g}${g}`, HEX),
-      parseInt(`${b}${b}`, HEX),
-      1
     );
   }
   return arr;
@@ -434,17 +435,17 @@ export const hexToLinearRgb = async value => {
   let g = parseFloat(gg) / MAX_RGB;
   let b = parseFloat(bb) / MAX_RGB;
   if (r > COND_POW) {
-    r = Math.pow((r + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), LINEAR_POW);
+    r = Math.pow((r + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
   } else {
     r = (r / LINEAR_COEF);
   }
   if (g > COND_POW) {
-    g = Math.pow((g + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), LINEAR_POW);
+    g = Math.pow((g + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
   } else {
     g = (g / LINEAR_COEF);
   }
   if (b > COND_POW) {
-    b = Math.pow((b + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), LINEAR_POW);
+    b = Math.pow((b + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
   } else {
     b = (b / LINEAR_COEF);
   }
@@ -455,7 +456,7 @@ export const hexToLinearRgb = async value => {
  * hex to xyz
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const hexToXyz = async value => {
   const [r, g, b, a] = await hexToLinearRgb(value);
@@ -474,7 +475,7 @@ export const hexToXyz = async value => {
  * hex to xyz D50
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const hexToXyzD50 = async value => {
   const [r, g, b, a] = await hexToLinearRgb(value);
@@ -501,7 +502,8 @@ export const hexToXyzD50 = async value => {
  * hex to lab
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [l, a, b, aa] l: 0..100 aa: 0..1
+ * @returns {Array.<number>} - [l, a, b, aa]
+ *                             l: 0..100 a|b: around -160..160 aa: 0..1
  */
 export const hexToLab = async value => {
   const [x, y, z, aa] = await hexToXyzD50(value);
@@ -522,7 +524,8 @@ export const hexToLab = async value => {
  * hex to lch
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [l, c, h, a] l: 0..100 h: 0..360 a: 0..1
+ * @returns {Array.<number>} - [l, c, h, a]
+ *                             l: 0..100 c: around 0..230 h: 0..360 a: 0..1
  */
 export const hexToLch = async value => {
   const [l, a, b, aa] = await hexToLab(value);
@@ -532,7 +535,7 @@ export const hexToLch = async value => {
     c = 0;
     h = 0;
   } else {
-    c = Math.sqrt(Math.pow(a, SQUARE) + Math.pow(b, SQUARE));
+    c = Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE));
     h = Math.atan2(b, a) * DEG * HALF / Math.PI;
     if (h < 0) {
       h += DEG;
@@ -546,7 +549,7 @@ export const hexToLch = async value => {
  *
  * @param {string} value - value
  * @param {boolean} asis - leave value as is
- * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1
+ * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1 a|b: around -0.5..0.5
  */
 export const hexToOklab = async (value, asis = false) => {
   const [xx, yy, zz, aa] = await hexToXyz(value);
@@ -581,7 +584,8 @@ export const hexToOklab = async (value, asis = false) => {
  * hex to oklch
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1
+ * @returns {Array.<number>} - [l, a, b, aa]
+ *                             l|aa: 0..1 c: around 0..0.5 h: 0..360
  */
 export const hexToOklch = async value => {
   const [ll, a, b, aa] = await hexToOklab(value, true);
@@ -592,7 +596,7 @@ export const hexToOklch = async value => {
     h = 0;
   } else {
     l = ll;
-    c = Math.sqrt(Math.pow(a, SQUARE) + Math.pow(b, SQUARE));
+    c = Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE));
     h = Math.atan2(b, a) * DEG * HALF / Math.PI;
     if (h < 0) {
       h += DEG;
@@ -806,7 +810,7 @@ export const parseHwb = async value => {
  + parse lab()
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseLab = async value => {
   if (!isString(value)) {
@@ -855,9 +859,9 @@ export const parseLab = async value => {
   const fl = (l + HEX) / LAB_L;
   const fa = (a / LAB_A + fl);
   const fb = (fl - b / LAB_B);
-  const powFl = Math.pow(fl, CUBE);
-  const powFa = Math.pow(fa, CUBE);
-  const powFb = Math.pow(fb, CUBE);
+  const powFl = Math.pow(fl, POW_CUBE);
+  const powFa = Math.pow(fa, POW_CUBE);
+  const powFb = Math.pow(fb, POW_CUBE);
   const xyz = [
     powFa > LAB_EPSILON ? powFa : (fa * LAB_L - HEX) / LAB_KAPPA,
     l > COND_POW ? powFl : l / LAB_KAPPA,
@@ -871,7 +875,7 @@ export const parseLab = async value => {
  + parse lch()
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseLch = async value => {
   if (!isString(value)) {
@@ -922,7 +926,7 @@ export const parseLch = async value => {
  + parse oklab()
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseOklab = async value => {
   if (!isString(value)) {
@@ -981,9 +985,9 @@ export const parseOklab = async value => {
     [r1c0Xyz, r1c1Xyz, r1c2Xyz],
     [r2c0Xyz, r2c1Xyz, r2c2Xyz]
   ] = MATRIX_LMS_TO_XYZ;
-  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, CUBE);
-  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, CUBE);
-  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, CUBE);
+  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, POW_CUBE);
+  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, POW_CUBE);
+  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, POW_CUBE);
   const x65 = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
   const y65 = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
   const z65 = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
@@ -995,7 +999,7 @@ export const parseOklab = async value => {
  + parse oklab()
  *
  * @param {string} value - value
- * @returns {Array.<number>} - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseOklch = async value => {
   if (!isString(value)) {
@@ -1061,9 +1065,9 @@ export const parseOklch = async value => {
   ] = MATRIX_LMS_TO_XYZ;
   const a = c * Math.cos(h * Math.PI / (DEG * HALF));
   const b = c * Math.sin(h * Math.PI / (DEG * HALF));
-  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, CUBE);
-  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, CUBE);
-  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, CUBE);
+  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, POW_CUBE);
+  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, POW_CUBE);
+  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, POW_CUBE);
   const x = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
   const y = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
   const z = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
@@ -1074,7 +1078,7 @@ export const parseOklch = async value => {
  * convert linear rgb to hex
  *
  * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
- * @returns {string} - hex
+ * @returns {string} - hex color
  */
 export const convertLinearRgbToHex = async rgb => {
   if (!Array.isArray(rgb)) {
@@ -1111,17 +1115,17 @@ export const convertLinearRgbToHex = async rgb => {
   }
   const COND_POW = 809 / 258400;
   if (r > COND_POW) {
-    r = Math.pow(r, 1 / LINEAR_POW) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
+    r = Math.pow(r, 1 / POW_LINEAR) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
   } else {
     r *= LINEAR_COEF;
   }
   if (g > COND_POW) {
-    g = Math.pow(g, 1 / LINEAR_POW) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
+    g = Math.pow(g, 1 / POW_LINEAR) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
   } else {
     g *= LINEAR_COEF;
   }
   if (b > COND_POW) {
-    b = Math.pow(b, 1 / LINEAR_POW) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
+    b = Math.pow(b, 1 / POW_LINEAR) * (1 + LINEAR_OFFSET) - LINEAR_OFFSET;
   } else {
     b *= LINEAR_COEF;
   }
@@ -1143,8 +1147,8 @@ export const convertLinearRgbToHex = async rgb => {
 /**
  * convert xyz to hex
  *
- * @param {Array} xyz - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
- * @returns {string} - hex
+ * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {string} - hex color
  */
 export const convertXyzToHex = async xyz => {
   if (!Array.isArray(xyz)) {
@@ -1193,8 +1197,8 @@ export const convertXyzToHex = async xyz => {
 /**
  * convert xyz D50 to hex
  *
- * @param {Array} xyz - [x, y, z, a] x|y|z: 0..1|>1|<0 a: 0..1
- * @returns {string} - hex
+ * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {string} - hex color
  */
 export const convertXyzD50ToHex = async xyz => {
   if (!Array.isArray(xyz)) {
@@ -1257,7 +1261,7 @@ export const convertXyzD50ToHex = async xyz => {
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
- * @returns {?string} - hex
+ * @returns {?string} - hex color
  */
 export const convertColorToHex = async (value, alpha = false) => {
   if (!isString(value)) {
@@ -1278,6 +1282,9 @@ export const convertColorToHex = async (value, alpha = false) => {
   } else if (value.startsWith('#')) {
     if (/^#[\da-f]{6}$/.test(value)) {
       hex = value;
+    } else if (/^#[\da-f]{3}$/.test(value)) {
+      const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
+      hex = `#${r}${r}${g}${g}${b}${b}`;
     } else if (/^#[\da-f]{8}$/.test(value)) {
       if (alpha) {
         hex = value;
@@ -1292,9 +1299,6 @@ export const convertColorToHex = async (value, alpha = false) => {
       hex = alpha
         ? `#${r}${r}${g}${g}${b}${b}${a}${a}`
         : `#${r}${r}${g}${g}${b}${b}`;
-    } else if (/^#[\da-f]{3}$/.test(value)) {
-      const [, r, g, b] = value.match(/^#([\da-f])([\da-f])([\da-f])$/);
-      hex = `#${r}${r}${g}${g}${b}${b}`;
     }
   // lab()
   } else if (value.startsWith('lab')) {
@@ -1344,7 +1348,7 @@ export const convertColorToHex = async (value, alpha = false) => {
  * convert color-mix() to hex
  *
  * @param {string} value - value
- * @returns {?string} - hex
+ * @returns {?string} - hex color
  */
 export const convertColorMixToHex = async value => {
   if (!isString(value)) {
@@ -1532,7 +1536,7 @@ export const convertColorMixToHex = async value => {
  *
  * @param {string} overlay - overlay color
  * @param {string} base - base color
- * @returns {?string} - hex
+ * @returns {?string} - hex color
  */
 export const compositeLayeredColors = async (overlay, base) => {
   const overlayHex = await convertColorToHex(overlay, true);
@@ -1566,11 +1570,11 @@ export const compositeLayeredColors = async (overlay, base) => {
 };
 
 /**
- * get color in hexadecimal color syntax
+ * get color in hex color notation
  *
  * @param {string} value - value
  * @param {object} opt - options
- * @returns {Array|?string} - hex
+ * @returns {Array|?string} - hex color as [prop, hex] pair or string
  */
 export const getColorInHex = async (value, opt = {}) => {
   if (!isString(value)) {

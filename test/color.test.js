@@ -1153,6 +1153,16 @@ describe('color', () => {
       });
     });
 
+    // NOTE: 'none' is not yet supported
+    it('should throw', async () => {
+      await func('hsl(none 100% 50%)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: none',
+          'error message');
+      });
+    });
+
     it('should throw', async () => {
       await func('hsl(1, 2, 3 / 1)').catch(e => {
         assert.instanceOf(e, Error, 'error');
