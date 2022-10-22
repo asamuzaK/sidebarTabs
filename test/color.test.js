@@ -190,6 +190,151 @@ describe('color', () => {
     });
   });
 
+  describe('rgb to linear rgb', () => {
+    const func = mjs.rgbToLinearRgb;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([-1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1.1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1.1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, Number.NaN]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1.1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func([1, 0, 0]);
+      assert.deepEqual(res, [1, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0, 0.5, 0]);
+      res[1] = parseFloat(res[1].toFixed(5))
+      assert.deepEqual(res, [0, 0.21404, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0, 0, 0]);
+      assert.deepEqual(res, [0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([1, 1, 1,]);
+      assert.deepEqual(res, [1, 1, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.0405, 0.0405, 0.0405]);
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.00313, 0.00313, 0.00313], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0.0406, 0.0406, 0.0406]);
+      res[0] = parseFloat(res[0].toFixed(5));
+      res[1] = parseFloat(res[1].toFixed(5));
+      res[2] = parseFloat(res[2].toFixed(5));
+      assert.deepEqual(res, [0.00314, 0.00314, 0.00314], 'result');
+    });
+  });
+
   describe('hex to rgb', () => {
     const func = mjs.hexToRgb;
 
@@ -2249,7 +2394,7 @@ describe('color', () => {
     });
   });
 
-  describe('convert linear rgb to hex', () => {
+  describe('convert linear rgb to hex color', () => {
     const func = mjs.convertLinearRgbToHex;
 
     it('should throw', async () => {
@@ -2429,7 +2574,7 @@ describe('color', () => {
     });
   });
 
-  describe('convert xyz to hex', () => {
+  describe('convert xyz to hex color', () => {
     const func = mjs.convertXyzToHex;
 
     it('should throw', async () => {
@@ -2576,7 +2721,7 @@ describe('color', () => {
     });
   });
 
-  describe('convert xyz D50 to hex', () => {
+  describe('convert xyz D50 to hex color', () => {
     const func = mjs.convertXyzD50ToHex;
 
     it('should throw', async () => {
@@ -2713,7 +2858,7 @@ describe('color', () => {
     });
   });
 
-  describe('convert color to hex', () => {
+  describe('convert color to hex color', () => {
     const func = mjs.convertColorToHex;
 
     it('should throw', async () => {
@@ -2910,7 +3055,200 @@ describe('color', () => {
     });
   });
 
-  describe('convert color-mix() to hex', () => {
+  describe('convert color() to hex color', () => {
+    const func = mjs.convertColorFuncToHex;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('color(in foo, 1 1 1)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(in foo, 1 1 1)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('color(srgb foo bar baz)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(srgb foo bar baz)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('color(srgb 1 bar baz)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(srgb 1 bar baz)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('color(srgb 1 1 baz)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(srgb 1 1 baz)',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0 0.6 0)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0% 60% 0%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0 0.6 0 / 0.5)');
+      assert.strictEqual(res, '#00990080', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0 0.6 0 / 50%)');
+      assert.strictEqual(res, '#00990080', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 0 0.21586 0)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 1 1 1)');
+      const val = await func('color(srgb 1 1 1)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 0 1 0)');
+      const val = await mjs.convertColorToHex('lab(87.8185% -79.271 80.9946)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 43.5% 1.7% 5.5%)');
+      const val = await func('color(srgb 0.691 0.139 0.259)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz 0.07719 0.15438 0.02573)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz-d65 0.07719 0.15438 0.02573)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz 7.719% 15.438% 2.573%)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz 1 1 1)');
+      const val = await mjs.convertColorToHex('lab(100.115% 9.06448 5.80177)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz 0 1 0)');
+      const val = await mjs.convertColorToHex('lab(99.6289% -354.58 146.707)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz-d50 0.08312 0.154746 0.020961)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz-d50 8.312% 15.4746% 2.0961%)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz-d50 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(xyz-d50 1 1 1)');
+      const val = await mjs.convertColorToHex('lab(100% 6.1097 -13.2268)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.26374 0.59085 0.16434)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 26.374% 59.085% 16.434%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.21604 0.49418 0.13151)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(86.61399% -106.539 102.871)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 1 1 0.330897)');
+      const val = await mjs.convertColorToHex('yellow');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.465377 0.532768 0.317713)');
+      const val = await mjs.convertColorToHex('lch(54% 35 118)');
+      assert.strictEqual(res, val, 'result');
+    });
+  });
+
+  describe('convert color-mix() to hex color', () => {
     const func = mjs.convertColorMixToHex;
 
     it('should throw', async () => {
@@ -3021,479 +3359,479 @@ describe('color', () => {
       assert.isNull(res, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, blue, red)');
       const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, blue, green)');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, #0000ff, #008000)');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, rgb(0 0 255), rgb(0 128 0))');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb, hsl(240 100% 50%), hsl(120 100% 25%))');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb, hwb(240 0% 0%), hwb(120 0% 50%))');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, rgba(255, 0, 0, 0.2), red)');
       const value = await mjs.convertColorToHex('rgba(255, 0, 0, 0.6)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, blue 80%, red 80%)');
       const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, blue 10%, red)');
       const value = await mjs.convertColorToHex('rgb(230, 0, 26)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, blue 100%, red)');
       const value = await mjs.convertColorToHex('rgb(0, 0, 255)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb, rgba(0, 0, 255, 0.5) 100%, red)');
       const value = await mjs.convertColorToHex('rgb(0, 0, 255, 0.5)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb, red, rgba(0, 0, 255, 0.5) 100%)');
       const value = await mjs.convertColorToHex('rgb(0, 0, 255, 0.5)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, rgb(100% 0% 0% / 0.7) 25%, rgb(0% 100% 0% / 0.2))');
       const value =
         await mjs.convertColorToHex('rgb(53.846% 46.154% 0% / 0.325)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb, rgb(100% 0% 0% / 0.7) 20%, rgb(0% 100% 0% / 0.2) 60%)');
       const value =
         await mjs.convertColorToHex('rgb(53.846% 46.154% 0% / 0.26)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb, blue, lab(46.2775% -47.5621 48.5837))');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb, lab(46.2775% -47.5621 48.5837), blue)');
       const value = await mjs.convertColorToHex('rgb(0, 64, 128)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hsl, hsl(120 10% 20%), hsl(30 30% 40%))');
       const value = await mjs.convertColorToHex('rgb(84, 92, 61)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40%))');
       const value = await mjs.convertColorToHex('rgb(112, 106, 67)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hsl, hsl(120 10% 20%), hsl(30 30% 40%) 25%)');
       const value = await mjs.convertColorToHex('rgb(61, 73, 54)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40%) 75%)');
       const value = await mjs.convertColorToHex('rgb(112, 106, 67)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20%) 30%, hsl(30 30% 40%) 90%)');
       const value = await mjs.convertColorToHex('rgb(112, 106, 67)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20%) 12.5%, hsl(30 30% 40%) 37.5%)');
       const value =
         await mjs.convertColorToHex('rgba(112, 106, 67, 0.5)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hsl, hsl(120 10% 20%) 0%, hsl(30 30% 40%))');
       const value = await mjs.convertColorToHex('rgb(133, 102, 71)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4), hsl(30 30% 40% / .8))');
       const value = await mjs.convertColorToHex('rgba(95, 105, 65, 0.6)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20%) 25%, hsl(30 30% 40% / .8))');
       const value =
         await mjs.convertColorToHex('rgba(108, 103, 66, 0.85)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4), hsl(30 30% 40% / .8) 25%)');
       const value = await mjs.convertColorToHex('rgba(68, 84, 59, 0.5)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 25%, hsl(30 30% 40% / .8) 75%)');
       const value =
         await mjs.convertColorToHex('rgba(121, 114, 69, 0.7)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 30%, hsl(30 30% 40% / .8) 90%)');
       const value =
         await mjs.convertColorToHex('rgba(121, 114, 69, 0.7)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 12.5%, hsl(30 30% 40% / .8) 37.5%)');
       const value =
         await mjs.convertColorToHex('rgba(121, 114, 69, 0.35)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hsl, hsl(120 10% 20% / .4) 0%, hsl(30 30% 40% / .8))');
       const value =
         await mjs.convertColorToHex('rgba(133, 102, 71, 0.8)', true);
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hwb, hwb(0 100% 0%), hwb(0 0% 100%))');
       assert.strictEqual(res, '#808080', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hwb, hwb(120 10% 20%), hwb(30 30% 40%))');
       assert.strictEqual(res, '#93b334', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40%))');
       assert.strictEqual(res, '#a69940', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hwb, hwb(120 10% 20%), hwb(30 30% 40%) 25%)');
       assert.strictEqual(res, '#60bf27', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40%) 75%)');
       assert.strictEqual(res, '#a69940', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20%) 30%, hwb(30 30% 40%) 90%)');
       assert.strictEqual(res, '#a69940', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20%) 12.5%, hwb(30 30% 40%) 37.5%)');
       assert.strictEqual(res, '#a6994080', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in hwb, hwb(120 10% 20%) 0%, hwb(30 30% 40%))');
       assert.strictEqual(res, '#99734d', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4), hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#8faa3c99', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20%) 25%, hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#a89b3ed9', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4), hwb(30 30% 40% / .8) 25%)');
       assert.strictEqual(res, '#62b82e80', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 25%, hwb(30 30% 40% / .8) 75%)');
       assert.strictEqual(res, '#a09546b3', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 30%, hwb(30 30% 40% / .8) 90%)');
       assert.strictEqual(res, '#a09546b3', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 12.5%, hwb(30 30% 40% / .8) 37.5%)');
       assert.strictEqual(res, '#a0954659', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in hwb, hwb(120 10% 20% / .4) 0%, hwb(30 30% 40% / .8))');
       assert.strictEqual(res, '#99734dcc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, blue, red)');
       assert.strictEqual(res, '#bc00bc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, blue, green)');
       assert.strictEqual(res, '#005cbc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, #0000ff, #008000)');
       assert.strictEqual(res, '#005cbc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb-linear, rgb(0 0 255), rgb(0 128 0))');
       assert.strictEqual(res, '#005cbc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, hsl(240 100% 50%), hsl(120 100% 25%))');
       assert.strictEqual(res, '#005cbc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, hwb(240 0% 0%), hwb(120 0% 50%))');
       assert.strictEqual(res, '#005cbc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, rgba(255, 0, 0, 0.2), red)');
       assert.strictEqual(res, '#a2000099', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, blue 80%, red 80%)');
       assert.strictEqual(res, '#bc00bc', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, blue 10%, red)');
       assert.strictEqual(res, '#f30059', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, blue 100%, red)');
       assert.strictEqual(res, '#0000ff', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb-linear, rgba(0, 0, 255, 0.5) 100%, red)');
       assert.strictEqual(res, '#00008980', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res =
         await func('color-mix(in srgb-linear, red, rgba(0, 0, 255, 0.5) 100%)');
       assert.strictEqual(res, '#00008980', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, rgb(100% 0% 0% / 0.7) 25%, rgb(0% 100% 0% / 0.2))');
       assert.strictEqual(res, '#443e0053', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in srgb-linear, rgb(100% 0% 0% / 0.7) 20%, rgb(0% 100% 0% / 0.2) 60%)');
       assert.strictEqual(res, '#443e0042', 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz, red, green)');
       const value = await mjs.convertColorToHex('rgb(188, 92, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz, red, green 90%)');
       const value = await mjs.convertColorToHex('rgb(89, 122, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz, red 90%, green)');
       const value = await mjs.convertColorToHex('rgb(243, 40, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz-d65, red, green)');
       const value = await mjs.convertColorToHex('rgb(188, 92, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz-d65, red, green 90%)');
       const value = await mjs.convertColorToHex('rgb(89, 122, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz-d65, red 90%, green)');
       const value = await mjs.convertColorToHex('rgb(243, 40, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz-d50, red, green)');
       const value = await mjs.convertColorToHex('rgb(188, 92, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz-d50, red, green 90%)');
       const value = await mjs.convertColorToHex('rgb(89, 122, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in xyz-d50, red 90%, green)');
       const value = await mjs.convertColorToHex('rgb(243, 40, 0)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in lab, red, green)');
       const value = await mjs.convertColorToHex('lab(50.2841 16.6263 59.2386)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in lab, red, green 90%)');
       const value =
         await mjs.convertColorToHex('lab(47.0790 -34.7167 50.7168)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in lab, red 90%, green)');
       const value = await mjs.convertColorToHex('lab(53.4893 67.9692 67.7605)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in lch, red, green)');
       const value = await mjs.convertColorToHex('lch(50.28% 87.41 87.62)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in lch, red, green 90%)');
       const value = await mjs.convertColorToHex('lch(47.08% 71.87 125.03)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in lch, red 90%, green)');
       const value = await mjs.convertColorToHex('lch(53.49 102.95 50.21)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in oklab, red, green)');
       const value = await mjs.convertColorToHex('oklab(0.5720 0.0287 0.1151)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in oklab, red, green 90%)');
       const value = await mjs.convertColorToHex('oklab(0.5293 -0.1131 0.1073)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in oklab, red 90%, green)');
       const value = await mjs.convertColorToHex('oklab(0.6147 0.1704 0.1230)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in oklch, red, green)');
       const value = await mjs.convertColorToHex('oklch(0.574 0.217 85.865)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in oklch, red, green 90%)');
       const value = await mjs.convertColorToHex('oklch(0.531 0.185 131.169)');
       assert.strictEqual(res, value, 'result');
     });
 
-    it('should get result', async () => {
+    it('should get value', async () => {
       const res = await func('color-mix(in oklch, red 90%, green)');
       const value = await mjs.convertColorToHex('oklch(0.617 0.25 40.56)');
       assert.strictEqual(res, value, 'result');

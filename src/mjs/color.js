@@ -74,10 +74,18 @@ const MATRIX_LMS_TO_OKLAB = [
   [1.9779984951, -2.4285922050, 0.4505937099],
   [0.0259040371, 0.7827717662, -0.8086757660]
 ];
+const MATRIX_P3_TO_XYZ = [
+  [608311 / 1250200, 189793 / 714400, 198249 / 1000160],
+  [35783 / 156275, 247089 / 357200, 198249 / 2500400],
+  [0, 32229 / 714400, 5220557 / 5000800]
+];
 /* regexp */
 const REG_ANGLE = 'deg|g?rad|turn';
-const REG_COLOR_SPACE =
-  '((?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?)';
+const REG_COLOR_SPACE_COLOR_MIX =
+  '(?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?';
+const REG_COLOR_SPACE_RGB =
+  '(?:a98|prophoto)-rgb|display-p3|rec2020|srgb(?:-linear)?';
+const REG_COLOR_SPACE_XYZ = 'xyz(?:-d(?:50|65))?';
 const REG_NUM =
   '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)(?:[Ee]-?(?:(?:0|[1-9]\\d*)))?';
 const REG_PCT = `${REG_NUM}%`;
@@ -87,9 +95,10 @@ const REG_RGB = `(?:${REG_NUM}(?:\\s+${REG_NUM}){2}|${REG_PCT}(?:\\s+${REG_PCT})
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LAB = `(?:${REG_NUM}|${REG_PCT})(?:\\s+(?:${REG_NUM}|${REG_PCT})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT})\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_COLOR_TYPE = `(?:[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\))`;
-const REG_COLOR_MIX_PART = `${REG_COLOR_TYPE}(?:\\s+${REG_PCT})?`;
-const REG_COLOR_MIX = `in\\s+${REG_COLOR_SPACE}\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
+const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\)`;
+const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
+const REG_COLOR_MIX = `in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
+const REG_COLOR_FUNC = `(?:${REG_COLOR_SPACE_RGB}|${REG_COLOR_SPACE_XYZ})(?:\\s+(?:${REG_NUM}|${REG_PCT})){3}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 
 export const colorname = {
   aliceblue: '#f0f8ff',
@@ -302,6 +311,57 @@ export const angleToDeg = async angle => {
 };
 
 /**
+ * rgb to linear rgb
+ *
+ * @param {Array} rgb - [r, g, b] r|g|b: 0..1
+ * @returns {Array} - [r, g, b] r|g|b: 0..1
+ */
+export const rgbToLinearRgb = async rgb => {
+  if (!Array.isArray(rgb)) {
+    throw new TypeError(`Expected Array but got ${getType(rgb)}.`);
+  }
+  let [r, g, b] = rgb;
+  if (typeof r !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(r)}.`);
+  } else if (Number.isNaN(r)) {
+    throw new Error(`${r} is not a number.`);
+  } else if (r < 0 || r > 1) {
+    throw new RangeError(`${r} is not between 0 and 1.`);
+  }
+  if (typeof g !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(g)}.`);
+  } else if (Number.isNaN(g)) {
+    throw new Error(`${g} is not a number.`);
+  } else if (g < 0 || g > 1) {
+    throw new RangeError(`${g} is not between 0 and 1.`);
+  }
+  if (typeof b !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(b)}.`);
+  } else if (Number.isNaN(b)) {
+    throw new Error(`${b} is not a number.`);
+  } else if (b < 0 || b > 1) {
+    throw new RangeError(`${b} is not between 0 and 1.`);
+  }
+  const COND_POW = 0.04045;
+  if (r > COND_POW) {
+    r = Math.pow((r + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
+  } else {
+    r = (r / LINEAR_COEF);
+  }
+  if (g > COND_POW) {
+    g = Math.pow((g + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
+  } else {
+    g = (g / LINEAR_COEF);
+  }
+  if (b > COND_POW) {
+    b = Math.pow((b + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
+  } else {
+    b = (b / LINEAR_COEF);
+  }
+  return [r, g, b];
+};
+
+/**
  * hex to rgb
  *
  * @param {string} value - value
@@ -431,24 +491,11 @@ export const hexToHwb = async value => {
 export const hexToLinearRgb = async value => {
   const COND_POW = 0.04045;
   const [rr, gg, bb, a] = await hexToRgb(value);
-  let r = parseFloat(rr) / MAX_RGB;
-  let g = parseFloat(gg) / MAX_RGB;
-  let b = parseFloat(bb) / MAX_RGB;
-  if (r > COND_POW) {
-    r = Math.pow((r + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
-  } else {
-    r = (r / LINEAR_COEF);
-  }
-  if (g > COND_POW) {
-    g = Math.pow((g + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
-  } else {
-    g = (g / LINEAR_COEF);
-  }
-  if (b > COND_POW) {
-    b = Math.pow((b + LINEAR_OFFSET) / (1 + LINEAR_OFFSET), POW_LINEAR);
-  } else {
-    b = (b / LINEAR_COEF);
-  }
+  const [r, g, b] = await rgbToLinearRgb([
+    parseFloat(rr) / MAX_RGB,
+    parseFloat(gg) / MAX_RGB,
+    parseFloat(bb) / MAX_RGB
+  ]);
   return [r, g, b, a];
 };
 
@@ -1075,7 +1122,7 @@ export const parseOklch = async value => {
 };
 
 /**
- * convert linear rgb to hex
+ * convert linear rgb to hex color
  *
  * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
  * @returns {string} - hex color
@@ -1145,7 +1192,7 @@ export const convertLinearRgbToHex = async rgb => {
 };
 
 /**
- * convert xyz to hex
+ * convert xyz to hex color
  *
  * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {string} - hex color
@@ -1195,7 +1242,7 @@ export const convertXyzToHex = async xyz => {
 };
 
 /**
- * convert xyz D50 to hex
+ * convert xyz D50 to hex color
  *
  * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {string} - hex color
@@ -1253,7 +1300,7 @@ export const convertXyzD50ToHex = async xyz => {
 };
 
 /**
- * convert color to hex
+ * convert color to hex color
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
  *       convertColorToHex('currentColor') warns not supported, resolves as null
@@ -1345,7 +1392,74 @@ export const convertColorToHex = async (value, alpha = false) => {
 };
 
 /**
- * convert color-mix() to hex
+ * convert color() to hex color
+ *
+ * @param {string} value - value
+ * @returns {?string} - hex color
+ */
+export const convertColorFuncToHex = async value => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const reg = new RegExp(`color\\(\\s*(${REG_COLOR_FUNC})\\s*\\)`);
+  if (!reg.test(value)) {
+    throw new Error(`Invalid property value: ${value}`);
+  }
+  const [, val] = value.match(reg);
+  const [cs, v1, v2, v3, aa] = val.replace('/', ' ').split(/\s+/);
+  console.log([[cs, v1, v2, v3, aa]])
+  let a;
+  if (isString(aa)) {
+    a = aa;
+    if (a.endsWith('%')) {
+      a = parseFloat(a) / MAX_PCT;
+    } else {
+      a = parseFloat(a);
+    }
+  } else {
+    a = 1;
+  }
+  let hex;
+  if (cs === 'srgb') {
+    const r = v1.endsWith('%') ? v1 : `${parseFloat(v1) * MAX_PCT}%`;
+    const g = v2.endsWith('%') ? v2 : `${parseFloat(v2) * MAX_PCT}%`;
+    const b = v3.endsWith('%') ? v3 : `${parseFloat(v3) * MAX_PCT}%`;
+    const rgb = `rgb(${r} ${g} ${b} / ${a})`;
+    hex = await convertColorToHex(rgb, true);
+  } else if (cs === 'srgb-linear') {
+    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    hex = await convertLinearRgbToHex([r, g, b, a]);
+  } else if (/^xyz(?:-d(?:50|65))?$/.test(cs)) {
+    const x = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const y = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const z = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    if (cs === 'xyz-d50') {
+      hex = await convertXyzD50ToHex([x, y, z, a]);
+    } else {
+      hex = await convertXyzToHex([x, y, z, a]);
+    }
+  } else if (cs === 'display-p3') {
+    const [
+      [r0c0, r0c1, r0c2],
+      [r1c0, r1c1, r1c2],
+      [r2c0, r2c1, r2c2]
+    ] = MATRIX_P3_TO_XYZ;
+    const rr = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const gg = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const bb = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    const [r, g, b] = await rgbToLinearRgb([rr, gg, bb]);
+    const x = r0c0 * r + r0c1 * g + r0c2 * b;
+    const y = r1c0 * r + r1c1 * g + r1c2 * b;
+    const z = r2c0 * r + r2c1 * g + r2c2 * b;
+    hex = await convertXyzToHex([x, y, z, a]);
+  }
+  return hex;
+};
+
+/**
+ * convert color-mix() to hex color
  *
  * @param {string} value - value
  * @returns {?string} - hex color
