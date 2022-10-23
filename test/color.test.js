@@ -22,6 +22,110 @@ describe('color', () => {
     });
   });
 
+  describe('transform matrix', () => {
+    const func = mjs.transformMatrix;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 3 but got 0.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func(['foo', [], []]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got String.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[], [], []]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 3 but got 0.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[1, 0, 'foo'], [], []]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got String.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[1, 0, NaN], [], []]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[1, 0, 0], [0, 1, 0], [0, 0, 1]], []).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 3 but got 0.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 0, 'foo']).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got String.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 0, NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 0, 0.5]);
+      assert.deepEqual(res, [1, 0, 0.5], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([[0, 0, 1], [0, 1, 0], [1, 0, 0]], [1, 0, 0.5]);
+      assert.deepEqual(res, [0.5, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 0.5, 0]);
+      assert.deepEqual(res, [1, 0.5, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([[0, 0, 1], [0, 1, 0], [1, 0, 0]], [0, 0.5, 1]);
+      assert.deepEqual(res, [1, 0.5, 0], 'result');
+    });
+  });
+
   describe('number to hex string', () => {
     const func = mjs.numberToHexString;
 
@@ -3204,7 +3308,7 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 0.26374 0.59085 0.16434)');
+      const res = await func('color(display-p3 0.26374 0.59085 0.16434 / 1)');
       assert.strictEqual(res, '#009900', 'result');
     });
 
@@ -3244,6 +3348,102 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func('color(display-p3 0.465377 0.532768 0.317713)');
       const val = await mjs.convertColorToHex('lch(54% 35 118)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0.299218 0.533327 0.120785 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 29.9218% 53.3327% 12.0785%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0.235202 0.431704 0.085432)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0 1 0)');
+      const val = await
+        mjs.convertColorToHex('lab(85.7729% -160.7259 109.2319)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0.33582 0.59441 0.13934 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 33.582% 59.441% 13.934%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0.281363 0.498012 0.116746)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(83.2141% -129.1072 87.1718)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0.2861 0.49131 0.16133 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 28.610% 49.131% 16.133%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0.230479 0.395789 0.129968)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(87.5745% -186.6921 150.9905)');
       assert.strictEqual(res, val, 'result');
     });
   });
@@ -4041,15 +4241,20 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
-      const res = await func('black');
-      assert.strictEqual(res, '#000000', 'result');
+      const res = await func('green');
+      assert.strictEqual(res, '#008000', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('rgba(0 0 0 / 0)', {
+      const res = await func(' GREEN ');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(0% 50% 0% / 0.5)', {
         alpha: true
       });
-      assert.strictEqual(res, '#00000000', 'result');
+      assert.strictEqual(res, '#00800080', 'result');
     });
 
     it('should get value', async () => {
@@ -4065,6 +4270,11 @@ describe('color', () => {
       });
       const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
       assert.deepEqual(res, ['foo', value], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0 0.5 0)');
+      assert.strictEqual(res, '#008000', 'result');
     });
   });
 });

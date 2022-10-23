@@ -5,13 +5,13 @@
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
  * NOTE: 'currentColor' keyword is not supported
  *       'none' keyword is not yet supported
- *       'color()' functional notation is not yet supported
  */
 
 /* shared */
 import { getType, isString, logWarn } from './common.js';
 
 /* constants */
+const DEC = 10;
 const DEG = 360;
 const DOUBLE = 2;
 const HALF = 0.5;
@@ -43,6 +43,7 @@ const MATRIX_D65_TO_D50 = [
   [0.029627815688159344, 0.990434484573249, -0.01707382502938514],
   [-0.009243058152591178, 0.015055144896577895, 0.7518742899580008]
 ];
+
 /* color spaces */
 const MATRIX_RGB_TO_XYZ = [
   [506752 / 1228815, 87881 / 245763, 12673 / 70218],
@@ -79,6 +80,22 @@ const MATRIX_P3_TO_XYZ = [
   [35783 / 156275, 247089 / 357200, 198249 / 2500400],
   [0, 32229 / 714400, 5220557 / 5000800]
 ];
+const MATRIX_REC2020_TO_XYZ = [
+  [63426534 / 99577255, 20160776 / 139408157, 47086771 / 278816314],
+  [26158966 / 99577255, 472592308 / 697040785, 8267143 / 139408157 ],
+  [0, 19567812 / 697040785, 295819943 / 278816314]
+];
+const MATRIX_A98_TO_XYZ = [
+  [573536 / 994567, 263643 / 1420810, 187206 / 994567],
+  [591459 / 1989134, 6239551 / 9945670, 374412 / 4972835],
+  [53769 / 1989134, 351524 / 4972835, 4929758 / 4972835]
+];
+const MATRIX_PROPHOTO_TO_XYZ_D50 = [
+  [0.7977604896723027, 0.13518583717574031, 0.0313493495815248],
+  [0.2880711282292934, 0.7118432178101014, 0.00008565396060525902],
+  [0, 0, 0.8251046025104601]
+];
+
 /* regexp */
 const REG_ANGLE = 'deg|g?rad|turn';
 const REG_COLOR_SPACE_COLOR_MIX =
@@ -249,6 +266,59 @@ export const colorname = {
   whitesmoke: '#f5f5f5',
   yellow: '#ffff00',
   yellowgreen: '#9acd32'
+};
+
+/**
+ * transform matrix
+ *
+ * @param {Array.<Array.<number>>} matrix - 3 * 3 matrix
+ * @param {Array.<number>} vector - vector
+ */
+export const transformMatrix = async (matrix, vector) => {
+  if (!Array.isArray(matrix)) {
+    throw new TypeError(`Expected Array but got ${getType(matrix)}.`);
+  } else if (matrix.length !== 3) {
+    throw new Error(`Expected array length of 3 but got ${matrix.length}.`);
+  } else {
+    for (const i of matrix) {
+      if (!Array.isArray(i)) {
+        throw new TypeError(`Expected Array but got ${getType(i)}.`);
+      } else if (i.length !== 3) {
+        throw new Error(`Expected array length of 3 but got ${i.length}.`);
+      } else {
+        for (const j of i) {
+          if (typeof j !== 'number') {
+            throw new TypeError(`Expected Number but got ${getType(j)}.`);
+          } else if (Number.isNaN(j)) {
+            throw new TypeError(`${j} is not a number.`);
+          }
+        }
+      }
+    }
+  }
+  if (!Array.isArray(vector)) {
+    throw new TypeError(`Expected Array but got ${getType(vector)}.`);
+  } else if (vector.length !== 3) {
+    throw new Error(`Expected array length of 3 but got ${vector.length}.`);
+  } else {
+    for (const i of vector) {
+      if (typeof i !== 'number') {
+        throw new TypeError(`Expected Number but got ${getType(i)}.`);
+      } else if (Number.isNaN(i)) {
+        throw new TypeError(`${i} is not a number.`);
+      }
+    }
+  }
+  const [
+    [r0c0, r0c1, r0c2],
+    [r1c0, r1c1, r1c2],
+    [r2c0, r2c1, r2c2]
+  ] = matrix;
+  const [v1, v2, v3] = vector;
+  const p1 = r0c0 * v1 + r0c1 * v2 + r0c2 * v3;
+  const p2 = r1c0 * v1 + r1c1 * v2 + r1c2 * v3;
+  const p3 = r2c0 * v1 + r2c1 * v2 + r2c2 * v3;
+  return [p1, p2, p3];
 };
 
 /**
@@ -507,14 +577,7 @@ export const hexToLinearRgb = async value => {
  */
 export const hexToXyz = async value => {
   const [r, g, b, a] = await hexToLinearRgb(value);
-  const [
-    [r0c0, r0c1, r0c2],
-    [r1c0, r1c1, r1c2],
-    [r2c0, r2c1, r2c2]
-  ] = MATRIX_RGB_TO_XYZ;
-  const x = r0c0 * r + r0c1 * g + r0c2 * b;
-  const y = r1c0 * r + r1c1 * g + r1c2 * b;
-  const z = r2c0 * r + r2c1 * g + r2c2 * b;
+  const [x, y, z] = await transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
   return [x, y, z, a];
 };
 
@@ -526,22 +589,8 @@ export const hexToXyz = async value => {
  */
 export const hexToXyzD50 = async value => {
   const [r, g, b, a] = await hexToLinearRgb(value);
-  const [
-    [r0c0Xyz, r0c1Xyz, r0c2Xyz],
-    [r1c0Xyz, r1c1Xyz, r1c2Xyz],
-    [r2c0Xyz, r2c1Xyz, r2c2Xyz]
-  ] = MATRIX_RGB_TO_XYZ;
-  const [
-    [r0c0D50, r0c1D50, r0c2D50],
-    [r1c0D50, r1c1D50, r1c2D50],
-    [r2c0D50, r2c1D50, r2c2D50]
-  ] = MATRIX_D65_TO_D50;
-  const x65 = r0c0Xyz * r + r0c1Xyz * g + r0c2Xyz * b;
-  const y65 = r1c0Xyz * r + r1c1Xyz * g + r1c2Xyz * b;
-  const z65 = r2c0Xyz * r + r2c1Xyz * g + r2c2Xyz * b;
-  const x = r0c0D50 * x65 + r0c1D50 * y65 + r0c2D50 * z65;
-  const y = r1c0D50 * x65 + r1c1D50 * y65 + r1c2D50 * z65;
-  const z = r2c0D50 * x65 + r2c1D50 * y65 + r2c2D50 * z65;
+  const xyz = await transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
+  const [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, xyz);
   return [x, y, z, a];
 };
 
@@ -613,17 +662,11 @@ export const hexToOklab = async (value, asis = false) => {
     [r1c0Lms, r1c1Lms, r1c2Lms],
     [r2c0Lms, r2c1Lms, r2c2Lms]
   ] = MATRIX_XYZ_TO_LMS;
-  const [
-    [r0c0Okl, r0c1Okl, r0c2Okl],
-    [r1c0Okl, r1c1Okl, r1c2Okl],
-    [r2c0Okl, r2c1Okl, r2c2Okl]
-  ] = MATRIX_LMS_TO_OKLAB;
   const xLms = Math.cbrt(r0c0Lms * x + r0c1Lms * y + r0c2Lms * z);
   const yLms = Math.cbrt(r1c0Lms * x + r1c1Lms * y + r1c2Lms * z);
   const zLms = Math.cbrt(r2c0Lms * x + r2c1Lms * y + r2c2Lms * z);
-  const l = r0c0Okl * xLms + r0c1Okl * yLms + r0c2Okl * zLms;
-  const a = r1c0Okl * xLms + r1c1Okl * yLms + r1c2Okl * zLms;
-  const b = r2c0Okl * xLms + r2c1Okl * yLms + r2c2Okl * zLms;
+  const [l, a, b] =
+    await transformMatrix(MATRIX_LMS_TO_OKLAB, [xLms, yLms, zLms]);
   return [l, a, b, aa];
 };
 
@@ -1027,18 +1070,11 @@ export const parseOklab = async value => {
     [r1c0Lms, r1c1Lms, r1c2Lms],
     [r2c0Lms, r2c1Lms, r2c2Lms]
   ] = MATRIX_OKLAB_TO_LMS;
-  const [
-    [r0c0Xyz, r0c1Xyz, r0c2Xyz],
-    [r1c0Xyz, r1c1Xyz, r1c2Xyz],
-    [r2c0Xyz, r2c1Xyz, r2c2Xyz]
-  ] = MATRIX_LMS_TO_XYZ;
   const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, POW_CUBE);
   const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, POW_CUBE);
   const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, POW_CUBE);
-  const x65 = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
-  const y65 = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
-  const z65 = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
-  const [x, y, z] = [x65, y65, z65].map((val, i) => val / D65[i]);
+  const xyz = await transformMatrix(MATRIX_LMS_TO_XYZ, [xLms, yLms, zLms]);
+  const [x, y, z] = xyz.map((val, i) => val / D65[i]);
   return [x, y, z, aa];
 };
 
@@ -1105,19 +1141,13 @@ export const parseOklch = async value => {
     [r1c0Lms, r1c1Lms, r1c2Lms],
     [r2c0Lms, r2c1Lms, r2c2Lms]
   ] = MATRIX_OKLAB_TO_LMS;
-  const [
-    [r0c0Xyz, r0c1Xyz, r0c2Xyz],
-    [r1c0Xyz, r1c1Xyz, r1c2Xyz],
-    [r2c0Xyz, r2c1Xyz, r2c2Xyz]
-  ] = MATRIX_LMS_TO_XYZ;
   const a = c * Math.cos(h * Math.PI / (DEG * HALF));
   const b = c * Math.sin(h * Math.PI / (DEG * HALF));
   const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, POW_CUBE);
   const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, POW_CUBE);
   const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, POW_CUBE);
-  const x = r0c0Xyz * xLms + r0c1Xyz * yLms + r0c2Xyz * zLms;
-  const y = r1c0Xyz * xLms + r1c1Xyz * yLms + r1c2Xyz * zLms;
-  const z = r2c0Xyz * xLms + r2c1Xyz * yLms + r2c2Xyz * zLms;
+  const [x, y, z] =
+    await transformMatrix(MATRIX_LMS_TO_XYZ, [xLms, yLms, zLms]);
   return [x, y, z, aa];
 };
 
@@ -1224,14 +1254,7 @@ export const convertXyzToHex = async xyz => {
   } else if (a < 0 || a > 1) {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
-  const [
-    [r0c0, r0c1, r0c2],
-    [r1c0, r1c1, r1c2],
-    [r2c0, r2c1, r2c2]
-  ] = MATRIX_XYZ_TO_RGB;
-  const r = r0c0 * x + r0c1 * y + r0c2 * z;
-  const g = r1c0 * x + r1c1 * y + r1c2 * z;
-  const b = r2c0 * x + r2c1 * y + r2c2 * z;
+  const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
   const hex = await convertLinearRgbToHex([
     Math.min(Math.max(r, 0), 1),
     Math.min(Math.max(g, 0), 1),
@@ -1274,22 +1297,8 @@ export const convertXyzD50ToHex = async xyz => {
   } else if (a < 0 || a > 1) {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
-  const [
-    [r0c0D65, r0c1D65, r0c2D65],
-    [r1c0D65, r1c1D65, r1c2D65],
-    [r2c0D65, r2c1D65, r2c2D65]
-  ] = MATRIX_D50_TO_D65;
-  const [
-    [r0c0Rgb, r0c1Rgb, r0c2Rgb],
-    [r1c0Rgb, r1c1Rgb, r1c2Rgb],
-    [r2c0Rgb, r2c1Rgb, r2c2Rgb]
-  ] = MATRIX_XYZ_TO_RGB;
-  const x65 = r0c0D65 * x + r0c1D65 * y + r0c2D65 * z;
-  const y65 = r1c0D65 * x + r1c1D65 * y + r1c2D65 * z;
-  const z65 = r2c0D65 * x + r2c1D65 * y + r2c2D65 * z;
-  const r = r0c0Rgb * x65 + r0c1Rgb * y65 + r0c2Rgb * z65;
-  const g = r1c0Rgb * x65 + r1c1Rgb * y65 + r1c2Rgb * z65;
-  const b = r2c0Rgb * x65 + r2c1Rgb * y65 + r2c2Rgb * z65;
+  const xyzD65 = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
+  const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, xyzD65);
   const hex = await convertLinearRgbToHex([
     Math.min(Math.max(r, 0), 1),
     Math.min(Math.max(g, 0), 1),
@@ -1304,7 +1313,6 @@ export const convertXyzD50ToHex = async xyz => {
  * NOTE: convertColorToHex('transparent') resolves as null
  *       convertColorToHex('transparent', true) resolves as #00000000
  *       convertColorToHex('currentColor') warns not supported, resolves as null
- *       color() functional notation is not yet supported
  *
  * @param {string} value - value
  * @param {boolean} alpha - add alpha channel value
@@ -1407,7 +1415,6 @@ export const convertColorFuncToHex = async value => {
   }
   const [, val] = value.match(reg);
   const [cs, v1, v2, v3, aa] = val.replace('/', ' ').split(/\s+/);
-  console.log([[cs, v1, v2, v3, aa]])
   let a;
   if (isString(aa)) {
     a = aa;
@@ -1441,19 +1448,57 @@ export const convertColorFuncToHex = async value => {
       hex = await convertXyzToHex([x, y, z, a]);
     }
   } else if (cs === 'display-p3') {
-    const [
-      [r0c0, r0c1, r0c2],
-      [r1c0, r1c1, r1c2],
-      [r2c0, r2c1, r2c2]
-    ] = MATRIX_P3_TO_XYZ;
-    const rr = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const gg = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const bb = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
-    const [r, g, b] = await rgbToLinearRgb([rr, gg, bb]);
-    const x = r0c0 * r + r0c1 * g + r0c2 * b;
-    const y = r1c0 * r + r1c1 * g + r1c2 * b;
-    const z = r2c0 * r + r2c1 * g + r2c2 * b;
+    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    const linearRgb = await rgbToLinearRgb([r, g, b]);
+    const [x, y, z] = await transformMatrix(MATRIX_P3_TO_XYZ, linearRgb);
     hex = await convertXyzToHex([x, y, z, a]);
+  } else if (cs === 'rec2020') {
+    const ALPHA = 1.09929682680944;
+	const BETA = 0.018053968510807;
+	const REC_COEF = 0.45;
+    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    const rgb = [r, g, b].map(c => {
+      let cl;
+      if (c < BETA * REC_COEF * DEC) {
+        cl = c / (REC_COEF * DEC);
+      } else {
+        cl = Math.pow((c + ALPHA - 1) / ALPHA, 1 / REC_COEF);
+      }
+      return cl;
+    });
+    const [x, y, z] = await transformMatrix(MATRIX_REC2020_TO_XYZ, rgb);
+    hex = await convertXyzToHex([x, y, z, a]);
+  } else if (cs === 'a98-rgb') {
+    const POW_A98 = 563 / 256;
+    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    const rgb = [r, g, b].map(c => {
+      const cl = Math.pow(c, POW_A98);
+      return cl;
+    });
+    const [x, y, z] = await transformMatrix(MATRIX_A98_TO_XYZ, rgb);
+    hex = await convertXyzToHex([x, y, z, a]);
+  } else if (cs === 'prophoto-rgb') {
+    const POW_PROPHOTO = 1.8;
+    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+    const rgb = [r, g, b].map(c => {
+      let cl;
+      if (c > 1 / (HEX * DOUBLE)) {
+        cl = Math.pow(c, POW_PROPHOTO);
+      } else {
+        cl = c / HEX;
+      }
+      return cl;
+    });
+    const [x, y, z] = await transformMatrix(MATRIX_PROPHOTO_TO_XYZ_D50, rgb);
+    hex = await convertXyzD50ToHex([x, y, z, a]);
   }
   return hex;
 };
@@ -1688,7 +1733,7 @@ export const compositeLayeredColors = async (overlay, base) => {
  *
  * @param {string} value - value
  * @param {object} opt - options
- * @returns {Array|?string} - hex color as [prop, hex] pair or string
+ * @returns {?string|Array} - string of hex color or array of [prop, hex] pair
  */
 export const getColorInHex = async (value, opt = {}) => {
   if (!isString(value)) {
@@ -1696,8 +1741,11 @@ export const getColorInHex = async (value, opt = {}) => {
   }
   const { alpha, prop } = opt;
   let hex;
+  value = value.trim();
   if (value.startsWith('color-mix')) {
     hex = await convertColorMixToHex(value);
+  } else if (value.startsWith('color(')) {
+    hex = await convertColorFuncToHex(value);
   } else {
     hex = await convertColorToHex(value, !!alpha);
   }
