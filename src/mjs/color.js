@@ -275,6 +275,7 @@ export const colorname = {
  *
  * @param {Array.<Array.<number>>} mtx - 3 * 3 matrix
  * @param {Array.<number>} vct - vector
+ * @returns {Array.<number>} - [p1, p2, p3]
  */
 export const transformMatrix = async (mtx, vct) => {
   if (!Array.isArray(mtx)) {
@@ -385,8 +386,8 @@ export const angleToDeg = async angle => {
 /**
  * rgb to linear rgb
  *
- * @param {Array} rgb - [r, g, b] r|g|b: 0..1
- * @returns {Array} - [r, g, b] r|g|b: 0..1
+ * @param {Array.<number>} rgb - [r, g, b] r|g|b: 0..1
+ * @returns {Array.<number>} - [r, g, b] r|g|b: 0..1
  */
 export const rgbToLinearRgb = async rgb => {
   if (!Array.isArray(rgb)) {
