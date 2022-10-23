@@ -408,7 +408,7 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func([0, 0.5, 0]);
-      res[1] = parseFloat(res[1].toFixed(5))
+      res[1] = parseFloat(res[1].toFixed(5));
       assert.deepEqual(res, [0, 0.21404, 0], 'result');
     });
 
@@ -418,7 +418,7 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
-      const res = await func([1, 1, 1,]);
+      const res = await func([1, 1, 1]);
       assert.deepEqual(res, [1, 1, 1], 'result');
     });
 
@@ -3378,8 +3378,8 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('color(rec2020 0 1 0)');
-      const val = await
-        mjs.convertColorToHex('lab(85.7729% -160.7259 109.2319)');
+      const val =
+        await mjs.convertColorToHex('lab(85.7729% -160.7259 109.2319)');
       assert.strictEqual(res, val, 'result');
     });
 

@@ -82,7 +82,7 @@ const MATRIX_P3_TO_XYZ = [
 ];
 const MATRIX_REC2020_TO_XYZ = [
   [63426534 / 99577255, 20160776 / 139408157, 47086771 / 278816314],
-  [26158966 / 99577255, 472592308 / 697040785, 8267143 / 139408157 ],
+  [26158966 / 99577255, 472592308 / 697040785, 8267143 / 139408157],
   [0, 19567812 / 697040785, 295819943 / 278816314]
 ];
 const MATRIX_A98_TO_XYZ = [
@@ -559,7 +559,6 @@ export const hexToHwb = async value => {
  * @returns {Array.<number>} - [r, g, b, a] r|g|b|a: 0..1
  */
 export const hexToLinearRgb = async value => {
-  const COND_POW = 0.04045;
   const [rr, gg, bb, a] = await hexToRgb(value);
   const [r, g, b] = await rgbToLinearRgb([
     parseFloat(rr) / MAX_RGB,
@@ -1456,8 +1455,8 @@ export const convertColorFuncToHex = async value => {
     hex = await convertXyzToHex([x, y, z, a]);
   } else if (cs === 'rec2020') {
     const ALPHA = 1.09929682680944;
-	const BETA = 0.018053968510807;
-	const REC_COEF = 0.45;
+    const BETA = 0.018053968510807;
+    const REC_COEF = 0.45;
     const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
     const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
     const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
