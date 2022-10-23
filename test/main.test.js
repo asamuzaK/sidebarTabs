@@ -3290,6 +3290,21 @@ describe('main', () => {
           muted: false
         }
       };
+      const activeTabsTab = {
+        active: true,
+        audible: false,
+        cookieStoreId: COOKIE_STORE_DEFAULT,
+        id: 2,
+        index: 0,
+        pinned: false,
+        status: 'complete',
+        title: 'foo',
+        url: 'https://example.com',
+        windowId: 1,
+        mutedInfo: {
+          muted: false
+        }
+      };
       const parent = document.createElement('section');
       const parent2 = document.createElement('section');
       const child = document.createElement('div');
@@ -3338,12 +3353,12 @@ describe('main', () => {
         windowId: 1,
         active: true,
         windowType: 'normal'
-      }).resolves([tabsTab]);
+      }).resolves([activeTabsTab]);
       browser.tabs.query.withArgs({
         windowId: 1,
         highlighted: true,
         windowType: 'normal'
-      }).resolves([1]);
+      }).resolves([2]);
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.isOk(elm, 'created');
