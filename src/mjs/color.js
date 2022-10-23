@@ -1692,6 +1692,30 @@ export const convertColorMixToHex = async value => {
 };
 
 /**
+ * get color in hex color notation
+ *
+ * @param {string} value - value
+ * @param {object} opt - options
+ * @returns {?string|Array} - string of hex color or array of [prop, hex] pair
+ */
+export const getColorInHex = async (value, opt = {}) => {
+  if (!isString(value)) {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const { alpha, prop } = opt;
+  let hex;
+  value = value.trim();
+  if (value.startsWith('color-mix')) {
+    hex = await convertColorMixToHex(value);
+  } else if (value.startsWith('color(')) {
+    hex = await convertColorFuncToHex(value);
+  } else {
+    hex = await convertColorToHex(value, !!alpha);
+  }
+  return prop ? [prop, hex] : (hex || null);
+};
+
+/**
  * composite two layered colors
  *
  * @param {string} overlay - overlay color
@@ -1699,8 +1723,12 @@ export const convertColorMixToHex = async value => {
  * @returns {?string} - hex color
  */
 export const compositeLayeredColors = async (overlay, base) => {
-  const overlayHex = await convertColorToHex(overlay, true);
-  const baseHex = await convertColorToHex(base, true);
+  const overlayHex = await getColorInHex(overlay, {
+    alpha: true
+  });
+  const baseHex = await await getColorInHex(base, {
+    alpha: true
+  });
   let hex;
   if (overlayHex && baseHex) {
     const [overlayR, overlayG, overlayB, overlayA] = await hexToRgb(overlayHex);
@@ -1727,28 +1755,4 @@ export const compositeLayeredColors = async (overlay, base) => {
     }
   }
   return hex || null;
-};
-
-/**
- * get color in hex color notation
- *
- * @param {string} value - value
- * @param {object} opt - options
- * @returns {?string|Array} - string of hex color or array of [prop, hex] pair
- */
-export const getColorInHex = async (value, opt = {}) => {
-  if (!isString(value)) {
-    throw new TypeError(`Expected String but got ${getType(value)}.`);
-  }
-  const { alpha, prop } = opt;
-  let hex;
-  value = value.trim();
-  if (value.startsWith('color-mix')) {
-    hex = await convertColorMixToHex(value);
-  } else if (value.startsWith('color(')) {
-    hex = await convertColorFuncToHex(value);
-  } else {
-    hex = await convertColorToHex(value, !!alpha);
-  }
-  return prop ? [prop, hex] : (hex || null);
 };

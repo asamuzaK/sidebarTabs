@@ -4038,6 +4038,60 @@ describe('color', () => {
     });
   });
 
+  describe('get color in hexadecimal color syntax', () => {
+    const func = mjs.getColorInHex;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should get null', async () => {
+      const res = await func('transparent');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('green');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func(' GREEN ');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(0% 50% 0% / 0.5)', {
+        alpha: true
+      });
+      assert.strictEqual(res, '#00800080', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color-mix(in srgb, blue, red)');
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get array', async () => {
+      const res = await func('color-mix(in srgb, blue, red)', {
+        alpha: true,
+        prop: 'foo'
+      });
+      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
+      assert.deepEqual(res, ['foo', value], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0 0.5 0)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+  });
+
   describe('composite two layered colors', () => {
     const func = mjs.compositeLayeredColors;
 
@@ -4217,64 +4271,17 @@ describe('color', () => {
       assert.strictEqual(res, '#6699ccc2', 'result');
     });
 
+    it('should get value', async () => {
+      const overlay = 'color(srgb 0 0.5 0 / 0.4)';
+      const base = 'color-mix(in srgb, white, blue)';
+      const res = await func(overlay, base);
+      assert.strictEqual(res, '#4d8099', 'result');
+    });
+
     // active tab border mixed color of the default theme
     it('should get value', async () => {
       const res = await func('rgba(128,128,142,0.4)', '#fff');
       assert.strictEqual(res, '#ccccd2', 'result');
-    });
-  });
-
-  describe('get color in hexadecimal color syntax', () => {
-    const func = mjs.getColorInHex;
-
-    it('should throw', async () => {
-      await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected String but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should get null', async () => {
-      const res = await func('transparent');
-      assert.isNull(res, 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('green');
-      assert.strictEqual(res, '#008000', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func(' GREEN ');
-      assert.strictEqual(res, '#008000', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('rgba(0% 50% 0% / 0.5)', {
-        alpha: true
-      });
-      assert.strictEqual(res, '#00800080', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color-mix(in srgb, blue, red)');
-      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
-      assert.strictEqual(res, value, 'result');
-    });
-
-    it('should get array', async () => {
-      const res = await func('color-mix(in srgb, blue, red)', {
-        alpha: true,
-        prop: 'foo'
-      });
-      const value = await mjs.convertColorToHex('rgb(128, 0, 128)');
-      assert.deepEqual(res, ['foo', value], 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(srgb 0 0.5 0)');
-      assert.strictEqual(res, '#008000', 'result');
     });
   });
 });
