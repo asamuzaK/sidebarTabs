@@ -661,16 +661,9 @@ export const hexToOklab = async (value, asis = false) => {
   } else {
     [x, y, z] = [xx, yy, zz].map((val, i) => val * D65[i]);
   }
-  const [
-    [r0c0Lms, r0c1Lms, r0c2Lms],
-    [r1c0Lms, r1c1Lms, r1c2Lms],
-    [r2c0Lms, r2c1Lms, r2c2Lms]
-  ] = MATRIX_XYZ_TO_LMS;
-  const xLms = Math.cbrt(r0c0Lms * x + r0c1Lms * y + r0c2Lms * z);
-  const yLms = Math.cbrt(r1c0Lms * x + r1c1Lms * y + r1c2Lms * z);
-  const zLms = Math.cbrt(r2c0Lms * x + r2c1Lms * y + r2c2Lms * z);
-  const [l, a, b] =
-    await transformMatrix(MATRIX_LMS_TO_OKLAB, [xLms, yLms, zLms]);
+  const lms = await transformMatrix(MATRIX_XYZ_TO_LMS, [x, y, z]);
+  const xyzLms = lms.map(c => Math.cbrt(c));
+  const [l, a, b] = await transformMatrix(MATRIX_LMS_TO_OKLAB, xyzLms);
   return [l, a, b, aa];
 };
 
@@ -1069,15 +1062,9 @@ export const parseOklab = async value => {
   } else {
     aa = 1;
   }
-  const [
-    [r0c0Lms, r0c1Lms, r0c2Lms],
-    [r1c0Lms, r1c1Lms, r1c2Lms],
-    [r2c0Lms, r2c1Lms, r2c2Lms]
-  ] = MATRIX_OKLAB_TO_LMS;
-  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, POW_CUBE);
-  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, POW_CUBE);
-  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, POW_CUBE);
-  const xyz = await transformMatrix(MATRIX_LMS_TO_XYZ, [xLms, yLms, zLms]);
+  const lms = await transformMatrix(MATRIX_OKLAB_TO_LMS, [l, a, b]);
+  const xyzLms = lms.map(c => Math.pow(c, POW_CUBE));
+  const xyz = await transformMatrix(MATRIX_LMS_TO_XYZ, xyzLms);
   const [x, y, z] = xyz.map((val, i) => val / D65[i]);
   return [x, y, z, aa];
 };
@@ -1140,18 +1127,11 @@ export const parseOklch = async value => {
   } else {
     aa = 1;
   }
-  const [
-    [r0c0Lms, r0c1Lms, r0c2Lms],
-    [r1c0Lms, r1c1Lms, r1c2Lms],
-    [r2c0Lms, r2c1Lms, r2c2Lms]
-  ] = MATRIX_OKLAB_TO_LMS;
   const a = c * Math.cos(h * Math.PI / (DEG * HALF));
   const b = c * Math.sin(h * Math.PI / (DEG * HALF));
-  const xLms = Math.pow(r0c0Lms * l + r0c1Lms * a + r0c2Lms * b, POW_CUBE);
-  const yLms = Math.pow(r1c0Lms * l + r1c1Lms * a + r1c2Lms * b, POW_CUBE);
-  const zLms = Math.pow(r2c0Lms * l + r2c1Lms * a + r2c2Lms * b, POW_CUBE);
-  const [x, y, z] =
-    await transformMatrix(MATRIX_LMS_TO_XYZ, [xLms, yLms, zLms]);
+  const lms = await transformMatrix(MATRIX_OKLAB_TO_LMS, [l, a, b]);
+  const xyzLms = lms.map(c => Math.pow(c, POW_CUBE));
+  const [x, y, z] = await transformMatrix(MATRIX_LMS_TO_XYZ, xyzLms);
   return [x, y, z, aa];
 };
 
