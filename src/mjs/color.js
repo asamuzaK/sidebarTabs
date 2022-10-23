@@ -563,9 +563,9 @@ export const hexToHwb = async value => {
 export const hexToLinearRgb = async value => {
   const [rr, gg, bb, a] = await hexToRgb(value);
   const [r, g, b] = await rgbToLinearRgb([
-    parseFloat(rr) / MAX_RGB,
-    parseFloat(gg) / MAX_RGB,
-    parseFloat(bb) / MAX_RGB
+    rr / MAX_RGB,
+    gg / MAX_RGB,
+    bb / MAX_RGB
   ]);
   return [r, g, b, a];
 };
