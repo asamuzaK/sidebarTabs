@@ -1,10 +1,12 @@
 /**
  * color.js
+ *
  * Ref: CSS Color Module Level 4
  *      §17. Sample code for Color Conversions
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
+ *
  * NOTE: 'currentColor' keyword is not supported
- *       'none' keyword is not yet supported
+ * TODO: 'none' keyword is not yet supported
  */
 
 /* shared */
