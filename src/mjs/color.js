@@ -11,28 +11,30 @@
 import { getType, isString, logWarn } from './common.js';
 
 /* constants */
-const DEC = 10;
-const DEG = 360;
-const DOUBLE = 2;
 const HALF = 0.5;
+const DOUBLE = 2;
+const TRIPLE = 3;
+const QUAD = 4;
+const DEC = 10;
 const HEX = 16;
-const INTERVAL = 60;
+const DEG = 360;
+const DEG_INTERVAL = 60;
+const MAX_PCT = 100;
+const MAX_RGB = 255;
+const POW_SQUARE = 2;
+const POW_CUBE = 3;
+const POW_LINEAR = 2.4;
+const LINEAR_COEF = 12.92;
+const LINEAR_OFFSET = 0.055;
+const LAB_L = 116;
 const LAB_A = 500;
 const LAB_B = 200;
 const LAB_EPSILON = 216 / 24389;
 const LAB_KAPPA = 24389 / 27;
-const LAB_L = 116;
-const LINEAR_COEF = 12.92;
-const LINEAR_OFFSET = 0.055;
-const MAX_PCT = 100;
-const MAX_RGB = 255;
-const POW_CUBE = 3;
-const POW_LINEAR = 2.4;
-const POW_SQUARE = 2;
-const QUAD = 4;
+
 /* white points */
-const D50 = [0.3457 / 0.3585, 1.00000, (1.0 - 0.3457 - 0.3585) / 0.3585];
-const D65 = [0.3127 / 0.3290, 1.00000, (1.0 - 0.3127 - 0.3290) / 0.3290];
+const D50 = [0.3457 / 0.3585, 1, (1 - 0.3457 - 0.3585) / 0.3585];
+const D65 = [0.3127 / 0.3290, 1, (1 - 0.3127 - 0.3290) / 0.3290];
 const MATRIX_D50_TO_D65 = [
   [0.9554734527042182, -0.023098536874261423, 0.0632593086610217],
   [-0.028369706963208136, 1.0099954580058226, 0.021041398966943008],
@@ -271,19 +273,19 @@ export const colorname = {
 /**
  * transform matrix
  *
- * @param {Array.<Array.<number>>} matrix - 3 * 3 matrix
- * @param {Array.<number>} vector - vector
+ * @param {Array.<Array.<number>>} mtx - 3 * 3 matrix
+ * @param {Array.<number>} vct - vector
  */
-export const transformMatrix = async (matrix, vector) => {
-  if (!Array.isArray(matrix)) {
-    throw new TypeError(`Expected Array but got ${getType(matrix)}.`);
-  } else if (matrix.length !== 3) {
-    throw new Error(`Expected array length of 3 but got ${matrix.length}.`);
+export const transformMatrix = async (mtx, vct) => {
+  if (!Array.isArray(mtx)) {
+    throw new TypeError(`Expected Array but got ${getType(mtx)}.`);
+  } else if (mtx.length !== TRIPLE) {
+    throw new Error(`Expected array length of 3 but got ${mtx.length}.`);
   } else {
-    for (const i of matrix) {
+    for (const i of mtx) {
       if (!Array.isArray(i)) {
         throw new TypeError(`Expected Array but got ${getType(i)}.`);
-      } else if (i.length !== 3) {
+      } else if (i.length !== TRIPLE) {
         throw new Error(`Expected array length of 3 but got ${i.length}.`);
       } else {
         for (const j of i) {
@@ -296,12 +298,12 @@ export const transformMatrix = async (matrix, vector) => {
       }
     }
   }
-  if (!Array.isArray(vector)) {
-    throw new TypeError(`Expected Array but got ${getType(vector)}.`);
-  } else if (vector.length !== 3) {
-    throw new Error(`Expected array length of 3 but got ${vector.length}.`);
+  if (!Array.isArray(vct)) {
+    throw new TypeError(`Expected Array but got ${getType(vct)}.`);
+  } else if (vct.length !== TRIPLE) {
+    throw new Error(`Expected array length of 3 but got ${vct.length}.`);
   } else {
-    for (const i of vector) {
+    for (const i of vct) {
       if (typeof i !== 'number') {
         throw new TypeError(`Expected Number but got ${getType(i)}.`);
       } else if (Number.isNaN(i)) {
@@ -313,8 +315,8 @@ export const transformMatrix = async (matrix, vector) => {
     [r0c0, r0c1, r0c2],
     [r1c0, r1c1, r1c2],
     [r2c0, r2c1, r2c2]
-  ] = matrix;
-  const [v1, v2, v3] = vector;
+  ] = mtx;
+  const [v1, v2, v3] = vct;
   const p1 = r0c0 * v1 + r0c1 * v2 + r0c2 * v3;
   const p2 = r1c0 * v1 + r1c1 * v2 + r1c2 * v3;
   const p3 = r2c0 * v1 + r2c1 * v2 + r2c2 * v3;
@@ -517,7 +519,7 @@ export const hexToHsl = async value => {
         h = (r - g) / d + QUAD;
         break;
     }
-    h = h * INTERVAL % DEG;
+    h = h * DEG_INTERVAL % DEG;
     if (h < 0) {
       h += DEG;
     }
@@ -800,31 +802,31 @@ export const parseHsl = async value => {
     max = (l + (MAX_PCT - l) * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
     min = (l - (MAX_PCT - l) * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
   }
-  const factor = (max - min) / INTERVAL;
+  const factor = (max - min) / DEG_INTERVAL;
   let r, g, b;
   // < 60
-  if (h >= 0 && h < INTERVAL) {
+  if (h >= 0 && h < DEG_INTERVAL) {
     r = max;
     g = h * factor + min;
     b = min;
   // < 120
-  } else if (h < INTERVAL * DOUBLE) {
-    r = (INTERVAL * DOUBLE - h) * factor + min;
+  } else if (h < DEG_INTERVAL * DOUBLE) {
+    r = (DEG_INTERVAL * DOUBLE - h) * factor + min;
     g = max;
     b = min;
   // < 180
   } else if (h < DEG * HALF) {
     r = min;
     g = max;
-    b = (h - INTERVAL * DOUBLE) * factor + min;
+    b = (h - DEG_INTERVAL * DOUBLE) * factor + min;
   // < 240
-  } else if (h < INTERVAL * QUAD) {
+  } else if (h < DEG_INTERVAL * QUAD) {
     r = min;
-    g = (INTERVAL * QUAD - h) * factor + min;
+    g = (DEG_INTERVAL * QUAD - h) * factor + min;
     b = max;
   // < 300
-  } else if (h < DEG - INTERVAL) {
-    r = (h - (INTERVAL * QUAD)) * factor + min;
+  } else if (h < DEG - DEG_INTERVAL) {
+    r = (h - (DEG_INTERVAL * QUAD)) * factor + min;
     g = min;
     b = max;
   // < 360
