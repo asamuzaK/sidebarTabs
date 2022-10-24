@@ -338,10 +338,11 @@ export const numberToHexString = async value => {
   } else if (Number.isNaN(value)) {
     throw new TypeError(`${value} is not a number.`);
   }
-  let hex = Math.round(value).toString(HEX);
-  if (hex < 0 || hex > MAX_RGB) {
+  value = Math.round(value);
+  if (value < 0 || value > MAX_RGB) {
     throw new RangeError(`${value} is not between 0 and ${MAX_RGB}.`);
   }
+  let hex = value.toString(HEX);
   if (hex.length === 1) {
     hex = `0${hex}`;
   }

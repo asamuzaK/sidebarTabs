@@ -161,14 +161,60 @@ describe('color', () => {
       });
     });
 
+    it('should throw', async () => {
+      await func(-0.5).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func(255.5).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func(-0.4);
+      assert.strictEqual(res, '00', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func(255.4);
+      assert.strictEqual(res, 'ff', 'result');
+    });
+
     it('should get value', async () => {
       const res = await func(0);
       assert.strictEqual(res, '00', 'result');
     });
 
     it('should get value', async () => {
+      const res = await func(9);
+      assert.strictEqual(res, '09', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func(10);
+      assert.strictEqual(res, '0a', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func(15);
+      assert.strictEqual(res, '0f', 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func(16);
       assert.strictEqual(res, '10', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func(17);
+      assert.strictEqual(res, '11', 'result');
     });
 
     it('should get value', async () => {
