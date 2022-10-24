@@ -474,7 +474,7 @@ export const searchQuery = async (dropTarget, data = '') => {
  * handle drop
  *
  * @param {!object} evt - event
- * @returns {?(Function|Error)} - promise chain
+ * @returns {?(Function|Error)|undefined} - promise chain
  */
 export const handleDrop = evt => {
   const { currentTarget, dataTransfer, type } = evt;
@@ -694,7 +694,7 @@ export const handleDragEnter = evt => {
  *
  * @param {!object} evt - event
  * @param {object} opt - options
- * @returns {Promise.<Array>} - result of each handler
+ * @returns {Promise.<Array>|undefined} - result of each handler
  */
 export const handleDragStart = (evt, opt = {}) => {
   const {
