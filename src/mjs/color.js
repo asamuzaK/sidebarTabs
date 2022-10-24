@@ -116,10 +116,11 @@ const REG_RGB = `(?:${REG_NUM}(?:\\s+${REG_NUM}){2}|${REG_PCT}(?:\\s+${REG_PCT})
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LAB = `(?:${REG_NUM}|${REG_PCT})(?:\\s+(?:${REG_NUM}|${REG_PCT})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT})\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\)`;
-const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
-const REG_COLOR_MIX = `in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})`;
 const REG_COLOR_FUNC = `(?:${REG_COLOR_SPACE_RGB}|${REG_COLOR_SPACE_XYZ})(?:\\s+(?:${REG_NUM}|${REG_PCT})){3}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\)|color\\(\\s*${REG_COLOR_FUNC}\\s*\\)`;
+const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
+const REG_COLOR_MIX = `in\\s+(?:${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(?:${REG_COLOR_MIX_PART})\\s*,\\s*(?:${REG_COLOR_MIX_PART})`;
+const REG_COLOR_MIX_FULL = `in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART}|color-mix\\(${REG_COLOR_MIX}\\))\\s*,\\s*(${REG_COLOR_MIX_PART}|color-mix\\(${REG_COLOR_MIX}\\))`;
 
 export const colorname = {
   aliceblue: '#f0f8ff',
@@ -1498,7 +1499,7 @@ export const convertColorMixToHex = async value => {
   if (!isString(value)) {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`color-mix\\(\\s*${REG_COLOR_MIX}\\s*\\)`, 'i');
+  const reg = new RegExp(`color-mix\\(\\s*${REG_COLOR_MIX_FULL}\\s*\\)`, 'i');
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -1554,8 +1555,21 @@ export const convertColorMixToHex = async value => {
     }
     multipler = 1;
   }
-  const colorAHex = await convertColorToHex(colorA, true);
-  const colorBHex = await convertColorToHex(colorB, true);
+  let colorAHex, colorBHex;
+  if (colorA.startsWith('color-mix')) {
+    colorAHex = await convertColorMixToHex(colorA);
+  } else if (colorA.startsWith('color(')) {
+    colorAHex = await convertColorFuncToHex(colorA);
+  } else {
+    colorAHex = await convertColorToHex(colorA, true);
+  }
+  if (colorB.startsWith('color-mix')) {
+    colorBHex = await convertColorMixToHex(colorB);
+  } else if (colorB.startsWith('color(')) {
+    colorBHex = await convertColorFuncToHex(colorB);
+  } else {
+    colorBHex = await convertColorToHex(colorB, true);
+  }
   let hex;
   // in srgb
   if (colorAHex && colorBHex && colorSpace === 'srgb') {
