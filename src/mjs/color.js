@@ -119,8 +119,7 @@ const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT})\\s+){2}${REG_NUM}(?:${REG_ANGLE})?
 const REG_COLOR_FUNC = `(?:${REG_COLOR_SPACE_RGB}|${REG_COLOR_SPACE_XYZ})(?:\\s+(?:${REG_NUM}|${REG_PCT})){3}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\)|color\\(\\s*${REG_COLOR_FUNC}\\s*\\)`;
 const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
-const REG_COLOR_MIX = `in\\s+(?:${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(?:${REG_COLOR_MIX_PART})\\s*,\\s*(?:${REG_COLOR_MIX_PART})`;
-const REG_COLOR_MIX_FULL = `in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART}|color-mix\\(${REG_COLOR_MIX}\\))\\s*,\\s*(${REG_COLOR_MIX_PART}|color-mix\\(${REG_COLOR_MIX}\\))`;
+const REG_COLOR_MIX_CAPT = `color-mix\\(\\s*in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*\\)`;
 
 export const colorname = {
   aliceblue: '#f0f8ff',
@@ -445,10 +444,11 @@ export const rgbToLinearRgb = async rgb => {
  * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const hexToRgb = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.toLowerCase().trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  value = value.toLowerCase().trim();
   if (!(/^#[\da-f]{6}$/.test(value) || /^#[\da-f]{3}$/.test(value) ||
         /^#[\da-f]{8}$/.test(value) || /^#[\da-f]{4}$/.test(value))) {
     throw new Error(`Invalid property value: ${value}`);
@@ -701,10 +701,13 @@ export const hexToOklch = async value => {
  * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseRgb = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`rgba?\\(\\s*((?:${REG_RGB}|${REG_RGB_LV3}))\\s*\\)`);
+  const reg =
+    new RegExp(`^rgba?\\(\\s*((?:${REG_RGB}|${REG_RGB_LV3}))\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -761,11 +764,13 @@ export const parseRgb = async value => {
  * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseHsl = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const reg =
-    new RegExp(`hsla?\\(\\s*((?:${REG_HSL_HWB}|${REG_HSL_LV3}))\\s*\\)`);
+    new RegExp(`^hsla?\\(\\s*((?:${REG_HSL_HWB}|${REG_HSL_LV3}))\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -848,10 +853,12 @@ export const parseHsl = async value => {
  * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const parseHwb = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)`);
+  const reg = new RegExp(`^hwb\\(\\s*(${REG_HSL_HWB})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -902,10 +909,12 @@ export const parseHwb = async value => {
  * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseLab = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`lab\\(\\s*(${REG_LAB})\\s*\\)`);
+  const reg = new RegExp(`^lab\\(\\s*(${REG_LAB})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -967,10 +976,12 @@ export const parseLab = async value => {
  * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseLch = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`lch\\(\\s*(${REG_LCH})\\s*\\)`);
+  const reg = new RegExp(`^lch\\(\\s*(${REG_LCH})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -1018,7 +1029,9 @@ export const parseLch = async value => {
  * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseOklab = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const reg = new RegExp(`oklab\\(\\s*(${REG_LAB})\\s*\\)`);
@@ -1078,7 +1091,9 @@ export const parseOklab = async value => {
  * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseOklch = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const reg = new RegExp(`oklch\\(\\s*(${REG_LAB})\\s*\\)`);
@@ -1305,11 +1320,12 @@ export const convertXyzD50ToHex = async xyz => {
  * @returns {?string} - hex color
  */
 export const convertColorToHex = async (value, alpha = false) => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.toLowerCase().trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   let hex;
-  value = value.toLowerCase().trim();
   // named-color
   if (/^[a-z]+$/.test(value)) {
     if (Object.prototype.hasOwnProperty.call(colorname, value)) {
@@ -1392,10 +1408,12 @@ export const convertColorToHex = async (value, alpha = false) => {
  * @returns {?string} - hex color
  */
 export const convertColorFuncToHex = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`color\\(\\s*(${REG_COLOR_FUNC})\\s*\\)`);
+  const reg = new RegExp(`^color\\(\\s*(${REG_COLOR_FUNC})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -1496,195 +1514,185 @@ export const convertColorFuncToHex = async value => {
  * @returns {?string} - hex color
  */
 export const convertColorMixToHex = async value => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`color-mix\\(\\s*${REG_COLOR_MIX_FULL}\\s*\\)`, 'i');
-  if (!reg.test(value)) {
+  const colorMixReg = new RegExp(`^${REG_COLOR_MIX_CAPT}$`, 'i');
+  if (!colorMixReg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const [, colorSpace, colorPartA, colorPartB] = value.match(reg);
-  const pctReg = new RegExp(`\\s+(${REG_PCT})$`);
-  let colorA, pctA, colorB, pctB;
-  if (colorPartA.endsWith('%')) {
-    [, pctA] = colorPartA.match(pctReg);
-    colorA = colorPartA.replace(new RegExp(`${pctA}$`), '').trim();
-  } else {
-    colorA = colorPartA;
-  }
-  if (colorPartB.endsWith('%')) {
-    [, pctB] = colorPartB.match(pctReg);
-    colorB = colorPartB.replace(new RegExp(`${pctB}$`), '').trim();
-  } else {
-    colorB = colorPartB;
-  }
-  // normalize percentages and set multipler
-  let pA, pB, multipler;
-  if (pctA && pctB) {
-    const p1 = parseFloat(pctA) / MAX_PCT;
-    const p2 = parseFloat(pctB) / MAX_PCT;
-    if (p1 < 0 || p1 > 1) {
-      throw new RangeError(`${pctA} is not between 0% and 100%.`);
-    }
-    if (p2 < 0 || p2 > 1) {
-      throw new RangeError(`${pctB} is not between 0% and 100%.`);
-    }
-    const factor = p1 + p2;
-    if (factor === 0) {
-      throw new Error(`Invalid property value: ${value}`);
-    }
-    pA = p1 / factor;
-    pB = p2 / factor;
-    multipler = factor < 1 ? factor : 1;
-  } else {
-    if (pctA) {
-      pA = parseFloat(pctA) / MAX_PCT;
-      if (pA < 0 || pA > 1) {
-        throw new RangeError(`${pctA} is not between 0% and 100%.`);
-      }
-      pB = 1 - pA;
-    } else if (pctB) {
-      pB = parseFloat(pctB) / MAX_PCT;
-      if (pB < 0 || pB > 1) {
-        throw new RangeError(`${pctB} is not between 0% and 100%.`);
-      }
-      pA = 1 - pB;
-    } else {
-      pA = HALF;
-      pB = HALF;
-    }
-    multipler = 1;
-  }
+  const [, colorSpace, colorPartA, colorPartB] = value.match(colorMixReg);
+  const colorPartReg =
+    new RegExp(`^(${REG_COLOR_TYPE})(?:\\s+(${REG_PCT}))?$`, 'i');
+  const [, colorA, pctA] = colorPartA.match(colorPartReg);
+  const [, colorB, pctB] = colorPartB.match(colorPartReg);
   let colorAHex, colorBHex;
-  if (colorA.startsWith('color-mix')) {
-    colorAHex = await convertColorMixToHex(colorA);
-  } else if (colorA.startsWith('color(')) {
+  if (colorA.startsWith('color(')) {
     colorAHex = await convertColorFuncToHex(colorA);
   } else {
     colorAHex = await convertColorToHex(colorA, true);
   }
-  if (colorB.startsWith('color-mix')) {
-    colorBHex = await convertColorMixToHex(colorB);
-  } else if (colorB.startsWith('color(')) {
+  if (colorB.startsWith('color(')) {
     colorBHex = await convertColorFuncToHex(colorB);
   } else {
     colorBHex = await convertColorToHex(colorB, true);
   }
   let hex;
-  // in srgb
-  if (colorAHex && colorBHex && colorSpace === 'srgb') {
-    const [rA, gA, bA, aA] = await hexToRgb(colorAHex);
-    const [rB, gB, bB, aB] = await hexToRgb(colorBHex);
-    const factorA = aA * pA;
-    const factorB = aB * pB;
-    const a = (factorA + factorB);
-    const factor = MAX_PCT / (a * MAX_RGB);
-    const r = (rA * factorA + rB * factorB) * factor;
-    const g = (gA * factorA + gB * factorB) * factor;
-    const b = (bA * factorA + bB * factorB) * factor;
-    const rgb = `rgb(${r}% ${g}% ${b}% / ${a * multipler})`;
-    hex = await convertColorToHex(rgb, true);
-  // in hsl
-  } else if (colorAHex && colorBHex && colorSpace === 'hsl') {
-    const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
-    const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
-    const factorA = aA * pA;
-    const factorB = aB * pB;
-    const a = (factorA + factorB);
-    const h = (hA * pA + hB * pB) % DEG;
-    const s = (sA * factorA + sB * factorB) / a;
-    const l = (lA * factorA + lB * factorB) / a;
-    const hsl = `hsl(${h} ${s}% ${l}% / ${a * multipler})`;
-    hex = await convertColorToHex(hsl, true);
-  // in hwb
-  } else if (colorAHex && colorBHex && colorSpace === 'hwb') {
-    const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
-    const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
-    const factorA = aA * pA;
-    const factorB = aB * pB;
-    const a = (factorA + factorB);
-    const h = (hA * pA + hB * pB) % DEG;
-    const w = (wA * factorA + wB * factorB) / a;
-    const b = (bA * factorA + bB * factorB) / a;
-    const hwb = `hwb(${h} ${w}% ${b}% / ${a * multipler})`;
-    hex = await convertColorToHex(hwb, true);
-  // in srgb-linear
-  } else if (colorAHex && colorBHex && colorSpace === 'srgb-linear') {
-    const [rA, gA, bA, aA] = await hexToLinearRgb(colorAHex);
-    const [rB, gB, bB, aB] = await hexToLinearRgb(colorBHex);
-    const factorA = aA * pA;
-    const factorB = aB * pB;
-    const a = (factorA + factorB);
-    const r = (rA * factorA + rB * factorB) * a;
-    const g = (gA * factorA + gB * factorB) * a;
-    const b = (bA * factorA + bB * factorB) * a;
-    hex = await convertLinearRgbToHex([r, g, b, a * multipler]);
-  // in xyz, xyz-d65
-  } else if (colorAHex && colorBHex && /^xyz(?:-d65)?$/.test(colorSpace)) {
-    const [xA, yA, zA, aA] = await hexToXyz(colorAHex);
-    const [xB, yB, zB, aB] = await hexToXyz(colorBHex);
-    const factorA = aA * pA;
-    const factorB = aB * pB;
-    const a = (factorA + factorB);
-    const r = (xA * factorA + xB * factorB) * a;
-    const g = (yA * factorA + yB * factorB) * a;
-    const b = (zA * factorA + zB * factorB) * a;
-    hex = await convertXyzToHex([r, g, b, a * multipler]);
-  // in xyz-d50
-  } else if (colorAHex && colorBHex && colorSpace === 'xyz-d50') {
-    const [xA, yA, zA, aA] = await hexToXyzD50(colorAHex);
-    const [xB, yB, zB, aB] = await hexToXyzD50(colorBHex);
-    const factorA = aA * pA;
-    const factorB = aB * pB;
-    const a = (factorA + factorB);
-    const r = (xA * factorA + xB * factorB) * a;
-    const g = (yA * factorA + yB * factorB) * a;
-    const b = (zA * factorA + zB * factorB) * a;
-    hex = await convertXyzD50ToHex([r, g, b, a * multipler]);
-  // in lab
-  } else if (colorAHex && colorBHex && colorSpace === 'lab') {
-    const [lA, aA, bA, aaA] = await hexToLab(colorAHex);
-    const [lB, aB, bB, aaB] = await hexToLab(colorBHex);
-    const factorA = aaA * pA;
-    const factorB = aaB * pB;
-    const aa = (factorA + factorB);
-    const l = (lA * factorA + lB * factorB) * aa;
-    const a = (aA * factorA + aB * factorB) * aa;
-    const b = (bA * factorA + bB * factorB) * aa;
-    hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * multipler})`);
-  // in lch
-  } else if (colorAHex && colorBHex && colorSpace === 'lch') {
-    const [lA, cA, hA, aaA] = await hexToLch(colorAHex);
-    const [lB, cB, hB, aaB] = await hexToLch(colorBHex);
-    const factorA = aaA * pA;
-    const factorB = aaB * pB;
-    const aa = (factorA + factorB);
-    const l = (lA * factorA + lB * factorB) * aa;
-    const c = (cA * factorA + cB * factorB) * aa;
-    const h = (hA * factorA + hB * factorB) * aa;
-    hex = await convertColorToHex(`lch(${l} ${c} ${h} / ${aa * multipler})`);
-  // in oklab
-  } else if (colorAHex && colorBHex && colorSpace === 'oklab') {
-    const [lA, aA, bA, aaA] = await hexToOklab(colorAHex);
-    const [lB, aB, bB, aaB] = await hexToOklab(colorBHex);
-    const factorA = aaA * pA;
-    const factorB = aaB * pB;
-    const aa = (factorA + factorB);
-    const l = (lA * factorA + lB * factorB) * aa;
-    const a = (aA * factorA + aB * factorB) * aa;
-    const b = (bA * factorA + bB * factorB) * aa;
-    hex = await convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * multipler})`);
-  // in oklch
-  } else if (colorAHex && colorBHex && colorSpace === 'oklch') {
-    const [lA, cA, hA, aaA] = await hexToOklch(colorAHex);
-    const [lB, cB, hB, aaB] = await hexToOklch(colorBHex);
-    const factorA = aaA * pA;
-    const factorB = aaB * pB;
-    const aa = (factorA + factorB);
-    const l = (lA * factorA + lB * factorB) * aa;
-    const c = (cA * factorA + cB * factorB) * aa;
-    const h = (hA * factorA + hB * factorB) * aa;
-    hex = await convertColorToHex(`oklch(${l} ${c} ${h} / ${aa * multipler})`);
+  if (colorAHex && colorBHex) {
+    // normalize percentages and set multipler
+    let pA, pB, m;
+    if (pctA && pctB) {
+      const p1 = parseFloat(pctA) / MAX_PCT;
+      const p2 = parseFloat(pctB) / MAX_PCT;
+      if (p1 < 0 || p1 > 1) {
+        throw new RangeError(`${pctA} is not between 0% and 100%.`);
+      }
+      if (p2 < 0 || p2 > 1) {
+        throw new RangeError(`${pctB} is not between 0% and 100%.`);
+      }
+      const factor = p1 + p2;
+      if (factor === 0) {
+        throw new Error(`Invalid property value: ${value}`);
+      }
+      pA = p1 / factor;
+      pB = p2 / factor;
+      m = factor < 1 ? factor : 1;
+    } else {
+      if (pctA) {
+        pA = parseFloat(pctA) / MAX_PCT;
+        if (pA < 0 || pA > 1) {
+          throw new RangeError(`${pctA} is not between 0% and 100%.`);
+        }
+        pB = 1 - pA;
+      } else if (pctB) {
+        pB = parseFloat(pctB) / MAX_PCT;
+        if (pB < 0 || pB > 1) {
+          throw new RangeError(`${pctB} is not between 0% and 100%.`);
+        }
+        pA = 1 - pB;
+      } else {
+        pA = HALF;
+        pB = HALF;
+      }
+      m = 1;
+    }
+    // in srgb
+    if (colorSpace === 'srgb') {
+      const [rA, gA, bA, aA] = await hexToRgb(colorAHex);
+      const [rB, gB, bB, aB] = await hexToRgb(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const factor = MAX_PCT / (a * MAX_RGB);
+      const r = (rA * factorA + rB * factorB) * factor;
+      const g = (gA * factorA + gB * factorB) * factor;
+      const b = (bA * factorA + bB * factorB) * factor;
+      const rgb = `rgb(${r}% ${g}% ${b}% / ${a * m})`;
+      hex = await convertColorToHex(rgb, true);
+    // in hsl
+    } else if (colorSpace === 'hsl') {
+      const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
+      const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const h = (hA * pA + hB * pB) % DEG;
+      const s = (sA * factorA + sB * factorB) / a;
+      const l = (lA * factorA + lB * factorB) / a;
+      const hsl = `hsl(${h} ${s}% ${l}% / ${a * m})`;
+      hex = await convertColorToHex(hsl, true);
+    // in hwb
+    } else if (colorSpace === 'hwb') {
+      const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
+      const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const h = (hA * pA + hB * pB) % DEG;
+      const w = (wA * factorA + wB * factorB) / a;
+      const b = (bA * factorA + bB * factorB) / a;
+      const hwb = `hwb(${h} ${w}% ${b}% / ${a * m})`;
+      hex = await convertColorToHex(hwb, true);
+    // in srgb-linear
+    } else if (colorSpace === 'srgb-linear') {
+      const [rA, gA, bA, aA] = await hexToLinearRgb(colorAHex);
+      const [rB, gB, bB, aB] = await hexToLinearRgb(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const r = (rA * factorA + rB * factorB) * a;
+      const g = (gA * factorA + gB * factorB) * a;
+      const b = (bA * factorA + bB * factorB) * a;
+      hex = await convertLinearRgbToHex([r, g, b, a * m]);
+    // in xyz, xyz-d65
+    } else if (/^xyz(?:-d65)?$/.test(colorSpace)) {
+      const [xA, yA, zA, aA] = await hexToXyz(colorAHex);
+      const [xB, yB, zB, aB] = await hexToXyz(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const r = (xA * factorA + xB * factorB) * a;
+      const g = (yA * factorA + yB * factorB) * a;
+      const b = (zA * factorA + zB * factorB) * a;
+      hex = await convertXyzToHex([r, g, b, a * m]);
+    // in xyz-d50
+    } else if (colorSpace === 'xyz-d50') {
+      const [xA, yA, zA, aA] = await hexToXyzD50(colorAHex);
+      const [xB, yB, zB, aB] = await hexToXyzD50(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const r = (xA * factorA + xB * factorB) * a;
+      const g = (yA * factorA + yB * factorB) * a;
+      const b = (zA * factorA + zB * factorB) * a;
+      hex = await convertXyzD50ToHex([r, g, b, a * m]);
+    // in lab
+    } else if (colorSpace === 'lab') {
+      const [lA, aA, bA, aaA] = await hexToLab(colorAHex);
+      const [lB, aB, bB, aaB] = await hexToLab(colorBHex);
+      const factorA = aaA * pA;
+      const factorB = aaB * pB;
+      const aa = (factorA + factorB);
+      const l = (lA * factorA + lB * factorB) * aa;
+      const a = (aA * factorA + aB * factorB) * aa;
+      const b = (bA * factorA + bB * factorB) * aa;
+      hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * m})`);
+    // in lch
+    } else if (colorSpace === 'lch') {
+      const [lA, cA, hA, aaA] = await hexToLch(colorAHex);
+      const [lB, cB, hB, aaB] = await hexToLch(colorBHex);
+      const factorA = aaA * pA;
+      const factorB = aaB * pB;
+      const aa = (factorA + factorB);
+      const l = (lA * factorA + lB * factorB) * aa;
+      const c = (cA * factorA + cB * factorB) * aa;
+      const h = (hA * factorA + hB * factorB) * aa;
+      hex = await convertColorToHex(`lch(${l} ${c} ${h} / ${aa * m})`);
+    // in oklab
+    } else if (colorSpace === 'oklab') {
+      const [lA, aA, bA, aaA] = await hexToOklab(colorAHex);
+      const [lB, aB, bB, aaB] = await hexToOklab(colorBHex);
+      const factorA = aaA * pA;
+      const factorB = aaB * pB;
+      const aa = (factorA + factorB);
+      const l = (lA * factorA + lB * factorB) * aa;
+      const a = (aA * factorA + aB * factorB) * aa;
+      const b = (bA * factorA + bB * factorB) * aa;
+      hex = await convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * m})`);
+    // in oklch
+    } else if (colorSpace === 'oklch') {
+      const [lA, cA, hA, aaA] = await hexToOklch(colorAHex);
+      const [lB, cB, hB, aaB] = await hexToOklch(colorBHex);
+      const factorA = aaA * pA;
+      const factorB = aaB * pB;
+      const aa = (factorA + factorB);
+      const l = (lA * factorA + lB * factorB) * aa;
+      const c = (cA * factorA + cB * factorB) * aa;
+      const h = (hA * factorA + hB * factorB) * aa;
+      hex = await convertColorToHex(`oklch(${l} ${c} ${h} / ${aa * m})`);
+    }
   }
   return hex || null;
 };
@@ -1697,12 +1705,13 @@ export const convertColorMixToHex = async value => {
  * @returns {?string|Array} - string of hex color or array of [prop, hex] pair
  */
 export const getColorInHex = async (value, opt = {}) => {
-  if (!isString(value)) {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const { alpha, prop } = opt;
   let hex;
-  value = value.trim();
   if (value.startsWith('color-mix')) {
     hex = await convertColorMixToHex(value);
   } else if (value.startsWith('color(')) {

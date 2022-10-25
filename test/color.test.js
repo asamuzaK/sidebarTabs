@@ -4087,16 +4087,6 @@ describe('color', () => {
       const res = await func('color-mix(in srgb, color(srgb 0 0.5 0), color(srgb 1 0 1))');
       assert.strictEqual(res, '#804080', 'result');
     });
-
-    it('should get value', async () => {
-      const res = await func('color-mix(in srgb, color(srgb 0 0.5 0), color-mix(in srgb, white, blue))');
-      assert.strictEqual(res, '#408080', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color-mix(in srgb, color-mix(in srgb, white, blue), color(srgb 0 0.5 0))');
-      assert.strictEqual(res, '#408080', 'result');
-    });
   });
 
   describe('get color in hexadecimal color syntax', () => {
