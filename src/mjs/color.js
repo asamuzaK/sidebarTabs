@@ -1034,7 +1034,7 @@ export const parseOklab = async value => {
   } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`oklab\\(\\s*(${REG_LAB})\\s*\\)`);
+  const reg = new RegExp(`^oklab\\(\\s*(${REG_LAB})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -1096,7 +1096,7 @@ export const parseOklch = async value => {
   } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const reg = new RegExp(`oklch\\(\\s*(${REG_LAB})\\s*\\)`);
+  const reg = new RegExp(`^oklch\\(\\s*(${REG_LAB})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
