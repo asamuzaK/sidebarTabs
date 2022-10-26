@@ -337,10 +337,11 @@ export const numberToHexString = async value => {
     throw new TypeError(`Expected Number but got ${getType(value)}.`);
   } else if (Number.isNaN(value)) {
     throw new TypeError(`${value} is not a number.`);
-  }
-  value = Math.round(value);
-  if (value < 0 || value > MAX_RGB) {
-    throw new RangeError(`${value} is not between 0 and ${MAX_RGB}.`);
+  } else {
+    value = Math.round(value);
+    if (value < 0 || value > MAX_RGB) {
+      throw new RangeError(`${value} is not between 0 and ${MAX_RGB}.`);
+    }
   }
   let hex = value.toString(HEX);
   if (hex.length === 1) {
@@ -356,7 +357,9 @@ export const numberToHexString = async value => {
  * @returns {number} - deg 0..360
  */
 export const angleToDeg = async angle => {
-  if (!isString(angle)) {
+  if (isString(angle)) {
+    angle = angle.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(angle)}.`);
   }
   const reg = new RegExp(`^(${REG_NUM})(${REG_ANGLE})?$`);
