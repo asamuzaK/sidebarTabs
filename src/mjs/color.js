@@ -121,6 +121,7 @@ const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{
 const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
 const REG_COLOR_MIX_CAPT = `color-mix\\(\\s*in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*\\)`;
 
+/* named colors */
 export const colorname = {
   aliceblue: '#f0f8ff',
   antiquewhite: '#faebd7',
@@ -636,6 +637,7 @@ export const hexToLch = async value => {
   const [l, a, b, aa] = await hexToLab(value);
   let c, h;
   // l = 100 should always be white
+  // https://github.com/web-platform-tests/wpt/blob/master/css/css-color/lch-009.html
   if (parseFloat(l.toFixed(1)) === 100) {
     c = 0;
     h = 0;
@@ -1434,17 +1436,20 @@ export const convertColorFuncToHex = async value => {
     a = 1;
   }
   let hex;
+  // srgb
   if (cs === 'srgb') {
     const r = v1.endsWith('%') ? v1 : `${parseFloat(v1) * MAX_PCT}%`;
     const g = v2.endsWith('%') ? v2 : `${parseFloat(v2) * MAX_PCT}%`;
     const b = v3.endsWith('%') ? v3 : `${parseFloat(v3) * MAX_PCT}%`;
     const rgb = `rgb(${r} ${g} ${b} / ${a})`;
     hex = await convertColorToHex(rgb, true);
+  // srgb-linear
   } else if (cs === 'srgb-linear') {
     const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
     const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
     const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
     hex = await convertLinearRgbToHex([r, g, b, a]);
+  // xyz, xyz-d50, xyz-d65
   } else if (/^xyz(?:-d(?:50|65))?$/.test(cs)) {
     const x = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
     const y = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
@@ -1454,6 +1459,7 @@ export const convertColorFuncToHex = async value => {
     } else {
       hex = await convertXyzToHex([x, y, z, a]);
     }
+  // display-p3
   } else if (cs === 'display-p3') {
     const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
     const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
@@ -1461,6 +1467,7 @@ export const convertColorFuncToHex = async value => {
     const linearRgb = await rgbToLinearRgb([r, g, b]);
     const [x, y, z] = await transformMatrix(MATRIX_P3_TO_XYZ, linearRgb);
     hex = await convertXyzToHex([x, y, z, a]);
+  // rec2020
   } else if (cs === 'rec2020') {
     const ALPHA = 1.09929682680944;
     const BETA = 0.018053968510807;
@@ -1479,6 +1486,7 @@ export const convertColorFuncToHex = async value => {
     });
     const [x, y, z] = await transformMatrix(MATRIX_REC2020_TO_XYZ, rgb);
     hex = await convertXyzToHex([x, y, z, a]);
+  // a98-rgb
   } else if (cs === 'a98-rgb') {
     const POW_A98 = 563 / 256;
     const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
@@ -1490,6 +1498,7 @@ export const convertColorFuncToHex = async value => {
     });
     const [x, y, z] = await transformMatrix(MATRIX_A98_TO_XYZ, rgb);
     hex = await convertXyzToHex([x, y, z, a]);
+  // prophoto-rgb
   } else if (cs === 'prophoto-rgb') {
     const POW_PROPHOTO = 1.8;
     const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
