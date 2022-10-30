@@ -1750,20 +1750,20 @@ export const compositeLayeredColors = async (overlay, base) => {
   });
   let hex;
   if (overlayHex && baseHex) {
-    const [overlayR, overlayG, overlayB, overlayA] = await hexToRgb(overlayHex);
-    const [baseR, baseG, baseB, baseA] = await hexToRgb(baseHex);
-    const alpha = 1 - (1 - overlayA) * (1 - baseA);
-    if (overlayA === 1) {
+    const [rO, gO, bO, aO] = await hexToRgb(overlayHex);
+    const [rB, gB, bB, aB] = await hexToRgb(baseHex);
+    const alpha = 1 - (1 - aO) * (1 - aB);
+    if (aO === 1) {
       hex = overlayHex;
-    } else if (overlayA === 0) {
+    } else if (aO === 0) {
       hex = baseHex;
     } else if (alpha) {
-      const overlayAlpha = overlayA / alpha;
-      const baseAlpha = baseA * (1 - overlayA) / alpha;
+      const alphaO = aO / alpha;
+      const alphaB = aB * (1 - aO) / alpha;
       const [r, g, b, a] = await Promise.all([
-        numberToHexString(baseR * baseAlpha + overlayR * overlayAlpha),
-        numberToHexString(baseG * baseAlpha + overlayG * overlayAlpha),
-        numberToHexString(baseB * baseAlpha + overlayB * overlayAlpha),
+        numberToHexString(rO * alphaO + rB * alphaB),
+        numberToHexString(gO * alphaO + gB * alphaB),
+        numberToHexString(bO * alphaO + bB * alphaB),
         numberToHexString(alpha * MAX_RGB)
       ]);
       if (a === 'ff') {
