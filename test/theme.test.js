@@ -175,7 +175,104 @@ describe('theme', () => {
     it('should throw', async () => {
       await func('foo').catch(e => {
         assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+        assert.strictEqual(e.message,
+          'Expected Array or String but got Undefined.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', []).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [-1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [256]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, 256]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, 128]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, 128, NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, 128, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
+          'message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('foo', [128, 128, 256]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
           'message');
       });
     });
@@ -192,7 +289,8 @@ describe('theme', () => {
       await func('qux', 'currentColor');
       await func('quux', 'color-mix(in srgb, currentcolor, red)');
       await func('corge', 'foobar');
-      assert.strictEqual(mjs.currentThemeColors.size, 5, 'size');
+      await func('grault', [128, 128, 128]);
+      assert.strictEqual(mjs.currentThemeColors.size, 6, 'size');
       assert.strictEqual(mjs.currentThemeColors.get('foo'), '#1234ab', 'map');
       assert.strictEqual(mjs.currentThemeColors.get('bar'), '#ff1234', 'map');
       assert.strictEqual(mjs.currentThemeColors.get('baz'), 'transparent',
@@ -202,6 +300,8 @@ describe('theme', () => {
       assert.strictEqual(mjs.currentThemeColors.get('quux'),
         'color-mix(in srgb, currentcolor, red)', 'map');
       assert.isFalse(mjs.currentThemeColors.has('corge'), 'map');
+      assert.strictEqual(mjs.currentThemeColors.get('grault'), '#808080',
+        'map');
     });
   });
 

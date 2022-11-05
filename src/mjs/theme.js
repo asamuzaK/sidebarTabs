@@ -46,6 +46,7 @@ import {
 /* constants */
 const FRAME_BG = 'frame';
 const FRAME_TEXT = 'tab_background_text';
+const MAX_RGB = 255;
 
 /* theme map */
 export const themeMap = {
@@ -231,8 +232,43 @@ export const setCurrentThemeColors = async (key, value) => {
   if (!isString(key)) {
     throw new TypeError(`Expected String but got ${getType(key)}.`);
   }
-  if (!isString(value)) {
-    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  if (Array.isArray(value)) {
+    let [r, g, b] = value;
+    if (typeof r === 'number') {
+      r = Math.round(r);
+      if (Number.isNaN(r)) {
+        throw new TypeError(`${r} is not a number.`);
+      } else if (r < 0 || r > MAX_RGB) {
+        throw new RangeError(`${r} is not between 0 and ${MAX_RGB}.`);
+      }
+    } else {
+      throw new TypeError(`Expected Number but got ${getType(r)}.`);
+    }
+    if (typeof g === 'number') {
+      g = Math.round(g);
+      if (Number.isNaN(g)) {
+        throw new TypeError(`${g} is not a number.`);
+      } else if (g < 0 || g > MAX_RGB) {
+        throw new RangeError(`${g} is not between 0 and ${MAX_RGB}.`);
+      }
+    } else {
+      throw new TypeError(`Expected Number but got ${getType(g)}.`);
+    }
+    if (typeof b === 'number') {
+      b = Math.round(b);
+      if (Number.isNaN(b)) {
+        throw new TypeError(`${b} is not a number.`);
+      } else if (b < 0 || b > MAX_RGB) {
+        throw new RangeError(`${b} is not between 0 and ${MAX_RGB}.`);
+      }
+    } else {
+      throw new TypeError(`Expected Number but got ${getType(b)}.`);
+    }
+    value = `rgb(${r} ${g} ${b})`;
+  } else if (isString(value)) {
+    value = value.trim();
+  } else {
+    throw new TypeError(`Expected Array or String but got ${getType(value)}.`);
   }
   if (/currentcolor|transparent/i.test(value)) {
     currentThemeColors.set(key, value);
