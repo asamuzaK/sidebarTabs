@@ -289,7 +289,7 @@ describe('theme', () => {
       await func('qux', 'currentColor');
       await func('quux', 'color-mix(in srgb, currentcolor, red)');
       await func('corge', 'foobar');
-      await func('grault', [128, 128, 128]);
+      await func('grault', [128, 0, 255]);
       await func('garply', ' ');
       await func(' ', 'red');
       assert.strictEqual(mjs.currentThemeColors.size, 6, 'size');
@@ -302,7 +302,7 @@ describe('theme', () => {
       assert.strictEqual(mjs.currentThemeColors.get('quux'),
         'color-mix(in srgb, currentcolor, red)', 'map');
       assert.isFalse(mjs.currentThemeColors.has('corge'), 'map');
-      assert.strictEqual(mjs.currentThemeColors.get('grault'), '#808080',
+      assert.strictEqual(mjs.currentThemeColors.get('grault'), '#8000ff',
         'map');
       assert.isFalse(mjs.currentThemeColors.has('garply'), 'map');
       assert.isFalse(mjs.currentThemeColors.has(''), 'map');
