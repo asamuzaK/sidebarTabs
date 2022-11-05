@@ -7,9 +7,9 @@ import {
   getType, isObjectNotEmpty, isString, sleep, throwErr
 } from './common.js';
 import {
-  clearStorage, getActiveTab, getAllContextualIdentities,
-  getAllTabsInWindow, getContextualId, getCurrentWindow, getHighlightedTab,
-  getOs, getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
+  clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
+  getContextualId, getCurrentWindow, getHighlightedTab, getOs,
+  getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
   restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { addPort, ports } from './port.js';
@@ -17,10 +17,9 @@ import { bookmarkTabs } from './bookmark.js';
 import { getSessionTabList, requestSaveSession } from './session.js';
 import { localizeHtml } from './localize.js';
 import {
-  activateTab, createSidebarTab, getSidebarTab,
-  getSidebarTabContainer, getSidebarTabId, getSidebarTabIndex, getTabsInRange,
-  getTemplate, isNewTab, scrollTabIntoView,
-  storeCloseTabsByDoubleClickValue, switchTab
+  activateTab, createSidebarTab, getSidebarTab, getSidebarTabContainer,
+  getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate,
+  isNewTab, scrollTabIntoView, storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
 import {
   closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
