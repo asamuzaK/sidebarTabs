@@ -305,6 +305,7 @@ describe('theme', () => {
       assert.strictEqual(mjs.currentThemeColors.get('grault'), '#808080',
         'map');
       assert.isFalse(mjs.currentThemeColors.has('garply'), 'map');
+      assert.isFalse(mjs.currentThemeColors.has(''), 'map');
     });
   });
 

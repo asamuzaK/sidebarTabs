@@ -229,7 +229,9 @@ export const getThemeId = async () => {
  * @returns {void}
  */
 export const setCurrentThemeColors = async (key, value) => {
-  if (!isString(key)) {
+  if (isString(key)) {
+    key = key.trim();
+  } else {
     throw new TypeError(`Expected String but got ${getType(key)}.`);
   }
   if (Array.isArray(value)) {
@@ -270,7 +272,7 @@ export const setCurrentThemeColors = async (key, value) => {
   } else {
     throw new TypeError(`Expected Array or String but got ${getType(value)}.`);
   }
-  if (value) {
+  if (key && value) {
     if (/currentcolor|transparent/i.test(value)) {
       currentThemeColors.set(key, value);
     } else {
