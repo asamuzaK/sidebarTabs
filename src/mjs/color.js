@@ -316,14 +316,14 @@ export const transformMatrix = async (mtx, vct) => {
     }
   }
   const [
-    [r0c0, r0c1, r0c2],
-    [r1c0, r1c1, r1c2],
-    [r2c0, r2c1, r2c2]
+    [r1c1, r1c2, r1c3],
+    [r2c1, r2c2, r2c3],
+    [r3c1, r3c2, r3c3]
   ] = mtx;
   const [v1, v2, v3] = vct;
-  const p1 = r0c0 * v1 + r0c1 * v2 + r0c2 * v3;
-  const p2 = r1c0 * v1 + r1c1 * v2 + r1c2 * v3;
-  const p3 = r2c0 * v1 + r2c1 * v2 + r2c2 * v3;
+  const p1 = r1c1 * v1 + r1c2 * v2 + r1c3 * v3;
+  const p2 = r2c1 * v1 + r2c2 * v2 + r2c3 * v3;
+  const p3 = r3c1 * v1 + r3c2 * v2 + r3c3 * v3;
   return [p1, p2, p3];
 };
 
