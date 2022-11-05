@@ -306,6 +306,7 @@ describe('theme', () => {
         'map');
       assert.isFalse(mjs.currentThemeColors.has('garply'), 'map');
       assert.isFalse(mjs.currentThemeColors.has(''), 'map');
+      assert.isFalse(mjs.currentThemeColors.has(' '), 'map');
     });
   });
 
