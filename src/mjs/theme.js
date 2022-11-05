@@ -270,14 +270,16 @@ export const setCurrentThemeColors = async (key, value) => {
   } else {
     throw new TypeError(`Expected Array or String but got ${getType(value)}.`);
   }
-  if (/currentcolor|transparent/i.test(value)) {
-    currentThemeColors.set(key, value);
-  } else {
-    const hexValue = await getColorInHex(value, {
-      alpha: true
-    });
-    if (hexValue) {
-      currentThemeColors.set(key, hexValue);
+  if (value) {
+    if (/currentcolor|transparent/i.test(value)) {
+      currentThemeColors.set(key, value);
+    } else {
+      const hexValue = await getColorInHex(value, {
+        alpha: true
+      });
+      if (hexValue) {
+        currentThemeColors.set(key, hexValue);
+      }
     }
   }
 };
