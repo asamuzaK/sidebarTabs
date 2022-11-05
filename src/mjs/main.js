@@ -2501,5 +2501,6 @@ export const startup = async () => {
     .then(toggleTabGrouping).then(restoreHighlightedTabs)
     .then(requestSaveSession).then(getLastClosedTab);
 };
+
 // For test
 export { ports };
