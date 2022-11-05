@@ -291,6 +291,7 @@ describe('theme', () => {
       await func('corge', 'foobar');
       await func('grault', [128, 128, 128]);
       await func('garply', ' ');
+      await func(' ', 'red');
       assert.strictEqual(mjs.currentThemeColors.size, 6, 'size');
       assert.strictEqual(mjs.currentThemeColors.get('foo'), '#1234ab', 'map');
       assert.strictEqual(mjs.currentThemeColors.get('bar'), '#ff1234', 'map');

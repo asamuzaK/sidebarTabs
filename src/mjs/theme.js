@@ -225,7 +225,7 @@ export const getThemeId = async () => {
  * set current theme colors map
  *
  * @param {string} key - key
- * @param {string} value - value
+ * @param {Array.<number>|string} value - color value
  * @returns {void}
  */
 export const setCurrentThemeColors = async (key, value) => {
