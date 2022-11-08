@@ -361,7 +361,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -393,7 +393,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -425,7 +425,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2544,6 +2544,176 @@ describe('color', () => {
     });
   });
 
+  describe('convert rgb to hex color', () => {
+    const func = mjs.convertRgbToHex;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([Number.NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([-1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([256]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, Number.NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 256]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, Number.NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, 256]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '256 is not between 0 and 255.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, 128, 'foo']).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got String.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, 128, Number.NaN]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, 128, -1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([128, 128, 128, 1.1]).catch(e => {
+        assert.instanceOf(e, RangeError, 'error');
+        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func([255, 0, 128]);
+      assert.deepEqual(res, '#ff0080', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([255, 0, 128, 1]);
+      assert.deepEqual(res, '#ff0080', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([0, 0, 0, 1]);
+      assert.deepEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([255, 255, 255, 1]);
+      assert.deepEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([1, 35, 69, 0.40392]);
+      assert.deepEqual(res, '#01234567', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func([137, 171, 205, 0.93725]);
+      assert.deepEqual(res, '#89abcdef', 'result');
+    });
+  });
+
   describe('convert linear rgb to hex color', () => {
     const func = mjs.convertLinearRgbToHex;
 
@@ -2565,7 +2735,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2597,7 +2767,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2629,7 +2799,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2661,7 +2831,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2745,7 +2915,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2761,7 +2931,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2777,7 +2947,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2793,7 +2963,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2892,7 +3062,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2908,7 +3078,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2924,7 +3094,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });
@@ -2940,7 +3110,7 @@ describe('color', () => {
 
     it('should throw', async () => {
       await func([1, 1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.instanceOf(e, TypeError, 'error');
         assert.strictEqual(e.message, 'NaN is not a number.',
           'error message');
       });

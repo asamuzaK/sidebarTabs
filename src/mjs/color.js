@@ -404,21 +404,21 @@ export const rgbToLinearRgb = async rgb => {
   if (typeof r !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(r)}.`);
   } else if (Number.isNaN(r)) {
-    throw new Error(`${r} is not a number.`);
+    throw new TypeError(`${r} is not a number.`);
   } else if (r < 0 || r > 1) {
     throw new RangeError(`${r} is not between 0 and 1.`);
   }
   if (typeof g !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(g)}.`);
   } else if (Number.isNaN(g)) {
-    throw new Error(`${g} is not a number.`);
+    throw new TypeError(`${g} is not a number.`);
   } else if (g < 0 || g > 1) {
     throw new RangeError(`${g} is not between 0 and 1.`);
   }
   if (typeof b !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(b)}.`);
   } else if (Number.isNaN(b)) {
-    throw new Error(`${b} is not a number.`);
+    throw new TypeError(`${b} is not a number.`);
   } else if (b < 0 || b > 1) {
     throw new RangeError(`${b} is not between 0 and 1.`);
   }
@@ -1158,6 +1158,61 @@ export const parseOklch = async value => {
 };
 
 /**
+ * convert rgb to hex color
+ *
+ * @param {Array.<number>} rgb - [r, g, b, a] r|g|b: 0..255 a: 0..1|undefined
+ * @returns {string} - hex color;
+ */
+export const convertRgbToHex = async rgb => {
+  if (!Array.isArray(rgb)) {
+    throw new TypeError(`Expected Array but got ${getType(rgb)}.`);
+  }
+  let [r, g, b, a] = rgb;
+  if (typeof r !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(r)}.`);
+  } else if (Number.isNaN(r)) {
+    throw new TypeError(`${r} is not a number.`);
+  } else if (r < 0 || r > MAX_RGB) {
+    throw new RangeError(`${r} is not between 0 and ${MAX_RGB}.`);
+  }
+  if (typeof g !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(g)}.`);
+  } else if (Number.isNaN(g)) {
+    throw new TypeError(`${g} is not a number.`);
+  } else if (g < 0 || g > MAX_RGB) {
+    throw new RangeError(`${g} is not between 0 and ${MAX_RGB}.`);
+  }
+  if (typeof b !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(b)}.`);
+  } else if (Number.isNaN(b)) {
+    throw new TypeError(`${b} is not a number.`);
+  } else if (b < 0 || b > MAX_RGB) {
+    throw new RangeError(`${b} is not between 0 and ${MAX_RGB}.`);
+  }
+  a ??= 1;
+  if (typeof a !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(a)}.`);
+  } else if (Number.isNaN(a)) {
+    throw new TypeError(`${a} is not a number.`);
+  } else if (a < 0 || a > 1) {
+    throw new RangeError(`${a} is not between 0 and 1.`);
+  }
+  const [rr, gg, bb, aa] = await Promise.all([
+    numberToHexString(r),
+    numberToHexString(g),
+    numberToHexString(b),
+    numberToHexString(a * MAX_RGB)
+  ]);
+  let hex;
+  if (aa === 'ff') {
+    hex = `#${rr}${gg}${bb}`;
+  } else {
+    hex = `#${rr}${gg}${bb}${aa}`;
+  }
+  return hex;
+};
+
+/**
  * convert linear rgb to hex color
  *
  * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
@@ -1171,28 +1226,28 @@ export const convertLinearRgbToHex = async rgb => {
   if (typeof r !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(r)}.`);
   } else if (Number.isNaN(r)) {
-    throw new Error(`${r} is not a number.`);
+    throw new TypeError(`${r} is not a number.`);
   } else if (r < 0 || r > 1) {
     throw new RangeError(`${r} is not between 0 and 1.`);
   }
   if (typeof g !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(g)}.`);
   } else if (Number.isNaN(g)) {
-    throw new Error(`${g} is not a number.`);
+    throw new TypeError(`${g} is not a number.`);
   } else if (g < 0 || g > 1) {
     throw new RangeError(`${g} is not between 0 and 1.`);
   }
   if (typeof b !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(b)}.`);
   } else if (Number.isNaN(b)) {
-    throw new Error(`${b} is not a number.`);
+    throw new TypeError(`${b} is not a number.`);
   } else if (b < 0 || b > 1) {
     throw new RangeError(`${b} is not between 0 and 1.`);
   }
   if (typeof a !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(a)}.`);
   } else if (Number.isNaN(a)) {
-    throw new Error(`${a} is not a number.`);
+    throw new TypeError(`${a} is not a number.`);
   } else if (a < 0 || a > 1) {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
@@ -1241,22 +1296,22 @@ export const convertXyzToHex = async xyz => {
   if (typeof x !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(x)}.`);
   } else if (Number.isNaN(x)) {
-    throw new Error(`${x} is not a number.`);
+    throw new TypeError(`${x} is not a number.`);
   }
   if (typeof y !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(y)}.`);
   } else if (Number.isNaN(y)) {
-    throw new Error(`${y} is not a number.`);
+    throw new TypeError(`${y} is not a number.`);
   }
   if (typeof z !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(z)}.`);
   } else if (Number.isNaN(z)) {
-    throw new Error(`${z} is not a number.`);
+    throw new TypeError(`${z} is not a number.`);
   }
   if (typeof a !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(a)}.`);
   } else if (Number.isNaN(a)) {
-    throw new Error(`${a} is not a number.`);
+    throw new TypeError(`${a} is not a number.`);
   } else if (a < 0 || a > 1) {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
@@ -1284,22 +1339,22 @@ export const convertXyzD50ToHex = async xyz => {
   if (typeof x !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(x)}.`);
   } else if (Number.isNaN(x)) {
-    throw new Error(`${x} is not a number.`);
+    throw new TypeError(`${x} is not a number.`);
   }
   if (typeof y !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(y)}.`);
   } else if (Number.isNaN(y)) {
-    throw new Error(`${y} is not a number.`);
+    throw new TypeError(`${y} is not a number.`);
   }
   if (typeof z !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(z)}.`);
   } else if (Number.isNaN(z)) {
-    throw new Error(`${z} is not a number.`);
+    throw new TypeError(`${z} is not a number.`);
   }
   if (typeof a !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(a)}.`);
   } else if (Number.isNaN(a)) {
-    throw new Error(`${a} is not a number.`);
+    throw new TypeError(`${a} is not a number.`);
   } else if (a < 0 || a > 1) {
     throw new RangeError(`${a} is not between 0 and 1.`);
   }
@@ -1390,16 +1445,10 @@ export const convertColorToHex = async (value, alpha = false) => {
         typeof g === 'number' && !Number.isNaN(g) &&
         typeof b === 'number' && !Number.isNaN(b) &&
         typeof a === 'number' && !Number.isNaN(a)) {
-      const [rr, gg, bb, aa] = await Promise.all([
-        numberToHexString(r),
-        numberToHexString(g),
-        numberToHexString(b),
-        numberToHexString(a * MAX_RGB)
-      ]);
-      if (!alpha || aa === 'ff') {
-        hex = `#${rr}${gg}${bb}`;
+      if (alpha) {
+        hex = await convertRgbToHex([r, g, b, a]);
       } else {
-        hex = `#${rr}${gg}${bb}${aa}`;
+        hex = await convertRgbToHex([r, g, b]);
       }
     }
   }
@@ -1597,36 +1646,10 @@ export const convertColorMixToHex = async value => {
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const factor = MAX_PCT / (a * MAX_RGB);
-      const r = (rA * factorA + rB * factorB) * factor;
-      const g = (gA * factorA + gB * factorB) * factor;
-      const b = (bA * factorA + bB * factorB) * factor;
-      const rgb = `rgb(${r}% ${g}% ${b}% / ${a * m})`;
-      hex = await convertColorToHex(rgb, true);
-    // in hsl
-    } else if (colorSpace === 'hsl') {
-      const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
-      const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
-      const factorA = aA * pA;
-      const factorB = aB * pB;
-      const a = (factorA + factorB);
-      const h = (hA * pA + hB * pB) % DEG;
-      const s = (sA * factorA + sB * factorB) / a;
-      const l = (lA * factorA + lB * factorB) / a;
-      const hsl = `hsl(${h} ${s}% ${l}% / ${a * m})`;
-      hex = await convertColorToHex(hsl, true);
-    // in hwb
-    } else if (colorSpace === 'hwb') {
-      const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
-      const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
-      const factorA = aA * pA;
-      const factorB = aB * pB;
-      const a = (factorA + factorB);
-      const h = (hA * pA + hB * pB) % DEG;
-      const w = (wA * factorA + wB * factorB) / a;
+      const r = (rA * factorA + rB * factorB) / a;
+      const g = (gA * factorA + gB * factorB) / a;
       const b = (bA * factorA + bB * factorB) / a;
-      const hwb = `hwb(${h} ${w}% ${b}% / ${a * m})`;
-      hex = await convertColorToHex(hwb, true);
+      hex = await convertRgbToHex([r, g, b, a * m]);
     // in srgb-linear
     } else if (colorSpace === 'srgb-linear') {
       const [rA, gA, bA, aA] = await hexToLinearRgb(colorAHex);
@@ -1660,6 +1683,30 @@ export const convertColorMixToHex = async value => {
       const g = (yA * factorA + yB * factorB) * a;
       const b = (zA * factorA + zB * factorB) * a;
       hex = await convertXyzD50ToHex([r, g, b, a * m]);
+    // in hsl
+    } else if (colorSpace === 'hsl') {
+      const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
+      const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const h = (hA * pA + hB * pB) % DEG;
+      const s = (sA * factorA + sB * factorB) / a;
+      const l = (lA * factorA + lB * factorB) / a;
+      const hsl = `hsl(${h} ${s}% ${l}% / ${a * m})`;
+      hex = await convertColorToHex(hsl, true);
+    // in hwb
+    } else if (colorSpace === 'hwb') {
+      const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
+      const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
+      const factorA = aA * pA;
+      const factorB = aB * pB;
+      const a = (factorA + factorB);
+      const h = (hA * pA + hB * pB) % DEG;
+      const w = (wA * factorA + wB * factorB) / a;
+      const b = (bA * factorA + bB * factorB) / a;
+      const hwb = `hwb(${h} ${w}% ${b}% / ${a * m})`;
+      hex = await convertColorToHex(hwb, true);
     // in lab
     } else if (colorSpace === 'lab') {
       const [lA, aA, bA, aaA] = await hexToLab(colorAHex);
