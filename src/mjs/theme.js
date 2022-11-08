@@ -48,7 +48,6 @@ import {
 /* constants */
 const FRAME_BG = 'frame';
 const FRAME_TEXT = 'tab_background_text';
-const MAX_RGB = 255;
 
 /* theme map */
 export const themeMap = {
