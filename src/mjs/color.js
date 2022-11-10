@@ -1668,10 +1668,10 @@ export const convertColorMixToHex = async value => {
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const r = (xA * factorA + xB * factorB) * a;
-      const g = (yA * factorA + yB * factorB) * a;
-      const b = (zA * factorA + zB * factorB) * a;
-      hex = await convertXyzToHex([r, g, b, a * m]);
+      const x = (xA * factorA + xB * factorB) * a;
+      const y = (yA * factorA + yB * factorB) * a;
+      const z = (zA * factorA + zB * factorB) * a;
+      hex = await convertXyzToHex([x, y, z, a * m]);
     // in xyz-d50
     } else if (colorSpace === 'xyz-d50') {
       const [xA, yA, zA, aA] = await hexToXyzD50(colorAHex);
@@ -1679,10 +1679,10 @@ export const convertColorMixToHex = async value => {
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const r = (xA * factorA + xB * factorB) * a;
-      const g = (yA * factorA + yB * factorB) * a;
-      const b = (zA * factorA + zB * factorB) * a;
-      hex = await convertXyzD50ToHex([r, g, b, a * m]);
+      const x = (xA * factorA + xB * factorB) * a;
+      const y = (yA * factorA + yB * factorB) * a;
+      const z = (zA * factorA + zB * factorB) * a;
+      hex = await convertXyzD50ToHex([x, y, z, a * m]);
     // in hsl
     } else if (colorSpace === 'hsl') {
       const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
