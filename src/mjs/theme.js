@@ -235,22 +235,26 @@ export const setCurrentThemeColors = async (key, value) => {
   } else {
     throw new TypeError(`Expected String but got ${getType(key)}.`);
   }
-  if (Array.isArray(value)) {
-    value = await convertRgbToHex(value);
-  } else if (isString(value)) {
-    value = value.trim();
-  } else {
+  if (!(Array.isArray(value) || isString(value))) {
     throw new TypeError(`Expected Array or String but got ${getType(value)}.`);
   }
-  if (key && value) {
-    if (/currentcolor|transparent/i.test(value)) {
-      currentThemeColors.set(key, value);
-    } else {
-      const hexValue = await getColorInHex(value, {
-        alpha: true
-      });
+  if (key) {
+    if (Array.isArray(value)) {
+      const hexValue = await convertRgbToHex(value);
       if (hexValue) {
         currentThemeColors.set(key, hexValue);
+      }
+    } else {
+      value = value.trim();
+      if (/currentcolor|transparent/i.test(value)) {
+        currentThemeColors.set(key, value);
+      } else if (value) {
+        const hexValue = await getColorInHex(value, {
+          alpha: true
+        });
+        if (hexValue) {
+          currentThemeColors.set(key, hexValue);
+        }
       }
     }
   }
