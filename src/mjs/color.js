@@ -1693,8 +1693,7 @@ export const convertColorMixToHex = async value => {
       const h = (hA * pA + hB * pB) % DEG;
       const s = (sA * factorA + sB * factorB) / a;
       const l = (lA * factorA + lB * factorB) / a;
-      const hsl = `hsl(${h} ${s}% ${l}% / ${a * m})`;
-      hex = await convertColorToHex(hsl, true);
+      hex = await convertColorToHex(`hsl(${h} ${s}% ${l}% / ${a * m})`, true);
     // in hwb
     } else if (colorSpace === 'hwb') {
       const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
@@ -1705,8 +1704,7 @@ export const convertColorMixToHex = async value => {
       const h = (hA * pA + hB * pB) % DEG;
       const w = (wA * factorA + wB * factorB) / a;
       const b = (bA * factorA + bB * factorB) / a;
-      const hwb = `hwb(${h} ${w}% ${b}% / ${a * m})`;
-      hex = await convertColorToHex(hwb, true);
+      hex = await convertColorToHex(`hwb(${h} ${w}% ${b}% / ${a * m})`, true);
     // in lab
     } else if (colorSpace === 'lab') {
       const [lA, aA, bA, aaA] = await hexToLab(colorAHex);
