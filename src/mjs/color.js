@@ -1090,7 +1090,7 @@ export const parseOklab = async value => {
 };
 
 /**
- + parse oklab()
+ + parse oklch()
  *
  * @param {string} value - value
  * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
