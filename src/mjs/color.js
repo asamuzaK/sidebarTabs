@@ -6,7 +6,7 @@
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
  *
  * NOTE: 'currentColor' keyword is not supported
- * TODO: 'none' keyword is not yet supported
+ * TODO: 'none' keyword is not yet fully supported
  */
 
 /* shared */
@@ -101,6 +101,7 @@ const MATRIX_PROPHOTO_TO_XYZ_D50 = [
 ];
 
 /* regexp */
+const NONE = 'none';
 const REG_ANGLE = 'deg|g?rad|turn';
 const REG_COLOR_SPACE_COLOR_MIX =
   '(?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?';
@@ -112,7 +113,7 @@ const REG_NUM =
 const REG_PCT = `${REG_NUM}%`;
 const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s+${REG_PCT}){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s*,\\s*${REG_PCT}){2}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_RGB = `(?:${REG_NUM}(?:\\s+${REG_NUM}){2}|${REG_PCT}(?:\\s+${REG_PCT}){2})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_RGB = `(?:(?:${REG_NUM}|${NONE})(?:\\s+(?:${REG_NUM}|${NONE})){2}|(?:${REG_PCT}|${NONE})(?:\\s+(?:${REG_PCT}|${NONE})){2})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LAB = `(?:${REG_NUM}|${REG_PCT})(?:\\s+(?:${REG_NUM}|${REG_PCT})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT})\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
@@ -718,38 +719,54 @@ export const parseRgb = async value => {
   }
   const [, val] = value.match(reg);
   let [r, g, b, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
-  if (r.startsWith('.')) {
-    r = `0${r}`;
-  }
-  if (r.endsWith('%')) {
-    r = parseFloat(r) * MAX_RGB / MAX_PCT;
+  if (r === 'none') {
+    r = 0;
   } else {
-    r = parseFloat(r);
+    if (r.startsWith('.')) {
+      r = `0${r}`;
+    }
+    if (r.endsWith('%')) {
+      r = parseFloat(r) * MAX_RGB / MAX_PCT;
+    } else {
+      r = parseFloat(r);
+    }
   }
-  if (g.startsWith('.')) {
-    g = `0${g}`;
-  }
-  if (g.endsWith('%')) {
-    g = parseFloat(g) * MAX_RGB / MAX_PCT;
+  if (g === 'none') {
+    g = 0;
   } else {
-    g = parseFloat(g);
+    if (g.startsWith('.')) {
+      g = `0${g}`;
+    }
+    if (g.endsWith('%')) {
+      g = parseFloat(g) * MAX_RGB / MAX_PCT;
+    } else {
+      g = parseFloat(g);
+    }
   }
-  if (b.startsWith('.')) {
-    b = `0${b}`;
-  }
-  if (b.endsWith('%')) {
-    b = parseFloat(b) * MAX_RGB / MAX_PCT;
+  if (b === 'none') {
+    b = 0;
   } else {
-    b = parseFloat(b);
+    if (b.startsWith('.')) {
+      b = `0${b}`;
+    }
+    if (b.endsWith('%')) {
+      b = parseFloat(b) * MAX_RGB / MAX_PCT;
+    } else {
+      b = parseFloat(b);
+    }
   }
   if (isString(a)) {
-    if (a.startsWith('.')) {
-      a = `0${a}`;
-    }
-    if (a.endsWith('%')) {
-      a = parseFloat(a) / MAX_PCT;
+    if (a === 'none') {
+      a = 0;
     } else {
-      a = parseFloat(a);
+      if (a.startsWith('.')) {
+        a = `0${a}`;
+      }
+      if (a.endsWith('%')) {
+        a = parseFloat(a) / MAX_PCT;
+      } else {
+        a = parseFloat(a);
+      }
     }
   } else {
     a = 1;

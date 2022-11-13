@@ -1421,6 +1421,42 @@ describe('color', () => {
       });
     });
 
+    it('should throw', async () => {
+      await func('rgb(none, 2, 3)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: rgb(none, 2, 3)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('rgb(1, none, 3)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: rgb(1, none, 3)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('rgb(1, 2, none)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: rgb(1, 2, none)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('rgba(1, 2, 3, none)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: rgba(1, 2, 3, none)',
+          'error message');
+      });
+    });
+
     it('should get value', async () => {
       const res = await func('rgb(10% 20% 30% / 40%)');
       assert.deepEqual(res, [25.5, 51, 76.5, 0.4], 'result');
@@ -1434,6 +1470,86 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func('rgb(.1% .2% .3% / .4)');
       assert.deepEqual(res, [0.255, 0.51, 0.765, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(128 none none)');
+      assert.deepEqual(res, [128, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(128 none none / none)');
+      assert.deepEqual(res, [128, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(none none none / .5)');
+      assert.deepEqual(res, [0, 0, 0, 0.5], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(20% none none)');
+      assert.deepEqual(res, [51, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(20% none none / none)');
+      assert.deepEqual(res, [51, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(none none none / 50%)');
+      assert.deepEqual(res, [0, 0, 0, 0.5], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(128 none none)');
+      assert.deepEqual(res, [128, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(128 none none / none)');
+      assert.deepEqual(res, [128, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(none none none / .5)');
+      assert.deepEqual(res, [0, 0, 0, 0.5], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(20% none none)');
+      assert.deepEqual(res, [51, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(20% none none / none)');
+      assert.deepEqual(res, [51, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgba(none none none / 50%)');
+      assert.deepEqual(res, [0, 0, 0, 0.5], 'result');
     });
   });
 
