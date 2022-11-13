@@ -902,23 +902,39 @@ export const parseHwb = async value => {
   }
   const [, val] = value.match(reg);
   let [h, w, b, a] = val.replace('/', ' ').split(/\s+/);
-  h = await angleToDeg(h);
-  if (w.startsWith('.')) {
-    w = `0${w}`;
+  if (h === 'none') {
+    h = 0;
+  } else {
+    h = await angleToDeg(h);
   }
-  w = Math.min(Math.max(parseFloat(w), 0), MAX_PCT) / MAX_PCT;
-  if (b.startsWith('.')) {
-    b = `0${b}`;
-  }
-  b = Math.min(Math.max(parseFloat(b), 0), MAX_PCT) / MAX_PCT;
-  if (isString(a)) {
-    if (a.startsWith('.')) {
-      a = `0${a}`;
+  if (w === 'none') {
+    w = 0;
+  } else {
+    if (w.startsWith('.')) {
+      w = `0${w}`;
     }
-    if (a.endsWith('%')) {
-      a = parseFloat(a) / MAX_PCT;
+    w = Math.min(Math.max(parseFloat(w), 0), MAX_PCT) / MAX_PCT;
+  }
+  if (b === 'none') {
+    b = 0;
+  } else {
+    if (b.startsWith('.')) {
+      b = `0${b}`;
+    }
+    b = Math.min(Math.max(parseFloat(b), 0), MAX_PCT) / MAX_PCT;
+  }
+  if (isString(a)) {
+    if (a === 'none') {
+      a = 0;
     } else {
-      a = parseFloat(a);
+      if (a.startsWith('.')) {
+        a = `0${a}`;
+      }
+      if (a.endsWith('%')) {
+        a = parseFloat(a) / MAX_PCT;
+      } else {
+        a = parseFloat(a);
+      }
     }
   } else {
     a = 1;

@@ -1907,6 +1907,77 @@ describe('color', () => {
       }
       assert.deepEqual(res, [64, 128, 0, 0.7], 'result');
     });
+
+    it('should get value', async () => {
+      const res = await func('hwb(none none none)');
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(none none none / none)');
+      assert.deepEqual(res, [255, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 none none)');
+      assert.deepEqual(res, [0, 255, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 80% none)');
+      assert.deepEqual(res, [204, 255, 204, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 80% 0%)');
+      assert.deepEqual(res, [204, 255, 204, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 none 50%)');
+      assert.deepEqual(res, [0, 127.5, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 0% 50%)');
+      assert.deepEqual(res, [0, 127.5, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 30% 50% / none)');
+      res[1] = Math.round(res[1].toFixed(1));
+      assert.deepEqual(res, [76.5, 128, 76.5, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 30% 50% / 0)');
+      res[1] = Math.round(res[1].toFixed(1));
+      assert.deepEqual(res, [76.5, 128, 76.5, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 30% 50% / none)');
+      res[1] = Math.round(res[1].toFixed(1));
+      assert.deepEqual(res, [76.5, 128, 76.5, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(120 30% 50% / 0)');
+      res[1] = Math.round(res[1].toFixed(1));
+      assert.deepEqual(res, [76.5, 128, 76.5, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(none 100% 50% / none)');
+      res[1] = Math.round(res[1].toFixed(1));
+      assert.deepEqual(res, [170, 170, 170, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(0 100% 50% / 0)');
+      res[1] = Math.round(res[1].toFixed(1));
+      assert.deepEqual(res, [170, 170, 170, 0], 'result');
+    });
   });
 
   describe('parse lab()', () => {
