@@ -1564,21 +1564,47 @@ describe('color', () => {
       });
     });
 
-    // NOTE: 'none' is not yet supported
     it('should throw', async () => {
-      await func('hsl(none 100% 50%)').catch(e => {
+      await func('hsl(1, 2%, 3% / 1)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
-          'Invalid property value: hsl(none 100% 50%)',
+          'Invalid property value: hsl(1, 2%, 3% / 1)',
           'error message');
       });
     });
 
     it('should throw', async () => {
-      await func('hsl(1, 2, 3 / 1)').catch(e => {
+      await func('hsl(none, 2%, 3%)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
-          'Invalid property value: hsl(1, 2, 3 / 1)',
+          'Invalid property value: hsl(none, 2%, 3%)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('hsl(1, none, 3%)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: hsl(1, none, 3%)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('hsl(1, 2%, none)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: hsl(1, 2%, none)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('hsla(1, 2%, 3%, none)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: hsla(1, 2%, 3%, none)',
           'error message');
       });
     });
@@ -1669,6 +1695,86 @@ describe('color', () => {
         i++;
       }
       assert.deepEqual(res, [255, 0, 255, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsla(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsla(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 0% 0%)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 80% 0%)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 none 50%)');
+      assert.deepEqual(res, [127.5, 127.5, 127.5, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 0% 50%)');
+      assert.deepEqual(res, [127.5, 127.5, 127.5, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 100% 50% / none)');
+      assert.deepEqual(res, [0, 255, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 100% 50% / 0)');
+      assert.deepEqual(res, [0, 255, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(none 100% 50% / 0)');
+      assert.deepEqual(res, [255, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(0 100% 50% / 0)');
+      assert.deepEqual(res, [255, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(120 100% 50% / 0)');
+      assert.deepEqual(res, [0, 255, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(none 100% 50%)');
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(0 100% 50%)');
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
     });
   });
 

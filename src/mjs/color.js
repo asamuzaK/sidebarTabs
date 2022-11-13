@@ -111,7 +111,7 @@ const REG_COLOR_SPACE_XYZ = 'xyz(?:-d(?:50|65))?';
 const REG_NUM =
   '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)(?:[Ee]-?(?:(?:0|[1-9]\\d*)))?';
 const REG_PCT = `${REG_NUM}%`;
-const REG_HSL_HWB = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s+${REG_PCT}){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_HSL_HWB = `(?:${REG_NUM}(?:${REG_ANGLE})?|${NONE})(?:\\s+(?:${REG_PCT}|${NONE})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s*,\\s*${REG_PCT}){2}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:(?:${REG_NUM}|${NONE})(?:\\s+(?:${REG_NUM}|${NONE})){2}|(?:${REG_PCT}|${NONE})(?:\\s+(?:${REG_PCT}|${NONE})){2})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
@@ -798,23 +798,39 @@ export const parseHsl = async value => {
   }
   const [, val] = value.match(reg);
   let [h, s, l, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
-  h = await angleToDeg(h);
-  if (s.startsWith('.')) {
-    s = `0${s}`;
+  if (h === 'none') {
+    h = 0;
+  } else {
+    h = await angleToDeg(h);
   }
-  s = Math.min(Math.max(parseFloat(s), 0), MAX_PCT);
-  if (l.startsWith('.')) {
-    l = `0${l}`;
-  }
-  l = Math.min(Math.max(parseFloat(l), 0), MAX_PCT);
-  if (isString(a)) {
-    if (a.startsWith('.')) {
-      a = `0${a}`;
+  if (s === 'none') {
+    s = 0;
+  } else {
+    if (s.startsWith('.')) {
+      s = `0${s}`;
     }
-    if (a.endsWith('%')) {
-      a = parseFloat(a) / MAX_PCT;
+    s = Math.min(Math.max(parseFloat(s), 0), MAX_PCT);
+  }
+  if (l === 'none') {
+    l = 0;
+  } else {
+    if (l.startsWith('.')) {
+      l = `0${l}`;
+    }
+    l = Math.min(Math.max(parseFloat(l), 0), MAX_PCT);
+  }
+  if (isString(a)) {
+    if (a === 'none') {
+      a = 0;
     } else {
-      a = parseFloat(a);
+      if (a.startsWith('.')) {
+        a = `0${a}`;
+      }
+      if (a.endsWith('%')) {
+        a = parseFloat(a) / MAX_PCT;
+      } else {
+        a = parseFloat(a);
+      }
     }
   } else {
     a = 1;
