@@ -10,7 +10,7 @@ import {
   clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
   getContextualId, getCurrentWindow, getHighlightedTab, getOs,
   getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, setSessionWindowValue, warmupTab
+  removeStorage, restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { addPort, ports } from './port.js';
 import { bookmarkTabs } from './bookmark.js';
@@ -2240,11 +2240,14 @@ export const setStorageValue = async (item, obj, changed = false) => {
         break;
       case THEME_AUTO:
       case THEME_CUSTOM:
-      case THEME_DARK:
-      case THEME_LIGHT:
         if (changed && checked) {
           func.push(handleUpdatedTheme());
         }
+        break;
+      // TODO: for migration, remove later
+      case THEME_DARK:
+      case THEME_LIGHT:
+        func.push(removeStorage([item]));
         break;
       case THEME_LIST:
         if (changed) {

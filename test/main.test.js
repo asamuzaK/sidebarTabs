@@ -11598,14 +11598,20 @@ describe('main', () => {
       assert.deepEqual(res, [], 'result');
     });
 
-    it('should not set variable', async () => {
+    it('should remove from storage', async () => {
+      const i = browser.storage.local.remove.callCount;
       const res = await func(THEME_LIGHT, { checked: true });
-      assert.deepEqual(res, [], 'result');
+      assert.strictEqual(browser.storage.local.remove.callCount, i + 1,
+        'called');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
-    it('should not set variable', async () => {
+    it('should remove from storage', async () => {
+      const i = browser.storage.local.remove.callCount;
       const res = await func(THEME_DARK, { checked: true });
-      assert.deepEqual(res, [], 'result');
+      assert.strictEqual(browser.storage.local.remove.callCount, i + 1,
+        'called');
+      assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
@@ -11954,139 +11960,6 @@ describe('main', () => {
       }).callCount;
       const j = browser.runtime.sendMessage.callCount;
       const res = await func(THEME_CUSTOM, {
-        checked: true
-      }, true);
-      assert.strictEqual(browser.storage.local.set.withArgs({
-        [THEME]: [THEME_AUTO, false]
-      }).callCount, i + 1, 'called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
-        'called');
-      assert.deepEqual(res, [{}], 'result');
-    });
-
-    it('should not call function', async () => {
-      window.matchMedia().matches = true;
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
-        }
-      ]);
-      const i = browser.storage.local.set.callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      const res = await func(THEME_DARK, {
-        checked: false
-      }, true);
-      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
-        'not called');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should not call function', async () => {
-      window.matchMedia().matches = true;
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
-        }
-      ]);
-      const i = browser.storage.local.set.callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      const res = await func(THEME_DARK, {
-        checked: true
-      }, false);
-      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
-        'not called');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should call function', async () => {
-      window.matchMedia().matches = true;
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
-        }
-      ]);
-      browser.runtime.sendMessage.resolves({});
-      const i = browser.storage.local.set.withArgs({
-        [THEME]: [THEME_AUTO, false]
-      }).callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      const res = await func(THEME_DARK, {
-        checked: true
-      }, true);
-      assert.strictEqual(browser.storage.local.set.withArgs({
-        [THEME]: [THEME_AUTO, false]
-      }).callCount, i + 1, 'called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
-        'called');
-      assert.deepEqual(res, [{}], 'result');
-    });
-
-    it('should not call function', async () => {
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
-        }
-      ]);
-      const i = browser.storage.local.set.callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      const res = await func(THEME_LIGHT, {
-        checked: false
-      }, true);
-      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
-        'not called');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should not call function', async () => {
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
-        }
-      ]);
-      const i = browser.storage.local.set.callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      const res = await func(THEME_LIGHT, {
-        checked: true
-      }, false);
-      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.strictEqual(browser.runtime.sendMessage.callCount, j,
-        'not called');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.storage.local.get.withArgs(THEME).resolves(undefined);
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          type: 'theme',
-          enabled: true
-        }
-      ]);
-      browser.runtime.sendMessage.resolves({});
-      const i = browser.storage.local.set.withArgs({
-        [THEME]: [THEME_AUTO, false]
-      }).callCount;
-      const j = browser.runtime.sendMessage.callCount;
-      const res = await func(THEME_LIGHT, {
         checked: true
       }, true);
       assert.strictEqual(browser.storage.local.set.withArgs({
