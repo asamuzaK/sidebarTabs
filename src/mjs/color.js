@@ -117,7 +117,7 @@ const REG_RGB = `(?:(?:${REG_NUM}|${NONE})(?:\\s+(?:${REG_NUM}|${NONE})){2}|(?:$
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_LAB = `(?:${REG_NUM}|${REG_PCT}|${NONE})(?:\\s+(?:${REG_NUM}|${REG_PCT}|${NONE})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT}|${NONE})\\s+){2}(?:${REG_NUM}(?:${REG_ANGLE})?|${NONE})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
-const REG_COLOR_FUNC = `(?:${REG_COLOR_SPACE_RGB}|${REG_COLOR_SPACE_XYZ})(?:\\s+(?:${REG_NUM}|${REG_PCT})){3}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_COLOR_FUNC = `(?:${REG_COLOR_SPACE_RGB}|${REG_COLOR_SPACE_XYZ})(?:\\s+(?:${REG_NUM}|${REG_PCT}|${NONE})){3}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\)|color\\(\\s*${REG_COLOR_FUNC}\\s*\\)`;
 const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
 const REG_COLOR_MIX_CAPT = `color-mix\\(\\s*in\\s+(${REG_COLOR_SPACE_COLOR_MIX})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*,\\s*(${REG_COLOR_MIX_PART})\\s*\\)`;
@@ -1649,13 +1649,37 @@ export const convertColorFuncToHex = async value => {
   }
   const [, val] = value.match(reg);
   const [cs, v1, v2, v3, aa] = val.replace('/', ' ').split(/\s+/);
-  let a;
+  let r, g, b, a;
+  if (v1 === NONE) {
+    r = 0;
+  } else {
+    r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
+  }
+  if (v2 === NONE) {
+    g = 0;
+  } else {
+    g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
+  }
+  if (v3 === NONE) {
+    b = 0;
+  } else {
+    b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
+  }
   if (isString(aa)) {
-    a = aa;
-    if (a.endsWith('%')) {
-      a = parseFloat(a) / MAX_PCT;
+    if (aa === NONE) {
+      a = 0;
     } else {
-      a = parseFloat(a);
+      a = aa;
+      if (a.endsWith('%')) {
+        a = parseFloat(a) / MAX_PCT;
+      } else {
+        a = parseFloat(a);
+      }
+      if (a < 0) {
+        a = 0;
+      } else if (a > 1) {
+        a = 1;
+      }
     }
   } else {
     a = 1;
@@ -1663,32 +1687,12 @@ export const convertColorFuncToHex = async value => {
   let hex;
   // srgb
   if (cs === 'srgb') {
-    const r = v1.endsWith('%') ? v1 : `${parseFloat(v1) * MAX_PCT}%`;
-    const g = v2.endsWith('%') ? v2 : `${parseFloat(v2) * MAX_PCT}%`;
-    const b = v3.endsWith('%') ? v3 : `${parseFloat(v3) * MAX_PCT}%`;
-    const rgb = `rgb(${r} ${g} ${b} / ${a})`;
-    hex = await convertColorToHex(rgb, true);
+    hex = await convertRgbToHex([r * MAX_RGB, g * MAX_RGB, b * MAX_RGB, a]);
   // srgb-linear
   } else if (cs === 'srgb-linear') {
-    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
     hex = await convertLinearRgbToHex([r, g, b, a]);
-  // xyz, xyz-d50, xyz-d65
-  } else if (/^xyz(?:-d(?:50|65))?$/.test(cs)) {
-    const x = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const y = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const z = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
-    if (cs === 'xyz-d50') {
-      hex = await convertXyzD50ToHex([x, y, z, a]);
-    } else {
-      hex = await convertXyzToHex([x, y, z, a]);
-    }
   // display-p3
   } else if (cs === 'display-p3') {
-    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
     const linearRgb = await rgbToLinearRgb([r, g, b]);
     const [x, y, z] = await transformMatrix(MATRIX_P3_TO_XYZ, linearRgb);
     hex = await convertXyzToHex([x, y, z, a]);
@@ -1697,9 +1701,6 @@ export const convertColorFuncToHex = async value => {
     const ALPHA = 1.09929682680944;
     const BETA = 0.018053968510807;
     const REC_COEF = 0.45;
-    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
     const rgb = [r, g, b].map(c => {
       let cl;
       if (c < BETA * REC_COEF * DEC) {
@@ -1714,9 +1715,6 @@ export const convertColorFuncToHex = async value => {
   // a98-rgb
   } else if (cs === 'a98-rgb') {
     const POW_A98 = 563 / 256;
-    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
     const rgb = [r, g, b].map(c => {
       const cl = Math.pow(c, POW_A98);
       return cl;
@@ -1726,9 +1724,6 @@ export const convertColorFuncToHex = async value => {
   // prophoto-rgb
   } else if (cs === 'prophoto-rgb') {
     const POW_PROPHOTO = 1.8;
-    const r = v1.endsWith('%') ? parseFloat(v1) / MAX_PCT : parseFloat(v1);
-    const g = v2.endsWith('%') ? parseFloat(v2) / MAX_PCT : parseFloat(v2);
-    const b = v3.endsWith('%') ? parseFloat(v3) / MAX_PCT : parseFloat(v3);
     const rgb = [r, g, b].map(c => {
       let cl;
       if (c > 1 / (HEX * DOUBLE)) {
@@ -1740,6 +1735,14 @@ export const convertColorFuncToHex = async value => {
     });
     const [x, y, z] = await transformMatrix(MATRIX_PROPHOTO_TO_XYZ_D50, rgb);
     hex = await convertXyzD50ToHex([x, y, z, a]);
+  // xyz, xyz-d50, xyz-d65
+  } else if (/^xyz(?:-d(?:50|65))?$/.test(cs)) {
+    const [x, y, z] = [r, g, b];
+    if (cs === 'xyz-d50') {
+      hex = await convertXyzD50ToHex([x, y, z, a]);
+    } else {
+      hex = await convertXyzToHex([x, y, z, a]);
+    }
   }
   return hex;
 };

@@ -3981,6 +3981,51 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('color(srgb 0 0.6 0 / -50%)');
+      assert.strictEqual(res, '#00990000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0 0.6 0 / 150%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0.3 0.5 0.7 / none)');
+      assert.strictEqual(res, '#4d80b300', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb none 0.5 0.7)');
+      assert.strictEqual(res, '#0080b3', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0.3 none 0.7)');
+      assert.strictEqual(res, '#4d00b3', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0.3 0.5 none)');
+      assert.strictEqual(res, '#4d8000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb none 50% 70%)');
+      assert.strictEqual(res, '#0080b3', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 30% none 70%)');
+      assert.strictEqual(res, '#4d00b3', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 30% 50% none)');
+      assert.strictEqual(res, '#4d8000', 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('color(srgb-linear 0 0.21586 0)');
       assert.strictEqual(res, '#008000', 'result');
     });
@@ -4006,6 +4051,296 @@ describe('color', () => {
       const res = await func('color(srgb-linear 43.5% 1.7% 5.5%)');
       const val = await func('color(srgb 0.691 0.139 0.259)');
       assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear none 0.5 0.7)');
+      assert.strictEqual(res, '#00bcda', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 0.3 none 0.7)');
+      assert.strictEqual(res, '#9500da', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 0.3 0.5 none)');
+      assert.strictEqual(res, '#95bc00', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear none 50% 70%)');
+      assert.strictEqual(res, '#00bcda', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 30% none 70%)');
+      assert.strictEqual(res, '#9500da', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb-linear 30% 50% none)');
+      assert.strictEqual(res, '#95bc00', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.26374 0.59085 0.16434 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 26.374% 59.085% 16.434%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.21604 0.49418 0.13151)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(86.61399% -106.539 102.871)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 1 1 0.330897)');
+      const val = await mjs.convertColorToHex('yellow');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.465377 0.532768 0.317713)');
+      const val = await mjs.convertColorToHex('lch(54% 35 118)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 none 0.5 0.7)');
+      assert.strictEqual(res, '#0082b7', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.3 none 0.7)');
+      assert.strictEqual(res, '#5400ba', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 0.3 0.5 none)');
+      assert.strictEqual(res, '#398100', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 none 50% 70%)');
+      assert.strictEqual(res, '#0082b7', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 30% none 70%)');
+      assert.strictEqual(res, '#5400ba', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(display-p3 30% 50% none)');
+      assert.strictEqual(res, '#398100', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0.299218 0.533327 0.120785 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 29.9218% 53.3327% 12.0785%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0.235202 0.431704 0.085432)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(85.7729% -160.7259 109.2319)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 none 0.5 0.7)');
+      assert.strictEqual(res, '#0093c0', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0.3 none 0.7)');
+      assert.strictEqual(res, '#6800c4', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 0.3 0.5 none)');
+      assert.strictEqual(res, '#299100', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 none 50% 70%)');
+      assert.strictEqual(res, '#0093c0', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 30% none 70%)');
+      assert.strictEqual(res, '#6800c4', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(rec2020 30% 50% none)');
+      assert.strictEqual(res, '#299100', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0.33582 0.59441 0.13934 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 33.582% 59.441% 13.934%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0.281363 0.498012 0.116746)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(83.2141% -129.1072 87.1718)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb none 0.5 0.7)');
+      assert.strictEqual(res, '#0081b6', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0.3 none 0.7)');
+      assert.strictEqual(res, '#5900b7', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 0.3 0.5 none)');
+      assert.strictEqual(res, '#1d8100', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb none 50% 70%)');
+      assert.strictEqual(res, '#0081b6', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 30% none 70%)');
+      assert.strictEqual(res, '#5900b7', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(a98-rgb 30% 50% none)');
+      assert.strictEqual(res, '#1d8100', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0.2861 0.49131 0.16133 / 1)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 28.610% 49.131% 16.133%)');
+      assert.strictEqual(res, '#009900', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0.230479 0.395789 0.129968)');
+      assert.strictEqual(res, '#008000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0 0 0)');
+      assert.strictEqual(res, '#000000', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 1 1 1)');
+      assert.strictEqual(res, '#ffffff', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0 1 0)');
+      const val =
+        await mjs.convertColorToHex('lab(87.5745% -186.6921 150.9905)');
+      assert.strictEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb none 0.5 0.7)');
+      assert.strictEqual(res, '#00a0c6', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0.3 none 0.7)');
+      assert.strictEqual(res, '#4c00cd', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 0.3 0.5 none)');
+      assert.strictEqual(res, '#2b9b00', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb none 50% 70%)');
+      assert.strictEqual(res, '#00a0c6', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 30% none 70%)');
+      assert.strictEqual(res, '#4c00cd', 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(prophoto-rgb 30% 50% none)');
+      assert.strictEqual(res, '#2b9b00', 'result');
     });
 
     it('should get value', async () => {
@@ -4062,143 +4397,93 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 0.26374 0.59085 0.16434 / 1)');
-      assert.strictEqual(res, '#009900', 'result');
+      const res = await func('color(xyz none 0.5 0.7)');
+      assert.strictEqual(res, '#00fbd1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 26.374% 59.085% 16.434%)');
-      assert.strictEqual(res, '#009900', 'result');
+      const res = await func('color(xyz 0.3 none 0.7)');
+      assert.strictEqual(res, '#cf00e1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 0.21604 0.49418 0.13151)');
-      assert.strictEqual(res, '#008000', 'result');
+      const res = await func('color(xyz 0.3 0.5 none)');
+      assert.strictEqual(res, '#7dd200', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 0 0 0)');
-      assert.strictEqual(res, '#000000', 'result');
+      const res = await func('color(xyz none 50% 70%)');
+      assert.strictEqual(res, '#00fbd1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 1 1 1)');
-      assert.strictEqual(res, '#ffffff', 'result');
+      const res = await func('color(xyz 30% none 70%)');
+      assert.strictEqual(res, '#cf00e1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 0 1 0)');
-      const val =
-        await mjs.convertColorToHex('lab(86.61399% -106.539 102.871)');
-      assert.strictEqual(res, val, 'result');
+      const res = await func('color(xyz 30% 50% none)');
+      assert.strictEqual(res, '#7dd200', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 1 1 0.330897)');
-      const val = await mjs.convertColorToHex('yellow');
-      assert.strictEqual(res, val, 'result');
+      const res = await func('color(xyz-d65 none 0.5 0.7)');
+      assert.strictEqual(res, '#00fbd1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(display-p3 0.465377 0.532768 0.317713)');
-      const val = await mjs.convertColorToHex('lch(54% 35 118)');
-      assert.strictEqual(res, val, 'result');
+      const res = await func('color(xyz-d65 0.3 none 0.7)');
+      assert.strictEqual(res, '#cf00e1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(rec2020 0.299218 0.533327 0.120785 / 1)');
-      assert.strictEqual(res, '#009900', 'result');
+      const res = await func('color(xyz-d65 0.3 0.5 none)');
+      assert.strictEqual(res, '#7dd200', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(rec2020 29.9218% 53.3327% 12.0785%)');
-      assert.strictEqual(res, '#009900', 'result');
+      const res = await func('color(xyz-d65 none 50% 70%)');
+      assert.strictEqual(res, '#00fbd1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(rec2020 0.235202 0.431704 0.085432)');
-      assert.strictEqual(res, '#008000', 'result');
+      const res = await func('color(xyz-d65 30% none 70%)');
+      assert.strictEqual(res, '#cf00e1', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(rec2020 0 0 0)');
-      assert.strictEqual(res, '#000000', 'result');
+      const res = await func('color(xyz-d65 30% 50% none)');
+      assert.strictEqual(res, '#7dd200', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(rec2020 1 1 1)');
-      assert.strictEqual(res, '#ffffff', 'result');
+      const res = await func('color(xyz-d50 none 0.5 0.7)');
+      assert.strictEqual(res, '#00fdf0', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(rec2020 0 1 0)');
-      const val =
-        await mjs.convertColorToHex('lab(85.7729% -160.7259 109.2319)');
-      assert.strictEqual(res, val, 'result');
+      const res = await func('color(xyz-d50 0.3 none 0.7)');
+      assert.strictEqual(res, '#cb00ff', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(a98-rgb 0.33582 0.59441 0.13934 / 1)');
-      assert.strictEqual(res, '#009900', 'result');
+      const res = await func('color(xyz-d50 0.3 0.5 none)');
+      assert.strictEqual(res, '#66d500', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(a98-rgb 33.582% 59.441% 13.934%)');
-      assert.strictEqual(res, '#009900', 'result');
+      const res = await func('color(xyz-d50 none 50% 70%)');
+      assert.strictEqual(res, '#00fdf0', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(a98-rgb 0.281363 0.498012 0.116746)');
-      assert.strictEqual(res, '#008000', 'result');
+      const res = await func('color(xyz-d50 30% none 70%)');
+      assert.strictEqual(res, '#cb00ff', 'result');
     });
 
     it('should get value', async () => {
-      const res = await func('color(a98-rgb 0 0 0)');
-      assert.strictEqual(res, '#000000', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(a98-rgb 1 1 1)');
-      assert.strictEqual(res, '#ffffff', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(a98-rgb 0 1 0)');
-      const val =
-        await mjs.convertColorToHex('lab(83.2141% -129.1072 87.1718)');
-      assert.strictEqual(res, val, 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(prophoto-rgb 0.2861 0.49131 0.16133 / 1)');
-      assert.strictEqual(res, '#009900', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(prophoto-rgb 28.610% 49.131% 16.133%)');
-      assert.strictEqual(res, '#009900', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(prophoto-rgb 0.230479 0.395789 0.129968)');
-      assert.strictEqual(res, '#008000', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(prophoto-rgb 0 0 0)');
-      assert.strictEqual(res, '#000000', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(prophoto-rgb 1 1 1)');
-      assert.strictEqual(res, '#ffffff', 'result');
-    });
-
-    it('should get value', async () => {
-      const res = await func('color(prophoto-rgb 0 1 0)');
-      const val =
-        await mjs.convertColorToHex('lab(87.5745% -186.6921 150.9905)');
-      assert.strictEqual(res, val, 'result');
+      const res = await func('color(xyz-d50 30% 50% none)');
+      assert.strictEqual(res, '#66d500', 'result');
     });
   });
 
