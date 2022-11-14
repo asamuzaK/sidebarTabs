@@ -115,8 +115,8 @@ const REG_HSL_HWB = `(?:${REG_NUM}(?:${REG_ANGLE})?|${NONE})(?:\\s+(?:${REG_PCT}
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s*,\\s*${REG_PCT}){2}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_RGB = `(?:(?:${REG_NUM}|${NONE})(?:\\s+(?:${REG_NUM}|${NONE})){2}|(?:${REG_PCT}|${NONE})(?:\\s+(?:${REG_PCT}|${NONE})){2})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_RGB_LV3 = `(?:${REG_NUM}(?:\\s*,\\s*${REG_NUM}){2}|${REG_PCT}(?:\\s*,\\s*${REG_PCT}){2})(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_LAB = `(?:${REG_NUM}|${REG_PCT})(?:\\s+(?:${REG_NUM}|${REG_PCT})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
-const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT})\\s+){2}${REG_NUM}(?:${REG_ANGLE})?(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
+const REG_LAB = `(?:${REG_NUM}|${REG_PCT}|${NONE})(?:\\s+(?:${REG_NUM}|${REG_PCT}|${NONE})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
+const REG_LCH = `(?:(?:${REG_NUM}|${REG_PCT}|${NONE})\\s+){2}(?:${REG_NUM}(?:${REG_ANGLE})?|${NONE})(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_COLOR_FUNC = `(?:${REG_COLOR_SPACE_RGB}|${REG_COLOR_SPACE_XYZ})(?:\\s+(?:${REG_NUM}|${REG_PCT})){3}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}))?`;
 const REG_COLOR_TYPE = `[a-z]+|#(?:[\\da-f]{3}|[\\da-f]{4}|[\\da-f]{6}|[\\da-f]{8})|hsla?\\(\\s*(?:${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)|hwb\\(\\s*${REG_HSL_HWB}\\s*\\)|rgba?\\(\\s*(?:${REG_RGB}|${REG_RGB_LV3})\\s*\\)|(?:ok)?lab\\(\\s*${REG_LAB}\\s*\\)|(?:ok)?lch\\(\\s*${REG_LCH}\\s*\\)|color\\(\\s*${REG_COLOR_FUNC}\\s*\\)`;
 const REG_COLOR_MIX_PART = `(?:${REG_COLOR_TYPE})(?:\\s+${REG_PCT})?`;
@@ -511,32 +511,37 @@ export const hexToHsl = async value => {
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const d = max - min;
-  const s = (max === min && (max === 1 || max === 0))
-    ? 0
-    : d / (1 - Math.abs(max + min - 1));
   const l = (max + min) * HALF;
-  let h = 0;
-  if (max !== min) {
-    switch (max) {
-      case r:
-        h = (g - b) / d;
-        break;
-      case g:
-        h = (b - r) / d + DOUBLE;
-        break;
-      case b:
-      default:
-        h = (r - g) / d + QUAD;
-        break;
-    }
-    h = h * DEG_INTERVAL % DEG;
-    if (h < 0) {
-      h += DEG;
+  let h, s;
+  if (l === 0 || l === 1) {
+    h = NONE;
+    s = NONE;
+  } else {
+    s = d / (1 - Math.abs(max + min - 1)) * MAX_PCT;
+    if (s === 0) {
+      h = NONE;
+    } else {
+      switch (max) {
+        case r:
+          h = (g - b) / d;
+          break;
+        case g:
+          h = (b - r) / d + DOUBLE;
+          break;
+        case b:
+        default:
+          h = (r - g) / d + QUAD;
+          break;
+      }
+      h = h * DEG_INTERVAL % DEG;
+      if (h < 0) {
+        h += DEG;
+      }
     }
   }
   return [
     h,
-    s * MAX_PCT,
+    s,
     l * MAX_PCT,
     a
   ];
@@ -553,9 +558,14 @@ export const hexToHwb = async value => {
   const r = parseFloat(rr) / MAX_RGB;
   const g = parseFloat(gg) / MAX_RGB;
   const b = parseFloat(bb) / MAX_RGB;
-  const [h] = await hexToHsl(value);
   const w = Math.min(r, g, b);
   const bk = 1 - Math.max(r, g, b);
+  let h;
+  if (w + bk === 1) {
+    h = NONE;
+  } else {
+    [h] = await hexToHsl(value);
+  }
   return [
     h,
     w * MAX_PCT,
@@ -619,12 +629,16 @@ export const hexToLab = async value => {
     ? Math.cbrt(val)
     : (val * LAB_KAPPA + HEX) / LAB_L
   );
-  return [
-    (LAB_L * f1) - HEX,
-    (f0 - f1) * LAB_A,
-    (f1 - f2) * LAB_B,
-    aa
-  ];
+  const l = Math.min(Math.max((LAB_L * f1) - HEX, 0), 100);
+  let a, b;
+  if (l === 0 || l === 100) {
+    a = NONE;
+    b = NONE;
+  } else {
+    a = (f0 - f1) * LAB_A;
+    b = (f1 - f2) * LAB_B;
+  }
+  return [l, a, b, aa];
 };
 
 /**
@@ -637,16 +651,19 @@ export const hexToLab = async value => {
 export const hexToLch = async value => {
   const [l, a, b, aa] = await hexToLab(value);
   let c, h;
-  // l = 100 should always be white
-  // https://github.com/web-platform-tests/wpt/blob/master/css/css-color/lch-009.html
-  if (parseFloat(l.toFixed(1)) === 100) {
-    c = 0;
-    h = 0;
+  if (l === 0 || l === 100) {
+    c = NONE;
+    h = NONE;
   } else {
-    c = Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE));
-    h = Math.atan2(b, a) * DEG * HALF / Math.PI;
-    if (h < 0) {
-      h += DEG;
+    c =
+      Math.max(Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE)), 0);
+    if (parseFloat(c.toFixed(4)) === 0) {
+      h = NONE;
+    } else {
+      h = Math.atan2(b, a) * DEG * HALF / Math.PI;
+      if (h < 0) {
+        h += DEG;
+      }
     }
   }
   return [l, c, h, aa];
@@ -671,7 +688,13 @@ export const hexToOklab = async (value, asis = false) => {
   }
   const lms = await transformMatrix(MATRIX_XYZ_TO_LMS, [x, y, z]);
   const xyzLms = lms.map(c => Math.cbrt(c));
-  const [l, a, b] = await transformMatrix(MATRIX_LMS_TO_OKLAB, xyzLms);
+  let [l, a, b] = await transformMatrix(MATRIX_LMS_TO_OKLAB, xyzLms);
+  l = Math.min(Math.max(l, 0), 1);
+  const lPct = Math.round(parseFloat(l.toFixed(4)) * MAX_PCT);
+  if (lPct === 0 || lPct === 100) {
+    a = NONE;
+    b = NONE;
+  }
   return [l, a, b, aa];
 };
 
@@ -683,18 +706,22 @@ export const hexToOklab = async (value, asis = false) => {
  *                             l|aa: 0..1 c: around 0..0.5 h: 0..360
  */
 export const hexToOklch = async value => {
-  const [ll, a, b, aa] = await hexToOklab(value, true);
-  let l, c, h;
-  if (parseFloat(ll.toFixed(1)) === 1) {
-    l = 1;
-    c = 0;
-    h = 0;
+  const [l, a, b, aa] = await hexToOklab(value, true);
+  let c, h;
+  const lPct = Math.round(parseFloat(l.toFixed(4)) * MAX_PCT);
+  if (lPct === 0 || lPct === 100) {
+    c = NONE;
+    h = NONE;
   } else {
-    l = ll;
-    c = Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE));
-    h = Math.atan2(b, a) * DEG * HALF / Math.PI;
-    if (h < 0) {
-      h += DEG;
+    c =
+      Math.max(Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE)), 0);
+    if (parseFloat(c.toFixed(4)) === 0) {
+      h = NONE;
+    } else {
+      h = Math.atan2(b, a) * DEG * HALF / Math.PI;
+      if (h < 0) {
+        h += DEG;
+      }
     }
   }
   return [l, c, h, aa];
@@ -719,7 +746,7 @@ export const parseRgb = async value => {
   }
   const [, val] = value.match(reg);
   let [r, g, b, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
-  if (r === 'none') {
+  if (r === NONE) {
     r = 0;
   } else {
     if (r.startsWith('.')) {
@@ -731,7 +758,7 @@ export const parseRgb = async value => {
       r = parseFloat(r);
     }
   }
-  if (g === 'none') {
+  if (g === NONE) {
     g = 0;
   } else {
     if (g.startsWith('.')) {
@@ -743,7 +770,7 @@ export const parseRgb = async value => {
       g = parseFloat(g);
     }
   }
-  if (b === 'none') {
+  if (b === NONE) {
     b = 0;
   } else {
     if (b.startsWith('.')) {
@@ -756,7 +783,7 @@ export const parseRgb = async value => {
     }
   }
   if (isString(a)) {
-    if (a === 'none') {
+    if (a === NONE) {
       a = 0;
     } else {
       if (a.startsWith('.')) {
@@ -766,6 +793,11 @@ export const parseRgb = async value => {
         a = parseFloat(a) / MAX_PCT;
       } else {
         a = parseFloat(a);
+      }
+      if (a < 0) {
+        a = 0;
+      } else if (a > 1) {
+        a = 1;
       }
     }
   } else {
@@ -798,12 +830,12 @@ export const parseHsl = async value => {
   }
   const [, val] = value.match(reg);
   let [h, s, l, a] = val.replace(/[,/]/g, ' ').split(/\s+/);
-  if (h === 'none') {
+  if (h === NONE) {
     h = 0;
   } else {
     h = await angleToDeg(h);
   }
-  if (s === 'none') {
+  if (s === NONE) {
     s = 0;
   } else {
     if (s.startsWith('.')) {
@@ -811,7 +843,7 @@ export const parseHsl = async value => {
     }
     s = Math.min(Math.max(parseFloat(s), 0), MAX_PCT);
   }
-  if (l === 'none') {
+  if (l === NONE) {
     l = 0;
   } else {
     if (l.startsWith('.')) {
@@ -820,7 +852,7 @@ export const parseHsl = async value => {
     l = Math.min(Math.max(parseFloat(l), 0), MAX_PCT);
   }
   if (isString(a)) {
-    if (a === 'none') {
+    if (a === NONE) {
       a = 0;
     } else {
       if (a.startsWith('.')) {
@@ -830,6 +862,11 @@ export const parseHsl = async value => {
         a = parseFloat(a) / MAX_PCT;
       } else {
         a = parseFloat(a);
+      }
+      if (a < 0) {
+        a = 0;
+      } else if (a > 1) {
+        a = 1;
       }
     }
   } else {
@@ -902,12 +939,12 @@ export const parseHwb = async value => {
   }
   const [, val] = value.match(reg);
   let [h, w, b, a] = val.replace('/', ' ').split(/\s+/);
-  if (h === 'none') {
+  if (h === NONE) {
     h = 0;
   } else {
     h = await angleToDeg(h);
   }
-  if (w === 'none') {
+  if (w === NONE) {
     w = 0;
   } else {
     if (w.startsWith('.')) {
@@ -915,7 +952,7 @@ export const parseHwb = async value => {
     }
     w = Math.min(Math.max(parseFloat(w), 0), MAX_PCT) / MAX_PCT;
   }
-  if (b === 'none') {
+  if (b === NONE) {
     b = 0;
   } else {
     if (b.startsWith('.')) {
@@ -924,7 +961,7 @@ export const parseHwb = async value => {
     b = Math.min(Math.max(parseFloat(b), 0), MAX_PCT) / MAX_PCT;
   }
   if (isString(a)) {
-    if (a === 'none') {
+    if (a === NONE) {
       a = 0;
     } else {
       if (a.startsWith('.')) {
@@ -934,6 +971,11 @@ export const parseHwb = async value => {
         a = parseFloat(a) / MAX_PCT;
       } else {
         a = parseFloat(a);
+      }
+      if (a < 0) {
+        a = 0;
+      } else if (a > 1) {
+        a = 1;
       }
     }
   } else {
@@ -976,34 +1018,62 @@ export const parseLab = async value => {
   const COND_POW = 8;
   const [, val] = value.match(reg);
   let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
-  if (l.startsWith('.')) {
-    l = `0${l}`;
-  }
-  l = parseFloat(l);
-  if (l < 0) {
+  if (l === NONE) {
     l = 0;
-  }
-  if (a.startsWith('.')) {
-    a = `0${a}`;
-  }
-  if (a.endsWith('%')) {
-    a = parseFloat(a) * COEF_PCT;
   } else {
-    a = parseFloat(a);
+    if (l.startsWith('.')) {
+      l = `0${l}`;
+    }
+    if (l.endsWith('%')) {
+      l = parseFloat(l);
+      if (l > 100) {
+        l = 100;
+      }
+    } else {
+      l = parseFloat(l);
+    }
+    if (l < 0) {
+      l = 0;
+    }
   }
-  if (b.endsWith('%')) {
-    b = parseFloat(b) * COEF_PCT;
+  if (a === NONE) {
+    a = 0;
   } else {
-    b = parseFloat(b);
+    if (a.startsWith('.')) {
+      a = `0${a}`;
+    }
+    if (a.endsWith('%')) {
+      a = parseFloat(a) * COEF_PCT;
+    } else {
+      a = parseFloat(a);
+    }
+  }
+  if (b === NONE) {
+    b = 0;
+  } else {
+    if (b.endsWith('%')) {
+      b = parseFloat(b) * COEF_PCT;
+    } else {
+      b = parseFloat(b);
+    }
   }
   if (isString(aa)) {
-    if (aa.startsWith('.')) {
-      aa = `0${aa}`;
-    }
-    if (aa.endsWith('%')) {
-      aa = parseFloat(aa) / MAX_PCT;
+    if (aa === NONE) {
+      aa = 0;
     } else {
-      aa = parseFloat(aa);
+      if (aa.startsWith('.')) {
+        aa = `0${aa}`;
+      }
+      if (aa.endsWith('%')) {
+        aa = parseFloat(aa) / MAX_PCT;
+      } else {
+        aa = parseFloat(aa);
+      }
+      if (aa < 0) {
+        aa = 0;
+      } else if (aa > 1) {
+        aa = 1;
+      }
     }
   } else {
     aa = 1;
@@ -1042,30 +1112,51 @@ export const parseLch = async value => {
   const COEF_PCT = 1.5;
   const [, val] = value.match(reg);
   let [l, c, h, aa] = val.replace('/', ' ').split(/\s+/);
-  if (l.startsWith('.')) {
-    l = `0${l}`;
-  }
-  l = parseFloat(l);
-  if (l < 0) {
+  if (l === NONE) {
     l = 0;
-  }
-  if (c.startsWith('.')) {
-    c = `0${c}`;
-  }
-  if (c.endsWith('%')) {
-    c = parseFloat(c) * COEF_PCT;
   } else {
-    c = parseFloat(c);
-  }
-  h = await angleToDeg(h);
-  if (isString(aa)) {
-    if (aa.startsWith('.')) {
-      aa = `0${aa}`;
+    if (l.startsWith('.')) {
+      l = `0${l}`;
     }
-    if (aa.endsWith('%')) {
-      aa = parseFloat(aa) / MAX_PCT;
+    l = parseFloat(l);
+    if (l < 0) {
+      l = 0;
+    }
+  }
+  if (c === NONE) {
+    c = 0;
+  } else {
+    if (c.startsWith('.')) {
+      c = `0${c}`;
+    }
+    if (c.endsWith('%')) {
+      c = parseFloat(c) * COEF_PCT;
     } else {
-      aa = parseFloat(aa);
+      c = parseFloat(c);
+    }
+  }
+  if (h === NONE) {
+    h = 0;
+  } else {
+    h = await angleToDeg(h);
+  }
+  if (isString(aa)) {
+    if (aa === NONE) {
+      aa = 0;
+    } else {
+      if (aa.startsWith('.')) {
+        aa = `0${aa}`;
+      }
+      if (aa.endsWith('%')) {
+        aa = parseFloat(aa) / MAX_PCT;
+      } else {
+        aa = parseFloat(aa);
+      }
+      if (aa < 0) {
+        aa = 0;
+      } else if (aa > 1) {
+        aa = 1;
+      }
     }
   } else {
     aa = 1;
@@ -1095,38 +1186,59 @@ export const parseOklab = async value => {
   const COEF_PCT = 0.4;
   const [, val] = value.match(reg);
   let [l, a, b, aa] = val.replace('/', ' ').split(/\s+/);
-  if (l.startsWith('.')) {
-    l = `0${l}`;
-  }
-  if (l.endsWith('%')) {
-    l = parseFloat(l) / MAX_PCT;
-  } else {
-    l = parseFloat(l);
-  }
-  if (l < 0) {
+  if (l === NONE) {
     l = 0;
-  }
-  if (a.startsWith('.')) {
-    a = `0${a}`;
-  }
-  if (a.endsWith('%')) {
-    a = parseFloat(a) * COEF_PCT / MAX_PCT;
   } else {
-    a = parseFloat(a);
+    if (l.startsWith('.')) {
+      l = `0${l}`;
+    }
+    if (l.endsWith('%')) {
+      l = parseFloat(l) / MAX_PCT;
+    } else {
+      l = parseFloat(l);
+    }
+    if (l < 0) {
+      l = 0;
+    }
   }
-  if (b.endsWith('%')) {
-    b = parseFloat(b) * COEF_PCT / MAX_PCT;
+  if (a === NONE) {
+    a = 0;
   } else {
-    b = parseFloat(b);
+    if (a.startsWith('.')) {
+      a = `0${a}`;
+    }
+    if (a.endsWith('%')) {
+      a = parseFloat(a) * COEF_PCT / MAX_PCT;
+    } else {
+      a = parseFloat(a);
+    }
+  }
+  if (b === NONE) {
+    b = 0;
+  } else {
+    if (b.endsWith('%')) {
+      b = parseFloat(b) * COEF_PCT / MAX_PCT;
+    } else {
+      b = parseFloat(b);
+    }
   }
   if (isString(aa)) {
-    if (aa.startsWith('.')) {
-      aa = `0${aa}`;
-    }
-    if (aa.endsWith('%')) {
-      aa = parseFloat(aa) / MAX_PCT;
+    if (aa === NONE) {
+      aa = 0;
     } else {
-      aa = parseFloat(aa);
+      if (aa.startsWith('.')) {
+        aa = `0${aa}`;
+      }
+      if (aa.endsWith('%')) {
+        aa = parseFloat(aa) / MAX_PCT;
+      } else {
+        aa = parseFloat(aa);
+      }
+      if (aa < 0) {
+        aa = 0;
+      } else if (aa > 1) {
+        aa = 1;
+      }
     }
   } else {
     aa = 1;
@@ -1157,21 +1269,23 @@ export const parseOklch = async value => {
   const COEF_PCT = 0.4;
   const [, val] = value.match(reg);
   let [l, c, h, aa] = val.replace('/', ' ').split(/\s+/);
-  if (l.startsWith('.')) {
-    l = `0${l}`;
-  }
-  if (l.endsWith('%')) {
-    l = parseFloat(l) / MAX_PCT;
-  } else {
-    l = parseFloat(l);
-  }
-  if (l < 0) {
+  if (l === NONE) {
     l = 0;
+  } else {
+    if (l.startsWith('.')) {
+      l = `0${l}`;
+    }
+    if (l.endsWith('%')) {
+      l = parseFloat(l) / MAX_PCT;
+    } else {
+      l = parseFloat(l);
+    }
+    if (l < 0) {
+      l = 0;
+    }
   }
-  if (parseFloat(l.toFixed(1)) === 1) {
-    l = 1;
+  if (c === NONE) {
     c = 0;
-    h = 0;
   } else {
     if (c.startsWith('.')) {
       c = `0${c}`;
@@ -1184,16 +1298,29 @@ export const parseOklch = async value => {
     if (c < 0) {
       c = 0;
     }
+  }
+  if (h === NONE) {
+    h = 0;
+  } else {
     h = await angleToDeg(h);
   }
   if (isString(aa)) {
-    if (aa.startsWith('.')) {
-      aa = `0${aa}`;
-    }
-    if (aa.endsWith('%')) {
-      aa = parseFloat(aa) / MAX_PCT;
+    if (aa === NONE) {
+      aa = 0;
     } else {
-      aa = parseFloat(aa);
+      if (aa.startsWith('.')) {
+        aa = `0${aa}`;
+      }
+      if (aa.endsWith('%')) {
+        aa = parseFloat(aa) / MAX_PCT;
+      } else {
+        aa = parseFloat(aa);
+      }
+      if (aa < 0) {
+        aa = 0;
+      } else if (aa > 1) {
+        aa = 1;
+      }
     }
   } else {
     aa = 1;

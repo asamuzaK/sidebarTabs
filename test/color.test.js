@@ -626,12 +626,18 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#ffffff');
-      assert.deepEqual(res, [0, 0, 100, 1], 'result');
+      assert.deepEqual(res, ['none', 'none', 100, 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#000000');
-      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+      assert.deepEqual(res, ['none', 'none', 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#808080');
+      res[2] = Math.round(res[2]);
+      assert.deepEqual(res, ['none', 0, 50, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -708,20 +714,19 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#ffffff');
-      assert.deepEqual(res, [0, 100, 0, 1], 'result');
+      assert.deepEqual(res, ['none', 100, 0, 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#000000');
-      assert.deepEqual(res, [0, 0, 100, 1], 'result');
+      assert.deepEqual(res, ['none', 0, 100, 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#808080');
-      res[0] = Math.round(res[0]);
       res[1] = Math.round(res[1]);
       res[2] = Math.round(res[2]);
-      assert.deepEqual(res, [0, 50, 50, 1], 'result');
+      assert.deepEqual(res, ['none', 50, 50, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1055,15 +1060,13 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#000000');
-      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+      assert.deepEqual(res, [0, 'none', 'none', 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff');
       res[0] = parseFloat(Math.round(res[0]));
-      res[1] = parseFloat(Math.round(res[1]));
-      res[2] = parseFloat(Math.round(res[2]));
-      assert.deepEqual(res, [100, 0, 0, 1], 'result');
+      assert.deepEqual(res, [100, 'none', 'none', 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1154,15 +1157,33 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#000000');
-      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+      assert.deepEqual(res, [0, 'none', 'none', 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff');
-      res[0] = parseFloat(Math.round(res[0]));
-      res[1] = parseFloat(Math.round(res[1]));
-      res[2] = parseFloat(Math.round(res[2]));
-      assert.deepEqual(res, [100, 0, 0, 1], 'result');
+      assert.deepEqual(res, [100, 'none', 'none', 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#808080');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      assert.deepEqual(res, [54, 0, 'none', 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#010101');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      assert.deepEqual(res, [0, 0, 'none', 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#fefefe');
+      res[0] = Math.round(res[0]);
+      res[1] = Math.round(res[1]);
+      assert.deepEqual(res, [100, 0, 'none', 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1254,15 +1275,13 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#000000');
-      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+      assert.deepEqual(res, [0, 'none', 'none', 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff');
-      res[0] = parseFloat(Math.round(res[0]));
-      res[1] = parseFloat(Math.round(res[1]));
-      res[2] = parseFloat(Math.round(res[2]));
-      assert.deepEqual(res, [1, 0, 0, 1], 'result');
+      res[0] = Math.round(parseFloat(res[0].toFixed(4)));
+      assert.deepEqual(res, [1, 'none', 'none', 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1344,12 +1363,20 @@ describe('color', () => {
 
     it('should get value', async () => {
       const res = await func('#000000');
-      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+      assert.deepEqual(res, [0, 'none', 'none', 1], 'result');
     });
 
     it('should get value', async () => {
       const res = await func('#ffffff');
-      assert.deepEqual(res, [1, 0, 0, 1], 'result');
+      res[0] = Math.round(parseFloat(res[0].toFixed(4)));
+      assert.deepEqual(res, [1, 'none', 'none', 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('#808080');
+      res[0] = parseFloat(res[0].toFixed(2));
+      res[1] = parseFloat(res[1].toFixed(2));
+      assert.deepEqual(res, [0.6, 0, 'none', 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1460,6 +1487,16 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func('rgb(10% 20% 30% / 40%)');
       assert.deepEqual(res, [25.5, 51, 76.5, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(10% 20% 30% / -40%)');
+      assert.deepEqual(res, [25.5, 51, 76.5, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(10% 20% 30% / 140%)');
+      assert.deepEqual(res, [25.5, 51, 76.5, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1618,6 +1655,28 @@ describe('color', () => {
         i++;
       }
       assert.deepEqual(res, [255, 0, 0, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(0 100% 50% / -40%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.ceil(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [255, 0, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(0 100% 50% / 140%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.ceil(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [255, 0, 0, 1], 'result');
     });
 
     it('should get value', async () => {
@@ -1909,6 +1968,28 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('hwb(90deg 0% 50% / -70%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.ceil(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [64, 128, 0, 0], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(90deg 0% 50% / 170%)');
+      const l = 3;
+      let i = 0;
+      while (i < l) {
+        res[i] = Math.ceil(res[i]);
+        i++;
+      }
+      assert.deepEqual(res, [64, 128, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('hwb(none none none)');
       assert.deepEqual(res, [255, 0, 0, 1], 'result');
     });
@@ -2037,6 +2118,18 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('lab(110% 0 0)');
+      const val = await mjs.hexToXyzD50('#ffffff');
+      res[0] = parseFloat(res[0].toFixed(2));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(2));
+      val[0] = parseFloat(val[0].toFixed(2));
+      val[1] = parseFloat(val[1].toFixed(2));
+      val[2] = parseFloat(val[2].toFixed(2));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('lab(50 50 0)');
       const val =
         await mjs.convertColorToHex('rgb(75.6208% 30.4487% 47.5634%)', true)
@@ -2145,6 +2238,34 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('lab(44.36 36.05 -59 / -50%)');
+      const val = await mjs.hexToXyzD50('#7654cd00');
+      res[0] = parseFloat(res[0].toFixed(2));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(2));
+      res[3] = parseFloat(res[3].toFixed(2));
+      val[0] = parseFloat(val[0].toFixed(2));
+      val[1] = parseFloat(val[1].toFixed(2));
+      val[2] = parseFloat(val[2].toFixed(2));
+      val[3] = parseFloat(val[3].toFixed(2));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(44.36 36.05 -59 / 150%)');
+      const val = await mjs.hexToXyzD50('#7654cdff');
+      res[0] = parseFloat(res[0].toFixed(2));
+      res[1] = parseFloat(res[1].toFixed(2));
+      res[2] = parseFloat(res[2].toFixed(2));
+      res[3] = parseFloat(res[3].toFixed(2));
+      val[0] = parseFloat(val[0].toFixed(2));
+      val[1] = parseFloat(val[1].toFixed(2));
+      val[2] = parseFloat(val[2].toFixed(2));
+      val[3] = parseFloat(val[3].toFixed(2));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('lab(.5% 50% 50%)');
       const val = await mjs.hexToXyzD50('#4c0000');
       res[0] = parseFloat(Math.round(res[0]));
@@ -2190,6 +2311,16 @@ describe('color', () => {
       val[1] = parseFloat(Math.round(val[1]));
       val[2] = parseFloat(Math.round(val[2]));
       assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
     });
   });
 
@@ -2358,6 +2489,34 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43 / -50%)');
+      const val = await mjs.hexToXyzD50('#7654cd00');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(44.36% 69.13 301.43 / 150%)');
+      const val = await mjs.hexToXyzD50('#7654cdff');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('lch(.5% 20 30)');
       const val = await mjs.hexToXyzD50('#230000');
       res[0] = parseFloat(res[0].toFixed(1));
@@ -2421,6 +2580,16 @@ describe('color', () => {
       val[2] = parseFloat(val[2].toFixed(3));
       val[3] = parseFloat(val[3].toFixed(1));
       assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
     });
   });
 
@@ -2578,6 +2747,34 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('oklab(0.54166 0.03535 -0.18015 / -50%)');
+      const val = await mjs.hexToXyz('#7654cd00');
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(0.54166 0.03535 -0.18015 / 150%)');
+      const val = await mjs.hexToXyz('#7654cdff');
+      res[0] = parseFloat(res[0].toFixed(3));
+      res[1] = parseFloat(res[1].toFixed(3));
+      res[2] = parseFloat(res[2].toFixed(3));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(3));
+      val[1] = parseFloat(val[1].toFixed(3));
+      val[2] = parseFloat(val[2].toFixed(3));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('oklab(.5% 20% 30%)');
       const val = await mjs.hexToXyz('#000400');
       res[0] = parseFloat(Math.abs(res[0].toFixed(1)));
@@ -2623,6 +2820,16 @@ describe('color', () => {
       val[1] = parseFloat(val[1].toFixed(3));
       val[2] = parseFloat(Math.abs(val[2].toFixed(0)));
       assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
     });
   });
 
@@ -2793,6 +3000,34 @@ describe('color', () => {
     });
 
     it('should get value', async () => {
+      const res = await func('oklch(54% 0.18 292.37 / -50%)');
+      const val = await mjs.hexToXyz('#7654cd00');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(1));
+      res[2] = parseFloat(res[2].toFixed(2));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(1));
+      val[2] = parseFloat(val[2].toFixed(2));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(54% 0.18 292.37 / 150%)');
+      const val = await mjs.hexToXyz('#7654cdff');
+      res[0] = parseFloat(res[0].toFixed(1));
+      res[1] = parseFloat(res[1].toFixed(1));
+      res[2] = parseFloat(res[2].toFixed(2));
+      res[3] = parseFloat(res[3].toFixed(1));
+      val[0] = parseFloat(val[0].toFixed(1));
+      val[1] = parseFloat(val[1].toFixed(1));
+      val[2] = parseFloat(val[2].toFixed(2));
+      val[3] = parseFloat(val[3].toFixed(1));
+      assert.deepEqual(res, val, 'result');
+    });
+
+    it('should get value', async () => {
       const res = await func('oklch(.5 20% 30)');
       const val = await mjs.hexToXyz('#8b5148');
       res[0] = parseFloat(res[0].toFixed(3));
@@ -2834,6 +3069,16 @@ describe('color', () => {
       res[1] = parseFloat(res[1].toFixed(3));
       res[2] = parseFloat(res[2].toFixed(3));
       assert.deepEqual(res, [0.001, 0.001, 0.001, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(none none none)');
+      assert.deepEqual(res, [0, 0, 0, 1], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(none none none / none)');
+      assert.deepEqual(res, [0, 0, 0, 0], 'result');
     });
   });
 
