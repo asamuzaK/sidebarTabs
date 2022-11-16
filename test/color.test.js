@@ -1428,6 +1428,335 @@ describe('color', () => {
     });
   });
 
+  describe('re-insert missing color components', () => {
+    const func = mjs.reInsertMissingComponents;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should get value', async () => {
+      const res = await func('foo');
+      assert.deepEqual(res, [undefined, undefined, undefined, undefined],
+        'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('none');
+      assert.deepEqual(res, [undefined, undefined, undefined, undefined],
+        'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(4 3 2 / 1)', [1, 2, 3, 0.4]);
+      assert.deepEqual(res, [1, 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(none 2 3 / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(1 none 3 / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 'none', 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(1 2 none / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 'none', 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('rgb(1 2 3 / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb none 0.2 0.3 / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0.1 none 0.3 / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 'none', 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0.1 0.2 none / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 'none', 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('color(srgb 0.1 0.2 0.3 / none)', [1, 2, 3, 0.4]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(none 20% 10% / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 'none', 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(3 none 10% / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 'none', 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(3 20% none / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hsl(3 20% 10% / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(none 20% 10% / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 'none', 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(90 none 10% / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 0, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(90 20% none / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, [0, 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('hwb(90 20% 10% / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(none 2 3 / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(1 none 3 / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 0, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(1 2 none / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 0, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lab(1 2 3 / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(none 2 3 / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(1 none 3 / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 0, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(1 2 none / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 0, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklab(1 2 3 / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(none 2 3 / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(1 none 3 / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 'none', 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(1 2 none / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 'none', 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('lch(1 2 3 / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(none 2 3 / 0.4)', [0, 2, 3, 0.4]);
+      assert.deepEqual(res, ['none', 2, 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(1 none 3 / 0.4)', [1, 0, 3, 0.4]);
+      assert.deepEqual(res, [1, 'none', 3, 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(1 2 none / 0.4)', [1, 2, 0, 0.4]);
+      assert.deepEqual(res, [1, 2, 'none', 0.4], 'result');
+    });
+
+    it('should get value', async () => {
+      const res = await func('oklch(1 2 3 / none)', [1, 2, 3, 0]);
+      assert.deepEqual(res, [1, 2, 3, 'none'], 'result');
+    });
+  });
+
+  describe('normalize color components', () => {
+    const func = mjs.normalizeColorComponents;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 4 but got 0.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, 1]).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([1, 1, 1, 1], []).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 4 but got 0.',
+          'error message');
+      });
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 4], [5, 6, 7, 8]);
+      assert.deepEqual(res, [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func(['none', 2, 3, 4], ['none', 6, 7, 8]);
+      assert.deepEqual(res, [
+        [0, 2, 3, 4],
+        [0, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func(['none', 2, 3, 4], [5, 6, 7, 8]);
+      assert.deepEqual(res, [
+        [5, 2, 3, 4],
+        [5, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 4], ['none', 6, 7, 8]);
+      assert.deepEqual(res, [
+        [1, 2, 3, 4],
+        [1, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 'none', 3, 4], [5, 'none', 7, 8]);
+      assert.deepEqual(res, [
+        [1, 0, 3, 4],
+        [5, 0, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 'none', 3, 4], [5, 6, 7, 8]);
+      assert.deepEqual(res, [
+        [1, 6, 3, 4],
+        [5, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 4], [5, 'none', 7, 8]);
+      assert.deepEqual(res, [
+        [1, 2, 3, 4],
+        [5, 2, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 'none', 4], [5, 6, 'none', 8]);
+      assert.deepEqual(res, [
+        [1, 2, 0, 4],
+        [5, 6, 0, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 'none', 4], [5, 6, 7, 8]);
+      assert.deepEqual(res, [
+        [1, 2, 7, 4],
+        [5, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 4], [5, 6, 'none', 8]);
+      assert.deepEqual(res, [
+        [1, 2, 3, 4],
+        [5, 6, 3, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 'none'], [5, 6, 7, 'none']);
+      assert.deepEqual(res, [
+        [1, 2, 3, 0],
+        [5, 6, 7, 0]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 'none'], [5, 6, 7, 8]);
+      assert.deepEqual(res, [
+        [1, 2, 3, 8],
+        [5, 6, 7, 8]
+      ]);
+    });
+
+    it('should get values', async () => {
+      const res = await func([1, 2, 3, 4], [5, 6, 7, 'none']);
+      assert.deepEqual(res, [
+        [1, 2, 3, 4],
+        [5, 6, 7, 4]
+      ]);
+    });
+  });
+
   describe('parse rgb()', () => {
     const func = mjs.parseRgb;
 
@@ -5079,6 +5408,1303 @@ describe('color', () => {
     it('should get value', async () => {
       const res = await func('color-mix(in srgb, color(srgb 0 0.5 0), color(srgb 1 0 1))');
       assert.strictEqual(res, '#804080', 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)'; // rgb(77, 128, 179)
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(77, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(192, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(0, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 0, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 179)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 64)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 0)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('rgb(134.5, 128, 121.5)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in srgb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('rgba(134.5, 128, 121.5, 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      // [0.5271151257058131, 0.21586050011389923, 0.05126945837404324, 1]
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      // [0.07421356838014963, 0.21586050011389923, 0.45078578283822346, 1]
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.07421356838014963,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.5271151257058131,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.45078578283822346,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.05126945837404324,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.2510276206061334,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in srgb-linear, ${colorA}, ${colorB})`);
+      const value = await mjs.convertLinearRgbToHex([
+        0.30066434704298134,
+        0.21586050011389923,
+        0.2510276206061334,
+        0
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.24648520759776654,
+        0.23643190167188327,
+        0.2701513572532229,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.18915150059995164,
+        0.18038928351692313,
+        0.2650565737845902,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.30381891459558147,
+        0.2285415519706171,
+        0.269434052734926,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0,
+        0.17249893381565695,
+        0.26433926926629325,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.2078910404316155,
+        0.20270063746192896,
+        0.25728663486450587,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.20789104043161546,
+        0.2701631658818376,
+        0.25728663486450587,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.16929687326546441,
+        0,
+        0.24442191247578887,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.2418586314636254,
+        0.2345812712182268,
+        0.4556504341787926,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.20580612085427624,
+        0.22016026697448715,
+        0.08465228032765325,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.20117954472013508,
+        0.21830963652083069,
+        0,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.24648520759776654,
+        0.23643190167188327,
+        0.2701513572532229,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.24648520759776654,
+        0.23643190167188327,
+        0.2701513572532229,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in xyz, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzToHex([
+        0.24648520759776654,
+        0.23643190167188327,
+        0.2701513572532229,
+        0
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.2501650544900184,
+        0.2368606099644367,
+        0.20440109934622114,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.17999871658962865,
+        0.1782208465937984,
+        0.20073134901055587,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.3203313923904082,
+        0.22860460311417707,
+        0.20388442802682144,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(none 128 64 / 1)';
+      const colorB = 'color(srgb none 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0,
+        0.16996483974353876,
+        0.20021467769115614,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.20859556014898595,
+        0.19858615139645666,
+        0.193923091908467,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.2085955601489859,
+        0.2751350685324167,
+        0.19392309190846702,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 none 64 / 1)';
+      const colorB = 'color(srgb 0.3 none 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.16702606580795343,
+        0,
+        0.18344508447071284,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.2464972770583964,
+        0.23530663805066815,
+        0.3438951958151572,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.21791618794792156,
+        0.22319734009826947,
+        0.0649070028772851,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 none / 1)';
+      const colorB = 'color(srgb 0.3 0.5 none / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.21424841051629956,
+        0.22164336818450092,
+        0,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / 1)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.2501650544900184,
+        0.2368606099644367,
+        0.20440109934622114,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / 1)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.2501650544900184,
+        0.2368606099644367,
+        0.20440109934622114,
+        1
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'rgb(192 128 64 / none)';
+      const colorB = 'color(srgb 0.3 0.5 0.7 / none)';
+      const res = await func(`color-mix(in xyz-d50, ${colorA}, ${colorB})`);
+      const value = await mjs.convertXyzD50ToHex([
+        0.2501650544900184,
+        0.2368606099644367,
+        0.20440109934622114,
+        0
+      ]);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(85.69 48.2% 30.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(51.38 48.2% 30.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(120 54.9% 45.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(0 54.9% 45.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(51.38 86.6% 30.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(120 9.8% 43.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(0 0% 43.5%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(51.38 86.6% 40.98%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(60 54.9% 20%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(0 100% 0%)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(85.69 48.2% 30.5%)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / none)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hsl(85.69 48.2% 30.5%)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / none)'; // hsl(51.38 86.6% 40.98% / 0)
+      const res = await func(`color-mix(in hsl, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hsl(85.69 48.2% 30.5% / 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hwb(85.69 11.8% 50.8% / 1)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hwb(51.38 11.8% 50.8% / 1)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hwb(120 30% 39.02% / 1)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('hwb(0 30% 39.02% / 1)');
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / 1)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(85.69 11.8% 50.8% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / none)'; // hsl(51.38 86.6% 40.98% / 0)
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(85.69 11.8% 50.8% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / none)'; // hsl(51.38 86.6% 40.98%)
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(85.69 11.8% 50.8% / 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 10.2% 20% / 1)';
+      const colorB = 'hwb(30  30.2% 40% / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 20.2% 30% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 none 20% / 1)';
+      const colorB = 'hwb(30  30.2% 40% / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 15.1% 30% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 10.196% 20% / 1)';
+      const colorB = 'hwb(30  none 40% / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 5.1% 30% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 none 20% / 1)';
+      const colorB = 'hwb(30  none 40% / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 0% 30% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 10.2% none / 1)';
+      const colorB = 'hwb(30  30.2% 40% / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 20.2% 20% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 10.2% 20% / 1)';
+      const colorB = 'hwb(30  30.2% none / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 20.2% 10% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 10.2% none / 1)';
+      const colorB = 'hwb(30  30.2% none / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(75 20.2% 0% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hwb(120 50% 50% / 1)';
+      const colorB = 'hwb(30  30.2% 40% / 1)';
+      const res = await func(`color-mix(in hwb, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('hwb(30 40.2% 44.9% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(46.12 -3.11 37.38 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(69.9 -0.06 69.945 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(22.3325 5.2 5.37 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(0 16.547 5.92434 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(46.12 -3.11 37.38 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(46.12 -3.11 37.38 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(46.12 -3.11 37.38 / 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'black';
+      const colorB = 'white';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(50% 0% 0% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'lab(50% 25.124% 37.64%)';
+      const colorB = 'white';
+      const res = await func(`color-mix(in lab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lab(75% 25.124% 37.64% / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(46.12 38.88 116 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(70 70 90 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(22.3325 12.69 80.8 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('lch(0 17.6 19.7 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(45.574795 69.945 90.052 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(46.157 7.8 141.94 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('lch(45.6 0 0 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(45 37.5 90.1 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(44.19 35.078 141.94305 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(43.1 33.7 0 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(46.12 38.88 116 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(46.12 38.88 116 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in lch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('lch(46.12 38.88 116 / 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5302 -0.0313 0.0767 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.7334 -0.03658 0.1454 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.327 0.0142 0.0205 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0 0.054449 0.033 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5267 -0.0226 0.0702 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5329 -0.0231 -0.00176 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.529455 -0.0144 -0.008279)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.52227 -0.01553 0.072657)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5266 0.071 -0.0114)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.518687 0.086866 -0.01547)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5302 -0.0313 0.0767 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5302 -0.0313 0.0767 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.5302 -0.0313 0.0767 / 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'white';
+      const colorB = 'black';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.498396 0 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'lab(50% 25.124% 37.64%)';
+      const colorB = 'white';
+      const res = await func(`color-mix(in oklab, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklab(0.7856 0.0643785 0.09836)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.5318 0.0858 121.448 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.7355 0.1496 97.8434)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.327998 0.045 87.143)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% none / 1)';
+      const colorB = 'lch(none 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value = await mjs.convertColorToHex('oklch(0 0.068 29.23)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.528 0.1496 97.843)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.5346 0.02199 145.0526)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 none 20% / 1)';
+      const colorB = 'lch(70% none 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.531158888 0 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.52385 0.082121 97.8434)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.5285 0.106986 145.0526)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(none 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 none / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.52059565 0.1033 0)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / 1)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.5318 0.0858 121.448 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / 1)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.5318 0.0858 121.448 / 1)', true);
+      assert.strictEqual(res, value, 'result');
+    });
+
+    it('should get value', async () => {
+      const colorA = 'hsl(120 9.8% 20% / none)';
+      const colorB = 'lch(70% 70 90 / none)';
+      const res = await func(`color-mix(in oklch, ${colorA}, ${colorB})`);
+      const value =
+        await mjs.convertColorToHex('oklch(0.5318 0.0858 121.448 / 0)', true);
+      assert.strictEqual(res, value, 'result');
     });
   });
 

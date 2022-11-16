@@ -728,6 +728,92 @@ export const hexToOklch = async value => {
 };
 
 /**
+ * re-insert missing color components
+ *
+ * @param {string} value - value
+ * @param {Array} color - array of color components [r, g, b, a]|[l, c, h, a]
+ * @returns {Array} - [v1, v2, v3, v4]
+ */
+export const reInsertMissingComponents = async (value, color = []) => {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  const [v1, v2, v3, v4] = color;
+  let v1m, v2m, v3m, v4m;
+  if (/none/.test(value)) {
+    const regRgb = new RegExp(`^rgba?\\(\\s*(${REG_RGB})\\s*\\)$`);
+    const regColor = new RegExp(`^color\\(\\s*(${REG_COLOR_FUNC})\\s*\\)$`);
+    const regHsl = new RegExp(`^h(?:sla?|wb)\\(\\s*(${REG_HSL_HWB})\\s*\\)$`);
+    const regLab = new RegExp(`^(?:ok)?lab\\(\\s*(${REG_LAB})\\s*\\)$`);
+    const regLch = new RegExp(`^(?:ok)?lch\\(\\s*(${REG_LCH})\\s*\\)$`);
+    // rgb()
+    if (regRgb.test(value)) {
+      [v1m, v2m, v3m, v4m] =
+        value.match(regRgb)[1].replace('/', ' ').split(/\s+/);
+    // color()
+    } else if (regColor.test(value)) {
+      [, v1m, v2m, v3m, v4m] =
+        value.match(regColor)[1].replace('/', ' ').split(/\s+/);
+    // hsl()
+    } else if (value.startsWith('hsl') && regHsl.test(value)) {
+      [v3m, v2m, v1m, v4m] =
+        value.match(regHsl)[1].replace('/', ' ').split(/\s+/);
+    // hwb()
+    } else if (value.startsWith('hwb') && regHsl.test(value)) {
+      [v3m, , , v4m] = value.match(regHsl)[1].replace('/', ' ').split(/\s+/);
+    // lab(), oklab()
+    } else if (regLab.test(value)) {
+      [v1m, , , v4m] = value.match(regLab)[1].replace('/', ' ').split(/\s+/);
+    // lch(), oklch()
+    } else if (regLch.test(value)) {
+      [v1m, v2m, v3m, v4m] =
+        value.match(regLch)[1].replace('/', ' ').split(/\s+/);
+    }
+  }
+  return [
+    v1m === NONE ? v1m : v1,
+    v2m === NONE ? v2m : v2,
+    v3m === NONE ? v3m : v3,
+    v4m === NONE ? v4m : v4
+  ];
+};
+
+/**
+ * normalize color components
+ *
+ * @param {Array} colorA - array of color components [v1, v2, v3, v4]
+ * @param {Array} colorB - array of color components [v1, v2, v3, v4]
+ * @returns {Array.<Array>} - [colorA, colorB]
+ */
+export const normalizeColorComponents = async (colorA, colorB) => {
+  if (!Array.isArray(colorA)) {
+    throw new TypeError(`Expected Array but got ${getType(colorA)}.`);
+  } else if (colorA.length !== QUAD) {
+    throw new Error(`Expected array length of 4 but got ${colorA.length}.`);
+  }
+  if (!Array.isArray(colorB)) {
+    throw new TypeError(`Expected Array but got ${getType(colorB)}.`);
+  } else if (colorB.length !== QUAD) {
+    throw new Error(`Expected array length of 4 but got ${colorB.length}.`);
+  }
+  let i = 0;
+  while (i < QUAD) {
+    if (colorA[i] === NONE && colorB[i] === NONE) {
+      colorA[i] = 0;
+      colorB[i] = 0;
+    } else if (colorA[i] === NONE) {
+      colorA[i] = colorB[i];
+    } else if (colorB[i] === NONE) {
+      colorB[i] = colorA[i];
+    }
+    i++;
+  }
+  return [colorA, colorB];
+};
+
+/**
  * parse rgb()
  *
  * @param {string} value - value
@@ -1759,15 +1845,17 @@ export const convertColorMixToHex = async value => {
   } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const colorMixReg = new RegExp(`^${REG_COLOR_MIX_CAPT}$`, 'i');
-  if (!colorMixReg.test(value)) {
+  const regColorMix = new RegExp(`^${REG_COLOR_MIX_CAPT}$`, 'i');
+  if (!regColorMix.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const [, colorSpace, colorPartA, colorPartB] = value.match(colorMixReg);
-  const colorPartReg =
+  const [, colorSpace, colorPartA, colorPartB] = value.match(regColorMix);
+  const regColorPart =
     new RegExp(`^(${REG_COLOR_TYPE})(?:\\s+(${REG_PCT}))?$`, 'i');
-  const [, colorA, pctA] = colorPartA.match(colorPartReg);
-  const [, colorB, pctB] = colorPartB.match(colorPartReg);
+  const regMissingLch = /^(?:h(?:sla?|wb)|(?:ok)?l(?:ab|ch))\(.*none.*\)$/;
+  const regMissingRgb = /^(?:color|rgba?)\(.*none.*\)$/;
+  const [, colorA, pctA] = colorPartA.match(regColorPart);
+  const [, colorB, pctB] = colorPartB.match(regColorPart);
   let colorAHex, colorBHex;
   if (colorA.startsWith('color(')) {
     colorAHex = await convertColorFuncToHex(colorA);
@@ -1820,113 +1908,289 @@ export const convertColorMixToHex = async value => {
     }
     // in srgb
     if (colorSpace === 'srgb') {
-      const [rA, gA, bA, aA] = await hexToRgb(colorAHex);
-      const [rB, gB, bB, aB] = await hexToRgb(colorBHex);
+      let rgbA = await hexToRgb(colorAHex);
+      let rgbB = await hexToRgb(colorBHex);
+      if (regMissingRgb.test(colorA)) {
+        rgbA = await reInsertMissingComponents(colorA, rgbA);
+      }
+      if (regMissingRgb.test(colorB)) {
+        rgbB = await reInsertMissingComponents(colorB, rgbB);
+      }
+      const [
+        [rA, gA, bA, aA],
+        [rB, gB, bB, aB]
+      ] = await normalizeColorComponents(rgbA, rgbB);
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const r = (rA * factorA + rB * factorB) / a;
-      const g = (gA * factorA + gB * factorB) / a;
-      const b = (bA * factorA + bB * factorB) / a;
+      let r, g, b;
+      if (a === 0) {
+        r = rA * pA + rB * pB;
+        g = gA * pA + gB * pB;
+        b = bA * pA + bB * pB;
+      } else {
+        r = (rA * factorA + rB * factorB) / a;
+        g = (gA * factorA + gB * factorB) / a;
+        b = (bA * factorA + bB * factorB) / a;
+      }
       hex = await convertRgbToHex([r, g, b, a * m]);
     // in srgb-linear
     } else if (colorSpace === 'srgb-linear') {
-      const [rA, gA, bA, aA] = await hexToLinearRgb(colorAHex);
-      const [rB, gB, bB, aB] = await hexToLinearRgb(colorBHex);
+      let rgbA = await hexToLinearRgb(colorAHex);
+      let rgbB = await hexToLinearRgb(colorBHex);
+      if (regMissingRgb.test(colorA)) {
+        rgbA = await reInsertMissingComponents(colorA, rgbA);
+      }
+      if (regMissingRgb.test(colorB)) {
+        rgbB = await reInsertMissingComponents(colorB, rgbB);
+      }
+      const [
+        [rA, gA, bA, aA],
+        [rB, gB, bB, aB]
+      ] = await normalizeColorComponents(rgbA, rgbB);
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const r = (rA * factorA + rB * factorB) * a;
-      const g = (gA * factorA + gB * factorB) * a;
-      const b = (bA * factorA + bB * factorB) * a;
+      let r, g, b;
+      if (a === 0) {
+        r = rA * pA + rB * pB;
+        g = gA * pA + gB * pB;
+        b = bA * pA + bB * pB;
+      } else {
+        r = (rA * factorA + rB * factorB) * a;
+        g = (gA * factorA + gB * factorB) * a;
+        b = (bA * factorA + bB * factorB) * a;
+      }
       hex = await convertLinearRgbToHex([r, g, b, a * m]);
     // in xyz, xyz-d65
     } else if (/^xyz(?:-d65)?$/.test(colorSpace)) {
-      const [xA, yA, zA, aA] = await hexToXyz(colorAHex);
-      const [xB, yB, zB, aB] = await hexToXyz(colorBHex);
+      let xyzA = await hexToXyz(colorAHex);
+      let xyzB = await hexToXyz(colorBHex);
+      if (regMissingRgb.test(colorA)) {
+        xyzA = await reInsertMissingComponents(colorA, xyzA);
+      }
+      if (regMissingRgb.test(colorB)) {
+        xyzB = await reInsertMissingComponents(colorB, xyzB);
+      }
+      const [
+        [xA, yA, zA, aA],
+        [xB, yB, zB, aB]
+      ] = await normalizeColorComponents(xyzA, xyzB);
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const x = (xA * factorA + xB * factorB) * a;
-      const y = (yA * factorA + yB * factorB) * a;
-      const z = (zA * factorA + zB * factorB) * a;
+      let x, y, z;
+      if (a === 0) {
+        x = xA * pA + xB * pB;
+        y = yA * pA + yB * pB;
+        z = zA * pA + zB * pB;
+      } else {
+        x = (xA * factorA + xB * factorB) * a;
+        y = (yA * factorA + yB * factorB) * a;
+        z = (zA * factorA + zB * factorB) * a;
+      }
       hex = await convertXyzToHex([x, y, z, a * m]);
     // in xyz-d50
     } else if (colorSpace === 'xyz-d50') {
-      const [xA, yA, zA, aA] = await hexToXyzD50(colorAHex);
-      const [xB, yB, zB, aB] = await hexToXyzD50(colorBHex);
+      let xyzA = await hexToXyzD50(colorAHex);
+      let xyzB = await hexToXyzD50(colorBHex);
+      if (regMissingRgb.test(colorA)) {
+        xyzA = await reInsertMissingComponents(colorA, xyzA);
+      }
+      if (regMissingRgb.test(colorB)) {
+        xyzB = await reInsertMissingComponents(colorB, xyzB);
+      }
+      const [
+        [xA, yA, zA, aA],
+        [xB, yB, zB, aB]
+      ] = await normalizeColorComponents(xyzA, xyzB);
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
-      const x = (xA * factorA + xB * factorB) * a;
-      const y = (yA * factorA + yB * factorB) * a;
-      const z = (zA * factorA + zB * factorB) * a;
+      let x, y, z;
+      if (a === 0) {
+        x = xA * pA + xB * pB;
+        y = yA * pA + yB * pB;
+        z = zA * pA + zB * pB;
+      } else {
+        x = (xA * factorA + xB * factorB) * a;
+        y = (yA * factorA + yB * factorB) * a;
+        z = (zA * factorA + zB * factorB) * a;
+      }
       hex = await convertXyzD50ToHex([x, y, z, a * m]);
     // in hsl
     } else if (colorSpace === 'hsl') {
-      const [hA, sA, lA, aA] = await hexToHsl(colorAHex);
-      const [hB, sB, lB, aB] = await hexToHsl(colorBHex);
+      let [hA, sA, lA, aA] = await hexToHsl(colorAHex);
+      let [hB, sB, lB, aB] = await hexToHsl(colorBHex);
+      if (regMissingLch.test(colorA)) {
+        [lA, sA, hA, aA] =
+          await reInsertMissingComponents(colorA, [lA, sA, hA, aA]);
+      }
+      if (regMissingLch.test(colorB)) {
+        [lB, sB, hB, aB] =
+          await reInsertMissingComponents(colorB, [lB, sB, hB, aB]);
+      }
+      [
+        [hA, sA, lA, aA],
+        [hB, sB, lB, aB]
+      ] = await normalizeColorComponents([hA, sA, lA, aA], [hB, sB, lB, aB]);
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
       const h = (hA * pA + hB * pB) % DEG;
-      const s = (sA * factorA + sB * factorB) / a;
-      const l = (lA * factorA + lB * factorB) / a;
+      let s, l;
+      if (a === 0) {
+        s = sA * pA + sB * pB;
+        l = lA * pA + lB * pB;
+      } else {
+        s = (sA * factorA + sB * factorB) / a;
+        l = (lA * factorA + lB * factorB) / a;
+      }
       hex = await convertColorToHex(`hsl(${h} ${s}% ${l}% / ${a * m})`, true);
     // in hwb
     } else if (colorSpace === 'hwb') {
-      const [hA, wA, bA, aA] = await hexToHwb(colorAHex);
-      const [hB, wB, bB, aB] = await hexToHwb(colorBHex);
+      let [hA, wA, bA, aA] = await hexToHwb(colorAHex);
+      let [hB, wB, bB, aB] = await hexToHwb(colorBHex);
+      if (regMissingLch.test(colorA)) {
+        [,, hA, aA] =
+          await reInsertMissingComponents(colorA, [null, null, hA, aA]);
+      }
+      if (regMissingLch.test(colorB)) {
+        [,, hB, aB] =
+          await reInsertMissingComponents(colorB, [null, null, hB, aB]);
+      }
+      [
+        [hA, wA, bA, aA],
+        [hB, wB, bB, aB]
+      ] = await normalizeColorComponents([hA, wA, bA, aA], [hB, wB, bB, aB]);
       const factorA = aA * pA;
       const factorB = aB * pB;
       const a = (factorA + factorB);
       const h = (hA * pA + hB * pB) % DEG;
-      const w = (wA * factorA + wB * factorB) / a;
-      const b = (bA * factorA + bB * factorB) / a;
+      let w, b;
+      if (a === 0) {
+        w = wA * pA + wB * pB;
+        b = bA * pA + bB * pB;
+      } else {
+        w = (wA * factorA + wB * factorB) / a;
+        b = (bA * factorA + bB * factorB) / a;
+      }
       hex = await convertColorToHex(`hwb(${h} ${w}% ${b}% / ${a * m})`, true);
     // in lab
     } else if (colorSpace === 'lab') {
-      const [lA, aA, bA, aaA] = await hexToLab(colorAHex);
-      const [lB, aB, bB, aaB] = await hexToLab(colorBHex);
+      let [lA, aA, bA, aaA] = await hexToLab(colorAHex);
+      let [lB, aB, bB, aaB] = await hexToLab(colorBHex);
+      if (regMissingLch.test(colorA)) {
+        [lA,,, aaA] =
+          await reInsertMissingComponents(colorA, [lA, null, null, aaA]);
+      }
+      if (regMissingLch.test(colorB)) {
+        [lB,,, aaB] =
+          await reInsertMissingComponents(colorB, [lB, null, null, aaB]);
+      }
+      [
+        [lA, aA, bA, aaA],
+        [lB, aB, bB, aaB]
+      ] = await normalizeColorComponents([lA, aA, bA, aaA], [lB, aB, bB, aaB]);
       const factorA = aaA * pA;
       const factorB = aaB * pB;
       const aa = (factorA + factorB);
-      const l = (lA * factorA + lB * factorB) * aa;
-      const a = (aA * factorA + aB * factorB) * aa;
-      const b = (bA * factorA + bB * factorB) * aa;
+      let l, a, b;
+      if (aa === 0) {
+        l = lA * pA + lB * pB;
+        a = aA * pA + aB * pB;
+        b = bA * pA + bB * pB;
+      } else {
+        l = (lA * factorA + lB * factorB) * aa;
+        a = (aA * factorA + aB * factorB) * aa;
+        b = (bA * factorA + bB * factorB) * aa;
+      }
       hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * m})`);
     // in lch
     } else if (colorSpace === 'lch') {
-      const [lA, cA, hA, aaA] = await hexToLch(colorAHex);
-      const [lB, cB, hB, aaB] = await hexToLch(colorBHex);
+      let lchA = await hexToLch(colorAHex);
+      let lchB = await hexToLch(colorBHex);
+      if (regMissingLch.test(colorA)) {
+        lchA = await reInsertMissingComponents(colorA, lchA);
+      }
+      if (regMissingLch.test(colorB)) {
+        lchB = await reInsertMissingComponents(colorB, lchB);
+      }
+      const [
+        [lA, cA, hA, aaA],
+        [lB, cB, hB, aaB]
+      ] = await normalizeColorComponents(lchA, lchB);
       const factorA = aaA * pA;
       const factorB = aaB * pB;
       const aa = (factorA + factorB);
-      const l = (lA * factorA + lB * factorB) * aa;
-      const c = (cA * factorA + cB * factorB) * aa;
-      const h = (hA * factorA + hB * factorB) * aa;
+      let l, c, h;
+      if (aa === 0) {
+        l = lA * pA + lB * pB;
+        c = cA * pA + cB * pB;
+        h = hA * pA + hB * pB;
+      } else {
+        l = (lA * factorA + lB * factorB) * aa;
+        c = (cA * factorA + cB * factorB) * aa;
+        h = (hA * factorA + hB * factorB) * aa;
+      }
       hex = await convertColorToHex(`lch(${l} ${c} ${h} / ${aa * m})`);
     // in oklab
     } else if (colorSpace === 'oklab') {
-      const [lA, aA, bA, aaA] = await hexToOklab(colorAHex);
-      const [lB, aB, bB, aaB] = await hexToOklab(colorBHex);
+      let [lA, aA, bA, aaA] = await hexToOklab(colorAHex);
+      let [lB, aB, bB, aaB] = await hexToOklab(colorBHex);
+      if (regMissingLch.test(colorA)) {
+        [lA,,, aaA] =
+          await reInsertMissingComponents(colorA, [lA, null, null, aaA]);
+      }
+      if (regMissingLch.test(colorB)) {
+        [lB,,, aaB] =
+          await reInsertMissingComponents(colorB, [lB, null, null, aaB]);
+      }
+      [
+        [lA, aA, bA, aaA],
+        [lB, aB, bB, aaB]
+      ] = await normalizeColorComponents([lA, aA, bA, aaA], [lB, aB, bB, aaB]);
       const factorA = aaA * pA;
       const factorB = aaB * pB;
       const aa = (factorA + factorB);
-      const l = (lA * factorA + lB * factorB) * aa;
-      const a = (aA * factorA + aB * factorB) * aa;
-      const b = (bA * factorA + bB * factorB) * aa;
+      let l, a, b;
+      if (aa === 0) {
+        l = lA * pA + lB * pB;
+        a = aA * pA + aB * pB;
+        b = bA * pA + bB * pB;
+      } else {
+        l = (lA * factorA + lB * factorB) * aa;
+        a = (aA * factorA + aB * factorB) * aa;
+        b = (bA * factorA + bB * factorB) * aa;
+      }
       hex = await convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * m})`);
     // in oklch
     } else if (colorSpace === 'oklch') {
-      const [lA, cA, hA, aaA] = await hexToOklch(colorAHex);
-      const [lB, cB, hB, aaB] = await hexToOklch(colorBHex);
+      let lchA = await hexToOklch(colorAHex);
+      let lchB = await hexToOklch(colorBHex);
+      if (regMissingLch.test(colorA)) {
+        lchA = await reInsertMissingComponents(colorA, lchA);
+      }
+      if (regMissingLch.test(colorB)) {
+        lchB = await reInsertMissingComponents(colorB, lchB);
+      }
+      const [
+        [lA, cA, hA, aaA],
+        [lB, cB, hB, aaB]
+      ] = await normalizeColorComponents(lchA, lchB);
       const factorA = aaA * pA;
       const factorB = aaB * pB;
       const aa = (factorA + factorB);
-      const l = (lA * factorA + lB * factorB) * aa;
-      const c = (cA * factorA + cB * factorB) * aa;
-      const h = (hA * factorA + hB * factorB) * aa;
+      let l, c, h;
+      if (aa === 0) {
+        l = lA * pA + lB * pB;
+        c = cA * pA + cB * pB;
+        h = hA * pA + hB * pB;
+      } else {
+        l = (lA * factorA + lB * factorB) * aa;
+        c = (cA * factorA + cB * factorB) * aa;
+        h = (hA * factorA + hB * factorB) * aa;
+      }
       hex = await convertColorToHex(`oklch(${l} ${c} ${h} / ${aa * m})`);
     }
   }
