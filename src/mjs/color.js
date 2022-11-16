@@ -6,7 +6,6 @@
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
  *
  * NOTE: 'currentColor' keyword is not supported
- * TODO: 'none' keyword is not yet fully supported
  */
 
 /* shared */
