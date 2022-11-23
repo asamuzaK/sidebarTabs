@@ -274,7 +274,7 @@ export const colorname = {
 /**
  * validate color components
  *
- * @param {Array} arr - array
+ * @param {Array} arr - array of color components
  * @param {Object<number | boolean>} opt - options
  * @returns {Array} - arr;
  */
