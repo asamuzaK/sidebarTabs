@@ -1167,6 +1167,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
 export const handleClickedMenu = async info => {
   const { menuItemId } = info;
   const { context, contextualIds, windowId } = sidebar;
+  const { focused } = await getCurrentWindow();
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   const tab = getSidebarTab(context);
@@ -1323,7 +1324,9 @@ export const handleClickedMenu = async info => {
           opt.cookieStoreId = cookieStoreId;
         }
       }
-      func.push(createNewTab(windowId, opt));
+      if (focused) {
+        func.push(createNewTab(windowId, opt));
+      }
       break;
     }
     case TAB_PIN:

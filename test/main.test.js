@@ -6212,6 +6212,9 @@ describe('main', () => {
     });
 
     it('should not call function', async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: 'foo'
       };
@@ -6228,6 +6231,9 @@ describe('main', () => {
       const body = document.querySelector('body');
       mjs.sidebar.context = body;
       mjs.sidebar.windowId = 1;
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       for (const item of items) {
         const info = {
           menuItemId: item
@@ -6254,6 +6260,9 @@ describe('main', () => {
       mjs.sidebar.contextualIds = ['foo'];
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: 'foo'
       };
@@ -6264,6 +6273,9 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const i = browser.runtime.openOptionsPage.callCount;
       const res = await func({
         menuItemId: OPTIONS_OPEN
@@ -6288,6 +6300,9 @@ describe('main', () => {
       mjs.sidebar.contextualIds = ['foo'];
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: 'fooReopen'
       };
@@ -6318,6 +6333,9 @@ describe('main', () => {
       mjs.sidebar.contextualIds = ['foo'];
       mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: 'fooReopen'
       };
@@ -6348,6 +6366,9 @@ describe('main', () => {
       mjs.sidebar.contextualIds = ['foo'];
       mjs.sidebar.windowId = 1;
       browser.tabs.get.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: 'barReopen'
       };
@@ -6370,6 +6391,9 @@ describe('main', () => {
       mjs.sidebar.context = newTab;
       mjs.sidebar.contextualIds = ['foo'];
       mjs.sidebar.windowId = 1;
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: 'fooNewTab'
       };
@@ -6398,6 +6422,9 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = elm;
       mjs.sidebar.windowId = 1;
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_RELOAD
       };
@@ -6424,6 +6451,9 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = elm;
       mjs.sidebar.windowId = 1;
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_RELOAD
       };
@@ -6456,6 +6486,9 @@ describe('main', () => {
       });
       browser.tabs.update.withArgs(1, { pinned: false }).resolves({});
       browser.tabs.update.withArgs(2, { pinned: false }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_PIN
       };
@@ -6489,6 +6522,9 @@ describe('main', () => {
       });
       browser.tabs.update.withArgs(1, { pinned: true }).resolves({});
       browser.tabs.update.withArgs(2, { pinned: true }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_PIN
       };
@@ -6521,6 +6557,9 @@ describe('main', () => {
         pinned: true
       });
       browser.tabs.update.withArgs(1, { pinned: false }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_PIN
       };
@@ -6553,6 +6592,9 @@ describe('main', () => {
         pinned: false
       });
       browser.tabs.update.withArgs(1, { pinned: true }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_PIN
       };
@@ -6562,9 +6604,43 @@ describe('main', () => {
       assert.deepEqual(res, [[{}]], 'result');
     });
 
+    it('should not call function', async () => {
+      browser.browserSettings.newTabPosition.get.resolves({
+        value: 'afterCurrent'
+      });
+      browser.windows.getCurrent.resolves({
+        focused: false
+      });
+      browser.tabs.create.resolves({});
+      const i = browser.tabs.create.callCount;
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      body.appendChild(sect);
+      mjs.sidebar.context = elm;
+      mjs.sidebar.windowId = 1;
+      const info = {
+        menuItemId: TAB_NEW
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
         value: 'afterCurrent'
+      });
+      browser.windows.getCurrent.resolves({
+        focused: true
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
@@ -6598,6 +6674,9 @@ describe('main', () => {
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
         value: 'afterCurrent'
+      });
+      browser.windows.getCurrent.resolves({
+        focused: true
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
@@ -6631,6 +6710,9 @@ describe('main', () => {
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
         value: 'afterCurrent'
+      });
+      browser.windows.getCurrent.resolves({
+        focused: true
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
@@ -6666,6 +6748,9 @@ describe('main', () => {
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
         value: 'afterCurrent'
+      });
+      browser.windows.getCurrent.resolves({
+        focused: true
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
@@ -6706,6 +6791,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(1).resolves({
         cookieStoreId: COOKIE_STORE_DEFAULT
       });
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const create = browser.tabs.create.withArgs({
         index: 1,
         windowId: 1,
@@ -6744,6 +6832,9 @@ describe('main', () => {
       });
       browser.tabs.get.withArgs(1).resolves({
         cookieStoreId: 'foo'
+      });
+      browser.windows.getCurrent.resolves({
+        focused: true
       });
       const create = browser.tabs.create.withArgs({
         cookieStoreId: 'foo',
@@ -6804,6 +6895,9 @@ describe('main', () => {
       });
       browser.tabs.update.withArgs(1, { muted: false }).resolves({});
       browser.tabs.update.withArgs(2, { muted: false }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_MUTE
       };
@@ -6839,6 +6933,9 @@ describe('main', () => {
       });
       browser.tabs.update.withArgs(1, { muted: true }).resolves({});
       browser.tabs.update.withArgs(2, { muted: true }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_MUTE
       };
@@ -6873,6 +6970,9 @@ describe('main', () => {
         }
       });
       browser.tabs.update.withArgs(1, { muted: false }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_MUTE
       };
@@ -6907,6 +7007,9 @@ describe('main', () => {
         }
       });
       browser.tabs.update.withArgs(1, { muted: true }).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_MUTE
       };
@@ -6941,6 +7044,9 @@ describe('main', () => {
         id: 1
       });
       browser.tabs.move.resolves([{}, {}]);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_MOVE_WIN
       };
@@ -6977,6 +7083,9 @@ describe('main', () => {
         id: 2
       });
       browser.tabs.move.resolves([{}, {}]);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_MOVE_WIN
       };
@@ -7012,6 +7121,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.move.resolves([{}, {}]);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_MOVE_START
       };
@@ -7045,6 +7157,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.move.resolves([{}]);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_MOVE_START
       };
@@ -7081,6 +7196,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.move.resolves([{}, {}]);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_MOVE_END
       };
@@ -7117,6 +7235,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.move.resolves([{}]);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_MOVE_END
       };
@@ -7161,6 +7282,9 @@ describe('main', () => {
         index: 1
       });
       browser.tabs.duplicate.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_DUPE
       };
@@ -7203,6 +7327,9 @@ describe('main', () => {
       });
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.duplicate.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_DUPE
       };
@@ -7246,6 +7373,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_CLOSE_START
       };
@@ -7288,6 +7418,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_CLOSE_OTHER
       };
@@ -7330,6 +7463,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_CLOSE_END
       };
@@ -7372,6 +7508,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_CLOSE
       };
@@ -7414,6 +7553,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_CLOSE
       };
@@ -7464,6 +7606,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.bookmarks.create.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TABS_BOOKMARK
       };
@@ -7515,6 +7660,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
       browser.bookmarks.create.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_BOOKMARK
       };
@@ -7532,6 +7680,9 @@ describe('main', () => {
       };
       mjs.sidebar.windowId = 1;
       browser.sessions.restore.withArgs('foo').resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_CLOSE_UNDO
       };
@@ -7599,6 +7750,9 @@ describe('main', () => {
       }).resolves({
         id: 'foo'
       });
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_GROUP_BOOKMARK
       };
@@ -7668,6 +7822,9 @@ describe('main', () => {
       }).resolves({
         id: 'foo'
       });
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_GROUP_BOOKMARK
       };
@@ -7716,6 +7873,9 @@ describe('main', () => {
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.get.withArgs(2).resolves({});
       browser.tabs.get.withArgs(3).resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_GROUP_CLOSE
       };
@@ -7726,7 +7886,8 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -7737,6 +7898,7 @@ describe('main', () => {
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
+      const j = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -7788,13 +7950,15 @@ describe('main', () => {
       };
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -7806,6 +7970,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -7874,13 +8039,15 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -7892,6 +8059,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -7960,13 +8128,15 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -7978,6 +8148,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8032,13 +8203,15 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8050,6 +8223,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8104,13 +8278,15 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8122,6 +8298,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.tabs.move.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8176,7 +8353,8 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
@@ -8198,6 +8376,9 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = heading;
       mjs.sidebar.windowId = 1;
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW
       };
@@ -8224,6 +8405,9 @@ describe('main', () => {
       body.appendChild(sect);
       mjs.sidebar.context = heading;
       mjs.sidebar.windowId = 1;
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_GROUP_LABEL_SHOW
       };
@@ -8233,7 +8417,8 @@ describe('main', () => {
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8245,6 +8430,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8304,13 +8490,15 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8322,6 +8510,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8383,13 +8572,15 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8401,6 +8592,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8462,13 +8654,15 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8480,6 +8674,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8540,13 +8735,15 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
     it('should call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      browser.windows.getCurrent.resolves({
+        focused: true,
         id: 1,
         incognito: false
       });
@@ -8558,6 +8755,7 @@ describe('main', () => {
       mjs.ports.set(portId, port);
       const i = browser.tabs.get.callCount;
       const j = browser.i18n.getMessage.callCount;
+      const k = browser.windows.getCurrent.callCount;
       const tmpl = document.createElement('template');
       const sect = document.createElement('section');
       const pinned = document.createElement('section');
@@ -8626,7 +8824,8 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.i18n.getMessage.callCount, j + 2,
         'called get message');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
+      assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
+        'called current window');
       assert.isTrue(port.postMessage.calledOnce, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
@@ -8668,6 +8867,9 @@ describe('main', () => {
         index: 0
       }]);
       browser.tabs.highlight.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_ALL_SELECT
       };
@@ -8716,6 +8918,9 @@ describe('main', () => {
         index: 0
       }]);
       browser.tabs.highlight.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_ALL_SELECT
       };
@@ -8756,6 +8961,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.highlight.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_ALL_RELOAD
       };
@@ -8794,6 +9002,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.tabs.highlight.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_ALL_RELOAD
       };
@@ -8844,6 +9055,9 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       browser.tabs.get.withArgs(1).resolves({});
       browser.bookmarks.create.resolves({});
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
       const info = {
         menuItemId: TAB_ALL_BOOKMARK
       };
