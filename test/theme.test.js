@@ -183,80 +183,8 @@ describe('theme', () => {
 
     it('should throw', async () => {
       await func('foo', []).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [-1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [256]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '256 is not between 0 and 255.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, -1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, 256]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '256 is not between 0 and 255.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, 128]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, 128, NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.',
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 3 or 4 but got 0.',
           'message');
       });
     });
@@ -1726,7 +1654,9 @@ describe('theme', () => {
       const items = Object.entries(colors);
       for (const [key, value] of items) {
         // eslint-disable-next-line no-await-in-loop
-        const hexValue = await convertColorToHex(value, true);
+        const hexValue = await convertColorToHex(value, {
+          alpha: true
+        });
         mjs.currentThemeColors.set(key, hexValue);
       }
       const res = await func({
@@ -1753,7 +1683,9 @@ describe('theme', () => {
       const items = Object.entries(colors);
       for (const [key, value] of items) {
         // eslint-disable-next-line no-await-in-loop
-        const hexValue = await convertColorToHex(value, true);
+        const hexValue = await convertColorToHex(value, {
+          alpha: true
+        });
         mjs.currentThemeColors.set(key, hexValue);
       }
       const res = await func({
