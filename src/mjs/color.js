@@ -1515,8 +1515,8 @@ export const parseColor = async (value, d50 = false) => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   let x, y, z, a;
+  // complement currentcolor as a missing color
   if (/^currentcolor$/.test(value)) {
-    // complement currentcolor as a missing color
     x = 0;
     y = 0;
     z = 0;
@@ -1726,32 +1726,10 @@ export const convertLinearRgbToHex = async rgb => {
  * @returns {string} - hex color
  */
 export const convertXyzToHex = async xyz => {
-  if (!Array.isArray(xyz)) {
-    throw new TypeError(`Expected Array but got ${getType(xyz)}.`);
-  }
-  const [x, y, z, a] = xyz;
-  if (typeof x !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(x)}.`);
-  } else if (Number.isNaN(x)) {
-    throw new TypeError(`${x} is not a number.`);
-  }
-  if (typeof y !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(y)}.`);
-  } else if (Number.isNaN(y)) {
-    throw new TypeError(`${y} is not a number.`);
-  }
-  if (typeof z !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(z)}.`);
-  } else if (Number.isNaN(z)) {
-    throw new TypeError(`${z} is not a number.`);
-  }
-  if (typeof a !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(a)}.`);
-  } else if (Number.isNaN(a)) {
-    throw new TypeError(`${a} is not a number.`);
-  } else if (a < 0 || a > 1) {
-    throw new RangeError(`${a} is not between 0 and 1.`);
-  }
+  const [x, y, z, a] = await validateColorComponents(xyz, {
+    minLength: QUAD,
+    validateRange: false
+  });
   const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
   const hex = await convertLinearRgbToHex([
     Math.min(Math.max(r, 0), 1),
@@ -1769,32 +1747,10 @@ export const convertXyzToHex = async xyz => {
  * @returns {string} - hex color
  */
 export const convertXyzD50ToHex = async xyz => {
-  if (!Array.isArray(xyz)) {
-    throw new TypeError(`Expected Array but got ${getType(xyz)}.`);
-  }
-  const [x, y, z, a] = xyz;
-  if (typeof x !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(x)}.`);
-  } else if (Number.isNaN(x)) {
-    throw new TypeError(`${x} is not a number.`);
-  }
-  if (typeof y !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(y)}.`);
-  } else if (Number.isNaN(y)) {
-    throw new TypeError(`${y} is not a number.`);
-  }
-  if (typeof z !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(z)}.`);
-  } else if (Number.isNaN(z)) {
-    throw new TypeError(`${z} is not a number.`);
-  }
-  if (typeof a !== 'number') {
-    throw new TypeError(`Expected Number but got ${getType(a)}.`);
-  } else if (Number.isNaN(a)) {
-    throw new TypeError(`${a} is not a number.`);
-  } else if (a < 0 || a > 1) {
-    throw new RangeError(`${a} is not between 0 and 1.`);
-  }
+  const [x, y, z, a] = await validateColorComponents(xyz, {
+    minLength: QUAD,
+    validateRange: false
+  });
   const xyzD65 = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
   const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, xyzD65);
   const hex = await convertLinearRgbToHex([

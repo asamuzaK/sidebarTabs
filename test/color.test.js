@@ -4443,77 +4443,9 @@ describe('color', () => {
     });
 
     it('should throw', async () => {
-      await func([]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
       await func([1, 1, 1]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, 1, -1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, 1, 1.1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 4 but got 3.',
           'error message');
       });
     });
@@ -4586,77 +4518,9 @@ describe('color', () => {
     });
 
     it('should throw', async () => {
-      await func([]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
       await func([1, 1, 1]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'Expected Number but got Undefined.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, 1, Number.NaN]).catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
-        assert.strictEqual(e.message, 'NaN is not a number.', 'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, 1, -1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '-1 is not between 0 and 1.',
-          'error message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func([1, 1, 1, 1.1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '1.1 is not between 0 and 1.',
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'Expected array length of 4 but got 3.',
           'error message');
       });
     });
