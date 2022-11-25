@@ -4,7 +4,6 @@
  * Ref: CSS Color Module Level 4
  *      §17. Sample code for Color Conversions
  *      https://w3c.github.io/csswg-drafts/css-color-4/#color-conversion-code
- *
  */
 
 /* shared */
@@ -12,9 +11,9 @@ import { getType, isString } from './common.js';
 
 /* constants */
 const HALF = 0.5;
-const DOUBLE = 2;
-const TRIPLE = 3;
-const QUAD = 4;
+const DUO = 2;
+const TRIA = 3;
+const QUAT = 4;
 const DEC = 10;
 const HEX = 16;
 const DEG = 360;
@@ -32,7 +31,7 @@ const LAB_B = 200;
 const LAB_EPSILON = 216 / 24389;
 const LAB_KAPPA = 24389 / 27;
 
-/* white points */
+/* white point */
 const D50 = [0.3457 / 0.3585, 1, (1 - 0.3457 - 0.3585) / 0.3585];
 const MATRIX_D50_TO_D65 = [
   [0.9554734527042182, -0.023098536874261423, 0.0632593086610217],
@@ -45,7 +44,7 @@ const MATRIX_D65_TO_D50 = [
   [-0.009243058152591178, 0.015055144896577895, 0.7518742899580008]
 ];
 
-/* color spaces */
+/* color space */
 const MATRIX_RGB_TO_XYZ = [
   [506752 / 1228815, 87881 / 245763, 12673 / 70218],
   [87098 / 409605, 175762 / 245763, 12673 / 175545],
@@ -285,8 +284,8 @@ export const validateColorComponents = async (arr, opt = {}) => {
   let { alpha, maxLength, maxRange, minLength, minRange, validateRange } = opt;
   // default values
   alpha ??= false;
-  minLength ??= TRIPLE;
-  maxLength ??= QUAD;
+  minLength ??= TRIA;
+  maxLength ??= QUAT;
   minRange ??= 0;
   maxRange ??= 1;
   validateRange ??= true;
@@ -308,14 +307,14 @@ export const validateColorComponents = async (arr, opt = {}) => {
       throw new TypeError(`Expected Number but got ${getType(v)}.`);
     } else if (Number.isNaN(v)) {
       throw new TypeError(`${v} is not a number.`);
-    } else if (i < TRIPLE && validateRange && (v < minRange || v > maxRange)) {
+    } else if (i < TRIA && validateRange && (v < minRange || v > maxRange)) {
       throw new RangeError(`${v} is not between ${minRange} and ${maxRange}.`);
-    } else if (i === TRIPLE && (v < 0 || v > 1)) {
+    } else if (i === TRIA && (v < 0 || v > 1)) {
       throw new RangeError(`${v} is not between 0 and 1.`);
     }
     i++;
   }
-  if (alpha && l === TRIPLE) {
+  if (alpha && l === TRIA) {
     arr.push(1);
   }
   return arr;
@@ -331,7 +330,7 @@ export const validateColorComponents = async (arr, opt = {}) => {
 export const transformMatrix = async (mtx, vct) => {
   if (!Array.isArray(mtx)) {
     throw new TypeError(`Expected Array but got ${getType(mtx)}.`);
-  } else if (mtx.length !== TRIPLE) {
+  } else if (mtx.length !== TRIA) {
     throw new Error(`Expected array length of 3 but got ${mtx.length}.`);
   } else {
     const func = [];
@@ -403,10 +402,10 @@ export const angleToDeg = async angle => {
   let deg;
   switch (unit) {
     case 'grad':
-      deg = parseFloat(value) * DEG / (MAX_PCT * QUAD);
+      deg = parseFloat(value) * DEG / (MAX_PCT * QUAT);
       break;
     case 'rad':
-      deg = parseFloat(value) * DEG / (Math.PI * DOUBLE);
+      deg = parseFloat(value) * DEG / (Math.PI * DUO);
       break;
     case 'turn':
       deg = parseFloat(value) * DEG;
@@ -429,7 +428,7 @@ export const angleToDeg = async angle => {
  */
 export const rgbToLinearRgb = async rgb => {
   let [r, g, b] = await validateColorComponents(rgb, {
-    maxLength: 3
+    maxLength: TRIA
   });
   const COND_POW = 0.04045;
   if (r > COND_POW) {
@@ -458,7 +457,7 @@ export const rgbToLinearRgb = async rgb => {
  */
 export const linearRgbToRgb = async rgb => {
   let [r, g, b] = await validateColorComponents(rgb, {
-    maxLength: 3
+    maxLength: TRIA
   });
   const COND_POW = 809 / 258400;
   if (r > COND_POW) {
@@ -539,11 +538,11 @@ export const xyzToHsl = async xyz => {
           h = (g - b) / d;
           break;
         case g:
-          h = (b - r) / d + DOUBLE;
+          h = (b - r) / d + DUO;
           break;
         case b:
         default:
-          h = (r - g) / d + QUAD;
+          h = (r - g) / d + QUAT;
           break;
       }
       h = h * DEG_INTERVAL % DEG;
@@ -595,9 +594,9 @@ export const xyzD50ToLab = async xyz => {
     ? Math.cbrt(val)
     : (val * LAB_KAPPA + HEX) / LAB_L
   );
-  const l = Math.min(Math.max((LAB_L * f1) - HEX, 0), 100);
+  const l = Math.min(Math.max((LAB_L * f1) - HEX, 0), MAX_PCT);
   let a, b;
-  if (l === 0 || l === 100) {
+  if (l === 0 || l === MAX_PCT) {
     a = NONE;
     b = NONE;
   } else {
@@ -617,13 +616,13 @@ export const xyzD50ToLab = async xyz => {
 export const xyzD50ToLch = async xyz => {
   const [l, a, b, aa] = await xyzD50ToLab(xyz);
   let c, h;
-  if (l === 0 || l === 100) {
+  if (l === 0 || l === MAX_PCT) {
     c = NONE;
     h = NONE;
   } else {
     c =
       Math.max(Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE)), 0);
-    if (parseFloat(c.toFixed(4)) === 0) {
+    if (parseFloat(c.toFixed(QUAT)) === 0) {
       h = NONE;
     } else {
       h = Math.atan2(b, a) * DEG * HALF / Math.PI;
@@ -649,8 +648,8 @@ export const xyzToOklab = async xyz => {
   const xyzLms = lms.map(c => Math.cbrt(c));
   let [l, a, b] = await transformMatrix(MATRIX_LMS_TO_OKLAB, xyzLms);
   l = Math.min(Math.max(l, 0), 1);
-  const lPct = Math.round(parseFloat(l.toFixed(4)) * MAX_PCT);
-  if (lPct === 0 || lPct === 100) {
+  const lPct = Math.round(parseFloat(l.toFixed(QUAT)) * MAX_PCT);
+  if (lPct === 0 || lPct === MAX_PCT) {
     a = NONE;
     b = NONE;
   }
@@ -667,14 +666,14 @@ export const xyzToOklab = async xyz => {
 export const xyzToOklch = async xyz => {
   const [l, a, b, aa] = await xyzToOklab(xyz);
   let c, h;
-  const lPct = Math.round(parseFloat(l.toFixed(4)) * MAX_PCT);
-  if (lPct === 0 || lPct === 100) {
+  const lPct = Math.round(parseFloat(l.toFixed(QUAT)) * MAX_PCT);
+  if (lPct === 0 || lPct === MAX_PCT) {
     c = NONE;
     h = NONE;
   } else {
     c =
       Math.max(Math.sqrt(Math.pow(a, POW_SQUARE) + Math.pow(b, POW_SQUARE)), 0);
-    if (parseFloat(c.toFixed(4)) === 0) {
+    if (parseFloat(c.toFixed(QUAT)) === 0) {
       h = NONE;
     } else {
       h = Math.atan2(b, a) * DEG * HALF / Math.PI;
@@ -845,16 +844,16 @@ export const reInsertMissingComponents = async (value, color = []) => {
 export const normalizeColorComponents = async (colorA, colorB) => {
   if (!Array.isArray(colorA)) {
     throw new TypeError(`Expected Array but got ${getType(colorA)}.`);
-  } else if (colorA.length !== QUAD) {
+  } else if (colorA.length !== QUAT) {
     throw new Error(`Expected array length of 4 but got ${colorA.length}.`);
   }
   if (!Array.isArray(colorB)) {
     throw new TypeError(`Expected Array but got ${getType(colorB)}.`);
-  } else if (colorB.length !== QUAD) {
+  } else if (colorB.length !== QUAT) {
     throw new Error(`Expected array length of 4 but got ${colorB.length}.`);
   }
   let i = 0;
-  while (i < QUAD) {
+  while (i < QUAT) {
     if (colorA[i] === NONE && colorB[i] === NONE) {
       colorA[i] = 0;
       colorB[i] = 0;
@@ -1024,23 +1023,23 @@ export const parseHsl = async value => {
     g = h * factor + min;
     b = min;
   // < 120
-  } else if (h < DEG_INTERVAL * DOUBLE) {
-    r = (DEG_INTERVAL * DOUBLE - h) * factor + min;
+  } else if (h < DEG_INTERVAL * DUO) {
+    r = (DEG_INTERVAL * DUO - h) * factor + min;
     g = max;
     b = min;
   // < 180
   } else if (h < DEG * HALF) {
     r = min;
     g = max;
-    b = (h - DEG_INTERVAL * DOUBLE) * factor + min;
+    b = (h - DEG_INTERVAL * DUO) * factor + min;
   // < 240
-  } else if (h < DEG_INTERVAL * QUAD) {
+  } else if (h < DEG_INTERVAL * QUAT) {
     r = min;
-    g = (DEG_INTERVAL * QUAD - h) * factor + min;
+    g = (DEG_INTERVAL * QUAT - h) * factor + min;
     b = max;
   // < 300
   } else if (h < DEG - DEG_INTERVAL) {
-    r = (h - (DEG_INTERVAL * QUAD)) * factor + min;
+    r = (h - (DEG_INTERVAL * QUAT)) * factor + min;
     g = min;
     b = max;
   // < 360
@@ -1142,8 +1141,8 @@ export const parseLab = async value => {
     }
     if (l.endsWith('%')) {
       l = parseFloat(l);
-      if (l > 100) {
-        l = 100;
+      if (l > MAX_PCT) {
+        l = MAX_PCT;
       }
     } else {
       l = parseFloat(l);
@@ -1476,7 +1475,7 @@ export const parseColorFunc = async (value, d50 = false) => {
     const POW_PROPHOTO = 1.8;
     const rgb = [r, g, b].map(c => {
       let cl;
-      if (c > 1 / (HEX * DOUBLE)) {
+      if (c > 1 / (HEX * DUO)) {
         cl = Math.pow(c, POW_PROPHOTO);
       } else {
         cl = c / HEX;
@@ -1701,7 +1700,7 @@ export const convertRgbToHex = async rgb => {
  */
 export const convertLinearRgbToHex = async rgb => {
   let [r, g, b, a] = await validateColorComponents(rgb, {
-    minLength: 4
+    minLength: QUAT
   });
   [r, g, b] = await linearRgbToRgb([r, g, b]);
   const [rr, gg, bb, aa] = await Promise.all([
@@ -1727,7 +1726,7 @@ export const convertLinearRgbToHex = async rgb => {
  */
 export const convertXyzToHex = async xyz => {
   const [x, y, z, a] = await validateColorComponents(xyz, {
-    minLength: QUAD,
+    minLength: QUAT,
     validateRange: false
   });
   const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
@@ -1748,7 +1747,7 @@ export const convertXyzToHex = async xyz => {
  */
 export const convertXyzD50ToHex = async xyz => {
   const [x, y, z, a] = await validateColorComponents(xyz, {
-    minLength: QUAD,
+    minLength: QUAT,
     validateRange: false
   });
   const xyzD65 = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
@@ -1765,7 +1764,7 @@ export const convertXyzD50ToHex = async xyz => {
 /**
  * convert color to hex color
  * NOTE: convertColorToHex('transparent') resolves as null
- *       convertColorToHex('transparent', true) resolves as #00000000
+ *       convertColorToHex('transparent', { alpha: true }) resolves as #00000000
  *
  * @param {string} value - value
  * @param {object} opt - options
