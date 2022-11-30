@@ -336,7 +336,7 @@ export const transformMatrix = async (mtx, vct) => {
     const func = [];
     for (const i of mtx) {
       func.push(validateColorComponents(i, {
-        maxLength: 3,
+        maxLength: TRIA,
         validateRange: false
       }));
     }
@@ -348,7 +348,7 @@ export const transformMatrix = async (mtx, vct) => {
     [r3c1, r3c2, r3c3]
   ] = mtx;
   const [v1, v2, v3] = await validateColorComponents(vct, {
-    maxLength: 3,
+    maxLength: TRIA,
     validateRange: false
   });
   const p1 = r1c1 * v1 + r1c2 * v2 + r1c3 * v3;
@@ -393,6 +393,8 @@ export const angleToDeg = async angle => {
   } else {
     throw new TypeError(`Expected String but got ${getType(angle)}.`);
   }
+  const GRAD = DEG / 400;
+  const RAD = DEG / (Math.PI * DUO);
   const reg = new RegExp(`^(${REG_NUM})(${REG_ANGLE})?$`);
   if (!reg.test(angle)) {
     throw new Error(`Invalid property value: ${angle}`);
@@ -402,10 +404,10 @@ export const angleToDeg = async angle => {
   let deg;
   switch (unit) {
     case 'grad':
-      deg = parseFloat(value) * DEG / (MAX_PCT * QUAT);
+      deg = parseFloat(value) * GRAD;
       break;
     case 'rad':
-      deg = parseFloat(value) * DEG / (Math.PI * DUO);
+      deg = parseFloat(value) * RAD;
       break;
     case 'turn':
       deg = parseFloat(value) * DEG;
@@ -864,6 +866,14 @@ export const normalizeColorComponents = async (colorA, colorB) => {
     }
     i++;
   }
+  colorA = await validateColorComponents(colorA, {
+    minLength: QUAT,
+    validateRange: false
+  });
+  colorB = await validateColorComponents(colorB, {
+    minLength: QUAT,
+    validateRange: false
+  });
   return [colorA, colorB];
 };
 
@@ -1915,10 +1925,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
   if (!regColorMix.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
+  const CC_LCH = 'lch(none none none / none)';
+  const CC_RGB = 'rgb(none none none / none)';
   const { alpha } = opt;
   const [, colorSpace, colorPartA, colorPartB] = value.match(regColorMix);
   const regColorPart =
     new RegExp(`^(${REG_COLOR_TYPE})(?:\\s+(${REG_PCT}))?$`, 'i');
+  const regCurrentColor = /^currentColor$/i;
   const regMissingLch = /^(?:h(?:sla?|wb)|(?:ok)?l(?:ab|ch))\(.*none.*\)$/;
   const regMissingRgb = /^(?:color|rgba?)\(.*none.*\)$/;
   const [, colorA, pctA] = colorPartA.match(regColorPart);
@@ -1969,14 +1982,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     let rgbB = await convertColorToRgb(colorB, {
       alpha: true
     });
-    const currentColor = 'rgb(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
-      rgbA = await reInsertMissingComponents(currentColor, rgbA);
+    if (regCurrentColor.test(colorA)) {
+      rgbA = await reInsertMissingComponents(CC_RGB, rgbA);
     } else if (regMissingRgb.test(colorA)) {
       rgbA = await reInsertMissingComponents(colorA, rgbA);
     }
-    if (/^currentColor$/i.test(colorB)) {
-      rgbB = await reInsertMissingComponents(currentColor, rgbB);
+    if (regCurrentColor.test(colorB)) {
+      rgbB = await reInsertMissingComponents(CC_RGB, rgbB);
     } else if (regMissingRgb.test(colorB)) {
       rgbB = await reInsertMissingComponents(colorB, rgbB);
     }
@@ -2006,14 +2018,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     let rgbB = await convertColorToLinearRgb(colorB, {
       alpha: true
     });
-    const currentColor = 'rgb(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
-      rgbA = await reInsertMissingComponents(currentColor, rgbA);
+    if (regCurrentColor.test(colorA)) {
+      rgbA = await reInsertMissingComponents(CC_RGB, rgbA);
     } else if (regMissingRgb.test(colorA)) {
       rgbA = await reInsertMissingComponents(colorA, rgbA);
     }
-    if (/^currentColor$/i.test(colorB)) {
-      rgbB = await reInsertMissingComponents(currentColor, rgbB);
+    if (regCurrentColor.test(colorB)) {
+      rgbB = await reInsertMissingComponents(CC_RGB, rgbB);
     } else if (regMissingRgb.test(colorB)) {
       rgbB = await reInsertMissingComponents(colorB, rgbB);
     }
@@ -2052,14 +2063,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       xyzB = await parseColor(colorB);
     }
-    const currentColor = 'rgb(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
-      xyzA = await reInsertMissingComponents(currentColor, xyzA);
+    if (regCurrentColor.test(colorA)) {
+      xyzA = await reInsertMissingComponents(CC_RGB, xyzA);
     } else if (regMissingRgb.test(colorA)) {
       xyzA = await reInsertMissingComponents(colorA, xyzA);
     }
-    if (/^currentColor$/i.test(colorB)) {
-      xyzB = await reInsertMissingComponents(currentColor, xyzB);
+    if (regCurrentColor.test(colorB)) {
+      xyzB = await reInsertMissingComponents(CC_RGB, xyzB);
     } else if (regMissingRgb.test(colorB)) {
       xyzB = await reInsertMissingComponents(colorB, xyzB);
     }
@@ -2098,14 +2108,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       xyzB = await parseColor(colorB, true);
     }
-    const currentColor = 'rgb(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
-      xyzA = await reInsertMissingComponents(currentColor, xyzA);
+    if (regCurrentColor.test(colorA)) {
+      xyzA = await reInsertMissingComponents(CC_RGB, xyzA);
     } else if (regMissingRgb.test(colorA)) {
       xyzA = await reInsertMissingComponents(colorA, xyzA);
     }
-    if (/^currentColor$/i.test(colorB)) {
-      xyzB = await reInsertMissingComponents(currentColor, xyzB);
+    if (regCurrentColor.test(colorB)) {
+      xyzB = await reInsertMissingComponents(CC_RGB, xyzB);
     } else if (regMissingRgb.test(colorB)) {
       xyzB = await reInsertMissingComponents(colorB, xyzB);
     }
@@ -2145,17 +2154,16 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       [hB, sB, lB, aB] = await parseColor(colorB).then(xyzToHsl);
     }
-    const currentColor = 'lch(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
+    if (regCurrentColor.test(colorA)) {
       [lA, sA, hA, aA] =
-        await reInsertMissingComponents(currentColor, [lA, sA, hA, aA]);
+        await reInsertMissingComponents(CC_LCH, [lA, sA, hA, aA]);
     } else if (regMissingLch.test(colorA)) {
       [lA, sA, hA, aA] =
         await reInsertMissingComponents(colorA, [lA, sA, hA, aA]);
     }
-    if (/^currentColor$/i.test(colorB)) {
+    if (regCurrentColor.test(colorB)) {
       [lB, sB, hB, aB] =
-        await reInsertMissingComponents(currentColor, [lB, sB, hB, aB]);
+        await reInsertMissingComponents(CC_LCH, [lB, sB, hB, aB]);
     } else if (regMissingLch.test(colorB)) {
       [lB, sB, hB, aB] =
         await reInsertMissingComponents(colorB, [lB, sB, hB, aB]);
@@ -2197,17 +2205,16 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       [hB, wB, bB, aB] = await parseColor(colorB).then(xyzToHwb);
     }
-    const currentColor = 'lch(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
+    if (regCurrentColor.test(colorA)) {
       [,, hA, aA] =
-        await reInsertMissingComponents(currentColor, [null, null, hA, aA]);
+        await reInsertMissingComponents(CC_LCH, [null, null, hA, aA]);
     } else if (regMissingLch.test(colorA)) {
       [,, hA, aA] =
         await reInsertMissingComponents(colorA, [null, null, hA, aA]);
     }
-    if (/^currentColor$/i.test(colorB)) {
+    if (regCurrentColor.test(colorB)) {
       [,, hB, aB] =
-        await reInsertMissingComponents(currentColor, [null, null, hB, aB]);
+        await reInsertMissingComponents(CC_LCH, [null, null, hB, aB]);
     } else if (regMissingLch.test(colorB)) {
       [,, hB, aB] =
         await reInsertMissingComponents(colorB, [null, null, hB, aB]);
@@ -2249,17 +2256,16 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       [lB, aB, bB, aaB] = await parseColor(colorB, true).then(xyzD50ToLab);
     }
-    const currentColor = 'lch(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
+    if (regCurrentColor.test(colorA)) {
       [lA,,, aaA] =
-        await reInsertMissingComponents(currentColor, [lA, null, null, aaA]);
+        await reInsertMissingComponents(CC_LCH, [lA, null, null, aaA]);
     } else if (regMissingLch.test(colorA)) {
       [lA,,, aaA] =
         await reInsertMissingComponents(colorA, [lA, null, null, aaA]);
     }
-    if (/^currentColor$/i.test(colorB)) {
+    if (regCurrentColor.test(colorB)) {
       [lB,,, aaB] =
-        await reInsertMissingComponents(currentColor, [lB, null, null, aaB]);
+        await reInsertMissingComponents(CC_LCH, [lB, null, null, aaB]);
     } else if (regMissingLch.test(colorB)) {
       [lB,,, aaB] =
         await reInsertMissingComponents(colorB, [lB, null, null, aaB]);
@@ -2301,14 +2307,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       lchB = await parseColor(colorB, true).then(xyzD50ToLch);
     }
-    const currentColor = 'lch(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
-      lchA = await reInsertMissingComponents(currentColor, lchA);
+    if (regCurrentColor.test(colorA)) {
+      lchA = await reInsertMissingComponents(CC_LCH, lchA);
     } else if (regMissingLch.test(colorA)) {
       lchA = await reInsertMissingComponents(colorA, lchA);
     }
-    if (/^currentColor$/i.test(colorB)) {
-      lchB = await reInsertMissingComponents(currentColor, lchB);
+    if (regCurrentColor.test(colorB)) {
+      lchB = await reInsertMissingComponents(CC_LCH, lchB);
     } else if (regMissingLch.test(colorB)) {
       lchB = await reInsertMissingComponents(colorB, lchB);
     }
@@ -2350,17 +2355,16 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       [lB, aB, bB, aaB] = await parseColor(colorB).then(xyzToOklab);
     }
-    const currentColor = 'lch(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
+    if (regCurrentColor.test(colorA)) {
       [lA,,, aaA] =
-        await reInsertMissingComponents(currentColor, [lA, null, null, aaA]);
+        await reInsertMissingComponents(CC_LCH, [lA, null, null, aaA]);
     } else if (regMissingLch.test(colorA)) {
       [lA,,, aaA] =
         await reInsertMissingComponents(colorA, [lA, null, null, aaA]);
     }
-    if (/^currentColor$/i.test(colorB)) {
+    if (regCurrentColor.test(colorB)) {
       [lA,,, aaA] =
-        await reInsertMissingComponents(currentColor, [lB, null, null, aaB]);
+        await reInsertMissingComponents(CC_LCH, [lB, null, null, aaB]);
     } else if (regMissingLch.test(colorB)) {
       [lB,,, aaB] =
         await reInsertMissingComponents(colorB, [lB, null, null, aaB]);
@@ -2402,14 +2406,13 @@ export const convertColorMixToHex = async (value, opt = {}) => {
     } else {
       lchB = await parseColor(colorB, true).then(xyzToOklch);
     }
-    const currentColor = 'lch(none none none / none)';
-    if (/^currentColor$/i.test(colorA)) {
-      lchA = await reInsertMissingComponents(currentColor, lchA);
+    if (regCurrentColor.test(colorA)) {
+      lchA = await reInsertMissingComponents(CC_LCH, lchA);
     } else if (regMissingLch.test(colorA)) {
       lchA = await reInsertMissingComponents(colorA, lchA);
     }
-    if (/^currentColor$/i.test(colorB)) {
-      lchB = await reInsertMissingComponents(currentColor, lchB);
+    if (regCurrentColor.test(colorB)) {
+      lchB = await reInsertMissingComponents(CC_LCH, lchB);
     } else if (regMissingLch.test(colorB)) {
       lchB = await reInsertMissingComponents(colorB, lchB);
     }

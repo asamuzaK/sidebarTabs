@@ -1930,82 +1930,82 @@ describe('color', () => {
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 3, 4], [5, 6, 7, 8]);
+      const res = await func([1, 2, 3, 0.4], [5, 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 3, 4],
-        [5, 6, 7, 8]
+        [1, 2, 3, 0.4],
+        [5, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func(['none', 2, 3, 4], ['none', 6, 7, 8]);
+      const res = await func(['none', 2, 3, 0.4], ['none', 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [0, 2, 3, 4],
-        [0, 6, 7, 8]
+        [0, 2, 3, 0.4],
+        [0, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func(['none', 2, 3, 4], [5, 6, 7, 8]);
+      const res = await func(['none', 2, 3, 0.4], [5, 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [5, 2, 3, 4],
-        [5, 6, 7, 8]
+        [5, 2, 3, 0.4],
+        [5, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 3, 4], ['none', 6, 7, 8]);
+      const res = await func([1, 2, 3, 0.4], ['none', 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 3, 4],
-        [1, 6, 7, 8]
+        [1, 2, 3, 0.4],
+        [1, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 'none', 3, 4], [5, 'none', 7, 8]);
+      const res = await func([1, 'none', 3, 0.4], [5, 'none', 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 0, 3, 4],
-        [5, 0, 7, 8]
+        [1, 0, 3, 0.4],
+        [5, 0, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 'none', 3, 4], [5, 6, 7, 8]);
+      const res = await func([1, 'none', 3, 0.4], [5, 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 6, 3, 4],
-        [5, 6, 7, 8]
+        [1, 6, 3, 0.4],
+        [5, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 3, 4], [5, 'none', 7, 8]);
+      const res = await func([1, 2, 3, 0.4], [5, 'none', 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 3, 4],
-        [5, 2, 7, 8]
+        [1, 2, 3, 0.4],
+        [5, 2, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 'none', 4], [5, 6, 'none', 8]);
+      const res = await func([1, 2, 'none', 0.4], [5, 6, 'none', 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 0, 4],
-        [5, 6, 0, 8]
+        [1, 2, 0, 0.4],
+        [5, 6, 0, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 'none', 4], [5, 6, 7, 8]);
+      const res = await func([1, 2, 'none', 0.4], [5, 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 7, 4],
-        [5, 6, 7, 8]
+        [1, 2, 7, 0.4],
+        [5, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 3, 4], [5, 6, 'none', 8]);
+      const res = await func([1, 2, 3, 0.4], [5, 6, 'none', 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 3, 4],
-        [5, 6, 3, 8]
+        [1, 2, 3, 0.4],
+        [5, 6, 3, 0.8]
       ]);
     });
 
@@ -2018,18 +2018,18 @@ describe('color', () => {
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 3, 'none'], [5, 6, 7, 8]);
+      const res = await func([1, 2, 3, 'none'], [5, 6, 7, 0.8]);
       assert.deepEqual(res, [
-        [1, 2, 3, 8],
-        [5, 6, 7, 8]
+        [1, 2, 3, 0.8],
+        [5, 6, 7, 0.8]
       ]);
     });
 
     it('should get values', async () => {
-      const res = await func([1, 2, 3, 4], [5, 6, 7, 'none']);
+      const res = await func([1, 2, 3, 0.4], [5, 6, 7, 'none']);
       assert.deepEqual(res, [
-        [1, 2, 3, 4],
-        [5, 6, 7, 4]
+        [1, 2, 3, 0.4],
+        [5, 6, 7, 0.4]
       ]);
     });
   });
