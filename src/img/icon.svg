@@ -24,6 +24,9 @@
       fill: context-fill rgb(251,251,254);
     }
     @media (prefers-color-scheme: dark) {
+      #color > use[href="#background"] {
+        fill: transparent;
+      }
       #color > use[href="#activetab"],
       #color > use[href="#sidetab"],
       #current {
