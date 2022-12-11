@@ -16,12 +16,8 @@
     g:target ~ #color {
       display: none;
     }
-    #current,
-    #dark {
+    #current {
       fill: context-fill rgb(91,91,102);
-    }
-    #light {
-      fill: context-fill rgb(251,251,254);
     }
     @media (prefers-color-scheme: dark) {
       #color > use[href="#activetab"],
@@ -47,12 +43,6 @@
     <path d="m26 10c-8.7256 0-16 7.2744-16 16v76c0 8.7256 7.2744 16 16 16h76c8.7256 0 16-7.2744 16-16v-76c0-8.7256-7.2744-16-16-16h-76zm0 16h20v13h-20v-13zm28 0h48v76h-48v-76zm-28 21h20v13h-20v-13zm0 21h20v13h-20v-13zm0 21h20v13h-20v-13z"/>
   </symbol>
   <g id="current">
-    <use href="#outline"/>
-  </g>
-  <g id="dark">
-    <use href="#outline"/>
-  </g>
-  <g id="light">
     <use href="#outline"/>
   </g>
   <g id="color">
