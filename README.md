@@ -1,4 +1,4 @@
-EN | [JA](./README.ja.md) | [پارسی](./README.fa.md)
+EN | [JA](./README.ja.md) | [فا](./README.fa.md)
 
 [![build](https://github.com/asamuzaK/sidebarTabs/workflows/build/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3Abuild)
 [![CodeQL](https://github.com/asamuzaK/sidebarTabs/workflows/CodeQL/badge.svg)](https://github.com/asamuzaK/sidebarTabs/actions?query=workflow%3ACodeQL)
