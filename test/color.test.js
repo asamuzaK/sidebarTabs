@@ -142,6 +142,86 @@ describe('color', () => {
       });
     });
 
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        minLength: null
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Null.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        minLength: NaN
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        maxLength: null
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Null.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        maxLength: NaN
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        minRange: null
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Null.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        minRange: NaN
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        maxRange: null
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected Number but got Null.',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func([0, 128, 192, 1], {
+        maxRange: NaN
+      }).catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'NaN is not a number.',
+          'error message');
+      });
+    });
+
     it('should get value', async () => {
       const res = await func([1, 0.3, 0.7, 0.5]);
       assert.deepEqual(res, [1, 0.3, 0.7, 0.5], 'result');

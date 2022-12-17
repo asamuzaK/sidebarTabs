@@ -281,14 +281,34 @@ export const validateColorComponents = async (arr, opt = {}) => {
   if (!Array.isArray(arr)) {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
-  let { alpha, maxLength, maxRange, minLength, minRange, validateRange } = opt;
-  // default values
-  alpha ??= false;
-  minLength ??= TRIA;
-  maxLength ??= QUAT;
-  minRange ??= 0;
-  maxRange ??= 1;
-  validateRange ??= true;
+  const {
+    alpha = false,
+    minLength = TRIA,
+    maxLength = QUAT,
+    minRange = 0,
+    maxRange = 1,
+    validateRange = true
+  } = opt;
+  if (typeof minLength !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(minLength)}.`);
+  } else if (Number.isNaN(minLength)) {
+    throw new TypeError(`${minLength} is not a number.`);
+  }
+  if (typeof maxLength !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(maxLength)}.`);
+  } else if (Number.isNaN(maxLength)) {
+    throw new TypeError(`${maxLength} is not a number.`);
+  }
+  if (typeof minRange !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(minRange)}.`);
+  } else if (Number.isNaN(minRange)) {
+    throw new TypeError(`${minRange} is not a number.`);
+  }
+  if (typeof maxRange !== 'number') {
+    throw new TypeError(`Expected Number but got ${getType(maxRange)}.`);
+  } else if (Number.isNaN(maxRange)) {
+    throw new TypeError(`${maxRange} is not a number.`);
+  }
   const l = arr.length;
   if (l < minLength || l > maxLength) {
     let msg;
