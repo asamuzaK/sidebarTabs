@@ -461,13 +461,13 @@
     "message": "Enable grouping tabs functionality."
   },
   "optionsInit": {
-    "message": "Init"
+    "message": "Reset"
   },
   "optionsInitSidebar": {
-    "message": "Init Sidebar Tabs"
+    "message": "Reset Sidebar Tabs"
   },
   "optionsInitSidebarDetail": {
-    "message": "Initialize Sidebar Tabs. All configuration data will be removed."
+    "message": "Reset Sidebar Tabs. All configuration data will be removed."
   },
   "optionsInvertScrollDirection": {
     "message": "Invert scroll direction"
