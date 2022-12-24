@@ -876,7 +876,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
         cssText += `${propKeys[key]}: ${value};`;
         customTheme[key] = value;
         currentTheme.set(THEME_CURRENT, customTheme);
-      } else {
+      } else if (propKeys[key]) {
         cssText += `${propKeys[key]}: ${val};`;
       }
     }
@@ -1045,11 +1045,11 @@ export const setTheme = async (info = [], opt = {}) => {
             const textColor = await getColorInHex(currentColors[FRAME_TEXT], {
               alpha: true
             });
-            if (dark) {
-              local = frameColor !== '#1c1b22' || textColor !== '#fbfbfe';
-            } else {
-              local = frameColor !== '#f0f0f4' || textColor !== '#15141a';
-            }
+            const defaultTheme =
+              dark ? themeMap[THEME_DARK] : themeMap[THEME_LIGHT];
+            local = frameColor !== defaultTheme[CUSTOM_BG_FRAME] ||
+                    (textColor !== defaultTheme[CUSTOM_COLOR] &&
+                     textColor !== defaultTheme[CUSTOM_COLOR_ACTIVE]);
             if (local) {
               item = key;
             } else {

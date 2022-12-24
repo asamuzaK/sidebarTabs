@@ -2632,6 +2632,19 @@ describe('theme', () => {
     });
 
     it('should update stylesheet', async () => {
+      const currentTheme = mjs.themeMap[THEME_DARK];
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
+      await func('.foo');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 1, 'length');
+      assert.strictEqual(sheet.cssRules[0].selectorText, '.foo', 'selector');
+    });
+
+    it('should update stylesheet', async () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const body = document.querySelector('body');
@@ -3516,7 +3529,7 @@ describe('theme', () => {
     it('should set system light theme', async () => {
       browser.theme.getCurrent.withArgs(1).resolves({
         colors: {
-          frame: '#f0f0f4',
+          frame: 'rgb(237,237,241)',
           tab_background_text: 'rgb(21,20,26)'
         }
       });
@@ -3549,7 +3562,7 @@ describe('theme', () => {
       browser.theme.getCurrent.withArgs(1).resolves({
         colors: {
           frame: '#1c1b22',
-          tab_background_text: '#fbfbfe'
+          tab_background_text: 'rgb(251,251,254)'
         }
       });
       browser.management.getAll.resolves([
