@@ -26,9 +26,9 @@ import {
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
-  THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_ID,
-  THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_LIST, THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_DARK,
+  THEME_CUSTOM_ID, THEME_CUSTOM_LIGHT, THEME_CUSTOM_SETTING, THEME_DARK,
+  THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS_ID
 } from '../src/mjs/constant.js';
@@ -2092,7 +2092,11 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       await func({
         themeId: 'foo'
       });
@@ -2113,6 +2117,9 @@ describe('theme', () => {
         }
       ]);
       browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {},
         [CUSTOM_BG]: {
           value: '#ff0000'
         }
@@ -2139,32 +2146,10 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
-      await func({
-        themeId: 'foo'
-      });
-      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
-        'id value');
-    });
-
-    it('should set theme', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          bar: {}
-        }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
       });
       await func({
         themeId: 'foo'
@@ -2185,16 +2170,12 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            values: {
-              [CUSTOM_BG]: '#ff0000'
-            }
-          }
-        }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
       });
       await func({
         themeId: 'foo'
@@ -2204,9 +2185,6 @@ describe('theme', () => {
       assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
       assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
         'id value');
-      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#ff0000', 'value');
     });
 
     it('should set theme', async () => {
@@ -2218,116 +2196,17 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              [CUSTOM_BG]: '#ff0000'
-            }
-          }
-        }
-      });
-      await func({
-        themeId: 'foo'
-      });
-      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
-        'id value');
-      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#ededf1', 'value');
-    });
-
-    it('should set theme', async () => {
-      window.matchMedia().matches = true;
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            light: {
-              [CUSTOM_BG]: '#ff0000'
-            }
-          }
-        }
-      });
-      await func({
-        themeId: 'foo'
-      });
-      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
-        'id value');
-      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#38383d', 'value');
-    });
-
-    it('should set theme', async () => {
-      window.matchMedia().matches = true;
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            values: {
-              [CUSTOM_BG]: '#ff0000'
-            }
-          }
-        }
-      });
-      await func({
-        themeId: 'foo'
-      });
-      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
-      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
-        'id value');
-      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
-      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#ff0000', 'value');
-    });
-
-    it('should set theme', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            light: {
-              [CUSTOM_BG]: '#ff0000'
-            }
-          }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#0000ff'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: THEME_CUSTOM_LIGHT,
+          [CUSTOM_BG]: '#ff0000'
         }
       });
       await func({
@@ -2353,15 +2232,52 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              [CUSTOM_BG]: '#ff0000'
-            }
-          }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#0000ff'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: THEME_CUSTOM_LIGHT,
+          [CUSTOM_BG]: '#ff0000'
+        }
+      });
+      await func({
+        themeId: 'foo'
+      });
+      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
+        'id value');
+      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
+        '#0000ff', 'value');
+    });
+
+    it('should set theme', async () => {
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#0000ff'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: 'foo',
+          [CUSTOM_BG]: '#ff0000'
         }
       });
       await func({
@@ -2378,12 +2294,8 @@ describe('theme', () => {
     });
 
     it('should set theme', async () => {
-      browser.theme.getCurrent.resolves({
-        colors: {
-          frame: 'red',
-          sidebar: 'blue'
-        }
-      });
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
       browser.management.getAll.resolves([
         {
           id: 'foo',
@@ -2391,13 +2303,17 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            values: {}
-          }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#0000ff'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: 'foo',
+          [CUSTOM_BG]: '#ff0000'
         }
       });
       await func({
@@ -2427,17 +2343,20 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            values: {}
-          }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: false
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#00ff00'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: 'foo',
+          [CUSTOM_BG]: '#ff00ff'
         }
       });
       await func({
-        startup: true,
         themeId: 'foo'
       });
       assert.strictEqual(mjs.currentTheme.size, 2, 'size');
@@ -2448,6 +2367,87 @@ describe('theme', () => {
       assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
       assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
         '#0000ff', 'value');
+    });
+
+    it('should set theme', async () => {
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#00ff00'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: 'foo',
+          [CUSTOM_BG]: '#ff00ff'
+        }
+      });
+      await func({
+        themeId: 'foo'
+      });
+      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
+        'id value');
+      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
+        '#ff00ff', 'value');
+    });
+
+    it('should set theme', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({
+        colors: {
+          frame: 'red',
+          sidebar: 'blue'
+        }
+      });
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          [CUSTOM_BG]: '#00ff00'
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          id: 'foo',
+          [CUSTOM_BG]: '#ff00ff'
+        }
+      });
+      await func({
+        themeId: 'foo'
+      });
+      assert.strictEqual(mjs.currentTheme.size, 2, 'size');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT), 'key');
+      assert.isTrue(mjs.currentTheme.has(THEME_CURRENT_ID), 'id');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT_ID), 'foo',
+        'id value');
+      assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
+      assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
+        '#00ff00', 'value');
     });
   });
 
@@ -2775,7 +2775,6 @@ describe('theme', () => {
         }
       ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const i = browser.runtime.sendMessage.callCount;
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
@@ -2793,7 +2792,6 @@ describe('theme', () => {
         }
       ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
       const k = browser.storage.local.set.callCount;
@@ -2824,7 +2822,6 @@ describe('theme', () => {
         }
       ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
       const k = browser.storage.local.set.callCount;
@@ -2858,7 +2855,6 @@ describe('theme', () => {
         }
       ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
       const k = browser.storage.local.set.callCount;
@@ -2887,57 +2883,12 @@ describe('theme', () => {
         }
       ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
-      const i = browser.runtime.sendMessage.callCount;
-      const j = browser.storage.local.remove.callCount;
-      const k = browser.storage.local.set.callCount;
-      const l = browser.management.getAll.callCount;
-      const currentTheme = mjs.themeMap[THEME_LIGHT];
-      const elm = document.createElement('style');
-      const body = document.querySelector('body');
-      elm.id = THEME_CUSTOM_ID;
-      body.appendChild(elm);
-      mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
-      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func({
-        remove: true,
-        useFrame: true
-      });
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.remove.callCount, j,
-        'not called');
-      assert.strictEqual(browser.storage.local.set.callCount, k,
-        'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l,
-        'not called');
-      assert.deepEqual(res, [
-        {
-          [THEME_CUSTOM_SETTING]: {
-            id: 'foo',
-            values: currentTheme
-          }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
         },
-        null
-      ], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {}
-        }
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
       });
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
@@ -2957,7 +2908,59 @@ describe('theme', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
+        'not called');
+      assert.strictEqual(browser.storage.local.set.callCount, k,
+        'not called');
+      assert.strictEqual(browser.management.getAll.callCount, l,
+        'not called');
+      assert.deepEqual(res, [
+        {
+          [THEME_CUSTOM_SETTING]: {
+            id: 'foo',
+            values: currentTheme
+          }
+        },
+        null
+      ], 'result');
+    });
+
+    it('should call function', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.runtime.sendMessage.callsFake((...args) => args);
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
+      const k = browser.storage.local.set.callCount;
+      const l = browser.management.getAll.callCount;
+      const currentTheme = mjs.themeMap[THEME_DARK];
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
+      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
+      assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
+        'not called');
       assert.strictEqual(browser.storage.local.set.callCount, k,
         'not called');
       assert.strictEqual(browser.management.getAll.callCount, l,
@@ -2983,11 +2986,12 @@ describe('theme', () => {
         }
       ]);
       browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {}
-        }
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
       });
       const i = browser.runtime.sendMessage.callCount;
       const j = browser.storage.local.remove.callCount;
@@ -3010,108 +3014,6 @@ describe('theme', () => {
         'called');
       assert.strictEqual(browser.storage.local.set.callCount, k,
         'not called');
-      assert.strictEqual(browser.management.getAll.callCount, l + 1,
-        'called');
-      assert.deepEqual(res, [
-        {
-          [THEME_CUSTOM_SETTING]: {
-            id: 'foo',
-            values: currentTheme
-          }
-        },
-        null
-      ], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {},
-          bar: {}
-        }
-      });
-      const i = browser.runtime.sendMessage.callCount;
-      const j = browser.storage.local.remove.callCount;
-      const k = browser.storage.local.set.callCount;
-      const l = browser.management.getAll.callCount;
-      const currentTheme = mjs.themeMap[THEME_LIGHT];
-      const elm = document.createElement('style');
-      const body = document.querySelector('body');
-      elm.id = THEME_CUSTOM_ID;
-      body.appendChild(elm);
-      mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
-      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func({
-        remove: true,
-        useFrame: true
-      });
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.remove.callCount, j,
-        'not called');
-      assert.strictEqual(browser.storage.local.set.callCount, k + 1,
-        'called');
-      assert.strictEqual(browser.management.getAll.callCount, l,
-        'not called');
-      assert.deepEqual(res, [
-        {
-          [THEME_CUSTOM_SETTING]: {
-            id: 'foo',
-            values: currentTheme
-          }
-        },
-        null
-      ], 'result');
-    });
-
-    it('should call function', async () => {
-      browser.theme.getCurrent.resolves({});
-      browser.management.getAll.resolves([
-        {
-          id: 'foo',
-          enabled: true,
-          type: 'theme'
-        }
-      ]);
-      browser.runtime.sendMessage.callsFake((...args) => args);
-      browser.storage.local.get.resolves({});
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {},
-          bar: {}
-        }
-      });
-      const i = browser.runtime.sendMessage.callCount;
-      const j = browser.storage.local.remove.callCount;
-      const k = browser.storage.local.set.callCount;
-      const l = browser.management.getAll.callCount;
-      const currentTheme = mjs.themeMap[THEME_LIGHT];
-      const elm = document.createElement('style');
-      const body = document.querySelector('body');
-      elm.id = THEME_CUSTOM_ID;
-      body.appendChild(elm);
-      mjs.currentTheme.set(THEME_CURRENT_ID, null);
-      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
-      const res = await func({
-        remove: true,
-        useFrame: true
-      });
-      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
-        'called');
-      assert.strictEqual(browser.storage.local.remove.callCount, j,
-        'not called');
-      assert.strictEqual(browser.storage.local.set.callCount, k + 1,
-        'called');
       assert.strictEqual(browser.management.getAll.callCount, l + 1,
         'called');
       assert.deepEqual(res, [
@@ -3722,7 +3624,11 @@ describe('theme', () => {
 
     it('should not call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -3743,7 +3649,11 @@ describe('theme', () => {
 
     it('should not call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -3767,7 +3677,11 @@ describe('theme', () => {
 
     it('should call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -3800,7 +3714,11 @@ describe('theme', () => {
 
     it('should call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -3845,7 +3763,11 @@ describe('theme', () => {
 
     it('should call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -3918,7 +3840,11 @@ describe('theme', () => {
       const i = browser.storage.local.set.callCount;
       const j = browser.runtime.sendMessage.callCount;
       browser.runtime.sendMessage.resolves({});
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
         {
@@ -3943,7 +3869,11 @@ describe('theme', () => {
       const i = browser.storage.local.set.callCount;
       const j = browser.runtime.sendMessage.callCount;
       browser.runtime.sendMessage.resolves({});
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves(undefined);
       browser.management.getAll.resolves([
         {
@@ -3968,7 +3898,11 @@ describe('theme', () => {
 
     it('should call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -4005,7 +3939,11 @@ describe('theme', () => {
 
     it('should call function', async () => {
       const i = browser.theme.getCurrent.callCount;
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       browser.storage.local.get.withArgs(THEME).resolves({});
       browser.management.getAll.resolves([
         {
@@ -4348,7 +4286,15 @@ describe('theme', () => {
           type: 'theme'
         }
       ]);
-      browser.storage.local.get.resolves({});
+      browser.storage.local.get.withArgs({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      }).resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
