@@ -132,6 +132,7 @@ main {
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
+  font-weight: bold;
   fill: var(--foreground-active-color);
   stroke: var(--foreground-highlight-color);
   z-index: 3;
