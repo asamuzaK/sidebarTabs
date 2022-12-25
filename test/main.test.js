@@ -509,6 +509,56 @@ describe('main', () => {
     });
   });
 
+  describe('apply user custom theme', () => {
+    const func = mjs.applyUserCustomTheme;
+    beforeEach(() => {
+      mjs.userOpts.clear();
+    });
+    afterEach(() => {
+      mjs.userOpts.clear();
+    });
+
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', async () => {
+      mjs.userOpts.set(THEME_CUSTOM, true);
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should get array', async () => {
+      mjs.userOpts.set(THEME_CUSTOM, true);
+      mjs.userOpts.set(THEME_CUSTOM_DARK, {
+        [CUSTOM_BG]: '#ff0000',
+        [CUSTOM_COLOR]: '#ffffff'
+      });
+      mjs.userOpts.set(THEME_CUSTOM_LIGHT, {
+        [CUSTOM_BG]: '#ff00ff',
+        [CUSTOM_COLOR]: '#00ff00'
+      });
+      const res = await func();
+      assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+
+    it('should get array', async () => {
+      window.matchMedia().matches = true;
+      mjs.userOpts.set(THEME_CUSTOM, true);
+      mjs.userOpts.set(THEME_CUSTOM_DARK, {
+        [CUSTOM_BG]: '#ff0000',
+        [CUSTOM_COLOR]: '#ffffff'
+      });
+      mjs.userOpts.set(THEME_CUSTOM_LIGHT, {
+        [CUSTOM_BG]: '#ff00ff',
+        [CUSTOM_COLOR]: '#00ff00'
+      });
+      const res = await func();
+      assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+  });
+
   describe('trigger DnD handler', () => {
     const func = mjs.triggerDndHandler;
 
@@ -12005,7 +12055,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
       assert.isTrue(mjs.userOpts.get(FRAME_COLOR_USE), 'opts');
-      assert.deepEqual(res, [{}], 'result');
+      assert.deepEqual(res, [null], 'result');
     });
 
     it('should not call function', async () => {
@@ -12078,7 +12128,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
       assert.isTrue(mjs.userOpts.get(THEME_AUTO), 'map');
-      assert.deepEqual(res, [mjs.userOpts, {}], 'result');
+      assert.deepEqual(res, [mjs.userOpts, null], 'result');
     });
 
     it('should not call function', async () => {
@@ -12161,7 +12211,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
       assert.isUndefined(mjs.userOpts.get(THEME_AUTO), 'map');
-      assert.deepEqual(res, [mjs.userOpts, {}], 'result');
+      assert.deepEqual(res, [mjs.userOpts, null], 'result');
     });
 
     it('should call function', async () => {
@@ -12194,7 +12244,7 @@ describe('main', () => {
       }, 'map');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.deepEqual(res, [mjs.userOpts, {}], 'result');
+      assert.deepEqual(res, [mjs.userOpts, null], 'result');
     });
 
     it('should call function', async () => {
@@ -12227,7 +12277,7 @@ describe('main', () => {
       }, 'map');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.deepEqual(res, [mjs.userOpts, {}], 'result');
+      assert.deepEqual(res, [mjs.userOpts, null], 'result');
     });
 
     it('should set variable', async () => {

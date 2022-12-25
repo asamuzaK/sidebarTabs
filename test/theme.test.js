@@ -14,6 +14,7 @@ import { convertColorToHex } from '../src/mjs/color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
+  CSS_VAR_BG, CSS_VAR_COLOR,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_FRAME, CUSTOM_BG_HOVER,
   CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
@@ -3820,6 +3821,47 @@ describe('theme', () => {
       assert.strictEqual(browser.theme.getCurrent.callCount, i + 4, 'called');
       assert.strictEqual(mjs.timeStamp.size, 0, 'size');
       assert.deepEqual(res, [null, null], 'result');
+    });
+  });
+
+  describe('apply custom theme', () => {
+    const func = mjs.applyCustomTheme;
+    beforeEach(() => {
+      mjs.currentTheme.clear();
+    });
+    afterEach(() => {
+      mjs.currentTheme.clear();
+    });
+
+    it('should get empty array', async () => {
+      const res = await func();
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should get empty array', async () => {
+      const res = await func({
+        foo: 'bar'
+      });
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set css', async () => {
+      const currentTheme = mjs.themeMap[THEME_LIGHT];
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = THEME_CUSTOM_ID;
+      head.appendChild(elm);
+      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
+      const res = await func({
+        foo: 'bar',
+        [CUSTOM_BG]: '#ff0000',
+        [CUSTOM_COLOR]: '#ffffff'
+      });
+      assert.strictEqual(elm.sheet.cssRules[0].style[CSS_VAR_BG], '#ff0000',
+        'style');
+      assert.strictEqual(elm.sheet.cssRules[0].style[CSS_VAR_COLOR], '#ffffff',
+        'style');
+      assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
 

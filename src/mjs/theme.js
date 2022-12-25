@@ -1158,6 +1158,44 @@ export const applyLocalTheme = async (opt = {}) => {
 };
 
 /**
+ * apply custom theme
+ *
+ * @param {object} data - custom theme values
+ * @returns {Promise.<Array>} - result of each handler
+ */
+export const applyCustomTheme = async data => {
+  const func = [];
+  if (isObjectNotEmpty(data)) {
+    const elm = document.querySelector('body');
+    const { classList } = elm;
+    const keys = [
+      CUSTOM_BG,
+      CUSTOM_BG_ACTIVE,
+      CUSTOM_BG_HOVER,
+      CUSTOM_BG_SELECT,
+      CUSTOM_BG_SELECT_HOVER,
+      CUSTOM_BORDER_ACTIVE,
+      CUSTOM_COLOR,
+      CUSTOM_COLOR_ACTIVE,
+      CUSTOM_COLOR_HOVER,
+      CUSTOM_COLOR_SELECT,
+      CUSTOM_COLOR_SELECT_HOVER
+    ];
+    const items = Object.entries(data);
+    for (const [key, value] of items) {
+      if (keys.includes(key)) {
+        func.push(updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, key, value));
+      }
+    }
+    classList.add(CLASS_THEME_CUSTOM);
+    classList.remove(CLASS_THEME_DARK);
+    classList.remove(CLASS_THEME_LIGHT);
+    classList.remove(CLASS_THEME_SYSTEM);
+  }
+  return Promise.all(func);
+};
+
+/**
  * apply theme
  *
  * @param {object} opt - options
