@@ -3849,6 +3849,7 @@ describe('theme', () => {
       const currentTheme = mjs.themeMap[THEME_LIGHT];
       const elm = document.createElement('style');
       const head = document.querySelector('head');
+      const body = document.querySelector('body');
       elm.id = THEME_CUSTOM_ID;
       head.appendChild(elm);
       mjs.currentTheme.set(THEME_CURRENT, currentTheme);
@@ -3861,6 +3862,10 @@ describe('theme', () => {
         'style');
       assert.strictEqual(elm.sheet.cssRules[0].style[CSS_VAR_COLOR], '#ffffff',
         'style');
+      assert.isTrue(body.classList.contains(CLASS_THEME_CUSTOM), 'class');
+      assert.isFalse(body.classList.contains(CLASS_THEME_DARK), 'class');
+      assert.isFalse(body.classList.contains(CLASS_THEME_LIGHT), 'class');
+      assert.isFalse(body.classList.contains(CLASS_THEME_SYSTEM), 'class');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });

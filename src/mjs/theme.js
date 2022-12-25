@@ -1166,8 +1166,6 @@ export const applyLocalTheme = async (opt = {}) => {
 export const applyCustomTheme = async data => {
   const func = [];
   if (isObjectNotEmpty(data)) {
-    const elm = document.querySelector('body');
-    const { classList } = elm;
     const keys = [
       CUSTOM_BG,
       CUSTOM_BG_ACTIVE,
@@ -1187,10 +1185,14 @@ export const applyCustomTheme = async data => {
         func.push(updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, key, value));
       }
     }
-    classList.add(CLASS_THEME_CUSTOM);
-    classList.remove(CLASS_THEME_DARK);
-    classList.remove(CLASS_THEME_LIGHT);
-    classList.remove(CLASS_THEME_SYSTEM);
+    if (func.length) {
+      const elm = document.querySelector('body');
+      const { classList } = elm;
+      classList.add(CLASS_THEME_CUSTOM);
+      classList.remove(CLASS_THEME_DARK);
+      classList.remove(CLASS_THEME_LIGHT);
+      classList.remove(CLASS_THEME_SYSTEM);
+    }
   }
   return Promise.all(func);
 };
