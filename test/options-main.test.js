@@ -9,8 +9,9 @@ import { browser, createJsdom } from './mocha/setup.js';
 import sinon from 'sinon';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
-  THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_SETTING, THEME_ID, THEME_LIST,
-  THEME_RADIO, USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
+  THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT, THEME_CUSTOM_LIGHT,
+  THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO,
+  USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -130,215 +131,35 @@ describe('options-main', () => {
   describe('store custom theme values', () => {
     const func = mjs.storeCustomTheme;
 
-    it('should get null', async () => {
-      const res = await func();
-      assert.isNull(res, 'result');
-    });
-
-    it('should get null if value is falsy', async () => {
-      const themeId = document.createElement('input');
-      themeId.id = THEME_ID;
-      const res = await func();
-      assert.isNull(res, 'result');
-    });
-
     it('should get result', async () => {
-      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
-      themeId.id = THEME_ID;
-      themeId.value = 'foo';
-      elm.id = 'bar';
+      elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#123456';
-      body.appendChild(themeId);
       body.appendChild(elm);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const res = await func();
       assert.deepEqual(res, {
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            light: {
-              bar: '#123456'
-            }
-          }
+        [THEME_CUSTOM_LIGHT]: {
+          id: THEME_CUSTOM_LIGHT,
+          foo: '#123456'
         }
       }, 'result');
     });
 
     it('should get result', async () => {
       window.matchMedia().matches = true;
-      const themeId = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
-      themeId.id = THEME_ID;
-      themeId.value = 'foo';
-      elm.id = 'bar';
+      elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#123456';
-      body.appendChild(themeId);
       body.appendChild(elm);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const res = await func();
       assert.deepEqual(res, {
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              bar: '#123456'
-            }
-          }
-        }
-      }, 'result');
-    });
-
-    it('should get result', async () => {
-      const themeId = document.createElement('input');
-      const elm = document.createElement('input');
-      const body = document.querySelector('body');
-      themeId.id = THEME_ID;
-      themeId.value = 'foo';
-      elm.id = 'bar';
-      elm.type = 'color';
-      elm.value = '#123456';
-      body.appendChild(themeId);
-      body.appendChild(elm);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            values: {
-              bar: '#000000'
-            }
-          }
-        }
-      });
-      const res = await func();
-      assert.deepEqual(res, {
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            light: {
-              bar: '#123456'
-            }
-          }
-        }
-      }, 'result');
-    });
-
-    it('should get result', async () => {
-      window.matchMedia().matches = true;
-      const themeId = document.createElement('input');
-      const elm = document.createElement('input');
-      const body = document.querySelector('body');
-      themeId.id = THEME_ID;
-      themeId.value = 'foo';
-      elm.id = 'bar';
-      elm.type = 'color';
-      elm.value = '#123456';
-      body.appendChild(themeId);
-      body.appendChild(elm);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            values: {
-              bar: '#000000'
-            }
-          }
-        }
-      });
-      const res = await func();
-      assert.deepEqual(res, {
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              bar: '#123456'
-            }
-          }
-        }
-      }, 'result');
-    });
-
-    it('should get result', async () => {
-      const themeId = document.createElement('input');
-      const elm = document.createElement('input');
-      const body = document.querySelector('body');
-      themeId.id = THEME_ID;
-      themeId.value = 'foo';
-      elm.id = 'bar';
-      elm.type = 'color';
-      elm.value = '#123456';
-      body.appendChild(themeId);
-      body.appendChild(elm);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              bar: '#ffffff'
-            },
-            light: {
-              bar: '#000000'
-            }
-          }
-        }
-      });
-      const res = await func();
-      assert.deepEqual(res, {
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              bar: '#ffffff'
-            },
-            light: {
-              bar: '#123456'
-            }
-          }
-        }
-      }, 'result');
-    });
-
-    it('should get result', async () => {
-      window.matchMedia().matches = true;
-      const themeId = document.createElement('input');
-      const elm = document.createElement('input');
-      const body = document.querySelector('body');
-      themeId.id = THEME_ID;
-      themeId.value = 'foo';
-      elm.id = 'bar';
-      elm.type = 'color';
-      elm.value = '#123456';
-      body.appendChild(themeId);
-      body.appendChild(elm);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              bar: '#000000'
-            },
-            light: {
-              bar: '#ffffff'
-            }
-          }
-        }
-      });
-      const res = await func();
-      assert.deepEqual(res, {
-        [THEME_LIST]: {
-          foo: {
-            id: 'foo',
-            dark: {
-              bar: '#123456'
-            },
-            light: {
-              bar: '#ffffff'
-            }
-          }
+        [THEME_CUSTOM_DARK]: {
+          id: THEME_CUSTOM_DARK,
+          foo: '#123456'
         }
       }, 'result');
     });
@@ -434,7 +255,6 @@ describe('options-main', () => {
       body.appendChild(themeId);
       body.appendChild(elm);
       body.appendChild(elm2);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const res = await func(evt);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.strictEqual(res.length, 1, 'array length');
@@ -1432,6 +1252,23 @@ describe('options-main', () => {
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
       assert.strictEqual(res.length, 2, 'array length');
       assert.deepEqual(res, [[], []], 'result');
+    });
+
+    it('should get array', async () => {
+      const i = browser.storage.local.get.callCount;
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM_DARK]: {
+          foo: {},
+          bar: {}
+        },
+        [THEME_CUSTOM_LIGHT]: {
+          baz: {}
+        }
+      });
+      const res = await func();
+      assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
+      assert.strictEqual(res.length, 3, 'array length');
+      assert.deepEqual(res, [[], [], []], 'result');
     });
   });
 

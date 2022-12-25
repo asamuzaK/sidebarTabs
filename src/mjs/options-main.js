@@ -5,16 +5,16 @@
 /* shared */
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
-  clearContextMenuOnMouseup, getAllStorage, getStorage, removePermission,
+  clearContextMenuOnMouseup, getAllStorage, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
 import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME_DARK, EXT_INIT,
-  MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_CUSTOM_SETTING, THEME_ID, THEME_LIST, THEME_RADIO,
-  USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
+  MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_LIGHT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_ID,
+  THEME_RADIO, USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from './constant.js';
 
 /**
@@ -83,38 +83,19 @@ export const requestCustomTheme = async (bool = false) => {
  * @returns {object} - custom theme data
  */
 export const storeCustomTheme = async () => {
-  const themeId = document.getElementById(THEME_ID);
-  const storeId = themeId?.value;
-  let data;
-  if (storeId) {
-    const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
-    const items = document.querySelectorAll('[type=color]');
-    const themeValues = new Map();
-    for (const item of items) {
-      const { id, value } = item;
-      themeValues.set(id, value);
-    }
-    let { themeList } = await getStorage(THEME_LIST);
-    if (!themeList) {
-      themeList = {};
-    }
-    const storeTheme = themeList[storeId] ?? {};
-    storeTheme.id = storeId;
-    if (dark) {
-      storeTheme.dark = Object.fromEntries(themeValues);
-    } else {
-      storeTheme.light = Object.fromEntries(themeValues);
-    }
-    // TODO: for migration, remove later
-    if (storeTheme.values) {
-      delete storeTheme.values;
-    }
-    themeList[storeId] = storeTheme;
-    data = {
-      [THEME_LIST]: themeList
-    };
+  const items = document.querySelectorAll('[type=color]');
+  const themeValues = new Map();
+  for (const item of items) {
+    const { id, value } = item;
+    themeValues.set(id, value);
   }
-  return data || null;
+  const storeTheme = Object.fromEntries(themeValues);
+  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
+  const storeId = dark ? THEME_CUSTOM_DARK : THEME_CUSTOM_LIGHT;
+  storeTheme.id = storeId;
+  return {
+    [storeId]: storeTheme
+  };
 };
 
 /**
@@ -454,10 +435,23 @@ export const setValuesFromStorage = async () => {
   const func = [];
   const pref = await getAllStorage();
   if (isObjectNotEmpty(pref)) {
-    const items = Object.values(pref);
-    for (const item of items) {
-      if (isObjectNotEmpty(item)) {
-        func.push(setHtmlInputValue(item));
+    const items = Object.entries(pref);
+    for (const [key, value] of items) {
+      if (isObjectNotEmpty(value)) {
+        switch (key) {
+          case THEME_CUSTOM_DARK:
+          case THEME_CUSTOM_LIGHT: {
+            const themeColors = Object.entries(value);
+            for (const [prop, val] of themeColors) {
+              func.push(setHtmlInputValue({
+                id: prop,
+                value: val
+              }));
+            }
+            break;
+          }
+          default: func.push(setHtmlInputValue(value));
+        }
       }
     }
   }

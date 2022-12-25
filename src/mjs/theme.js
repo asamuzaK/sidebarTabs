@@ -38,9 +38,9 @@ import {
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
-  THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_ID,
-  THEME_CUSTOM_SETTING, THEME_DARK, THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID,
-  THEME_LIST, THEME_SYSTEM, THEME_SYSTEM_ID,
+  THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_DARK,
+  THEME_CUSTOM_ID, THEME_CUSTOM_LIGHT, THEME_CUSTOM_SETTING, THEME_DARK,
+  THEME_DARK_ID, THEME_LIGHT, THEME_LIGHT_ID, THEME_SYSTEM, THEME_SYSTEM_ID,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS_ID
 } from './constant.js';
@@ -786,22 +786,17 @@ export const getBaseValues = async (opt = {}) => {
 export const setCurrentThemeValue = async (opt = {}) => {
   const values = new Map();
   const { themeId } = opt;
-  const { themeList } = await getStorage(THEME_LIST);
+  const { customTheme, darkCustomTheme, lightCustomTheme } = await getStorage({
+    [THEME_CUSTOM]: {},
+    [THEME_CUSTOM_DARK]: {},
+    [THEME_CUSTOM_LIGHT]: {}
+  });
   const baseValues = await getBaseValues(opt);
   const items = Object.entries(baseValues);
-  if (themeId && isObjectNotEmpty(themeList) &&
-      Object.prototype.hasOwnProperty.call(themeList, themeId)) {
-    // TODO: for migration, remove obsValues later
-    const {
-      dark: darkValues, light: lightValues, values: obsValues
-    } = themeList[themeId];
+  const { checked: customThemeEnabled } = customTheme;
+  if (customThemeEnabled) {
     const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
-    let themeValues;
-    if (dark) {
-      themeValues = darkValues ?? obsValues;
-    } else {
-      themeValues = lightValues ?? obsValues;
-    }
+    const themeValues = dark ? darkCustomTheme : lightCustomTheme;
     for (const [key, value] of items) {
       const customValue = themeValues?.[key];
       if (customValue) {
@@ -946,18 +941,11 @@ export const initCustomTheme = async (opt = {}) => {
       themeId = await getThemeId();
     }
     if (remove) {
-      const { themeList } = await getStorage(THEME_LIST);
-      if (isObjectNotEmpty(themeList)) {
-        if (Object.prototype.hasOwnProperty.call(themeList, themeId)) {
-          delete themeList[themeId];
-        }
-        if (isObjectNotEmpty(themeList)) {
-          await setStorage({
-            [THEME_LIST]: themeList
-          });
-        } else {
-          await removeStorage([THEME_LIST]);
-        }
+      const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
+      if (dark) {
+        await removeStorage([THEME_CUSTOM_DARK]);
+      } else {
+        await removeStorage([THEME_CUSTOM_LIGHT]);
       }
     }
     currentThemeColors.clear();
@@ -1167,6 +1155,44 @@ export const applyLocalTheme = async (opt = {}) => {
     }
   }
   return func || null;
+};
+
+/**
+ * apply custom theme
+ *
+ * @param {object} data - custom theme values
+ * @returns {Promise.<Array>} - result of each handler
+ */
+export const applyCustomTheme = async data => {
+  const func = [];
+  if (isObjectNotEmpty(data)) {
+    const elm = document.querySelector('body');
+    const { classList } = elm;
+    const keys = [
+      CUSTOM_BG,
+      CUSTOM_BG_ACTIVE,
+      CUSTOM_BG_HOVER,
+      CUSTOM_BG_SELECT,
+      CUSTOM_BG_SELECT_HOVER,
+      CUSTOM_BORDER_ACTIVE,
+      CUSTOM_COLOR,
+      CUSTOM_COLOR_ACTIVE,
+      CUSTOM_COLOR_HOVER,
+      CUSTOM_COLOR_SELECT,
+      CUSTOM_COLOR_SELECT_HOVER
+    ];
+    const items = Object.entries(data);
+    for (const [key, value] of items) {
+      if (keys.includes(key)) {
+        func.push(updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, key, value));
+      }
+    }
+    classList.add(CLASS_THEME_CUSTOM);
+    classList.remove(CLASS_THEME_DARK);
+    classList.remove(CLASS_THEME_LIGHT);
+    classList.remove(CLASS_THEME_SYSTEM);
+  }
+  return Promise.all(func);
 };
 
 /**

@@ -10,7 +10,7 @@ import {
   clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
   getContextualId, getCurrentWindow, getHighlightedTab, getOs,
   getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  removeStorage, restoreSession, setSessionWindowValue, warmupTab
+  restoreSession, setSessionWindowValue, warmupTab
 } from './browser.js';
 import { addPort, ports } from './port.js';
 import { bookmarkTabs } from './bookmark.js';
@@ -49,9 +49,9 @@ import {
 import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
 import {
-  applyTheme, initCustomTheme, sendCurrentTheme, setNewTabSeparator,
-  setScrollbarWidth, setSidebarTheme, setTabGroupColorBarWidth, setTabHeight,
-  setUserCss, updateCustomThemeCss
+  applyCustomTheme, applyTheme, initCustomTheme, sendCurrentTheme,
+  setNewTabSeparator, setScrollbarWidth, setSidebarTheme,
+  setTabGroupColorBarWidth, setTabHeight, setUserCss
 } from './theme.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -60,16 +60,10 @@ import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
   CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON,
   CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  CLASS_THEME_CUSTOM,
-  COOKIE_STORE_DEFAULT,
-  CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_HOVER, CUSTOM_BG_SELECT,
-  CUSTOM_BG_SELECT_HOVER, CUSTOM_BORDER_ACTIVE,
-  CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
-  CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, FRAME_COLOR_USE, HIGHLIGHTED,
-  NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
-  OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
-  SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  COLOR_SCHEME_DARK, COOKIE_STORE_DEFAULT, DISCARDED, EXT_INIT,
+  FRAME_COLOR_USE, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
+  NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED,
+  SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
@@ -86,8 +80,8 @@ import {
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_INIT, THEME_CUSTOM_REQ,
-  THEME_DARK, THEME_LIGHT, THEME_LIST,
+  THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_LIGHT, THEME_CUSTOM_REQ,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS, USER_CSS_USE
 } from './constant.js';
@@ -119,6 +113,10 @@ export const userOptsKeys = new Set([
   TAB_SKIP_COLLAPSED,
   TAB_SWITCH_SCROLL,
   TAB_SWITCH_SCROLL_ALWAYS,
+  THEME_AUTO,
+  THEME_CUSTOM,
+  THEME_CUSTOM_DARK,
+  THEME_CUSTOM_LIGHT,
   USER_CSS_USE
 ]);
 
@@ -139,11 +137,15 @@ export const setUserOpts = async (opt = {}) => {
   }
   const items = Object.entries(opts);
   for (const [key, value] of items) {
-    const { checked } = value;
-    if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
-      userOpts.set(TAB_CLOSE_MDLCLICK, !checked);
+    if (key === THEME_CUSTOM_DARK || key === THEME_CUSTOM_LIGHT) {
+      userOpts.set(key, value);
     } else {
-      userOpts.set(key, !!checked);
+      const { checked } = value;
+      if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
+        userOpts.set(TAB_CLOSE_MDLCLICK, !checked);
+      } else {
+        userOpts.set(key, !!checked);
+      }
     }
   }
   return userOpts;
@@ -297,6 +299,25 @@ export const applyUserStyle = async () => {
     }
   }
   return setUserCss(css || '');
+};
+
+/**
+ * apply user custom theme
+ *
+ * @returns {?Function} - applyCustomTheme()
+ */
+export const applyUserCustomTheme = async () => {
+  const customThemeEnabled = userOpts.get(THEME_CUSTOM);
+  let func;
+  if (customThemeEnabled) {
+    const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
+    const customTheme =
+      dark ? userOpts.get(THEME_CUSTOM_DARK) : userOpts.get(THEME_CUSTOM_LIGHT);
+    if (isObjectNotEmpty(customTheme)) {
+      func = applyCustomTheme(customTheme);
+    }
+  }
+  return func || null;
 };
 
 /* DnD */
@@ -1952,7 +1973,7 @@ export const prepareTabMenuItems = async elm => {
  * handle updated theme
  *
  * @param {object} info - update info
- * @returns {?Function} - applyTheme()
+ * @returns {?Function} - promise chain
  */
 export const handleUpdatedTheme = async info => {
   const useFrame = userOpts.get(FRAME_COLOR_USE);
@@ -1975,12 +1996,12 @@ export const handleUpdatedTheme = async info => {
       func = applyTheme({
         theme,
         useFrame
-      });
+      }).then(applyUserCustomTheme);
     }
   } else {
     func = applyTheme({
       useFrame
-    });
+    }).then(applyUserCustomTheme);
   }
   return func || null;
 };
@@ -2151,7 +2172,7 @@ export const requestSidebarStateUpdate = async () => {
 export const setStorageValue = async (item, obj, changed = false) => {
   const func = [];
   if (item && obj) {
-    const { checked, value } = obj;
+    const { checked } = obj;
     switch (item) {
       case BROWSER_SETTINGS_READ:
         func.push(setUserOpts({
@@ -2161,23 +2182,6 @@ export const setStorageValue = async (item, obj, changed = false) => {
         }));
         if (changed) {
           func.push(storeCloseTabsByDoubleClickValue(!!checked));
-        }
-        break;
-      case CUSTOM_BG:
-      case CUSTOM_BG_ACTIVE:
-      case CUSTOM_BG_HOVER:
-      case CUSTOM_BG_SELECT:
-      case CUSTOM_BG_SELECT_HOVER:
-      case CUSTOM_BORDER_ACTIVE:
-      case CUSTOM_COLOR:
-      case CUSTOM_COLOR_ACTIVE:
-      case CUSTOM_COLOR_HOVER:
-      case CUSTOM_COLOR_SELECT:
-      case CUSTOM_COLOR_SELECT_HOVER:
-        if (changed) {
-          func.push(
-            updateCustomThemeCss(`.${CLASS_THEME_CUSTOM}`, item, value)
-          );
         }
         break;
       case FRAME_COLOR_USE: {
@@ -2243,18 +2247,26 @@ export const setStorageValue = async (item, obj, changed = false) => {
         break;
       case THEME_AUTO:
       case THEME_CUSTOM:
-        if (changed && checked) {
-          func.push(handleUpdatedTheme());
+        if (changed) {
+          func.push(setUserOpts({
+            [item]: {
+              checked
+            }
+          }));
+          if (checked) {
+            func.push(handleUpdatedTheme());
+          }
         }
         break;
-      // TODO: for migration, remove later
-      case THEME_DARK:
-      case THEME_LIGHT:
-        func.push(removeStorage([item]));
-        break;
-      case THEME_LIST:
+      case THEME_CUSTOM_DARK:
+      case THEME_CUSTOM_LIGHT:
         if (changed) {
-          func.push(handleUpdatedTheme());
+          func.push(
+            setUserOpts({
+              [item]: obj
+            }),
+            handleUpdatedTheme()
+          );
         }
         break;
       case THEME_UI_SCROLLBAR_NARROW:
@@ -2502,9 +2514,10 @@ export const startup = async () => {
   return setSidebarTheme({
     useFrame,
     startup: true
-  }).then(emulateTabs).then(restoreTabGroups).then(restoreTabContainers)
-    .then(toggleTabGrouping).then(restoreHighlightedTabs)
-    .then(requestSaveSession).then(getLastClosedTab);
+  }).then(applyUserCustomTheme).then(emulateTabs).then(restoreTabGroups)
+    .then(restoreTabContainers).then(toggleTabGrouping)
+    .then(restoreHighlightedTabs).then(requestSaveSession)
+    .then(getLastClosedTab);
 };
 
 // For test
