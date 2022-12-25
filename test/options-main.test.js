@@ -10,8 +10,8 @@ import sinon from 'sinon';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT, THEME_CUSTOM_LIGHT,
-  THEME_CUSTOM_SETTING, THEME_ID, THEME_LIST, THEME_RADIO, USER_CSS,
-  USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
+  THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO,
+  USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from '../src/mjs/constant.js';
 
 /* test */
@@ -255,7 +255,6 @@ describe('options-main', () => {
       body.appendChild(themeId);
       body.appendChild(elm);
       body.appendChild(elm2);
-      browser.storage.local.get.withArgs(THEME_LIST).resolves({});
       const res = await func(evt);
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.strictEqual(res.length, 1, 'array length');
