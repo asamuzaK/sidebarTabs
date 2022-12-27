@@ -336,13 +336,13 @@ export const saveUserCss = () => {
     if (value && !sheet.cssRules.length) {
       msg.removeAttribute('hidden');
     } else {
-      msg.setAttribute('hidden', 'hidden');
       let userCssText = '';
       for (const i of sheet.cssRules) {
         const { cssText } = i;
         userCssText += `${cssText.replace(/\n/g, '')}\n`;
       }
       css.value = userCssText.trim();
+      msg.setAttribute('hidden', 'hidden');
       func = storePref({
         target: css
       }).catch(throwErr);

@@ -96,7 +96,7 @@ describe('main', () => {
           }
 
           replaceSync(str) {
-            if (/{*}/.test(str)) {
+            if (/{\s*.*\s*}/.test(str)) {
               const arr = str.replace(/\n/g, '').trim().split('}');
               for (let i of arr) {
                 i = i.trim();
