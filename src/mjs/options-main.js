@@ -326,32 +326,32 @@ export const addInitExtensionListener = async () => {
  */
 export const saveUserCss = () => {
   const css = document.getElementById(USER_CSS);
-  const msg = document.getElementById(USER_CSS_WARN);
+  const warnMsg = document.getElementById(USER_CSS_WARN);
   let func;
-  if (css && msg) {
-    let { value } = css;
+  if (css && warnMsg) {
+    const { value } = css;
     const userCss = value.trim();
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(userCss);
-    if (userCss && !sheet.cssRules.length) {
-      msg.removeAttribute('hidden');
-    } else {
+    if (userCss === '' || sheet.cssRules.length) {
       let isValid = true;
       for (const i of sheet.cssRules) {
         const { style } = i;
-        if (!style?.cssText) {
+        if (!style.cssText) {
           isValid = false;
           break;
         }
       }
       if (isValid) {
-        msg.setAttribute('hidden', 'hidden');
+        warnMsg.setAttribute('hidden', 'hidden');
         func = storePref({
           target: css
         }).catch(throwErr);
       } else {
-        msg.removeAttribute('hidden');
+        warnMsg.removeAttribute('hidden');
       }
+    } else {
+      warnMsg.removeAttribute('hidden');
     }
   }
   return func || null;
