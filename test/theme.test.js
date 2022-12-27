@@ -75,8 +75,18 @@ describe('theme', () => {
                   } else {
                     textEnd = ';';
                   }
+                  const [, styleText] = /{\s*(.*)\s*$/.exec(i);
+                  let styleTextEnd;
+                  if (!styleText || styleText.endsWith(';')) {
+                    styleTextEnd = '';
+                  } else {
+                    styleTextEnd = ';';
+                  }
                   this.#cssRules.add({
-                    cssText: `${i}${textEnd} }`.trim()
+                    cssText: `${i}${textEnd} }`.trim(),
+                    style: {
+                      cssText: `${styleText}${styleTextEnd}`.trim()
+                    }
                   });
                 }
               }

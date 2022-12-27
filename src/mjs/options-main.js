@@ -330,22 +330,28 @@ export const saveUserCss = () => {
   let func;
   if (css && msg) {
     let { value } = css;
+    const userCss = value.trim();
     const sheet = new CSSStyleSheet();
-    value = value.trim();
-    sheet.replaceSync(value);
-    if (value && !sheet.cssRules.length) {
+    sheet.replaceSync(userCss);
+    if (userCss && !sheet.cssRules.length) {
       msg.removeAttribute('hidden');
     } else {
-      let userCssText = '';
+      let isValid = true;
       for (const i of sheet.cssRules) {
-        const { cssText } = i;
-        userCssText += `${cssText.replace(/\n/g, '')}\n`;
+        const { style } = i;
+        if (!style?.cssText) {
+          isValid = false;
+          break;
+        }
       }
-      css.value = userCssText.trim();
-      msg.setAttribute('hidden', 'hidden');
-      func = storePref({
-        target: css
-      }).catch(throwErr);
+      if (isValid) {
+        msg.setAttribute('hidden', 'hidden');
+        func = storePref({
+          target: css
+        }).catch(throwErr);
+      } else {
+        msg.removeAttribute('hidden');
+      }
     }
   }
   return func || null;

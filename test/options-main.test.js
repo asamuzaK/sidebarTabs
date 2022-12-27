@@ -56,8 +56,18 @@ describe('options-main', () => {
                   } else {
                     textEnd = ';';
                   }
+                  const [, styleText] = /{\s*(.*)\s*$/.exec(i);
+                  let styleTextEnd;
+                  if (!styleText || styleText.endsWith(';')) {
+                    styleTextEnd = '';
+                  } else {
+                    styleTextEnd = ';';
+                  }
                   this.#cssRules.add({
-                    cssText: `${i}${textEnd} }`.trim()
+                    cssText: `${i}${textEnd} }`.trim(),
+                    style: {
+                      cssText: `${styleText}${styleTextEnd}`.trim()
+                    }
                   });
                 }
               }
@@ -896,6 +906,23 @@ describe('options-main', () => {
       assert.isNull(res, 'result');
     });
 
+    it('should show warning', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const elm2 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      elm.value = 'body { }';
+      elm2.id = USER_CSS_WARN;
+      elm2.hidden = true;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.isFalse(elm2.hidden, 'hidden');
+      assert.isNull(res, 'result');
+    });
+
     it('should call function', async () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
@@ -928,7 +955,7 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
-      assert.strictEqual(elm.value, '', 'value');
+      assert.strictEqual(elm.value, ' ', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -946,7 +973,7 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
-      assert.strictEqual(elm.value, 'body { color: red; }', 'value');
+      assert.strictEqual(elm.value, 'body { color: red }', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -965,7 +992,7 @@ describe('options-main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
       assert.strictEqual(elm.value,
-        'body { color: red; }\na { background: white; }', 'value');
+        'body { color: red; } a { background: white }', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
   });
