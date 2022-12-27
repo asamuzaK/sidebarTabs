@@ -4127,7 +4127,7 @@ describe('theme', () => {
       const head = document.querySelector('head');
       elm.id = USER_CSS_ID;
       head.appendChild(elm);
-      await func('body { color : red }\nmain { background: blue }');
+      await func('body {\n color : red\n }\nmain {\n background: blue\n }\n');
       assert.strictEqual(elm.textContent,
         'body { color : red; } main { background: blue; }', 'content');
     });
