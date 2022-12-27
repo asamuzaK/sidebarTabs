@@ -46,7 +46,7 @@ describe('options-main', () => {
 
           replaceSync(str) {
             if (/{*}/.test(str)) {
-              const arr = str.trim().replace(/\n/g, '').split('}');
+              const arr = str.replace(/\n/g, '').trim().split('}');
               for (let i of arr) {
                 i = i.trim();
                 if (i) {
