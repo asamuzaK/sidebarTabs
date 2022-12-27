@@ -18,6 +18,7 @@ import {
 import * as mjs from '../src/mjs/options-main.js';
 
 describe('options-main', () => {
+  const globalKeys = ['CSSStyleSheet'];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -29,6 +30,47 @@ describe('options-main', () => {
     global.browser = browser;
     global.window = window;
     global.document = document;
+    for (const key of globalKeys) {
+      // mock CSSStyleSheet
+      if (key === 'CSSStyleSheet') {
+        global[key] = class CSSStyleSheet extends window.StyleSheet {
+          #cssRules;
+          constructor() {
+            super();
+            this.#cssRules = new Set();
+          }
+
+          get cssRules() {
+            return Array.from(this.#cssRules);
+          }
+
+          replaceSync(str) {
+            if (/{*}/.test(str)) {
+              const arr = str.trim().replace(/\n/g, '').split('}');
+              for (let i of arr) {
+                i = i.trim();
+                if (i) {
+                  let textEnd;
+                  if (i.endsWith(';') || i.endsWith('{')) {
+                    textEnd = '';
+                  } else {
+                    textEnd = ';';
+                  }
+                  this.#cssRules.add({
+                    cssText: `${i}${textEnd} }`.trim()
+                  });
+                }
+              }
+            }
+          }
+
+          async replace(str) {
+            await this.replaceSync(str);
+            return this;
+          }
+        };
+      }
+    }
   });
   afterEach(() => {
     window = null;
@@ -36,6 +78,9 @@ describe('options-main', () => {
     delete global.browser;
     delete global.window;
     delete global.document;
+    for (const key of globalKeys) {
+      delete global[key];
+    }
     browser._sandbox.reset();
   });
 
@@ -834,7 +879,7 @@ describe('options-main', () => {
       assert.deepEqual(res, [undefined], 'result');
     });
 
-    it('should log error', async () => {
+    it('should show warning', async () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('textarea');
       const elm2 = document.createElement('span');
@@ -865,6 +910,7 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm.value, '', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -874,7 +920,7 @@ describe('options-main', () => {
       const elm2 = document.createElement('span');
       const body = document.querySelector('body');
       elm.id = USER_CSS;
-      elm.value = 'body { color: red; }';
+      elm.value = ' ';
       elm2.id = USER_CSS_WARN;
       elm2.hidden = true;
       body.appendChild(elm);
@@ -882,6 +928,44 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm.value, '', 'value');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const elm2 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      elm.value = 'body { color: red }';
+      elm2.id = USER_CSS_WARN;
+      elm2.hidden = true;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm.value, 'body { color: red; }', 'value');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('textarea');
+      const elm2 = document.createElement('span');
+      const body = document.querySelector('body');
+      elm.id = USER_CSS;
+      elm.value = 'body { color: red; } a { background: white }';
+      elm2.id = USER_CSS_WARN;
+      elm2.hidden = true;
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      const res = await func();
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm.value,
+        'body { color: red; }\na { background: white; }', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
   });

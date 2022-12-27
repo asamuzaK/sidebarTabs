@@ -38,6 +38,7 @@ import {
 import * as mjs from '../src/mjs/theme.js';
 
 describe('theme', () => {
+  const globalKeys = ['CSSStyleSheet'];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -48,6 +49,47 @@ describe('theme', () => {
     global.browser = browser;
     global.window = window;
     global.document = document;
+    for (const key of globalKeys) {
+      // mock CSSStyleSheet
+      if (key === 'CSSStyleSheet') {
+        global[key] = class CSSStyleSheet extends window.StyleSheet {
+          #cssRules;
+          constructor() {
+            super();
+            this.#cssRules = new Set();
+          }
+
+          get cssRules() {
+            return Array.from(this.#cssRules);
+          }
+
+          replaceSync(str) {
+            if (/{*}/.test(str)) {
+              const arr = str.trim().replace(/\n/g, '').split('}');
+              for (let i of arr) {
+                i = i.trim();
+                if (i) {
+                  let textEnd;
+                  if (i.endsWith(';') || i.endsWith('{')) {
+                    textEnd = '';
+                  } else {
+                    textEnd = ';';
+                  }
+                  this.#cssRules.add({
+                    cssText: `${i}${textEnd} }`.trim()
+                  });
+                }
+              }
+            }
+          }
+
+          async replace(str) {
+            await this.replaceSync(str);
+            return this;
+          }
+        };
+      }
+    }
   });
   afterEach(() => {
     window = null;
@@ -55,6 +97,9 @@ describe('theme', () => {
     delete global.browser;
     delete global.window;
     delete global.document;
+    for (const key of globalKeys) {
+      delete global[key];
+    }
     browser._sandbox.reset();
   });
 
@@ -4052,16 +4097,6 @@ describe('theme', () => {
       const elm = document.createElement('style');
       const head = document.querySelector('head');
       elm.id = USER_CSS_ID;
-      elm.textContent = 'body { color: red }';
-      head.appendChild(elm);
-      await func('body { color }');
-      assert.strictEqual(elm.textContent, '', 'content');
-    });
-
-    it('should not set CSS', async () => {
-      const elm = document.createElement('style');
-      const head = document.querySelector('head');
-      elm.id = USER_CSS_ID;
       head.appendChild(elm);
       await func('');
       assert.strictEqual(elm.textContent, '', 'content');
@@ -4071,10 +4106,20 @@ describe('theme', () => {
       const elm = document.createElement('style');
       const head = document.querySelector('head');
       elm.id = USER_CSS_ID;
+      elm.textContent = 'body { color: red; }';
+      head.appendChild(elm);
+      await func('body { }');
+      assert.strictEqual(elm.textContent, 'body { }', 'content');
+    });
+
+    it('should set CSS', async () => {
+      const elm = document.createElement('style');
+      const head = document.querySelector('head');
+      elm.id = USER_CSS_ID;
       head.appendChild(elm);
       await func('body { color : red }\nmain { background: blue }');
       assert.strictEqual(elm.textContent,
-        'body { color : red }\nmain { background: blue }', 'content');
+        'body { color : red; }\nmain { background: blue; }', 'content');
     });
   });
 

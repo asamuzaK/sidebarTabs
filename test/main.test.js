@@ -50,7 +50,7 @@ import {
 import * as mjs from '../src/mjs/main.js';
 
 describe('main', () => {
-  const globalKeys = ['DOMParser', 'Node', 'XMLSerializer'];
+  const globalKeys = ['CSSStyleSheet', 'DOMParser', 'Node', 'XMLSerializer'];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -82,7 +82,47 @@ describe('main', () => {
     global.window = window;
     global.document = document;
     for (const key of globalKeys) {
-      global[key] = window[key];
+      // mock CSSStyleSheet
+      if (key === 'CSSStyleSheet') {
+        global[key] = class CSSStyleSheet extends window.StyleSheet {
+          #cssRules;
+          constructor() {
+            super();
+            this.#cssRules = new Set();
+          }
+
+          get cssRules() {
+            return Array.from(this.#cssRules);
+          }
+
+          replaceSync(str) {
+            if (/{*}/.test(str)) {
+              const arr = str.trim().replace(/\n/g, '').split('}');
+              for (let i of arr) {
+                i = i.trim();
+                if (i) {
+                  let textEnd;
+                  if (i.endsWith(';') || i.endsWith('{')) {
+                    textEnd = '';
+                  } else {
+                    textEnd = ';';
+                  }
+                  this.#cssRules.add({
+                    cssText: `${i}${textEnd} }`.trim()
+                  });
+                }
+              }
+            }
+          }
+
+          async replace(str) {
+            await this.replaceSync(str);
+            return this;
+          }
+        };
+      } else {
+        global[key] = window[key];
+      }
     }
     mjs.sidebar.context = null;
     mjs.sidebar.contextualIds = null;
