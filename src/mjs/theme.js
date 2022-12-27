@@ -1246,12 +1246,12 @@ export const setUserCss = async css => {
   if (usrCss) {
     const sheet = await new CSSStyleSheet().replace(css.trim());
     if (sheet.cssRules.length) {
-      let userCssText = '';
+      const userCssText = [];
       for (const i of sheet.cssRules) {
         const { cssText } = i;
-        userCssText += `${cssText.replace(/\n/g, '')}\n`;
+        userCssText.push(cssText);
       }
-      usrCss.textContent = userCssText.trim();
+      usrCss.textContent = userCssText.join(' ');
     } else {
       usrCss.textContent = '';
     }

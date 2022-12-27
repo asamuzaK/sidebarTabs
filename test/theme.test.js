@@ -4129,7 +4129,7 @@ describe('theme', () => {
       head.appendChild(elm);
       await func('body { color : red }\nmain { background: blue }');
       assert.strictEqual(elm.textContent,
-        'body { color : red; }\nmain { background: blue; }', 'content');
+        'body { color : red; } main { background: blue; }', 'content');
     });
   });
 
