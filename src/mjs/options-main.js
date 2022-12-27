@@ -9,7 +9,6 @@ import {
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
-import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME_DARK, EXT_INIT,
   MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
@@ -330,17 +329,23 @@ export const saveUserCss = () => {
   const msg = document.getElementById(USER_CSS_WARN);
   let func;
   if (css && msg) {
-    const { value } = css;
-    const errors = cssValidator(value);
-    if (Array.isArray(errors)) {
-      if (errors.length) {
-        msg.removeAttribute('hidden');
-      } else {
-        msg.setAttribute('hidden', 'hidden');
-        func = storePref({
-          target: css
-        }).catch(throwErr);
+    let { value } = css;
+    const sheet = new CSSStyleSheet();
+    value = value.trim();
+    sheet.replaceSync(value);
+    if (value && !sheet.cssRules.length) {
+      msg.removeAttribute('hidden');
+    } else {
+      msg.setAttribute('hidden', 'hidden');
+      let userCssText = '';
+      for (const i of sheet.cssRules) {
+        const { cssText } = i;
+        userCssText += `${cssText.replace(/\n/g, '')}\n`;
       }
+      css.value = userCssText.trim();
+      func = storePref({
+        target: css
+      }).catch(throwErr);
     }
   }
   return func || null;
@@ -409,16 +414,16 @@ export const setHtmlInputValue = async (data = {}) => {
       case 'color':
       case 'text':
       case 'url': {
-        elm.value = isString(value) ? value : '';
+        elm.value = isString(value) ? value.trim() : '';
         break;
       }
       default: {
         if (localName === 'select' && id === BOOKMARK_LOCATION && value) {
-          const child = elm.querySelector(`#${value}`);
+          const child = elm.querySelector(`#${value.trim()}`);
           child?.setAttribute('selected', 'selected');
         } else if (localName === 'textarea' && id === USER_CSS) {
           const css = document.getElementById(USER_CSS);
-          css.value = isString(value) ? value : '';
+          css.value = isString(value) ? value.trim() : '';
         }
       }
     }

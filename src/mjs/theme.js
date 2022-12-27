@@ -11,7 +11,6 @@ import {
 import {
   compositeLayeredColors, convertRgbToHex, getColorInHex
 } from './color.js';
-import { validate as cssValidator } from '../lib/css/csstree-validator.esm.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -1245,9 +1244,14 @@ export const setUserCss = async css => {
   }
   const usrCss = document.getElementById(USER_CSS_ID);
   if (usrCss) {
-    const errors = cssValidator(css);
-    if (Array.isArray(errors) && !errors.length && css) {
-      usrCss.textContent = css;
+    const sheet = await new CSSStyleSheet().replace(css.trim());
+    if (sheet.cssRules.length) {
+      let userCssText = '';
+      for (const i of sheet.cssRules) {
+        const { cssText } = i;
+        userCssText += `${cssText.replace(/\n/g, '')}\n`;
+      }
+      usrCss.textContent = userCssText.trim();
     } else {
       usrCss.textContent = '';
     }

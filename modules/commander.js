@@ -150,25 +150,6 @@ export const saveLibraryPackage = async (lib, info) => {
 export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const libraries = {
-    css: {
-      name: 'csstree-validator',
-      origin: 'https://unpkg.com/csstree-validator',
-      repository: {
-        type: 'git',
-        url: 'git+https://github.com/csstree/validator.git'
-      },
-      type: 'module',
-      files: [
-        {
-          file: 'LICENSE',
-          path: 'LICENSE'
-        },
-        {
-          file: 'csstree-validator.esm.js',
-          path: 'dist/csstree-validator.esm.js'
-        }
-      ]
-    },
     tldts: {
       name: 'tldts-experimental',
       origin: 'https://unpkg.com/tldts-experimental',
