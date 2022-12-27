@@ -1244,7 +1244,7 @@ export const setUserCss = async css => {
   }
   const usrCss = document.getElementById(USER_CSS_ID);
   if (usrCss) {
-    const sheet = await new CSSStyleSheet().replace(css.trim());
+    const sheet = await new CSSStyleSheet().replace(css);
     if (sheet.cssRules.length) {
       const userCssText = [];
       for (const i of sheet.cssRules) {
