@@ -14,14 +14,14 @@ import {
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
-  COLOR_SCHEME_DARK,
+  COLOR_SCHEME_DARK, CSS_ROOT,
   CSS_VAR_BG, CSS_VAR_BG_ACTIVE, CSS_VAR_BG_DISCARDED, CSS_VAR_BG_FIELD,
   CSS_VAR_BG_FIELD_ACTIVE, CSS_VAR_BG_HOVER, CSS_VAR_BG_HOVER_SHADOW,
   CSS_VAR_BG_SELECT, CSS_VAR_BG_SELECT_HOVER,
   CSS_VAR_BORDER_ACTIVE, CSS_VAR_BORDER_FIELD, CSS_VAR_BORDER_FIELD_ACTIVE,
   CSS_VAR_COLOR, CSS_VAR_COLOR_ACTIVE, CSS_VAR_COLOR_DISCARDED,
-  CSS_VAR_COLOR_FIELD, CSS_VAR_COLOR_FIELD_ACTIVE,
-  CSS_VAR_COLOR_HOVER, CSS_VAR_COLOR_SELECT, CSS_VAR_COLOR_SELECT_HOVER,
+  CSS_VAR_COLOR_FIELD, CSS_VAR_COLOR_FIELD_ACTIVE, CSS_VAR_COLOR_HOVER,
+  CSS_VAR_COLOR_SELECT, CSS_VAR_COLOR_SELECT_HOVER, CSS_VAR_FONT_ACTIVE,
   CSS_VAR_HEADING_TEXT_GROUP_1, CSS_VAR_HEADING_TEXT_GROUP_2,
   CSS_VAR_HEADING_TEXT_GROUP_3, CSS_VAR_HEADING_TEXT_GROUP_4,
   CSS_VAR_HEADING_TEXT_PINNED, CSS_VAR_OUTLINE_FOCUS,
@@ -858,38 +858,46 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
     throw new TypeError(`Expected String but got ${getType(sel)}.`);
   }
   const elm = document.getElementById(THEME_CUSTOM_ID);
-  const customTheme = currentTheme.get(THEME_CURRENT);
-  if (elm?.sheet && isObjectNotEmpty(customTheme)) {
+  if (elm?.sheet) {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
-    const propKeys = themeMap[THEME_CUSTOM];
-    const items = Object.entries(customTheme);
     let cssText = '';
-    for (const [key, val] of items) {
-      if (key === prop && isString(value)) {
-        cssText += `${propKeys[key]}: ${value};`;
-        customTheme[key] = value;
-        currentTheme.set(THEME_CURRENT, customTheme);
-      } else if (propKeys[key]) {
-        cssText += `${propKeys[key]}: ${val};`;
+    if (sel === CSS_ROOT) {
+      cssText += `${prop}: ${value};`;
+    } else {
+      const customTheme = currentTheme.get(THEME_CURRENT);
+      if (isObjectNotEmpty(customTheme)) {
+        const propKeys = themeMap[THEME_CUSTOM];
+        const items = Object.entries(customTheme);
+        for (const [key, val] of items) {
+          if (key === prop && isString(value)) {
+            cssText += `${propKeys[key]}: ${value};`;
+            customTheme[key] = value;
+            currentTheme.set(THEME_CURRENT, customTheme);
+          } else if (propKeys[key]) {
+            cssText += `${propKeys[key]}: ${val};`;
+          }
+        }
       }
     }
-    if (l) {
-      let i = l - 1;
-      let bool;
-      while (i >= 0) {
-        if (sheet.cssRules[i].selectorText === sel) {
-          sheet.cssRules[i].style.cssText = cssText;
-          bool = true;
-          break;
+    if (cssText) {
+      if (l) {
+        let i = l - 1;
+        let bool;
+        while (i >= 0) {
+          if (sheet.cssRules[i].selectorText === sel) {
+            sheet.cssRules[i].style.cssText = cssText;
+            bool = true;
+            break;
+          }
+          i--;
         }
-        i--;
+        if (!bool) {
+          sheet.insertRule(`${sel} { ${cssText} }`, l);
+        }
+      } else {
+        sheet.insertRule(`${sel} { ${cssText} }`, l);
       }
-      if (!bool) {
-        sheet.insertRule(`${sel} {${cssText}}`, l);
-      }
-    } else {
-      sheet.insertRule(`${sel} {${cssText}}`, l);
     }
   }
 };
@@ -1386,6 +1394,26 @@ export const setNewTabSeparator = async show => {
   } else {
     classList.remove(CLASS_SEPARATOR_SHOW);
   }
+};
+
+/* active tab */
+/**
+ * set active tab font weight
+ *
+ * @param {string} value - value of font weight
+ * @returns {?Function} - updateCustomThemeCss()
+ */
+export const setActiveTabFontWeight = async value => {
+  if (isString(value)) {
+    value = value.trim();
+  } else {
+    throw new TypeError(`Expected String but got ${getType(value)}.`);
+  }
+  let func;
+  if (/^(?:bold|normal)$/.test(value)) {
+    func = updateCustomThemeCss(CSS_ROOT, CSS_VAR_FONT_ACTIVE, value);
+  }
+  return func || null;
 };
 
 /**

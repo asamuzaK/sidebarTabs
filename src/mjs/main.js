@@ -50,8 +50,8 @@ import { overrideContextMenu, updateContextMenu } from './menu.js';
 import menuItems from './menu-items.js';
 import {
   applyCustomTheme, applyTheme, initCustomTheme, sendCurrentTheme,
-  setNewTabSeparator, setScrollbarWidth, setSidebarTheme,
-  setTabGroupColorBarWidth, setTabHeight, setUserCss
+  setActiveTabFontWeight, setNewTabSeparator, setScrollbarWidth,
+  setSidebarTheme, setTabGroupColorBarWidth, setTabHeight, setUserCss
 } from './theme.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
@@ -61,9 +61,10 @@ import {
   CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON,
   CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
   COLOR_SCHEME_DARK, COOKIE_STORE_DEFAULT, DISCARDED, EXT_INIT,
-  FRAME_COLOR_USE, HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON,
-  NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED,
-  SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, FRAME_COLOR_USE,
+  HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER,
+  NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
@@ -101,6 +102,8 @@ export const userOpts = new Map();
 /* user options keys */
 export const userOptsKeys = new Set([
   BROWSER_SETTINGS_READ,
+  FONT_ACTIVE_BOLD,
+  FONT_ACTIVE_NORMAL,
   FRAME_COLOR_USE,
   NEW_TAB_SEPARATOR_SHOW,
   SCROLL_DIR_INVERT,
@@ -139,6 +142,11 @@ export const setUserOpts = async (opt = {}) => {
   for (const [key, value] of items) {
     if (key === THEME_CUSTOM_DARK || key === THEME_CUSTOM_LIGHT) {
       userOpts.set(key, value);
+    } else if (key === FONT_ACTIVE_BOLD || key === FONT_ACTIVE_NORMAL) {
+      const { checked, value: itemValue } = value;
+      if (checked) {
+        userOpts.set(FONT_ACTIVE, itemValue);
+      }
     } else {
       const { checked } = value;
       if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
@@ -2172,7 +2180,7 @@ export const requestSidebarStateUpdate = async () => {
 export const setStorageValue = async (item, obj, changed = false) => {
   const func = [];
   if (item && obj) {
-    const { checked } = obj;
+    const { checked, value } = obj;
     switch (item) {
       case BROWSER_SETTINGS_READ:
         func.push(setUserOpts({
@@ -2182,6 +2190,18 @@ export const setStorageValue = async (item, obj, changed = false) => {
         }));
         if (changed) {
           func.push(storeCloseTabsByDoubleClickValue(!!checked));
+        }
+        break;
+      case FONT_ACTIVE_BOLD:
+      case FONT_ACTIVE_NORMAL:
+        func.push(setUserOpts({
+          [item]: {
+            checked,
+            value
+          }
+        }));
+        if (changed && checked) {
+          func.push(setActiveTabFontWeight(value));
         }
         break;
       case FRAME_COLOR_USE: {
@@ -2248,11 +2268,11 @@ export const setStorageValue = async (item, obj, changed = false) => {
       case THEME_AUTO:
       case THEME_CUSTOM:
         if (changed) {
-          func.push(setUserOpts({
+          await setUserOpts({
             [item]: {
               checked
             }
-          }));
+          });
           if (checked) {
             func.push(handleUpdatedTheme());
           }
@@ -2261,12 +2281,10 @@ export const setStorageValue = async (item, obj, changed = false) => {
       case THEME_CUSTOM_DARK:
       case THEME_CUSTOM_LIGHT:
         if (changed) {
-          func.push(
-            setUserOpts({
-              [item]: obj
-            }),
-            handleUpdatedTheme()
-          );
+          await setUserOpts({
+            [item]: obj
+          });
+          func.push(handleUpdatedTheme());
         }
         break;
       case THEME_UI_SCROLLBAR_NARROW:
@@ -2510,14 +2528,14 @@ export const startup = async () => {
     localizeHtml(),
     setContextualIds()
   ]);
-  const useFrame = userOpts.get(FRAME_COLOR_USE);
-  return setSidebarTheme({
-    useFrame,
+  await setSidebarTheme({
+    useFrame: userOpts.get(FRAME_COLOR_USE) ?? false,
     startup: true
-  }).then(applyUserCustomTheme).then(emulateTabs).then(restoreTabGroups)
-    .then(restoreTabContainers).then(toggleTabGrouping)
-    .then(restoreHighlightedTabs).then(requestSaveSession)
-    .then(getLastClosedTab);
+  }).then(applyUserCustomTheme);
+  await setActiveTabFontWeight(userOpts.get(FONT_ACTIVE) ?? '');
+  return emulateTabs().then(restoreTabGroups).then(restoreTabContainers)
+    .then(toggleTabGrouping).then(restoreHighlightedTabs)
+    .then(requestSaveSession).then(getLastClosedTab);
 };
 
 // For test

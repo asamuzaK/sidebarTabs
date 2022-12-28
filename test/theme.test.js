@@ -14,7 +14,7 @@ import { convertColorToHex } from '../src/mjs/color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
-  CSS_VAR_BG, CSS_VAR_COLOR,
+  CSS_ROOT, CSS_VAR_BG, CSS_VAR_COLOR, CSS_VAR_FONT_ACTIVE,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_FRAME, CUSTOM_BG_HOVER,
   CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
@@ -2630,6 +2630,19 @@ describe('theme', () => {
       });
     });
 
+    it('should update stylesheet', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      await func(CSS_ROOT, CSS_VAR_FONT_ACTIVE, 'bold');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 1, 'length');
+      assert.strictEqual(sheet.cssRules[0].selectorText, CSS_ROOT, 'selector');
+      assert.strictEqual(sheet.cssRules[0].style.cssText,
+        '--font-weight-active: bold;', 'cssText');
+    });
+
     it('should not update stylesheet if map is not set', async () => {
       const elm = document.createElement('style');
       const body = document.querySelector('body');
@@ -4360,6 +4373,67 @@ describe('theme', () => {
       body.appendChild(parent);
       await func(false);
       assert.isFalse(elm.classList.contains(CLASS_SEPARATOR_SHOW));
+    });
+  });
+
+  describe('set active tab font weight', () => {
+    const func = mjs.setActiveTabFontWeight;
+
+    it('should throw', async () => {
+      await func().catch(e => {
+        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e.message, 'Expected String but got Undefined.');
+      });
+    });
+
+    it('should not set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 0, 'length');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('foo');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 0, 'length');
+      assert.isNull(res, 'result');
+    });
+
+    it('should set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('bold');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 1, 'length');
+      assert.strictEqual(sheet.cssRules[0].selectorText, CSS_ROOT, 'selector');
+      assert.strictEqual(sheet.cssRules[0].style.cssText,
+        '--font-weight-active: bold;', 'cssText');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('normal');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 1, 'length');
+      assert.strictEqual(sheet.cssRules[0].selectorText, CSS_ROOT, 'selector');
+      assert.strictEqual(sheet.cssRules[0].style.cssText,
+        '--font-weight-active: normal;', 'cssText');
+      assert.isUndefined(res, 'result');
     });
   });
 

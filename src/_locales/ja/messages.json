@@ -433,6 +433,18 @@
       }
     }
   },
+  "optionsActiveTabFontBold": {
+    "message": "太字"
+  },
+  "optionsActiveTabFontDetail": {
+    "message": "アクティブタブのフォントの太さを選択してください。"
+  },
+  "optionsActiveTabFontLabel": {
+    "message": "アクティブタブのフォント:"
+  },
+  "optionsActiveTabFontNormal": {
+    "message": "通常"
+  },
   "optionsAlwaysSwitchTabByScrolling": {
     "message": "常にマウスホイールでタブを切り替える"
   },
