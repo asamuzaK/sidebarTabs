@@ -434,16 +434,16 @@
     }
   },
   "optionsActiveTabFontBold": {
-    "message": "Bold"
+    "message": "برجسته"
   },
   "optionsActiveTabFontDetail": {
-    "message": "Choose font weight of the active tab."
+    "message": "کلفتی فونت زبانه‌ فعّال را انتخاب کنید."
   },
   "optionsActiveTabFontLabel": {
-    "message": "Active tab font:"
+    "message": "فونت زبانه‌ فعّال:"
   },
   "optionsActiveTabFontNormal": {
-    "message": "Normal"
+    "message": "عادی"
   },
   "optionsAlwaysSwitchTabByScrolling": {
     "message": "همیشه با اسکرول موس بین زبانه ها جابجا شو"
