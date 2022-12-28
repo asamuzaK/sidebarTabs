@@ -42,6 +42,7 @@
   --tab-group-3-heading-text: #834566;
   --tab-group-4: #69c;
   --tab-group-4-heading-text: #466485;
+  --font-weight-active: bold;
 
   color-scheme: normal;
   font: menu;
@@ -130,7 +131,7 @@ main {
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
-  font-weight: bold;
+  font-weight: var(--font-weight-active);
   fill: var(--foreground-active-color);
   z-index: 3;
 }
