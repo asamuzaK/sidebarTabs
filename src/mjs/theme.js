@@ -1168,12 +1168,14 @@ export const applyCustomTheme = async data => {
     const keys = [
       CUSTOM_BG,
       CUSTOM_BG_ACTIVE,
+      CUSTOM_BG_DISCARDED,
       CUSTOM_BG_HOVER,
       CUSTOM_BG_SELECT,
       CUSTOM_BG_SELECT_HOVER,
       CUSTOM_BORDER_ACTIVE,
       CUSTOM_COLOR,
       CUSTOM_COLOR_ACTIVE,
+      CUSTOM_COLOR_DISCARDED,
       CUSTOM_COLOR_HOVER,
       CUSTOM_COLOR_SELECT,
       CUSTOM_COLOR_SELECT_HOVER
