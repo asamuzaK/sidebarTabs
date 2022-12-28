@@ -21,7 +21,9 @@ import {
   CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, FRAME_COLOR_USE, HIGHLIGHTED,
+  DISCARDED, EXT_INIT, FRAME_COLOR_USE,
+  FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL,
+  HIGHLIGHTED,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
   OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN,
@@ -232,6 +234,7 @@ describe('main', () => {
       assert.isFalse(res.get(TAB_CLOSE_MDLCLICK), 'value');
       assert.isTrue(res.has(TAB_GROUP_ENABLE), 'key');
       assert.isFalse(res.get(TAB_GROUP_ENABLE), 'value');
+      assert.isFalse(res.has(FONT_ACTIVE), 'key');
     });
 
     it('should call function', async () => {
@@ -250,6 +253,42 @@ describe('main', () => {
       assert.isObject(res.get(THEME_CUSTOM_DARK), 'value');
       assert.isTrue(res.has(THEME_CUSTOM_LIGHT), 'key');
       assert.isObject(res.get(THEME_CUSTOM_LIGHT), 'value');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.resolves({
+        [FONT_ACTIVE_BOLD]: {
+          checked: true,
+          value: 'bold'
+        },
+        [FONT_ACTIVE_NORMAL]: {
+          checked: false,
+          value: 'normal'
+        }
+      });
+      const res = await func();
+      assert.deepEqual(res, mjs.userOpts, 'result');
+      assert.strictEqual(res.size, 3, 'size');
+      assert.isTrue(res.has(FONT_ACTIVE), 'key');
+      assert.strictEqual(res.get(FONT_ACTIVE), 'bold', 'value');
+    });
+
+    it('should call function', async () => {
+      browser.storage.local.get.resolves({
+        [FONT_ACTIVE_BOLD]: {
+          checked: false,
+          value: 'bold'
+        },
+        [FONT_ACTIVE_NORMAL]: {
+          checked: true,
+          value: 'normal'
+        }
+      });
+      const res = await func();
+      assert.deepEqual(res, mjs.userOpts, 'result');
+      assert.strictEqual(res.size, 3, 'size');
+      assert.isTrue(res.has(FONT_ACTIVE), 'key');
+      assert.strictEqual(res.get(FONT_ACTIVE), 'normal', 'value');
     });
   });
 
@@ -12126,7 +12165,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.isFalse(mjs.userOpts.get(THEME_AUTO), 'map');
-      assert.deepEqual(res, [mjs.userOpts], 'result');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should not call function', async () => {
@@ -12178,7 +12217,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
       assert.isTrue(mjs.userOpts.get(THEME_AUTO), 'map');
-      assert.deepEqual(res, [mjs.userOpts, null], 'result');
+      assert.deepEqual(res, [null], 'result');
     });
 
     it('should not call function', async () => {
@@ -12204,7 +12243,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.isFalse(mjs.userOpts.get(THEME_CUSTOM), 'map');
-      assert.deepEqual(res, [mjs.userOpts], 'result');
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should not call function', async () => {
@@ -12261,7 +12300,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
       assert.isUndefined(mjs.userOpts.get(THEME_AUTO), 'map');
-      assert.deepEqual(res, [mjs.userOpts, null], 'result');
+      assert.deepEqual(res, [null], 'result');
     });
 
     it('should call function', async () => {
@@ -12294,7 +12333,7 @@ describe('main', () => {
       }, 'map');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.deepEqual(res, [mjs.userOpts, null], 'result');
+      assert.deepEqual(res, [null], 'result');
     });
 
     it('should call function', async () => {
@@ -12327,7 +12366,7 @@ describe('main', () => {
       }, 'map');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.deepEqual(res, [mjs.userOpts, null], 'result');
+      assert.deepEqual(res, [null], 'result');
     });
 
     it('should set variable', async () => {
@@ -12370,6 +12409,66 @@ describe('main', () => {
       );
       assert.strictEqual(browser.storage.local.set.callCount, j + 1, 'called');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(FONT_ACTIVE_BOLD, {
+        checked: true,
+        value: 'bold'
+      }, true);
+      assert.strictEqual(mjs.userOpts.get(FONT_ACTIVE), 'bold', 'value');
+      assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(FONT_ACTIVE_BOLD, {
+        checked: false,
+        value: 'bold'
+      }, true);
+      assert.isFalse(mjs.userOpts.has(FONT_ACTIVE), 'value');
+      assert.deepEqual(res, [mjs.userOpts], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(FONT_ACTIVE_BOLD, {
+        checked: true,
+        value: 'bold'
+      }, false);
+      assert.strictEqual(mjs.userOpts.get(FONT_ACTIVE), 'bold', 'value');
+      assert.deepEqual(res, [mjs.userOpts], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(FONT_ACTIVE_NORMAL, {
+        checked: true,
+        value: 'normal'
+      }, true);
+      assert.strictEqual(mjs.userOpts.get(FONT_ACTIVE), 'normal', 'value');
+      assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(FONT_ACTIVE_NORMAL, {
+        checked: false,
+        value: 'normal'
+      }, true);
+      assert.isFalse(mjs.userOpts.has(FONT_ACTIVE), 'value');
+      assert.deepEqual(res, [mjs.userOpts], 'result');
+    });
+
+    it('should set variable', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func(FONT_ACTIVE_NORMAL, {
+        checked: true,
+        value: 'normal'
+      }, false);
+      const { sheet } = elm;
+      assert.strictEqual(mjs.userOpts.get(FONT_ACTIVE), 'normal', 'value');
+      assert.strictEqual(sheet.cssRules.length, 0, 'length');
+      assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {

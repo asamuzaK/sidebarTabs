@@ -165,7 +165,7 @@
                 <label for="useFrameColor" class="checkboxLabel"
                        data-i18n="optionsUseFrameColor"
                        aria-details="useFrameColorDetail">
-                  Use tab color for sidebar background
+                  Use tab color for sidebar
                 </label>
               </span>
             </p>
@@ -281,6 +281,32 @@
               <div>
                 <p data-i18n="optionsUseUserCSSDetail">
                   Override theme styles with user stylesheet.
+                </p>
+              </div>
+            </details>
+          </div>
+          <div>
+            <p class="browser-style" aria-details="activeTabFontDetail">
+              <span data-18n="optionsActiveTabFontLabel">
+                Active tab font:
+              </span>
+              <input type="radio" id="activeTabFontBold"
+                     name="activeTabFontRadio" value="bold" />
+              <label for="activeTabFontBold"
+                     data-i18n="optionsActiveTabFontBold">
+                Bold
+              </label>
+              <input type="radio" id="activeTabFontNormal"
+                     name="activeTabFontRadio" value="normal" />
+              <label for="activeTabFontNormal"
+                     data-i18n="optionsActiveTabFontNormal">
+                Normal
+              </label>
+            </p>
+            <details id="activeTabFontDetail">
+              <div>
+                <p data-i18n="optionsActiveTabFontDetail">
+                  Choose font weight of the active tab.
                 </p>
               </div>
             </details>

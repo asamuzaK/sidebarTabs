@@ -433,6 +433,18 @@
       }
     }
   },
+  "optionsActiveTabFontBold": {
+    "message": "Bold"
+  },
+  "optionsActiveTabFontDetail": {
+    "message": "Choose font weight of the active tab."
+  },
+  "optionsActiveTabFontLabel": {
+    "message": "Active tab font:"
+  },
+  "optionsActiveTabFontNormal": {
+    "message": "Normal"
+  },
   "optionsAlwaysSwitchTabByScrolling": {
     "message": "همیشه با اسکرول موس بین زبانه ها جابجا شو"
   },
