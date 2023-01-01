@@ -2740,6 +2740,42 @@ describe('main', () => {
     });
 
     it('should create element', async () => {
+      const stubErr = sinon.stub(console, 'error');
+      const i = browser.i18n.getMessage.callCount;
+      const tabsTab = {
+        active: false,
+        audible: false,
+        cookieStoreId: 'foo',
+        id: 1,
+        index: 0,
+        pinned: false,
+        status: 'complete',
+        title: 'bar',
+        url: 'https://example.com',
+        windowId: 1,
+        mutedInfo: {
+          muted: false
+        }
+      };
+      browser.contextualIdentities.get.withArgs('foo')
+        .rejects(new Error('error'));
+      mjs.sidebar.windowId = 1;
+      const res = await func(tabsTab);
+      const { calledOnce: errCalled } = stubErr;
+      stubErr.restore();
+      const elm = document.querySelector('[data-tab-id="1"]');
+      assert.isTrue(errCalled, 'called error');
+      assert.isOk(elm, 'created');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
+      assert.strictEqual(elm.dataset.tabId, '1', 'id');
+      assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
+      assert.deepEqual(res, [
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        undefined, undefined
+      ], 'result');
+    });
+
+    it('should create element', async () => {
       const i = browser.i18n.getMessage.callCount;
       const tabsTab = {
         active: false,

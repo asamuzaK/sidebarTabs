@@ -4,7 +4,7 @@
 
 /* shared */
 import {
-  getType, isObjectNotEmpty, isString, sleep, throwErr
+  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr
 } from './common.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
@@ -711,7 +711,13 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     tab.dataset.tab = JSON.stringify(tabsTab);
     await addTabEventListeners(tab);
     if (!incognito && cookieStoreId && cookieStoreId !== COOKIE_STORE_DEFAULT) {
-      const ident = await getContextualId(cookieStoreId);
+      let ident;
+      try {
+        ident = await getContextualId(cookieStoreId);
+      } catch (e) {
+        logErr(e);
+        ident = null;
+      }
       if (isObjectNotEmpty(ident)) {
         const { color, icon, name } = ident;
         const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
