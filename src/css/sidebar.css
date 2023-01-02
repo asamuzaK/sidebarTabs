@@ -344,7 +344,7 @@ main {
   background-color: var(--background-color);
   color: var(--foreground-color);
   fill: var(--foreground-color);
-  z-index: 6;
+  z-index: 7;
 }
 
 .tab-container.pinned .tab-close {
