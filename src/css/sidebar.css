@@ -341,7 +341,7 @@ main {
 .tab-container.pinned {
   position: sticky;
   top: 0;
-  max-height: calc(100vh - (var(--tab-height) * 3));
+  max-height: calc(100vh - var(--tab-height) * 3);
   overflow-y: auto;
   background-color: var(--background-color);
   color: var(--foreground-color);
