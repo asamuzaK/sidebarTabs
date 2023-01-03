@@ -342,11 +342,15 @@ main {
   position: sticky;
   top: 0;
   max-height: calc(100vh - (var(--tab-height) * 3));
-  overflow-y: hidden;
+  overflow-y: auto;
   background-color: var(--background-color);
   color: var(--foreground-color);
   fill: var(--foreground-color);
   z-index: 6;
+}
+
+.narrow .tab-container.pinned {
+  scrollbar-width: thin;
 }
 
 .tab-container.pinned .tab-close {
@@ -373,7 +377,6 @@ main {
 .compact .tab-container.pinned .tab-pinned {
   border-radius: calc(var(--scale-size) / 2);
   padding: 0;
-  max-height: calc(100vh - (var(--tab-height-compact) * 3));
 }
 
 .tab-container.pinned > .tab.active .tab-pinned {
