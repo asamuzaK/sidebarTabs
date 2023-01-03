@@ -9,7 +9,8 @@ import {
 } from './browser.js';
 import {
   CLASS_HEADING, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_QUERY
+  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  NEW_TAB, PINNED, SIDEBAR_MAIN, TAB_QUERY
 } from './constant.js';
 import { parse as parseTld } from '../lib/tldts/index.esm.min.js';
 
@@ -308,20 +309,38 @@ export const scrollTabIntoView = async elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE) {
     const tabsTab = elm.dataset.tab;
     if (tabsTab) {
-      const { active } = JSON.parse(tabsTab);
+      const { active, pinned } = JSON.parse(tabsTab);
       if (active) {
-        const pinned = document.getElementById(PINNED);
+        const pinnedContainer = document.getElementById(PINNED);
         const newTab = document.getElementById(NEW_TAB);
         const {
           top: pinnedTop, bottom: pinnedBottom
-        } = pinned.getBoundingClientRect();
+        } = pinnedContainer.getBoundingClientRect();
         const { top: newTabTop } = newTab.getBoundingClientRect();
         const { bottom: tabBottom, top: tabTop } = elm.getBoundingClientRect();
         if (tabTop < pinnedBottom) {
-          elm.scrollIntoView({
-            behavior: 'smooth',
-            block: pinnedTop === pinnedBottom ? 'start' : 'center'
-          });
+          if (pinned) {
+            elm.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          } else {
+            const main = document.getElementById(SIDEBAR_MAIN);
+            const { clientHeight: mainHeight } = main;
+            const mainHalf = mainHeight / 2;
+            if (pinnedBottom > mainHalf) {
+              main.scrollBy({
+                behavior: 'smooth',
+                left: 0,
+                top: mainHalf - pinnedBottom - 1
+              });
+            } else {
+              elm.scrollIntoView({
+                behavior: 'smooth',
+                block: pinnedTop === pinnedBottom ? 'start' : 'center'
+              });
+            }
+          }
         } else if (tabBottom > newTabTop) {
           elm.scrollIntoView({
             behavior: 'smooth',
