@@ -13105,7 +13105,9 @@ describe('main', () => {
       body.insertBefore(sect4, newTab);
       body.insertBefore(sect5, newTab);
       browser.sessions.getWindowValue
-        .withArgs(winId, TAB_LIST).resolves(JSON.stringify({}));
+        .withArgs(winId, TAB_LIST).resolves(JSON.stringify({
+          foo: 'bar'
+        }));
       browser.windows.getCurrent.resolves({
         id: winId
       });
@@ -13279,6 +13281,156 @@ describe('main', () => {
         assert.strictEqual(item.childElementCount, 2, 'child');
       }
       assert.deepEqual(res, [], 'result');
+    });
+
+    it('should restore pinned tabs', async () => {
+      const winId = browser.windows.WINDOW_ID_CURRENT;
+      const i =
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount;
+      const j = browser.windows.getCurrent.callCount;
+      const pinned = document.getElementById(PINNED);
+      const sect1 = document.createElement('section');
+      const sect2 = document.createElement('section');
+      const sect3 = document.createElement('section');
+      const sect4 = document.createElement('section');
+      const sect5 = document.createElement('section');
+      const heading1 = document.createElement('h1');
+      const heading2 = document.createElement('h1');
+      const heading3 = document.createElement('h1');
+      const heading4 = document.createElement('h1');
+      const heading5 = document.createElement('h1');
+      const label1 = document.createElement('span');
+      const label2 = document.createElement('span');
+      const label3 = document.createElement('span');
+      const label4 = document.createElement('span');
+      const label5 = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
+      const elm5 = document.createElement('div');
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector('body');
+      sect1.id = 'sect1';
+      sect1.classList.add(CLASS_TAB_CONTAINER);
+      label1.classList.add(CLASS_HEADING_LABEL);
+      heading1.classList.add(CLASS_HEADING);
+      heading1.hidden = true;
+      heading1.appendChild(label1);
+      sect1.appendChild(heading1);
+      sect2.id = 'sect2';
+      sect2.classList.add(CLASS_TAB_CONTAINER);
+      label2.classList.add(CLASS_HEADING_LABEL);
+      heading2.classList.add(CLASS_HEADING);
+      heading2.hidden = true;
+      heading2.appendChild(label2);
+      sect2.appendChild(heading2);
+      sect3.id = 'sect3';
+      sect3.classList.add(CLASS_TAB_CONTAINER);
+      label3.classList.add(CLASS_HEADING_LABEL);
+      heading3.classList.add(CLASS_HEADING);
+      heading3.hidden = true;
+      heading3.appendChild(label3);
+      sect3.appendChild(heading3);
+      sect4.id = 'sect4';
+      sect4.classList.add(CLASS_TAB_CONTAINER);
+      label4.classList.add(CLASS_HEADING_LABEL);
+      heading4.classList.add(CLASS_HEADING);
+      heading4.hidden = true;
+      heading4.appendChild(label4);
+      sect4.appendChild(heading4);
+      sect5.id = 'sect5';
+      sect5.classList.add(CLASS_TAB_CONTAINER);
+      label5.classList.add(CLASS_HEADING_LABEL);
+      heading5.classList.add(CLASS_HEADING);
+      heading5.hidden = true;
+      heading5.appendChild(label5);
+      sect5.appendChild(heading5);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        id: 1,
+        pinned: true,
+        url: 'https://example.com'
+      });
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        id: 2,
+        pinned: true,
+        url: 'https://example.com/foo'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        id: 3,
+        pinned: true,
+        url: 'https://example.com/bar'
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        id: 4,
+        pinned: false,
+        url: 'https://example.com/baz'
+      });
+      elm5.classList.add(TAB);
+      elm5.dataset.tabId = '5';
+      elm5.dataset.tab = JSON.stringify({
+        id: 5,
+        pinned: false,
+        url: 'https://example.com/qux'
+      });
+      sect1.appendChild(elm);
+      sect2.appendChild(elm2);
+      sect3.appendChild(elm3);
+      sect4.appendChild(elm4);
+      sect5.appendChild(elm5);
+      body.insertBefore(sect1, newTab);
+      body.insertBefore(sect2, newTab);
+      body.insertBefore(sect3, newTab);
+      body.insertBefore(sect4, newTab);
+      body.insertBefore(sect5, newTab);
+      browser.sessions.getWindowValue.withArgs(winId, TAB_LIST)
+        .resolves(JSON.stringify({
+          recent: {
+            0: {
+              collapsed: false,
+              containerIndex: 0,
+              headingLabel: 'foo',
+              headingShown: true,
+              url: 'https://example.com'
+            },
+            1: {
+              collapsed: false,
+              containerIndex: 0,
+              headingLabel: 'foo',
+              headingShown: true,
+              url: 'https://example.com/foo'
+            }
+          }
+        }));
+      browser.windows.getCurrent.resolves({
+        id: winId
+      });
+      const res = await func();
+      assert.strictEqual(
+        browser.sessions.getWindowValue.withArgs(winId, TAB_LIST).callCount,
+        i + 1,
+        'called sessions get'
+      );
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
+        'called windows get current');
+      assert.strictEqual(pinned.childElementCount, 4, 'pinned');
+      assert.isFalse(pinned.classList.contains(CLASS_TAB_COLLAPSED), 'false');
+      assert.isTrue(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
+        'heading');
+      assert.strictEqual(sect1.childElementCount, 1, 'empty section');
+      assert.strictEqual(sect2.childElementCount, 1, 'empty section');
+      assert.strictEqual(sect3.childElementCount, 1, 'empty section');
+      assert.strictEqual(sect4.childElementCount, 2, 'section');
+      assert.strictEqual(sect5.childElementCount, 2, 'section');
+      assert.deepEqual(res, [undefined, undefined, undefined], 'result');
     });
 
     it('should restore pinned tabs', async () => {

@@ -2398,77 +2398,81 @@ export const restoreTabGroups = async () => {
   const func = [];
   if (isObjectNotEmpty(tabList)) {
     const { recent } = tabList;
-    const listItems = Object.entries(recent);
-    const listItemIndexes = new Map();
-    for (const [index, listItem] of listItems) {
-      const { url } = listItem;
-      if (listItemIndexes.has(url)) {
-        const indexes = listItemIndexes.get(url);
-        indexes.push(index * 1);
-        listItemIndexes.set(url, indexes);
-      } else {
-        listItemIndexes.set(url, [index * 1]);
-      }
-    }
-    const multi = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
-    const items = document.querySelectorAll(TAB_QUERY);
-    const l = items.length;
-    let i = 0;
-    while (i < l) {
-      const item = items[i];
-      const { dataset: { tab: itemTab } } = item;
-      const { pinned, url: itemUrl } = JSON.parse(itemTab);
-      if (pinned) {
-        const listItem = recent[i];
-        const {
-          collapsed, headingLabel: headingLabelTextContent, headingShown
-        } = listItem;
-        const container = document.getElementById(PINNED);
-        const heading = container.querySelector(`.${CLASS_HEADING}`);
-        const headingLabel = container.querySelector(`.${CLASS_HEADING_LABEL}`);
-        container.appendChild(item);
-        if (collapsed) {
-          container.classList.add(CLASS_TAB_COLLAPSED);
+    if (isObjectNotEmpty(recent)) {
+      const listItems = Object.entries(recent);
+      const listItemIndexes = new Map();
+      for (const [index, listItem] of listItems) {
+        const { url } = listItem;
+        if (listItemIndexes.has(url)) {
+          const indexes = listItemIndexes.get(url);
+          indexes.push(index * 1);
+          listItemIndexes.set(url, indexes);
         } else {
-          container.classList.remove(CLASS_TAB_COLLAPSED);
+          listItemIndexes.set(url, [index * 1]);
         }
-        headingLabel.textContent = headingLabelTextContent || '';
-        heading.hidden = !headingShown;
-        func.push(addListenersToHeadingItems(heading, !!multi));
-      } else if (i && listItemIndexes.has(itemUrl)) {
-        const prevItem = items[i - 1];
-        const { dataset: { tab: prevItemTab } } = prevItem;
-        const { url: prevItemUrl } = JSON.parse(prevItemTab);
-        const container = prevItem.parentNode;
-        const indexes = listItemIndexes.get(itemUrl);
-        const heading = container.querySelector(`.${CLASS_HEADING}`);
-        const headingLabel = container.querySelector(`.${CLASS_HEADING_LABEL}`);
-        for (const index of indexes) {
-          const listItem = recent[index];
-          const prevListItem = index > 0 ? recent[index - 1] : {};
+      }
+      const multi = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
+      const items = document.querySelectorAll(TAB_QUERY);
+      const l = items.length;
+      let i = 0;
+      while (i < l) {
+        const item = items[i];
+        const { dataset: { tab: itemTab } } = item;
+        const { pinned, url: itemUrl } = JSON.parse(itemTab);
+        if (pinned) {
+          const listItem = recent[i] ?? {};
           const {
-            collapsed, containerIndex: listContainerIndex,
-            headingLabel: headingLabelTextContent, headingShown
+            collapsed, headingLabel: headingLabelTextContent, headingShown
           } = listItem;
-          const {
-            containerIndex: prevListContainerIndex, url: prevListUrl
-          } = prevListItem;
-          if (listContainerIndex === prevListContainerIndex &&
-              (index === i || prevItemUrl === prevListUrl)) {
-            container.appendChild(item);
-            if (collapsed) {
-              container.classList.add(CLASS_TAB_COLLAPSED);
-            } else {
-              container.classList.remove(CLASS_TAB_COLLAPSED);
+          const container = document.getElementById(PINNED);
+          const heading = container.querySelector(`.${CLASS_HEADING}`);
+          const headingLabel =
+            container.querySelector(`.${CLASS_HEADING_LABEL}`);
+          container.appendChild(item);
+          if (collapsed) {
+            container.classList.add(CLASS_TAB_COLLAPSED);
+          } else {
+            container.classList.remove(CLASS_TAB_COLLAPSED);
+          }
+          headingLabel.textContent = headingLabelTextContent || '';
+          heading.hidden = !headingShown;
+          func.push(addListenersToHeadingItems(heading, !!multi));
+        } else if (i && listItemIndexes.has(itemUrl)) {
+          const prevItem = items[i - 1];
+          const { dataset: { tab: prevItemTab } } = prevItem;
+          const { url: prevItemUrl } = JSON.parse(prevItemTab);
+          const container = prevItem.parentNode;
+          const indexes = listItemIndexes.get(itemUrl);
+          const heading = container.querySelector(`.${CLASS_HEADING}`);
+          const headingLabel =
+            container.querySelector(`.${CLASS_HEADING_LABEL}`);
+          for (const index of indexes) {
+            const listItem = recent[index];
+            const prevListItem = index > 0 ? recent[index - 1] : {};
+            const {
+              collapsed, containerIndex: listContainerIndex,
+              headingLabel: headingLabelTextContent, headingShown
+            } = listItem;
+            const {
+              containerIndex: prevListContainerIndex, url: prevListUrl
+            } = prevListItem;
+            if (listContainerIndex === prevListContainerIndex &&
+                (index === i || prevItemUrl === prevListUrl)) {
+              container.appendChild(item);
+              if (collapsed) {
+                container.classList.add(CLASS_TAB_COLLAPSED);
+              } else {
+                container.classList.remove(CLASS_TAB_COLLAPSED);
+              }
+              headingLabel.textContent = headingLabelTextContent || '';
+              heading.hidden = !headingShown;
+              func.push(addListenersToHeadingItems(heading, !!multi));
+              break;
             }
-            headingLabel.textContent = headingLabelTextContent || '';
-            heading.hidden = !headingShown;
-            func.push(addListenersToHeadingItems(heading, !!multi));
-            break;
           }
         }
+        i++;
       }
-      i++;
     }
   }
   return Promise.all(func);
