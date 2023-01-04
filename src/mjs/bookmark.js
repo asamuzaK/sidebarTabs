@@ -81,6 +81,7 @@ export const getBookmarkLocationId = async () => {
           id = treeId;
         }
       } catch (e) {
+        id = null;
         logErr(e);
       }
     }

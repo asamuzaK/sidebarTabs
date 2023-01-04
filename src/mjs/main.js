@@ -390,6 +390,7 @@ export const activateClickedTab = async elm => {
       }
     } catch (e) {
       func = null;
+      logErr(e);
     }
   }
   return func || null;
@@ -715,8 +716,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
       try {
         ident = await getContextualId(cookieStoreId);
       } catch (e) {
-        logErr(e);
         ident = null;
+        logErr(e);
       }
       if (isObjectNotEmpty(ident)) {
         const { color, icon, name } = ident;

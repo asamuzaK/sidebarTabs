@@ -960,6 +960,7 @@ describe('main', () => {
     });
 
     it('should not call function', async () => {
+      const stubErr = sinon.stub(console, 'error');
       const { get: getTab, update } = browser.tabs;
       const i = update.callCount;
       const j = getTab.callCount;
@@ -971,6 +972,9 @@ describe('main', () => {
       elm.dataset.tabId = '1';
       body.appendChild(elm);
       const res = await func(elm);
+      const { calledOnce: errCalled } = stubErr;
+      stubErr.restore();
+      assert.isTrue(errCalled, 'called error');
       assert.strictEqual(update.callCount, i, 'not called update');
       assert.strictEqual(getTab.callCount, j + 1, 'called get');
       assert.isNull(res, 'result');

@@ -114,8 +114,8 @@ export const setTabIcon = async (elm, info) => {
           elm.dataset.connecting = url;
         }
       } catch (e) {
-        logErr(e);
         elm.dataset.connecting = url;
+        logErr(e);
       }
       elm.src = URL_LOADING_THROBBER;
     } else {
