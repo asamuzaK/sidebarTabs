@@ -343,7 +343,6 @@ main {
   top: 0;
   max-height: calc(100vh - var(--tab-height) * 3);
   overflow-y: auto;
-  resize: block;
   background-color: var(--background-color);
   color: var(--foreground-color);
   fill: var(--foreground-color);
