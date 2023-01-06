@@ -10,11 +10,8 @@ import path from 'path';
 import process from 'process';
 
 /* constants */
-/* TODO: bring back later
 const BASE_URL =
   'https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/themes/addons/';
-*/
-const BASE_URL = 'https://hg.mozilla.org/releases/mozilla-release/raw-file/tip/browser/themes/addons/';
 const CHAR = 'utf8';
 const DIR_CWD = process.cwd();
 const INDENT = 2;

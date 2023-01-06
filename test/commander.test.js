@@ -14,11 +14,7 @@ import {
 } from '../modules/commander.js';
 
 const BASE_URL = 'https://hg.mozilla.org';
-/* TODO: bring back later
 const BASE_DIR = '/mozilla-central/raw-file/tip/browser/themes/addons/';
-*/
-const BASE_DIR =
-  '/releases/mozilla-release/raw-file/tip/browser/themes/addons/';
 const DIR_CWD = process.cwd();
 const PATH_LIB = './src/lib';
 const PATH_MODULE = './node_modules';
