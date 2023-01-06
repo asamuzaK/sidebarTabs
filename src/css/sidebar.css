@@ -10,16 +10,16 @@
   --icon-small-size: calc(var(--scale-size) * (3 * 3) / (2 * 2));
   --icon-x-small-size: calc(var(--scale-size) * 2);
   --icon-xx-small-size: calc(var(--scale-size) * 3 / 2);
-  --background-color: #ededf1;
+  --background-color: #f0f0f4;
   --background-active-color: #fff;
-  --background-discarded-color: #ededf1;
-  --background-field-color: #f9f9fb;
+  --background-discarded-color: #f0f0f4;
+  --background-field-color: #f0f0f4;
   --background-field-active-color: #fff;
-  --background-hover-color: #d7d7db;
+  --background-hover-color: #dadade;
   --background-hover-shadow: #15141a1a;
   --background-selection-color: #fff;
-  --background-selection-hover-color: #e7e7e8;
-  --border-active-color: #d7d7db;
+  --background-selection-hover-color: #dadade;
+  --border-active-color: #80808e66;
   --border-discarded-color: transparent;
   --border-field-color: transparent;
   --border-field-active-color: #053e94;
@@ -131,8 +131,8 @@ main {
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
   background: var(--background-active-color);
   color: var(--foreground-active-color);
-  font-weight: var(--font-weight-active);
   fill: var(--foreground-active-color);
+  font-weight: var(--font-weight-active);
   z-index: 3;
 }
 
@@ -722,17 +722,17 @@ main {
 
 .dark-theme {
   --background-color: #38383d;
-  --background-active-color: #52525e;
+  --background-active-color: #42414d;
   --background-discarded-color: #38383d;
-  --background-field-color: #4a4a55;
-  --background-field-active-color: #000;
+  --background-field-color: #1c1b22;
+  --background-field-active-color: #42414d;
   --background-hover-color: #4c4c50;
-  --background-hover-shadow: #f9f9fa1a;
-  --background-selection-color: #52525e;
-  --background-selection-hover-color: #63636e;
+  --background-hover-shadow: #fbfbfe1a;
+  --background-selection-color: #42414d;
+  --background-selection-hover-color: #4c4c50;
   --border-active-color: transparent;
   --border-field-color: transparent;
-  --border-field-active-color: #0df;
+  --border-field-active-color: #aaf2ff;
   --focus-outline-color: #0df6;
   --foreground-color: #f9f9fa;
   --foreground-active-color: #fbfbfe;
@@ -741,7 +741,7 @@ main {
   --foreground-field-active-color: #fbfbfe;
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #fbfbfe;
-  --foreground-selection-hover-color: #fbfbfe;
+  --foreground-selection-hover-color: #f9f9fa;
   --tab-group-pinned-heading-text: #a1a1c0;
   --tab-group-1-heading-text: #dea183;
   --tab-group-2-heading-text: #82bfa1;

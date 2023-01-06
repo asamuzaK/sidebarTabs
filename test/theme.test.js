@@ -375,7 +375,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#63636e', `${key}`);
+          assert.strictEqual(value, '#55545f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -412,7 +412,7 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME || key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#63636e', `${key}`);
+          assert.strictEqual(value, '#55545f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -455,7 +455,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fc8a8a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#63636e', `${key}`);
+          assert.strictEqual(value, '#55545f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -494,7 +494,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#63636e', `${key}`);
+          assert.strictEqual(value, '#55545f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -531,7 +531,7 @@ describe('theme', () => {
             key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#63636e', `${key}`);
+          assert.strictEqual(value, '#55545f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -572,7 +572,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fc8a8a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#63636e', `${key}`);
+          assert.strictEqual(value, '#55545f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -957,7 +957,7 @@ describe('theme', () => {
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       for (const [key, value] of items) {
         if (key === CUSTOM_BORDER_FIELD_ACTIVE) {
-          assert.strictEqual(value, '#ededf1', `${key}`);
+          assert.strictEqual(value, '#f0f0f4', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1504,9 +1504,9 @@ describe('theme', () => {
       const items = Object.entries(res);
       for (const [key, value] of items) {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
-          assert.strictEqual(value, '#ededf1', `${key}`);
+          assert.strictEqual(value, '#f0f0f4', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#e3d6da', `${key}`);
+          assert.strictEqual(value, '#e6d9dc', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
           assert.strictEqual(value, '#8a0a0d1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
@@ -1935,7 +1935,7 @@ describe('theme', () => {
         themeId: THEME_LIGHT_ID,
         useFrame: true
       });
-      assert.strictEqual(res[CUSTOM_BG], '#ededf1', `${CUSTOM_BG}`);
+      assert.strictEqual(res[CUSTOM_BG], '#f0f0f4', `${CUSTOM_BG}`);
       assert.strictEqual(res[CUSTOM_COLOR], '#15141a', `${CUSTOM_COLOR}`);
     });
 
@@ -2190,7 +2190,7 @@ describe('theme', () => {
         'id value');
       assert.isObject(mjs.currentTheme.get(THEME_CURRENT), 'key value');
       assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#ededf1', 'value');
+        '#f0f0f4', 'value');
     });
 
     it('should set theme', async () => {
@@ -3500,7 +3500,7 @@ describe('theme', () => {
     it('should set system light theme', async () => {
       browser.theme.getCurrent.withArgs(1).resolves({
         colors: {
-          frame: 'rgb(237,237,241)',
+          frame: '#f0f0f4',
           tab_background_text: 'rgb(21,20,26)'
         }
       });
