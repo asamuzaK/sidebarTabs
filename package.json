@@ -37,7 +37,7 @@
     "commander": "^9.4.1",
     "decamelize": "^6.0.0",
     "node-fetch": "^3.3.0",
-    "tldts-experimental": "^5.7.103",
+    "tldts-experimental": "^5.7.104",
     "webext-schema": "^5.0.10"
   },
   "devDependencies": {
@@ -52,7 +52,7 @@
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
-    "html-validate": "^7.12.0",
+    "html-validate": "^7.12.1",
     "jsdom": "^20.0.3",
     "mocha": "^10.2.0",
     "nock": "^13.2.9",
@@ -61,5 +61,5 @@
     "stylelint": "^14.16.1",
     "stylelint-config-standard": "^29.0.0"
   },
-  "version": "10.0.0"
+  "version": "10.1.0"
 }
