@@ -834,8 +834,11 @@ export const sendCurrentTheme = async themeId => {
         id = await getThemeId();
       }
     }
+    const colorScheme =
+      window.matchMedia(COLOR_SCHEME_DARK).matches ? 'dark' : 'light';
     const msg = {
       [THEME_CUSTOM_SETTING]: {
+        colorScheme,
         id,
         values
       }

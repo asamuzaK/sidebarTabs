@@ -2542,6 +2542,39 @@ describe('theme', () => {
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'light',
+            id: 'foo',
+            values: {
+              bar: 'baz'
+            }
+          }
+        },
+        null
+      ], 'result');
+    });
+
+    it('it should call function', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'qux',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.runtime.sendMessage.callsFake((...args) => args);
+      mjs.currentTheme.set(THEME_CURRENT_ID, 'foo');
+      mjs.currentTheme.set(THEME_CURRENT, {
+        bar: 'baz'
+      });
+      const res = await func();
+      assert.isFalse(browser.management.getAll.called, 'not called');
+      assert.isTrue(browser.runtime.sendMessage.calledOnce, 'called');
+      assert.deepEqual(res, [
+        {
+          [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'dark',
             id: 'foo',
             values: {
               bar: 'baz'
@@ -2572,6 +2605,7 @@ describe('theme', () => {
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'light',
             id: 'foo',
             values: {
               bar: 'baz'
@@ -2602,6 +2636,7 @@ describe('theme', () => {
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'light',
             id: 'foo',
             values: {
               bar: 'baz'
@@ -2985,6 +3020,7 @@ describe('theme', () => {
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'light',
             id: 'foo',
             values: currentTheme
           }
@@ -3037,6 +3073,7 @@ describe('theme', () => {
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'dark',
             id: 'foo',
             values: currentTheme
           }
@@ -3088,6 +3125,60 @@ describe('theme', () => {
       assert.deepEqual(res, [
         {
           [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'light',
+            id: 'foo',
+            values: currentTheme
+          }
+        },
+        null
+      ], 'result');
+    });
+
+    it('should call function', async () => {
+      window.matchMedia().matches = true;
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.runtime.sendMessage.callsFake((...args) => args);
+      browser.storage.local.get.resolves({
+        [THEME_CUSTOM]: {
+          checked: true
+        },
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
+      const i = browser.runtime.sendMessage.callCount;
+      const j = browser.storage.local.remove.callCount;
+      const k = browser.storage.local.set.callCount;
+      const l = browser.management.getAll.callCount;
+      const currentTheme = mjs.themeMap[THEME_DARK];
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      mjs.currentTheme.set(THEME_CURRENT_ID, null);
+      mjs.currentTheme.set(THEME_CURRENT, currentTheme);
+      const res = await func({
+        remove: true,
+        useFrame: true
+      });
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+        'called');
+      assert.strictEqual(browser.storage.local.remove.callCount, j + 1,
+        'called');
+      assert.strictEqual(browser.storage.local.set.callCount, k,
+        'not called');
+      assert.strictEqual(browser.management.getAll.callCount, l + 1,
+        'called');
+      assert.deepEqual(res, [
+        {
+          [THEME_CUSTOM_SETTING]: {
+            colorScheme: 'dark',
             id: 'foo',
             values: currentTheme
           }

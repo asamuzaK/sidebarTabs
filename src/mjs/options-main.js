@@ -10,7 +10,7 @@ import {
 } from './browser.js';
 import { getFolderMap } from './bookmark.js';
 import {
-  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME_DARK, EXT_INIT,
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, EXT_INIT,
   MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
   THEME_CUSTOM_LIGHT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_ID,
   THEME_RADIO, USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
@@ -89,7 +89,7 @@ export const storeCustomTheme = async () => {
     themeValues.set(id, value);
   }
   const storeTheme = Object.fromEntries(themeValues);
-  const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
+  const dark = document.getElementById(COLOR_SCHEME)?.value === 'dark';
   const storeId = dark ? THEME_CUSTOM_DARK : THEME_CUSTOM_LIGHT;
   storeTheme.id = storeId;
   return {
@@ -219,10 +219,14 @@ export const addCustomThemeListener = async () => {
  */
 export const setCustomThemeValue = async (obj = {}) => {
   if (isObjectNotEmpty(obj)) {
-    const { id, values } = obj;
+    const { colorScheme, id, values } = obj;
     const themeId = document.getElementById(THEME_ID);
+    const colorSchemeId = document.getElementById(COLOR_SCHEME);
     if (themeId) {
       themeId.value = id || '';
+    }
+    if (colorSchemeId) {
+      colorSchemeId.value = colorScheme || '';
     }
     const items = Object.entries(values);
     for (const [key, value] of items) {
