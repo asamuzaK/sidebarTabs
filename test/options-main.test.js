@@ -8,7 +8,8 @@ import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
 import sinon from 'sinon';
 import {
-  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, EXT_INIT, MENU_SHOW_MOUSEUP,
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, EXT_INIT,
+  MENU_SHOW_MOUSEUP,
   THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT, THEME_CUSTOM_LIGHT,
   THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO,
   USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
@@ -188,11 +189,16 @@ describe('options-main', () => {
 
     it('should get result', async () => {
       const elm = document.createElement('input');
+      const elm2 = document.createElement('input');
       const body = document.querySelector('body');
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#123456';
+      elm2.id = COLOR_SCHEME;
+      elm2.type = 'hidden';
+      elm2.value = '';
       body.appendChild(elm);
+      body.appendChild(elm2);
       const res = await func();
       assert.deepEqual(res, {
         [THEME_CUSTOM_LIGHT]: {
@@ -203,13 +209,17 @@ describe('options-main', () => {
     });
 
     it('should get result', async () => {
-      window.matchMedia().matches = true;
       const elm = document.createElement('input');
+      const elm2 = document.createElement('input');
       const body = document.querySelector('body');
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#123456';
+      elm2.id = COLOR_SCHEME;
+      elm2.type = 'hidden';
+      elm2.value = 'dark';
       body.appendChild(elm);
+      body.appendChild(elm2);
       const res = await func();
       assert.deepEqual(res, {
         [THEME_CUSTOM_DARK]: {
@@ -586,16 +596,20 @@ describe('options-main', () => {
 
     it('should not set value if argument not given', async () => {
       const themeId = document.createElement('input');
+      const colorScheme = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
       themeId.id = THEME_ID;
+      colorScheme.id = COLOR_SCHEME;
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#ffffff';
       body.appendChild(themeId);
+      body.appendChild(colorScheme);
       body.appendChild(elm);
       await func();
       assert.strictEqual(themeId.value, '', 'value');
+      assert.strictEqual(colorScheme.value, '', 'value');
       assert.strictEqual(elm.value, '#ffffff', 'value');
     });
 
@@ -617,13 +631,16 @@ describe('options-main', () => {
 
     it('should not set value', async () => {
       const themeId = document.createElement('input');
+      const colorScheme = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
       themeId.id = THEME_ID;
+      colorScheme.id = COLOR_SCHEME;
       elm.id = 'foo';
       elm.type = 'text';
       elm.value = 'baz';
       body.appendChild(themeId);
+      body.appendChild(colorScheme);
       body.appendChild(elm);
       await func({
         values: {
@@ -631,26 +648,32 @@ describe('options-main', () => {
         }
       });
       assert.strictEqual(themeId.value, '', 'value');
+      assert.strictEqual(colorScheme.value, '', 'value');
       assert.strictEqual(elm.value, 'baz', 'value');
     });
 
     it('should set color value', async () => {
       const themeId = document.createElement('input');
+      const colorScheme = document.createElement('input');
       const elm = document.createElement('input');
       const body = document.querySelector('body');
       themeId.id = THEME_ID;
+      colorScheme.id = COLOR_SCHEME;
       elm.id = 'foo';
       elm.type = 'color';
       elm.value = '#ffffff';
       body.appendChild(themeId);
+      body.appendChild(colorScheme);
       body.appendChild(elm);
       await func({
+        colorScheme: 'light',
         id: 'foobar',
         values: {
           foo: '#1234AB'
         }
       });
       assert.strictEqual(themeId.value, 'foobar', 'value');
+      assert.strictEqual(colorScheme.value, 'light', 'value');
       assert.strictEqual(elm.value, '#1234ab', 'value');
     });
   });
