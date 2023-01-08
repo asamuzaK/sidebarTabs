@@ -1,10 +1,10 @@
 /* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import fs from 'fs';
+import fs from 'node:fs';
 import nock from 'nock';
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 
 /* test */
 import {

@@ -6,9 +6,9 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import fs from 'fs';
-import path from 'path';
-import process from 'process';
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
 import sinon from 'sinon';
 import {
   CLASS_MULTI, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT,

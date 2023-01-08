@@ -6,8 +6,8 @@
 import { getType, isString, throwErr } from './common.js';
 import { createFile, fetchText, isFile, readFile } from './file-util.js';
 import { program as commander } from 'commander';
-import path from 'path';
-import process from 'process';
+import path from 'node:path';
+import process from 'node:process';
 
 /* constants */
 const BASE_URL =

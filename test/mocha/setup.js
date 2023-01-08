@@ -4,7 +4,7 @@
 
 import { JSDOM } from 'jsdom';
 import { Schema } from 'webext-schema';
-import process from 'process';
+import process from 'node:process';
 import sinon from 'sinon';
 
 /**

@@ -6,9 +6,9 @@
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import { fileURLToPath } from 'url';
-import { promises as fsPromise } from 'fs';
-import path from 'path';
+import { fileURLToPath } from 'node:url';
+import { promises as fsPromise } from 'node:fs';
+import path from 'node:path';
 import { sleep } from '../src/mjs/common.js';
 import { convertColorToHex } from '../src/mjs/color.js';
 import {

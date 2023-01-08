@@ -1,10 +1,10 @@
 /* api */
 import { assert } from 'chai';
 import { describe, it } from 'mocha';
-import fs, { promises as fsPromise } from 'fs';
+import fs, { promises as fsPromise } from 'node:fs';
 import nock from 'nock';
-import path from 'path';
-import process from 'process';
+import path from 'node:path';
+import process from 'node:process';
 import sinon from 'sinon';
 
 /* test */

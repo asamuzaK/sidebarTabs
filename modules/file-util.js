@@ -3,9 +3,9 @@
  */
 
 import { getType, isString } from './common.js';
-import fs, { promises as fsPromise } from 'fs';
+import fs, { promises as fsPromise } from 'node:fs';
 import fetch from 'node-fetch';
-import path from 'path';
+import path from 'node:path';
 
 /* constants */
 const CHAR = 'utf8';
