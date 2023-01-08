@@ -1137,6 +1137,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             tab.classList.add(PINNED);
             if (tab.parentNode !== container) {
               container.appendChild(tab);
+              func.push(scrollTabIntoView(tab));
             }
           } else {
             const {

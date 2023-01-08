@@ -6281,7 +6281,7 @@ describe('main', () => {
       assert.isTrue(elm.parentNode === pinned, 'parent');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.deepEqual(res, [{}], 'result');
+      assert.deepEqual(res, [undefined, {}], 'result');
     });
 
     it('should update, call function', async () => {
