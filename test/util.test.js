@@ -1283,6 +1283,51 @@ describe('util', () => {
       });
       const stubElm = sinon.stub(elm, 'getBoundingClientRect').returns({
         top: 450,
+        bottom: 550
+      });
+      const stubFunc = sinon.stub().withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      elm.dataset.tab = JSON.stringify({
+        active: true,
+        pinned: true
+      });
+      elm.scrollIntoView = stubFunc;
+      Object.defineProperty(main, 'clientHeight', { value: 400 });
+      main.id = SIDEBAR_MAIN;
+      main.scrollBy = stubMain;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      main.appendChild(pinned);
+      main.appendChild(elm);
+      main.appendChild(newTab);
+      body.appendChild(main);
+      await func(elm);
+      assert.isFalse(stubMain.calledOnce, 'called');
+      assert.isTrue(stubPinned.calledOnce, 'called');
+      assert.isTrue(stubNewTab.calledOnce, 'called');
+      assert.isTrue(stubElm.calledOnce, 'called');
+      assert.isTrue(stubFunc.calledOnce, 'called');
+    });
+
+    it('should call function', async () => {
+      const main = document.createElement('div');
+      const pinned = document.createElement('p');
+      const newTab = document.createElement('p');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      const stubMain = sinon.stub();
+      const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
+        top: 100,
+        bottom: 200
+      });
+      const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
+        top: 300,
+        bottom: 400
+      });
+      const stubElm = sinon.stub(elm, 'getBoundingClientRect').returns({
+        top: 450,
         bottom: 500
       });
       const stubFunc = sinon.stub().withArgs({
