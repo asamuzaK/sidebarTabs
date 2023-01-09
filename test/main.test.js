@@ -706,7 +706,7 @@ describe('main', () => {
 
     it('should get empty array', async () => {
       const res = await func([{}]);
-      assert.deepEqual(res, [], 'result');
+      assert.isNull(res, 'result');
     });
 
     it('should not set styles', async () => {
@@ -721,7 +721,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '', 'height');
       assert.strictEqual(elm.style.resize, '', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.deepEqual(res, [], 'result');
+      assert.isNull(res, 'result');
     });
 
     it('should set height: auto, resize: none', async () => {
@@ -736,7 +736,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'none', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.deepEqual(res, [], 'result');
+      assert.isNull(res, 'result');
     });
 
     it('should set height: auto, resize: none', async () => {
@@ -753,7 +753,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'none', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.deepEqual(res, [], 'result');
+      assert.isNull(res, 'result');
     });
 
     it('should set height: auto, resize: none', async () => {
@@ -771,7 +771,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'none', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.deepEqual(res, [], 'result');
+      assert.isNull(res, 'result');
     });
 
     it('should set height: auto, resize: block', async () => {
@@ -788,7 +788,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'called');
-      assert.deepEqual(res, [], 'result');
+      assert.isNull(res, 'result');
     });
 
     it('should set height: 200px, resize: block', async () => {
@@ -805,7 +805,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '200px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should set height: 100px, resize: block', async () => {
@@ -823,7 +823,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '100px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.deepEqual(res, [undefined], 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should throw', async () => {

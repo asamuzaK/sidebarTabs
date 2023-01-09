@@ -344,14 +344,14 @@ export const applyUserCustomTheme = async () => {
  * apply pinned container height
  *
  * @param {Array} entries - array of ResizeObserverEntry
- * @returns {Function} - promise chain
+ * @returns {?Function} - promise chain
  */
 export const applyPinnedContainerHeight = entries => {
   if (!Array.isArray(entries)) {
     throw new TypeError(`Expected Array but got ${getType(entries)}.`);
   }
   const [{ target }] = entries;
-  const func = [];
+  let func;
   if (target?.nodeType === Node.ELEMENT_NODE && target?.id === PINNED) {
     const { classList, clientHeight, scrollHeight } = target;
     if (!classList.contains(CLASS_TAB_COLLAPSED) &&
@@ -365,18 +365,18 @@ export const applyPinnedContainerHeight = entries => {
       target.style.height = height > 0 ? `${height}px` : 'auto';
       target.style.resize = 'block';
       if (clientHeight > 0) {
-        func.push(setStorage({
+        func = setStorage({
           [PINNED_HEIGHT]: {
             value: clientHeight
           }
-        }));
+        }).catch(throwErr);
       }
     } else {
       target.style.height = 'auto';
       target.style.resize = 'none';
     }
   }
-  return Promise.all(func).catch(throwErr);
+  return func || null;
 };
 
 /* DnD */
