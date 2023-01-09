@@ -825,6 +825,25 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.deepEqual(res, [undefined], 'result');
     });
+
+    it('should throw', async () => {
+      browser.storage.local.set.rejects(new Error('error'));
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      elm.clientHeight = 200;
+      elm.scrollHeight = 300;
+      body.appendChild(elm);
+      await func([{
+        target: elm
+      }]).catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message, 'error', 'message');
+      });
+      assert.strictEqual(elm.style.height, '200px', 'height');
+      assert.strictEqual(elm.style.resize, 'block', 'resize');
+    });
+
   });
 
   describe('trigger DnD handler', () => {
