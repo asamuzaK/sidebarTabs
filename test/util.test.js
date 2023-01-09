@@ -1298,7 +1298,7 @@ describe('util', () => {
       assert.isFalse(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'start'
-      }).calledOnce, 'called');
+      }).called, 'called');
     });
 
     it('should not call function', async () => {
