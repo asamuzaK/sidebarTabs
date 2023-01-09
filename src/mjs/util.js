@@ -319,10 +319,12 @@ export const scrollTabIntoView = async elm => {
         const { top: newTabTop } = newTab.getBoundingClientRect();
         const { bottom: tabBottom, top: tabTop } = elm.getBoundingClientRect();
         if (pinned) {
-          elm.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+          if (tabTop < pinnedTop || tabBottom > pinnedBottom) {
+            elm.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         } else if (tabTop < pinnedBottom) {
           const main = document.getElementById(SIDEBAR_MAIN);
           const { clientHeight: mainHeight } = main;

@@ -793,8 +793,8 @@ describe('util', () => {
 
     it('should not call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -818,9 +818,9 @@ describe('util', () => {
 
     it('should not call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -850,9 +850,9 @@ describe('util', () => {
 
     it('should not call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -885,9 +885,9 @@ describe('util', () => {
 
     it('should not call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -901,11 +901,10 @@ describe('util', () => {
         top: 150,
         bottom: 250
       });
-      const stubFunc = sinon.stub();
       elm.dataset.tab = JSON.stringify({
         active: true
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       pinned.id = PINNED;
@@ -918,14 +917,14 @@ describe('util', () => {
       assert.isTrue(stubPinned.called, 'called');
       assert.isTrue(stubNewTab.called, 'called');
       assert.isTrue(stubElm.called, 'called');
-      assert.isFalse(stubFunc.called, 'not called');
+      assert.isFalse(elm.scrollIntoView.called, 'not called');
     });
 
     it('should not call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -939,11 +938,10 @@ describe('util', () => {
         top: 150,
         bottom: 250
       });
-      const stubFunc = sinon.stub();
       elm.dataset.tab = JSON.stringify({
         active: false
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       pinned.id = PINNED;
@@ -956,14 +954,14 @@ describe('util', () => {
       assert.isFalse(stubPinned.called, 'not called');
       assert.isFalse(stubNewTab.called, 'not called');
       assert.isFalse(stubElm.called, 'not called');
-      assert.isFalse(stubFunc.called, 'not called');
+      assert.isFalse(elm.scrollIntoView.called, 'not called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -977,14 +975,10 @@ describe('util', () => {
         top: 350,
         bottom: 450
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       pinned.id = PINNED;
@@ -997,14 +991,17 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      }).calledOnce, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
         top: 0,
@@ -1018,14 +1015,10 @@ describe('util', () => {
         top: -50,
         bottom: 50
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'start'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       pinned.id = PINNED;
@@ -1038,14 +1031,17 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'start'
+      }).calledOnce, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
@@ -1060,15 +1056,11 @@ describe('util', () => {
         top: 50,
         bottom: 150
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: false
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
@@ -1083,18 +1075,21 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      }).calledOnce, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
-        top: 100,
+        top: 0,
         bottom: 200
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
@@ -1105,15 +1100,11 @@ describe('util', () => {
         top: 50,
         bottom: 150
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: false
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
@@ -1128,18 +1119,21 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      }).calledOnce, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
-        top: 100,
+        top: 0,
         bottom: 200
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
@@ -1150,15 +1144,11 @@ describe('util', () => {
         top: 450,
         bottom: 500
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: false
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
@@ -1173,14 +1163,17 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      }).calledOnce, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
@@ -1195,15 +1188,11 @@ describe('util', () => {
         top: 50,
         bottom: 150
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: false
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
@@ -1218,18 +1207,21 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isFalse(stubFunc.calledOnce, 'called');
+      assert.isFalse(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      }).calledOnce, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
-        top: 100,
+        top: 0,
         bottom: 200
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
@@ -1237,25 +1229,21 @@ describe('util', () => {
         bottom: 400
       });
       const stubElm = sinon.stub(elm, 'getBoundingClientRect').returns({
-        top: -150,
-        bottom: -50
-      });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
+        top: -50,
+        bottom: 50
       });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: true
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
       pinned.id = PINNED;
       newTab.id = NEW_TAB;
+      pinned.appendChild(elm);
       main.appendChild(pinned);
-      main.appendChild(elm);
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
@@ -1263,18 +1251,65 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'start'
+      }).calledOnce, 'called');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
-        top: 100,
+        top: 0,
+        bottom: 300
+      });
+      const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
+        top: 400,
+        bottom: 500
+      });
+      const stubElm = sinon.stub(elm, 'getBoundingClientRect').returns({
+        top: 50,
+        bottom: 150
+      });
+      elm.dataset.tab = JSON.stringify({
+        active: true,
+        pinned: true
+      });
+      elm.scrollIntoView = sinon.stub();
+      Object.defineProperty(main, 'clientHeight', { value: 500 });
+      main.id = SIDEBAR_MAIN;
+      main.scrollBy = stubMain;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      pinned.appendChild(elm);
+      main.appendChild(pinned);
+      main.appendChild(newTab);
+      body.appendChild(main);
+      await func(elm);
+      assert.isFalse(stubMain.calledOnce, 'called');
+      assert.isTrue(stubPinned.calledOnce, 'called');
+      assert.isTrue(stubNewTab.calledOnce, 'called');
+      assert.isTrue(stubElm.calledOnce, 'called');
+      assert.isFalse(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'start'
+      }).calledOnce, 'called');
+    });
+
+    it('should not call function', async () => {
+      const main = document.createElement('div');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      const stubMain = sinon.stub();
+      const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
+        top: 0,
         bottom: 200
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
@@ -1282,25 +1317,21 @@ describe('util', () => {
         bottom: 400
       });
       const stubElm = sinon.stub(elm, 'getBoundingClientRect').returns({
-        top: 450,
-        bottom: 550
-      });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
+        top: 50,
+        bottom: 150
       });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: true
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
       pinned.id = PINNED;
       newTab.id = NEW_TAB;
+      pinned.appendChild(elm);
       main.appendChild(pinned);
-      main.appendChild(elm);
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
@@ -1308,18 +1339,21 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isFalse(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'start'
+      }).called, 'called');
     });
 
     it('should call function', async () => {
       const main = document.createElement('div');
-      const pinned = document.createElement('p');
-      const newTab = document.createElement('p');
-      const elm = document.createElement('p');
+      const pinned = document.createElement('div');
+      const newTab = document.createElement('div');
+      const elm = document.createElement('div');
       const body = document.querySelector('body');
       const stubMain = sinon.stub();
       const stubPinned = sinon.stub(pinned, 'getBoundingClientRect').returns({
-        top: 100,
+        top: 0,
         bottom: 200
       });
       const stubNewTab = sinon.stub(newTab, 'getBoundingClientRect').returns({
@@ -1330,15 +1364,11 @@ describe('util', () => {
         top: 450,
         bottom: 500
       });
-      const stubFunc = sinon.stub().withArgs({
-        behavior: 'smooth',
-        block: 'center'
-      });
       elm.dataset.tab = JSON.stringify({
         active: true,
         pinned: false
       });
-      elm.scrollIntoView = stubFunc;
+      elm.scrollIntoView = sinon.stub();
       Object.defineProperty(main, 'clientHeight', { value: 400 });
       main.id = SIDEBAR_MAIN;
       main.scrollBy = stubMain;
@@ -1353,7 +1383,10 @@ describe('util', () => {
       assert.isTrue(stubPinned.calledOnce, 'called');
       assert.isTrue(stubNewTab.calledOnce, 'called');
       assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(stubFunc.calledOnce, 'called');
+      assert.isTrue(elm.scrollIntoView.withArgs({
+        behavior: 'smooth',
+        block: 'center'
+      }).calledOnce, 'called');
     });
   });
 
