@@ -843,7 +843,6 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '200px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
     });
-
   });
 
   describe('trigger DnD handler', () => {
