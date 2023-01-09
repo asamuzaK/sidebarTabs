@@ -164,7 +164,7 @@ describe('main', () => {
             return this.#unobserve();
           }
         };
-      } else if (window[key]) {
+      } else {
         global[key] = window[key];
       }
     }
