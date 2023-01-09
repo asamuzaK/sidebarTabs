@@ -318,28 +318,26 @@ export const scrollTabIntoView = async elm => {
         } = pinnedContainer.getBoundingClientRect();
         const { top: newTabTop } = newTab.getBoundingClientRect();
         const { bottom: tabBottom, top: tabTop } = elm.getBoundingClientRect();
-        if (tabTop < pinnedBottom) {
-          if (pinned) {
-            elm.scrollIntoView({
+        if (pinned) {
+          elm.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        } else if (tabTop < pinnedBottom) {
+          const main = document.getElementById(SIDEBAR_MAIN);
+          const { clientHeight: mainHeight } = main;
+          const mainHalf = mainHeight / 2;
+          if (pinnedBottom > mainHalf) {
+            main.scrollBy({
               behavior: 'smooth',
-              block: 'center'
+              left: 0,
+              top: mainHalf - pinnedBottom - 1
             });
           } else {
-            const main = document.getElementById(SIDEBAR_MAIN);
-            const { clientHeight: mainHeight } = main;
-            const mainHalf = mainHeight / 2;
-            if (pinnedBottom > mainHalf) {
-              main.scrollBy({
-                behavior: 'smooth',
-                left: 0,
-                top: mainHalf - pinnedBottom - 1
-              });
-            } else {
-              elm.scrollIntoView({
-                behavior: 'smooth',
-                block: pinnedTop === pinnedBottom ? 'start' : 'center'
-              });
-            }
+            elm.scrollIntoView({
+              behavior: 'smooth',
+              block: pinnedTop === pinnedBottom ? 'start' : 'center'
+            });
           }
         } else if (tabBottom > newTabTop) {
           elm.scrollIntoView({
