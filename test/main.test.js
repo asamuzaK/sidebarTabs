@@ -25,7 +25,7 @@ import {
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL,
   HIGHLIGHTED,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_SEPARATOR_SHOW,
-  OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
+  OPTIONS_OPEN, PINNED, PINNED_HEIGHT, SCROLL_DIR_INVERT,
   SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
   TAB_CLOSE, TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
@@ -52,7 +52,13 @@ import {
 import * as mjs from '../src/mjs/main.js';
 
 describe('main', () => {
-  const globalKeys = ['CSSStyleSheet', 'DOMParser', 'Node', 'XMLSerializer'];
+  const globalKeys = [
+    'CSSStyleSheet',
+    'DOMParser',
+    'Node',
+    'ResizeObserver',
+    'XMLSerializer'
+  ];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -132,6 +138,32 @@ describe('main', () => {
             return this;
           }
         };
+      // mock ResizeObserver
+      } else if (key === 'ResizeObserver') {
+        global[key] = class ResizeObserver {
+          #callback;
+          #disconnect;
+          #observe;
+          #unobserve;
+          constructor(callback) {
+            this.#callback = callback;
+            this.#disconnect = () => sinon.stub();
+            this.#observe = () => sinon.stub();
+            this.#unobserve = () => sinon.stub();
+          }
+
+          disconnect() {
+            return this.#disconnect();
+          }
+
+          observe() {
+            return this.#observe();
+          }
+
+          unobserve() {
+            return this.#unobserve();
+          }
+        };
       } else {
         global[key] = window[key];
       }
@@ -142,6 +174,7 @@ describe('main', () => {
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
+    mjs.sidebar.pinnedObserver = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
     mjs.sidebar.tabsWaitingToMove = null;
     mjs.sidebar.windowId = null;
@@ -162,6 +195,7 @@ describe('main', () => {
     mjs.sidebar.incognito = false;
     mjs.sidebar.isMac = false;
     mjs.sidebar.lastClosedTab = null;
+    mjs.sidebar.pinnedObserver = null;
     mjs.sidebar.pinnedTabsWaitingToMove = null;
     mjs.sidebar.tabsWaitingToMove = null;
     mjs.sidebar.windowId = null;
@@ -218,6 +252,9 @@ describe('main', () => {
         [BROWSER_SETTINGS_READ]: {
           checked: true
         },
+        [PINNED_HEIGHT]: {
+          value: 100
+        },
         [TAB_CLOSE_MDLCLICK_PREVENT]: {
           checked: true
         },
@@ -227,9 +264,11 @@ describe('main', () => {
       });
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
-      assert.strictEqual(res.size, 3, 'size');
+      assert.strictEqual(res.size, 4, 'size');
       assert.isTrue(res.has(BROWSER_SETTINGS_READ), 'key');
       assert.isTrue(res.get(BROWSER_SETTINGS_READ), 'value');
+      assert.isTrue(res.has(PINNED_HEIGHT), 'key');
+      assert.strictEqual(res.get(PINNED_HEIGHT), 100, 'value');
       assert.isTrue(res.has(TAB_CLOSE_MDLCLICK), 'key');
       assert.isFalse(res.get(TAB_CLOSE_MDLCLICK), 'value');
       assert.isTrue(res.has(TAB_GROUP_ENABLE), 'key');
@@ -645,6 +684,145 @@ describe('main', () => {
       });
       const res = await func();
       assert.deepEqual(res, [undefined, undefined], 'result');
+    });
+  });
+
+  describe('apply pinned container height', () => {
+    const func = mjs.applyPinnedContainerHeight;
+    beforeEach(() => {
+      mjs.userOpts.clear();
+    });
+    afterEach(() => {
+      mjs.userOpts.clear();
+    });
+
+    it('should throw', async () => {
+      assert.throws(() => func());
+    });
+
+    it('should throw', async () => {
+      assert.throws(() => func([]));
+    });
+
+    it('should get empty array', async () => {
+      assert.throws(() => func([{}]));
+    });
+
+    it('should not set styles', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, '', 'height');
+      assert.strictEqual(elm.style.resize, '', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set height: auto, resize: none', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, 'auto', 'height');
+      assert.strictEqual(elm.style.resize, 'none', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set height: auto, resize: none', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      elm.clientHeight = 100;
+      elm.scrollHeight = 100;
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, 'auto', 'height');
+      assert.strictEqual(elm.style.resize, 'none', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set height: auto, resize: none', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      elm.clientHeight = 200;
+      elm.scrollHeight = 300;
+      elm.classList.add(CLASS_TAB_COLLAPSED);
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, 'auto', 'height');
+      assert.strictEqual(elm.style.resize, 'none', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set height: auto, resize: block', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      elm.clientHeight = 0;
+      elm.scrollHeight = 300;
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, 'auto', 'height');
+      assert.strictEqual(elm.style.resize, 'block', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'called');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set height: 200px, resize: block', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      elm.clientHeight = 200;
+      elm.scrollHeight = 300;
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, '200px', 'height');
+      assert.strictEqual(elm.style.resize, 'block', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should set height: 100px, resize: block', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = PINNED;
+      elm.clientHeight = 200;
+      elm.scrollHeight = 300;
+      body.appendChild(elm);
+      mjs.userOpts.set(PINNED_HEIGHT, 100);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, '100px', 'height');
+      assert.strictEqual(elm.style.resize, 'block', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
+      assert.deepEqual(res, [undefined], 'result');
     });
   });
 
@@ -14876,6 +15054,18 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.query.callCount, i + 1, 'called');
       assert.strictEqual(items.length, 1, 'created');
       assert.strictEqual(items[0].textContent, 'foo', 'title');
+    });
+  });
+
+  describe('set pinned container observer', () => {
+    const func = mjs.setPinnedObserver;
+    it('should add observer', async () => {
+      const pinned = document.createElement('section');
+      const body = document.querySelector('body');
+      pinned.id = PINNED;
+      body.appendChild(pinned);
+      await func();
+      assert.instanceOf(mjs.sidebar.pinnedObserver, ResizeObserver, 'observer');
     });
   });
 

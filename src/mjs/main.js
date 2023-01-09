@@ -10,7 +10,7 @@ import {
   clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
   getContextualId, getCurrentWindow, getHighlightedTab, getOs,
   getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
-  restoreSession, setSessionWindowValue, warmupTab
+  restoreSession, setSessionWindowValue, setStorage, warmupTab
 } from './browser.js';
 import { addPort, ports } from './port.js';
 import { bookmarkTabs } from './bookmark.js';
@@ -63,8 +63,8 @@ import {
   COLOR_SCHEME_DARK, COOKIE_STORE_DEFAULT, DISCARDED, EXT_INIT,
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, FRAME_COLOR_USE,
   HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER,
-  NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, SCROLL_DIR_INVERT,
-  SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, PINNED_HEIGHT,
+  SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
@@ -106,6 +106,7 @@ export const userOptsKeys = new Set([
   FONT_ACTIVE_NORMAL,
   FRAME_COLOR_USE,
   NEW_TAB_SEPARATOR_SHOW,
+  PINNED_HEIGHT,
   SCROLL_DIR_INVERT,
   TAB_CLOSE_DBLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT,
@@ -140,19 +141,29 @@ export const setUserOpts = async (opt = {}) => {
   }
   const items = Object.entries(opts);
   for (const [key, value] of items) {
-    if (key === THEME_CUSTOM_DARK || key === THEME_CUSTOM_LIGHT) {
-      userOpts.set(key, value);
-    } else if (key === FONT_ACTIVE_BOLD || key === FONT_ACTIVE_NORMAL) {
-      const { checked, value: itemValue } = value;
-      if (checked) {
-        userOpts.set(FONT_ACTIVE, itemValue);
+    switch (key) {
+      case THEME_CUSTOM_DARK:
+      case THEME_CUSTOM_LIGHT: {
+        userOpts.set(key, value);
+        break;
       }
-    } else {
-      const { checked } = value;
-      if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
-        userOpts.set(TAB_CLOSE_MDLCLICK, !checked);
-      } else {
-        userOpts.set(key, !!checked);
+      case FONT_ACTIVE_BOLD:
+      case FONT_ACTIVE_NORMAL: {
+        const { checked, value: itemValue } = value;
+        if (checked) {
+          userOpts.set(FONT_ACTIVE, itemValue);
+        }
+        break;
+      }
+      default: {
+        const { checked, value: itemValue } = value;
+        if (key === PINNED_HEIGHT) {
+          userOpts.set(key, itemValue);
+        } else if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
+          userOpts.set(TAB_CLOSE_MDLCLICK, !checked);
+        } else {
+          userOpts.set(key, !!checked);
+        }
       }
     }
   }
@@ -167,6 +178,7 @@ export const sidebar = {
   incognito: false,
   isMac: false,
   lastClosedTab: null,
+  pinnedObserver: null,
   pinnedTabsWaitingToMove: null,
   tabsWaitingToMove: null,
   windowId: null
@@ -326,6 +338,45 @@ export const applyUserCustomTheme = async () => {
     }
   }
   return func || null;
+};
+
+/**
+ * apply pinned container height
+ *
+ * @param {Array} entries - array of ResizeObserverEntry
+ * @returns {Function} - promise chain
+ */
+export const applyPinnedContainerHeight = entries => {
+  if (!Array.isArray(entries)) {
+    throw new TypeError(`Expected Array but got ${getType(entries)}.`);
+  }
+  const [{ target }] = entries;
+  const func = [];
+  if (target.nodeType === Node.ELEMENT_NODE && target.id === PINNED) {
+    const { classList, clientHeight, scrollHeight } = target;
+    if (!classList.contains(CLASS_TAB_COLLAPSED) &&
+        scrollHeight > clientHeight) {
+      const userPinnedHeight = userOpts.get(PINNED_HEIGHT);
+      let height = clientHeight;
+      if (Number.isInteger(userPinnedHeight) && userPinnedHeight > 0 &&
+          userPinnedHeight < clientHeight) {
+        height = userPinnedHeight;
+      }
+      target.style.height = height > 0 ? `${height}px` : 'auto';
+      target.style.resize = 'block';
+      if (clientHeight > 0) {
+        func.push(setStorage({
+          [PINNED_HEIGHT]: {
+            value: clientHeight
+          }
+        }));
+      }
+    } else {
+      target.style.height = 'auto';
+      target.style.resize = 'none';
+    }
+  }
+  return Promise.all(func).catch(throwErr);
 };
 
 /* DnD */
@@ -2329,7 +2380,7 @@ export const setStorageValue = async (item, obj, changed = false) => {
         if (userOptsKeys.has(item)) {
           func.push(setUserOpts({
             [item]: {
-              checked
+              checked, value
             }
           }));
         }
@@ -2513,9 +2564,21 @@ export const emulateTabs = async () => {
 };
 
 /**
+ * set pinned container observer
+ *
+ * @returns {void}
+ */
+export const setPinnedObserver = async () => {
+  const pinned = document.getElementById(PINNED);
+  const pinnedObserver = new ResizeObserver(applyPinnedContainerHeight);
+  pinnedObserver.observe(pinned);
+  sidebar.pinnedObserver = pinnedObserver;
+};
+
+/**
  * set main
  *
- * @returns {void} - result of each handler
+ * @returns {void}
  */
 export const setMain = async () => {
   const main = document.getElementById(SIDEBAR_MAIN);
@@ -2546,8 +2609,9 @@ export const startup = async () => {
   }).then(applyUserCustomTheme);
   await setActiveTabFontWeight(userOpts.get(FONT_ACTIVE) ?? '');
   return emulateTabs().then(restoreTabGroups).then(restoreTabContainers)
-    .then(toggleTabGrouping).then(restoreHighlightedTabs)
-    .then(requestSaveSession).then(getLastClosedTab);
+    .then(toggleTabGrouping).then(setPinnedObserver)
+    .then(restoreHighlightedTabs).then(requestSaveSession)
+    .then(getLastClosedTab);
 };
 
 // For test
