@@ -700,10 +700,34 @@ describe('main', () => {
       assert.throws(() => func());
     });
 
+    it('should throw', async () => {
+      assert.throws(() => func([]));
+    });
+
+    it('should get empty array', async () => {
+      assert.throws(() => func([{}]));
+    });
+
+    it('should not set styles', async () => {
+      const i = browser.storage.local.set.callCount;
+      const elm = document.createElement('div');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      body.appendChild(elm);
+      const res = await func([{
+        target: elm
+      }]);
+      assert.strictEqual(elm.style.height, '', 'height');
+      assert.strictEqual(elm.style.resize, '', 'resize');
+      assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
     it('should set height: auto, resize: none', async () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('div');
       const body = document.querySelector('body');
+      elm.id = PINNED;
       body.appendChild(elm);
       const res = await func([{
         target: elm
@@ -718,6 +742,7 @@ describe('main', () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('div');
       const body = document.querySelector('body');
+      elm.id = PINNED;
       elm.clientHeight = 100;
       elm.scrollHeight = 100;
       body.appendChild(elm);
@@ -734,6 +759,7 @@ describe('main', () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('div');
       const body = document.querySelector('body');
+      elm.id = PINNED;
       elm.clientHeight = 200;
       elm.scrollHeight = 300;
       elm.classList.add(CLASS_TAB_COLLAPSED);
@@ -751,6 +777,7 @@ describe('main', () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('div');
       const body = document.querySelector('body');
+      elm.id = PINNED;
       elm.clientHeight = 0;
       elm.scrollHeight = 300;
       body.appendChild(elm);
@@ -767,6 +794,7 @@ describe('main', () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('div');
       const body = document.querySelector('body');
+      elm.id = PINNED;
       elm.clientHeight = 200;
       elm.scrollHeight = 300;
       body.appendChild(elm);
@@ -783,6 +811,7 @@ describe('main', () => {
       const i = browser.storage.local.set.callCount;
       const elm = document.createElement('div');
       const body = document.querySelector('body');
+      elm.id = PINNED;
       elm.clientHeight = 200;
       elm.scrollHeight = 300;
       body.appendChild(elm);

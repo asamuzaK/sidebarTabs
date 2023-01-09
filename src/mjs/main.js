@@ -351,27 +351,30 @@ export const applyPinnedContainerHeight = entries => {
     throw new TypeError(`Expected Array but got ${getType(entries)}.`);
   }
   const [{ target }] = entries;
-  const { classList, clientHeight, scrollHeight } = target;
   const func = [];
-  if (!classList.contains(CLASS_TAB_COLLAPSED) && scrollHeight > clientHeight) {
-    const userPinnedHeight = userOpts.get(PINNED_HEIGHT);
-    let height = clientHeight;
-    if (Number.isInteger(userPinnedHeight) && userPinnedHeight > 0 &&
-        userPinnedHeight < clientHeight) {
-      height = userPinnedHeight;
+  if (target.nodeType === Node.ELEMENT_NODE && target.id === PINNED) {
+    const { classList, clientHeight, scrollHeight } = target;
+    if (!classList.contains(CLASS_TAB_COLLAPSED) &&
+        scrollHeight > clientHeight) {
+      const userPinnedHeight = userOpts.get(PINNED_HEIGHT);
+      let height = clientHeight;
+      if (Number.isInteger(userPinnedHeight) && userPinnedHeight > 0 &&
+          userPinnedHeight < clientHeight) {
+        height = userPinnedHeight;
+      }
+      target.style.height = height > 0 ? `${height}px` : 'auto';
+      target.style.resize = 'block';
+      if (clientHeight > 0) {
+        func.push(setStorage({
+          [PINNED_HEIGHT]: {
+            value: clientHeight
+          }
+        }));
+      }
+    } else {
+      target.style.height = 'auto';
+      target.style.resize = 'none';
     }
-    target.style.height = height > 0 ? `${height}px` : 'auto';
-    target.style.resize = 'block';
-    if (clientHeight > 0) {
-      func.push(setStorage({
-        [PINNED_HEIGHT]: {
-          value: clientHeight
-        }
-      }));
-    }
-  } else {
-    target.style.height = 'auto';
-    target.style.resize = 'none';
   }
   return Promise.all(func).catch(throwErr);
 };
