@@ -352,7 +352,7 @@ export const applyPinnedContainerHeight = entries => {
   }
   const [{ target }] = entries;
   const func = [];
-  if (target.nodeType === Node.ELEMENT_NODE && target.id === PINNED) {
+  if (target?.nodeType === Node.ELEMENT_NODE && target?.id === PINNED) {
     const { classList, clientHeight, scrollHeight } = target;
     if (!classList.contains(CLASS_TAB_COLLAPSED) &&
         scrollHeight > clientHeight) {

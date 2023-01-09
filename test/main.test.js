@@ -705,7 +705,8 @@ describe('main', () => {
     });
 
     it('should get empty array', async () => {
-      assert.throws(() => func([{}]));
+      const res = await func([{}]);
+      assert.deepEqual(res, [], 'result');
     });
 
     it('should not set styles', async () => {
