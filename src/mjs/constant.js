@@ -121,7 +121,6 @@ export const NEW_TAB_OPEN_CONTAINER = 'openNewTabInContainer';
 export const NEW_TAB_SEPARATOR_SHOW = 'showNewTabSeparator';
 export const OPTIONS_OPEN = 'openOptions';
 export const PINNED = 'pinned';
-export const PINNED_HEIGHT = 'pinnedHeight';
 export const SCROLL_DIR_INVERT = 'invertScrollDirection';
 export const SESSION_SAVE = 'saveSession';
 export const SIDEBAR = 'sidebar-tabs';
