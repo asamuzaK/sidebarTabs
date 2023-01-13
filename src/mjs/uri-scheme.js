@@ -393,14 +393,12 @@ export const sanitizeUrl = (input, data = false) => {
     const { href, protocol } = new URL(input);
     const schemeParts = protocol.replace(/:$/, '').split('+');
     if (data || schemeParts.every(s => s !== 'data')) {
-      const amp = encodeURIComponent('&');
-      const lt = new RegExp(encodeURIComponent('<'), 'g');
-      const gt = new RegExp(encodeURIComponent('>'), 'g');
-      const quot = new RegExp(encodeURIComponent('"'), 'g');
-      const apos =
-        new RegExp(`%${"'".charCodeAt(0).toString(HEX).toUpperCase()}`, 'g');
-      url = href.replace(lt, `${amp}lt;`).replace(gt, `${amp}gt;`)
-        .replace(quot, `${amp}quot;`).replace(apos, `${amp}#39;`);
+      const [amp, lt, gt, quot, apos] = ['&', '<', '>', '"', "'"]
+        .map(c => `%${c.charCodeAt(0).toString(HEX).toUpperCase()}`);
+      url = href.replace(new RegExp(lt, 'g'), `${amp}lt;`)
+        .replace(new RegExp(gt, 'g'), `${amp}gt;`)
+        .replace(new RegExp(quot, 'g'), `${amp}quot;`)
+        .replace(new RegExp(apos, 'g'), `${amp}#39;`);
     }
   }
   return url || null;
