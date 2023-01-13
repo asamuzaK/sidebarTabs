@@ -158,7 +158,7 @@ describe('uri-scheme', () => {
         'decode');
     });
 
-    it('should get value', () => {
+    it('should get sanitized value', () => {
       const res =
         func("http://example.com/?<script>alert('XSS');</script>");
       assert.strictEqual(res,
@@ -169,7 +169,7 @@ describe('uri-scheme', () => {
         'decode');
     });
 
-    it('should get value', () => {
+    it('should get sanitized value', () => {
       const res =
         func('http://example.com/"onmouseover="alert(1)"');
       assert.strictEqual(res,
