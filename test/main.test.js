@@ -827,6 +827,7 @@ describe('main', () => {
     });
 
     it('should throw', async () => {
+      const stubErr = sinon.stub(console, 'error');
       browser.storage.local.set.rejects(new Error('error'));
       const elm = document.createElement('div');
       const body = document.querySelector('body');
@@ -840,6 +841,9 @@ describe('main', () => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message, 'error', 'message');
       });
+      const { calledOnce: errCalled } = stubErr;
+      stubErr.restore();
+      assert.isTrue(errCalled, 'called');
       assert.strictEqual(elm.style.height, '200px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
     });
