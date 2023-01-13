@@ -157,11 +157,39 @@ describe('uri-scheme', () => {
       assert.isNull(res, 'result');
     });
 
+    it('should get null', () => {
+      const res = func('data:,Hello%2C%20World!', {
+        file: true
+      });
+      assert.isNull(res, 'result');
+    });
+
     it('should get value', () => {
-      const res = func('data:,Hello%2C%20World!', true);
+      const res = func('data:,Hello%2C%20World!', {
+        data: true
+      });
       assert.strictEqual(res, 'data:,Hello%2C%20World!', 'result');
       assert.strictEqual(decodeURIComponent(res), 'data:,Hello, World!',
         'decode');
+    });
+
+    it('should get null', () => {
+      const res = func('file:///foo/bar');
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', () => {
+      const res = func('file:///foo/bar', {
+        data: true
+      });
+      assert.isNull(res, 'result');
+    });
+
+    it('should get value', () => {
+      const res = func('file:///foo/bar', {
+        file: true
+      });
+      assert.strictEqual(res, 'file:///foo/bar', 'result');
     });
 
     it('should get sanitized value', () => {

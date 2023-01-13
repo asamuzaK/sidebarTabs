@@ -391,15 +391,17 @@ export const isUri = uri => {
  * sanitize URL
  *
  * @param {string} input - URL input
- * @param {boolean} data - accept 'data' scheme
+ * @param {object} opt - accept 'data' and/or 'file' schemes option
  * @returns {?string} - sanitized URL
  */
-export const sanitizeUrl = (input, data = false) => {
+export const sanitizeUrl = (input, opt = { data: false, file: false }) => {
   let url;
   if (isUri(input)) {
+    const { data, file } = opt;
     const { href, protocol } = new URL(input);
     const schemeParts = protocol.replace(/:$/, '').split('+');
-    if (data || schemeParts.every(s => s !== 'data')) {
+    if ((data || schemeParts.every(s => s !== 'data')) &&
+        (file || schemeParts.every(s => s !== 'file'))) {
       const [amp, lt, gt, quot, apos] = ['&', '<', '>', '"', "'"]
         .map(c => `%${c.charCodeAt(0).toString(HEX).toUpperCase()}`);
       url = href.replace(new RegExp(lt, 'g'), `${amp}lt;`)
