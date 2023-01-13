@@ -5,6 +5,9 @@
 /* shared */
 import { isString } from './common.js';
 
+/* constants */
+const HEX = 16;
+
 /**
  * uri schemes
  *
@@ -387,7 +390,6 @@ export const isUri = uri => {
  * @returns {?string} - sanitized URL
  */
 export const sanitizeUrl = (input, data = false) => {
-  const HEX = 16;
   let url;
   if (isUri(input)) {
     const { href, protocol } = new URL(input);
