@@ -368,7 +368,7 @@ export { uriSchemes as default };
 /**
  * is URI
  *
- * @param {string} uri - URI
+ * @param {string} uri - URI input
  * @returns {boolean} - result
  */
 export const isUri = uri => {
@@ -390,25 +390,25 @@ export const isUri = uri => {
 /**
  * sanitize URL
  *
- * @param {string} input - URL input
+ * @param {string} url - URL input
  * @param {object} opt - accept 'data' and/or 'file' schemes option
  * @returns {?string} - sanitized URL
  */
-export const sanitizeUrl = (input, opt = { data: false, file: false }) => {
-  let url;
-  if (isUri(input)) {
+export const sanitizeUrl = (url, opt = { data: false, file: false }) => {
+  let sanitizedUrl;
+  if (isUri(url)) {
     const { data, file } = opt;
-    const { href, protocol } = new URL(input);
+    const { href, protocol } = new URL(url);
     const schemeParts = protocol.replace(/:$/, '').split('+');
     if ((data || schemeParts.every(s => s !== 'data')) &&
         (file || schemeParts.every(s => s !== 'file'))) {
       const [amp, lt, gt, quot, apos] = ['&', '<', '>', '"', "'"]
         .map(c => `%${c.charCodeAt(0).toString(HEX).toUpperCase()}`);
-      url = href.replace(new RegExp(lt, 'g'), `${amp}lt;`)
+      sanitizedUrl = href.replace(new RegExp(lt, 'g'), `${amp}lt;`)
         .replace(new RegExp(gt, 'g'), `${amp}gt;`)
         .replace(new RegExp(quot, 'g'), `${amp}quot;`)
         .replace(new RegExp(apos, 'g'), `${amp}#39;`);
     }
   }
-  return url || null;
+  return sanitizedUrl || null;
 };
