@@ -1924,6 +1924,41 @@ describe('dnd', () => {
       });
     });
 
+    it('should not call function', async () => {
+      const i = browser.tabs.create.callCount;
+      const j = browser.tabs.move.callCount;
+      const k = browser.tabs.update.callCount;
+      browser.tabs.update.resolves({});
+      const stubCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        windowId: '1'
+      });
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const res = await func(elm, ['foo:bar']);
+      assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
+      assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
+      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(port.postMessage.called, 'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
     it('should call function', async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
@@ -1986,6 +2021,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const res = await func(elm, [
         'https://example.com',
+        'foo:bar',
         'https://www.example.com'
       ]);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
@@ -2023,6 +2059,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const res = await func(elm, [
         'https://example.com',
+        'foo:bar',
         'https://www.example.com'
       ]);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
@@ -2064,6 +2101,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const res = await func(elm, [
         'https://example.com',
+        'foo:bar',
         'https://www.example.com'
       ]);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
@@ -2108,6 +2146,7 @@ describe('dnd', () => {
       body.appendChild(main);
       const res = await func(main, [
         'https://example.com',
+        'foo:bar',
         'https://www.example.com'
       ]);
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');

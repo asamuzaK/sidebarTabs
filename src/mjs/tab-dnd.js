@@ -10,7 +10,7 @@ import {
 import {
   createTabsInOrder, highlightTabs, moveTabsInOrder
 } from './browser-tabs.js';
-import { isUri } from './uri-scheme.js';
+import { isUri, sanitizeUrl } from './uri-scheme.js';
 import { requestSaveSession } from './session.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
@@ -370,12 +370,15 @@ export const openUriList = async (dropTarget, data = []) => {
       if (data.length === 1 &&
           !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
           !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
-        const [url] = data;
-        const dropTargetId = getSidebarTabId(dropTarget);
-        func.push(updateTab(dropTargetId, {
-          url,
-          active: true
-        }));
+        const [value] = data;
+        const url = sanitizeUrl(value);
+        if (url) {
+          const dropTargetId = getSidebarTabId(dropTarget);
+          func.push(updateTab(dropTargetId, {
+            url,
+            active: true
+          }));
+        }
       } else {
         const { windowId } = JSON.parse(dropTarget.dataset.tab);
         const dropTargetIndex = getSidebarTabIndex(dropTarget);
@@ -388,26 +391,32 @@ export const openUriList = async (dropTarget, data = []) => {
                    dropTargetIndex < lastTabIndex) {
           index = dropTargetIndex + 1;
         }
-        for (const url of data) {
-          const opt = {
-            url,
-            windowId
-          };
-          if (Number.isInteger(index)) {
-            opt.index = index;
+        for (const value of data) {
+          const url = sanitizeUrl(value);
+          if (url) {
+            const opt = {
+              url,
+              windowId
+            };
+            if (Number.isInteger(index)) {
+              opt.index = index;
+            }
+            opts.push(opt);
           }
-          opts.push(opt);
         }
         func.push(createTabsInOrder(opts).then(restoreTabContainers)
           .then(requestSaveSession));
       }
     } else if (isMain) {
       const opts = [];
-      for (const url of data) {
-        const opt = {
-          url
-        };
-        opts.push(opt);
+      for (const value of data) {
+        const url = sanitizeUrl(value);
+        if (url) {
+          const opt = {
+            url
+          };
+          opts.push(opt);
+        }
       }
       func.push(createTabsInOrder(opts).then(restoreTabContainers)
         .then(requestSaveSession));
