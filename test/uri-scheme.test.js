@@ -131,6 +131,12 @@ describe('uri-scheme', () => {
         'result');
     });
 
+    it('should get value', () => {
+      const res = func('https://example.com/?foo=bar&baz=qux');
+      assert.strictEqual(res, 'https://example.com/?foo=bar&baz=qux',
+        'result');
+    });
+
     it('should get null', () => {
       const res = func('../../');
       assert.isNull(res, 'result');
@@ -166,6 +172,17 @@ describe('uri-scheme', () => {
         'result');
       assert.strictEqual(decodeURIComponent(res),
         'http://example.com/?&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;',
+        'decode');
+    });
+
+    it('should get sanitized value', () => {
+      const res =
+        func("http://example.com/?foo=bar&<script>alert('XSS');</script>");
+      assert.strictEqual(res,
+        'http://example.com/?foo=bar&%26lt;script%26gt;alert(%26#39;XSS%26#39;);%26lt;/script%26gt;',
+        'result');
+      assert.strictEqual(decodeURIComponent(res),
+        'http://example.com/?foo=bar&&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;',
         'decode');
     });
 

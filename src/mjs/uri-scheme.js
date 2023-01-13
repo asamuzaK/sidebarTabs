@@ -387,13 +387,20 @@ export const isUri = uri => {
  * @returns {?string} - sanitized URL
  */
 export const sanitizeUrl = (input, data = false) => {
+  const HEX = 16;
   let url;
   if (isUri(input)) {
     const { href, protocol } = new URL(input);
     const schemeParts = protocol.replace(/:$/, '').split('+');
     if (data || schemeParts.every(s => s !== 'data')) {
-      url = href.replace(/%3C/g, '%26lt;').replace(/%3E/g, '%26gt;')
-        .replace(/%27/g, '%26#39;').replace(/%22/g, '%26quot;'); ;
+      const amp = encodeURIComponent('&');
+      const lt = new RegExp(encodeURIComponent('<'), 'g');
+      const gt = new RegExp(encodeURIComponent('>'), 'g');
+      const quot = new RegExp(encodeURIComponent('"'), 'g');
+      const apos =
+        new RegExp(`%${"'".charCodeAt(0).toString(HEX).toUpperCase()}`, 'g');
+      url = href.replace(lt, `${amp}lt;`).replace(gt, `${amp}gt;`)
+        .replace(quot, `${amp}quot;`).replace(apos, `${amp}#39;`);
     }
   }
   return url || null;
