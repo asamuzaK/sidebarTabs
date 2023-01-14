@@ -245,7 +245,7 @@ describe('uri-scheme', () => {
         'http://example.com/?&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;',
         'decode');
       assert.deepEqual(Array.from(url.searchParams.entries()), [
-        ['&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;', ""]
+        ['&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;', '']
       ], 'search');
     });
 
@@ -261,7 +261,7 @@ describe('uri-scheme', () => {
         'decode');
       assert.deepEqual(Array.from(url.searchParams.entries()), [
         ['foo', 'bar'],
-        ['&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;', ""]
+        ['&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;', '']
       ], 'search');
     });
 

@@ -8,7 +8,7 @@ import path from 'node:path';
 
 /* test */
 import {
-  createFile, fetchText, getStat, isFile, readFile
+  createFile, fetchText, getStat, isFile, readFile, removeFile
 } from '../modules/file-util.js';
 
 /* constants */
@@ -89,6 +89,50 @@ describe('createFile', () => {
   });
 });
 
+describe('remove file / directory', () => {
+  const dirPath = path.join(TMPDIR, 'sidebartabs');
+  beforeEach(() => {
+    fs.rmSync(dirPath, { force: true, recursive: true });
+  });
+  afterEach(() => {
+    fs.rmSync(dirPath, { force: true, recursive: true });
+  });
+
+  it('should throw', async () => {
+    await removeFile().catch(e => {
+      assert.instanceOf(e, TypeError, 'error');
+      assert.strictEqual(e.message, 'Expected String but got Undefined.');
+    });
+  });
+
+  it('should throw', async () => {
+    fs.mkdirSync(dirPath);
+    const filePath = path.join(dirPath, 'test.txt');
+    await removeFile(filePath).catch(e => {
+      assert.instanceOf(e, Error, 'error');
+    });
+  });
+
+  it('should not throw', async () => {
+    fs.mkdirSync(dirPath);
+    const filePath = path.join(dirPath, 'test.txt');
+    const res = await removeFile(filePath, {
+      force: true
+    });
+    assert.isUndefined(res, 'result');
+  });
+
+  it('should remove file', async () => {
+    fs.mkdirSync(dirPath);
+    const filePath = path.join(dirPath, 'test.txt');
+    const value = 'test file.\n';
+    const file = await createFile(filePath, value);
+    const res = await removeFile(file);
+    assert.isFalse(isFile(file));
+    assert.isUndefined(res, 'result');
+  });
+});
+
 describe('fetch text', () => {
   it('should throw', async () => {
     await fetchText().catch(e => {
@@ -97,15 +141,11 @@ describe('fetch text', () => {
     });
   });
 
-  it('should throw', async () => {
+  it('should get empty string', async () => {
     const base = 'https://example.com';
     nock(base).get('/').reply(undefined);
-    await fetchText(base).catch(e => {
-      assert.instanceOf(e, Error, 'error');
-      assert.strictEqual(e.message,
-        `Network response was not ok. status: undefined url: ${base}`
-      );
-    });
+    const res = await fetchText(base);
+    assert.strictEqual(res, '', 'result');
     nock.cleanAll();
   });
 

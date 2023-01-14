@@ -70,6 +70,21 @@ export const createFile = async (file, value) => {
 };
 
 /**
+ * remove file / directory
+ *
+ * @param {string} file - file / directory path to remove
+ * @param {object} opt - options
+ * @returns {void}
+ */
+export const removeFile = async (file, opt = {}) => {
+  if (!isString(file)) {
+    throw new TypeError(`Expected String but got ${getType(file)}.`);
+  }
+  const filePath = path.resolve(file);
+  await fsPromise.rm(filePath, opt);
+};
+
+/**
  * fetch text
  *
  * @param {string} url - URL
