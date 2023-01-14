@@ -296,15 +296,13 @@ describe('update manifests', () => {
 
 describe('save URI schemes file', () => {
   const csvText = [
-    'URIScheme,Reference,Status',
+    'URI Scheme,Reference,Status',
     'foo,,Historical',
     'bar(OBSOLETE),,Permanent',
     'baz,,Permanent',
     'qux,,Provisional',
     'quux,"foo, ""bar"", baz",Provisional'
   ].join('\n');
-  const csvContent =
-    csvText.replace(/(?<="[^,]+),(?:(?<=[^,]+),)*(?=[^,]+")/g, '_');
 
   it('should throw', async () => {
     await saveUriSchemes().catch(e => {
@@ -316,7 +314,7 @@ describe('save URI schemes file', () => {
   it('should get result', async () => {
     const dir = 'iana';
     const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvContent);
+    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvText);
     const stubInfo = sinon.stub(console, 'info');
     const i = stubWrite.callCount;
     const j = stubInfo.callCount;
@@ -330,7 +328,7 @@ describe('save URI schemes file', () => {
     stubInfo.restore();
     stubRead.restore();
     stubWrite.restore();
-    assert.strictEqual(writeCallCount, i + 2, 'write');
+    assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j, 'info');
     assert.strictEqual(res, filePath, 'result');
     nock.cleanAll();
@@ -339,7 +337,7 @@ describe('save URI schemes file', () => {
   it('should get result', async () => {
     const dir = 'iana';
     const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvContent);
+    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvText);
     const stubInfo = sinon.stub(console, 'info');
     const i = stubWrite.callCount;
     const j = stubInfo.callCount;
@@ -353,7 +351,7 @@ describe('save URI schemes file', () => {
     stubInfo.restore();
     stubRead.restore();
     stubWrite.restore();
-    assert.strictEqual(writeCallCount, i + 2, 'write');
+    assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j + 1, 'info');
     assert.strictEqual(res, filePath, 'result');
     nock.cleanAll();

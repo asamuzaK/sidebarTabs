@@ -8,7 +8,7 @@ import path from 'node:path';
 
 /* test */
 import {
-  createFile, fetchText, getStat, isFile, readFile, removeFile
+  createFile, fetchText, getStat, isFile, readFile
 } from '../modules/file-util.js';
 
 /* constants */
@@ -86,50 +86,6 @@ describe('createFile', () => {
     createFile(file).catch(e => {
       assert.strictEqual(e.message, 'Expected String but got Undefined.');
     });
-  });
-});
-
-describe('remove file / directory', () => {
-  const dirPath = path.join(TMPDIR, 'sidebartabs');
-  beforeEach(() => {
-    fs.rmSync(dirPath, { force: true, recursive: true });
-  });
-  afterEach(() => {
-    fs.rmSync(dirPath, { force: true, recursive: true });
-  });
-
-  it('should throw', async () => {
-    await removeFile().catch(e => {
-      assert.instanceOf(e, TypeError, 'error');
-      assert.strictEqual(e.message, 'Expected String but got Undefined.');
-    });
-  });
-
-  it('should throw', async () => {
-    fs.mkdirSync(dirPath);
-    const filePath = path.join(dirPath, 'test.txt');
-    await removeFile(filePath).catch(e => {
-      assert.instanceOf(e, Error, 'error');
-    });
-  });
-
-  it('should not throw', async () => {
-    fs.mkdirSync(dirPath);
-    const filePath = path.join(dirPath, 'test.txt');
-    const res = await removeFile(filePath, {
-      force: true
-    });
-    assert.isUndefined(res, 'result');
-  });
-
-  it('should remove file', async () => {
-    fs.mkdirSync(dirPath);
-    const filePath = path.join(dirPath, 'test.txt');
-    const value = 'test file.\n';
-    const file = await createFile(filePath, value);
-    const res = await removeFile(file);
-    assert.isFalse(isFile(file));
-    assert.isUndefined(res, 'result');
   });
 });
 

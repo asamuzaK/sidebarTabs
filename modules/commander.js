@@ -5,10 +5,10 @@
 /* api */
 import { getType, isString, throwErr } from './common.js';
 import {
-  createFile, fetchText, isFile, readFile, removeFile
+  createFile, fetchText, isFile, readFile
 } from './file-util.js';
 import { program as commander } from 'commander';
-import csvToJson from 'convert-csv-to-json';
+import csvToJson from 'csvtojson';
 import path from 'node:path';
 import process from 'node:process';
 
@@ -98,14 +98,10 @@ export const saveUriSchemes = async (dir, info) => {
   const libPath = path.resolve(DIR_CWD, PATH_LIB, dir);
   const csvFile = 'uri-schemes-1.csv';
   const csvText = await fetchText(`${BASE_URL_IANA}${csvFile}`);
-  const csvContent =
-    csvText.replace(/(?<="[^,]+),(?:(?<=[^,]+),)*(?=[^,]+")/g, '_');
-  const csvPath =
-    await createFile(path.resolve(libPath, csvFile), `${csvContent}\n`);
-  const items = await csvToJson.fieldDelimiter(',').getJsonFromCsv(csvPath);
+  const items = await csvToJson().fromString(csvText);
   const schemes = new Set(['moz-extension']);
   for (const item of items) {
-    const { URIScheme: scheme, Status: status } = item;
+    const { 'URI Scheme': scheme, Status: status } = item;
     if (!/obsolete|\+/i.test(scheme) &&
         /^p(?:ermanent|rovisional)$/i.test(status)) {
       schemes.add(scheme);
@@ -117,9 +113,6 @@ export const saveUriSchemes = async (dir, info) => {
   if (filePath && info) {
     console.info(`Created: ${filePath}`);
   }
-  await removeFile(csvPath, {
-    force: true
-  });
   return filePath;
 };
 
