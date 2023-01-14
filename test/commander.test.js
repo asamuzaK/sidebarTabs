@@ -296,12 +296,15 @@ describe('update manifests', () => {
 
 describe('save URI schemes file', () => {
   const csvText = [
-    'URIScheme,Status',
-    'foo,Historical',
-    'bar(OBSOLETE),Permanent',
-    'baz,Permanent',
-    'qux,Provisional'
+    'URIScheme,Reference,Status',
+    'foo,,Historical',
+    'bar(OBSOLETE),,Permanent',
+    'baz,,Permanent',
+    'qux,,Provisional',
+    'quux,"foo, ""bar"", baz",Provisional'
   ].join('\n');
+  const csvContent =
+    csvText.replace(/(?<="[^,]+),(?=[^,]+")(?:(?<=[^,]+),(?=[^,]+))*/g, '_');
 
   it('should throw', async () => {
     await saveUriSchemes().catch(e => {
@@ -313,7 +316,7 @@ describe('save URI schemes file', () => {
   it('should get result', async () => {
     const dir = 'iana';
     const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvText);
+    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvContent);
     const stubInfo = sinon.stub(console, 'info');
     const i = stubWrite.callCount;
     const j = stubInfo.callCount;
@@ -336,7 +339,7 @@ describe('save URI schemes file', () => {
   it('should get result', async () => {
     const dir = 'iana';
     const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvText);
+    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvContent);
     const stubInfo = sinon.stub(console, 'info');
     const i = stubWrite.callCount;
     const j = stubInfo.callCount;

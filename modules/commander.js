@@ -99,7 +99,7 @@ export const saveUriSchemes = async (dir, info) => {
   const csvFile = 'uri-schemes-1.csv';
   const csvText = await fetchText(`${BASE_URL_IANA}${csvFile}`);
   const csvContent =
-    csvText.replace(/("[^,]+),([^,]+")/g, (m, p1, p2) => `${p1}_${p2}`);
+    csvText.replace(/(?<="[^,]+),(?=[^,]+")(?:(?<=[^,]+),(?=[^,]+))*/g, '_');
   const csvPath =
     await createFile(path.resolve(libPath, csvFile), `${csvContent}\n`);
   const items = await csvToJson.fieldDelimiter(',').getJsonFromCsv(csvPath);
@@ -230,7 +230,7 @@ export const extractLibraries = async (cmdOpts = {}) => {
     for (const [key, value] of items) {
       func.push(saveLibraryPackage([key, value], info));
     }
-    func.push(saveUriSchemes(dir, info));
+    func.push(saveUriSchemes('iana', info));
   }
   const arr = await Promise.allSettled(func);
   for (const i of arr) {
