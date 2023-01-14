@@ -96,11 +96,13 @@ export const saveUriSchemes = async (dir, info) => {
     throw new TypeError(`Expected String but got ${getType(dir)}.`);
   }
   const libPath = path.resolve(DIR_CWD, PATH_LIB, dir);
-  const csvFileName = 'uri-schemes-1.csv';
-  const csvContent = await fetchText(`${BASE_URL_IANA}${csvFileName}`);
-  const csvPath = path.resolve(libPath, csvFileName);
-  const csvFile = await createFile(csvPath, csvContent + '\n');
-  const items = await csvToJson.fieldDelimiter(',').getJsonFromCsv(csvFile);
+  const csvFile = 'uri-schemes-1.csv';
+  const csvText = await fetchText(`${BASE_URL_IANA}${csvFile}`);
+  const csvPath = await createFile(
+    path.resolve(libPath, csvFile),
+    csvText.replace(/("[^,]+),([^,]+")/g, (m, p1, p2) => `${p1}_${p2}`) + '\n'
+  );
+  const items = await csvToJson.fieldDelimiter(',').getJsonFromCsv(csvPath);
   const schemes = new Set(['moz-extension']);
   for (const item of items) {
     const { URIScheme: scheme, Status: status } = item;
