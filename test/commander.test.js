@@ -304,7 +304,7 @@ describe('save URI schemes file', () => {
     'quux,"foo, ""bar"", baz",Provisional'
   ].join('\n');
   const csvContent =
-    csvText.replace(/(?<="[^,]+),(?=[^,]+")(?:(?<=[^,]+),(?=[^,]+))*/g, '_');
+    csvText.replace(/(?<="[^,]+),(?:(?<=[^,]+),)*(?=[^,]+")/g, '_');
 
   it('should throw', async () => {
     await saveUriSchemes().catch(e => {

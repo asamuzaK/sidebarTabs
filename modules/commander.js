@@ -99,7 +99,7 @@ export const saveUriSchemes = async (dir, info) => {
   const csvFile = 'uri-schemes-1.csv';
   const csvText = await fetchText(`${BASE_URL_IANA}${csvFile}`);
   const csvContent =
-    csvText.replace(/(?<="[^,]+),(?=[^,]+")(?:(?<=[^,]+),(?=[^,]+))*/g, '_');
+    csvText.replace(/(?<="[^,]+),(?:(?<=[^,]+),)*(?=[^,]+")/g, '_');
   const csvPath =
     await createFile(path.resolve(libPath, csvFile), `${csvContent}\n`);
   const items = await csvToJson.fieldDelimiter(',').getJsonFromCsv(csvPath);
