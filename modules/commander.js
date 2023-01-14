@@ -4,9 +4,7 @@
 
 /* api */
 import { getType, isString, throwErr } from './common.js';
-import {
-  createFile, fetchText, isFile, readFile
-} from './file-util.js';
+import { createFile, fetchText, isFile, readFile } from './file-util.js';
 import { program as commander } from 'commander';
 import csvToJson from 'csvtojson';
 import path from 'node:path';
