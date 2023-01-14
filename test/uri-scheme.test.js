@@ -36,6 +36,26 @@ describe('uri-scheme', () => {
       assert.isFalse(res, 'result');
     });
 
+    it('should get false', () => {
+      const res = func('javascript:alert(1)');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get false', () => {
+      const res = func('Javas&#99;ript:alert(1)');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get false', () => {
+      const res = func('/../');
+      assert.isFalse(res, 'result');
+    });
+
+    it('should get false', () => {
+      const res = func('../../');
+      assert.isFalse(res, 'result');
+    });
+
     it('should get true', () => {
       const res = func('https://example.com');
       assert.isTrue(res, 'result');
@@ -192,31 +212,61 @@ describe('uri-scheme', () => {
       assert.strictEqual(res, 'file:///foo/bar', 'result');
     });
 
+    it('should get value', () => {
+      const res = func('http://example.com/?lt=5&gt=4');
+      const url = new URL(res);
+      assert.strictEqual(res, 'http://example.com/?lt=5&gt=4', 'result');
+      assert.deepEqual(Array.from(url.searchParams.entries()), [
+        ['lt', '5'],
+        ['gt', '4']
+      ], 'search');
+    });
+
+    it('should get sanitized value', () => {
+      const value = encodeURIComponent('5&gt=4');
+      const res = func(`http://example.com/?lt=${value}`);
+      const url = new URL(res);
+      assert.strictEqual(res, 'http://example.com/?lt=5%26amp;gt%3D4', 'result');
+      assert.strictEqual(decodeURIComponent(res),
+        'http://example.com/?lt=5&amp;gt=4', 'decode');
+      assert.deepEqual(Array.from(url.searchParams.entries()), [
+        ['lt', '5&amp;gt=4']
+      ], 'search');
+    });
+
     it('should get sanitized value', () => {
       const res =
         func("http://example.com/?<script>alert('XSS');</script>");
+      const url = new URL(res);
       assert.strictEqual(res,
-        'http://example.com/?%26lt;script%26gt;alert(%26#39;XSS%26#39;);%26lt;/script%26gt;',
+        'http://example.com/?%26lt;script%26gt;alert(%26%2339;XSS%26%2339;);%26lt;/script%26gt;',
         'result');
       assert.strictEqual(decodeURIComponent(res),
         'http://example.com/?&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;',
         'decode');
+      assert.deepEqual(Array.from(url.searchParams.entries()), [
+        ['&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;', ""]
+      ], 'search');
     });
 
     it('should get sanitized value', () => {
       const res =
         func("http://example.com/?foo=bar&<script>alert('XSS');</script>");
+      const url = new URL(res);
       assert.strictEqual(res,
-        'http://example.com/?foo=bar&%26lt;script%26gt;alert(%26#39;XSS%26#39;);%26lt;/script%26gt;',
+        'http://example.com/?foo=bar&%26lt;script%26gt;alert(%26%2339;XSS%26%2339;);%26lt;/script%26gt;',
         'result');
       assert.strictEqual(decodeURIComponent(res),
         'http://example.com/?foo=bar&&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;',
         'decode');
+      assert.deepEqual(Array.from(url.searchParams.entries()), [
+        ['foo', 'bar'],
+        ['&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;', ""]
+      ], 'search');
     });
 
     it('should get sanitized value', () => {
-      const res =
-        func('http://example.com/"onmouseover="alert(1)"');
+      const res = func('http://example.com/"onmouseover="alert(1)"');
       assert.strictEqual(res,
         'http://example.com/%26quot;onmouseover=%26quot;alert(1)%26quot;',
         'result');

@@ -391,7 +391,7 @@ export const isUri = uri => {
  * sanitize URL
  *
  * @param {string} url - URL input
- * @param {object} opt - accept 'data' and/or 'file' schemes option
+ * @param {object} opt - accept 'data' and/or 'file' schemes
  * @returns {?string} - sanitized URL
  */
 export const sanitizeUrl = (url, opt = { data: false, file: false }) => {
@@ -402,12 +402,13 @@ export const sanitizeUrl = (url, opt = { data: false, file: false }) => {
     const schemeParts = protocol.replace(/:$/, '').split('+');
     if ((data || schemeParts.every(s => s !== 'data')) &&
         (file || schemeParts.every(s => s !== 'file'))) {
-      const [amp, lt, gt, quot, apos] = ['&', '<', '>', '"', "'"]
+      const [amp, num, lt, gt, quot, apos] = ['&', '#', '<', '>', '"', "'"]
         .map(c => `%${c.charCodeAt(0).toString(HEX).toUpperCase()}`);
-      sanitizedUrl = href.replace(new RegExp(lt, 'g'), `${amp}lt;`)
+      sanitizedUrl = href.replace(new RegExp(amp, 'g'), `${amp}amp;`)
+        .replace(new RegExp(lt, 'g'), `${amp}lt;`)
         .replace(new RegExp(gt, 'g'), `${amp}gt;`)
         .replace(new RegExp(quot, 'g'), `${amp}quot;`)
-        .replace(new RegExp(apos, 'g'), `${amp}#39;`);
+        .replace(new RegExp(apos, 'g'), `${amp}${num}39;`);
     }
   }
   return sanitizedUrl || null;
