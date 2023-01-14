@@ -98,10 +98,10 @@ export const saveUriSchemes = async (dir, info) => {
   const libPath = path.resolve(DIR_CWD, PATH_LIB, dir);
   const csvFile = 'uri-schemes-1.csv';
   const csvText = await fetchText(`${BASE_URL_IANA}${csvFile}`);
-  const csvPath = await createFile(
-    path.resolve(libPath, csvFile),
-    csvText.replace(/("[^,]+),([^,]+")/g, (m, p1, p2) => `${p1}_${p2}`) + '\n'
-  );
+  const csvContent =
+    csvText.replace(/("[^,]+),([^,]+")/g, (m, p1, p2) => `${p1}_${p2}`);
+  const csvPath =
+    await createFile(path.resolve(libPath, csvFile), `${csvContent}\n`);
   const items = await csvToJson.fieldDelimiter(',').getJsonFromCsv(csvPath);
   const schemes = new Set(['moz-extension']);
   for (const item of items) {
@@ -112,10 +112,8 @@ export const saveUriSchemes = async (dir, info) => {
     }
   }
   const content = JSON.stringify([...schemes].sort(), null, INDENT);
-  const filePath = await createFile(
-    path.resolve(libPath, 'uri-schemes.json'),
-    content + '\n'
-  );
+  const filePath =
+    await createFile(path.resolve(libPath, 'uri-schemes.json'), `${content}\n`);
   if (filePath && info) {
     console.info(`Created: ${filePath}`);
   }
@@ -182,7 +180,7 @@ export const saveLibraryPackage = async (lib, info) => {
     origins
   }, null, INDENT);
   const filePath =
-    await createFile(path.resolve(libPath, 'package.json'), content + '\n');
+    await createFile(path.resolve(libPath, 'package.json'), `${content}\n`);
   if (filePath && info) {
     console.info(`Created: ${filePath}`);
   }
