@@ -341,7 +341,6 @@ describe('save URI schemes file', () => {
   it('should get result', async () => {
     const dir = 'iana';
     const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvText);
     const stubInfo = sinon.stub(console, 'info');
     const i = stubWrite.callCount;
     const j = stubInfo.callCount;
@@ -354,7 +353,6 @@ describe('save URI schemes file', () => {
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
     stubInfo.restore();
-    stubRead.restore();
     stubWrite.restore();
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j, 'info');
@@ -364,7 +362,6 @@ describe('save URI schemes file', () => {
   it('should get result', async () => {
     const dir = 'iana';
     const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubRead = sinon.stub(fs, 'readFileSync').returns(csvText);
     const stubInfo = sinon.stub(console, 'info');
     const i = stubWrite.callCount;
     const j = stubInfo.callCount;
@@ -377,7 +374,6 @@ describe('save URI schemes file', () => {
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
     stubInfo.restore();
-    stubRead.restore();
     stubWrite.restore();
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j + 1, 'info');
