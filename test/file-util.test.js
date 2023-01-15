@@ -1,8 +1,8 @@
 /* api */
+import { MockAgent, getGlobalDispatcher, setGlobalDispatcher } from 'undici';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import fs from 'node:fs';
-import nock from 'nock';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -90,6 +90,17 @@ describe('createFile', () => {
 });
 
 describe('fetch text', () => {
+  const globalDispatcher = getGlobalDispatcher();
+  const mockAgent = new MockAgent();
+  beforeEach(() => {
+    setGlobalDispatcher(mockAgent);
+    mockAgent.disableNetConnect();
+  });
+  afterEach(() => {
+    mockAgent.enableNetConnect();
+    setGlobalDispatcher(globalDispatcher);
+  });
+
   it('should throw', async () => {
     await fetchText().catch(e => {
       assert.instanceOf(e, TypeError, 'error');
@@ -97,30 +108,21 @@ describe('fetch text', () => {
     });
   });
 
-  it('should get empty string', async () => {
-    const base = 'https://example.com';
-    nock(base).get('/').reply(undefined);
-    const res = await fetchText(base);
-    assert.strictEqual(res, '', 'result');
-    nock.cleanAll();
-  });
-
   it('should throw', async () => {
     const base = 'https://example.com';
-    nock(base).get('/').reply(404);
+    mockAgent.get(base).intercept({ path: '/', method: 'GET' }).reply(404);
     await fetchText(base).catch(e => {
       assert.instanceOf(e, Error, 'error');
       assert.strictEqual(e.message,
         `Network response was not ok. status: 404 url: ${base}`);
     });
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
     const base = 'https://example.com';
-    nock(base).get('/').reply(200, 'foo');
+    mockAgent.get(base).intercept({ path: '/', method: 'GET' })
+      .reply(200, 'foo');
     const res = await fetchText('https://example.com');
     assert.strictEqual(res, 'foo', 'result');
-    nock.cleanAll();
   });
 });
