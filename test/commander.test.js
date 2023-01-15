@@ -1,8 +1,8 @@
 /* api */
+import { MockAgent, getGlobalDispatcher, setGlobalDispatcher } from 'undici';
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
+import { afterEach, beforeEach, describe, it } from 'mocha';
 import fs, { promises as fsPromise } from 'node:fs';
-import nock from 'nock';
 import path from 'node:path';
 import process from 'node:process';
 import sinon from 'sinon';
@@ -23,6 +23,17 @@ const PATH_LIB = './src/lib';
 const PATH_MODULE = './node_modules';
 
 describe('save theme manifest file', () => {
+  const globalDispatcher = getGlobalDispatcher();
+  const mockAgent = new MockAgent();
+  beforeEach(() => {
+    setGlobalDispatcher(mockAgent);
+    mockAgent.disableNetConnect();
+  });
+  afterEach(() => {
+    mockAgent.enableNetConnect();
+    setGlobalDispatcher(globalDispatcher);
+  });
+
   it('should throw', async () => {
     await saveThemeManifest().catch(e => {
       assert.instanceOf(e, TypeError, 'error');
@@ -31,14 +42,14 @@ describe('save theme manifest file', () => {
   });
 
   it('should throw if file not found', async () => {
-    const url = `${BASE_URL_MOZ}${DIR_MOZ}foo/manifest.json`;
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}foo/manifest.json`).reply(404);
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}foo/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(404);
     await saveThemeManifest('foo').catch(e => {
       assert.instanceOf(e, Error, 'error');
       assert.strictEqual(e.message,
         `Network response was not ok. status: 404 url: ${url}`);
     });
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -49,7 +60,9 @@ describe('save theme manifest file', () => {
     const j = stubInfo.callCount;
     const filePath =
       path.join(process.cwd(), 'resource', `${dir}-manifest.json`);
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}${dir}/manifest.json`).reply(200, '{}');
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}${dir}/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(200, '{}');
     const res = await saveThemeManifest(dir);
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
@@ -58,7 +71,6 @@ describe('save theme manifest file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -69,7 +81,9 @@ describe('save theme manifest file', () => {
     const j = stubInfo.callCount;
     const filePath =
       path.join(process.cwd(), 'resource', `${dir}-manifest.json`);
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}${dir}/manifest.json`).reply(200, '{}');
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}${dir}/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(200, '{}');
     const res = await saveThemeManifest(dir, true);
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
@@ -78,7 +92,6 @@ describe('save theme manifest file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j + 1, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -89,7 +102,9 @@ describe('save theme manifest file', () => {
     const j = stubInfo.callCount;
     const filePath =
       path.join(process.cwd(), 'resource', `${dir}-manifest.json`);
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}${dir}/manifest.json`).reply(200, '{}');
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}${dir}/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(200, '{}');
     const res = await saveThemeManifest(dir);
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
@@ -98,7 +113,6 @@ describe('save theme manifest file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -109,7 +123,9 @@ describe('save theme manifest file', () => {
     const j = stubInfo.callCount;
     const filePath =
       path.join(process.cwd(), 'resource', `${dir}-manifest.json`);
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}${dir}/manifest.json`).reply(200, '{}');
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}${dir}/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(200, '{}');
     const res = await saveThemeManifest(dir, true);
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
@@ -118,7 +134,6 @@ describe('save theme manifest file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j + 1, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -129,7 +144,9 @@ describe('save theme manifest file', () => {
     const j = stubInfo.callCount;
     const filePath =
       path.join(process.cwd(), 'resource', `${dir}-manifest.json`);
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}${dir}/manifest.json`).reply(200, '{}');
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}${dir}/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(200, '{}');
     const res = await saveThemeManifest(dir);
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
@@ -138,7 +155,6 @@ describe('save theme manifest file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -149,7 +165,9 @@ describe('save theme manifest file', () => {
     const j = stubInfo.callCount;
     const filePath =
       path.join(process.cwd(), 'resource', `${dir}-manifest.json`);
-    nock(BASE_URL_MOZ).get(`${DIR_MOZ}${dir}/manifest.json`).reply(200, '{}');
+    const url = new URL(`${BASE_URL_MOZ}${DIR_MOZ}${dir}/manifest.json`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
+      .reply(200, '{}');
     const res = await saveThemeManifest(dir, true);
     const { callCount: writeCallCount } = stubWrite;
     const { callCount: infoCallCount } = stubInfo;
@@ -158,7 +176,6 @@ describe('save theme manifest file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j + 1, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 });
 
@@ -303,6 +320,16 @@ describe('save URI schemes file', () => {
     'qux,,Provisional',
     'quux,"foo, ""bar"", baz",Provisional'
   ].join('\n');
+  const globalDispatcher = getGlobalDispatcher();
+  const mockAgent = new MockAgent();
+  beforeEach(() => {
+    setGlobalDispatcher(mockAgent);
+    mockAgent.disableNetConnect();
+  });
+  afterEach(() => {
+    mockAgent.enableNetConnect();
+    setGlobalDispatcher(globalDispatcher);
+  });
 
   it('should throw', async () => {
     await saveUriSchemes().catch(e => {
@@ -320,7 +347,8 @@ describe('save URI schemes file', () => {
     const j = stubInfo.callCount;
     const libPath = path.resolve(process.cwd(), 'src', 'lib');
     const filePath = path.resolve(libPath, dir, 'uri-schemes.json');
-    nock(BASE_URL_IANA).get(`${DIR_IANA}uri-schemes-1.csv`)
+    const url = new URL(`${BASE_URL_IANA}${DIR_IANA}uri-schemes-1.csv`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
       .reply(200, csvText);
     const res = await saveUriSchemes(dir);
     const { callCount: writeCallCount } = stubWrite;
@@ -331,7 +359,6 @@ describe('save URI schemes file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 
   it('should get result', async () => {
@@ -343,7 +370,8 @@ describe('save URI schemes file', () => {
     const j = stubInfo.callCount;
     const libPath = path.resolve(process.cwd(), 'src', 'lib');
     const filePath = path.resolve(libPath, dir, 'uri-schemes.json');
-    nock(BASE_URL_IANA).get(`${DIR_IANA}uri-schemes-1.csv`)
+    const url = new URL(`${BASE_URL_IANA}${DIR_IANA}uri-schemes-1.csv`);
+    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
       .reply(200, csvText);
     const res = await saveUriSchemes(dir, true);
     const { callCount: writeCallCount } = stubWrite;
@@ -354,7 +382,6 @@ describe('save URI schemes file', () => {
     assert.strictEqual(writeCallCount, i + 1, 'write');
     assert.strictEqual(infoCallCount, j + 1, 'info');
     assert.strictEqual(res, filePath, 'result');
-    nock.cleanAll();
   });
 });
 
