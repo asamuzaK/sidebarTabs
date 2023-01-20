@@ -557,7 +557,9 @@ export const sanitizeUrl = (url, opt = {
       for (let item of items) {
         if (isString(item)) {
           item = item.trim();
-          if (item) {
+          if (/(?:java|vb)script/.test(item)) {
+            schemeMap.set(item, false);
+          } else if (item) {
             schemeMap.set(item, true);
           }
         }

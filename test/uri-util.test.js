@@ -490,6 +490,34 @@ describe('uri-scheme', () => {
       assert.isNull(res, 'result');
     });
 
+    it('should get null', () => {
+      const res = func('javascript:alert(1)', {
+        allow: ['javascript']
+      });
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', () => {
+      const res = func('vbscript:window.external.AddFavorite(&quot;http://www.mozilla.org/&quot;,&quot;Mozilla&quot;)', {
+        allow: ['vbscript']
+      });
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', () => {
+      const res = func('web+javascript:alert(1)', {
+        allow: ['web+javascript']
+      });
+      assert.isNull(res, 'result');
+    });
+
+    it('should get null', () => {
+      const res = func('web+vbscript:window.external.AddFavorite(&quot;http://www.mozilla.org/&quot;,&quot;Mozilla&quot;)', {
+        allow: ['web+vbscript']
+      });
+      assert.isNull(res, 'result');
+    });
+
     it('should get value', () => {
       const res = func('http://example.com/?lt=5&gt=4');
       const url = new URL(res);
