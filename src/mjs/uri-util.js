@@ -529,6 +529,7 @@ export const parseBase64 = data => {
 /**
  * sanitize URL
  * NOTE: `data` and/or `file` schemes must be explicitly allowed
+ *       `javascript` and/or `vbscript` schemes can not be registered
  *
  * @param {string} url - URL input
  * @param {object} opt - options
