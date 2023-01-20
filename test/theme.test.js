@@ -1871,7 +1871,7 @@ describe('theme', () => {
         flag: 'r'
       });
       const {
-        applications: {
+        browser_specific_settings: {
           gecko: {
             id
           }
@@ -1914,7 +1914,7 @@ describe('theme', () => {
         flag: 'r'
       });
       const {
-        applications: {
+        browser_specific_settings: {
           gecko: {
             id
           }
@@ -1965,7 +1965,7 @@ describe('theme', () => {
         flag: 'r'
       });
       const {
-        applications: {
+        browser_specific_settings: {
           gecko: {
             id
           }
@@ -2003,7 +2003,7 @@ describe('theme', () => {
         flag: 'r'
       });
       const {
-        applications: {
+        browser_specific_settings: {
           gecko: {
             id
           }
@@ -2072,7 +2072,7 @@ describe('theme', () => {
         flag: 'r'
       });
       const {
-        applications: {
+        browser_specific_settings: {
           gecko: {
             id
           }
@@ -2105,7 +2105,7 @@ describe('theme', () => {
         flag: 'r'
       });
       const {
-        applications: {
+        browser_specific_settings: {
           gecko: {
             id
           }
