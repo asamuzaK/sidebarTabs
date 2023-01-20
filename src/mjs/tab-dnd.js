@@ -10,7 +10,7 @@ import {
 import {
   createTabsInOrder, highlightTabs, moveTabsInOrder
 } from './browser-tabs.js';
-import { isUri, sanitizeUrl } from './uri-scheme.js';
+import { isUri, sanitizeUrl } from './uri-util.js';
 import { requestSaveSession } from './session.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
