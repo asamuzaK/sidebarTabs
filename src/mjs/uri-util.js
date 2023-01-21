@@ -280,6 +280,7 @@ export class URISchemes {
       'ms-powerpoint',
       'ms-project',
       'ms-publisher',
+      'ms-remotedesktop-launch',
       'ms-restoretabcompanion',
       'ms-screenclip',
       'ms-screensketch',
