@@ -349,7 +349,7 @@ describe('uri-scheme', () => {
 
     it('should be instance of URLSanitizer', () => {
       const sanitizer = new URLSanitizer();
-      assert.instanceOf(urlSanitizer, URLSanitizer, 'instance');
+      assert.instanceOf(sanitizer, URLSanitizer, 'instance');
     });
 
     describe('sanitize URL', () => {
