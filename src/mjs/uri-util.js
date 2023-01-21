@@ -9,6 +9,87 @@ import { getType, isString } from './common.js';
 const HEX = 16;
 
 /**
+ * get URL encoded string
+ *
+ * @param {string} str - string
+ * @returns {string} - URL encoded string
+ */
+export const getUrlEncodedString = str => {
+  if (!isString(str)) {
+    throw new TypeError(`Expected String but got ${getType(str)}.`);
+  }
+  const chars = [];
+  for (const ch of str) {
+    chars.push(`%${ch.charCodeAt(0).toString(HEX).toUpperCase()}`);
+  }
+  return chars.join('');
+};
+
+/**
+ * escape URL encoded HTML special chars
+ *
+ * @param {string} ch - URL encoded (percent encoded) char
+ * @returns {string} - escaped URL encoded HTML special char / URL encoded char
+ */
+export const escapeUrlEncodedHtmlChars = ch => {
+  if (isString(ch)) {
+    if (/^%[\dA-F]{2}$/i.test(ch)) {
+      ch = ch.toUpperCase();
+    } else {
+      throw new Error(`${ch} is not a URL encoded character.`);
+    }
+  } else {
+    throw new TypeError(`Expected String but got ${getType(ch)}.`);
+  }
+  const [amp, num, lt, gt, quot, apos] =
+    ['&', '#', '<', '>', '"', "'"].map(getUrlEncodedString);
+  let escapedChar;
+  if (ch === amp) {
+    escapedChar = `${amp}amp;`;
+  } else if (ch === lt) {
+    escapedChar = `${amp}lt;`;
+  } else if (ch === gt) {
+    escapedChar = `${amp}gt;`;
+  } else if (ch === quot) {
+    escapedChar = `${amp}quot;`;
+  } else if (ch === apos) {
+    escapedChar = `${amp}${num}39;`;
+  } else {
+    escapedChar = ch;
+  }
+  return escapedChar;
+};
+
+/**
+ * parse base64
+ *
+ * @see {@link https://github.com/file/file/blob/master/src/encoding.c}
+ * @param {string} data - base64 data
+ * @returns {string} - parsed data / base64 data
+ */
+export const parseBase64 = data => {
+  if (!isString(data)) {
+    throw new TypeError(`Expected String but got ${getType(data)}.`);
+  }
+  const bin = atob(data);
+  const uint8arr = Uint8Array.from([...bin].map(c => c.charCodeAt(0)));
+  const textChars = new Set([0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x1b]);
+  for (let i = 0x20; i < 0x7f; i++) {
+    textChars.add(i);
+  }
+  for (let i = 0x80; i <= 0xff; i++) {
+    textChars.add(i);
+  }
+  let parsedData;
+  if (uint8arr.every(c => textChars.has(c))) {
+    parsedData = bin;
+  } else {
+    parsedData = data;
+  }
+  return parsedData;
+};
+
+/**
  * URI schemes
  *
  * @see {@link https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml}
@@ -374,7 +455,7 @@ export class URISchemes {
   }
 
   /**
-   * get scheme
+   * get schemes
    *
    * @returns {Array.<string>} - array of schemes
    */
@@ -419,200 +500,140 @@ export class URISchemes {
   remove(scheme) {
     return this.#schemes.delete(scheme);
   }
+
+  /**
+   * is URI
+   *
+   * @param {string} uri - URI input
+   * @returns {boolean} - result
+   */
+  isURI(uri) {
+    let res;
+    if (isString(uri)) {
+      try {
+        const { protocol } = new URL(uri);
+        const scheme = protocol.replace(/:$/, '');
+        const schemeParts = scheme.split('+');
+        res = /^(?:ext|web)\+[a-z]+$/.test(scheme) ||
+              schemeParts.every(s => this.#schemes.has(s));
+      } catch (e) {
+        res = false;
+      }
+    }
+    return !!res;
+  };
+}
+
+/* URL sanitizer */
+export class URLSanitizer extends URISchemes {
+  /**
+   * sanitize URL
+   * NOTE: `data` and/or `file` schemes must be explicitly allowed
+   *       `javascript` and/or `vbscript` schemes can not be allowed
+   *
+   * @param {string} url - URL input
+   * @param {object} opt - options
+   * @param {Array.<string>} [opt.allow] - array of allowed schemes
+   * @param {Array.<string>} [opt.deny] - array of denied schemes
+   * @param {boolean} [opt.parseData] - parse data URL, `true` if omitted
+   * @returns {?string} - sanitized URL
+   */
+  sanitize(url, opt = { allow: [], deny: [], parseData: true }) {
+    let sanitizedUrl;
+    if (super.isURI(url)) {
+      const { allow, deny, parseData } = opt ?? {};
+      const { href, pathname, protocol } = new URL(url);
+      const scheme = protocol.replace(/:$/, '');
+      const schemeParts = scheme.split('+');
+      const schemeMap = new Map([
+        ['data', false],
+        ['file', false]
+      ]);
+      if (Array.isArray(allow) && allow.length) {
+        const items = Object.values(allow);
+        for (let item of items) {
+          if (isString(item)) {
+            item = item.trim();
+            if (/(?:java|vb)script/.test(item)) {
+              schemeMap.set(item, false);
+            } else if (item) {
+              schemeMap.set(item, true);
+            }
+          }
+        }
+      }
+      if (Array.isArray(deny) && deny.length) {
+        const items = Object.values(deny);
+        for (let item of items) {
+          if (isString(item)) {
+            item = item.trim();
+            if (item) {
+              schemeMap.set(item, false);
+            }
+          }
+        }
+      }
+      let bool;
+      for (const [key, value] of schemeMap.entries()) {
+        bool = value || (scheme !== key && schemeParts.every(s => s !== key));
+        if (!bool) {
+          break;
+        }
+      }
+      if (bool) {
+        let urlToSanitize = href;
+        if (schemeParts.includes('data') && (parseData ?? true)) {
+          const [header, data] = pathname.split(',');
+          const mediaType = header.split(';');
+          const isBase64 = mediaType.pop() === 'base64';
+          if (isBase64) {
+            const parsedData = parseBase64(data);
+            if (parsedData !== data) {
+              urlToSanitize = `${scheme}:${mediaType.join(';')},${parsedData}`;
+            }
+          }
+        }
+        const [amp, lt, gt, quot, apos] =
+          ['&', '<', '>', '"', "'"].map(getUrlEncodedString);
+        const regChars = /[<>"']/g;
+        const regAmp = new RegExp(amp, 'g');
+        const regEncodedChars =
+          new RegExp(`(${lt}|${gt}|${quot}|${apos})`, 'g');
+        sanitizedUrl = urlToSanitize.replace(regChars, getUrlEncodedString)
+          .replace(regAmp, escapeUrlEncodedHtmlChars)
+          .replace(regEncodedChars, escapeUrlEncodedHtmlChars);
+      }
+    }
+    return sanitizedUrl || null;
+  };
 };
 
-const uriSchemes = new URISchemes();
+const urlSanitizer = new URLSanitizer();
 
+/* alias */
 /**
  * is URI
  *
  * @param {string} uri - URI input
  * @returns {boolean} - result
  */
-export const isUri = uri => {
-  let res;
-  if (isString(uri)) {
-    try {
-      const { protocol } = new URL(uri);
-      const scheme = protocol.replace(/:$/, '');
-      const schemeParts = scheme.split('+');
-      res = /^(?:ext|web)\+[a-z]+$/.test(scheme) ||
-            schemeParts.every(s => uriSchemes.has(s));
-    } catch (e) {
-      res = false;
-    }
-  }
-  return !!res;
-};
-
-/**
- * get URL encoded string
- *
- * @param {string} str - string
- * @returns {string} - URL encoded string
- */
-export const getUrlEncodedString = str => {
-  if (!isString(str)) {
-    throw new TypeError(`Expected String but got ${getType(str)}.`);
-  }
-  const chars = [];
-  for (const ch of str) {
-    chars.push(`%${ch.charCodeAt(0).toString(HEX).toUpperCase()}`);
-  }
-  return chars.join('');
-};
-
-/**
- * escape URL encoded HTML special chars
- *
- * @param {string} ch - URL encoded (percent encoded) char
- * @returns {string} - escaped URL encoded HTML special char / URL encoded char
- */
-export const escapeUrlEncodedHtmlChars = ch => {
-  if (isString(ch)) {
-    if (/^%[\dA-F]{2}$/i.test(ch)) {
-      ch = ch.toUpperCase();
-    } else {
-      throw new Error(`${ch} is not a URL encoded character.`);
-    }
-  } else {
-    throw new TypeError(`Expected String but got ${getType(ch)}.`);
-  }
-  const [amp, num, lt, gt, quot, apos] =
-    ['&', '#', '<', '>', '"', "'"].map(getUrlEncodedString);
-  let escapedChar;
-  if (ch === amp) {
-    escapedChar = `${amp}amp;`;
-  } else if (ch === lt) {
-    escapedChar = `${amp}lt;`;
-  } else if (ch === gt) {
-    escapedChar = `${amp}gt;`;
-  } else if (ch === quot) {
-    escapedChar = `${amp}quot;`;
-  } else if (ch === apos) {
-    escapedChar = `${amp}${num}39;`;
-  } else {
-    escapedChar = ch;
-  }
-  return escapedChar;
-};
-
-/**
- * parse base64
- *
- * @see {@link https://github.com/file/file/blob/master/src/encoding.c}
- * @param {string} data - base64 data
- * @returns {string} - parsed data / base64 data
- */
-export const parseBase64 = data => {
-  if (!isString(data)) {
-    throw new TypeError(`Expected String but got ${getType(data)}.`);
-  }
-  const bin = atob(data);
-  const uint8arr = Uint8Array.from([...bin].map(c => c.charCodeAt(0)));
-  const textChars = new Set([0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x1b]);
-  for (let i = 0x20; i < 0x7f; i++) {
-    textChars.add(i);
-  }
-  for (let i = 0x80; i <= 0xff; i++) {
-    textChars.add(i);
-  }
-  let parsedData;
-  if (uint8arr.every(c => textChars.has(c))) {
-    parsedData = bin;
-  } else {
-    parsedData = data;
-  }
-  return parsedData;
-};
+export const isUri = uri => urlSanitizer.isURI(uri);
 
 /**
  * sanitize URL
- * NOTE: `data` and/or `file` schemes must be explicitly allowed
- *       `javascript` and/or `vbscript` schemes can not be registered
  *
  * @param {string} url - URL input
  * @param {object} opt - options
- * @param {Array.<string>} [opt.allow] - array of allowed schemes
- * @param {Array.<string>} [opt.deny] - array of denied schemes
- * @param {boolean} [opt.parseData] - parse data URL, `true` if omitted
  * @returns {?string} - sanitized URL
  */
-export const sanitizeUrl = (url, opt = {
+export const sanitizeUrl = (url, opt) => urlSanitizer.sanitize(url, opt ?? {
   allow: [],
   deny: [],
   parseData: true
-}) => {
-  let sanitizedUrl;
-  if (isUri(url)) {
-    const { allow, deny, parseData } = opt ?? {};
-    const { href, pathname, protocol } = new URL(url);
-    const scheme = protocol.replace(/:$/, '');
-    const schemeParts = scheme.split('+');
-    const schemeMap = new Map([
-      ['data', false],
-      ['file', false]
-    ]);
-    if (Array.isArray(allow) && allow.length) {
-      const items = Object.values(allow);
-      for (let item of items) {
-        if (isString(item)) {
-          item = item.trim();
-          if (/(?:java|vb)script/.test(item)) {
-            schemeMap.set(item, false);
-          } else if (item) {
-            schemeMap.set(item, true);
-          }
-        }
-      }
-    }
-    if (Array.isArray(deny) && deny.length) {
-      const items = Object.values(deny);
-      for (let item of items) {
-        if (isString(item)) {
-          item = item.trim();
-          if (item) {
-            schemeMap.set(item, false);
-          }
-        }
-      }
-    }
-    let bool;
-    for (const [key, value] of schemeMap.entries()) {
-      bool = value || (scheme !== key && schemeParts.every(s => s !== key));
-      if (!bool) {
-        break;
-      }
-    }
-    if (bool) {
-      let toBeSanitizedUrl = href;
-      if (schemeParts.includes('data') && (parseData ?? true)) {
-        const [header, data] = pathname.split(',');
-        const mediaType = header.split(';');
-        const isBase64 = mediaType.pop() === 'base64';
-        if (isBase64) {
-          const parsedData = parseBase64(data);
-          if (parsedData !== data) {
-            toBeSanitizedUrl = `${scheme}:${mediaType.join(';')},${parsedData}`;
-          }
-        }
-      }
-      const [amp, lt, gt, quot, apos] =
-        ['&', '<', '>', '"', "'"].map(getUrlEncodedString);
-      const regChars = /[<>"']/g;
-      const regAmp = new RegExp(amp, 'g');
-      const regEncodedChars = new RegExp(`(${lt}|${gt}|${quot}|${apos})`, 'g');
-      sanitizedUrl = toBeSanitizedUrl.replace(regChars, getUrlEncodedString)
-        .replace(regAmp, escapeUrlEncodedHtmlChars)
-        .replace(regEncodedChars, escapeUrlEncodedHtmlChars);
-    }
-  }
-  return sanitizedUrl || null;
-};
+});
 
-/* alias exports */
 export {
-  uriSchemes as default,
+  urlSanitizer as default,
   isUri as isURI,
   sanitizeUrl as sanitizeURL
 };
