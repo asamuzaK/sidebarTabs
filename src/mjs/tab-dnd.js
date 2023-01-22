@@ -12,7 +12,7 @@ import {
 } from './browser-tabs.js';
 import { requestSaveSession } from './session.js';
 import { restoreTabContainers } from './tab-group.js';
-import { isURI, sanitizeURL } from './uri-util.js';
+import { isURISync, sanitizeURLSync } from '../lib/url/url-sanitizer.min.js';
 import {
   activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
@@ -371,7 +371,7 @@ export const openUriList = async (dropTarget, data = []) => {
           !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
           !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
         const [value] = data;
-        const url = sanitizeURL(value);
+        const url = sanitizeURLSync(value);
         if (url) {
           const dropTargetId = getSidebarTabId(dropTarget);
           func.push(updateTab(dropTargetId, {
@@ -392,7 +392,7 @@ export const openUriList = async (dropTarget, data = []) => {
           index = dropTargetIndex + 1;
         }
         for (const value of data) {
-          const url = sanitizeURL(value);
+          const url = sanitizeURLSync(value);
           if (url) {
             const opt = {
               url,
@@ -410,7 +410,7 @@ export const openUriList = async (dropTarget, data = []) => {
     } else if (isMain) {
       const opts = [];
       for (const value of data) {
-        const url = sanitizeURL(value);
+        const url = sanitizeURLSync(value);
         if (url) {
           const opt = {
             url
@@ -523,7 +523,7 @@ export const handleDrop = evt => {
           evt.stopPropagation();
         // dropped query string
         } else if (isString(item) && dropEffect === 'move') {
-          if (isURI(item)) {
+          if (isURISync(item)) {
             func = openUriList(dropTarget, [item]).catch(throwErr);
           } else {
             func = searchQuery(dropTarget, item).catch(throwErr);
@@ -543,7 +543,7 @@ export const handleDrop = evt => {
       evt.stopPropagation();
     // dropped query string
     } else if (data) {
-      if (isURI(data)) {
+      if (isURISync(data)) {
         func = openUriList(currentTarget, [data]).catch(throwErr);
       } else {
         func = searchQuery(currentTarget, data).catch(throwErr);

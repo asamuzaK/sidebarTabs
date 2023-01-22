@@ -10,14 +10,11 @@ import sinon from 'sinon';
 /* test */
 import {
   commander, extractLibraries, extractManifests, includeLibraries,
-  parseCommand, saveLibraryPackage, saveThemeManifest, saveUriSchemes,
-  updateManifests
+  parseCommand, saveLibraryPackage, saveThemeManifest, updateManifests
 } from '../modules/commander.js';
 
-const BASE_URL_IANA = 'https://www.iana.org';
 const BASE_URL_MOZ = 'https://hg.mozilla.org';
 const DIR_CWD = process.cwd();
-const DIR_IANA = '/assignments/uri-schemes/';
 const DIR_MOZ = '/mozilla-central/raw-file/tip/browser/themes/addons/';
 const PATH_LIB = './src/lib';
 const PATH_MODULE = './node_modules';
@@ -311,76 +308,6 @@ describe('update manifests', () => {
   });
 });
 
-describe('save URI schemes file', () => {
-  const csvText = [
-    'URI Scheme,Reference,Status',
-    'foo,,Historical',
-    'bar(OBSOLETE),,Permanent',
-    'baz,,Permanent',
-    'qux,,Provisional',
-    'quux,"foo, ""bar"", baz",Provisional'
-  ].join('\n');
-  const globalDispatcher = getGlobalDispatcher();
-  const mockAgent = new MockAgent();
-  beforeEach(() => {
-    setGlobalDispatcher(mockAgent);
-    mockAgent.disableNetConnect();
-  });
-  afterEach(() => {
-    mockAgent.enableNetConnect();
-    setGlobalDispatcher(globalDispatcher);
-  });
-
-  it('should throw', async () => {
-    await saveUriSchemes().catch(e => {
-      assert.instanceOf(e, TypeError, 'error');
-      assert.strictEqual(e.message, 'Expected String but got Undefined.');
-    });
-  });
-
-  it('should get result', async () => {
-    const dir = 'iana';
-    const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubInfo = sinon.stub(console, 'info');
-    const i = stubWrite.callCount;
-    const j = stubInfo.callCount;
-    const libPath = path.resolve(process.cwd(), 'src', 'lib');
-    const filePath = path.resolve(libPath, dir, 'uri-schemes.json');
-    const url = new URL(`${BASE_URL_IANA}${DIR_IANA}uri-schemes-1.csv`);
-    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
-      .reply(200, csvText);
-    const res = await saveUriSchemes(dir);
-    const { callCount: writeCallCount } = stubWrite;
-    const { callCount: infoCallCount } = stubInfo;
-    stubInfo.restore();
-    stubWrite.restore();
-    assert.strictEqual(writeCallCount, i + 1, 'write');
-    assert.strictEqual(infoCallCount, j, 'info');
-    assert.strictEqual(res, filePath, 'result');
-  });
-
-  it('should get result', async () => {
-    const dir = 'iana';
-    const stubWrite = sinon.stub(fs.promises, 'writeFile');
-    const stubInfo = sinon.stub(console, 'info');
-    const i = stubWrite.callCount;
-    const j = stubInfo.callCount;
-    const libPath = path.resolve(process.cwd(), 'src', 'lib');
-    const filePath = path.resolve(libPath, dir, 'uri-schemes.json');
-    const url = new URL(`${BASE_URL_IANA}${DIR_IANA}uri-schemes-1.csv`);
-    mockAgent.get(url.origin).intercept({ path: url.pathname, method: 'GET' })
-      .reply(200, csvText);
-    const res = await saveUriSchemes(dir, true);
-    const { callCount: writeCallCount } = stubWrite;
-    const { callCount: infoCallCount } = stubInfo;
-    stubInfo.restore();
-    stubWrite.restore();
-    assert.strictEqual(writeCallCount, i + 1, 'write');
-    assert.strictEqual(infoCallCount, j + 1, 'info');
-    assert.strictEqual(res, filePath, 'result');
-  });
-});
-
 describe('save library package info', () => {
   it('should throw', async () => {
     await saveLibraryPackage().catch(e => {
@@ -573,53 +500,6 @@ describe('extract libraries', () => {
     const i = stubTrace.callCount;
     const j = stubWrite.callCount;
     await extractLibraries();
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        reason: new Error('error'),
-        status: 'rejected'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    const opt = {
-      dir: 'iana'
-    };
-    await extractLibraries(opt);
-    const { callCount: traceCallCount } = stubTrace;
-    const { callCount: writeCallCount } = stubWrite;
-    stubAll.restore();
-    stubTrace.restore();
-    stubWrite.restore();
-    assert.strictEqual(traceCallCount, i + 1, 'trace');
-    assert.strictEqual(writeCallCount, j, 'write');
-  });
-
-  it('should not call function', async () => {
-    const stubWrite = sinon.stub(fsPromise, 'writeFile');
-    const stubAll = sinon.stub(Promise, 'allSettled').resolves([
-      {
-        status: 'resolved'
-      }
-    ]);
-    const stubTrace = sinon.stub(console, 'trace');
-    const i = stubTrace.callCount;
-    const j = stubWrite.callCount;
-    const opt = {
-      dir: 'iana'
-    };
-    await extractLibraries(opt);
     const { callCount: traceCallCount } = stubTrace;
     const { callCount: writeCallCount } = stubWrite;
     stubAll.restore();

@@ -15,7 +15,7 @@
   "scripts": {
     "include": "npm-run-all -s include-*",
     "include-browser": "copyfiles --up=3 --verbose node_modules/webext-schema/modules/browser.js src/mjs",
-    "include-iana": "node index include --dir=iana -i",
+    "include-url": "copyfiles -f --verbose node_modules/url-sanitizer/LICENSE node_modules/url-sanitizer/dist/url-sanitizer.min.js node_modules/url-sanitizer/dist/url-sanitizer.min.js.map src/lib/url && node index include --dir=url -i",
     "include-tldts": "copyfiles -f --verbose node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts && node index include --dir=tldts -i",
     "lint": "npm-run-all -s lint-*",
     "lint-addons-linter": "addons-linter src",
@@ -39,6 +39,7 @@
     "csvtojson": "^2.0.10",
     "decamelize": "^6.0.0",
     "tldts-experimental": "^5.7.104",
+    "url-sanitizer": "^0.2.2",
     "webext-schema": "^5.1.0"
   },
   "devDependencies": {

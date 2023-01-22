@@ -1,0 +1,27 @@
+{
+  "name": "url-sanitizer",
+  "description": "Sanitize URL",
+  "author": "asamuzaK",
+  "license": "MIT",
+  "homepage": "https://github.com/asamuzaK/urlSanitizer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asamuzaK/urlSanitizer.git"
+  },
+  "type": "module",
+  "version": "0.2.2",
+  "origins": [
+    {
+      "file": "LICENSE",
+      "url": "https://unpkg.com/url-sanitizer@0.2.2/LICENSE"
+    },
+    {
+      "file": "url-sanitizer.min.js",
+      "url": "https://unpkg.com/url-sanitizer@0.2.2/dist/url-sanitizer.min.js"
+    },
+    {
+      "file": "url-sanitizer.min.js.map",
+      "url": "https://unpkg.com/url-sanitizer@0.2.2/dist/url-sanitizer.min.js.map"
+    }
+  ]
+}
