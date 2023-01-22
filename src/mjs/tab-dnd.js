@@ -12,10 +12,10 @@ import {
 } from './browser-tabs.js';
 import { requestSaveSession } from './session.js';
 import { restoreTabContainers } from './tab-group.js';
-import { isURISync, sanitizeURLSync } from '../lib/url/url-sanitizer.min.js';
 import {
   activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
+import { isURISync, sanitizeURLSync } from '../lib/url/url-sanitizer.min.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
