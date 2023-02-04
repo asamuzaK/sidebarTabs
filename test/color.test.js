@@ -3825,6 +3825,33 @@ describe('color', () => {
     });
 
     it('should throw', async () => {
+      await func('color(srgb)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(srgb)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('color(srgb 1)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(srgb 1)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
+      await func('color(srgb 1 1)').catch(e => {
+        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e.message,
+          'Invalid property value: color(srgb 1 1)',
+          'error message');
+      });
+    });
+
+    it('should throw', async () => {
       await func('color(srgb foo bar baz)').catch(e => {
         assert.instanceOf(e, Error, 'error');
         assert.strictEqual(e.message,
