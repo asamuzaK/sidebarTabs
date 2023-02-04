@@ -37,8 +37,8 @@
     "camelize": "^1.0.1",
     "commander": "^10.0.0",
     "decamelize": "^6.0.0",
-    "tldts-experimental": "^5.7.104",
-    "url-sanitizer": "^0.2.2",
+    "tldts-experimental": "^5.7.105",
+    "url-sanitizer": "^0.7.4",
     "webext-schema": "^5.1.0"
   },
   "devDependencies": {
@@ -46,22 +46,22 @@
     "c8": "^7.12.0",
     "chai": "^4.3.7",
     "copyfiles": "^2.4.1",
-    "eslint": "^8.32.0",
+    "eslint": "^8.33.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^39.6.7",
+    "eslint-plugin-jsdoc": "^39.8.0",
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-unicorn": "^45.0.2",
     "html-validate": "^7.13.1",
-    "jsdom": "^21.0.0",
+    "jsdom": "^21.1.0",
     "mocha": "^10.2.0",
     "npm-run-all": "^4.1.5",
     "sinon": "^15.0.1",
     "stylelint": "^14.16.1",
     "stylelint-config-standard": "^29.0.0",
-    "undici": "^5.15.1"
+    "undici": "^5.16.0"
   },
   "version": "10.2.0"
 }

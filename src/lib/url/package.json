@@ -1,6 +1,6 @@
 {
   "name": "url-sanitizer",
-  "description": "Sanitize URL",
+  "description": "URL sanitizer for Node.js (>=18), browsers and web sites.",
   "author": "asamuzaK",
   "license": "MIT",
   "homepage": "https://github.com/asamuzaK/urlSanitizer",
@@ -9,19 +9,19 @@
     "url": "https://github.com/asamuzaK/urlSanitizer.git"
   },
   "type": "module",
-  "version": "0.2.2",
+  "version": "0.7.4",
   "origins": [
     {
       "file": "LICENSE",
-      "url": "https://unpkg.com/url-sanitizer@0.2.2/LICENSE"
+      "url": "https://unpkg.com/url-sanitizer@0.7.4/LICENSE"
     },
     {
       "file": "url-sanitizer.min.js",
-      "url": "https://unpkg.com/url-sanitizer@0.2.2/dist/url-sanitizer.min.js"
+      "url": "https://unpkg.com/url-sanitizer@0.7.4/dist/url-sanitizer.min.js"
     },
     {
       "file": "url-sanitizer.min.js.map",
-      "url": "https://unpkg.com/url-sanitizer@0.2.2/dist/url-sanitizer.min.js.map"
+      "url": "https://unpkg.com/url-sanitizer@0.7.4/dist/url-sanitizer.min.js.map"
     }
   ]
 }
