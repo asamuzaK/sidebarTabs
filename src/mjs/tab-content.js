@@ -4,11 +4,12 @@
 
 /* shared */
 import {
-  getType, isObjectNotEmpty, isString, logErr, setElementDataset, throwErr
+  getType, isObjectNotEmpty, isString, setElementDataset, throwErr
 } from './common.js';
 import { getTab, updateTab } from './browser.js';
 import { closeTabs, muteTabs } from './browser-tabs.js';
 import { getSidebarTab, getSidebarTabId } from './util.js';
+import { sanitizeURL } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   CLASS_MULTI, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT,
   CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,
@@ -96,10 +97,13 @@ export const addTabIconErrorListener = async elm => {
 export const setTabIcon = async (elm, info) => {
   if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
       isObjectNotEmpty(info)) {
-    const { favIconUrl, status, title, url } = info;
+    const { favIconUrl, status, title, url: infoUrl } = info;
     if (status === 'loading') {
-      try {
-        if (isString(title) && isString(url)) {
+      if (isString(infoUrl)) {
+        const url = await sanitizeURL(infoUrl, {
+          allow: ['blob', 'data', 'file']
+        });
+        if (url && isString(title)) {
           const { href } = new URL(url);
           const connecting =
             href.replace(/\/$/, '').endsWith(title.replace(/\/$/, ''));
@@ -111,11 +115,10 @@ export const setTabIcon = async (elm, info) => {
             elm.dataset.connecting = '';
           }
         } else {
-          elm.dataset.connecting = url;
+          elm.dataset.connecting = '';
         }
-      } catch (e) {
-        elm.dataset.connecting = url;
-        logErr(e);
+      } else {
+        elm.dataset.connecting = '';
       }
       elm.src = URL_LOADING_THROBBER;
     } else {

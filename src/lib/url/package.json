@@ -9,19 +9,22 @@
     "url": "https://github.com/asamuzaK/urlSanitizer.git"
   },
   "type": "module",
-  "version": "0.7.4",
+  "version": "0.8.10",
   "origins": [
     {
       "file": "LICENSE",
-      "url": "https://unpkg.com/url-sanitizer@0.7.4/LICENSE"
+      "raw": "https://raw.githubusercontent.com/asamuzaK/urlSanitizer/v0.8.10/LICENSE",
+      "cdn": "https://unpkg.com/url-sanitizer@0.8.10/LICENSE"
     },
     {
-      "file": "url-sanitizer.min.js",
-      "url": "https://unpkg.com/url-sanitizer@0.7.4/dist/url-sanitizer.min.js"
+      "file": "url-sanitizer-wo-dompurify.min.js",
+      "raw": "https://raw.githubusercontent.com/asamuzaK/urlSanitizer/v0.8.10/dist/url-sanitizer-wo-dompurify.min.js",
+      "cdn": "https://unpkg.com/url-sanitizer@0.8.10/dist/url-sanitizer-wo-dompurify.min.js"
     },
     {
-      "file": "url-sanitizer.min.js.map",
-      "url": "https://unpkg.com/url-sanitizer@0.7.4/dist/url-sanitizer.min.js.map"
+      "file": "url-sanitizer-wo-dompurify.min.js.map",
+      "raw": "https://raw.githubusercontent.com/asamuzaK/urlSanitizer/v0.8.10/dist/url-sanitizer-wo-dompurify.min.js.map",
+      "cdn": "https://unpkg.com/url-sanitizer@0.8.10/dist/url-sanitizer-wo-dompurify.min.js.map"
     }
   ]
 }

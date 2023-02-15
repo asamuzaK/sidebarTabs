@@ -15,7 +15,9 @@ import { restoreTabContainers } from './tab-group.js';
 import {
   activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
-import { isURISync, sanitizeURLSync } from '../lib/url/url-sanitizer.min.js';
+import {
+  isURISync, sanitizeURL, sanitizeURLSync
+} from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
@@ -371,7 +373,9 @@ export const openUriList = async (dropTarget, data = []) => {
           !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
           !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
         const [value] = data;
-        const url = sanitizeURLSync(value);
+        const url = await sanitizeURL(value, {
+          allow: ['blob', 'data', 'file']
+        });
         if (url) {
           const dropTargetId = getSidebarTabId(dropTarget);
           func.push(updateTab(dropTargetId, {
@@ -392,7 +396,9 @@ export const openUriList = async (dropTarget, data = []) => {
           index = dropTargetIndex + 1;
         }
         for (const value of data) {
-          const url = sanitizeURLSync(value);
+          const url = sanitizeURLSync(value, {
+            allow: ['data', 'file']
+          });
           if (url) {
             const opt = {
               url,
@@ -410,7 +416,9 @@ export const openUriList = async (dropTarget, data = []) => {
     } else if (isMain) {
       const opts = [];
       for (const value of data) {
-        const url = sanitizeURLSync(value);
+        const url = sanitizeURLSync(value, {
+          allow: ['data', 'file']
+        });
         if (url) {
           const opt = {
             url

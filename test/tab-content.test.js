@@ -314,7 +314,21 @@ describe('tab-content', () => {
     it('should set throbber icon', async () => {
       const elm = document.createElement('img');
       const body = document.querySelector('body');
-      const stub = sinon.stub(console, 'error');
+      elm.style.fill = 'red';
+      elm.style.stroke = 'blue';
+      body.appendChild(elm);
+      await func(elm, {
+        status: 'loading'
+      });
+      assert.strictEqual(elm.style.fill, 'red', 'fill');
+      assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
+      assert.strictEqual(elm.dataset.connecting, '', 'connecting');
+      assert.strictEqual(elm.src, URL_LOADING_THROBBER, 'src');
+    });
+
+    it('should set throbber icon', async () => {
+      const elm = document.createElement('img');
+      const body = document.querySelector('body');
       elm.style.fill = 'red';
       elm.style.stroke = 'blue';
       body.appendChild(elm);
@@ -322,19 +336,15 @@ describe('tab-content', () => {
         status: 'loading',
         url: 'foo/bar'
       });
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.isFalse(calledOnce, 'called');
       assert.strictEqual(elm.style.fill, 'red', 'fill');
       assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
-      assert.strictEqual(elm.dataset.connecting, 'foo/bar', 'connecting');
+      assert.strictEqual(elm.dataset.connecting, '', 'connecting');
       assert.strictEqual(elm.src, URL_LOADING_THROBBER, 'src');
     });
 
     it('should set throbber icon', async () => {
       const elm = document.createElement('img');
       const body = document.querySelector('body');
-      const stub = sinon.stub(console, 'error');
       elm.style.fill = 'red';
       elm.style.stroke = 'blue';
       body.appendChild(elm);
@@ -343,19 +353,15 @@ describe('tab-content', () => {
         url: 'foo/bar',
         title: 'baz'
       });
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.isTrue(calledOnce, 'called');
       assert.strictEqual(elm.style.fill, 'red', 'fill');
       assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
-      assert.strictEqual(elm.dataset.connecting, 'foo/bar', 'connecting');
+      assert.strictEqual(elm.dataset.connecting, '', 'connecting');
       assert.strictEqual(elm.src, URL_LOADING_THROBBER, 'src');
     });
 
     it('should set throbber icon', async () => {
       const elm = document.createElement('img');
       const body = document.querySelector('body');
-      const stub = sinon.stub(console, 'error');
       elm.style.fill = 'red';
       elm.style.stroke = 'blue';
       body.appendChild(elm);
@@ -364,12 +370,9 @@ describe('tab-content', () => {
         url: 'https://example.com',
         title: 'example.com/'
       });
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.isFalse(calledOnce, 'not called');
       assert.strictEqual(elm.style.fill, 'red', 'fill');
       assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
-      assert.strictEqual(elm.dataset.connecting, 'https://example.com',
+      assert.strictEqual(elm.dataset.connecting, 'https://example.com/',
         'connecting');
       assert.strictEqual(elm.src, URL_LOADING_THROBBER, 'src');
     });
@@ -377,22 +380,18 @@ describe('tab-content', () => {
     it('should set throbber icon', async () => {
       const elm = document.createElement('img');
       const body = document.querySelector('body');
-      const stub = sinon.stub(console, 'error');
       elm.style.fill = 'red';
       elm.style.stroke = 'blue';
-      elm.dataset.connecting = 'https://example.com';
+      elm.dataset.connecting = 'https://example.com/';
       body.appendChild(elm);
       await func(elm, {
         status: 'loading',
         url: 'https://example.com',
         title: 'example.com/'
       });
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.isFalse(calledOnce, 'not called');
       assert.strictEqual(elm.style.fill, 'red', 'fill');
       assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
-      assert.strictEqual(elm.dataset.connecting, 'https://example.com',
+      assert.strictEqual(elm.dataset.connecting, 'https://example.com/',
         'connecting');
       assert.strictEqual(elm.src, URL_LOADING_THROBBER, 'src');
     });
@@ -400,7 +399,6 @@ describe('tab-content', () => {
     it('should set throbber icon', async () => {
       const elm = document.createElement('img');
       const body = document.querySelector('body');
-      const stub = sinon.stub(console, 'error');
       elm.style.fill = 'red';
       elm.style.stroke = 'blue';
       elm.dataset.connecting = 'https://example.com';
@@ -410,9 +408,6 @@ describe('tab-content', () => {
         url: 'https://example.com',
         title: 'Example Domain'
       });
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.isFalse(calledOnce, 'not called');
       assert.strictEqual(elm.style.fill, 'blue', 'fill');
       assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
       assert.strictEqual(elm.dataset.connecting, '', 'connecting');
@@ -422,7 +417,6 @@ describe('tab-content', () => {
     it('should set throbber icon', async () => {
       const elm = document.createElement('img');
       const body = document.querySelector('body');
-      const stub = sinon.stub(console, 'error');
       elm.style.fill = 'blue';
       elm.style.stroke = 'blue';
       elm.dataset.connecting = '';
@@ -432,9 +426,6 @@ describe('tab-content', () => {
         url: 'https://example.com',
         title: 'Example Domain'
       });
-      const { calledOnce } = stub;
-      stub.restore();
-      assert.isFalse(calledOnce, 'not called');
       assert.strictEqual(elm.style.fill, 'blue', 'fill');
       assert.strictEqual(elm.style.stroke, 'blue', 'stroke');
       assert.strictEqual(elm.dataset.connecting, '', 'connecting');

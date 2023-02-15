@@ -1559,12 +1559,14 @@ describe('util', () => {
         'throw');
     });
 
-    it('should throw', () => {
-      assert.throws(() => func(''));
+    it('should get null', () => {
+      const res = func('');
+      assert.isNull(res, 'result');
     });
 
-    it('should throw', () => {
-      assert.throws(() => func('foo'));
+    it('should get null', () => {
+      const res = func('foo');
+      assert.isNull(res, 'result');
     });
 
     it('should get result', () => {
