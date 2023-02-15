@@ -7,6 +7,7 @@ import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getActiveTabId, getCloseTabsByDoubleClickValue, setStorage, updateTab
 } from './browser.js';
+import { sanitizeURLSync } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   CLASS_HEADING, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
@@ -390,24 +391,30 @@ export const createUrlMatchString = url => {
   if (!isString(url)) {
     throw new TypeError(`Expected String but got ${getType(url)}.`);
   }
-  const { hostname, protocol } = new URL(url);
-  const { domain } = parseTld(hostname);
-  const isHttp = /^https?:$/.test(protocol);
+  url = sanitizeURLSync(url.trim(), {
+    only: ['data', 'file', 'ftp', 'http', 'https', 'ws', 'wss'],
+    remove: true
+  });
   let str;
-  if (/^file:$/.test(protocol)) {
-    str = 'file:///*';
-  } else if (isHttp) {
-    if (domain) {
-      str = `*://*.${domain}/*`;
+  if (url) {
+    const { hostname, protocol } = new URL(url);
+    const { domain } = parseTld(hostname);
+    const isHttp = /^https?:$/.test(protocol);
+    if (/^file:$/.test(protocol)) {
+      str = 'file:///*';
+    } else if (isHttp) {
+      if (domain) {
+        str = `*://*.${domain}/*`;
+      } else {
+        str = `*://${hostname}/*`;
+      }
+    } else if (domain) {
+      str = `${protocol}//*.${domain}/*`;
     } else {
-      str = `*://${hostname}/*`;
+      str = `${protocol}//${hostname}/*`;
     }
-  } else if (domain) {
-    str = `${protocol}//*.${domain}/*`;
-  } else {
-    str = `${protocol}//${hostname}/*`;
   }
-  return str;
+  return str || null;
 };
 
 /**

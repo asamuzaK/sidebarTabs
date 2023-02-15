@@ -4,6 +4,7 @@
 
 import { JSDOM } from 'jsdom';
 import { Schema } from 'webext-schema';
+import domPurify from 'dompurify';
 import process from 'node:process';
 import sinon from 'sinon';
 
@@ -22,6 +23,7 @@ export const createJsdom = () => {
         matches: false
       });
       window.prompt = sinon.stub();
+      window.DOMPurify = domPurify;
     }
   };
   return new JSDOM(domstr, opt);

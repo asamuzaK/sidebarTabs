@@ -3393,6 +3393,30 @@ describe('tab-group', () => {
       const i = browser.tabs.query.withArgs(arg).callCount;
       const j = browser.tabs.move.callCount;
       browser.tabs.get.resolves({
+        url: 'web+https://www.example.com/foo'
+      });
+      browser.tabs.query.withArgs(arg).resolves([
+        {
+          id: 1,
+          url: 'https://www.example.com/foo'
+        }
+      ]);
+      const res = await func(1);
+      assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i,
+        'not called query');
+      assert.strictEqual(browser.tabs.move.callCount, j, 'not moved');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not group', async () => {
+      const arg = {
+        pinned: false,
+        url: '*://*.example.com/*',
+        windowId: browser.windows.WINDOW_ID_CURRENT
+      };
+      const i = browser.tabs.query.withArgs(arg).callCount;
+      const j = browser.tabs.move.callCount;
+      browser.tabs.get.resolves({
         url: 'https://www.example.com/foo'
       });
       browser.tabs.query.withArgs(arg).resolves([

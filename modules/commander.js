@@ -90,11 +90,13 @@ export const saveLibraryPackage = async (lib, info) => {
   }
   const [key, value] = lib;
   const {
-    name: moduleName,
-    origin: originUrl,
+    files,
     repository,
     type,
-    files
+    vPrefix,
+    cdn: cdnUrl,
+    name: moduleName,
+    raw: rawUrl
   } = value;
   const libPath = path.resolve(DIR_CWD, PATH_LIB, key);
   const modulePath = path.resolve(DIR_CWD, PATH_MODULE, moduleName);
@@ -117,10 +119,13 @@ export const saveLibraryPackage = async (lib, info) => {
     if (!isFile(libFile)) {
       throw new Error(`${libFile} is not a file.`);
     }
-    origins.push({
-      file,
-      url: `${originUrl}@${version}/${itemPath}`
-    });
+    const fileMap = new Map();
+    fileMap.set('file', file);
+    if (rawUrl) {
+      fileMap.set('raw', `${rawUrl}${vPrefix || ''}${version}/${itemPath}`);
+    }
+    fileMap.set('cdn', `${cdnUrl}@${version}/${itemPath}`);
+    origins.push(Object.fromEntries(fileMap));
   }
   const content = JSON.stringify({
     name,
@@ -150,32 +155,32 @@ export const saveLibraryPackage = async (lib, info) => {
 export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const libraries = {
-    url: {
-      name: 'url-sanitizer',
-      origin: 'https://unpkg.com/url-sanitizer',
+    purify: {
+      name: 'dompurify',
+      raw: 'https://raw.githubusercontent.com/cure53/DOMPurify/',
+      cdn: 'https://unpkg.com/dompurify',
       repository: {
         type: 'git',
-        url: 'https://github.com/asamuzaK/urlSanitizer.git'
+        url: 'git://github.com/cure53/DOMPurify.git'
       },
-      type: 'module',
       files: [
         {
           file: 'LICENSE',
           path: 'LICENSE'
         },
         {
-          file: 'url-sanitizer.min.js',
-          path: 'dist/url-sanitizer.min.js'
+          file: 'purify.min.js',
+          path: 'dist/purify.min.js'
         },
         {
-          file: 'url-sanitizer.min.js.map',
-          path: 'dist/url-sanitizer.min.js.map'
+          file: 'purify.min.js.map',
+          path: 'dist/purify.min.js.map'
         }
       ]
     },
     tldts: {
       name: 'tldts-experimental',
-      origin: 'https://unpkg.com/tldts-experimental',
+      cdn: 'https://unpkg.com/tldts-experimental',
       repository: {
         type: 'git',
         url: 'git+ssh://git@github.com/remusao/tldts.git'
@@ -193,6 +198,31 @@ export const extractLibraries = async (cmdOpts = {}) => {
         {
           file: 'index.esm.min.js.map',
           path: 'dist/index.esm.min.js.map'
+        }
+      ]
+    },
+    url: {
+      name: 'url-sanitizer',
+      raw: 'https://raw.githubusercontent.com/asamuzaK/urlSanitizer/',
+      vPrefix: 'v',
+      cdn: 'https://unpkg.com/url-sanitizer',
+      repository: {
+        type: 'git',
+        url: 'https://github.com/asamuzaK/urlSanitizer.git'
+      },
+      type: 'module',
+      files: [
+        {
+          file: 'LICENSE',
+          path: 'LICENSE'
+        },
+        {
+          file: 'url-sanitizer-wo-dompurify.min.js',
+          path: 'dist/url-sanitizer-wo-dompurify.min.js'
+        },
+        {
+          file: 'url-sanitizer-wo-dompurify.min.js.map',
+          path: 'dist/url-sanitizer-wo-dompurify.min.js.map'
         }
       ]
     }
