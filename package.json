@@ -2,6 +2,7 @@
   "name": "sidebartabs",
   "description": "Emulate tabs in sidebar.",
   "author": "asamuzaK",
+  "license": "MPL-2.0",
   "homepage": "https://github.com/asamuzaK/sidebarTabs",
   "bugs": {
     "url": "https://github.com/asamuzaK/sidebarTabs/issues"
@@ -10,13 +11,44 @@
     "type": "git",
     "url": "git+https://github.com/asamuzaK/sidebarTabs.git"
   },
-  "license": "MPL-2.0",
   "type": "module",
+  "dependencies": {
+    "camelize": "^1.0.1",
+    "commander": "^10.0.0",
+    "decamelize": "^6.0.0",
+    "dompurify": "^3.0.0",
+    "tldts-experimental": "^5.7.108",
+    "url-sanitizer": "^0.8.10",
+    "webext-schema": "^5.1.3"
+  },
+  "devDependencies": {
+    "addons-linter": "^5.28.0",
+    "c8": "^7.12.0",
+    "chai": "^4.3.7",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.34.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^40.0.0",
+    "eslint-plugin-no-unsanitized": "^4.0.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-unicorn": "^45.0.2",
+    "html-validate": "^7.13.2",
+    "jsdom": "^21.1.0",
+    "mocha": "^10.2.0",
+    "npm-run-all": "^4.1.5",
+    "sinon": "^15.0.1",
+    "stylelint": "^15.1.0",
+    "stylelint-config-standard": "^30.0.1",
+    "undici": "^5.19.1"
+  },
   "scripts": {
     "include": "npm-run-all -s include-*",
     "include-browser": "copyfiles --up=3 --verbose node_modules/webext-schema/modules/browser.js src/mjs",
-    "include-url": "copyfiles -f --verbose node_modules/url-sanitizer/LICENSE node_modules/url-sanitizer/dist/url-sanitizer.min.js node_modules/url-sanitizer/dist/url-sanitizer.min.js.map src/lib/url && node index include --dir=url -i",
+    "include-purify": "copyfiles -f --verbose node_modules/dompurify/LICENSE node_modules/dompurify/dist/purify.min.js node_modules/dompurify/dist/purify.min.js.map src/lib/purify && node index include --dir=purify -i",
     "include-tldts": "copyfiles -f --verbose node_modules/tldts-experimental/LICENSE node_modules/tldts-experimental/dist/index.esm.min.js node_modules/tldts-experimental/dist/index.esm.min.js.map src/lib/tldts && node index include --dir=tldts -i",
+    "include-url": "copyfiles -f --verbose node_modules/url-sanitizer/LICENSE node_modules/url-sanitizer/dist/url-sanitizer-wo-dompurify.min.js node_modules/url-sanitizer/dist/url-sanitizer-wo-dompurify.min.js.map src/lib/url && node index include --dir=url -i",
     "lint": "npm-run-all -s lint-*",
     "lint-addons-linter": "addons-linter src",
     "lint-eslint": "eslint --fix .",
@@ -32,36 +64,6 @@
     "update-alpen": "node index update --dir=alpenglow -i",
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
-  },
-  "dependencies": {
-    "camelize": "^1.0.1",
-    "commander": "^10.0.0",
-    "decamelize": "^6.0.0",
-    "tldts-experimental": "^5.7.105",
-    "url-sanitizer": "^0.7.4",
-    "webext-schema": "^5.1.0"
-  },
-  "devDependencies": {
-    "addons-linter": "^5.27.0",
-    "c8": "^7.12.0",
-    "chai": "^4.3.7",
-    "copyfiles": "^2.4.1",
-    "eslint": "^8.33.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^39.8.0",
-    "eslint-plugin-no-unsanitized": "^4.0.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-unicorn": "^45.0.2",
-    "html-validate": "^7.13.1",
-    "jsdom": "^21.1.0",
-    "mocha": "^10.2.0",
-    "npm-run-all": "^4.1.5",
-    "sinon": "^15.0.1",
-    "stylelint": "^14.16.1",
-    "stylelint-config-standard": "^29.0.0",
-    "undici": "^5.16.0"
   },
   "version": "10.2.0"
 }
