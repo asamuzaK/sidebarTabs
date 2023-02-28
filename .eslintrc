@@ -8,6 +8,7 @@
   "extends": [
     "plugin:jsdoc/recommended",
     "plugin:no-unsanitized/DOM",
+    "plugin:regexp/recommended",
     "standard"
   ],
   "parserOptions": {
@@ -15,6 +16,7 @@
     "sourceType": "module"
   },
   "plugins": [
+    "eslint-plugin-regexp",
     "unicorn"
   ],
   "reportUnusedDisableDirectives": true,
