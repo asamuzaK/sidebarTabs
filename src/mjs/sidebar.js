@@ -4,10 +4,6 @@
 
 /* shared */
 import { throwErr } from './common.js';
-import { requestSaveSession } from './session.js';
-import {
-  expandActivatedCollapsedTab, restoreTabContainers
-} from './tab-group.js';
 import {
   getLastClosedTab, handleActivatedTab, handleAttachedTab, handleClickedMenu,
   handleContextmenuEvt, handleCreatedTab, handleDetachedTab, handleEvt,
@@ -15,6 +11,10 @@ import {
   handleStorage, handleUpdatedTab, handleUpdatedTheme, restoreHighlightedTabs,
   setContextualIds, startup
 } from './main.js';
+import { requestSaveSession } from './session.js';
+import {
+  expandActivatedCollapsedTab, restoreTabContainers
+} from './tab-group.js';
 import { COLOR_SCHEME_DARK } from './constant.js';
 
 /* api */

@@ -1,13 +1,16 @@
 /**
  * main.test.js
  */
-/* eslint-disable camelcase, regexp/no-super-linear-backtracking */
+/* eslint-disable camelcase, import/order, regexp/no-super-linear-backtracking */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
-import sinon from 'sinon';
+
+/* test */
+import * as mjs from '../src/mjs/main.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_COLLAPSE_AUTO, CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL,
@@ -47,9 +50,6 @@ import {
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS, USER_CSS_USE, USER_CSS_ID
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/main.js';
 
 describe('main', () => {
   const globalKeys = [

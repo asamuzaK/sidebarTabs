@@ -2,11 +2,11 @@
  * setup.js
  */
 
+import process from 'node:process';
+import domPurify from 'dompurify';
+import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
 import { Schema } from 'webext-schema';
-import domPurify from 'dompurify';
-import process from 'node:process';
-import sinon from 'sinon';
 
 /**
  * create jsdom

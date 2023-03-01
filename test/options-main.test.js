@@ -1,13 +1,16 @@
 /**
  * options-main.test.js
  */
-/* eslint-disable regexp/no-super-linear-backtracking */
+/* eslint-disable import/order, regexp/no-super-linear-backtracking */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import sinon from 'sinon';
+
+/* test */
+import * as mjs from '../src/mjs/options-main.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, EXT_INIT,
   MENU_SHOW_MOUSEUP,
@@ -15,9 +18,6 @@ import {
   THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO,
   USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/options-main.js';
 
 describe('options-main', () => {
   const globalKeys = ['CSSStyleSheet'];

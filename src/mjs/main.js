@@ -3,30 +3,27 @@
  */
 
 /* shared */
-import {
-  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr
-} from './common.js';
+import menuItems from './menu-items.js';
+import { bookmarkTabs } from './bookmark.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
   getContextualId, getCurrentWindow, getHighlightedTab, getOs,
   getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
   restoreSession, setSessionWindowValue, setStorage, warmupTab
 } from './browser.js';
-import { addPort, ports } from './port.js';
-import { bookmarkTabs } from './bookmark.js';
-import { getSessionTabList, requestSaveSession } from './session.js';
-import { localizeHtml } from './localize.js';
-import {
-  activateTab, createSidebarTab, getSidebarTab, getSidebarTabContainer,
-  getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate,
-  isNewTab, scrollTabIntoView, storeCloseTabsByDoubleClickValue, switchTab
-} from './util.js';
 import {
   closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
   moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
   muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
 } from './browser-tabs.js';
+import {
+  getType, isObjectNotEmpty, isString, logErr, sleep, throwErr
+} from './common.js';
+import { localizeHtml } from './localize.js';
+import { overrideContextMenu, updateContextMenu } from './menu.js';
+import { addPort, ports } from './port.js';
+import { getSessionTabList, requestSaveSession } from './session.js';
 import {
   addHighlightToTabs, addTabAudioClickListener, addTabCloseClickListener,
   addTabIconErrorListener, removeHighlightFromTabs,
@@ -46,13 +43,16 @@ import {
   toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState,
   toggleTabGroupHeadingState, ungroupTabs
 } from './tab-group.js';
-import { overrideContextMenu, updateContextMenu } from './menu.js';
-import menuItems from './menu-items.js';
 import {
   applyCustomTheme, applyTheme, initCustomTheme, sendCurrentTheme,
   setActiveTabFontWeight, setNewTabSeparator, setScrollbarWidth,
   setSidebarTheme, setTabGroupColorBarWidth, setTabHeight, setUserCss
 } from './theme.js';
+import {
+  activateTab, createSidebarTab, getSidebarTab, getSidebarTabContainer,
+  getSidebarTabId, getSidebarTabIndex, getTabsInRange, getTemplate,
+  isNewTab, scrollTabIntoView, storeCloseTabsByDoubleClickValue, switchTab
+} from './util.js';
 import {
   ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON,

@@ -3,9 +3,9 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString, throwErr } from './common.js';
-import { getAllContextualIdentities } from './browser.js';
 import menuItems from './menu-items.js';
+import { getAllContextualIdentities } from './browser.js';
+import { getType, isObjectNotEmpty, isString, throwErr } from './common.js';
 import { NEW_TAB_OPEN_CONTAINER, TAB_REOPEN_CONTAINER } from './constant.js';
 
 /* api */

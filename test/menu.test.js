@@ -1,12 +1,13 @@
 /**
  * menu.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import sinon from 'sinon';
 
 /* test */
 import * as mjs from '../src/mjs/menu.js';

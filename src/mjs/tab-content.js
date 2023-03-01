@@ -3,13 +3,13 @@
  */
 
 /* shared */
+import { sanitizeURL } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
+import { getTab, updateTab } from './browser.js';
+import { closeTabs, muteTabs } from './browser-tabs.js';
 import {
   getType, isObjectNotEmpty, isString, setElementDataset, throwErr
 } from './common.js';
-import { getTab, updateTab } from './browser.js';
-import { closeTabs, muteTabs } from './browser-tabs.js';
 import { getSidebarTab, getSidebarTabId } from './util.js';
-import { sanitizeURL } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   CLASS_MULTI, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT,
   CLASS_TAB_ICON, CLASS_TAB_TITLE, HIGHLIGHTED, IDENTIFIED, TAB_CLOSE, TAB_MUTE,

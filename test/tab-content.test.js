@@ -1,15 +1,19 @@
 /**
  * tab-content.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
-import { assert } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom } from './mocha/setup.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import sinon from 'sinon';
+import { assert } from 'chai';
+import { afterEach, beforeEach, describe, it } from 'mocha';
+import { browser, createJsdom } from './mocha/setup.js';
+
+/* test */
+import * as mjs from '../src/mjs/tab-content.js';
 import {
   CLASS_MULTI, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CONTENT,
   CLASS_TAB_ICON, CLASS_TAB_TITLE,
@@ -18,9 +22,6 @@ import {
   URL_AUDIO_MUTED, URL_AUDIO_PLAYING, URL_FAVICON_DEFAULT, URL_LOADING_THROBBER,
   URL_SPACER
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/tab-content.js';
 
 describe('tab-content', () => {
   const globalKeys = ['Node'];

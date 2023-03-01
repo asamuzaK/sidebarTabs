@@ -3,13 +3,13 @@
  */
 
 /* shared */
+import { bookmarkTabs } from './bookmark.js';
+import { getStorage, getTab, queryTabs } from './browser.js';
+import { closeTabs, moveTabsInOrder } from './browser-tabs.js';
 import {
   addElementContentEditable, getType, isObjectNotEmpty,
   removeElementContentEditable, throwErr
 } from './common.js';
-import { getStorage, getTab, queryTabs } from './browser.js';
-import { closeTabs, moveTabsInOrder } from './browser-tabs.js';
-import { bookmarkTabs } from './bookmark.js';
 import { requestSaveSession } from './session.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,

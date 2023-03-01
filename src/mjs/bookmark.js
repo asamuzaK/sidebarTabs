@@ -3,8 +3,8 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString, logErr } from './common.js';
 import { createBookmark, getBookmarkTreeNode, getStorage } from './browser.js';
+import { getType, isObjectNotEmpty, isString, logErr } from './common.js';
 import { BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION } from './constant.js';
 
 /* api */

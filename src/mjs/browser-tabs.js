@@ -3,12 +3,12 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   createNewWindow, createTab, duplicateTab, getActiveTab,
   getNewTabPositionValue, getTab, highlightTab, moveTab, reloadTab, removeTab,
   updateTab
 } from './browser.js';
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIds, getSidebarTabIndex,
   getTemplate

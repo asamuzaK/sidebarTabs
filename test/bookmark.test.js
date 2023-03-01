@@ -1,18 +1,19 @@
 /**
  * bookmark.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
-import {
-  BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION, HIGHLIGHTED, TAB
-} from '../src/mjs/constant.js';
-import sinon from 'sinon';
 
 /* test */
 import * as mjs from '../src/mjs/bookmark.js';
+import {
+  BOOKMARK_FOLDER_MSG, BOOKMARK_LOCATION, HIGHLIGHTED, TAB
+} from '../src/mjs/constant.js';
 
 describe('bookmark', () => {
   const globalKeys = ['Node'];

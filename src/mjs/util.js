@@ -3,17 +3,17 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString } from './common.js';
+import { parse as parseTld } from '../lib/tldts/index.esm.min.js';
+import { sanitizeURLSync } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   getActiveTabId, getCloseTabsByDoubleClickValue, setStorage, updateTab
 } from './browser.js';
-import { sanitizeURLSync } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   CLASS_HEADING, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   NEW_TAB, PINNED, SIDEBAR_MAIN, TAB_QUERY
 } from './constant.js';
-import { parse as parseTld } from '../lib/tldts/index.esm.min.js';
 
 /**
  * get template

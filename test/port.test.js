@@ -1,16 +1,17 @@
 /**
  * port.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, mockPort } from './mocha/setup.js';
-import { SIDEBAR } from '../src/mjs/constant.js';
-import sinon from 'sinon';
 
 /* test */
 import * as mjs from '../src/mjs/port.js';
+import { SIDEBAR } from '../src/mjs/constant.js';
 
 describe('port', () => {
   beforeEach(() => {

@@ -1,18 +1,19 @@
 /**
  * session.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
+
+/* test */
+import * as mjs from '../src/mjs/session.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   SESSION_SAVE, SIDEBAR, TAB, TAB_LIST
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/session.js';
 
 describe('session', () => {
   const globalKeys = ['DOMParser', 'Node', 'NodeList', 'XMLSerializer'];

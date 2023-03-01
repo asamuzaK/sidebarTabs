@@ -3,12 +3,12 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, isString, throwErr } from './common.js';
+import { getFolderMap } from './bookmark.js';
 import {
   clearContextMenuOnMouseup, getAllStorage, removePermission,
   requestPermission, sendMessage, setContextMenuOnMouseup, setStorage
 } from './browser.js';
-import { getFolderMap } from './bookmark.js';
+import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
   BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, EXT_INIT,
   MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,

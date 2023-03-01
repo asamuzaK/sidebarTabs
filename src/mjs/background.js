@@ -3,15 +3,15 @@
  */
 
 /* shared */
+import {
+  handleCmd, handleConnectedPort, handleMsg, removeSidebarState,
+  setSidebarState, toggleSidebar
+} from './background-main.js';
 import { throwErr } from './common.js';
 import {
   createContextualIdentitiesMenu, removeContextualIdentitiesMenu,
   restoreContextMenu, updateContextualIdentitiesMenu
 } from './menu.js';
-import {
-  handleCmd, handleConnectedPort, handleMsg, removeSidebarState,
-  setSidebarState, toggleSidebar
-} from './background-main.js';
 
 /* api */
 const { commands, contextualIdentities, runtime, windows } = browser;

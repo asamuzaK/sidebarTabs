@@ -3,10 +3,10 @@
  */
 
 /* shared */
+import { getCurrentWindow, getWindow } from './browser.js';
 import {
   getType, isObjectNotEmpty, isString, logErr, throwErr
 } from './common.js';
-import { getCurrentWindow, getWindow } from './browser.js';
 import { ports, removePort } from './port.js';
 import { saveSessionTabList } from './session.js';
 import {

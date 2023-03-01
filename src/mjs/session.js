@@ -3,10 +3,10 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString } from './common.js';
 import {
   getCurrentWindow, getSessionWindowValue, getWindow, setSessionWindowValue
 } from './browser.js';
+import { getType, isObjectNotEmpty, isString } from './common.js';
 import { getPort } from './port.js';
 import {
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,

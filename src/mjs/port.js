@@ -2,8 +2,8 @@
  * port.js
  */
 
-import { logErr, throwErr } from './common.js';
 import { getCurrentWindow, makeConnection } from './browser.js';
+import { logErr, throwErr } from './common.js';
 import { SIDEBAR } from './constant.js';
 
 /* api */

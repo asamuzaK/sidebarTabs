@@ -1,12 +1,16 @@
 /**
  * tab-group.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
-import sinon from 'sinon';
+
+/* test */
+import * as mjs from '../src/mjs/tab-group.js';
 import {
   ACTIVE, BOOKMARK_FOLDER_MSG,
   CLASS_COLLAPSE_AUTO, CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL,
@@ -15,9 +19,6 @@ import {
   HIGHLIGHTED, PINNED, SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND, TAB_GROUP_LABEL_EDIT
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/tab-group.js';
 
 describe('tab-group', () => {
   const globalKeys = ['Node', 'XMLSerializer'];

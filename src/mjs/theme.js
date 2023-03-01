@@ -3,11 +3,11 @@
  */
 
 /* shared */
-import { getType, isObjectNotEmpty, isString, sleep } from './common.js';
 import {
   getCurrentTheme, getCurrentWindow, getEnabledTheme, getStorage,
   removeStorage, sendMessage, setStorage
 } from './browser.js';
+import { getType, isObjectNotEmpty, isString, sleep } from './common.js';
 import {
   compositeLayeredColors, convertRgbToHex, getColorInHex
 } from './color.js';

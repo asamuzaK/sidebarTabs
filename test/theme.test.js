@@ -1,16 +1,19 @@
 /**
  * theme.test.js
  */
-/* eslint-disable regexp/no-super-linear-backtracking */
+/* eslint-disable import/order, regexp/no-super-linear-backtracking */
 
 /* api */
+import path from 'node:path';
+import { promises as fsPromise } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom } from './mocha/setup.js';
-import { fileURLToPath } from 'node:url';
-import { promises as fsPromise } from 'node:fs';
-import path from 'node:path';
 import { sleep } from '../src/mjs/common.js';
+import { browser, createJsdom } from './mocha/setup.js';
+
+/* test */
+import * as mjs from '../src/mjs/theme.js';
 import { convertColorToHex } from '../src/mjs/color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
@@ -34,9 +37,6 @@ import {
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
   USER_CSS_ID
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/theme.js';
 
 describe('theme', () => {
   const globalKeys = ['CSSStyleSheet'];

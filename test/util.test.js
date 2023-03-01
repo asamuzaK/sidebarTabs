@@ -1,19 +1,20 @@
 /**
  * util.test.js
  */
+/* eslint-disable import/order */
 
 /* api */
+import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
-import sinon from 'sinon';
+
+/* test */
+import * as mjs from '../src/mjs/util.js';
 import {
   CLASS_HEADING, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, SIDEBAR_MAIN, TAB
 } from '../src/mjs/constant.js';
-
-/* test */
-import * as mjs from '../src/mjs/util.js';
 
 describe('util', () => {
   const globalKeys = ['DOMParser', 'Node', 'NodeList', 'XMLSerializer'];

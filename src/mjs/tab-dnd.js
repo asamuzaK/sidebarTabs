@@ -3,21 +3,21 @@
  */
 
 /* shared */
-import { isObjectNotEmpty, isString, throwErr } from './common.js';
+import {
+  isURISync, sanitizeURL, sanitizeURLSync
+} from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   createTab, duplicateTab, moveTab, searchWithSearchEngine, updateTab
 } from './browser.js';
 import {
   createTabsInOrder, highlightTabs, moveTabsInOrder
 } from './browser-tabs.js';
+import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import { requestSaveSession } from './session.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
   activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
-import {
-  isURISync, sanitizeURL, sanitizeURLSync
-} from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
