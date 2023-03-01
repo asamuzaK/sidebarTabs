@@ -20,7 +20,7 @@ import {
  * send message
  *
  * @param {*} msg - message
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const sendMsg = async msg => {
   if (msg) {
@@ -32,7 +32,7 @@ export const sendMsg = async msg => {
  * init extension
  *
  * @param {boolean} init - init
- * @returns {?Function} - sendMessage()
+ * @returns {Promise.<?Promise>} - sendMessage()
  */
 export const initExt = async (init = false) => {
   let func;
@@ -47,8 +47,8 @@ export const initExt = async (init = false) => {
 /**
  * init custom theme
  *
- * @param {boolean} init - init
- * @returns {?Function} - sendMessage()
+ * @param {boolean} [init] - init
+ * @returns {Promise.<?Promise>} - sendMessage()
  */
 export const initCustomTheme = async (init = false) => {
   let func;
@@ -64,7 +64,7 @@ export const initCustomTheme = async (init = false) => {
  * request custom theme
  *
  * @param {boolean} bool - bool
- * @returns {?Function} - sendMessage()
+ * @returns {Promise.<?Promise>} - sendMessage()
  */
 export const requestCustomTheme = async (bool = false) => {
   let func;
@@ -79,7 +79,7 @@ export const requestCustomTheme = async (bool = false) => {
 /**
  * store custom theme values
  *
- * @returns {object} - custom theme data
+ * @returns {Promise.<object>} - custom theme data
  */
 export const storeCustomTheme = async () => {
   const items = document.querySelectorAll('[type=color]');
@@ -101,7 +101,7 @@ export const storeCustomTheme = async () => {
  * create pref
  *
  * @param {object} elm - element
- * @returns {object} - pref data
+ * @returns {Promise.<object>} - pref data
  */
 export const createPref = async (elm = {}) => {
   const { dataset, id } = elm;
@@ -186,23 +186,21 @@ export const toggleSubItems = evt => {
 /**
  * toggle custom theme settings
  *
- * @returns {?Function} - toggleSubItems()
+ * @returns {void}
  */
 export const toggleCustomThemeSettings = () => {
   const target = document.getElementById(THEME_CUSTOM);
-  let func;
   if (target) {
-    func = toggleSubItems({
+    toggleSubItems({
       target
     });
   }
-  return func || null;
 };
 
 /**
  * add event listener to custom theme radio button
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addCustomThemeListener = async () => {
   const nodes = document.querySelectorAll(`input[name=${THEME_RADIO}]`);
@@ -215,7 +213,7 @@ export const addCustomThemeListener = async () => {
  * set custom theme value
  *
  * @param {object} obj - values
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setCustomThemeValue = async (obj = {}) => {
   if (isObjectNotEmpty(obj)) {
@@ -245,7 +243,7 @@ export const setCustomThemeValue = async (obj = {}) => {
 /**
  * add bookmark locations
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addBookmarkLocations = async () => {
   const sel = document.getElementById(BOOKMARK_LOCATION);
@@ -279,7 +277,7 @@ export const addBookmarkLocations = async () => {
  * handle init custom theme click
  *
  * @param {object} evt - Event
- * @returns {Promise.<Array>} - result of each handler
+ * @returns {Promise} - promise chain
  */
 export const handleInitCustomThemeClick = evt => {
   const { currentTarget, target } = evt;
@@ -291,7 +289,7 @@ export const handleInitCustomThemeClick = evt => {
 /**
  * add event listener to init custom theme button
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addInitCustomThemeListener = async () => {
   const elm = document.getElementById(THEME_CUSTOM_INIT);
@@ -303,7 +301,7 @@ export const addInitCustomThemeListener = async () => {
  * handle init extension click
  *
  * @param {!object} evt - event
- * @returns {Function} - initExt()
+ * @returns {Promise} - initExt()
  */
 export const handleInitExtClick = evt => {
   const { currentTarget, target } = evt;
@@ -315,7 +313,7 @@ export const handleInitExtClick = evt => {
 /**
  * add event listener to init button
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addInitExtensionListener = async () => {
   const elm = document.getElementById(EXT_INIT);
@@ -326,7 +324,7 @@ export const addInitExtensionListener = async () => {
  *
  * save user CSS
  *
- * @returns {?Function} - storePref() / logErr()
+ * @returns {?Promise} - storePref() / logErr()
  */
 export const saveUserCss = () => {
   const css = document.getElementById(USER_CSS);
@@ -364,7 +362,7 @@ export const saveUserCss = () => {
 /**
  * add event listener to save user CSS
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addUserCssListener = async () => {
   const elm = document.getElementById(USER_CSS_SAVE);
@@ -375,14 +373,14 @@ export const addUserCssListener = async () => {
  * handle input change
  *
  * @param {!object} evt - Event
- * @returns {Function} - storePref()
+ * @returns {Promise} - storePref()
  */
 export const handleInputChange = evt => storePref(evt).catch(throwErr);
 
 /**
  * add event listener to input elements
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addInputChangeListener = async () => {
   const nodes = document.querySelectorAll('input, select');

@@ -537,12 +537,7 @@ describe('options-main', () => {
   describe('toggle custom theme settings', () => {
     const func = mjs.toggleCustomThemeSettings;
 
-    it('should get null', async () => {
-      const res = await func();
-      assert.isNull(res, 'result');
-    });
-
-    it('should not remove attribute', async () => {
+    it('should not remove attribute', () => {
       const elm = document.createElement('input');
       const elm2 = document.createElement('p');
       const body = document.querySelector('body');
@@ -553,12 +548,11 @@ describe('options-main', () => {
       elm2.setAttribute('hidden', 'hidden');
       body.appendChild(elm);
       body.appendChild(elm2);
-      const res = await func();
+      func();
       assert.isTrue(elm2.hasAttribute('hidden'), 'attr');
-      assert.isNull(res, 'result');
     });
 
-    it('should remove attribute', async () => {
+    it('should remove attribute', () => {
       const elm = document.createElement('input');
       const elm2 = document.createElement('p');
       const body = document.querySelector('body');
@@ -570,12 +564,11 @@ describe('options-main', () => {
       elm2.dataset.subItemOf = THEME_CUSTOM;
       body.appendChild(elm);
       body.appendChild(elm2);
-      const res = await func();
+      func();
       assert.isFalse(elm2.hasAttribute('hidden'), 'attr');
-      assert.isNull(res, 'result');
     });
 
-    it('should add attribute', async () => {
+    it('should add attribute', () => {
       const elm = document.createElement('input');
       const elm2 = document.createElement('p');
       const body = document.querySelector('body');
@@ -586,9 +579,8 @@ describe('options-main', () => {
       elm2.dataset.subItemOf = THEME_CUSTOM;
       body.appendChild(elm);
       body.appendChild(elm2);
-      const res = await func();
+      func();
       assert.isTrue(elm2.hasAttribute('hidden'), 'attr');
-      assert.isNull(res, 'result');
     });
   });
 

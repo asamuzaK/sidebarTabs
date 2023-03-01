@@ -19,7 +19,7 @@ export const ports = new Map();
  * remove port
  *
  * @param {string} portId - port ID
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const removePort = async portId => ports.delete(portId);
 
@@ -27,7 +27,7 @@ export const removePort = async portId => ports.delete(portId);
  * port on disconnect
  *
  * @param {object} port - runtime.Port
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const portOnDisconnect = (port = {}) => {
   const { error, name: portId } = port;
@@ -42,8 +42,8 @@ export const portOnDisconnect = (port = {}) => {
 /**
  * add port
  *
- * @param {string} portId - port ID
- * @returns {object} - runtime.Port
+ * @param {string} [portId] - port ID
+ * @returns {Promise.<object>} - runtime.Port
  */
 export const addPort = async portId => {
   const { id: windowId } = await getCurrentWindow();
@@ -68,7 +68,7 @@ export const addPort = async portId => {
  *
  * @param {string} portId - port ID
  * @param {boolean} add - add port if port does not exist
- * @returns {object} - runtime.Port
+ * @returns {Promise.<object>} - runtime.Port
  */
 export const getPort = async (portId, add = false) => {
   let port;

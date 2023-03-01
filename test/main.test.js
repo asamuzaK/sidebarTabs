@@ -6012,7 +6012,7 @@ describe('main', () => {
     });
 
     it('should update, not call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6045,13 +6045,13 @@ describe('main', () => {
       const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, add class', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6085,13 +6085,13 @@ describe('main', () => {
       assert.isTrue(elm.hasAttribute('hidden'), 'hidden');
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, add class', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6126,13 +6126,13 @@ describe('main', () => {
       assert.isFalse(elm.hasAttribute('hidden'), 'hidden');
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, not call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6165,13 +6165,13 @@ describe('main', () => {
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, not call function', async () => {
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6205,13 +6205,13 @@ describe('main', () => {
       const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(DISCARDED), 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubCurrentWin.called, 'not called');
+      assert.isFalse(stubWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, call function', async () => {
-      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6244,7 +6244,7 @@ describe('main', () => {
     });
 
     it('should not update, not call function', async () => {
-      const stubWin = browser.windows.get.withArgs(1, null).resolves({
+      const stubWin = browser.windows.getCurrent.resolves({
         id: 1,
         incognito: false
       });
@@ -6277,10 +6277,6 @@ describe('main', () => {
     });
 
     it('should not update, not call function', async () => {
-      const stubWin = browser.windows.get.withArgs(1, null).resolves({
-        id: 1,
-        incognito: false
-      });
       const portId = `${SIDEBAR}_1`;
       const port = mockPort({
         name: portId
@@ -6288,6 +6284,7 @@ describe('main', () => {
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
       const i = browser.tabs.query.callCount;
+      const j = browser.windows.getCurrent.callCount;
       const info = {
         status: 'loading'
       };
@@ -6310,6 +6307,10 @@ describe('main', () => {
         active: true,
         windowType: 'normal'
       }).resolves([tabsTab]);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
       const elm = document.querySelector('[data-tab-id="1"]');
       elm.getBoundingClientRect.returns({
         top: 100,
@@ -6318,17 +6319,13 @@ describe('main', () => {
       const res = await func(1, info, tabsTab);
       assert.isFalse(elm.classList.contains(ACTIVE), 'class');
       assert.strictEqual(browser.tabs.query.callCount, i, 'not called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j, 'not called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
     it('should update, call function', async () => {
-      const stubWin = browser.windows.get.withArgs(1, null).resolves({
-        id: 1,
-        incognito: false
-      });
       const portId = `${SIDEBAR}_1`;
       const port = mockPort({
         name: portId
@@ -6336,6 +6333,7 @@ describe('main', () => {
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
       const i = browser.tabs.query.callCount;
+      const j = browser.windows.getCurrent.callCount;
       const info = {
         status: 'complete'
       };
@@ -6364,6 +6362,10 @@ describe('main', () => {
         windowType: 'normal'
       }).resolves([1]);
       browser.tabs.get.withArgs(1).resolves(tabsTab);
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
       const elm = document.querySelector('[data-tab-id="1"]');
       elm.getBoundingClientRect.returns({
         top: 100,
@@ -6373,17 +6375,13 @@ describe('main', () => {
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');
       assert.strictEqual(browser.tabs.query.callCount, i + 2, 'called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isTrue(stubWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
       assert.deepEqual(res, [undefined, {}], 'result');
     });
 
     it('should update, call function', async () => {
-      const stubWin = browser.windows.get.withArgs(1, null).resolves({
-        id: 1,
-        incognito: false
-      });
       const portId = `${SIDEBAR}_1`;
       const port = mockPort({
         name: portId
@@ -6391,6 +6389,7 @@ describe('main', () => {
       port.postMessage.resolves({});
       mjs.ports.set(portId, port);
       const i = browser.tabs.query.callCount;
+      const j = browser.windows.getCurrent.callCount;
       const info = {
         status: 'complete'
       };
@@ -6438,8 +6437,8 @@ describe('main', () => {
       const res = await func(1, info, tabsTab);
       assert.isTrue(elm.classList.contains(ACTIVE), 'class');
       assert.strictEqual(browser.tabs.query.callCount, i + 2, 'called');
+      assert.strictEqual(browser.windows.getCurrent.callCount, j + 2, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isTrue(stubWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledTwice, 'called');
       assert.deepEqual(res, [{}, undefined, {}], 'result');
     });

@@ -27,7 +27,7 @@ export const sidebar = new Map();
  * set sidebar state
  *
  * @param {number} windowId - window ID
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setSidebarState = async windowId => {
   let win;
@@ -67,7 +67,7 @@ export const setSidebarState = async windowId => {
  * remove sidebar state
  *
  * @param {number} windowId - window ID
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const removeSidebarState = async windowId => {
   const res = sidebar.delete(windowId);
@@ -77,7 +77,7 @@ export const removeSidebarState = async windowId => {
 /**
  * toggle sidebar
  *
- * @returns {Function} - sidebarAction.toggle()
+ * @returns {Promise} - sidebarAction.toggle()
  */
 export const toggleSidebar = async () => sidebarAction.toggle();
 
@@ -86,7 +86,7 @@ export const toggleSidebar = async () => sidebarAction.toggle();
  *
  * @param {string} domString - DOM string
  * @param {number} windowId - window ID
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const handleSaveSessionRequest = async (domString, windowId) => {
   if (!isString(domString)) {
@@ -154,7 +154,7 @@ export const handleMsg = async msg => {
  * port on message
  *
  * @param {object} msg - message
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const portOnMessage = msg => handleMsg(msg).catch(throwErr);
 
@@ -162,7 +162,7 @@ export const portOnMessage = msg => handleMsg(msg).catch(throwErr);
  * handle disconnected port
  *
  * @param {object} port - runtime.Port
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const handleDisconnectedPort = async (port = {}) => {
   const { error, name: portId } = port;
@@ -193,7 +193,7 @@ export const handleDisconnectedPort = async (port = {}) => {
  * port on disconnect
  *
  * @param {object} port - runtime.Port
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const portOnDisconnect = port =>
   handleDisconnectedPort(port).catch(throwErr);
@@ -202,7 +202,7 @@ export const portOnDisconnect = port =>
  * handle connected port
  *
  * @param {object} port - runtime.Port
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const handleConnectedPort = async (port = {}) => {
   const { name: portId } = port;
@@ -222,7 +222,7 @@ export const handleConnectedPort = async (port = {}) => {
  * handle command
  *
  * @param {string} cmd - command
- * @returns {?Function} - promise chain
+ * @returns {Promise.<?Promise>} - promise chain
  */
 export const handleCmd = async cmd => {
   if (!isString(cmd)) {

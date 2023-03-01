@@ -287,7 +287,7 @@ export const isNewTab = node => {
  * activate tab
  *
  * @param {object} elm - element
- * @returns {?Function} - updateTab()
+ * @returns {?Promise} - updateTab()
  */
 export const activateTab = async elm => {
   const tabId = getSidebarTabId(elm);
@@ -304,7 +304,7 @@ export const activateTab = async elm => {
  * scroll tab into view
  *
  * @param {object} elm - Element
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const scrollTabIntoView = async elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE) {
@@ -358,7 +358,7 @@ export const scrollTabIntoView = async elm => {
  * switch tab
  *
  * @param {object} opt - options
- * @returns {?Function} - activateTab()
+ * @returns {?Promise} - activateTab()
  */
 export const switchTab = async opt => {
   let func;
@@ -421,7 +421,7 @@ export const createUrlMatchString = url => {
  * store closeTabsByDoubleClick user value
  *
  * @param {boolean} bool - browserSettings enabled
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const storeCloseTabsByDoubleClickValue = async bool => {
   const store = {

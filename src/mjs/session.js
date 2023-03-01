@@ -17,8 +17,8 @@ import {
  * get tab list from sessions
  *
  * @param {string} key - key
- * @param {number} windowId - window ID
- * @returns {object} - tab list
+ * @param {number} [windowId] - window ID
+ * @returns {Promise.<object>} - tab list
  */
 export const getSessionTabList = async (key, windowId) => {
   if (!isString(key)) {
@@ -43,8 +43,8 @@ export const mutex = new Set();
  * save tab list to sessions
  *
  * @param {string} domStr - DOM string
- * @param {number} windowId - window ID
- * @returns {boolean} - saved
+ * @param {number} [windowId] - window ID
+ * @returns {Promise.<boolean>} - saved
  */
 export const saveSessionTabList = async (domStr, windowId) => {
   if (!isString(domStr)) {
@@ -109,19 +109,13 @@ export const saveSessionTabList = async (domStr, windowId) => {
 /**
  * request save session
  *
- * @param {number} windowId - window ID
- * @returns {?Function} - port.postMessage()
+ * @returns {Promise.<?Function>} - port.postMessage()
  */
-export const requestSaveSession = async windowId => {
-  let func, win;
-  if (Number.isInteger(windowId)) {
-    win = await getWindow(windowId);
-  } else {
-    win = await getCurrentWindow();
-    windowId = win.id;
-  }
+export const requestSaveSession = async () => {
+  const { id: windowId, incognito } = await getCurrentWindow();
   const port = await getPort(`${SIDEBAR}_${windowId}`, true);
-  if (port && win && !win.incognito) {
+  let func;
+  if (port && !incognito) {
     const clonedBody = document.body.cloneNode(true);
     const items =
       clonedBody.querySelectorAll(`.${CLASS_TAB_CONTAINER}:not(#${NEW_TAB})`);

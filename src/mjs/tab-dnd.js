@@ -132,7 +132,7 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
  *
  * @param {object} dropTarget - drop target
  * @param {object} opt - options
- * @returns {number} - index;
+ * @returns {object} - element
  */
 export const getTargetForDraggedTabs = (dropTarget, opt) => {
   let target;
@@ -491,7 +491,7 @@ export const searchQuery = async (dropTarget, data = '') => {
  * handle drop
  *
  * @param {!object} evt - event
- * @returns {?(Function|Error)|undefined} - promise chain
+ * @returns {?Promise|undefined} - promise chain
  */
 export const handleDrop = evt => {
   const { currentTarget, dataTransfer, type } = evt;

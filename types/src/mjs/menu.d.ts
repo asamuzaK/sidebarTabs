@@ -1,0 +1,10 @@
+export const menuItemMap: Map<any, any>;
+export function updateContextMenu(menuItemId: string, data: object): Promise<any[]>;
+export function createMenuItemCallback(): Promise<any[] | Error>;
+export function createMenuItem(data: object): Promise<(string | number) | null>;
+export function createContextualIdentitiesMenu(info: object): Promise<any[]>;
+export function createContextMenu(menu?: object, parentId?: string): Promise<any[]>;
+export function updateContextualIdentitiesMenu(info?: object): Promise<any[]>;
+export function removeContextualIdentitiesMenu(info: object): Promise<any[]>;
+export function restoreContextMenu(): Promise<any>;
+export function overrideContextMenu(opt?: object): Promise<any>;

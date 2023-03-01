@@ -41,7 +41,7 @@ export const createBookmark = async opt => {
 /**
  * get bookmark tree node
  *
- * @param {string|Array} id - bookmark ID or array of bookmark IDs
+ * @param {string|Array} [id] - bookmark ID or array of bookmark IDs
  * @returns {Promise.<?Array>} - array of bookmarks.BookmarkTreeNode
  */
 export const getBookmarkTreeNode = async id => {

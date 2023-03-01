@@ -69,7 +69,7 @@ export const createMenuItemCallback = () => {
  * create context menu item
  *
  * @param {object} data - context data
- * @returns {?string|number} - menu item ID
+ * @returns {Promise.<?string|number>} - menu item ID
  */
 export const createMenuItem = async data => {
   let menuItemId;
@@ -254,7 +254,7 @@ export const removeContextualIdentitiesMenu = async info => {
 /**
  * restore context menu
  *
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const restoreContextMenu = async () =>
   menus.removeAll().then(createContextMenu);
@@ -263,7 +263,7 @@ export const restoreContextMenu = async () =>
  * override context menu
  *
  * @param {object} opt - options
- * @returns {Function} - menus.overrideContext()
+ * @returns {Promise} - menus.overrideContext()
  */
 export const overrideContextMenu = async (opt = {}) =>
   menus.overrideContext(opt);

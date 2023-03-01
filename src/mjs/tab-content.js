@@ -79,7 +79,7 @@ export const tabIconFallback = evt => {
  * add tab icon error listener
  *
  * @param {object} elm - img element
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addTabIconErrorListener = async elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img') {
@@ -92,7 +92,7 @@ export const addTabIconErrorListener = async elm => {
  *
  * @param {object} elm - img element
  * @param {object} info - tab info
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setTabIcon = async (elm, info) => {
   if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
@@ -139,7 +139,7 @@ export const setTabIcon = async (elm, info) => {
  *
  * @param {object} tab - tab element
  * @param {object} tabsTab - tabs.Tab
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setTabContent = async (tab, tabsTab) => {
   if (tab?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(tabsTab)) {
@@ -159,7 +159,7 @@ export const setTabContent = async (tab, tabsTab) => {
  * handle clicked audio button
  *
  * @param {object} elm - element
- * @returns {?Function} - muteTabs() / updateTab()
+ * @returns {Promise.<?Promise>} - muteTabs() / updateTab()
  */
 export const handleClickedTabAudio = async elm => {
   let func;
@@ -185,7 +185,7 @@ export const handleClickedTabAudio = async elm => {
  * handle tab audio onclick
  *
  * @param {!object} evt - Event
- * @returns {?Function} - promise chain
+ * @returns {?Promise} - promise chain
  */
 export const tabAudioOnClick = evt => {
   const { target } = evt;
@@ -203,7 +203,7 @@ export const tabAudioOnClick = evt => {
  * add tab audio click event listener
  *
  * @param {object} elm - element
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addTabAudioClickListener = async elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE &&
@@ -217,8 +217,8 @@ export const addTabAudioClickListener = async elm => {
  *
  * @param {object} elm - element
  * @param {object} info - audio info
- * @param {number} num - number of highlighted tabs
- * @returns {void}
+ * @param {number} [num] - number of highlighted tabs
+ * @returns {Promise.<void>} - void
  */
 export const setTabAudio = async (elm, info, num) => {
   if (elm?.nodeType === Node.ELEMENT_NODE && isObjectNotEmpty(info)) {
@@ -246,7 +246,7 @@ export const setTabAudio = async (elm, info, num) => {
  *
  * @param {object} elm - element
  * @param {object} info - audio info
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setTabAudioIcon = async (elm, info) => {
   if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
@@ -271,8 +271,8 @@ export const setTabAudioIcon = async (elm, info) => {
  *
  * @param {object} elm - element
  * @param {boolean} highlighted - highlighted
- * @param {number} num - number of highlighted tabs
- * @returns {void}
+ * @param {number} [num] - number of highlighted tabs
+ * @returns {Promise.<void>} - void
  */
 export const setCloseTab = async (elm, highlighted, num) => {
   if (elm?.nodeType === Node.ELEMENT_NODE &&
@@ -289,7 +289,7 @@ export const setCloseTab = async (elm, highlighted, num) => {
  * handle tab close button click
  *
  * @param {!object} evt - Event
- * @returns {Function} - promise chain
+ * @returns {?Promise} - promise chain
  */
 export const tabCloseOnClick = evt => {
   const { target } = evt;
@@ -323,7 +323,7 @@ export const preventDefaultEvent = evt => {
  * add tab close click listener
  *
  * @param {object} elm - element
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addTabCloseClickListener = async elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE &&
@@ -339,7 +339,7 @@ export const addTabCloseClickListener = async elm => {
  *
  * @param {object} elm - element
  * @param {object} info - contextual identities info
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setContextualIdentitiesIcon = async (elm, info) => {
   if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&

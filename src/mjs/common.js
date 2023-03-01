@@ -91,7 +91,7 @@ export const isObjectNotEmpty = o => {
  *
  * @param {number} msec - millisecond
  * @param {boolean} doReject - reject instead of resolve
- * @returns {?Function} - resolve / reject
+ * @returns {?Promise} - resolve / reject
  */
 export const sleep = (msec = 0, doReject = false) => {
   let func;
@@ -111,7 +111,7 @@ export const sleep = (msec = 0, doReject = false) => {
  * add contenteditable attribute to element
  *
  * @param {object} elm - Element
- * @param {boolean} focus - focus Element
+ * @param {boolean} [focus] - focus Element
  * @returns {object} elm - Element
  */
 export const addElementContentEditable = (elm, focus) => {

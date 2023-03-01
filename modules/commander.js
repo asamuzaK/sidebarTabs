@@ -3,11 +3,13 @@
  */
 
 /* api */
-import { getType, isString, throwErr } from './common.js';
-import { createFile, fetchText, isFile, readFile } from './file-util.js';
-import { program as commander } from 'commander';
 import path from 'node:path';
 import process from 'node:process';
+import { program as commander } from 'commander';
+import { getType, isString, throwErr } from './common.js';
+import {
+  createFile, fetchText, isDir, isFile, readFile, removeDir
+} from './file-util.js';
 
 /* constants */
 const BASE_URL_MOZ =
@@ -23,7 +25,7 @@ const PATH_MODULE = './node_modules';
  *
  * @param {string} dir - theme directory
  * @param {boolean} info - console info
- * @returns {string} - file path
+ * @returns {Promise.<string>} - file path
  */
 export const saveThemeManifest = async (dir, info) => {
   if (!isString(dir)) {
@@ -45,7 +47,7 @@ export const saveThemeManifest = async (dir, info) => {
  * extract manifests
  *
  * @param {object} cmdOpts - command options
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const extractManifests = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
@@ -72,7 +74,7 @@ export const extractManifests = async (cmdOpts = {}) => {
  * update manifests
  *
  * @param {object} cmdOpts - command options
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const updateManifests = cmdOpts =>
   extractManifests(cmdOpts).catch(throwErr);
@@ -82,7 +84,7 @@ export const updateManifests = cmdOpts =>
  *
  * @param {Array} lib - library
  * @param {boolean} info - console info
- * @returns {string} - package.json file path
+ * @returns {Promise.<string>} - package.json file path
  */
 export const saveLibraryPackage = async (lib, info) => {
   if (!Array.isArray(lib)) {
@@ -150,7 +152,7 @@ export const saveLibraryPackage = async (lib, info) => {
  * extract libraries
  *
  * @param {object} cmdOpts - command options
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
@@ -249,10 +251,26 @@ export const extractLibraries = async (cmdOpts = {}) => {
  * include libraries
  *
  * @param {object} cmdOpts - command options
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const includeLibraries = cmdOpts =>
   extractLibraries(cmdOpts).catch(throwErr);
+
+/**
+ * clean directory
+ *
+ * @param {object} cmdOpts - command options
+ * @returns {void}
+ */
+export const cleanDirectory = (cmdOpts = {}) => {
+  const { dir, info } = cmdOpts;
+  if (isDir(dir)) {
+    removeDir(dir);
+    if (info) {
+      console.info(`Removed: ${path.resolve(dir)}`);
+    }
+  }
+};
 
 /**
  * parse command
@@ -261,20 +279,25 @@ export const includeLibraries = cmdOpts =>
  * @returns {void}
  */
 export const parseCommand = args => {
-  const reg = /^(?:(?:--)?help|-[h|v]|--version|(?:includ|updat)e)$/;
+  const reg = /^(?:(?:--)?help|-[h|v]|--version|(?:includ|updat)e|clean)$/;
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
     commander.exitOverride();
     commander.version(process.env.npm_package_version, '-v, --version');
-    commander.command('update')
-      .description('update theme manifests')
-      .option('-d, --dir <name>', 'specify theme directory')
+    commander.command('clean')
+      .description('clean directory')
+      .option('-d, --dir <name>', 'specify directory')
       .option('-i, --info', 'console info')
-      .action(updateManifests);
+      .action(cleanDirectory);
     commander.command('include')
       .description('include library packages')
       .option('-d, --dir <name>', 'specify library directory')
       .option('-i, --info', 'console info')
       .action(includeLibraries);
+    commander.command('update')
+      .description('update theme manifests')
+      .option('-d, --dir <name>', 'specify theme directory')
+      .option('-i, --info', 'console info')
+      .action(updateManifests);
     commander.parse(args);
   }
 };

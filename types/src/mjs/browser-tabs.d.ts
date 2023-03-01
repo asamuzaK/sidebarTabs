@@ -1,0 +1,18 @@
+export function closeTabs(nodes: any[]): Promise<Promise<any> | null>;
+export function closeOtherTabs(nodes: any[]): Promise<Promise<any> | null>;
+export function closeTabsToEnd(elm: object): Promise<Promise<any> | null>;
+export function closeTabsToStart(elm: object): Promise<Promise<any> | null>;
+export function createTabsInOrder(arr: any[]): Promise<Promise<any> | null>;
+export function reopenTabsInContainer(nodes: any[], cookieId: string, windowId: number): Promise<Promise<any> | null>;
+export function dupeTab(tabId: number): Promise<Promise<any> | null>;
+export function dupeTabs(nodes: any[]): Promise<any[]>;
+export function highlightTabs(nodes: any[], windowId: number): Promise<Promise<any> | null>;
+export function moveTabsInOrder(arr: any[], windowId: number): Promise<Promise<any> | null>;
+export function moveTabsToEnd(nodes: any[], tabId: number, windowId: number): Promise<any[]>;
+export function moveTabsToStart(nodes: any[], tabId: number, windowId: number): Promise<any[]>;
+export function moveTabsToNewWindow(nodes: any[]): Promise<Promise<any> | null>;
+export function muteTabs(nodes: any[], muted: boolean): Promise<any[]>;
+export function createNewTab(windowId: number, opt?: object): Promise<any>;
+export function createNewTabInContainer(cookieId: string, windowId: number): Promise<any>;
+export function pinTabs(nodes: any[], pinned: boolean): Promise<any[]>;
+export function reloadTabs(nodes: any[]): Promise<any[]>;

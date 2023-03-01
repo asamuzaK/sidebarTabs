@@ -30,7 +30,7 @@ const { i18n, windows } = browser;
 /**
  * restore sidebar tab containers
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const restoreTabContainers = async () => {
   const body = document.querySelector('body');
@@ -65,8 +65,8 @@ export const restoreTabContainers = async () => {
  * collapse tab group
  *
  * @param {object} elm - element
- * @param {boolean} activate - activate element
- * @returns {void}
+ * @param {boolean} [activate] - activate element
+ * @returns {Promise.<void>} - void
  */
 export const collapseTabGroup = async (elm, activate) => {
   const body = document.querySelector('body');
@@ -94,7 +94,7 @@ export const collapseTabGroup = async (elm, activate) => {
  * expand tab group
  *
  * @param {object} elm - element
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const expandTabGroup = async elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE &&
@@ -255,7 +255,7 @@ export const getTabGroupHeading = node => {
  * handle individual tab group collapsed state
  *
  * @param {!object} evt - Event
- * @returns {?(Function|Error)} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const handleTabGroupCollapsedState = evt => {
   const { target } = evt;
@@ -271,9 +271,8 @@ export const handleTabGroupCollapsedState = evt => {
         break;
       }
     }
-    func =
-      toggleTabGroupCollapsedState(heading, activate).then(requestSaveSession)
-        .catch(throwErr);
+    func = toggleTabGroupCollapsedState(heading, activate)
+      .then(requestSaveSession).catch(throwErr);
     evt.stopPropagation();
     evt.preventDefault();
   } else if (tab) {
@@ -284,8 +283,8 @@ export const handleTabGroupCollapsedState = evt => {
         break;
       }
     }
-    func = toggleTabGroupCollapsedState(tab, activate).then(requestSaveSession)
-      .catch(throwErr);
+    func = toggleTabGroupCollapsedState(tab, activate)
+      .then(requestSaveSession).catch(throwErr);
     evt.stopPropagation();
     evt.preventDefault();
   }
@@ -296,15 +295,15 @@ export const handleTabGroupCollapsedState = evt => {
  * handle multiple tab groups collapsed state
  *
  * @param {!object} evt - Event
- * @returns {?(Function|Error)} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const handleTabGroupsCollapsedState = evt => {
   const { target } = evt;
   const container = getSidebarTabContainer(target);
   let func;
   if (container) {
-    func = toggleTabGroupsCollapsedState(container).then(requestSaveSession)
-      .catch(throwErr);
+    func = toggleTabGroupsCollapsedState(container)
+      .then(requestSaveSession).catch(throwErr);
     evt.stopPropagation();
     evt.preventDefault();
   }
@@ -362,7 +361,7 @@ export const replaceTabContextClickListener = async multi => {
 /**
  * expand activated collapsed tab
  *
- * @returns {?Function} - toggleTabGroupCollapsedState()
+ * @returns {Promise.<?Promise>} - toggleTabGroupCollapsedState()
  */
 export const expandActivatedCollapsedTab = async () => {
   const tab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
@@ -382,7 +381,7 @@ export const expandActivatedCollapsedTab = async () => {
  * finish editing group label
  *
  * @param {!object} evt - event
- * @returns {?(Function|Error)} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const finishGroupLabelEdit = evt => {
   const { isComposing, key, target, type } = evt;
@@ -413,7 +412,7 @@ export const finishGroupLabelEdit = evt => {
  * start editing group label
  *
  * @param {object} node - element
- * @returns {object} - group label element
+ * @returns {Promise.<object>} - group label element
  */
 export const startGroupLabelEdit = async node => {
   const heading = getTabGroupHeading(node);
@@ -434,7 +433,7 @@ export const startGroupLabelEdit = async node => {
  * enable editing group label
  *
  * @param {!object} evt - event
- * @returns {(Function|Error)} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const enableGroupLabelEdit = evt => {
   const { target } = evt;
@@ -446,7 +445,7 @@ export const enableGroupLabelEdit = evt => {
  *
  * @param {object} node - node;
  * @param {boolean} multi - handle multiple tab groups
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const addListenersToHeadingItems = async (node, multi) => {
   const heading = getTabGroupHeading(node);
@@ -475,7 +474,7 @@ export const addListenersToHeadingItems = async (node, multi) => {
  * remove listeners from heading items
  *
  * @param {object} node - node;
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const removeListenersFromHeadingItems = async node => {
   const heading = getTabGroupHeading(node);
@@ -530,7 +529,7 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
  * toggle auto collapse pinned tabs
  *
  * @param {boolean} auto - enable auto collapse
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const toggleAutoCollapsePinnedTabs = async auto => {
   const pinned = document.querySelector(`.${CLASS_TAB_CONTAINER}.${PINNED}`);
@@ -547,7 +546,7 @@ export const toggleAutoCollapsePinnedTabs = async auto => {
  * bookmark tab group
  *
  * @param {object} node - node
- * @returns {?Function} - bookmarkTabs()
+ * @returns {Promise.<?Promise>} - bookmarkTabs()
  */
 export const bookmarkTabGroup = async node => {
   const container = getSidebarTabContainer(node);
@@ -566,7 +565,7 @@ export const bookmarkTabGroup = async node => {
  * close tab group
  *
  * @param {object} node - node
- * @returns {?Function} - closeTabs()
+ * @returns {Promise.<?Promise>} - closeTabs()
  */
 export const closeTabGroup = async node => {
   const container = getSidebarTabContainer(node);
@@ -585,7 +584,7 @@ export const closeTabGroup = async node => {
  *
  * @param {Array} nodes - array of node
  * @param {number} windowId - window ID
- * @returns {?Function} - moveTabsInOrder()
+ * @returns {Promise.<?Promise>} - moveTabsInOrder()
  */
 export const detachTabsFromGroup = async (nodes, windowId) => {
   if (!Array.isArray(nodes)) {
@@ -632,7 +631,7 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
  * group selected tabs
  *
  * @param {number} windowId - window ID
- * @returns {?Function} - moveTabsInOrder()
+ * @returns {Promise.<?Promise>} - moveTabsInOrder()
  */
 export const groupSelectedTabs = async windowId => {
   const selectedTabs =
@@ -681,7 +680,7 @@ export const groupSelectedTabs = async windowId => {
  *
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
- * @returns {?Function} - moveTabsInOrder()
+ * @returns {Promise.<?Function>} - moveTabsInOrder()
  */
 export const groupSameContainerTabs = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
@@ -740,7 +739,7 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
  *
  * @param {number} tabId - tab ID
  * @param {number} windowId - window ID
- * @returns {?Function} - moveTabsInOrder()
+ * @returns {Promise.<?Promise>} - moveTabsInOrder()
  */
 export const groupSameDomainTabs = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
@@ -801,7 +800,7 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
  * ungroup tabs
  *
  * @param {object} node - tab group container
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const ungroupTabs = async node => {
   if (node?.nodeType === Node.ELEMENT_NODE) {

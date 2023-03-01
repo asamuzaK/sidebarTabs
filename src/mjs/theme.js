@@ -209,7 +209,7 @@ export const currentTheme = new Map();
 /**
  * get theme ID
  *
- * @returns {?string} - theme ID
+ * @returns {Promise.<?string>} - theme ID
  */
 export const getThemeId = async () => {
   const items = await getEnabledTheme();
@@ -226,7 +226,7 @@ export const getThemeId = async () => {
  *
  * @param {string} key - key
  * @param {Array.<number>|string} value - color value
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setCurrentThemeColors = async (key, value) => {
   if (isString(key)) {
@@ -263,7 +263,7 @@ export const setCurrentThemeColors = async (key, value) => {
  * get current theme base values
  *
  * @param {object} opt - options
- * @returns {object} - values
+ * @returns {Promise.<object>} - values
  */
 export const getCurrentThemeBaseValues = async (opt = {}) => {
   const values = new Map();
@@ -698,7 +698,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
  * get base values
  *
  * @param {object} opt - options
- * @returns {object} - values
+ * @returns {Promise.<object>} - values
  */
 export const getBaseValues = async (opt = {}) => {
   const { startup, theme, themeId, useFrame, windowId } = opt;
@@ -780,7 +780,7 @@ export const getBaseValues = async (opt = {}) => {
  * set current theme value
  *
  * @param {object} opt - options
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setCurrentThemeValue = async (opt = {}) => {
   const values = new Map();
@@ -816,8 +816,8 @@ export const setCurrentThemeValue = async (opt = {}) => {
 /**
  * send current theme values
  *
- * @param {string} themeId - theme ID
- * @returns {?Function} - sendMessage()
+ * @param {string} [themeId] - theme ID
+ * @returns {Promise.<?Promise>} - sendMessage()
  */
 export const sendCurrentTheme = async themeId => {
   const values = currentTheme.get(THEME_CURRENT);
@@ -852,9 +852,9 @@ export const sendCurrentTheme = async themeId => {
  * update custom theme CSS
  *
  * @param {string} sel - selector
- * @param {string} prop - property
- * @param {string} value - value
- * @returns {void}
+ * @param {string} [prop] - property
+ * @param {string} [value] - value
+ * @returns {Promise.<void>} - void
  */
 export const updateCustomThemeCss = async (sel, prop, value) => {
   if (!isString(sel)) {
@@ -865,7 +865,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
     let cssText = '';
-    if (sel === CSS_ROOT) {
+    if (sel === CSS_ROOT && prop && value) {
       cssText += `${prop}: ${value};`;
     } else {
       const customTheme = currentTheme.get(THEME_CURRENT);
@@ -909,7 +909,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
  * delete custom theme CSS rule
  *
  * @param {string} sel - selector
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
   const elm = document.getElementById(THEME_CUSTOM_ID);
@@ -938,7 +938,7 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
  * init custom theme
  *
  * @param {object} opt - options
- * @returns {?Function} - sendCurrentTheme()
+ * @returns {Promise.<?Promise>} - sendCurrentTheme()
  */
 export const initCustomTheme = async (opt = {}) => {
   const elm = document.getElementById(THEME_CUSTOM_ID);
@@ -975,7 +975,7 @@ export const initCustomTheme = async (opt = {}) => {
  * get theme info
  *
  * @param {object} opt - options
- * @returns {Array} - theme info
+ * @returns {Promise.<Array>} - theme info
  */
 export const getThemeInfo = async (opt = {}) => {
   const themes = new Map();
@@ -1015,7 +1015,7 @@ export const getThemeInfo = async (opt = {}) => {
  *
  * @param {Array} info - theme info
  * @param {object} opt - options
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setTheme = async (info = [], opt = {}) => {
   const [key, value] = info;
@@ -1120,7 +1120,7 @@ export const timeStamp = new Map();
  * apply local theme
  *
  * @param {object} opt - options
- * @returns {?Function} - recurse applyLocalTheme()
+ * @returns {Promise.<?Promise>} - recurse applyLocalTheme()
  */
 export const applyLocalTheme = async (opt = {}) => {
   const { local, theme: appliedTheme, themeId, useFrame, windowId } = opt;
@@ -1213,7 +1213,7 @@ export const applyCustomTheme = async data => {
  * apply theme
  *
  * @param {object} opt - options
- * @returns {Function} - promise chain
+ * @returns {Promise} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
   const { local, startup, theme: appliedTheme, useFrame, windowId } = opt;
@@ -1237,9 +1237,10 @@ export const applyTheme = async (opt = {}) => {
       useFrame,
       theme: appliedTheme
     });
-    func = setTheme(themeInfo, {
+    await setTheme(themeInfo, {
       themeId
-    }).then(sendCurrentTheme);
+    });
+    func = sendCurrentTheme(themeId);
   }
   return func;
 };
@@ -1249,7 +1250,7 @@ export const applyTheme = async (opt = {}) => {
  * set user CSS
  *
  * @param {string} css - css text
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setUserCss = async css => {
   if (!isString(css)) {
@@ -1275,7 +1276,7 @@ export const setUserCss = async css => {
 /**
  * get tab height
  *
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const getTabHeight = async () => {
   const data = await getStorage(THEME_UI_TAB_COMPACT);
@@ -1291,7 +1292,7 @@ export const getTabHeight = async () => {
  * set tab height
  *
  * @param {boolean} compact - compact
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setTabHeight = async compact => {
   const elm = document.querySelector('body');
@@ -1307,7 +1308,7 @@ export const setTabHeight = async compact => {
 /**
  * get scrollbar width
  *
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const getScrollbarWidth = async () => {
   const data = await getStorage(THEME_UI_SCROLLBAR_NARROW);
@@ -1323,7 +1324,7 @@ export const getScrollbarWidth = async () => {
  * set scrollbar width
  *
  * @param {boolean} narrow - narrow
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setScrollbarWidth = async narrow => {
   const elm = document.querySelector('body');
@@ -1339,7 +1340,7 @@ export const setScrollbarWidth = async narrow => {
 /**
  * get tab group color bar width
  *
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const getTabGroupColorBarWidth = async () => {
   const data = await getStorage(THEME_UI_TAB_GROUP_NARROW);
@@ -1355,7 +1356,7 @@ export const getTabGroupColorBarWidth = async () => {
  * set tab group color bar width
  *
  * @param {boolean} narrow - narrow
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setTabGroupColorBarWidth = async narrow => {
   const elm = document.querySelector('body');
@@ -1371,7 +1372,7 @@ export const setTabGroupColorBarWidth = async narrow => {
 /**
  * get new tab separator
  *
- * @returns {boolean} - result
+ * @returns {Promise.<boolean>} - result
  */
 export const getNewTabSeparator = async () => {
   const data = await getStorage(NEW_TAB_SEPARATOR_SHOW);
@@ -1387,7 +1388,7 @@ export const getNewTabSeparator = async () => {
  * set new tab separator
  *
  * @param {boolean} show - show separator
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setNewTabSeparator = async show => {
   const elm = document.querySelector(`#${NEW_TAB} > .${TAB}.${NEW_TAB}`);
@@ -1404,7 +1405,7 @@ export const setNewTabSeparator = async show => {
  * set active tab font weight
  *
  * @param {string} value - value of font weight
- * @returns {?Function} - updateCustomThemeCss()
+ * @returns {Promise.<?Promise>} - updateCustomThemeCss()
  */
 export const setActiveTabFontWeight = async value => {
   if (isString(value)) {
@@ -1422,7 +1423,7 @@ export const setActiveTabFontWeight = async value => {
 /**
  * apply CSS
  *
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const applyCss = async () => {
   const items = document.querySelectorAll('section[hidden]');
@@ -1435,7 +1436,7 @@ export const applyCss = async () => {
  * set sidebar theme
  *
  * @param {object} opt - options
- * @returns {void}
+ * @returns {Promise.<void>} - void
  */
 export const setSidebarTheme = async (opt = {}) => Promise.all([
   applyTheme(opt),

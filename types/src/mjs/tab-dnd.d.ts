@@ -1,0 +1,13 @@
+export function moveDroppedTabs(dropTarget: object, draggedIds: any[], opt: object): Promise<any[]>;
+export function getTargetForDraggedTabs(dropTarget: object, opt: object): object;
+export function getDropIndexForDraggedTabs(dropTarget: object, opt: object): number;
+export function extractDroppedTabs(dropTarget: object, data: object): Promise<any[]>;
+export function openUriList(dropTarget: object, data?: any[]): Promise<any[]>;
+export function searchQuery(dropTarget: object, data?: string): Promise<any[]>;
+export function handleDrop(evt: object): (Promise<any> | undefined) | null;
+export function handleDragEnd(evt: object): void;
+export function handleDragLeave(evt: object): void;
+export function handleDragOver(evt: object, opt?: object): void;
+export function handleDragEnter(evt: object): void;
+export function handleDragStart(evt: object, opt?: object): Promise<any[]> | undefined;
+export { ports } from "./session.js";
