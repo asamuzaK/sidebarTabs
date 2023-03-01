@@ -49,7 +49,8 @@ export const createMenuItemCallback = () => {
   if (runtime.lastError) {
     const e = runtime.lastError;
     if (e.message.includes('ID already exists:')) {
-      const [, menuItemId] = /ID\s+already\s+exists:\s+(.+)$/.exec(e.message);
+      const [, menuItemId] =
+        /ID\s+already\s+exists:\s+([\dA-Za-z]+)$/.exec(e.message);
       const data = menuItemId && menuItemMap.has(menuItemId) &&
                      menuItemMap.get(menuItemId);
       if (data) {

@@ -105,7 +105,7 @@ const REG_COLOR_SPACE_RGB =
   '(?:a98|prophoto)-rgb|display-p3|rec2020|srgb(?:-linear)?';
 const REG_COLOR_SPACE_XYZ = 'xyz(?:-d(?:50|65))?';
 const REG_NUM =
-  '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)(?:[Ee]-?(?:(?:0|[1-9]\\d*)))?';
+  '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)(?:e-?(?:0|[1-9]\\d*))?';
 const REG_PCT = `${REG_NUM}%`;
 const REG_HSL_HWB = `(?:${REG_NUM}(?:${REG_ANGLE})?|${NONE})(?:\\s+(?:${REG_PCT}|${NONE})){2}(?:\\s*\\/\\s*(?:${REG_NUM}|${REG_PCT}|${NONE}))?`;
 const REG_HSL_LV3 = `${REG_NUM}(?:${REG_ANGLE})?(?:\\s*,\\s*${REG_PCT}){2}(?:\\s*,\\s*(?:${REG_NUM}|${REG_PCT}))?`;
@@ -945,7 +945,7 @@ export const parseRgb = async value => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const reg =
-    new RegExp(`^rgba?\\(\\s*((?:${REG_RGB}|${REG_RGB_LV3}))\\s*\\)$`);
+    new RegExp(`^rgba?\\(\\s*(${REG_RGB}|${REG_RGB_LV3})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -1009,7 +1009,7 @@ export const parseHsl = async value => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const reg =
-    new RegExp(`^hsla?\\(\\s*((?:${REG_HSL_HWB}|${REG_HSL_LV3}))\\s*\\)$`);
+    new RegExp(`^hsla?\\(\\s*(${REG_HSL_HWB}|${REG_HSL_LV3})\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
@@ -1912,7 +1912,7 @@ export const convertColorFuncToHex = async (value, opt = {}) => {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
   const { alpha } = opt;
-  const reg = new RegExp(`^color\\(\\s*(${REG_COLOR_FUNC})\\s*\\)$`);
+  const reg = new RegExp(`^color\\(\\s*${REG_COLOR_FUNC}\\s*\\)$`);
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }

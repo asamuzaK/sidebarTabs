@@ -261,15 +261,16 @@ export const includeLibraries = cmdOpts =>
  * @returns {void}
  */
 export const parseCommand = args => {
-  const reg = /^(?:(?:--)?help|-[h|v]|--version|i(?:nclude)|u(?:pdate)?)$/;
+  const reg = /^(?:(?:--)?help|-[h|v]|--version|(?:includ|updat)e)$/;
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
     commander.exitOverride();
     commander.version(process.env.npm_package_version, '-v, --version');
-    commander.command('update').alias('u').description('update theme manifests')
+    commander.command('update')
+      .description('update theme manifests')
       .option('-d, --dir <name>', 'specify theme directory')
       .option('-i, --info', 'console info')
       .action(updateManifests);
-    commander.command('include').alias('i')
+    commander.command('include')
       .description('include library packages')
       .option('-d, --dir <name>', 'specify library directory')
       .option('-i, --info', 'console info')

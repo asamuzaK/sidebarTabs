@@ -618,7 +618,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     if (border.startsWith('color-mix')) {
       let borderColor;
       if (/currentcolor/i.test(border)) {
-        borderColor = border.replace(/currentcolor/img, color);
+        borderColor = border.replace(/currentcolor/gi, color);
       } else {
         borderColor = border;
       }
@@ -640,7 +640,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     if (border.startsWith('color-mix')) {
       let borderColor;
       if (/currentcolor/i.test(border)) {
-        borderColor = border.replace(/currentcolor/img, color);
+        borderColor = border.replace(/currentcolor/gi, color);
       } else {
         borderColor = border;
       }
@@ -662,7 +662,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     if (border.startsWith('color-mix')) {
       let borderColor;
       if (/currentcolor/i.test(border)) {
-        borderColor = border.replace(/currentcolor/img, color);
+        borderColor = border.replace(/currentcolor/gi, color);
       } else {
         borderColor = border;
       }

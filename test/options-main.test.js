@@ -1,6 +1,7 @@
 /**
  * options-main.test.js
  */
+/* eslint-disable regexp/no-super-linear-backtracking */
 
 /* api */
 import { assert } from 'chai';
@@ -46,7 +47,7 @@ describe('options-main', () => {
           }
 
           replaceSync(str) {
-            if (/{\s*.*\s*}/.test(str)) {
+            if (/\{\s*(?:\S.*(?:[\n\r\u2028\u2029]\s*)?)?\}/.test(str)) {
               const arr = str.replace(/\n/g, '').trim().split('}');
               for (let i of arr) {
                 i = i.trim();
@@ -57,7 +58,7 @@ describe('options-main', () => {
                   } else {
                     textEnd = ';';
                   }
-                  const [, styleText] = /{\s*(.*)\s*$/.exec(i);
+                  const [, styleText] = /\{\s*(.*)\s*$/.exec(i);
                   let styleTextEnd;
                   if (!styleText || styleText.endsWith(';')) {
                     styleTextEnd = '';

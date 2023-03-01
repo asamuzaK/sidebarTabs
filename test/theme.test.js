@@ -1,6 +1,7 @@
 /**
  * theme.test.js
  */
+/* eslint-disable regexp/no-super-linear-backtracking */
 
 /* api */
 import { assert } from 'chai';
@@ -64,7 +65,7 @@ describe('theme', () => {
           }
 
           replaceSync(str) {
-            if (/{\s*.*\s*}/.test(str)) {
+            if (/\{\s*(?:\S.*(?:[\n\r\u2028\u2029]\s*)?)?\}/.test(str)) {
               const arr = str.replace(/\n/g, '').trim().split('}');
               for (let i of arr) {
                 i = i.trim();
@@ -75,7 +76,7 @@ describe('theme', () => {
                   } else {
                     textEnd = ';';
                   }
-                  const [, styleText] = /{\s*(.*)\s*$/.exec(i);
+                  const [, styleText] = /\{\s*(.*)\s*$/.exec(i);
                   let styleTextEnd;
                   if (!styleText || styleText.endsWith(';')) {
                     styleTextEnd = '';
