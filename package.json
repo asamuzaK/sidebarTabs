@@ -17,9 +17,9 @@
     "camelize": "^1.0.1",
     "commander": "^10.0.0",
     "decamelize": "^6.0.0",
-    "dompurify": "^3.0.0",
-    "tldts-experimental": "^5.7.109",
-    "url-sanitizer": "^0.9.8",
+    "dompurify": "^3.0.1",
+    "tldts-experimental": "^5.7.110",
+    "url-sanitizer": "^0.9.14",
     "webext-schema": "^5.1.8"
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "eslint": "^8.35.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^40.0.0",
+    "eslint-plugin-jsdoc": "^40.0.1",
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",

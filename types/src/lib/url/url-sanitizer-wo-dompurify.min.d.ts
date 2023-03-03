@@ -14,12 +14,12 @@ declare var y: {
     remove(e: any): boolean;
     verify(e: any): boolean;
 };
-declare function xe(t: any): Promise<boolean>;
-declare function Ue(t: any): boolean;
+declare function Re(t: any): Promise<boolean>;
+declare function ve(t: any): boolean;
 declare function Ee(t: any): Promise<{
     [k: string]: any;
 }>;
-declare function Re(t: any): {
+declare function xe(t: any): {
     [k: string]: any;
 };
 declare function be(t: any, e?: {
@@ -28,4 +28,4 @@ declare function be(t: any, e?: {
     only: any[];
 }): Promise<string>;
 declare function we(t: any, e: any): string;
-export { y as default, xe as isURI, Ue as isURISync, Ee as parseURL, Re as parseURLSync, be as sanitizeURL, we as sanitizeURLSync };
+export { y as default, Re as isURI, ve as isURISync, Ee as parseURL, xe as parseURLSync, be as sanitizeURL, we as sanitizeURLSync };
