@@ -83,4 +83,4 @@ window.addEventListener('contextmenu', handleContextmenuEvt);
 window.matchMedia(COLOR_SCHEME_DARK).addEventListener('change', () =>
   handleUpdatedTheme().catch(throwErr)
 );
-document.addEventListener('DOMContentLoaded', startup().catch(throwErr));
+document.addEventListener('DOMContentLoaded', () => startup().catch(throwErr));

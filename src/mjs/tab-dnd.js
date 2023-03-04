@@ -36,8 +36,8 @@ const ONE_THIRD = 1 / 3;
  * move dropped tabs
  *
  * @param {object} dropTarget - drop target
- * @param {Array} draggedIds - Array of dragged tab ID
- * @param {object} opt - options
+ * @param {Array} [draggedIds] - Array of dragged tab ID
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - result of each handler
  */
 export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
@@ -130,8 +130,8 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
 /**
  * get target for dragged tabs
  *
- * @param {object} dropTarget - drop target
- * @param {object} opt - options
+ * @param {object} [dropTarget] - drop target
+ * @param {object} [opt] - options
  * @returns {object} - element
  */
 export const getTargetForDraggedTabs = (dropTarget, opt) => {
@@ -164,8 +164,8 @@ export const getTargetForDraggedTabs = (dropTarget, opt) => {
 /**
  * get drop target index for dragged tabs
  *
- * @param {object} dropTarget - drop target
- * @param {object} opt - options
+ * @param {object} [dropTarget] - drop target
+ * @param {object} [opt] - options
  * @returns {number} - index;
  */
 export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
@@ -206,8 +206,8 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
 /**
  * extract dropped tabs data
  *
- * @param {object} dropTarget - target element
- * @param {object} data - dragged data
+ * @param {object} [dropTarget] - target element
+ * @param {object} [data] - dragged data
  * @returns {Promise.<Array>} - results of each handler
  */
 export const extractDroppedTabs = async (dropTarget, data) => {
@@ -359,8 +359,8 @@ export const extractDroppedTabs = async (dropTarget, data) => {
 /**
  * open dropped URI list
  *
- * @param {object} dropTarget - target element
- * @param {Array} data - uri list
+ * @param {object} [dropTarget] - target element
+ * @param {Array} [data] - uri list
  * @returns {Promise.<Array>} - results of each handler
  */
 export const openUriList = async (dropTarget, data = []) => {
@@ -436,8 +436,8 @@ export const openUriList = async (dropTarget, data = []) => {
 /**
  * search dropped query
  *
- * @param {object} dropTarget - target element
- * @param {string} data - seach query
+ * @param {object} [dropTarget] - target element
+ * @param {string} [data] - seach query
  * @returns {Promise.<Array>} - results of each handler
  */
 export const searchQuery = async (dropTarget, data = '') => {
@@ -601,7 +601,7 @@ export const handleDragLeave = evt => {
  * handle dragover
  *
  * @param {!object} evt - event
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {void}
  */
 export const handleDragOver = (evt, opt = {}) => {
@@ -710,7 +710,7 @@ export const handleDragEnter = evt => {
  * handle dragstart
  *
  * @param {!object} evt - event
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>|undefined} - result of each handler
  */
 export const handleDragStart = (evt, opt = {}) => {

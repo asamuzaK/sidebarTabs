@@ -31,7 +31,7 @@ export const sendMsg = async msg => {
 /**
  * init extension
  *
- * @param {boolean} init - init
+ * @param {boolean} [init] - init
  * @returns {Promise.<?Promise>} - sendMessage()
  */
 export const initExt = async (init = false) => {
@@ -63,7 +63,7 @@ export const initCustomTheme = async (init = false) => {
 /**
  * request custom theme
  *
- * @param {boolean} bool - bool
+ * @param {boolean} [bool] - bool
  * @returns {Promise.<?Promise>} - sendMessage()
  */
 export const requestCustomTheme = async (bool = false) => {
@@ -100,7 +100,7 @@ export const storeCustomTheme = async () => {
 /**
  * create pref
  *
- * @param {object} elm - element
+ * @param {object} [elm] - element
  * @returns {Promise.<object>} - pref data
  */
 export const createPref = async (elm = {}) => {
@@ -212,7 +212,7 @@ export const addCustomThemeListener = async () => {
 /**
  * set custom theme value
  *
- * @param {object} obj - values
+ * @param {object} [obj] - values
  * @returns {Promise.<void>} - void
  */
 export const setCustomThemeValue = async (obj = {}) => {
@@ -276,7 +276,7 @@ export const addBookmarkLocations = async () => {
 /**
  * handle init custom theme click
  *
- * @param {object} evt - Event
+ * @param {!object} evt - Event
  * @returns {Promise} - promise chain
  */
 export const handleInitCustomThemeClick = evt => {
@@ -397,7 +397,7 @@ export const addInputChangeListener = async () => {
 /**
  * set html input value
  *
- * @param {object} data - storage data
+ * @param {object} [data] - storage data
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setHtmlInputValue = async (data = {}) => {

@@ -911,7 +911,7 @@ export const normalizeColorComponents = async (colorA, colorB) => {
 /**
  * parse alpha
  *
- * @param {?string} a - alpha value
+ * @param {?string} [a] - alpha value
  * @returns {Promise.<number>} - a: 0..1
  */
 export const parseAlpha = async a => {
@@ -1545,7 +1545,7 @@ export const parseColorFunc = async (value, d50 = false) => {
  * parse color keywords and functions
  *
  * @param {string} value - value
- * @param {boolean} d50 - xyz in d50 white point
+ * @param {boolean} [d50] - xyz in d50 white point
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
 export const parseColor = async (value, d50 = false) => {
@@ -1653,7 +1653,7 @@ export const parseColor = async (value, d50 = false) => {
  * convert color to linear rgb
  *
  * @param {string} value - value
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - [r, g, b, a] r|g|b|a: 0..1
  */
 export const convertColorToLinearRgb = async (value, opt = {}) => {
@@ -1686,7 +1686,7 @@ export const convertColorToLinearRgb = async (value, opt = {}) => {
  * convert color to rgb
  *
  * @param {string} value - value
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
 export const convertColorToRgb = async (value, opt = {}) => {
@@ -2486,7 +2486,7 @@ export const convertColorMixToHex = async (value, opt = {}) => {
  * get color in hex color notation
  *
  * @param {string} value - value
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<?string|Array>} - hex color or array of [prop, hex] pair
  */
 export const getColorInHex = async (value, opt = {}) => {

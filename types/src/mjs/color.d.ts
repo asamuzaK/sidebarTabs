@@ -175,7 +175,7 @@ export function hexToXyz(value: string): Promise<Array<number>>;
 export function hexToXyzD50(value: string): Promise<Array<number>>;
 export function reInsertMissingComponents(value: string, color?: any[]): Promise<any[]>;
 export function normalizeColorComponents(colorA: any[], colorB: any[]): Promise<Array<any[]>>;
-export function parseAlpha(a: string | null): Promise<number>;
+export function parseAlpha(a?: string | null): Promise<number>;
 export function parseRgb(value: string): Promise<Array<number>>;
 export function parseHsl(value: string): Promise<Array<number>>;
 export function parseHwb(value: string): Promise<Array<number>>;

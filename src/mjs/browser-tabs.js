@@ -497,7 +497,7 @@ export const moveTabsToNewWindow = async nodes => {
  * mute tabs
  *
  * @param {Array} nodes - array of node
- * @param {boolean} muted - muted
+ * @param {boolean} [muted] - muted
  * @returns {Promise.<Array>} - results of each handler
  */
 export const muteTabs = async (nodes, muted) => {
@@ -518,8 +518,8 @@ export const muteTabs = async (nodes, muted) => {
 /**
  * create new tab
  *
- * @param {number} windowId - window ID
- * @param {object} opt - options
+ * @param {number} [windowId] - window ID
+ * @param {object} [opt] - options
  * @returns {Promise} - createTab()
  */
 export const createNewTab = async (windowId, opt = {}) => {
@@ -561,7 +561,7 @@ export const createNewTab = async (windowId, opt = {}) => {
  * create new tab in container
  *
  * @param {string} cookieId - cookie store ID
- * @param {number} windowId - window ID
+ * @param {number} [windowId] - window ID
  * @returns {Promise} - createTab()
  */
 export const createNewTabInContainer = async (cookieId, windowId) => {
@@ -583,7 +583,7 @@ export const createNewTabInContainer = async (cookieId, windowId) => {
  * pin tabs
  *
  * @param {Array} nodes - array of node
- * @param {boolean} pinned - pinned
+ * @param {boolean} [pinned] - pinned
  * @returns {Promise.<Array>} - results of each handler
  */
 export const pinTabs = async (nodes, pinned) => {

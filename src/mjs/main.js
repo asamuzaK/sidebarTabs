@@ -127,7 +127,7 @@ export const userOptsKeys = new Set([
 /**
  * set user options
  *
- * @param {object} opt - user option
+ * @param {object} [opt] - user option
  * @returns {Promise.<object>} - userOpts
  */
 export const setUserOpts = async (opt = {}) => {
@@ -203,7 +203,7 @@ export const setSidebar = async () => {
 /**
  * init sidebar
  *
- * @param {boolean} bool - bypass cache
+ * @param {boolean} [bool] - bypass cache
  * @returns {Promise.<void>} - void
  */
 export const initSidebar = async (bool = false) => {
@@ -216,7 +216,7 @@ export const initSidebar = async (bool = false) => {
 /**
  * set context
  *
- * @param {object} elm - Element
+ * @param {object} [elm] - Element
  * @returns {void}
  */
 export const setContext = elm => {
@@ -243,7 +243,7 @@ export const setContextualIds = async () => {
 /**
  * set last closed tab
  *
- * @param {object} tab - tabs.Tab
+ * @param {object} [tab] - tabs.Tab
  * @returns {Promise.<void>} - void
  */
 export const setLastClosedTab = async tab => {
@@ -284,7 +284,7 @@ export const undoCloseTab = async () => {
 /**
  * set pinned tabs waiting to move
  *
- * @param {?Array} arr - array of tabs
+ * @param {?Array} [arr] - array of tabs
  * @returns {Promise.<void>} - void
  */
 export const setPinnedTabsWaitingToMove = async arr => {
@@ -295,7 +295,7 @@ export const setPinnedTabsWaitingToMove = async arr => {
 /**
  * set tabs waiting to move
  *
- * @param {?Array} arr - array of tabs
+ * @param {?Array} [arr] - array of tabs
  * @returns {Promise.<void>} - void
  */
 export const setTabsWaitingToMove = async arr => {
@@ -402,7 +402,7 @@ export const triggerDndHandler = evt => {
 /**
  * handle create new tab
  *
- * @param {object} evt - event
+ * @param {!object} evt - event
  * @returns {?Promise} - createNewTab()
  */
 export const handleCreateNewTab = evt => {
@@ -514,7 +514,7 @@ export const handleClickedTab = evt => {
 /**
  * add sidebar tab click listener
  *
- * @param {object} elm - element
+ * @param {object} [elm] - element
  * @returns {Promise.<void>} - void
  */
 export const addTabClickListener = async elm => {
@@ -528,8 +528,8 @@ export const addTabClickListener = async elm => {
 /**
  * toggle tab dblclick listener
  *
- * @param {object} elm - element
- * @param {boolean} bool - add or remove
+ * @param {object} [elm] - element
+ * @param {boolean} [bool] - add or remove
  * @returns {Promise.<void>} - void
  */
 export const toggleTabDblClickListener = async (elm, bool) => {
@@ -546,7 +546,7 @@ export const toggleTabDblClickListener = async (elm, bool) => {
 /**
  * replace tab dblclick listeners
  *
- * @param {boolean} bool - add or remove
+ * @param {boolean} [bool] - add or remove
  * @returns {Promise.<Array>} - result of each handler
  */
 export const replaceTabDblClickListeners = async (bool = false) => {
@@ -585,7 +585,7 @@ export const triggerTabWarmup = evt => {
 /**
  * add tab event listeners
  *
- * @param {object} elm - element
+ * @param {object} [elm] - element
  * @returns {Promise.<void>} - void
  */
 export const addTabEventListeners = async elm => {
@@ -667,7 +667,7 @@ export const handleActivatedTab = async info => {
  * handle created tab
  *
  * @param {!object} tabsTab - tabs.Tab
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleCreatedTab = async (tabsTab, opt = {}) => {
@@ -884,18 +884,18 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
  * @returns {Promise.<?Promise>} - tabs.Tab
  */
 export const handleAttachedTab = async (tabId, info) => {
-  const { newPosition, newWindowId } = info;
-  const { windowId } = sidebar;
-  let func;
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
+  const { newPosition, newWindowId } = info;
   if (!Number.isInteger(newPosition)) {
     throw new TypeError(`Expected Number but got ${getType(newPosition)}.`);
   }
   if (!Number.isInteger(newWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(newWindowId)}.`);
   }
+  const { windowId } = sidebar;
+  let func;
   if (tabId !== TAB_ID_NONE && newWindowId === windowId) {
     const tabsTab = await getTab(tabId);
     const opt = {
@@ -915,14 +915,14 @@ export const handleAttachedTab = async (tabId, info) => {
  * @returns {Promise.<void>} - void
  */
 export const handleDetachedTab = async (tabId, info) => {
-  const { oldWindowId } = info;
-  const { windowId } = sidebar;
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
+  const { oldWindowId } = info;
   if (!Number.isInteger(oldWindowId)) {
     throw new TypeError(`Expected Number but got ${getType(oldWindowId)}.`);
   }
+  const { windowId } = sidebar;
   if (oldWindowId === windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     tab?.parentNode.removeChild(tab);
@@ -937,13 +937,13 @@ export const handleDetachedTab = async (tabId, info) => {
  */
 export const handleHighlightedTab = async info => {
   const { tabIds, windowId } = info;
-  const func = [];
   if (!Array.isArray(tabIds)) {
     throw new TypeError(`Expected Array but got ${getType(tabIds)}.`);
   }
   if (!Number.isInteger(windowId)) {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
+  const func = [];
   if (windowId === sidebar.windowId) {
     const items = document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     const highlightedTabIds = tabIds.filter(i => Number.isInteger(i));
@@ -973,10 +973,10 @@ export const handleHighlightedTab = async info => {
  * @returns {Promise.<?Promise>} - promise chain
  */
 export const handleMovedTab = async (tabId, info) => {
-  const { fromIndex, toIndex, windowId } = info;
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
+  const { fromIndex, toIndex, windowId } = info;
   if (!Number.isInteger(fromIndex)) {
     throw new TypeError(`Expected Number but got ${getType(fromIndex)}.`);
   }
@@ -1115,10 +1115,10 @@ export const handleMovedTab = async (tabId, info) => {
  * @returns {Promise.<void>} - void
  */
 export const handleRemovedTab = async (tabId, info) => {
-  const { isWindowClosing, windowId } = info;
   if (!Number.isInteger(tabId)) {
     throw new TypeError(`Expected Number but got ${getType(tabId)}.`);
   }
+  const { isWindowClosing, windowId } = info;
   if (!Number.isInteger(windowId)) {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
@@ -1132,8 +1132,8 @@ export const handleRemovedTab = async (tabId, info) => {
  * handle updated tab
  *
  * @param {!number} tabId - tab ID
- * @param {!object} info - updated tab info
- * @param {!object} tabsTab - tabs.Tab
+ * @param {object} [info] - updated tab info
+ * @param {object} [tabsTab] - tabs.Tab
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleUpdatedTab = async (tabId, info, tabsTab) => {
@@ -1546,7 +1546,7 @@ export const prepareNewTabMenuItems = async elm => {
 /**
  * prepare page menu items
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
  */
 export const preparePageMenuItems = async opt => {
@@ -1586,8 +1586,8 @@ export const preparePageMenuItems = async opt => {
 /**
  * prepare tab group menu items
  *
- * @param {object} elm - element
- * @param {object} opt - options
+ * @param {object} [elm] - element
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
  */
 export const prepareTabGroupMenuItems = async (elm, opt) => {
@@ -2036,7 +2036,7 @@ export const prepareTabMenuItems = async elm => {
 /**
  * handle updated theme
  *
- * @param {object} info - update info
+ * @param {object} [info] - update info
  * @returns {Promise.<?Promise>} - promise chain
  */
 export const handleUpdatedTheme = async info => {
@@ -2073,7 +2073,7 @@ export const handleUpdatedTheme = async info => {
 /**
  * handle init custom theme request
  *
- * @param {boolean} remove - remove
+ * @param {boolean} [remove] - remove
  * @returns {Promise.<?Promise>} - initCustomTheme()
  */
 export const handleInitCustomThemeRequest = async (remove = false) => {
@@ -2228,9 +2228,9 @@ export const requestSidebarStateUpdate = async () => {
 /**
  * set storage value
  *
- * @param {string} item - item
- * @param {object} obj - value object
- * @param {boolean} changed - changed
+ * @param {string} [item] - item
+ * @param {object} [obj] - value object
+ * @param {boolean} [changed] - changed
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setStorageValue = async (item, obj, changed = false) => {
@@ -2389,9 +2389,9 @@ export const setStorageValue = async (item, obj, changed = false) => {
 /**
  * handle storage
  *
- * @param {object} data - data
- * @param {string} area - storage area
- * @param {boolean} changed - storage changed
+ * @param {object} [data] - data
+ * @param {string} [area] - storage area
+ * @param {boolean} [changed] - storage changed
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleStorage = async (data, area = 'local', changed = false) => {

@@ -26,7 +26,7 @@ export const removePort = async portId => ports.delete(portId);
 /**
  * port on disconnect
  *
- * @param {object} port - runtime.Port
+ * @param {object} [port] - runtime.Port
  * @returns {Promise} - promise chain
  */
 export const portOnDisconnect = (port = {}) => {
@@ -66,8 +66,8 @@ export const addPort = async portId => {
 /**
  * get port
  *
- * @param {string} portId - port ID
- * @param {boolean} add - add port if port does not exist
+ * @param {string} [portId] - port ID
+ * @param {boolean} [add] - add port if port does not exist
  * @returns {Promise.<object>} - runtime.Port
  */
 export const getPort = async (portId, add = false) => {

@@ -262,7 +262,7 @@ export const setCurrentThemeColors = async (key, value) => {
 /**
  * get current theme base values
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<object>} - values
  */
 export const getCurrentThemeBaseValues = async (opt = {}) => {
@@ -697,7 +697,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
 /**
  * get base values
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<object>} - values
  */
 export const getBaseValues = async (opt = {}) => {
@@ -779,7 +779,7 @@ export const getBaseValues = async (opt = {}) => {
 /**
  * set current theme value
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<void>} - void
  */
 export const setCurrentThemeValue = async (opt = {}) => {
@@ -908,7 +908,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
 /**
  * delete custom theme CSS rule
  *
- * @param {string} sel - selector
+ * @param {string} [sel] - selector
  * @returns {Promise.<void>} - void
  */
 export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
@@ -937,7 +937,7 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
 /**
  * init custom theme
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<?Promise>} - sendCurrentTheme()
  */
 export const initCustomTheme = async (opt = {}) => {
@@ -974,7 +974,7 @@ export const initCustomTheme = async (opt = {}) => {
 /**
  * get theme info
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - theme info
  */
 export const getThemeInfo = async (opt = {}) => {
@@ -1013,8 +1013,8 @@ export const getThemeInfo = async (opt = {}) => {
 /**
  * set theme
  *
- * @param {Array} info - theme info
- * @param {object} opt - options
+ * @param {Array} [info] - theme info
+ * @param {object} [opt] - options
  * @returns {Promise.<void>} - void
  */
 export const setTheme = async (info = [], opt = {}) => {
@@ -1119,7 +1119,7 @@ export const timeStamp = new Map();
 /**
  * apply local theme
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<?Promise>} - recurse applyLocalTheme()
  */
 export const applyLocalTheme = async (opt = {}) => {
@@ -1170,7 +1170,7 @@ export const applyLocalTheme = async (opt = {}) => {
 /**
  * apply custom theme
  *
- * @param {object} data - custom theme values
+ * @param {object} [data] - custom theme values
  * @returns {Promise.<Array>} - result of each handler
  */
 export const applyCustomTheme = async data => {
@@ -1212,7 +1212,7 @@ export const applyCustomTheme = async data => {
 /**
  * apply theme
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise} - promise chain
  */
 export const applyTheme = async (opt = {}) => {
@@ -1291,7 +1291,7 @@ export const getTabHeight = async () => {
 /**
  * set tab height
  *
- * @param {boolean} compact - compact
+ * @param {boolean} [compact] - compact
  * @returns {Promise.<void>} - void
  */
 export const setTabHeight = async compact => {
@@ -1323,7 +1323,7 @@ export const getScrollbarWidth = async () => {
 /**
  * set scrollbar width
  *
- * @param {boolean} narrow - narrow
+ * @param {boolean} [narrow] - narrow
  * @returns {Promise.<void>} - void
  */
 export const setScrollbarWidth = async narrow => {
@@ -1355,7 +1355,7 @@ export const getTabGroupColorBarWidth = async () => {
 /**
  * set tab group color bar width
  *
- * @param {boolean} narrow - narrow
+ * @param {boolean} [narrow] - narrow
  * @returns {Promise.<void>} - void
  */
 export const setTabGroupColorBarWidth = async narrow => {
@@ -1387,7 +1387,7 @@ export const getNewTabSeparator = async () => {
 /**
  * set new tab separator
  *
- * @param {boolean} show - show separator
+ * @param {boolean} [show] - show separator
  * @returns {Promise.<void>} - void
  */
 export const setNewTabSeparator = async show => {
@@ -1435,7 +1435,7 @@ export const applyCss = async () => {
 /**
  * set sidebar theme
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {Promise.<void>} - void
  */
 export const setSidebarTheme = async (opt = {}) => Promise.all([

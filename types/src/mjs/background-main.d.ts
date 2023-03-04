@@ -1,9 +1,9 @@
 export const sidebar: Map<any, any>;
-export function setSidebarState(windowId: number): Promise<void>;
+export function setSidebarState(windowId?: number): Promise<void>;
 export function removeSidebarState(windowId: number): Promise<boolean>;
 export function toggleSidebar(): Promise<any>;
 export function handleSaveSessionRequest(domString: string, windowId: number): Promise<boolean>;
-export function handleMsg(msg: object): Promise<any[]>;
+export function handleMsg(msg?: object): Promise<any[]>;
 export function portOnMessage(msg: object): Promise<any>;
 export function handleDisconnectedPort(port?: object): Promise<void>;
 export function portOnDisconnect(port: object): Promise<any>;

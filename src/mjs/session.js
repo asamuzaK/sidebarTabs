@@ -43,7 +43,7 @@ export const mutex = new Set();
  * save tab list to sessions
  *
  * @param {string} domStr - DOM string
- * @param {number} [windowId] - window ID
+ * @param {number} windowId - window ID
  * @returns {Promise.<boolean>} - saved
  */
 export const saveSessionTabList = async (domStr, windowId) => {

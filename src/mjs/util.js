@@ -37,7 +37,7 @@ export const getTemplate = id => {
 /**
  * get sidebar tab container from parent node
  *
- * @param {object} node - node
+ * @param {object} [node] - node
  * @returns {object} - sidebar tab container
  */
 export const getSidebarTabContainer = node => {
@@ -56,7 +56,7 @@ export const getSidebarTabContainer = node => {
 /**
  * restore sidebar tab container
  *
- * @param {object} container - tab container
+ * @param {object} [container] - tab container
  * @returns {void}
  */
 export const restoreTabContainer = container => {
@@ -77,7 +77,7 @@ export const restoreTabContainer = container => {
 /**
  * create sidebar tab
  *
- * @param {object} node - node
+ * @param {object} [node] - node
  * @param {object} [target] - target element to insert before
  * @returns {object} - sidebar tab
  */
@@ -100,7 +100,7 @@ export const createSidebarTab = (node, target) => {
 /**
  * get sidebar tab from parent node
  *
- * @param {object} node - node
+ * @param {object} [node] - node
  * @returns {object} - sidebar tab
  */
 export const getSidebarTab = node => {
@@ -119,7 +119,7 @@ export const getSidebarTab = node => {
 /**
  * get sidebar tab ID
  *
- * @param {object} node - node
+ * @param {object} [node] - node
  * @returns {?number} - tab ID
  */
 export const getSidebarTabId = node => {
@@ -211,7 +211,7 @@ export const getTabsInRange = (tabA, tabB) => {
  * get next tab
  *
  * @param {object} elm - element
- * @param {boolean} skipCollapsed - skip collapsed tab
+ * @param {boolean} [skipCollapsed] - skip collapsed tab
  * @returns {object} - tab
  */
 export const getNextTab = (elm, skipCollapsed = false) => {
@@ -239,7 +239,7 @@ export const getNextTab = (elm, skipCollapsed = false) => {
  * get previous tab
  *
  * @param {object} elm - element
- * @param {boolean} skipCollapsed - skip collapsed tab
+ * @param {boolean} [skipCollapsed] - skip collapsed tab
  * @returns {object} - tab
  */
 export const getPreviousTab = (elm, skipCollapsed = false) => {
@@ -267,7 +267,7 @@ export const getPreviousTab = (elm, skipCollapsed = false) => {
 /**
  * is newtab
  *
- * @param {object} node - node
+ * @param {object} [node] - node
  * @returns {boolean} - result
  */
 export const isNewTab = node => {
@@ -303,7 +303,7 @@ export const activateTab = async elm => {
 /**
  * scroll tab into view
  *
- * @param {object} elm - Element
+ * @param {object} [elm] - Element
  * @returns {Promise.<void>} - void
  */
 export const scrollTabIntoView = async elm => {
@@ -357,7 +357,7 @@ export const scrollTabIntoView = async elm => {
  *
  * switch tab
  *
- * @param {object} opt - options
+ * @param {object} [opt] - options
  * @returns {?Promise} - activateTab()
  */
 export const switchTab = async opt => {
@@ -420,7 +420,7 @@ export const createUrlMatchString = url => {
 /**
  * store closeTabsByDoubleClick user value
  *
- * @param {boolean} bool - browserSettings enabled
+ * @param {boolean} [bool] - browserSettings enabled
  * @returns {Promise.<void>} - void
  */
 export const storeCloseTabsByDoubleClickValue = async bool => {

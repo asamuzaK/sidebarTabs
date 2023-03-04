@@ -26,7 +26,7 @@ export const sidebar = new Map();
 /**
  * set sidebar state
  *
- * @param {number} windowId - window ID
+ * @param {number} [windowId] - window ID
  * @returns {Promise.<void>} - void
  */
 export const setSidebarState = async windowId => {
@@ -122,7 +122,7 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
 /**
  * handle runtime message
  *
- * @param {object} msg - message
+ * @param {object} [msg] - message
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleMsg = async msg => {
@@ -161,7 +161,7 @@ export const portOnMessage = msg => handleMsg(msg).catch(throwErr);
 /**
  * handle disconnected port
  *
- * @param {object} port - runtime.Port
+ * @param {object} [port] - runtime.Port
  * @returns {Promise.<void>} - void
  */
 export const handleDisconnectedPort = async (port = {}) => {
@@ -201,7 +201,7 @@ export const portOnDisconnect = port =>
 /**
  * handle connected port
  *
- * @param {object} port - runtime.Port
+ * @param {object} [port] - runtime.Port
  * @returns {Promise.<void>} - void
  */
 export const handleConnectedPort = async (port = {}) => {

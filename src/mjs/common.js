@@ -35,7 +35,7 @@ export const throwErr = e => {
 /**
  * log warn
  *
- * @param {*} msg - message
+ * @param {*} [msg] - message
  * @returns {boolean} - false
  */
 export const logWarn = msg => {
@@ -48,7 +48,7 @@ export const logWarn = msg => {
 /**
  * log message
  *
- * @param {*} msg - message
+ * @param {*} [msg] - message
  * @returns {object} - message
  */
 export const logMsg = msg => {
@@ -89,8 +89,8 @@ export const isObjectNotEmpty = o => {
 /**
  * sleep
  *
- * @param {number} msec - millisecond
- * @param {boolean} doReject - reject instead of resolve
+ * @param {number} [msec] - millisecond
+ * @param {boolean} [doReject] - reject instead of resolve
  * @returns {?Promise} - resolve / reject
  */
 export const sleep = (msec = 0, doReject = false) => {
@@ -110,9 +110,9 @@ export const sleep = (msec = 0, doReject = false) => {
 /**
  * add contenteditable attribute to element
  *
- * @param {object} elm - Element
+ * @param {object} [elm] - Element
  * @param {boolean} [focus] - focus Element
- * @returns {object} elm - Element
+ * @returns {object} - Element
  */
 export const addElementContentEditable = (elm, focus) => {
   if (elm?.nodeType === Node.ELEMENT_NODE) {
@@ -127,8 +127,8 @@ export const addElementContentEditable = (elm, focus) => {
 /**
  * remove contenteditable attribute from element
  *
- * @param {object} elm - Element
- * @returns {object} elm - Element
+ * @param {object} [elm] - Element
+ * @returns {object} - Element
  */
 export const removeElementContentEditable = elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE) {
@@ -140,9 +140,9 @@ export const removeElementContentEditable = elm => {
 /**
  * set element dataset
  *
- * @param {object} elm - Element
- * @param {string} key - dataset key
- * @param {string} value - dataset value
+ * @param {object} [elm] - Element
+ * @param {string} [key] - dataset key
+ * @param {string} [value] - dataset value
  * @returns {object} - Element
  */
 export const setElementDataset = (elm, key, value) => {
