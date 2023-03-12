@@ -11,19 +11,19 @@
     "url": "git+ssh://git@github.com/remusao/tldts.git"
   },
   "type": "module",
-  "version": "5.7.110",
+  "version": "5.7.111",
   "origins": [
     {
       "file": "LICENSE",
-      "cdn": "https://unpkg.com/tldts-experimental@5.7.110/LICENSE"
+      "cdn": "https://unpkg.com/tldts-experimental@5.7.111/LICENSE"
     },
     {
       "file": "index.esm.min.js",
-      "cdn": "https://unpkg.com/tldts-experimental@5.7.110/dist/index.esm.min.js"
+      "cdn": "https://unpkg.com/tldts-experimental@5.7.111/dist/index.esm.min.js"
     },
     {
       "file": "index.esm.min.js.map",
-      "cdn": "https://unpkg.com/tldts-experimental@5.7.110/dist/index.esm.min.js.map"
+      "cdn": "https://unpkg.com/tldts-experimental@5.7.111/dist/index.esm.min.js.map"
     }
   ]
 }
