@@ -1,7 +1,10 @@
 {
   "background": {
-    "page": "html/background.html",
-    "persistent": false
+    "persistent": false,
+    "scripts": [
+      "mjs/background.js"
+    ],
+    "type": "module"
   },
   "browser_action": {
     "browser_style": true,
@@ -11,7 +14,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "sidebarTabs@asamuzak.jp",
-      "strict_min_version": "101.0"
+      "strict_min_version": "112.0a1"
     }
   },
   "commands": {
