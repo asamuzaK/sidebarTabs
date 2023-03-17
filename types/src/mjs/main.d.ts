@@ -65,4 +65,4 @@ export function setPinnedObserver(): Promise<void>;
 export function setMain(): Promise<void>;
 export function startup(): Promise<any>;
 export { ports };
-import { ports } from "./port.js";
+import { ports } from './port.js';

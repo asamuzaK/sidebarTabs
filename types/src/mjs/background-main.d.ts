@@ -10,4 +10,4 @@ export function portOnDisconnect(port: object): Promise<any>;
 export function handleConnectedPort(port?: object): Promise<void>;
 export function handleCmd(cmd: string): Promise<Promise<any> | null>;
 export { ports };
-import { ports } from "./port.js";
+import { ports } from './port.js';
