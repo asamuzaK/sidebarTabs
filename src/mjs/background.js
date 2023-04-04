@@ -14,8 +14,7 @@ import {
 } from './menu.js';
 
 /* api */
-const { commands, contextualIdentities, runtime, windows } = browser;
-const action = browser.action ?? browser.browserAction;
+const { action, commands, contextualIdentities, runtime, windows } = browser;
 
 /* listeners */
 action.onClicked.addListener(() =>
