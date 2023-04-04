@@ -6669,6 +6669,19 @@ describe('main', () => {
       assert.deepEqual(res, [], 'result');
     });
 
+    it('should not call function', async () => {
+      browser.windows.getCurrent.resolves({
+        focused: false
+      });
+      const i = browser.runtime.openOptionsPage.callCount;
+      const res = await func({
+        menuItemId: OPTIONS_OPEN
+      });
+      assert.strictEqual(browser.runtime.openOptionsPage.callCount, i,
+        'not called');
+      assert.deepEqual(res, [], 'result');
+    });
+
     it('should call function', async () => {
       browser.windows.getCurrent.resolves({
         focused: true

@@ -1250,229 +1250,230 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
  * @returns {Promise.<Array>} - results of each handler
  */
 export const handleClickedMenu = async info => {
-  const { menuItemId } = info;
-  const { context, contextualIds, windowId } = sidebar;
   const { focused } = await getCurrentWindow();
-  const allTabs = document.querySelectorAll(TAB_QUERY);
-  const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-  const tab = getSidebarTab(context);
-  const tabId = getSidebarTabId(tab);
-  const tabIndex = getSidebarTabIndex(tab);
-  const heading = getTabGroupHeading(context);
-  const collapseOther = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
   const func = [];
-  let tabsTab;
-  if (Number.isInteger(tabId)) {
-    tabsTab = await getTab(tabId);
-  }
-  switch (menuItemId) {
-    case OPTIONS_OPEN:
-      func.push(runtime.openOptionsPage());
-      break;
-    case TAB_ALL_BOOKMARK:
-      func.push(bookmarkTabs([...allTabs]));
-      break;
-    case TAB_ALL_RELOAD:
-      func.push(reloadTabs([...allTabs]));
-      break;
-    case TAB_ALL_SELECT:
-      func.push(highlightTabs([...allTabs], windowId));
-      break;
-    case TAB_BOOKMARK:
-      func.push(bookmarkTabs([tab]));
-      break;
-    case TAB_CLOSE:
-      func.push(closeTabs([tab]));
-      break;
-    case TAB_CLOSE_END:
-      func.push(closeTabsToEnd(tab));
-      break;
-    case TAB_CLOSE_OTHER:
-      func.push(closeOtherTabs([tab]));
-      break;
-    case TAB_CLOSE_START:
-      func.push(closeTabsToStart(tab));
-      break;
-    case TAB_CLOSE_UNDO:
-      func.push(undoCloseTab());
-      break;
-    case TAB_DUPE:
-      func.push(dupeTabs([tab]));
-      break;
-    case TAB_GROUP_BOOKMARK:
-      func.push(bookmarkTabGroup(tab || heading));
-      break;
-    case TAB_GROUP_CLOSE:
-      func.push(closeTabGroup(tab || heading));
-      break;
-    case TAB_GROUP_COLLAPSE:
-      if (tab) {
-        const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
-        if (enableTabGroup && collapseOther) {
-          func.push(
-            toggleTabGroupsCollapsedState(tab).then(requestSaveSession)
-          );
-        } else {
-          let activate;
-          for (const selectedTab of selectedTabs) {
-            if (selectedTab.parentNode === tab.parentNode) {
-              activate = true;
-              break;
-            }
-          }
-          func.push(
-            toggleTabGroupCollapsedState(tab, activate).then(requestSaveSession)
-          );
-        }
-      }
-      break;
-    case TAB_GROUP_COLLAPSE_OTHER:
-      if (tab) {
-        func.push(Promise.all([
-          activateTab(tab),
-          collapseTabGroups(tab)
-        ]).then(requestSaveSession));
-      }
-      break;
-    case TAB_GROUP_CONTAINER:
-      func.push(
-        groupSameContainerTabs(tabId, windowId).then(restoreTabContainers)
-          .then(requestSaveSession)
-      );
-      break;
-    case TAB_GROUP_DETACH:
-      if (tab) {
-        func.push(
-          detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
-            .then(requestSaveSession)
-        );
-      }
-      break;
-    case TAB_GROUP_DETACH_TABS:
-      func.push(
-        detachTabsFromGroup([...selectedTabs], windowId)
-          .then(restoreTabContainers).then(requestSaveSession)
-      );
-      break;
-    case TAB_GROUP_DOMAIN:
-      func.push(
-        groupSameDomainTabs(tabId, windowId).then(restoreTabContainers)
-          .then(requestSaveSession)
-      );
-      break;
-    case TAB_GROUP_LABEL_SHOW:
-      if (heading) {
-        func.push(toggleTabGroupHeadingState(heading, collapseOther));
-      }
-      break;
-    case TAB_GROUP_SELECTED:
-      func.push(
-        groupSelectedTabs(windowId).then(restoreTabContainers)
-          .then(requestSaveSession)
-      );
-      break;
-    case TAB_GROUP_UNGROUP:
-      if (tab) {
-        func.push(
-          ungroupTabs(tab.parentNode).then(restoreTabContainers)
-            .then(requestSaveSession)
-        );
-      }
-      break;
-    case TAB_MOVE_END:
-      func.push(moveTabsToEnd([tab], tabId, windowId));
-      break;
-    case TAB_MOVE_START:
-      func.push(moveTabsToStart([tab], tabId, windowId));
-      break;
-    case TAB_MOVE_WIN:
-      func.push(moveTabsToNewWindow([tab]));
-      break;
-    case TAB_MUTE:
-      if (tabsTab) {
-        const { mutedInfo: { muted } } = tabsTab;
-        func.push(muteTabs([tab], !muted));
-      }
-      break;
-    case TAB_NEW: {
-      const opt = {
-        index: tabIndex + 1
-      };
-      if (tab) {
-        if (tab.parentNode.classList.contains(CLASS_TAB_GROUP)) {
-          opt.openerTabId = tabId;
-        }
-      }
-      if (tabsTab) {
-        const { cookieStoreId } = tabsTab;
-        if (cookieStoreId !== COOKIE_STORE_DEFAULT) {
-          opt.cookieStoreId = cookieStoreId;
-        }
-      }
-      if (focused) {
-        func.push(createNewTab(windowId, opt));
-      }
-      break;
+  if (focused) {
+    const { menuItemId } = info;
+    const { context, contextualIds, windowId } = sidebar;
+    const allTabs = document.querySelectorAll(TAB_QUERY);
+    const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
+    const tab = getSidebarTab(context);
+    const tabId = getSidebarTabId(tab);
+    const tabIndex = getSidebarTabIndex(tab);
+    const heading = getTabGroupHeading(context);
+    const collapseOther = userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER);
+    let tabsTab;
+    if (Number.isInteger(tabId)) {
+      tabsTab = await getTab(tabId);
     }
-    case TAB_PIN:
-      if (tabsTab) {
-        const { pinned } = tabsTab;
-        func.push(pinTabs([tab], !pinned));
-      }
-      break;
-    case TAB_RELOAD:
-      func.push(reloadTabs([tab]));
-      break;
-    case TABS_BOOKMARK:
-      func.push(bookmarkTabs([...selectedTabs]));
-      break;
-    case TABS_CLOSE:
-      func.push(closeTabs([...selectedTabs]));
-      break;
-    case TABS_DUPE:
-      func.push(dupeTabs([...selectedTabs].reverse()));
-      break;
-    case TABS_MOVE_END:
-      func.push(moveTabsToEnd([...selectedTabs], tabId, windowId));
-      break;
-    case TABS_MOVE_START:
-      func.push(moveTabsToStart([...selectedTabs], tabId, windowId));
-      break;
-    case TABS_MOVE_WIN:
-      func.push(moveTabsToNewWindow([...selectedTabs]));
-      break;
-    case TABS_MUTE:
-      if (tabsTab) {
-        const { mutedInfo: { muted } } = tabsTab;
-        func.push(muteTabs([...selectedTabs], !muted));
-      }
-      break;
-    case TABS_PIN:
-      if (tabsTab) {
-        const { pinned } = tabsTab;
-        func.push(pinTabs([...selectedTabs], !pinned));
-      }
-      break;
-    case TABS_RELOAD:
-      func.push(reloadTabs([...selectedTabs]));
-      break;
-    default: {
-      if (Array.isArray(contextualIds)) {
-        if (menuItemId.endsWith('Reopen')) {
-          const itemId = menuItemId.replace(/Reopen$/, '');
-          if (contextualIds.includes(itemId)) {
-            const arr = [];
-            if (selectedTabs.length) {
-              arr.push(...selectedTabs);
-            } else {
-              arr.push(tab);
+    switch (menuItemId) {
+      case OPTIONS_OPEN:
+        func.push(runtime.openOptionsPage());
+        break;
+      case TAB_ALL_BOOKMARK:
+        func.push(bookmarkTabs([...allTabs]));
+        break;
+      case TAB_ALL_RELOAD:
+        func.push(reloadTabs([...allTabs]));
+        break;
+      case TAB_ALL_SELECT:
+        func.push(highlightTabs([...allTabs], windowId));
+        break;
+      case TAB_BOOKMARK:
+        func.push(bookmarkTabs([tab]));
+        break;
+      case TAB_CLOSE:
+        func.push(closeTabs([tab]));
+        break;
+      case TAB_CLOSE_END:
+        func.push(closeTabsToEnd(tab));
+        break;
+      case TAB_CLOSE_OTHER:
+        func.push(closeOtherTabs([tab]));
+        break;
+      case TAB_CLOSE_START:
+        func.push(closeTabsToStart(tab));
+        break;
+      case TAB_CLOSE_UNDO:
+        func.push(undoCloseTab());
+        break;
+      case TAB_DUPE:
+        func.push(dupeTabs([tab]));
+        break;
+      case TAB_GROUP_BOOKMARK:
+        func.push(bookmarkTabGroup(tab || heading));
+        break;
+      case TAB_GROUP_CLOSE:
+        func.push(closeTabGroup(tab || heading));
+        break;
+      case TAB_GROUP_COLLAPSE:
+        if (tab) {
+          const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
+          if (enableTabGroup && collapseOther) {
+            func.push(
+              toggleTabGroupsCollapsedState(tab).then(requestSaveSession)
+            );
+          } else {
+            let activate;
+            for (const selectedTab of selectedTabs) {
+              if (selectedTab.parentNode === tab.parentNode) {
+                activate = true;
+                break;
+              }
             }
-            func.push(reopenTabsInContainer(arr, itemId, windowId));
+            func.push(
+              toggleTabGroupCollapsedState(tab, activate)
+                .then(requestSaveSession)
+            );
           }
-        } else if (menuItemId.endsWith('NewTab')) {
-          const itemId = menuItemId.replace(/NewTab$/, '');
-          if (contextualIds.includes(itemId)) {
-            func.push(createNewTabInContainer(itemId, windowId));
+        }
+        break;
+      case TAB_GROUP_COLLAPSE_OTHER:
+        if (tab) {
+          func.push(Promise.all([
+            activateTab(tab),
+            collapseTabGroups(tab)
+          ]).then(requestSaveSession));
+        }
+        break;
+      case TAB_GROUP_CONTAINER:
+        func.push(
+          groupSameContainerTabs(tabId, windowId).then(restoreTabContainers)
+            .then(requestSaveSession)
+        );
+        break;
+      case TAB_GROUP_DETACH:
+        if (tab) {
+          func.push(
+            detachTabsFromGroup([tab], windowId).then(restoreTabContainers)
+              .then(requestSaveSession)
+          );
+        }
+        break;
+      case TAB_GROUP_DETACH_TABS:
+        func.push(
+          detachTabsFromGroup([...selectedTabs], windowId)
+            .then(restoreTabContainers).then(requestSaveSession)
+        );
+        break;
+      case TAB_GROUP_DOMAIN:
+        func.push(
+          groupSameDomainTabs(tabId, windowId).then(restoreTabContainers)
+            .then(requestSaveSession)
+        );
+        break;
+      case TAB_GROUP_LABEL_SHOW:
+        if (heading) {
+          func.push(toggleTabGroupHeadingState(heading, collapseOther));
+        }
+        break;
+      case TAB_GROUP_SELECTED:
+        func.push(
+          groupSelectedTabs(windowId).then(restoreTabContainers)
+            .then(requestSaveSession)
+        );
+        break;
+      case TAB_GROUP_UNGROUP:
+        if (tab) {
+          func.push(
+            ungroupTabs(tab.parentNode).then(restoreTabContainers)
+              .then(requestSaveSession)
+          );
+        }
+        break;
+      case TAB_MOVE_END:
+        func.push(moveTabsToEnd([tab], tabId, windowId));
+        break;
+      case TAB_MOVE_START:
+        func.push(moveTabsToStart([tab], tabId, windowId));
+        break;
+      case TAB_MOVE_WIN:
+        func.push(moveTabsToNewWindow([tab]));
+        break;
+      case TAB_MUTE:
+        if (tabsTab) {
+          const { mutedInfo: { muted } } = tabsTab;
+          func.push(muteTabs([tab], !muted));
+        }
+        break;
+      case TAB_NEW: {
+        const opt = {
+          index: tabIndex + 1
+        };
+        if (tab) {
+          if (tab.parentNode.classList.contains(CLASS_TAB_GROUP)) {
+            opt.openerTabId = tabId;
+          }
+        }
+        if (tabsTab) {
+          const { cookieStoreId } = tabsTab;
+          if (cookieStoreId !== COOKIE_STORE_DEFAULT) {
+            opt.cookieStoreId = cookieStoreId;
+          }
+        }
+        func.push(createNewTab(windowId, opt));
+        break;
+      }
+      case TAB_PIN:
+        if (tabsTab) {
+          const { pinned } = tabsTab;
+          func.push(pinTabs([tab], !pinned));
+        }
+        break;
+      case TAB_RELOAD:
+        func.push(reloadTabs([tab]));
+        break;
+      case TABS_BOOKMARK:
+        func.push(bookmarkTabs([...selectedTabs]));
+        break;
+      case TABS_CLOSE:
+        func.push(closeTabs([...selectedTabs]));
+        break;
+      case TABS_DUPE:
+        func.push(dupeTabs([...selectedTabs].reverse()));
+        break;
+      case TABS_MOVE_END:
+        func.push(moveTabsToEnd([...selectedTabs], tabId, windowId));
+        break;
+      case TABS_MOVE_START:
+        func.push(moveTabsToStart([...selectedTabs], tabId, windowId));
+        break;
+      case TABS_MOVE_WIN:
+        func.push(moveTabsToNewWindow([...selectedTabs]));
+        break;
+      case TABS_MUTE:
+        if (tabsTab) {
+          const { mutedInfo: { muted } } = tabsTab;
+          func.push(muteTabs([...selectedTabs], !muted));
+        }
+        break;
+      case TABS_PIN:
+        if (tabsTab) {
+          const { pinned } = tabsTab;
+          func.push(pinTabs([...selectedTabs], !pinned));
+        }
+        break;
+      case TABS_RELOAD:
+        func.push(reloadTabs([...selectedTabs]));
+        break;
+      default: {
+        if (Array.isArray(contextualIds)) {
+          if (menuItemId.endsWith('Reopen')) {
+            const itemId = menuItemId.replace(/Reopen$/, '');
+            if (contextualIds.includes(itemId)) {
+              const arr = [];
+              if (selectedTabs.length) {
+                arr.push(...selectedTabs);
+              } else {
+                arr.push(tab);
+              }
+              func.push(reopenTabsInContainer(arr, itemId, windowId));
+            }
+          } else if (menuItemId.endsWith('NewTab')) {
+            const itemId = menuItemId.replace(/NewTab$/, '');
+            if (contextualIds.includes(itemId)) {
+              func.push(createNewTabInContainer(itemId, windowId));
+            }
           }
         }
       }
