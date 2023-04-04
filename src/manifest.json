@@ -14,7 +14,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "sidebarTabs@asamuzak.jp",
-      "strict_min_version": "112.0a1"
+      "strict_min_version": "112.0"
     }
   },
   "commands": {
@@ -61,5 +61,5 @@
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "10.2.3"
+  "version": "10.2.3.2"
 }
