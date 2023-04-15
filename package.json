@@ -49,7 +49,7 @@
   "overrides": {
     "jsdom": {
       ".": "$jsdom",
-      "nwsapi": "2.2.2"
+      "nwsapi": "2.2.4"
     }
   },
   "scripts": {
