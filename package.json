@@ -46,12 +46,6 @@
     "typescript": "^5.0.4",
     "undici": "^5.21.2"
   },
-  "overrides": {
-    "jsdom": {
-      ".": "$jsdom",
-      "nwsapi": "2.2.4"
-    }
-  },
   "scripts": {
     "include": "npm-run-all -s include-*",
     "include-browser": "copyfiles --up=3 --verbose node_modules/webext-schema/modules/browser.js src/mjs",
