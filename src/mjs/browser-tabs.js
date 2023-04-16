@@ -80,7 +80,7 @@ export const closeTabsToEnd = async elm => {
   let func;
   if (Number.isInteger(tabId) && Number.isInteger(index)) {
     const items = document.querySelectorAll(
-      `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+      `${TAB_QUERY}:not([data-tab-id="${tabId}"], .${PINNED})`
     );
     for (const item of items) {
       const itemId = getSidebarTabId(item);
@@ -110,7 +110,7 @@ export const closeTabsToStart = async elm => {
   let func;
   if (Number.isInteger(tabId) && Number.isInteger(index)) {
     const items = document.querySelectorAll(
-      `${TAB_QUERY}:not(.${PINNED}):not([data-tab-id="${tabId}"])`
+      `${TAB_QUERY}:not([data-tab-id="${tabId}"], .${PINNED})`
     );
     for (const item of items) {
       const itemId = getSidebarTabId(item);
