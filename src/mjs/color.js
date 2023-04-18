@@ -99,11 +99,12 @@ const MATRIX_PROPHOTO_TO_XYZ_D50 = [
 /* regexp */
 const NONE = 'none';
 const REG_ANGLE = 'deg|g?rad|turn';
-const REG_COLOR_SPACE_COLOR_MIX =
-  '(?:ok)?l(?:ab|ch)|h(?:sl|wb)|srgb(?:-linear)?|xyz(?:-d(?:50|65))?';
-const REG_COLOR_SPACE_RGB =
-  '(?:a98|prophoto)-rgb|display-p3|rec2020|srgb(?:-linear)?';
+const REG_SRGB = 'srgb(?:-linear)?';
 const REG_COLOR_SPACE_XYZ = 'xyz(?:-d(?:50|65))?';
+const REG_COLOR_SPACE_COLOR_MIX =
+  `(?:ok)?l(?:ab|ch)|h(?:sl|wb)|${REG_SRGB}|${REG_COLOR_SPACE_XYZ}`;
+const REG_COLOR_SPACE_RGB =
+  `(?:a98|prophoto)-rgb|display-p3|rec2020|${REG_SRGB}`;
 const REG_NUM =
   '-?(?:(?:0|[1-9]\\d*)(?:\\.\\d*)?|\\.\\d+)(?:e-?(?:0|[1-9]\\d*))?';
 const REG_PCT = `${REG_NUM}%`;
