@@ -18,7 +18,6 @@ import {
 
 /**
  * send message
- *
  * @param {*} msg - message
  * @returns {Promise.<void>} - void
  */
@@ -30,7 +29,6 @@ export const sendMsg = async msg => {
 
 /**
  * init extension
- *
  * @param {boolean} [init] - init
  * @returns {Promise.<?Promise>} - sendMessage()
  */
@@ -46,7 +44,6 @@ export const initExt = async (init = false) => {
 
 /**
  * init custom theme
- *
  * @param {boolean} [init] - init
  * @returns {Promise.<?Promise>} - sendMessage()
  */
@@ -62,7 +59,6 @@ export const initCustomTheme = async (init = false) => {
 
 /**
  * request custom theme
- *
  * @param {boolean} [bool] - bool
  * @returns {Promise.<?Promise>} - sendMessage()
  */
@@ -78,7 +74,6 @@ export const requestCustomTheme = async (bool = false) => {
 
 /**
  * store custom theme values
- *
  * @returns {Promise.<object>} - custom theme data
  */
 export const storeCustomTheme = async () => {
@@ -99,7 +94,6 @@ export const storeCustomTheme = async () => {
 
 /**
  * create pref
- *
  * @param {object} [elm] - element
  * @returns {Promise.<object>} - pref data
  */
@@ -118,7 +112,6 @@ export const createPref = async (elm = {}) => {
 
 /**
  * store pref
- *
  * @param {!object} evt - Event
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -165,7 +158,6 @@ export const storePref = async evt => {
 
 /**
  * toggle sub items
- *
  * @param {!object} evt - Event
  * @returns {void}
  */
@@ -185,7 +177,6 @@ export const toggleSubItems = evt => {
 /* custom theme */
 /**
  * toggle custom theme settings
- *
  * @returns {void}
  */
 export const toggleCustomThemeSettings = () => {
@@ -199,7 +190,6 @@ export const toggleCustomThemeSettings = () => {
 
 /**
  * add event listener to custom theme radio button
- *
  * @returns {Promise.<void>} - void
  */
 export const addCustomThemeListener = async () => {
@@ -211,7 +201,6 @@ export const addCustomThemeListener = async () => {
 
 /**
  * set custom theme value
- *
  * @param {object} [obj] - values
  * @returns {Promise.<void>} - void
  */
@@ -242,7 +231,6 @@ export const setCustomThemeValue = async (obj = {}) => {
 
 /**
  * add bookmark locations
- *
  * @returns {Promise.<void>} - void
  */
 export const addBookmarkLocations = async () => {
@@ -275,7 +263,6 @@ export const addBookmarkLocations = async () => {
 
 /**
  * handle init custom theme click
- *
  * @param {!object} evt - Event
  * @returns {Promise} - promise chain
  */
@@ -288,7 +275,6 @@ export const handleInitCustomThemeClick = evt => {
 
 /**
  * add event listener to init custom theme button
- *
  * @returns {Promise.<void>} - void
  */
 export const addInitCustomThemeListener = async () => {
@@ -299,7 +285,6 @@ export const addInitCustomThemeListener = async () => {
 /* html */
 /**
  * handle init extension click
- *
  * @param {!object} evt - event
  * @returns {Promise} - initExt()
  */
@@ -312,7 +297,6 @@ export const handleInitExtClick = evt => {
 
 /**
  * add event listener to init button
- *
  * @returns {Promise.<void>} - void
  */
 export const addInitExtensionListener = async () => {
@@ -322,8 +306,7 @@ export const addInitExtensionListener = async () => {
 
 /**
  *
- * save user CSS
- *
+ *save user CSS
  * @returns {?Promise} - storePref() / logErr()
  */
 export const saveUserCss = () => {
@@ -361,7 +344,6 @@ export const saveUserCss = () => {
 
 /**
  * add event listener to save user CSS
- *
  * @returns {Promise.<void>} - void
  */
 export const addUserCssListener = async () => {
@@ -371,7 +353,6 @@ export const addUserCssListener = async () => {
 
 /**
  * handle input change
- *
  * @param {!object} evt - Event
  * @returns {Promise} - storePref()
  */
@@ -379,7 +360,6 @@ export const handleInputChange = evt => storePref(evt).catch(throwErr);
 
 /**
  * add event listener to input elements
- *
  * @returns {Promise.<void>} - void
  */
 export const addInputChangeListener = async () => {
@@ -396,7 +376,6 @@ export const addInputChangeListener = async () => {
 
 /**
  * set html input value
- *
  * @param {object} [data] - storage data
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -441,7 +420,6 @@ export const setHtmlInputValue = async (data = {}) => {
 
 /**
  * set html input values from storage
- *
  * @returns {Promise.<Array>} - results of each handler
  */
 export const setValuesFromStorage = async () => {
@@ -474,7 +452,6 @@ export const setValuesFromStorage = async () => {
 /* runtime message */
 /**
  * handle runtime message
- *
  * @param {!object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */

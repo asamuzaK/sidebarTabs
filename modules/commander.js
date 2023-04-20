@@ -22,7 +22,6 @@ const PATH_MODULE = './node_modules';
 
 /**
  * save theme manifest file
- *
  * @param {string} dir - theme directory
  * @param {boolean} info - console info
  * @returns {Promise.<string>} - file path
@@ -45,7 +44,6 @@ export const saveThemeManifest = async (dir, info) => {
 
 /**
  * extract manifests
- *
  * @param {object} cmdOpts - command options
  * @returns {Promise.<void>} - void
  */
@@ -72,7 +70,6 @@ export const extractManifests = async (cmdOpts = {}) => {
 
 /**
  * update manifests
- *
  * @param {object} cmdOpts - command options
  * @returns {Promise} - promise chain
  */
@@ -81,7 +78,6 @@ export const updateManifests = cmdOpts =>
 
 /**
  * save library package info
- *
  * @param {Array} lib - library
  * @param {boolean} info - console info
  * @returns {Promise.<string>} - package.json file path
@@ -150,7 +146,6 @@ export const saveLibraryPackage = async (lib, info) => {
 
 /**
  * extract libraries
- *
  * @param {object} cmdOpts - command options
  * @returns {Promise.<void>} - void
  */
@@ -249,7 +244,6 @@ export const extractLibraries = async (cmdOpts = {}) => {
 
 /**
  * include libraries
- *
  * @param {object} cmdOpts - command options
  * @returns {Promise} - promise chain
  */
@@ -258,7 +252,6 @@ export const includeLibraries = cmdOpts =>
 
 /**
  * clean directory
- *
  * @param {object} cmdOpts - command options
  * @returns {void}
  */
@@ -274,7 +267,6 @@ export const cleanDirectory = (cmdOpts = {}) => {
 
 /**
  * parse command
- *
  * @param {Array} args - process.argv
  * @returns {void}
  */

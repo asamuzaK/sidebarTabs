@@ -25,7 +25,6 @@ export const sidebar = new Map();
 
 /**
  * set sidebar state
- *
  * @param {number} [windowId] - window ID
  * @returns {Promise.<void>} - void
  */
@@ -65,7 +64,6 @@ export const setSidebarState = async windowId => {
 
 /**
  * remove sidebar state
- *
  * @param {number} windowId - window ID
  * @returns {Promise.<boolean>} - result
  */
@@ -76,14 +74,12 @@ export const removeSidebarState = async windowId => {
 
 /**
  * toggle sidebar
- *
  * @returns {Promise} - sidebarAction.toggle()
  */
 export const toggleSidebar = async () => sidebarAction.toggle();
 
 /**
  * handle save session request
- *
  * @param {string} domString - DOM string
  * @param {number} windowId - window ID
  * @returns {Promise.<boolean>} - result
@@ -121,7 +117,6 @@ export const handleSaveSessionRequest = async (domString, windowId) => {
 
 /**
  * handle runtime message
- *
  * @param {object} [msg] - message
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -152,7 +147,6 @@ export const handleMsg = async msg => {
 
 /**
  * port on message
- *
  * @param {object} msg - message
  * @returns {Promise} - promise chain
  */
@@ -160,7 +154,6 @@ export const portOnMessage = msg => handleMsg(msg).catch(throwErr);
 
 /**
  * handle disconnected port
- *
  * @param {object} [port] - runtime.Port
  * @returns {Promise.<void>} - void
  */
@@ -191,7 +184,6 @@ export const handleDisconnectedPort = async (port = {}) => {
 
 /**
  * port on disconnect
- *
  * @param {object} port - runtime.Port
  * @returns {Promise} - promise chain
  */
@@ -200,7 +192,6 @@ export const portOnDisconnect = port =>
 
 /**
  * handle connected port
- *
  * @param {object} [port] - runtime.Port
  * @returns {Promise.<void>} - void
  */
@@ -220,7 +211,6 @@ export const handleConnectedPort = async (port = {}) => {
 
 /**
  * handle command
- *
  * @param {string} cmd - command
  * @returns {Promise.<?Promise>} - promise chain
  */

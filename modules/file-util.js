@@ -13,7 +13,6 @@ const PERM_FILE = 0o644;
 
 /**
  * get stat
- *
  * @param {string} file - file path
  * @returns {object} - file stat
  */
@@ -22,7 +21,6 @@ export const getStat = file =>
 
 /**
  * the directory is a directory
- *
  * @param {string} dir - directory path
  * @returns {boolean} - result
  */
@@ -33,7 +31,6 @@ export const isDir = dir => {
 
 /**
  * the file is a file
- *
  * @param {string} file - file path
  * @returns {boolean} - result
  */
@@ -44,7 +41,6 @@ export const isFile = file => {
 
 /**
  * remove the directory and it's files synchronously
- *
  * @param {string} dir - directory path
  * @returns {void}
  */
@@ -60,7 +56,6 @@ export const removeDir = dir => {
 
 /**
  * read a file
- *
  * @param {string} file - file path
  * @param {object} [opt] - options
  * @param {string} [opt.encoding] - encoding
@@ -77,7 +72,6 @@ export const readFile = async (file, opt = { encoding: null, flag: 'r' }) => {
 
 /**
  * create a file
- *
  * @param {string} file - file path to create
  * @param {string} value - value to write
  * @returns {Promise.<string>} - file path
@@ -98,7 +92,6 @@ export const createFile = async (file, value) => {
 
 /**
  * fetch text
- *
  * @param {string} url - URL
  * @returns {Promise.<string>} - content text
  */

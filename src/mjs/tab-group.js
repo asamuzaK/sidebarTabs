@@ -29,7 +29,6 @@ const { i18n, windows } = browser;
 
 /**
  * restore sidebar tab containers
- *
  * @returns {Promise.<void>} - void
  */
 export const restoreTabContainers = async () => {
@@ -63,7 +62,6 @@ export const restoreTabContainers = async () => {
 
 /**
  * collapse tab group
- *
  * @param {object} [elm] - element
  * @param {boolean} [activate] - activate element
  * @returns {Promise.<void>} - void
@@ -92,7 +90,6 @@ export const collapseTabGroup = async (elm, activate) => {
 
 /**
  * expand tab group
- *
  * @param {object} [elm] - element
  * @returns {Promise.<void>} - void
  */
@@ -112,7 +109,6 @@ export const expandTabGroup = async elm => {
 
 /**
  * toggle enable / disable tab grouping
- *
  * @returns {Promise.<Array>} - results of each handler
  */
 export const toggleTabGrouping = async () => {
@@ -149,7 +145,6 @@ export const toggleTabGrouping = async () => {
 
 /**
  * toggle tab group collapsed state
- *
  * @param {object} [elm] - element
  * @param {boolean} [activate] - activate tab
  * @returns {Promise.<Array>} - results of each handler
@@ -183,7 +178,6 @@ export const toggleTabGroupCollapsedState = async (elm, activate) => {
 
 /**
  * toggle multiple tab groups collapsed state
- *
  * @param {object} [elm] - element
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -214,7 +208,6 @@ export const toggleTabGroupsCollapsedState = async elm => {
 
 /**
  * collapse multiple tab groups
- *
  * @param {object} [elm] - element
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -238,7 +231,6 @@ export const collapseTabGroups = async elm => {
 
 /**
  * get tab group heading
- *
  * @param {object} node - node
  * @returns {object} - heading element
  */
@@ -253,7 +245,6 @@ export const getTabGroupHeading = node => {
 
 /**
  * handle individual tab group collapsed state
- *
  * @param {!object} evt - Event
  * @returns {Promise} - promise chain
  */
@@ -293,7 +284,6 @@ export const handleTabGroupCollapsedState = evt => {
 
 /**
  * handle multiple tab groups collapsed state
- *
  * @param {!object} evt - Event
  * @returns {Promise} - promise chain
  */
@@ -312,7 +302,6 @@ export const handleTabGroupsCollapsedState = evt => {
 
 /**
  * add tab context click listener
- *
  * @param {object} [elm] - element
  * @param {boolean} [multi] - handle multiple tab groups
  * @returns {void}
@@ -343,7 +332,6 @@ export const addTabContextClickListener = (elm, multi) => {
 
 /**
  * replace tab context click listener
- *
  * @param {boolean} [multi] - handle multiple tab groups
  * @returns {Promise.<Array>} - result of each handler
  */
@@ -360,7 +348,6 @@ export const replaceTabContextClickListener = async multi => {
 
 /**
  * expand activated collapsed tab
- *
  * @returns {Promise.<?Promise>} - toggleTabGroupCollapsedState()
  */
 export const expandActivatedCollapsedTab = async () => {
@@ -379,7 +366,6 @@ export const expandActivatedCollapsedTab = async () => {
 
 /**
  * finish editing group label
- *
  * @param {!object} evt - event
  * @returns {Promise} - promise chain
  */
@@ -410,7 +396,6 @@ export const finishGroupLabelEdit = evt => {
 
 /**
  * start editing group label
- *
  * @param {object} node - element
  * @returns {Promise.<object>} - group label element
  */
@@ -431,7 +416,6 @@ export const startGroupLabelEdit = async node => {
 
 /**
  * enable editing group label
- *
  * @param {!object} evt - event
  * @returns {Promise} - promise chain
  */
@@ -442,7 +426,6 @@ export const enableGroupLabelEdit = evt => {
 
 /**
  * add listeners to heading items
- *
  * @param {object} node - node;
  * @param {boolean} [multi] - handle multiple tab groups
  * @returns {Promise.<void>} - void
@@ -472,7 +455,6 @@ export const addListenersToHeadingItems = async (node, multi) => {
 
 /**
  * remove listeners from heading items
- *
  * @param {object} node - node;
  * @returns {Promise.<void>} - void
  */
@@ -498,7 +480,6 @@ export const removeListenersFromHeadingItems = async node => {
 
 /**
  * toggle tab group heading state
- *
  * @param {object} node - node
  * @param {boolean} [multi] - handle multiple tab groups
  * @returns {Promise.<Array>} - results of each handler
@@ -527,7 +508,6 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
 
 /**
  * toggle auto collapse pinned tabs
- *
  * @param {boolean} [auto] - enable auto collapse
  * @returns {Promise.<void>} - void
  */
@@ -544,7 +524,6 @@ export const toggleAutoCollapsePinnedTabs = async auto => {
 
 /**
  * bookmark tab group
- *
  * @param {object} node - node
  * @returns {Promise.<?Promise>} - bookmarkTabs()
  */
@@ -563,7 +542,6 @@ export const bookmarkTabGroup = async node => {
 
 /**
  * close tab group
- *
  * @param {object} node - node
  * @returns {Promise.<?Promise>} - closeTabs()
  */
@@ -581,7 +559,6 @@ export const closeTabGroup = async node => {
 
 /**
  * detach tabs from tab group
- *
  * @param {Array} nodes - array of node
  * @param {number} [windowId] - window ID
  * @returns {Promise.<?Promise>} - moveTabsInOrder()
@@ -629,7 +606,6 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
 
 /**
  * group selected tabs
- *
  * @param {number} [windowId] - window ID
  * @returns {Promise.<?Promise>} - moveTabsInOrder()
  */
@@ -677,7 +653,6 @@ export const groupSelectedTabs = async windowId => {
 
 /**
  * group same container tabs
- *
  * @param {number} tabId - tab ID
  * @param {number} [windowId] - window ID
  * @returns {Promise.<?Function>} - moveTabsInOrder()
@@ -736,7 +711,6 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
 
 /**
  * group same domain tabs
- *
  * @param {number} tabId - tab ID
  * @param {number} [windowId] - window ID
  * @returns {Promise.<?Promise>} - moveTabsInOrder()
@@ -798,7 +772,6 @@ export const groupSameDomainTabs = async (tabId, windowId) => {
 
 /**
  * ungroup tabs
- *
  * @param {object} [node] - tab group container
  * @returns {Promise.<void>} - void
  */

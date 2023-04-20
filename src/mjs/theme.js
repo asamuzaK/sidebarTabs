@@ -208,7 +208,6 @@ export const currentTheme = new Map();
 
 /**
  * get theme ID
- *
  * @returns {Promise.<?string>} - theme ID
  */
 export const getThemeId = async () => {
@@ -223,7 +222,6 @@ export const getThemeId = async () => {
 
 /**
  * set current theme colors map
- *
  * @param {string} key - key
  * @param {Array.<number>|string} value - color value
  * @returns {Promise.<void>} - void
@@ -261,7 +259,6 @@ export const setCurrentThemeColors = async (key, value) => {
 
 /**
  * get current theme base values
- *
  * @param {object} [opt] - options
  * @returns {Promise.<object>} - values
  */
@@ -696,7 +693,6 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
 
 /**
  * get base values
- *
  * @param {object} [opt] - options
  * @returns {Promise.<object>} - values
  */
@@ -778,7 +774,6 @@ export const getBaseValues = async (opt = {}) => {
 
 /**
  * set current theme value
- *
  * @param {object} [opt] - options
  * @returns {Promise.<void>} - void
  */
@@ -815,7 +810,6 @@ export const setCurrentThemeValue = async (opt = {}) => {
 
 /**
  * send current theme values
- *
  * @param {string} [themeId] - theme ID
  * @returns {Promise.<?Promise>} - sendMessage()
  */
@@ -850,7 +844,6 @@ export const sendCurrentTheme = async themeId => {
 
 /**
  * update custom theme CSS
- *
  * @param {string} sel - selector
  * @param {string} [prop] - property
  * @param {string} [value] - value
@@ -907,7 +900,6 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
 
 /**
  * delete custom theme CSS rule
- *
  * @param {string} [sel] - selector
  * @returns {Promise.<void>} - void
  */
@@ -936,7 +928,6 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
 
 /**
  * init custom theme
- *
  * @param {object} [opt] - options
  * @returns {Promise.<?Promise>} - sendCurrentTheme()
  */
@@ -973,7 +964,6 @@ export const initCustomTheme = async (opt = {}) => {
 
 /**
  * get theme info
- *
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - theme info
  */
@@ -1012,7 +1002,6 @@ export const getThemeInfo = async (opt = {}) => {
 
 /**
  * set theme
- *
  * @param {Array} [info] - theme info
  * @param {object} [opt] - options
  * @returns {Promise.<void>} - void
@@ -1118,7 +1107,6 @@ export const timeStamp = new Map();
 
 /**
  * apply local theme
- *
  * @param {object} [opt] - options
  * @returns {Promise.<?Promise>} - recurse applyLocalTheme()
  */
@@ -1169,7 +1157,6 @@ export const applyLocalTheme = async (opt = {}) => {
 
 /**
  * apply custom theme
- *
  * @param {object} [data] - custom theme values
  * @returns {Promise.<Array>} - result of each handler
  */
@@ -1211,7 +1198,6 @@ export const applyCustomTheme = async data => {
 
 /**
  * apply theme
- *
  * @param {object} [opt] - options
  * @returns {Promise} - promise chain
  */
@@ -1248,7 +1234,6 @@ export const applyTheme = async (opt = {}) => {
 /* user CSS */
 /**
  * set user CSS
- *
  * @param {string} css - css text
  * @returns {Promise.<void>} - void
  */
@@ -1275,7 +1260,6 @@ export const setUserCss = async css => {
 /* tab height */
 /**
  * get tab height
- *
  * @returns {Promise.<boolean>} - result
  */
 export const getTabHeight = async () => {
@@ -1290,7 +1274,6 @@ export const getTabHeight = async () => {
 
 /**
  * set tab height
- *
  * @param {boolean} [compact] - compact
  * @returns {Promise.<void>} - void
  */
@@ -1307,7 +1290,6 @@ export const setTabHeight = async compact => {
 /* scrollbar */
 /**
  * get scrollbar width
- *
  * @returns {Promise.<boolean>} - result
  */
 export const getScrollbarWidth = async () => {
@@ -1322,7 +1304,6 @@ export const getScrollbarWidth = async () => {
 
 /**
  * set scrollbar width
- *
  * @param {boolean} [narrow] - narrow
  * @returns {Promise.<void>} - void
  */
@@ -1339,7 +1320,6 @@ export const setScrollbarWidth = async narrow => {
 /* tab group color bar */
 /**
  * get tab group color bar width
- *
  * @returns {Promise.<boolean>} - result
  */
 export const getTabGroupColorBarWidth = async () => {
@@ -1354,7 +1334,6 @@ export const getTabGroupColorBarWidth = async () => {
 
 /**
  * set tab group color bar width
- *
  * @param {boolean} [narrow] - narrow
  * @returns {Promise.<void>} - void
  */
@@ -1371,7 +1350,6 @@ export const setTabGroupColorBarWidth = async narrow => {
 /* new tab */
 /**
  * get new tab separator
- *
  * @returns {Promise.<boolean>} - result
  */
 export const getNewTabSeparator = async () => {
@@ -1386,7 +1364,6 @@ export const getNewTabSeparator = async () => {
 
 /**
  * set new tab separator
- *
  * @param {boolean} [show] - show separator
  * @returns {Promise.<void>} - void
  */
@@ -1403,7 +1380,6 @@ export const setNewTabSeparator = async show => {
 /* active tab */
 /**
  * set active tab font weight
- *
  * @param {string} value - value of font weight
  * @returns {Promise.<?Promise>} - updateCustomThemeCss()
  */
@@ -1422,7 +1398,6 @@ export const setActiveTabFontWeight = async value => {
 
 /**
  * apply CSS
- *
  * @returns {Promise.<void>} - void
  */
 export const applyCss = async () => {
@@ -1434,7 +1409,6 @@ export const applyCss = async () => {
 
 /**
  * set sidebar theme
- *
  * @param {object} [opt] - options
  * @returns {Promise.<void>} - void
  */

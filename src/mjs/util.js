@@ -17,7 +17,6 @@ import {
 
 /**
  * get template
- *
  * @param {string} id - template ID
  * @returns {object} - document fragment
  */
@@ -36,7 +35,6 @@ export const getTemplate = id => {
 
 /**
  * get sidebar tab container from parent node
- *
  * @param {object} [node] - node
  * @returns {object} - sidebar tab container
  */
@@ -55,7 +53,6 @@ export const getSidebarTabContainer = node => {
 
 /**
  * restore sidebar tab container
- *
  * @param {object} [container] - tab container
  * @returns {void}
  */
@@ -76,7 +73,6 @@ export const restoreTabContainer = container => {
 
 /**
  * create sidebar tab
- *
  * @param {object} [node] - node
  * @param {object} [target] - target element to insert before
  * @returns {object} - sidebar tab
@@ -99,7 +95,6 @@ export const createSidebarTab = (node, target) => {
 
 /**
  * get sidebar tab from parent node
- *
  * @param {object} [node] - node
  * @returns {object} - sidebar tab
  */
@@ -118,7 +113,6 @@ export const getSidebarTab = node => {
 
 /**
  * get sidebar tab ID
- *
  * @param {object} [node] - node
  * @returns {?number} - tab ID
  */
@@ -137,7 +131,6 @@ export const getSidebarTabId = node => {
 
 /**
  * get sidebar tab IDs
- *
  * @param {Array} nodes - array of node
  * @returns {Array} - array of tab IDs
  */
@@ -157,7 +150,6 @@ export const getSidebarTabIds = nodes => {
 
 /**
  * get sidebar tab index
- *
  * @param {object} node - node
  * @returns {?number} - index
  */
@@ -181,7 +173,6 @@ export const getSidebarTabIndex = node => {
 
 /**
  * get tabs in range
- *
  * @param {object} tabA - tab A
  * @param {object} tabB - tab B
  * @returns {Array} - array of tabs
@@ -209,7 +200,6 @@ export const getTabsInRange = (tabA, tabB) => {
 
 /**
  * get next tab
- *
  * @param {object} elm - element
  * @param {boolean} [skipCollapsed] - skip collapsed tab
  * @returns {object} - tab
@@ -237,7 +227,6 @@ export const getNextTab = (elm, skipCollapsed = false) => {
 
 /**
  * get previous tab
- *
  * @param {object} elm - element
  * @param {boolean} [skipCollapsed] - skip collapsed tab
  * @returns {object} - tab
@@ -266,7 +255,6 @@ export const getPreviousTab = (elm, skipCollapsed = false) => {
 
 /**
  * is newtab
- *
  * @param {object} [node] - node
  * @returns {boolean} - result
  */
@@ -285,7 +273,6 @@ export const isNewTab = node => {
 
 /**
  * activate tab
- *
  * @param {object} elm - element
  * @returns {?Promise} - updateTab()
  */
@@ -302,7 +289,6 @@ export const activateTab = async elm => {
 
 /**
  * scroll tab into view
- *
  * @param {object} [elm] - Element
  * @returns {Promise.<void>} - void
  */
@@ -355,8 +341,7 @@ export const scrollTabIntoView = async elm => {
 
 /**
  *
- * switch tab
- *
+ *switch tab
  * @param {object} [opt] - options
  * @returns {?Promise} - activateTab()
  */
@@ -383,7 +368,6 @@ export const switchTab = async opt => {
 
 /**
  * create URL match string
- *
  * @param {string} url - url
  * @returns {string} - match string
  */
@@ -419,7 +403,6 @@ export const createUrlMatchString = url => {
 
 /**
  * store closeTabsByDoubleClick user value
- *
  * @param {boolean} [bool] - browserSettings enabled
  * @returns {Promise.<void>} - void
  */

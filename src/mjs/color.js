@@ -273,7 +273,6 @@ export const colorname = {
 
 /**
  * validate color components
- *
  * @param {Array} arr - array of color components
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - alpha
@@ -349,7 +348,6 @@ export const validateColorComponents = async (arr, opt = {}) => {
 
 /**
  * transform matrix
- *
  * @param {Array.<Array.<number>>} mtx - 3 * 3 matrix
  * @param {Array.<number>} vct - vector
  * @returns {Promise.<Array.<number>>} - [p1, p2, p3]
@@ -386,7 +384,6 @@ export const transformMatrix = async (mtx, vct) => {
 
 /**
  * number to hex string
- *
  * @param {number} value - value
  * @returns {Promise.<string>} - hex string
  */
@@ -410,7 +407,6 @@ export const numberToHexString = async value => {
 
 /**
  * angle to deg
- *
  * @param {string} angle - angle
  * @returns {Promise.<number>} - deg 0..360
  */
@@ -451,7 +447,6 @@ export const angleToDeg = async angle => {
 
 /**
  * rgb to linear rgb
- *
  * @param {Array.<number>} rgb - [r, g, b] r|g|b: 0..1
  * @returns {Promise.<Array.<number>>} - [r, g, b] r|g|b: 0..1
  */
@@ -480,7 +475,6 @@ export const rgbToLinearRgb = async rgb => {
 
 /**
  * linear rgb to rgb
- *
  * @param {Array.<number>} rgb - [r, g, b] r|g|b: 0..1
  * @returns {Promise.<Array.<number>>} - [r, g, b] r|g|b: 0..1
  */
@@ -509,7 +503,6 @@ export const linearRgbToRgb = async rgb => {
 
 /**
  * rgb to xyz
- *
  * @param {Array.<number>} rgb - [r, g, b, [a]] r|g|b|a: 0..1
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -524,7 +517,6 @@ export const rgbToXyz = async rgb => {
 
 /**
  * xyz to rgb
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b|a: 0..1
  */
@@ -543,7 +535,6 @@ export const xyzToRgb = async xyz => {
 
 /**
  * xyz to hsl
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [h, s, l, a]
  *                                       h: 0..360 s|l: 0..100 a: 0..1
@@ -586,7 +577,6 @@ export const xyzToHsl = async xyz => {
 
 /**
  * xyz to hwb
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [h, w, b, a]
  *                                       h: 0..360 w|b: 0..100 a: 0..1
@@ -611,7 +601,6 @@ export const xyzToHwb = async xyz => {
 
 /**
  * xyz-d50 to lab
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [l, a, b, aa]
  *                                       l: 0..100 a|b: around -160..160
@@ -640,7 +629,6 @@ export const xyzD50ToLab = async xyz => {
 
 /**
  * xyz-d50 to lch
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [l, c, h, a]
  *                                       l: 0..100 c: around 0..230 h: 0..360
@@ -669,7 +657,6 @@ export const xyzD50ToLch = async xyz => {
 
 /**
  * xyz to oklab
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [l, a, b, aa]
  *                                       l|aa: 0..1 a|b: around -0.5..0.5
@@ -692,7 +679,6 @@ export const xyzToOklab = async xyz => {
 
 /**
  * xyz to oklch
- *
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<Array.<number>>} - [l, a, b, aa]
  *                                       l|aa: 0..1 c: around 0..0.5 h: 0..360
@@ -721,7 +707,6 @@ export const xyzToOklch = async xyz => {
 
 /**
  * hex to rgb
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
@@ -776,7 +761,6 @@ export const hexToRgb = async value => {
 
 /**
  * hex to linear rgb
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b|a: 0..1
  */
@@ -792,7 +776,6 @@ export const hexToLinearRgb = async value => {
 
 /**
  * hex to xyz
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -804,7 +787,6 @@ export const hexToXyz = async value => {
 
 /**
  * hex to xyz D50
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -817,7 +799,6 @@ export const hexToXyzD50 = async value => {
 
 /**
  * re-insert missing color components
- *
  * @param {string} value - value
  * @param {Array} color - array of color components [r, g, b, a]|[l, c, h, a]
  * @returns {Promise.<Array>} - [v1, v2, v3, v4]
@@ -870,7 +851,6 @@ export const reInsertMissingComponents = async (value, color = []) => {
 
 /**
  * normalize color components
- *
  * @param {Array} colorA - array of color components [v1, v2, v3, v4]
  * @param {Array} colorB - array of color components [v1, v2, v3, v4]
  * @returns {Promise.<Array.<Array>>} - [colorA, colorB]
@@ -911,7 +891,6 @@ export const normalizeColorComponents = async (colorA, colorB) => {
 
 /**
  * parse alpha
- *
  * @param {?string} [a] - alpha value
  * @returns {Promise.<number>} - a: 0..1
  */
@@ -946,7 +925,6 @@ export const parseAlpha = async a => {
 
 /**
  * parse rgb()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
@@ -1010,7 +988,6 @@ export const parseRgb = async value => {
 
 /**
  * parse hsl()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
@@ -1100,7 +1077,6 @@ export const parseHsl = async value => {
 
 /**
  * parse hwb()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
@@ -1157,7 +1133,6 @@ export const parseHwb = async value => {
 
 /**
  + parse lab()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -1232,7 +1207,6 @@ export const parseLab = async value => {
 
 /**
  + parse lch()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -1286,7 +1260,6 @@ export const parseLch = async value => {
 
 /**
  + parse oklab()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -1348,7 +1321,6 @@ export const parseOklab = async value => {
 
 /**
  + parse oklch()
- *
  * @param {string} value - value
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
@@ -1411,7 +1383,6 @@ export const parseOklch = async value => {
 
 /**
  * parse color()
- *
  * @param {string} value - value
  * @param {boolean} d50 - xyz in d50 white point
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
@@ -1544,7 +1515,6 @@ export const parseColorFunc = async (value, d50 = false) => {
 
 /**
  * parse color keywords and functions
- *
  * @param {string} value - value
  * @param {boolean} [d50] - xyz in d50 white point
  * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
@@ -1652,7 +1622,6 @@ export const parseColor = async (value, d50 = false) => {
 
 /**
  * convert color to linear rgb
- *
  * @param {string} value - value
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - [r, g, b, a] r|g|b|a: 0..1
@@ -1685,7 +1654,6 @@ export const convertColorToLinearRgb = async (value, opt = {}) => {
 
 /**
  * convert color to rgb
- *
  * @param {string} value - value
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
@@ -1710,7 +1678,6 @@ export const convertColorToRgb = async (value, opt = {}) => {
 
 /**
  * convert rgb to hex color
- *
  * @param {Array.<number>} rgb - [r, g, b, a] r|g|b: 0..255 a: 0..1|undefined
  * @returns {Promise.<string>} - hex color;
  */
@@ -1736,7 +1703,6 @@ export const convertRgbToHex = async rgb => {
 
 /**
  * convert linear rgb to hex color
- *
  * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
  * @returns {Promise.<string>} - hex color
  */
@@ -1762,7 +1728,6 @@ export const convertLinearRgbToHex = async rgb => {
 
 /**
  * convert xyz to hex color
- *
  * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<string>} - hex color
  */
@@ -1783,7 +1748,6 @@ export const convertXyzToHex = async xyz => {
 
 /**
  * convert xyz D50 to hex color
- *
  * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  * @returns {Promise.<string>} - hex color
  */
@@ -1806,8 +1770,7 @@ export const convertXyzD50ToHex = async xyz => {
 /**
  * convert color to hex color
  * NOTE: convertColorToHex('transparent') resolves as null
- *       convertColorToHex('transparent', { alpha: true }) resolves as #00000000
- *
+ * convertColorToHex('transparent', { alpha: true }) resolves as #00000000
  * @param {string} value - value
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - add alpha channel value
@@ -1911,7 +1874,6 @@ export const convertColorToHex = async (value, opt = {}) => {
 
 /**
  * convert color() to hex color
- *
  * @param {string} value - value
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - add alpha channel value
@@ -1942,7 +1904,6 @@ export const convertColorFuncToHex = async (value, opt = {}) => {
 
 /**
  * convert color-mix() to hex color
- *
  * @param {string} value - value
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - add alpha channel value
@@ -2485,7 +2446,6 @@ export const convertColorMixToHex = async (value, opt = {}) => {
 
 /**
  * get color in hex color notation
- *
  * @param {string} value - value
  * @param {object} [opt] - options
  * @returns {Promise.<?string|Array>} - hex color or array of [prop, hex] pair
@@ -2538,7 +2498,6 @@ export const getColorInHex = async (value, opt = {}) => {
 
 /**
  * composite two layered colors
- *
  * @param {string} overlay - overlay color
  * @param {string} base - base color
  * @returns {Promise.<?string>} - hex color

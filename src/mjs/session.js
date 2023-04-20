@@ -15,7 +15,6 @@ import {
 
 /**
  * get tab list from sessions
- *
  * @param {string} key - key
  * @param {number} [windowId] - window ID
  * @returns {Promise.<object>} - tab list
@@ -41,7 +40,6 @@ export const mutex = new Set();
 
 /**
  * save tab list to sessions
- *
  * @param {string} domStr - DOM string
  * @param {number} windowId - window ID
  * @returns {Promise.<boolean>} - saved
@@ -108,7 +106,6 @@ export const saveSessionTabList = async (domStr, windowId) => {
 
 /**
  * request save session
- *
  * @returns {Promise.<?Function>} - port.postMessage()
  */
 export const requestSaveSession = async () => {

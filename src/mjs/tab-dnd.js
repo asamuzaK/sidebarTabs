@@ -34,7 +34,6 @@ const ONE_THIRD = 1 / 3;
 
 /**
  * move dropped tabs
- *
  * @param {object} dropTarget - drop target
  * @param {Array} [draggedIds] - Array of dragged tab ID
  * @param {object} [opt] - options
@@ -129,7 +128,6 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
 
 /**
  * get target for dragged tabs
- *
  * @param {object} [dropTarget] - drop target
  * @param {object} [opt] - options
  * @returns {object} - element
@@ -163,7 +161,6 @@ export const getTargetForDraggedTabs = (dropTarget, opt) => {
 
 /**
  * get drop target index for dragged tabs
- *
  * @param {object} [dropTarget] - drop target
  * @param {object} [opt] - options
  * @returns {number} - index;
@@ -205,7 +202,6 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
 
 /**
  * extract dropped tabs data
- *
  * @param {object} [dropTarget] - target element
  * @param {object} [data] - dragged data
  * @returns {Promise.<Array>} - results of each handler
@@ -358,7 +354,6 @@ export const extractDroppedTabs = async (dropTarget, data) => {
 
 /**
  * open dropped URI list
- *
  * @param {object} [dropTarget] - target element
  * @param {Array} [data] - uri list
  * @returns {Promise.<Array>} - results of each handler
@@ -435,7 +430,6 @@ export const openUriList = async (dropTarget, data = []) => {
 
 /**
  * search dropped query
- *
  * @param {object} [dropTarget] - target element
  * @param {string} [data] - seach query
  * @returns {Promise.<Array>} - results of each handler
@@ -489,7 +483,6 @@ export const searchQuery = async (dropTarget, data = '') => {
 
 /**
  * handle drop
- *
  * @param {!object} evt - event
  * @returns {?Promise|undefined} - promise chain
  */
@@ -565,7 +558,6 @@ export const handleDrop = evt => {
 
 /**
  * handle dragend
- *
  * @param {!object} evt - event
  * @returns {void}
  */
@@ -582,7 +574,6 @@ export const handleDragEnd = evt => {
 
 /**
  * handle dragleave
- *
  * @param {!object} evt - event
  * @returns {void}
  */
@@ -599,7 +590,6 @@ export const handleDragLeave = evt => {
 
 /**
  * handle dragover
- *
  * @param {!object} evt - event
  * @param {object} [opt] - options
  * @returns {void}
@@ -676,7 +666,6 @@ export const handleDragOver = (evt, opt = {}) => {
 
 /**
  * handle dragenter
- *
  * @param {!object} evt - event
  * @returns {void}
  */
@@ -708,7 +697,6 @@ export const handleDragEnter = evt => {
 
 /**
  * handle dragstart
- *
  * @param {!object} evt - event
  * @param {object} [opt] - options
  * @returns {Promise.<Array>|undefined} - result of each handler

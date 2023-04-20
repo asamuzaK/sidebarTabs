@@ -19,7 +19,6 @@ export const menuItemMap = new Map();
 
 /**
  * update context menu
- *
  * @param {string} [menuItemId] - menu item ID
  * @param {object} [data] - update items data
  * @returns {Promise.<Array>} - results of each handler
@@ -41,7 +40,6 @@ export const updateContextMenu = async (menuItemId, data) => {
 
 /**
  * handle create menu item callback
- *
  * @returns {Promise.<Array>} - promise chain
  */
 export const createMenuItemCallback = () => {
@@ -67,7 +65,6 @@ export const createMenuItemCallback = () => {
 
 /**
  * create context menu item
- *
  * @param {object} [data] - context data
  * @returns {Promise.<?string|number>} - menu item ID
  */
@@ -91,7 +88,6 @@ export const createMenuItem = async data => {
 
 /**
  * create contextual identities menu
- *
  * @param {object} [info] - info
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -146,7 +142,6 @@ export const createContextualIdentitiesMenu = async info => {
 
 /**
  * create context menu
- *
  * @param {object} [menu] - menu
  * @param {string} [parentId] - parent menu item ID
  * @returns {Promise.<Array>} - results of each handler
@@ -179,7 +174,6 @@ export const createContextMenu = async (menu = menuItems, parentId = null) => {
 
 /**
  * update contextual identities menu
- *
  * @param {object} [info] - contextual identities info
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -233,7 +227,6 @@ export const updateContextualIdentitiesMenu = async (info = {}) => {
 
 /**
  * remove contextual identities menu
- *
  * @param {object} [info] - contextual identities info
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -253,7 +246,6 @@ export const removeContextualIdentitiesMenu = async info => {
 
 /**
  * restore context menu
- *
  * @returns {Promise} - promise chain
  */
 export const restoreContextMenu = async () =>
@@ -261,7 +253,6 @@ export const restoreContextMenu = async () =>
 
 /**
  * override context menu
- *
  * @param {object} opt - options
  * @returns {Promise} - menus.overrideContext()
  */

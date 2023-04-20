@@ -17,7 +17,6 @@ export const ports = new Map();
 
 /**
  * remove port
- *
  * @param {string} portId - port ID
  * @returns {Promise.<boolean>} - result
  */
@@ -25,7 +24,6 @@ export const removePort = async portId => ports.delete(portId);
 
 /**
  * port on disconnect
- *
  * @param {object} [port] - runtime.Port
  * @returns {Promise} - promise chain
  */
@@ -41,7 +39,6 @@ export const portOnDisconnect = (port = {}) => {
 
 /**
  * add port
- *
  * @param {string} [portId] - port ID
  * @returns {Promise.<object>} - runtime.Port
  */
@@ -65,7 +62,6 @@ export const addPort = async portId => {
 
 /**
  * get port
- *
  * @param {string} [portId] - port ID
  * @param {boolean} [add] - add port if port does not exist
  * @returns {Promise.<object>} - runtime.Port

@@ -126,7 +126,6 @@ export const userOptsKeys = new Set([
 
 /**
  * set user options
- *
  * @param {object} [opt] - user option
  * @returns {Promise.<object>} - userOpts
  */
@@ -186,7 +185,6 @@ export const sidebar = {
 
 /**
  * set sidebar
- *
  * @returns {Promise.<void>} - void
  */
 export const setSidebar = async () => {
@@ -202,7 +200,6 @@ export const setSidebar = async () => {
 
 /**
  * init sidebar
- *
  * @param {boolean} [bool] - bypass cache
  * @returns {Promise.<void>} - void
  */
@@ -215,7 +212,6 @@ export const initSidebar = async (bool = false) => {
 
 /**
  * set context
- *
  * @param {object} [elm] - Element
  * @returns {void}
  */
@@ -225,7 +221,6 @@ export const setContext = elm => {
 
 /**
  * set contextual identities cookieStoreIds
- *
  * @returns {Promise.<void>} - void
  */
 export const setContextualIds = async () => {
@@ -242,7 +237,6 @@ export const setContextualIds = async () => {
 
 /**
  * set last closed tab
- *
  * @param {object} [tab] - tabs.Tab
  * @returns {Promise.<void>} - void
  */
@@ -256,7 +250,6 @@ export const setLastClosedTab = async tab => {
 
 /**
  * get last closed tab
- *
  * @returns {Promise.<object>} - tabs.Tab
  */
 export const getLastClosedTab = async () => {
@@ -268,7 +261,6 @@ export const getLastClosedTab = async () => {
 
 /**
  * undo close tab
- *
  * @returns {Promise.<?Promise>} - restoreSession()
  */
 export const undoCloseTab = async () => {
@@ -283,7 +275,6 @@ export const undoCloseTab = async () => {
 
 /**
  * set pinned tabs waiting to move
- *
  * @param {?Array} [arr] - array of tabs
  * @returns {Promise.<void>} - void
  */
@@ -294,7 +285,6 @@ export const setPinnedTabsWaitingToMove = async arr => {
 
 /**
  * set tabs waiting to move
- *
  * @param {?Array} [arr] - array of tabs
  * @returns {Promise.<void>} - void
  */
@@ -304,7 +294,6 @@ export const setTabsWaitingToMove = async arr => {
 
 /**
  * apply user style
- *
  * @returns {Promise} - setUserCSS()
  */
 export const applyUserStyle = async () => {
@@ -323,7 +312,6 @@ export const applyUserStyle = async () => {
 
 /**
  * apply user custom theme
- *
  * @returns {Promise.<?Promise>} - applyCustomTheme()
  */
 export const applyUserCustomTheme = async () => {
@@ -342,7 +330,6 @@ export const applyUserCustomTheme = async () => {
 
 /**
  * apply pinned container height
- *
  * @param {Array} entries - array of ResizeObserverEntry
  * @returns {?Promise} - promise chain
  */
@@ -382,7 +369,6 @@ export const applyPinnedContainerHeight = entries => {
 /* DnD */
 /**
  * trigger DnD handler
- *
  * @param {!object} evt - event
  * @returns {?Function} - handleDragStart() / handleDragOver()
  */
@@ -401,7 +387,6 @@ export const triggerDndHandler = evt => {
 /* sidebar tab event handlers */
 /**
  * handle create new tab
- *
  * @param {!object} evt - event
  * @returns {?Promise} - createNewTab()
  */
@@ -422,7 +407,6 @@ export const handleCreateNewTab = evt => {
 
 /**
  * activate clicked tab
- *
  * @param {object} elm - tab
  * @returns {Promise.<?Promise>} - activateTab()
  */
@@ -449,7 +433,6 @@ export const activateClickedTab = async elm => {
 
 /**
  * handle clicked tab
- *
  * @param {!object} evt - event
  * @returns {Promise} - promise chain
  */
@@ -513,7 +496,6 @@ export const handleClickedTab = evt => {
 
 /**
  * add sidebar tab click listener
- *
  * @param {object} [elm] - element
  * @returns {Promise.<void>} - void
  */
@@ -527,7 +509,6 @@ export const addTabClickListener = async elm => {
 
 /**
  * toggle tab dblclick listener
- *
  * @param {object} [elm] - element
  * @param {boolean} [bool] - add or remove
  * @returns {Promise.<void>} - void
@@ -545,7 +526,6 @@ export const toggleTabDblClickListener = async (elm, bool) => {
 
 /**
  * replace tab dblclick listeners
- *
  * @param {boolean} [bool] - add or remove
  * @returns {Promise.<Array>} - result of each handler
  */
@@ -563,7 +543,6 @@ export const replaceTabDblClickListeners = async (bool = false) => {
 
 /**
  * trigger tab warmup
- *
  * @param {!object} evt - event
  * @returns {?Promise} - promise chain
  */
@@ -584,7 +563,6 @@ export const triggerTabWarmup = evt => {
 
 /**
  * add tab event listeners
- *
  * @param {object} [elm] - element
  * @returns {Promise.<void>} - void
  */
@@ -607,7 +585,6 @@ export const addTabEventListeners = async elm => {
 /* tab handlers */
 /**
  * handle activated tab
- *
  * @param {!object} info - activated info
  * @returns {Promise.<?Promise>} - scrollTabIntoView()
  */
@@ -665,7 +642,6 @@ export const handleActivatedTab = async info => {
 
 /**
  * handle created tab
- *
  * @param {!object} tabsTab - tabs.Tab
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
@@ -878,7 +854,6 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
 
 /**
  * handle attached tab
- *
  * @param {!number} tabId - tab ID
  * @param {!object} info - attached tab info
  * @returns {Promise.<?Promise>} - tabs.Tab
@@ -909,7 +884,6 @@ export const handleAttachedTab = async (tabId, info) => {
 
 /**
  * handle detached tab
- *
  * @param {!number} tabId - tab ID
  * @param {!object} info - detached tab info
  * @returns {Promise.<void>} - void
@@ -931,7 +905,6 @@ export const handleDetachedTab = async (tabId, info) => {
 
 /**
  * handle highlighted tab
- *
  * @param {!object} info - info
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -967,7 +940,6 @@ export const handleHighlightedTab = async info => {
 
 /**
  * handle moved tab
- *
  * @param {!number} tabId - tab ID
  * @param {!object} info - moved info
  * @returns {Promise.<?Promise>} - promise chain
@@ -1109,7 +1081,6 @@ export const handleMovedTab = async (tabId, info) => {
 
 /**
  * handle removed tab
- *
  * @param {!number} tabId - tab ID
  * @param {!object} info - removed tab info
  * @returns {Promise.<void>} - void
@@ -1130,7 +1101,6 @@ export const handleRemovedTab = async (tabId, info) => {
 
 /**
  * handle updated tab
- *
  * @param {!number} tabId - tab ID
  * @param {object} [info] - updated tab info
  * @param {object} [tabsTab] - tabs.Tab
@@ -1245,7 +1215,6 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
 /* context menu */
 /**
  * handle clicked menu
- *
  * @param {!object} info - clicked menu info
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -1484,7 +1453,6 @@ export const handleClickedMenu = async info => {
 
 /**
  * prepare contexual IDs menu items
- *
  * @param {string} parentId - parent ID
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -1514,7 +1482,6 @@ export const prepareContexualIdsMenuItems = async parentId => {
 
 /**
  * prepare new tab menu items
- *
  * @param {object} elm - target element
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -1546,7 +1513,6 @@ export const prepareNewTabMenuItems = async elm => {
 
 /**
  * prepare page menu items
- *
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -1586,7 +1552,6 @@ export const preparePageMenuItems = async opt => {
 
 /**
  * prepare tab group menu items
- *
  * @param {object} [elm] - element
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
@@ -1717,7 +1682,6 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
 
 /**
  * prepare tab menu items
- *
  * @param {object} elm - target element
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -2036,7 +2000,6 @@ export const prepareTabMenuItems = async elm => {
 /* theme */
 /**
  * handle updated theme
- *
  * @param {object} [info] - update info
  * @returns {Promise.<?Promise>} - promise chain
  */
@@ -2073,7 +2036,6 @@ export const handleUpdatedTheme = async info => {
 
 /**
  * handle init custom theme request
- *
  * @param {boolean} [remove] - remove
  * @returns {Promise.<?Promise>} - initCustomTheme()
  */
@@ -2092,7 +2054,6 @@ export const handleInitCustomThemeRequest = async (remove = false) => {
 /* events */
 /**
  * handle event
- *
  * @param {!object} evt - event
  * @returns {Promise} - promise chain
  */
@@ -2119,7 +2080,6 @@ export const handleEvt = evt => {
 
 /**
  * handle contextmenu event
- *
  * @param {!object} evt - event
  * @returns {Promise} - promise chain
  */
@@ -2138,7 +2098,6 @@ export const handleContextmenuEvt = evt => {
 
 /**
  * handle wheel event
- *
  * @param {!object} evt - event
  * @returns {?Promise} - promise chain
  */
@@ -2171,7 +2130,6 @@ export const handleWheelEvt = evt => {
 /* runtime message */
 /**
  * handle runtime message
- *
  * @param {!object} msg - message
  * @returns {Promise.<Array>} - results of each handler
  */
@@ -2203,7 +2161,6 @@ export const handleMsg = async msg => {
 
 /**
  * request sidebar state update
- *
  * @returns {Promise.<?Promise>} - port.postMessage()
  */
 export const requestSidebarStateUpdate = async () => {
@@ -2228,7 +2185,6 @@ export const requestSidebarStateUpdate = async () => {
 /* storage */
 /**
  * set storage value
- *
  * @param {string} [item] - item
  * @param {object} [obj] - value object
  * @param {boolean} [changed] - changed
@@ -2389,7 +2345,6 @@ export const setStorageValue = async (item, obj, changed = false) => {
 
 /**
  * handle storage
- *
  * @param {object} [data] - data
  * @param {string} [area] - storage area
  * @param {boolean} [changed] - storage changed
@@ -2416,7 +2371,6 @@ export const handleStorage = async (data, area = 'local', changed = false) => {
 /* restore tabs */
 /**
  * restore highlighted tabs
- *
  * @returns {Promise.<void>} - void
  */
 export const restoreHighlightedTabs = async () => {
@@ -2440,7 +2394,6 @@ export const restoreHighlightedTabs = async () => {
 
 /**
  * restore tab groups
- *
  * @returns {Promise.<Array>} - results of each handler
  */
 export const restoreTabGroups = async () => {
@@ -2531,7 +2484,6 @@ export const restoreTabGroups = async () => {
 
 /**
  * emulate tabs in order
- *
  * @param {Array} arr - array of tabs.Tab
  * @returns {Promise.<void>} - void
  */
@@ -2553,7 +2505,6 @@ export const emulateTabsInOrder = async arr => {
 
 /**
  * emulate tabs in sidebar
- *
  * @returns {Promise} - emulateTabsInOrder()
  */
 export const emulateTabs = async () => {
@@ -2563,7 +2514,6 @@ export const emulateTabs = async () => {
 
 /**
  * set pinned container observer
- *
  * @returns {Promise.<void>} - void
  */
 export const setPinnedObserver = async () => {
@@ -2575,7 +2525,6 @@ export const setPinnedObserver = async () => {
 
 /**
  * set main
- *
  * @returns {Promise.<void>} - void
  */
 export const setMain = async () => {
@@ -2591,7 +2540,6 @@ export const setMain = async () => {
 
 /**
  * startup
- *
  * @returns {Promise} - promise chain
  */
 export const startup = async () => {
