@@ -64,7 +64,7 @@ import {
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, FRAME_COLOR_USE,
   HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER,
   NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, PINNED_HEIGHT,
-  SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE, TAB,
+  SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
   TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
   TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
@@ -603,7 +603,7 @@ export const handleActivatedTab = async info => {
       const { classList: newClass, parentNode: newParent } = tab;
       const newHeading = newParent.querySelector(`.${CLASS_HEADING}`);
       const items = document.querySelectorAll(
-        `.${TAB}:not([data-tab-id="${tabId}"], .${NEW_TAB})`
+        `${TAB_QUERY}:not([data-tab-id="${tabId}"])`
       );
       const tabsTab = await getTab(tabId);
       const highlightedTabs = await getHighlightedTab(windowId);

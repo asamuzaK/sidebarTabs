@@ -4,6 +4,7 @@
 /* eslint-disable camelcase, import/order, regexp/no-super-linear-backtracking */
 
 /* api */
+import selery from 'selery';
 import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
@@ -81,6 +82,25 @@ describe('main', () => {
       }
     });
     window = dom && dom.window;
+    // Overwrite querySelector(), querySelectorAll()
+    window.Document.prototype.querySelector = function (sel) {
+      return selery.querySelector(this, sel);
+    };
+    window.DocumentFragment.prototype.querySelector = function (sel) {
+      return selery.querySelector(this, sel);
+    };
+    window.Element.prototype.querySelector = function (sel) {
+      return selery.querySelector(this, sel);
+    };
+    window.Document.prototype.querySelectorAll = function (sel) {
+      return selery.querySelectorAll(this, sel);
+    };
+    window.DocumentFragment.prototype.querySelectorAll = function (sel) {
+      return selery.querySelectorAll(this, sel);
+    };
+    window.Element.prototype.querySelectorAll = function (sel) {
+      return selery.querySelectorAll(this, sel);
+    };
     document = window && window.document;
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
