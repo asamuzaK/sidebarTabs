@@ -14,7 +14,7 @@ import {
 } from './browser-tabs.js';
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import { requestSaveSession } from './session.js';
-import { groupSelectedTabs, restoreTabContainers } from './tab-group.js';
+import { restoreTabContainers } from './tab-group.js';
 import {
   activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
@@ -487,7 +487,7 @@ export const searchQuery = async (dropTarget, data = '') => {
  * @returns {?Promise|undefined} - promise chain
  */
 export const handleDrop = evt => {
-  const { altKey, currentTarget, dataTransfer, type } = evt;
+  const { currentTarget, dataTransfer, type } = evt;
   if (type !== 'drop') {
     return;
   }
@@ -517,15 +517,9 @@ export const handleDrop = evt => {
           const { windowId } = JSON.parse(dropTarget.dataset.tab);
           item.dropEffect = dropEffect;
           item.dropWindowId = windowId;
-          if (altKey) {
-            func = extractDroppedTabs(dropTarget, item)
-              .then(groupSelectedTabs).then(restoreTabContainers)
-              .then(requestSaveSession).catch(throwErr);
-          } else {
-            func = extractDroppedTabs(dropTarget, item)
-              .then(restoreTabContainers).then(requestSaveSession)
-              .catch(throwErr);
-          }
+          func = extractDroppedTabs(dropTarget, item)
+            .then(restoreTabContainers).then(requestSaveSession)
+            .catch(throwErr);
           evt.preventDefault();
           evt.stopPropagation();
         // dropped query string
