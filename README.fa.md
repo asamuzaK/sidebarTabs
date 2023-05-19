@@ -31,9 +31,7 @@
 * گروه زبانه‌ها را می‌توان با کلیک کردن روی بخش رنگی و یا از فهرست راست کلیک جمع/باز کرد.
 * زبانه جدیدی که از یک زبانه داخل گروه باز بشود،‌ عضوی از همان گروه زبانه خواهد شد.
 * برای لغو گروه زبانه، میتوانید از فهرست راست کلیک اقدام کنید.
-* To move the tab group with DnD (drag and drop):
-  1. Select all tabs in the group.
-  2. "Shift + Alt + DnD" ("Shift + Option + DnD" on Mac).
+* To move the tab group with DnD (drag and drop), "Shift + Ctrl + DnD" ("Shift + Cmd + DnD" on Mac).
 * گروه زبانه‌ها در صفحات خصوصی (Private window) ذخیره نخواهند شد.
 
 ## مشکلات موجود
