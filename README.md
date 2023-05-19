@@ -32,6 +32,9 @@ This can also improve dark theme ([Issue #154](https://github.com/asamuzaK/sideb
 * Collapse / expand tab groups can be done by clicking on the colored part, or from the context menu.
 * The new tab opened from the tab in the tab group will be displayed as the tab of that group.
 * To cancel the grouping of tabs, you can do it from the context menu.
+* To move the tab group with DnD (drag and drop):
+  1. Select all tabs in the group.
+  2. "Shift + Alt + DnD" ("Shift + Option + DnD" on Mac).
 * Tab groups will not be saved during private browsing.
 
 ## Known Issues
