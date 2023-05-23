@@ -1378,7 +1378,6 @@ export const handleClickedMenu = async info => {
             opt.cookieStoreId = cookieStoreId;
           }
         }
-        console.log(opt)
         func.push(createNewTab(windowId, opt));
         break;
       }
