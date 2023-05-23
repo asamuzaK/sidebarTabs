@@ -7074,6 +7074,7 @@ describe('main', () => {
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
+        openerTabId: 1,
         windowId: 1,
         active: true
       });
@@ -7184,6 +7185,7 @@ describe('main', () => {
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
+        openerTabId: 1,
         windowId: 1,
         active: true
       });
@@ -7226,6 +7228,7 @@ describe('main', () => {
       });
       const create = browser.tabs.create.withArgs({
         index: 1,
+        openerTabId: 1,
         windowId: 1,
         active: true
       });
@@ -7269,6 +7272,7 @@ describe('main', () => {
       const create = browser.tabs.create.withArgs({
         cookieStoreId: 'foo',
         index: 1,
+        openerTabId: 1,
         windowId: 1,
         active: true
       });

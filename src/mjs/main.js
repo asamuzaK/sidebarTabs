@@ -1370,9 +1370,7 @@ export const handleClickedMenu = async info => {
           index: tabIndex + 1
         };
         if (tab) {
-          if (tab.parentNode.classList.contains(CLASS_TAB_GROUP)) {
-            opt.openerTabId = tabId;
-          }
+          opt.openerTabId = tabId;
         }
         if (tabsTab) {
           const { cookieStoreId } = tabsTab;
