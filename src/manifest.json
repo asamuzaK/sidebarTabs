@@ -1,6 +1,5 @@
 {
   "action": {
-    "browser_style": true,
     "default_icon": "img/icon.svg#current",
     "default_title": "__MSG_extensionName__"
   },
@@ -35,7 +34,6 @@
     "browserSettings"
   ],
   "options_ui": {
-    "browser_style": true,
     "open_in_tab": true,
     "page": "html/options.html"
   },
@@ -55,10 +53,9 @@
   ],
   "short_name": "__MSG_extensionShortName__",
   "sidebar_action": {
-    "browser_style": false,
     "default_icon": "img/icon.svg#current",
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"
   },
-  "version": "10.2.3.6"
+  "version": "10.2.3.7"
 }
