@@ -2,16 +2,16 @@ export const userOpts: Map<any, any>;
 export const userOptsKeys: Set<string>;
 export function setUserOpts(opt?: object): Promise<object>;
 export namespace sidebar {
-    const context: any;
-    const contextualIds: any;
-    const firstSelectedTab: any;
-    const incognito: boolean;
-    const isMac: boolean;
-    const lastClosedTab: any;
-    const pinnedObserver: any;
-    const pinnedTabsWaitingToMove: any;
-    const tabsWaitingToMove: any;
-    const windowId: any;
+    let context: any;
+    let contextualIds: any;
+    let firstSelectedTab: any;
+    let incognito: boolean;
+    let isMac: boolean;
+    let lastClosedTab: any;
+    let pinnedObserver: any;
+    let pinnedTabsWaitingToMove: any;
+    let tabsWaitingToMove: any;
+    let windowId: any;
 }
 export function setSidebar(): Promise<void>;
 export function initSidebar(bool?: boolean): Promise<void>;
