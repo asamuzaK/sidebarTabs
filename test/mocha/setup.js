@@ -3,6 +3,9 @@
  */
 
 import process from 'node:process';
+import {
+  closest, matches, querySelector, querySelectorAll
+} from '@asamuzakjp/dom-selector';
 import domPurify from 'dompurify';
 import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
@@ -30,6 +33,39 @@ export const createJsdom = () => {
 
 const { window } = createJsdom();
 const { document } = window;
+
+/**
+ * patch jsdom
+ * @param {object} win - window
+ * @returns {object} - window
+ */
+export const patchJsdom = win => {
+  win.Element.prototype.matches = function (selector) {
+    return matches(selector, this);
+  };
+  win.Element.prototype.closest = function (selector) {
+    return closest(selector, this);
+  };
+  win.Document.prototype.querySelector = function (selector) {
+    return querySelector(selector, this);
+  };
+  win.DocumentFragment.prototype.querySelector = function (selector) {
+    return querySelector(selector, this);
+  };
+  win.Element.prototype.querySelector = function (selector) {
+    return querySelector(selector, this);
+  };
+  win.Document.prototype.querySelectorAll = function (selector) {
+    return querySelectorAll(selector, this);
+  };
+  win.DocumentFragment.prototype.querySelectorAll = function (selector) {
+    return querySelectorAll(selector, this);
+  };
+  win.Element.prototype.querySelectorAll = function (selector) {
+    return querySelectorAll(selector, this);
+  };
+  return win;
+};
 
 /**
  * get channel
