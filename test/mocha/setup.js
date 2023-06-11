@@ -26,6 +26,30 @@ export const createJsdom = () => {
       });
       window.prompt = sinon.stub();
       window.DOMPurify = domPurify;
+      window.Element.prototype.matches = function (selector) {
+        return matches(selector, this);
+      };
+      window.Element.prototype.closest = function (selector) {
+        return closest(selector, this);
+      };
+      window.Document.prototype.querySelector = function (selector) {
+        return querySelector(selector, this);
+      };
+      window.DocumentFragment.prototype.querySelector = function (selector) {
+        return querySelector(selector, this);
+      };
+      window.Element.prototype.querySelector = function (selector) {
+        return querySelector(selector, this);
+      };
+      window.Document.prototype.querySelectorAll = function (selector) {
+        return querySelectorAll(selector, this);
+      };
+      window.DocumentFragment.prototype.querySelectorAll = function (selector) {
+        return querySelectorAll(selector, this);
+      };
+      window.Element.prototype.querySelectorAll = function (selector) {
+        return querySelectorAll(selector, this);
+      };
     }
   };
   return new JSDOM(domstr, opt);
@@ -33,39 +57,6 @@ export const createJsdom = () => {
 
 const { window } = createJsdom();
 const { document } = window;
-
-/**
- * patch jsdom
- * @param {object} win - window
- * @returns {object} - window
- */
-export const patchJsdom = win => {
-  win.Element.prototype.matches = function (selector) {
-    return matches(selector, this);
-  };
-  win.Element.prototype.closest = function (selector) {
-    return closest(selector, this);
-  };
-  win.Document.prototype.querySelector = function (selector) {
-    return querySelector(selector, this);
-  };
-  win.DocumentFragment.prototype.querySelector = function (selector) {
-    return querySelector(selector, this);
-  };
-  win.Element.prototype.querySelector = function (selector) {
-    return querySelector(selector, this);
-  };
-  win.Document.prototype.querySelectorAll = function (selector) {
-    return querySelectorAll(selector, this);
-  };
-  win.DocumentFragment.prototype.querySelectorAll = function (selector) {
-    return querySelectorAll(selector, this);
-  };
-  win.Element.prototype.querySelectorAll = function (selector) {
-    return querySelectorAll(selector, this);
-  };
-  return win;
-};
 
 /**
  * get channel

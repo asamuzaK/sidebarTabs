@@ -7,7 +7,7 @@
 import sinon from 'sinon';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
-import { browser, createJsdom, mockPort, patchJsdom } from './mocha/setup.js';
+import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
 /* test */
 import * as mjs from '../src/mjs/main.js';
@@ -80,8 +80,8 @@ describe('main', () => {
         this._scrollHeight = val;
       }
     });
-    window = dom && patchJsdom(dom.window);
-    document = window && window.document;
+    window = dom.window;
+    document = dom.window.document;
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);

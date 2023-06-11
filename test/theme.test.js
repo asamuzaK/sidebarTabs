@@ -43,8 +43,8 @@ describe('theme', () => {
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
-    window = dom && dom.window;
-    document = window && window.document;
+    window = dom.window;
+    document = dom.window.document;
     browser._sandbox.reset();
     browser.permissions.contains.resolves(true);
     global.browser = browser;

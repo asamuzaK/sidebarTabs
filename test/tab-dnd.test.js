@@ -22,8 +22,8 @@ describe('dnd', () => {
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
-    window = dom && dom.window;
-    document = window && window.document;
+    window = dom.window;
+    document = dom.window.document;
     browser._sandbox.reset();
     browser.i18n.getMessage.callsFake((...args) => args.toString());
     browser.permissions.contains.resolves(true);
