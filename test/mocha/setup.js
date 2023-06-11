@@ -7,8 +7,8 @@ import {
   closest, matches, querySelector, querySelectorAll
 } from '@asamuzakjp/dom-selector';
 import domPurify from 'dompurify';
-import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
+import sinon from 'sinon';
 import { Schema } from 'webext-schema';
 
 /**
