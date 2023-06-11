@@ -22,7 +22,7 @@
     "webext-schema": "^5.1.16"
   },
   "devDependencies": {
-    "@asamuzakjp/dom-selector": "^0.16.1",
+    "@asamuzakjp/dom-selector": "^0.16.3",
     "@types/firefox-webext-browser": "^111.0.1",
     "addons-linter": "^6.7.0",
     "c8": "^7.14.0",
