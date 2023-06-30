@@ -16,7 +16,7 @@
     "camelize": "^1.0.1",
     "commander": "^11.0.0",
     "decamelize": "^6.0.0",
-    "dompurify": "^3.0.3",
+    "dompurify": "^3.0.4",
     "tldts-experimental": "^6.0.8",
     "url-sanitizer": "^0.10.8",
     "webext-schema": "^5.1.16"
