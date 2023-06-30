@@ -62,7 +62,8 @@ import {
   CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
   COLOR_SCHEME_DARK, COOKIE_STORE_DEFAULT, DISCARDED, EXT_INIT,
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, FRAME_COLOR_USE,
-  HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER,
+  HIGHLIGHTED,
+  NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER,
   NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, PINNED_HEIGHT,
   SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
@@ -77,10 +78,11 @@ import {
   TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
-  TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
+  TAB_REOPEN_NO_CONTAINER, TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL,
+  TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
-  TABS_RELOAD, TABS_REOPEN_CONTAINER,
+  TABS_RELOAD, TABS_REOPEN_CONTAINER, TABS_REOPEN_NO_CONTAINER,
   THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
   THEME_CUSTOM_LIGHT, THEME_CUSTOM_REQ,
   THEME_UI_SCROLLBAR_NARROW, THEME_UI_TAB_COMPACT, THEME_UI_TAB_GROUP_NARROW,
@@ -1425,21 +1427,70 @@ export const handleClickedMenu = async info => {
         break;
       default: {
         if (Array.isArray(contextualIds)) {
-          if (menuItemId.endsWith('Reopen')) {
-            const itemId = menuItemId.replace(/Reopen$/, '');
-            if (contextualIds.includes(itemId)) {
-              const arr = [];
-              if (selectedTabs.length) {
-                arr.push(...selectedTabs);
-              } else {
-                arr.push(tab);
+          if (menuItemId === NEW_TAB_OPEN_NO_CONTAINER) {
+            func.push(createNewTab(windowId));
+          } else if (menuItemId === TAB_REOPEN_NO_CONTAINER) {
+            if (tab) {
+              const opt = {
+                cookieStoreId: COOKIE_STORE_DEFAULT,
+                index: tabIndex + 1,
+                openerTabId: tabId
+              };
+              func.push(createNewTab(windowId, opt));
+            }
+          } else if (menuItemId === TABS_REOPEN_NO_CONTAINER) {
+            const arr = [];
+            for (const item of selectedTabs) {
+              const itemTabsTab = item.dataset.tab;
+              if (itemTabsTab) {
+                const {
+                  cookieStoreId: itemCookieStoreId, id: itemId, index: itemIndex
+                } = JSON.parse(itemTabsTab);
+                if (itemCookieStoreId !== COOKIE_STORE_DEFAULT) {
+                  const opt = {
+                    cookieStoreId: COOKIE_STORE_DEFAULT,
+                    index: itemIndex + 1,
+                    openerTabId: itemId
+                  };
+                  arr.unshift(opt);
+                }
               }
-              func.push(reopenTabsInContainer(arr, itemId, windowId));
+            }
+            if (arr.length) {
+              for (const opt of arr) {
+                func.push(createNewTab(windowId, opt));
+              }
             }
           } else if (menuItemId.endsWith('NewTab')) {
             const itemId = menuItemId.replace(/NewTab$/, '');
             if (contextualIds.includes(itemId)) {
               func.push(createNewTabInContainer(itemId, windowId));
+            }
+          } else if (menuItemId.endsWith('Reopen')) {
+            const itemId = menuItemId.replace(/Reopen$/, '');
+            if (contextualIds.includes(itemId)) {
+              const arr = [];
+              if (selectedTabs.length > 1) {
+                for (const item of selectedTabs) {
+                  const itemTabsTab = item.dataset.tab;
+                  if (itemTabsTab) {
+                    const {
+                      cookieStoreId: itemCookieStoreId
+                    } = JSON.parse(itemTabsTab);
+                    if (itemId !== itemCookieStoreId) {
+                      arr.push(item);
+                    }
+                  }
+                }
+              } else {
+                const { cookieStoreId } = tabsTab;
+                if (itemId !== cookieStoreId) {
+                  arr.push(tab);
+                }
+              }
+              if (arr.length) {
+                func.push(reopenTabsInContainer(arr, itemId, windowId));
+              }
             }
           }
         }
@@ -1452,21 +1503,37 @@ export const handleClickedMenu = async info => {
 /**
  * prepare contexual IDs menu items
  * @param {string} parentId - parent ID
+ * @param {string} [cookieId] - cookie store ID
  * @returns {Promise.<Array>} - results of each handler
  */
-export const prepareContexualIdsMenuItems = async parentId => {
+export const prepareContexualIdsMenuItems = async (parentId, cookieId) => {
   if (!isString(parentId)) {
     throw new TypeError(`Expected String but got ${getType(parentId)}.`);
   }
   const func = [];
   const { contextualIds } = sidebar;
   if (Array.isArray(contextualIds)) {
+    const noContainerKeys = [
+      TAB_REOPEN_NO_CONTAINER,
+      TABS_REOPEN_NO_CONTAINER,
+      'sepReopenContainer-1',
+      'sepReopenContainer-2'
+    ];
+    for (const itemKey of noContainerKeys) {
+      if (parentId === TAB_REOPEN_CONTAINER ||
+          parentId === TABS_REOPEN_CONTAINER) {
+        func.push(updateContextMenu(itemKey, {
+          visible: cookieId !== COOKIE_STORE_DEFAULT
+        }));
+      }
+    }
     const itemKeys = contextualIds.filter(k => isString(k) && k);
     for (const itemKey of itemKeys) {
       if (parentId === TAB_REOPEN_CONTAINER ||
           parentId === TABS_REOPEN_CONTAINER) {
         func.push(updateContextMenu(`${itemKey}Reopen`, {
-          parentId
+          parentId,
+          visible: itemKey !== cookieId
         }));
       } else if (parentId === NEW_TAB_OPEN_CONTAINER) {
         func.push(updateContextMenu(`${itemKey}NewTab`, {
@@ -1723,7 +1790,7 @@ export const prepareTabMenuItems = async elm => {
     );
     const lastTab = allTabs[allTabs.length - 1];
     const tabsTab = await getTab(tabId);
-    const { index, mutedInfo: { muted }, pinned } = tabsTab;
+    const { cookieStoreId, index, mutedInfo: { muted }, pinned } = tabsTab;
     const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
     for (const itemKey of tabKeys) {
       const item = menuItems[itemKey];
@@ -1859,7 +1926,9 @@ export const prepareTabMenuItems = async elm => {
         }
         func.push(updateContextMenu(id, data));
       }
-      func.push(prepareContexualIdsMenuItems(TABS_REOPEN_CONTAINER));
+      func.push(
+        prepareContexualIdsMenuItems(TABS_REOPEN_CONTAINER, cookieStoreId)
+      );
     } else {
       const tabMoveMenu = menuItems[TAB_MOVE];
       const tabMoveKeys = [TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN];
@@ -1892,7 +1961,9 @@ export const prepareTabMenuItems = async elm => {
         }
         func.push(updateContextMenu(id, data));
       }
-      func.push(prepareContexualIdsMenuItems(TAB_REOPEN_CONTAINER));
+      func.push(
+        prepareContexualIdsMenuItems(TAB_REOPEN_CONTAINER, cookieStoreId)
+      );
     }
     func.push(prepareTabGroupMenuItems(tab, {
       multiTabsSelected,
