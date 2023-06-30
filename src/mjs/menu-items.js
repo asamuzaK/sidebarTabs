@@ -4,9 +4,9 @@
 
 /* shared */
 import {
-  NEW_TAB_OPEN_CONTAINER, OPTIONS_OPEN, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD,
-  TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_END, TAB_CLOSE_OTHER,
-  TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
+  NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER, OPTIONS_OPEN,
+  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
+  TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND,
@@ -14,10 +14,11 @@ import {
   TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_MUTE_UNMUTE, TAB_NEW, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD,
-  TAB_REOPEN_CONTAINER,
+  TAB_REOPEN_CONTAINER, TAB_REOPEN_NO_CONTAINER,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
-  TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER
+  TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
+  TABS_REOPEN_NO_CONTAINER
 } from './constant.js';
 
 /* api */
@@ -40,7 +41,25 @@ export default {
     contexts: ['page'],
     viewTypes: ['sidebar'],
     enabled: false,
-    visible: false
+    visible: false,
+    subItems: {
+      [NEW_TAB_OPEN_NO_CONTAINER]: {
+        id: NEW_TAB_OPEN_NO_CONTAINER,
+        title: i18n.getMessage(`${NEW_TAB_OPEN_NO_CONTAINER}_menu`, '(&N)'),
+        type: 'normal',
+        contexts: ['page'],
+        viewTypes: ['sidebar'],
+        enabled: true,
+        visible: true
+      },
+      'sepNewContainer-1': {
+        id: 'sepNewContainer-1',
+        type: 'separator',
+        contexts: ['page'],
+        viewTypes: ['sidebar'],
+        visible: true
+      }
+    }
   },
   'sep-0': {
     id: 'sep-0',
@@ -247,7 +266,25 @@ export default {
     contexts: ['tab'],
     viewTypes: ['sidebar'],
     enabled: false,
-    visible: true
+    visible: true,
+    subItems: {
+      [TAB_REOPEN_NO_CONTAINER]: {
+        id: TAB_REOPEN_NO_CONTAINER,
+        title: i18n.getMessage(`${TAB_REOPEN_NO_CONTAINER}_menu`, '(&N)'),
+        type: 'normal',
+        contexts: ['tab'],
+        viewTypes: ['sidebar'],
+        enabled: true,
+        visible: true
+      },
+      'sepReopenContainer-1': {
+        id: 'sepReopenContainer-1',
+        type: 'separator',
+        contexts: ['tab'],
+        viewTypes: ['sidebar'],
+        visible: true
+      }
+    }
   },
   [TABS_REOPEN_CONTAINER]: {
     id: TABS_REOPEN_CONTAINER,
@@ -256,7 +293,24 @@ export default {
     contexts: ['tab'],
     viewTypes: ['sidebar'],
     enabled: false,
-    visible: false
+    visible: false,
+    subItems: {
+      [TABS_REOPEN_NO_CONTAINER]: {
+        id: TABS_REOPEN_NO_CONTAINER,
+        title: i18n.getMessage(`${TABS_REOPEN_NO_CONTAINER}_menu`, '(&N)'),
+        type: 'normal',
+        contexts: ['tab'],
+        viewTypes: ['sidebar'],
+        enabled: true,
+        visible: true
+      },
+      'sepReopenContainer-2': {
+        id: 'sepReopenContainer-2',
+        type: 'separator',
+        contexts: ['tab'],
+        viewTypes: ['sidebar']
+      }
+    }
   },
   'sep-3': {
     id: 'sep-3',
