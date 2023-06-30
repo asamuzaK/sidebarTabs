@@ -43,7 +43,7 @@ export function handleMovedTab(tabId: number, info: object): Promise<Promise<any
 export function handleRemovedTab(tabId: number, info: object): Promise<void>;
 export function handleUpdatedTab(tabId: number, info?: object, tabsTab?: object): Promise<any[]>;
 export function handleClickedMenu(info: object): Promise<any[]>;
-export function prepareContexualIdsMenuItems(parentId: string): Promise<any[]>;
+export function prepareContexualIdsMenuItems(parentId: string, cookieId?: string): Promise<any[]>;
 export function prepareNewTabMenuItems(elm: object): Promise<any[]>;
 export function preparePageMenuItems(opt?: object): Promise<any[]>;
 export function prepareTabGroupMenuItems(elm?: object, opt?: object): Promise<any[]>;

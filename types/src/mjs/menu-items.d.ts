@@ -13,6 +13,24 @@ declare const _default: {
         viewTypes: string[];
         enabled: boolean;
         visible: boolean;
+        subItems: {
+            openNewTabInNoContainer: {
+                id: string;
+                title: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+                enabled: boolean;
+                visible: boolean;
+            };
+            'sepNewContainer-1': {
+                id: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+                visible: boolean;
+            };
+        };
     };
     'sep-0': {
         id: string;
@@ -219,6 +237,24 @@ declare const _default: {
         viewTypes: string[];
         enabled: boolean;
         visible: boolean;
+        subItems: {
+            reopenTabInNoContainer: {
+                id: string;
+                title: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+                enabled: boolean;
+                visible: boolean;
+            };
+            'sepReopenContainer-1': {
+                id: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+                visible: boolean;
+            };
+        };
     };
     reopenTabsInContainer: {
         id: string;
@@ -228,6 +264,23 @@ declare const _default: {
         viewTypes: string[];
         enabled: boolean;
         visible: boolean;
+        subItems: {
+            reopenTabsInNoContainer: {
+                id: string;
+                title: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+                enabled: boolean;
+                visible: boolean;
+            };
+            'sepReopenContainer-2': {
+                id: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+            };
+        };
     };
     'sep-3': {
         id: string;
