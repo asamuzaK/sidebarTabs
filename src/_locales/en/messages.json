@@ -426,6 +426,7 @@
   },
   "openNewTabInNoContainer_menu": {
     "message": "&No Container",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
     "placeholders": {
       "key": {
         "content": "$1",
