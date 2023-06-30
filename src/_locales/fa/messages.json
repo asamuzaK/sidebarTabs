@@ -424,6 +424,16 @@
       }
     }
   },
+  "openNewTabInNoContainer_menu": {
+    "message": "بدون زبانه حامل $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      }
+    }
+  },
   "openOptions_menu": {
     "message": "گزینه ها $KEY$",
     "placeholders": {
@@ -695,6 +705,26 @@
       "key": {
         "content": "$1",
         "example": "(&E)"
+      }
+    }
+  },
+  "reopenTabInNoContainer_menu": {
+    "message": "بدون زبانه حامل $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      }
+    }
+  },
+  "reopenTabsInNoContainer_menu": {
+    "message": "بدون زبانه حامل $KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
       }
     }
   },

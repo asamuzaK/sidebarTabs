@@ -487,10 +487,12 @@ describe('browser-tabs', () => {
 
     it('should call function', async () => {
       browser.tabs.get.withArgs(1).resolves({
+        id: 1,
         index: 0,
         url: 'https://example.com'
       });
       browser.tabs.get.withArgs(2).resolves({
+        id: 2,
         index: 1,
         url: 'https://www.example.com'
       });
@@ -500,13 +502,15 @@ describe('browser-tabs', () => {
         url: 'https://www.example.com',
         windowId: 1,
         cookieStoreId: 'bar',
-        index: 2
+        index: 2,
+        openerTabId: 2
       }).callCount;
       const l = browser.tabs.create.withArgs({
         url: 'https://example.com',
         windowId: 1,
         cookieStoreId: 'bar',
-        index: 1
+        index: 1,
+        openerTabId: 1
       }).callCount;
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
@@ -524,23 +528,27 @@ describe('browser-tabs', () => {
         url: 'https://www.example.com',
         windowId: 1,
         cookieStoreId: 'bar',
-        index: 2
+        index: 2,
+        openerTabId: 2
       }).callCount, k + 1, 'called');
       assert.strictEqual(browser.tabs.create.withArgs({
         url: 'https://example.com',
         windowId: 1,
         cookieStoreId: 'bar',
-        index: 1
+        index: 1,
+        openerTabId: 1
       }).callCount, l + 1, 'called');
       assert.isUndefined(res, 'result');
     });
 
     it('should call function', async () => {
       browser.tabs.get.withArgs(1).resolves({
+        id: 1,
         index: 0,
         url: 'https://example.com'
       });
       browser.tabs.get.withArgs(2).resolves({
+        id: 2,
         index: 1,
         url: 'https://www.example.com'
       });
@@ -550,13 +558,15 @@ describe('browser-tabs', () => {
         url: 'https://www.example.com',
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 2
+        index: 2,
+        openerTabId: 2
       }).callCount;
       const l = browser.tabs.create.withArgs({
         url: 'https://example.com',
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 1
+        index: 1,
+        openerTabId: 1
       }).callCount;
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
@@ -574,23 +584,27 @@ describe('browser-tabs', () => {
         url: 'https://www.example.com',
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 2
+        index: 2,
+        openerTabId: 2
       }).callCount, k + 1, 'called');
       assert.strictEqual(browser.tabs.create.withArgs({
         url: 'https://example.com',
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 1
+        index: 1,
+        openerTabId: 1
       }).callCount, l + 1, 'called');
       assert.isUndefined(res, 'result');
     });
 
     it('should call function', async () => {
       browser.tabs.get.withArgs(1).resolves({
+        id: 1,
         index: 0,
         url: 'about:newtab'
       });
       browser.tabs.get.withArgs(2).resolves({
+        id: 2,
         index: 1,
         url: 'about:blank'
       });
@@ -599,13 +613,15 @@ describe('browser-tabs', () => {
       const k = browser.tabs.create.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 1
+        index: 1,
+        openerTabId: 1
       }).callCount;
       const l = browser.tabs.create.withArgs({
         url: 'about:blank',
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 2
+        index: 2,
+        openerTabId: 2
       }).callCount;
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
@@ -622,13 +638,15 @@ describe('browser-tabs', () => {
       assert.strictEqual(browser.tabs.create.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 1
+        index: 1,
+        openerTabId: 1
       }).callCount, k + 1, 'called');
       assert.strictEqual(browser.tabs.create.withArgs({
         url: 'about:blank',
         windowId: browser.windows.WINDOW_ID_CURRENT,
         cookieStoreId: 'bar',
-        index: 2
+        index: 2,
+        openerTabId: 2
       }).callCount, l + 1, 'called');
       assert.isUndefined(res, 'result');
     });

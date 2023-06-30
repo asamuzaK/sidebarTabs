@@ -424,6 +424,15 @@
       }
     }
   },
+  "openNewTabInNoContainer_menu": {
+    "message": "&No Container",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&E)"
+      }
+    }
+  },
   "openOptions_menu": {
     "message": "Op&tions",
     "placeholders": {
@@ -695,6 +704,26 @@
       "key": {
         "content": "$1",
         "example": "(&E)"
+      }
+    }
+  },
+  "reopenTabInNoContainer_menu": {
+    "message": "&No Container",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
+      }
+    }
+  },
+  "reopenTabsInNoContainer_menu": {
+    "message": "&No Container",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&N)"
       }
     }
   },

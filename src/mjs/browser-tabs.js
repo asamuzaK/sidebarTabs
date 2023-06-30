@@ -173,11 +173,12 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
     windowId = windows.WINDOW_ID_CURRENT;
   }
   for (const item of arr) {
-    const { index, url } = item;
+    const { id: tabId, index, url } = item;
     const opt = {
       windowId,
       cookieStoreId: cookieId,
-      index: index + 1
+      index: index + 1,
+      openerTabId: tabId
     };
     if (url !== 'about:newtab') {
       opt.url = url;
