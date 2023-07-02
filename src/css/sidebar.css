@@ -760,7 +760,26 @@ main {
 @media (prefers-color-scheme: dark) {
   :root {
     --background-color: #38383d;
+    --background-active-color: #42414d;
+    --background-discarded-color: #38383d;
+    --background-field-color: #1c1b22;
+    --background-field-active-color: #42414d;
+    --background-hover-color: #4c4c50;
+    --background-hover-shadow: #fbfbfe1a;
+    --background-selection-color: #42414d;
+    --background-selection-hover-color: #4c4c50;
+    --border-active-color: transparent;
+    --border-field-color: transparent;
+    --border-field-active-color: #aaf2ff;
+    --focus-outline-color: #0df6;
     --foreground-color: #f9f9fa;
+    --foreground-active-color: #fbfbfe;
+    --foreground-discarded-color: #f9f9fa;
+    --foreground-field-color: #fbfbfe;
+    --foreground-field-active-color: #fbfbfe;
+    --foreground-hover-color: #f9f9fa;
+    --foreground-selection-color: #fbfbfe;
+    --foreground-selection-hover-color: #f9f9fa;
     --tab-group-pinned-heading-text: #a1a1c0;
     --tab-group-1-heading-text: #dea183;
     --tab-group-2-heading-text: #82bfa1;
@@ -768,6 +787,10 @@ main {
     --tab-group-4-heading-text: #a1bfde;
 
     color-scheme: dark;
+  }
+
+  :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
+    box-shadow: none;
   }
 }
 
