@@ -72,5 +72,5 @@
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
   },
-  "version": "11.1.0"
+  "version": "11.1.1"
 }
