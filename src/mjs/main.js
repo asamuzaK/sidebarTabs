@@ -1435,7 +1435,7 @@ export const handleClickedMenu = async info => {
               func.push(createNewTab(windowId, opt));
             }
           } else if (menuItemId === TABS_REOPEN_NO_CONTAINER) {
-            const arr = [];
+            let arr = [];
             for (const item of selectedTabs) {
               const { dataset: { tab: itemTab } } = item;
               if (itemTab) {
@@ -1448,11 +1448,12 @@ export const handleClickedMenu = async info => {
                     index: itemIndex + 1,
                     openerTabId: itemId
                   };
-                  arr.unshift(opt);
+                  arr.push(opt);
                 }
               }
             }
             if (arr.length) {
+              arr = arr.reverse();
               for (const opt of arr) {
                 func.push(createNewTab(windowId, opt));
               }

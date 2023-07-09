@@ -909,15 +909,16 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
     if (l) {
-      const arr = [];
+      let arr = [];
       let i = 0;
       while (i < l) {
         if (sheet.cssRules[i].selectorText === sel) {
-          arr.unshift(i);
+          arr.push(i);
         }
         i++;
       }
       if (arr.length) {
+        arr = arr.reverse();
         for (const j of arr) {
           sheet.deleteRule(j);
         }

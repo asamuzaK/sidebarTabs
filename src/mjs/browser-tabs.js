@@ -183,10 +183,10 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
     if (url !== 'about:newtab') {
       opt.url = url;
     }
-    opts.unshift(opt);
+    opts.push(opt);
   }
   if (opts.length) {
-    func = createTabsInOrder(opts);
+    func = createTabsInOrder(opts.reverse());
   }
   return func || null;
 };
