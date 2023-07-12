@@ -909,7 +909,7 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
     if (l) {
-      let arr = [];
+      const arr = [];
       let i = 0;
       while (i < l) {
         if (sheet.cssRules[i].selectorText === sel) {
@@ -918,7 +918,7 @@ export const deleteCustomThemeCss = async (sel = `.${CLASS_THEME_CUSTOM}`) => {
         i++;
       }
       if (arr.length) {
-        arr = arr.reverse();
+        arr.reverse();
         for (const j of arr) {
           sheet.deleteRule(j);
         }

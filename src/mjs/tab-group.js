@@ -564,16 +564,17 @@ export const closeTabGroup = async node => {
  * @returns {Promise.<?Promise>} - moveTabsInOrder()
  */
 export const detachTabsFromGroup = async (nodes, windowId) => {
-  if (!Array.isArray(nodes)) {
+  if (Array.isArray(nodes)) {
+    nodes.reverse();
+  } else {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
   }
-  const revArr = nodes.reverse();
   const arr = [];
   let func;
-  for (const item of revArr) {
+  for (const item of nodes) {
     const itemId = getSidebarTabId(item);
     if (Number.isInteger(itemId)) {
       const { parentNode } = item;
