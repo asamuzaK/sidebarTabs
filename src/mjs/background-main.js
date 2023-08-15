@@ -8,6 +8,7 @@ import {
   getType, isObjectNotEmpty, isString, logErr, throwErr
 } from './common.js';
 import { ports, removePort } from './port.js';
+import { restoreContextMenu } from './menu.js';
 import { saveSessionTabList } from './session.js';
 import {
   SESSION_SAVE, SIDEBAR, SIDEBAR_STATE_UPDATE, TOGGLE_STATE
@@ -204,7 +205,7 @@ export const handleConnectedPort = async (port = {}) => {
       port.onDisconnect.addListener(portOnDisconnect);
       port.onMessage.addListener(portOnMessage);
       ports.set(portId, port);
-      await setSidebarState(windowId);
+      await setSidebarState(windowId).then(restoreContextMenu);
     }
   }
 };
