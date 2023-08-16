@@ -1443,12 +1443,16 @@ describe('background-main', () => {
       const port = mockPort({
         name: portId
       });
+      const remove = browser.menus.removeAll.resolves(undefined);
+      const create = browser.menus.create;
       await func(port);
       assert.isFalse(stubWin.called, 'called win');
       assert.strictEqual(mjs.ports.size, 0, 'ports size');
       assert.isFalse(mjs.ports.has(portId), 'ports');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
       assert.isFalse(mjs.sidebar.has(1), 'sidebar');
+      assert.isFalse(remove.called, 'remove');
+      assert.isFalse(create.called, 'create');
     });
 
     it('should add port', async () => {
@@ -1462,12 +1466,16 @@ describe('background-main', () => {
       const port = mockPort({
         name: portId
       });
+      const remove = browser.menus.removeAll.resolves(undefined);
+      const create = browser.menus.create;
       await func(port);
       assert.isTrue(stubWin.calledOnce, 'called win');
       assert.strictEqual(mjs.ports.size, 1, 'ports size');
       assert.isTrue(mjs.ports.has(portId), 'ports');
       assert.strictEqual(mjs.sidebar.size, 1, 'sidebar size');
       assert.isTrue(mjs.sidebar.has(1), 'sidebar');
+      assert.isTrue(remove.calledOnce, 'remove');
+      assert.isTrue(create.called, 'create');
     });
   });
 
