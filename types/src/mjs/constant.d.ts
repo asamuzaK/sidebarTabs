@@ -167,7 +167,7 @@ export const TAB_MUTE_UNMUTE: "unmuteTab";
 export const TAB_NEW: "newTab";
 export const TAB_PIN: "pinTab";
 export const TAB_PIN_UNPIN: "unpinTab";
-export const TAB_QUERY: string;
+export const TAB_QUERY: ".tab:not(.newtab)";
 export const TAB_RELOAD: "reloadTab";
 export const TAB_REOPEN_CONTAINER: "reopenTabInContainer";
 export const TAB_REOPEN_NO_CONTAINER: "reopenTabInNoContainer";
