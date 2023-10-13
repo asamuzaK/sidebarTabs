@@ -1,5 +1,5 @@
 /**
- * options.js
+ * options-main.js
  */
 
 /* shared */
@@ -305,8 +305,7 @@ export const addInitExtensionListener = async () => {
 };
 
 /**
- *
- *save user CSS
+ * save user CSS
  * @returns {?Promise} - storePref() / logErr()
  */
 export const saveUserCss = () => {
