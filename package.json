@@ -22,7 +22,7 @@
     "webext-schema": "^5.2.5"
   },
   "devDependencies": {
-    "@asamuzakjp/dom-selector": "^0.21.0",
+    "@asamuzakjp/dom-selector": "^0.21.1",
     "@types/firefox-webext-browser": "^111.0.3",
     "addons-linter": "^6.16.0",
     "c8": "^8.0.1",
@@ -44,7 +44,7 @@
     "stylelint": "^15.11.0",
     "stylelint-config-standard": "^34.0.0",
     "typescript": "^5.2.2",
-    "undici": "^5.26.5"
+    "undici": "^5.27.0"
   },
   "scripts": {
     "include": "npm-run-all -s include-*",
