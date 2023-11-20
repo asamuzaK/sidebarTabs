@@ -523,7 +523,7 @@ export const handleDrop = evt => {
           evt.preventDefault();
           evt.stopPropagation();
         // dropped query string
-        } else if (isString(item) && dropEffect === 'move') {
+        } else if (dropEffect === 'move' && isString(item)) {
           if (isURISync(item)) {
             func = openUriList(dropTarget, [item]).catch(throwErr);
           } else {

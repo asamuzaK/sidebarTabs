@@ -858,7 +858,7 @@ export const updateCustomThemeCss = async (sel, prop, value) => {
     const { sheet } = elm;
     const l = sheet.cssRules.length;
     let cssText = '';
-    if (sel === CSS_ROOT && prop && value) {
+    if (prop && value && sel === CSS_ROOT) {
       cssText += `${prop}: ${value};`;
     } else {
       const customTheme = currentTheme.get(THEME_CURRENT);
@@ -975,8 +975,8 @@ export const getThemeInfo = async (opt = {}) => {
     const { theme: storedTheme } = data;
     if (Array.isArray(storedTheme)) {
       const [key, value] = storedTheme;
-      if (isString(key) && key !== THEME_AUTO && key !== THEME_SYSTEM &&
-          value) {
+      if (value &&
+          isString(key) && key !== THEME_AUTO && key !== THEME_SYSTEM) {
         themes.set(key, !!value);
       }
     }

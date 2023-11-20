@@ -356,8 +356,8 @@ export const expandActivatedCollapsedTab = async () => {
   if (tab) {
     const { parentNode } = tab;
     const firstTab = parentNode.querySelector(TAB_QUERY);
-    if (parentNode.classList.contains(CLASS_TAB_COLLAPSED) &&
-        firstTab !== tab) {
+    if (firstTab !== tab &&
+        parentNode.classList.contains(CLASS_TAB_COLLAPSED)) {
       func = toggleTabGroupCollapsedState(tab, true);
     }
   }
@@ -373,7 +373,7 @@ export const finishGroupLabelEdit = evt => {
   const { isComposing, key, target, type } = evt;
   let func;
   if (type === 'blur' ||
-      (type === 'keydown' && !isComposing && key === 'Enter')) {
+      (!isComposing && type === 'keydown' && key === 'Enter')) {
     const heading = getTabGroupHeading(target);
     const label = heading?.querySelector(`.${CLASS_HEADING_LABEL}`);
     if (label) {

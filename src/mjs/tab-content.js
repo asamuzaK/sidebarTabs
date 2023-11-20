@@ -67,7 +67,7 @@ export const contextualIdentitiesIconColor = new Set([
 export const tabIconFallback = evt => {
   if (isObjectNotEmpty(evt)) {
     const { target, type } = evt;
-    if (type === 'error' && target && isString(target.src)) {
+    if (target && type === 'error' && isString(target.src)) {
       target.src = URL_FAVICON_DEFAULT;
     }
   }

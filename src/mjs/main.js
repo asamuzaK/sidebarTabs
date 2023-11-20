@@ -394,9 +394,9 @@ export const handleCreateNewTab = evt => {
   const newTab = document.getElementById(NEW_TAB_BUTTON);
   let func;
   if (currentTarget === newTab || target === newTab ||
-      (((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
-        (button === MOUSE_BUTTON_LEFT && type === 'dblclick')) &&
-       target === main)) {
+      (target === main &&
+       ((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
+        (button === MOUSE_BUTTON_LEFT && type === 'dblclick')))) {
     const { windowId } = sidebar;
     func = createNewTab(windowId).catch(throwErr);
   }
@@ -442,14 +442,14 @@ export const handleClickedTab = evt => {
   const switchByScroll = userOpts.get(TAB_SWITCH_SCROLL);
   const tab = getSidebarTab(target);
   const func = [];
-  if (button === MOUSE_BUTTON_MIDDLE && type === 'mousedown' && tab) {
+  if (tab && button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') {
     if (!switchByScroll || closeByMdlClick) {
       func.push(closeTabs([tab]));
       evt.stopPropagation();
       evt.preventDefault();
     }
-  } else if (button === MOUSE_BUTTON_LEFT && type === 'dblclick' &&
-             closeByDblClick && tab) {
+  } else if (tab && closeByDblClick && button === MOUSE_BUTTON_LEFT &&
+             type === 'dblclick') {
     const { classList } = tab;
     if (classList.contains(ACTIVE)) {
       func.push(closeTabs([tab]));
@@ -474,8 +474,7 @@ export const handleClickedTab = evt => {
         highlights.add(tabIndex);
         for (const item of items) {
           const itemIndex = getSidebarTabIndex(item);
-          if ((itemIndex === firstSelectedTabIndex && itemIndex === tabIndex) ||
-              itemIndex === tabIndex) {
+          if (itemIndex === tabIndex) {
             highlights.delete(itemIndex);
           } else {
             highlights.add(itemIndex);
@@ -551,8 +550,8 @@ export const triggerTabWarmup = evt => {
   if (tab) {
     const { classList } = tab;
     const tabId = getSidebarTabId(tab);
-    if (!classList.contains(ACTIVE) &&
-        Number.isInteger(tabId) && tabId !== TAB_ID_NONE) {
+    if (Number.isInteger(tabId) && tabId !== TAB_ID_NONE &&
+        !classList.contains(ACTIVE)) {
       func = warmupTab(tabId).catch(throwErr);
     }
   }
@@ -674,12 +673,13 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
     const tabList = document.querySelectorAll(TAB_QUERY);
     const targetTab = tabList[index];
     const targetTabPrev = index > 0 && tabList[index - 1];
-    const insertTarget =
-      tabList.length !== index && targetTab && targetTab.parentNode;
-    const inGroup = tabList.length !== index && targetTab && targetTabPrev &&
+    const insertTarget = targetTab && tabList.length !== index
+      ? targetTab.parentNode
+      : null;
+    const inGroup = targetTab && targetTabPrev && tabList.length !== index &&
+      targetTab.parentNode === targetTabPrev.parentNode &&
       targetTab.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-      targetTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP) &&
-      targetTab.parentNode === targetTabPrev.parentNode;
+      targetTabPrev.parentNode.classList.contains(CLASS_TAB_GROUP);
     let scroll;
     for (const item of items) {
       const { classList } = item;
@@ -793,8 +793,8 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         const newTabAtEnd = userOpts.get(TAB_GROUP_NEW_TAB_AT_END);
         if (tabList.length === index && nextContainer !== newTab) {
           await createSidebarTab(tab);
-        } else if (index !== openerTabIndex + 1 && !newTabAtEnd &&
-                   insertTarget) {
+        } else if (!newTabAtEnd && insertTarget &&
+                   index !== openerTabIndex + 1) {
           if (insertTarget.previousElementSibling === container) {
             container.appendChild(tab);
           } else {
@@ -958,7 +958,7 @@ export const handleMovedTab = async (tabId, info) => {
   }
   const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
   let func;
-  if (windowId === sidebar.windowId && tab) {
+  if (tab && windowId === sidebar.windowId) {
     const tabIndex = getSidebarTabIndex(tab);
     const tabsTab = await getTab(tabId);
     const { index, pinned } = tabsTab;
@@ -1091,7 +1091,7 @@ export const handleRemovedTab = async (tabId, info) => {
   if (!Number.isInteger(windowId)) {
     throw new TypeError(`Expected Number but got ${getType(windowId)}.`);
   }
-  if (windowId === sidebar.windowId && !isWindowClosing) {
+  if (!isWindowClosing && windowId === sidebar.windowId) {
     const tab = document.querySelector(`[data-tab-id="${tabId}"]`);
     tab?.parentNode.removeChild(tab);
   }
@@ -1168,8 +1168,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           }
           func.push(restoreTabContainers().then(requestSaveSession));
         }
-        if ((Object.prototype.hasOwnProperty.call(info, 'status') &&
-             info.status === 'complete') ||
+        if (info.status === 'complete' ||
             Object.prototype.hasOwnProperty.call(info, 'url')) {
           if (info.status === 'complete') {
             const activeTabsTab = await getActiveTab(windowId);
@@ -1968,7 +1967,7 @@ export const prepareTabMenuItems = async elm => {
       headingShown: heading && !heading.hidden
     }));
     for (const sep of sepKeys) {
-      if (sep === 'sep-4' && !enableTabGroup) {
+      if (!enableTabGroup && sep === 'sep-4') {
         func.push(updateContextMenu(sep, {
           visible: false
         }));
@@ -2236,7 +2235,7 @@ export const requestSidebarStateUpdate = async () => {
   if (port && Number.isInteger(windowId)) {
     const win = await getCurrentWindow();
     const { focused, id, type } = win;
-    if (windowId === id && focused && type === 'normal') {
+    if (focused && windowId === id && type === 'normal') {
       const msg = {
         [SIDEBAR_STATE_UPDATE]: {
           windowId
@@ -2418,7 +2417,7 @@ export const setStorageValue = async (item, obj, changed = false) => {
  */
 export const handleStorage = async (data, area = 'local', changed = false) => {
   const func = [];
-  if (isObjectNotEmpty(data) && area === 'local') {
+  if (area === 'local' && isObjectNotEmpty(data)) {
     const items = Object.entries(data);
     if (items.length) {
       if (changed && !userOpts.size) {
