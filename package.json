@@ -19,7 +19,7 @@
     "dompurify": "^3.0.6",
     "tldts-experimental": "^6.0.20",
     "url-sanitizer": "^0.10.14",
-    "webext-schema": "^5.2.5"
+    "webext-schema": "^5.2.6"
   },
   "devDependencies": {
     "@asamuzakjp/dom-selector": "^1.1.2",
@@ -43,7 +43,7 @@
     "sinon": "^17.0.1",
     "stylelint": "^15.11.0",
     "stylelint-config-standard": "^34.0.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.2",
     "undici": "^5.27.2"
   },
   "scripts": {
@@ -69,5 +69,5 @@
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
   },
-  "version": "11.1.4"
+  "version": "11.1.5"
 }
