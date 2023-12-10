@@ -595,9 +595,8 @@ main {
   flex: 0 0 var(--icon-medium-size);
   align-items: center;
   justify-content: space-around;
-  margin: calc(var(--scale-size) / 2) 0 0 calc(var(--scale-size) / 2);
-  border-top-left-radius: calc(var(--scale-size) / 2);
-  border-top-right-radius: calc(var(--scale-size) / 2);
+  margin: 0;
+  border-radius: 0;
   padding: 0;
 }
 
@@ -605,13 +604,15 @@ main {
   flex: 0 0 var(--icon-x-small-size);
 }
 
-.group:not(.ungroup) .tab-group > :not([hidden]) ~ .tab > .tab-context {
-  margin-top: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+.group:not(.ungroup) .tab-group > :is(.heading:not([hidden]), .heading[hidden] + .tab) > .tab-context {
+  margin-top: calc(var(--scale-size) / 2);
+  border-top-left-radius: calc(var(--scale-size) / 2);
+  border-top-right-radius: calc(var(--scale-size) / 2);
 }
 
-.group:not(.ungroup) :where(.tab-group > .tab:last-child, .tab-group.tab-collapsed > :not([hidden])) > .tab-context {
+.group:not(.ungroup) .tab-group:not(.tab-collapsed) > .tab:last-child > .tab-context,
+.group:not(.ungroup) .tab-group.tab-collapsed > .heading:not([hidden]) > .tab-context,
+.group:not(.ungroup) .tab-group.tab-collapsed > .heading[hidden] + .tab > .tab-context {
   margin-bottom: calc(var(--scale-size) / 2);
   border-bottom-left-radius: calc(var(--scale-size) / 2);
   border-bottom-right-radius: calc(var(--scale-size) / 2);
