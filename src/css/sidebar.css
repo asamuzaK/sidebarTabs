@@ -33,15 +33,15 @@
   --foreground-selection-color: #15141a;
   --foreground-selection-hover-color: #15141a;
   --tab-group-pinned: #669;
-  --tab-group-pinned-heading-text: #464566;
+  --tab-group-pinned-heading-text: #55557f;
   --tab-group-1: #c63;
-  --tab-group-1-heading-text: #834529;
+  --tab-group-1-heading-text: #8c4623;
   --tab-group-2: #396;
-  --tab-group-2-heading-text: #276448;
+  --tab-group-2-heading-text: #1e593b;
   --tab-group-3: #c69;
-  --tab-group-3-heading-text: #834566;
+  --tab-group-3-heading-text: #7f3f5f;
   --tab-group-4: #69c;
-  --tab-group-4-heading-text: #466485;
+  --tab-group-4-heading-text: #395672;
   --font-weight-active: normal;
 
   color-scheme: light dark;
@@ -611,7 +611,7 @@ main {
   border-top-right-radius: 0;
 }
 
-.group:not(.ungroup) :is(.tab-group > :not([hidden]) ~ .tab:last-child, .tab-group.tab-collapsed > :not([hidden])) > .tab-context {
+.group:not(.ungroup) :where(.tab-group > .tab:last-child, .tab-group.tab-collapsed > :not([hidden])) > .tab-context {
   margin-bottom: calc(var(--scale-size) / 2);
   border-bottom-left-radius: calc(var(--scale-size) / 2);
   border-bottom-right-radius: calc(var(--scale-size) / 2);
@@ -742,11 +742,11 @@ main {
   --foreground-hover-color: #f9f9fa;
   --foreground-selection-color: #fbfbfe;
   --foreground-selection-hover-color: #f9f9fa;
-  --tab-group-pinned-heading-text: #a1a1c0;
-  --tab-group-1-heading-text: #dea183;
-  --tab-group-2-heading-text: #82bfa1;
-  --tab-group-3-heading-text: #dea1c0;
-  --tab-group-4-heading-text: #a1bfde;
+  --tab-group-pinned-heading-text: #aaf;
+  --tab-group-1-heading-text: #ff7f3f;
+  --tab-group-2-heading-text: #41bf80;
+  --tab-group-3-heading-text: #f279b5;
+  --tab-group-4-heading-text: #72ace5;
 }
 
 .light-theme:not(.custom-theme) :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
@@ -780,11 +780,11 @@ main {
     --foreground-hover-color: #f9f9fa;
     --foreground-selection-color: #fbfbfe;
     --foreground-selection-hover-color: #f9f9fa;
-    --tab-group-pinned-heading-text: #a1a1c0;
-    --tab-group-1-heading-text: #dea183;
-    --tab-group-2-heading-text: #82bfa1;
-    --tab-group-3-heading-text: #dea1c0;
-    --tab-group-4-heading-text: #a1bfde;
+    --tab-group-pinned-heading-text: #aaf;
+    --tab-group-1-heading-text: #ff7f3f;
+    --tab-group-2-heading-text: #41bf80;
+    --tab-group-3-heading-text: #f279b5;
+    --tab-group-4-heading-text: #72ace5;
 
     color-scheme: dark;
   }
