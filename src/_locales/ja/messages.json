@@ -459,7 +459,7 @@
     "message": "常にマウスホイールでタブを切り替える"
   },
   "optionsAlwaysSwitchTabByScrollingDetail": {
-    "message": "スクロールバーが表示されているかどうかにかかわらず、常に次/前のタブに切り替えます。"
+    "message": "スクロールバーが表示されているかどうかにかかわらず、次/前のタブに切り替えます。"
   },
   "optionsAutoLabel": {
     "message": "自動"

@@ -459,7 +459,7 @@
     "message": "Always switch tab with mouse wheel"
   },
   "optionsAlwaysSwitchTabByScrollingDetail": {
-    "message": "Always switch to the next / previous tab, regardless of whether the scroll bar is visible or not."
+    "message": "Switch to the next / previous tab, regardless of whether the scroll bar is visible or not."
   },
   "optionsAutoLabel": {
     "message": "Auto"
@@ -555,7 +555,7 @@
     "message": "Tab Groups"
   },
   "optionsTabGroupOnExpandCollapseOther": {
-    "message": "Always collapse other groups when expanding a tab group"
+    "message": "Collapse other groups when expanding a tab group"
   },
   "optionsTabGroupOnExpandCollapseOtherDetail": {
     "message": "Expanding a tab group collapses other previously expanded tab groups."
@@ -567,7 +567,7 @@
     "message": "Leave pinned tabs expanded."
   },
   "optionsTabGroupPutNewTabAtTheEnd": {
-    "message": "Always put the newly opened grouped tab at the end of the group"
+    "message": "Put the newly opened grouped tab at the end of the group"
   },
   "optionsTabGroupPutNewTabAtTheEndDetail": {
     "message": "When opening a new tab from a grouped tab, open that tab at the end of the tab group, not below the opener tab."
