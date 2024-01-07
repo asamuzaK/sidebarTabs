@@ -237,7 +237,7 @@ export const setCurrentThemeColors = async (key, value) => {
   }
   if (key) {
     if (Array.isArray(value)) {
-      const hexValue = await convertRgbToHex(value);
+      const hexValue = convertRgbToHex(value);
       if (hexValue) {
         currentThemeColors.set(key, hexValue);
       }
@@ -246,7 +246,7 @@ export const setCurrentThemeColors = async (key, value) => {
       if (/currentcolor|transparent/i.test(value)) {
         currentThemeColors.set(key, value);
       } else if (value) {
-        const hexValue = await getColorInHex(value, {
+        const hexValue = getColorInHex(value, {
           alpha: true
         });
         if (hexValue) {
@@ -491,7 +491,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   }
   // replace currentColor keywords to color values
   if (currentColorKeys.has(CUSTOM_COLOR_FIELD_ACTIVE)) {
-    const value = await getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE)
+    const value = getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE)
       .replace(/currentcolor/i, values.get(CUSTOM_COLOR_FIELD)));
     values.set(CUSTOM_COLOR_FIELD_ACTIVE, value);
     currentColorKeys.delete(CUSTOM_COLOR_FIELD_ACTIVE);
@@ -576,26 +576,26 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       }
     }
     if (value) {
-      value = await getColorInHex(value);
+      value = getColorInHex(value);
       values.set(CUSTOM_BG_HOVER_SHADOW, `${value}1a`);
     }
   }
   // override CUSTOM_*_HOVER and CUSTOM_HEADING_TEXT_* colors
   if (useFrame || currentThemeColors.has('sidebar') ||
       currentThemeColors.has(FRAME_BG)) {
-    const base = await getColorInHex(values.get(CUSTOM_BG));
-    const color = await getColorInHex(values.get(CUSTOM_COLOR));
+    const base = getColorInHex(values.get(CUSTOM_BG));
+    const color = getColorInHex(values.get(CUSTOM_COLOR));
     const hoverOverlay = `${color}1a`;
-    const hoverValue = await compositeLayeredColors(hoverOverlay, base);
+    const hoverValue = compositeLayeredColors(hoverOverlay, base);
     const selectBase = values.get(CUSTOM_BG_SELECT);
-    const selectColor = await getColorInHex(values.get(CUSTOM_COLOR_SELECT));
+    const selectColor = getColorInHex(values.get(CUSTOM_COLOR_SELECT));
     const selectOverlay = `${selectColor}1a`;
-    const selectValue = await compositeLayeredColors(selectOverlay, selectBase);
-    const heading1 = await compositeLayeredColors('#cc663399', color);
-    const heading2 = await compositeLayeredColors('#33996699', color);
-    const heading3 = await compositeLayeredColors('#cc669999', color);
-    const heading4 = await compositeLayeredColors('#6699cc99', color);
-    const headingPinned = await compositeLayeredColors('#66669999', color);
+    const selectValue = compositeLayeredColors(selectOverlay, selectBase);
+    const heading1 = compositeLayeredColors('#cc663399', color);
+    const heading2 = compositeLayeredColors('#33996699', color);
+    const heading3 = compositeLayeredColors('#cc669999', color);
+    const heading4 = compositeLayeredColors('#6699cc99', color);
+    const headingPinned = compositeLayeredColors('#66669999', color);
     values.set(CUSTOM_BG_HOVER, hoverValue);
     values.set(CUSTOM_COLOR_HOVER, color);
     values.set(CUSTOM_BG_SELECT_HOVER, selectValue);
@@ -608,8 +608,8 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
   }
   // override CUSTOM_BORDER_* colors
   if (currentThemeColors.has('tab_line')) {
-    const base = await getColorInHex(values.get(CUSTOM_BG));
-    const color = await getColorInHex(values.get(CUSTOM_COLOR_ACTIVE));
+    const base = getColorInHex(values.get(CUSTOM_BG));
+    const color = getColorInHex(values.get(CUSTOM_COLOR_ACTIVE));
     const border = currentThemeColors.get('tab_line');
     let value;
     if (border.startsWith('color-mix')) {
@@ -619,19 +619,19 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       } else {
         borderColor = border;
       }
-      value = await getColorInHex(borderColor);
+      value = getColorInHex(borderColor);
     } else if (/^currentcolor$/i.test(border)) {
-      value = await compositeLayeredColors(color, base);
+      value = compositeLayeredColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = values.get(CUSTOM_BG_HOVER);
     } else {
-      value = await compositeLayeredColors(border, base);
+      value = compositeLayeredColors(border, base);
     }
     values.set(CUSTOM_BORDER_ACTIVE, value);
   }
   if (currentThemeColors.has('toolbar_field_border')) {
-    const base = await getColorInHex(values.get(CUSTOM_BG));
-    const color = await getColorInHex(values.get(CUSTOM_COLOR_FIELD));
+    const base = getColorInHex(values.get(CUSTOM_BG));
+    const color = getColorInHex(values.get(CUSTOM_COLOR_FIELD));
     const border = currentThemeColors.get('toolbar_field_border');
     let value;
     if (border.startsWith('color-mix')) {
@@ -641,19 +641,19 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       } else {
         borderColor = border;
       }
-      value = await getColorInHex(borderColor);
+      value = getColorInHex(borderColor);
     } else if (/^currentcolor$/i.test(border)) {
-      value = await compositeLayeredColors(color, base);
+      value = compositeLayeredColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = base;
     } else {
-      value = await compositeLayeredColors(border, base);
+      value = compositeLayeredColors(border, base);
     }
     values.set(CUSTOM_BORDER_FIELD, value);
   }
   if (currentThemeColors.has('toolbar_field_border_focus')) {
-    const base = await getColorInHex(values.get(CUSTOM_BG));
-    const color = await getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE));
+    const base = getColorInHex(values.get(CUSTOM_BG));
+    const color = getColorInHex(values.get(CUSTOM_COLOR_FIELD_ACTIVE));
     const border = currentThemeColors.get('toolbar_field_border_focus');
     let value;
     if (border.startsWith('color-mix')) {
@@ -663,13 +663,13 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       } else {
         borderColor = border;
       }
-      value = await getColorInHex(borderColor);
+      value = getColorInHex(borderColor);
     } else if (/^currentcolor$/i.test(border)) {
-      value = await compositeLayeredColors(color, base);
+      value = compositeLayeredColors(color, base);
     } else if (border === 'transparent' || border === '#00000000') {
       value = base;
     } else {
-      value = await compositeLayeredColors(border, base);
+      value = compositeLayeredColors(border, base);
     }
     values.set(CUSTOM_BORDER_FIELD_ACTIVE, value);
   }
@@ -683,7 +683,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
     if (/currentcolor/i.test(value)) {
       value = value.replace(/currentcolor/i, values.get(CUSTOM_COLOR));
     }
-    value = await getColorInHex(value);
+    value = getColorInHex(value);
     if (value) {
       values.set(CUSTOM_OUTLINE_FOCUS, `${value}66`);
     }
@@ -1027,10 +1027,10 @@ export const setTheme = async (info = [], opt = {}) => {
             Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
           const { colors: currentColors } = currentTheme;
           if (isObjectNotEmpty(currentColors)) {
-            const frameColor = await getColorInHex(currentColors[FRAME_BG], {
+            const frameColor = getColorInHex(currentColors[FRAME_BG], {
               alpha: true
             });
-            const textColor = await getColorInHex(currentColors[FRAME_TEXT], {
+            const textColor = getColorInHex(currentColors[FRAME_TEXT], {
               alpha: true
             });
             const defaultTheme =
