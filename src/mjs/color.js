@@ -281,9 +281,9 @@ export const colorname = {
  * @param {number} [opt.minRange] - min range
  * @param {number} [opt.maxRange] - max range
  * @param {boolean} [opt.validateRange] - validate range
- * @returns {Promise.<Array>} - arr;
+ * @returns {Array} - arr;
  */
-export const validateColorComponents = async (arr, opt = {}) => {
+export const validateColorComponents = (arr, opt = {}) => {
   if (!Array.isArray(arr)) {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
@@ -350,29 +350,27 @@ export const validateColorComponents = async (arr, opt = {}) => {
  * transform matrix
  * @param {Array.<Array.<number>>} mtx - 3 * 3 matrix
  * @param {Array.<number>} vct - vector
- * @returns {Promise.<Array.<number>>} - [p1, p2, p3]
+ * @returns {Array.<number>} - [p1, p2, p3]
  */
-export const transformMatrix = async (mtx, vct) => {
+export const transformMatrix = (mtx, vct) => {
   if (!Array.isArray(mtx)) {
     throw new TypeError(`Expected Array but got ${getType(mtx)}.`);
   } else if (mtx.length !== TRIA) {
     throw new Error(`Expected array length of 3 but got ${mtx.length}.`);
   } else {
-    const func = [];
-    for (const i of mtx) {
-      func.push(validateColorComponents(i, {
+    for (let i of mtx) {
+      i = validateColorComponents(i, {
         maxLength: TRIA,
         validateRange: false
-      }));
+      });
     }
-    mtx = await Promise.all(func);
   }
   const [
     [r1c1, r1c2, r1c3],
     [r2c1, r2c2, r2c3],
     [r3c1, r3c2, r3c3]
   ] = mtx;
-  const [v1, v2, v3] = await validateColorComponents(vct, {
+  const [v1, v2, v3] = validateColorComponents(vct, {
     maxLength: TRIA,
     validateRange: false
   });
@@ -385,9 +383,9 @@ export const transformMatrix = async (mtx, vct) => {
 /**
  * number to hex string
  * @param {number} value - value
- * @returns {Promise.<string>} - hex string
+ * @returns {string} - hex string
  */
-export const numberToHexString = async value => {
+export const numberToHexString = value => {
   if (typeof value !== 'number') {
     throw new TypeError(`Expected Number but got ${getType(value)}.`);
   } else if (Number.isNaN(value)) {
@@ -408,9 +406,9 @@ export const numberToHexString = async value => {
 /**
  * angle to deg
  * @param {string} angle - angle
- * @returns {Promise.<number>} - deg 0..360
+ * @returns {number} - deg 0..360
  */
-export const angleToDeg = async angle => {
+export const angleToDeg = angle => {
   if (isString(angle)) {
     angle = angle.trim();
   } else {
@@ -448,10 +446,10 @@ export const angleToDeg = async angle => {
 /**
  * rgb to linear rgb
  * @param {Array.<number>} rgb - [r, g, b] r|g|b: 0..1
- * @returns {Promise.<Array.<number>>} - [r, g, b] r|g|b: 0..1
+ * @returns {Array.<number>} - [r, g, b] r|g|b: 0..1
  */
-export const rgbToLinearRgb = async rgb => {
-  let [r, g, b] = await validateColorComponents(rgb, {
+export const rgbToLinearRgb = rgb => {
+  let [r, g, b] = validateColorComponents(rgb, {
     maxLength: TRIA
   });
   const COND_POW = 0.04045;
@@ -476,10 +474,10 @@ export const rgbToLinearRgb = async rgb => {
 /**
  * linear rgb to rgb
  * @param {Array.<number>} rgb - [r, g, b] r|g|b: 0..1
- * @returns {Promise.<Array.<number>>} - [r, g, b] r|g|b: 0..1
+ * @returns {Array.<number>} - [r, g, b] r|g|b: 0..1
  */
-export const linearRgbToRgb = async rgb => {
-  let [r, g, b] = await validateColorComponents(rgb, {
+export const linearRgbToRgb = rgb => {
+  let [r, g, b] = validateColorComponents(rgb, {
     maxLength: TRIA
   });
   const COND_POW = 809 / 258400;
@@ -504,28 +502,28 @@ export const linearRgbToRgb = async rgb => {
 /**
  * rgb to xyz
  * @param {Array.<number>} rgb - [r, g, b, [a]] r|g|b|a: 0..1
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const rgbToXyz = async rgb => {
-  const [r, g, b, a] = await validateColorComponents(rgb, {
+export const rgbToXyz = rgb => {
+  const [r, g, b, a] = validateColorComponents(rgb, {
     alpha: true
   });
-  const [rr, gg, bb] = await rgbToLinearRgb([r, g, b]);
-  const [x, y, z] = await transformMatrix(MATRIX_RGB_TO_XYZ, [rr, gg, bb]);
+  const [rr, gg, bb] = rgbToLinearRgb([r, g, b]);
+  const [x, y, z] = transformMatrix(MATRIX_RGB_TO_XYZ, [rr, gg, bb]);
   return [x, y, z, a];
 };
 
 /**
  * xyz to rgb
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b|a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b|a: 0..1
  */
-export const xyzToRgb = async xyz => {
-  const [x, y, z, a] = await validateColorComponents(xyz, {
+export const xyzToRgb = xyz => {
+  const [x, y, z, a] = validateColorComponents(xyz, {
     validateRange: false
   });
-  let [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
-  [r, g, b] = await linearRgbToRgb([
+  let [r, g, b] = transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
+  [r, g, b] = linearRgbToRgb([
     Math.min(Math.max(r, 0), 1),
     Math.min(Math.max(g, 0), 1),
     Math.min(Math.max(b, 0), 1)
@@ -536,11 +534,10 @@ export const xyzToRgb = async xyz => {
 /**
  * xyz to hsl
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [h, s, l, a]
- *                                       h: 0..360 s|l: 0..100 a: 0..1
+ * @returns {Array.<number>} - [h, s, l, a] h: 0..360 s|l: 0..100 a: 0..1
  */
-export const xyzToHsl = async xyz => {
-  const [r, g, b, a] = await xyzToRgb(xyz);
+export const xyzToHsl = xyz => {
+  const [r, g, b, a] = xyzToRgb(xyz);
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const d = max - min;
@@ -578,18 +575,17 @@ export const xyzToHsl = async xyz => {
 /**
  * xyz to hwb
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [h, w, b, a]
- *                                       h: 0..360 w|b: 0..100 a: 0..1
+ * @returns {Array.<number>} - [h, w, b, a] h: 0..360 w|b: 0..100 a: 0..1
  */
-export const xyzToHwb = async xyz => {
-  const [r, g, b, a] = await xyzToRgb(xyz);
+export const xyzToHwb = xyz => {
+  const [r, g, b, a] = xyzToRgb(xyz);
   const w = Math.min(r, g, b);
   const bk = 1 - Math.max(r, g, b);
   let h;
   if (w + bk === 1) {
     h = NONE;
   } else {
-    [h] = await xyzToHsl(xyz);
+    [h] = xyzToHsl(xyz);
   }
   return [
     h,
@@ -602,12 +598,11 @@ export const xyzToHwb = async xyz => {
 /**
  * xyz-d50 to lab
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [l, a, b, aa]
- *                                       l: 0..100 a|b: around -160..160
- *                                       aa: 0..1
+ * @returns {Array.<number>} - [l, a, b, aa]
+ *                             l: 0..100 a|b: around -160..160 aa: 0..1
  */
-export const xyzD50ToLab = async xyz => {
-  const [x, y, z, aa] = await validateColorComponents(xyz, {
+export const xyzD50ToLab = xyz => {
+  const [x, y, z, aa] = validateColorComponents(xyz, {
     validateRange: false
   });
   const xyzD50 = [x, y, z].map((val, i) => val / D50[i]);
@@ -630,12 +625,11 @@ export const xyzD50ToLab = async xyz => {
 /**
  * xyz-d50 to lch
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [l, c, h, a]
- *                                       l: 0..100 c: around 0..230 h: 0..360
- *                                       a: 0..1
+ * @returns {Array.<number>} - [l, c, h, a]
+ *                             l: 0..100 c: around 0..230 h: 0..360 a: 0..1
  */
-export const xyzD50ToLch = async xyz => {
-  const [l, a, b, aa] = await xyzD50ToLab(xyz);
+export const xyzD50ToLch = xyz => {
+  const [l, a, b, aa] = xyzD50ToLab(xyz);
   let c, h;
   if (l === 0 || l === MAX_PCT) {
     c = NONE;
@@ -658,16 +652,15 @@ export const xyzD50ToLch = async xyz => {
 /**
  * xyz to oklab
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [l, a, b, aa]
- *                                       l|aa: 0..1 a|b: around -0.5..0.5
+ * @returns {Array.<number>} - [l, a, b, aa] l|aa: 0..1 a|b: around -0.5..0.5
  */
-export const xyzToOklab = async xyz => {
-  const [x, y, z, aa] = await validateColorComponents(xyz, {
+export const xyzToOklab = xyz => {
+  const [x, y, z, aa] = validateColorComponents(xyz, {
     validateRange: false
   });
-  const lms = await transformMatrix(MATRIX_XYZ_TO_LMS, [x, y, z]);
+  const lms = transformMatrix(MATRIX_XYZ_TO_LMS, [x, y, z]);
   const xyzLms = lms.map(c => Math.cbrt(c));
-  let [l, a, b] = await transformMatrix(MATRIX_LMS_TO_OKLAB, xyzLms);
+  let [l, a, b] = transformMatrix(MATRIX_LMS_TO_OKLAB, xyzLms);
   l = Math.min(Math.max(l, 0), 1);
   const lPct = Math.round(parseFloat(l.toFixed(QUAT)) * MAX_PCT);
   if (lPct === 0 || lPct === MAX_PCT) {
@@ -680,11 +673,11 @@ export const xyzToOklab = async xyz => {
 /**
  * xyz to oklch
  * @param {Array.<number>} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<Array.<number>>} - [l, a, b, aa]
- *                                       l|aa: 0..1 c: around 0..0.5 h: 0..360
+ * @returns {Array.<number>} - [l, a, b, aa]
+ *                             l|aa: 0..1 c: around 0..0.5 h: 0..360
  */
-export const xyzToOklch = async xyz => {
-  const [l, a, b, aa] = await xyzToOklab(xyz);
+export const xyzToOklch = xyz => {
+  const [l, a, b, aa] = xyzToOklab(xyz);
   let c, h;
   const lPct = Math.round(parseFloat(l.toFixed(QUAT)) * MAX_PCT);
   if (lPct === 0 || lPct === MAX_PCT) {
@@ -708,9 +701,9 @@ export const xyzToOklch = async xyz => {
 /**
  * hex to rgb
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const hexToRgb = async value => {
+export const hexToRgb = value => {
   if (isString(value)) {
     value = value.toLowerCase().trim();
   } else {
@@ -762,11 +755,11 @@ export const hexToRgb = async value => {
 /**
  * hex to linear rgb
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b|a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b|a: 0..1
  */
-export const hexToLinearRgb = async value => {
-  const [rr, gg, bb, a] = await hexToRgb(value);
-  const [r, g, b] = await rgbToLinearRgb([
+export const hexToLinearRgb = value => {
+  const [rr, gg, bb, a] = hexToRgb(value);
+  const [r, g, b] = rgbToLinearRgb([
     rr / MAX_RGB,
     gg / MAX_RGB,
     bb / MAX_RGB
@@ -777,23 +770,23 @@ export const hexToLinearRgb = async value => {
 /**
  * hex to xyz
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const hexToXyz = async value => {
-  const [r, g, b, a] = await hexToLinearRgb(value);
-  const [x, y, z] = await transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
+export const hexToXyz = value => {
+  const [r, g, b, a] = hexToLinearRgb(value);
+  const [x, y, z] = transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
   return [x, y, z, a];
 };
 
 /**
  * hex to xyz D50
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const hexToXyzD50 = async value => {
-  const [r, g, b, a] = await hexToLinearRgb(value);
-  const xyz = await transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
-  const [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, xyz);
+export const hexToXyzD50 = value => {
+  const [r, g, b, a] = hexToLinearRgb(value);
+  const xyz = transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
+  const [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, xyz);
   return [x, y, z, a];
 };
 
@@ -801,9 +794,9 @@ export const hexToXyzD50 = async value => {
  * re-insert missing color components
  * @param {string} value - value
  * @param {Array} color - array of color components [r, g, b, a]|[l, c, h, a]
- * @returns {Promise.<Array>} - [v1, v2, v3, v4]
+ * @returns {Array<number|string>} - [v1, v2, v3, v4]
  */
-export const reInsertMissingComponents = async (value, color = []) => {
+export const reInsertMissingComponents = (value, color = []) => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -853,9 +846,9 @@ export const reInsertMissingComponents = async (value, color = []) => {
  * normalize color components
  * @param {Array} colorA - array of color components [v1, v2, v3, v4]
  * @param {Array} colorB - array of color components [v1, v2, v3, v4]
- * @returns {Promise.<Array.<Array>>} - [colorA, colorB]
+ * @returns {Array.<Array.<number>>} - [colorA, colorB]
  */
-export const normalizeColorComponents = async (colorA, colorB) => {
+export const normalizeColorComponents = (colorA, colorB) => {
   if (!Array.isArray(colorA)) {
     throw new TypeError(`Expected Array but got ${getType(colorA)}.`);
   } else if (colorA.length !== QUAT) {
@@ -878,11 +871,11 @@ export const normalizeColorComponents = async (colorA, colorB) => {
     }
     i++;
   }
-  colorA = await validateColorComponents(colorA, {
+  colorA = validateColorComponents(colorA, {
     minLength: QUAT,
     validateRange: false
   });
-  colorB = await validateColorComponents(colorB, {
+  colorB = validateColorComponents(colorB, {
     minLength: QUAT,
     validateRange: false
   });
@@ -892,9 +885,9 @@ export const normalizeColorComponents = async (colorA, colorB) => {
 /**
  * parse alpha
  * @param {?string} [a] - alpha value
- * @returns {Promise.<number>} - a: 0..1
+ * @returns {number} - a: 0..1
  */
-export const parseAlpha = async a => {
+export const parseAlpha = a => {
   if (isString(a)) {
     a = a.trim();
     if (!a) {
@@ -926,9 +919,9 @@ export const parseAlpha = async a => {
 /**
  * parse rgb()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const parseRgb = async value => {
+export const parseRgb = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -977,7 +970,7 @@ export const parseRgb = async value => {
       b = parseFloat(b);
     }
   }
-  a = await parseAlpha(a);
+  a = parseAlpha(a);
   return [
     Math.min(Math.max(r, 0), MAX_RGB),
     Math.min(Math.max(g, 0), MAX_RGB),
@@ -989,9 +982,9 @@ export const parseRgb = async value => {
 /**
  * parse hsl()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const parseHsl = async value => {
+export const parseHsl = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1007,7 +1000,7 @@ export const parseHsl = async value => {
   if (h === NONE) {
     h = 0;
   } else {
-    h = await angleToDeg(h);
+    h = angleToDeg(h);
   }
   if (s === NONE) {
     s = 0;
@@ -1025,7 +1018,7 @@ export const parseHsl = async value => {
     }
     l = Math.min(Math.max(parseFloat(l), 0), MAX_PCT);
   }
-  a = await parseAlpha(a);
+  a = parseAlpha(a);
   let max, min;
   if (l < MAX_PCT * HALF) {
     max = (l + l * (s / MAX_PCT)) * MAX_RGB / MAX_PCT;
@@ -1078,9 +1071,9 @@ export const parseHsl = async value => {
 /**
  * parse hwb()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const parseHwb = async value => {
+export const parseHwb = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1095,7 +1088,7 @@ export const parseHwb = async value => {
   if (h === NONE) {
     h = 0;
   } else {
-    h = await angleToDeg(h);
+    h = angleToDeg(h);
   }
   if (w === NONE) {
     w = 0;
@@ -1113,13 +1106,13 @@ export const parseHwb = async value => {
     }
     b = Math.min(Math.max(parseFloat(b), 0), MAX_PCT) / MAX_PCT;
   }
-  a = await parseAlpha(a);
+  a = parseAlpha(a);
   const arr = [];
   if (w + b >= 1) {
     const v = (w / (w + b)) * MAX_RGB;
     arr.push(v, v, v, a);
   } else {
-    const [rr, gg, bb] = await parseHsl(`hsl(${h} 100% 50%)`);
+    const [rr, gg, bb] = parseHsl(`hsl(${h} 100% 50%)`);
     const factor = (1 - w - b) / MAX_RGB;
     arr.push(
       (rr * factor + w) * MAX_RGB,
@@ -1134,9 +1127,9 @@ export const parseHwb = async value => {
 /**
  + parse lab()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const parseLab = async value => {
+export const parseLab = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1189,7 +1182,7 @@ export const parseLab = async value => {
       b = parseFloat(b);
     }
   }
-  aa = await parseAlpha(aa);
+  aa = parseAlpha(aa);
   const fl = (l + HEX) / LAB_L;
   const fa = (a / LAB_A + fl);
   const fb = (fl - b / LAB_B);
@@ -1208,9 +1201,9 @@ export const parseLab = async value => {
 /**
  + parse lch()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const parseLch = async value => {
+export const parseLch = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1249,21 +1242,21 @@ export const parseLch = async value => {
   if (h === NONE) {
     h = 0;
   } else {
-    h = await angleToDeg(h);
+    h = angleToDeg(h);
   }
-  aa = await parseAlpha(aa);
+  aa = parseAlpha(aa);
   const a = c * Math.cos(h * Math.PI / (DEG * HALF));
   const b = c * Math.sin(h * Math.PI / (DEG * HALF));
-  const [x, y, z] = await parseLab(`lab(${l} ${a} ${b})`);
+  const [x, y, z] = parseLab(`lab(${l} ${a} ${b})`);
   return [x, y, z, aa];
 };
 
 /**
  + parse oklab()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const parseOklab = async value => {
+export const parseOklab = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1312,19 +1305,19 @@ export const parseOklab = async value => {
       b = parseFloat(b);
     }
   }
-  aa = await parseAlpha(aa);
-  const lms = await transformMatrix(MATRIX_OKLAB_TO_LMS, [l, a, b]);
+  aa = parseAlpha(aa);
+  const lms = transformMatrix(MATRIX_OKLAB_TO_LMS, [l, a, b]);
   const xyzLms = lms.map(c => Math.pow(c, POW_CUBE));
-  const [x, y, z] = await transformMatrix(MATRIX_LMS_TO_XYZ, xyzLms);
+  const [x, y, z] = transformMatrix(MATRIX_LMS_TO_XYZ, xyzLms);
   return [x, y, z, aa];
 };
 
 /**
  + parse oklch()
  * @param {string} value - value
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const parseOklch = async value => {
+export const parseOklch = value => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1370,14 +1363,14 @@ export const parseOklch = async value => {
   if (h === NONE) {
     h = 0;
   } else {
-    h = await angleToDeg(h);
+    h = angleToDeg(h);
   }
-  aa = await parseAlpha(aa);
+  aa = parseAlpha(aa);
   const a = c * Math.cos(h * Math.PI / (DEG * HALF));
   const b = c * Math.sin(h * Math.PI / (DEG * HALF));
-  const lms = await transformMatrix(MATRIX_OKLAB_TO_LMS, [l, a, b]);
+  const lms = transformMatrix(MATRIX_OKLAB_TO_LMS, [l, a, b]);
   const xyzLms = lms.map(cl => Math.pow(cl, POW_CUBE));
-  const [x, y, z] = await transformMatrix(MATRIX_LMS_TO_XYZ, xyzLms);
+  const [x, y, z] = transformMatrix(MATRIX_LMS_TO_XYZ, xyzLms);
   return [x, y, z, aa];
 };
 
@@ -1385,9 +1378,9 @@ export const parseOklch = async value => {
  * parse color()
  * @param {string} value - value
  * @param {boolean} d50 - xyz in d50 white point
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const parseColorFunc = async (value, d50 = false) => {
+export const parseColorFunc = (value, d50 = false) => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1433,26 +1426,26 @@ export const parseColorFunc = async (value, d50 = false) => {
     }
     b = bb.endsWith('%') ? parseFloat(bb) / MAX_PCT : parseFloat(bb);
   }
-  const a = await parseAlpha(v4);
+  const a = parseAlpha(v4);
   let x, y, z;
   // srgb
   if (cs === 'srgb') {
-    [x, y, z] = await rgbToXyz([r, g, b]);
+    [x, y, z] = rgbToXyz([r, g, b]);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   // srgb-linear
   } else if (cs === 'srgb-linear') {
-    [x, y, z] = await transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
+    [x, y, z] = transformMatrix(MATRIX_RGB_TO_XYZ, [r, g, b]);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   // display-p3
   } else if (cs === 'display-p3') {
-    const linearRgb = await rgbToLinearRgb([r, g, b]);
-    [x, y, z] = await transformMatrix(MATRIX_P3_TO_XYZ, linearRgb);
+    const linearRgb = rgbToLinearRgb([r, g, b]);
+    [x, y, z] = transformMatrix(MATRIX_P3_TO_XYZ, linearRgb);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   // rec2020
   } else if (cs === 'rec2020') {
@@ -1468,9 +1461,9 @@ export const parseColorFunc = async (value, d50 = false) => {
       }
       return cl;
     });
-    [x, y, z] = await transformMatrix(MATRIX_REC2020_TO_XYZ, rgb);
+    [x, y, z] = transformMatrix(MATRIX_REC2020_TO_XYZ, rgb);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   // a98-rgb
   } else if (cs === 'a98-rgb') {
@@ -1479,9 +1472,9 @@ export const parseColorFunc = async (value, d50 = false) => {
       const cl = Math.pow(c, POW_A98);
       return cl;
     });
-    [x, y, z] = await transformMatrix(MATRIX_A98_TO_XYZ, rgb);
+    [x, y, z] = transformMatrix(MATRIX_A98_TO_XYZ, rgb);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   // prophoto-rgb
   } else if (cs === 'prophoto-rgb') {
@@ -1495,19 +1488,19 @@ export const parseColorFunc = async (value, d50 = false) => {
       }
       return cl;
     });
-    [x, y, z] = await transformMatrix(MATRIX_PROPHOTO_TO_XYZ_D50, rgb);
+    [x, y, z] = transformMatrix(MATRIX_PROPHOTO_TO_XYZ_D50, rgb);
     if (!d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
     }
   // xyz, xyz-d50, xyz-d65
   } else if (/^xyz(?:-d(?:50|65))?$/.test(cs)) {
     [x, y, z] = [r, g, b];
     if (cs === 'xyz-d50') {
       if (!d50) {
-        [x, y, z] = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
+        [x, y, z] = transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
       }
     } else if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   }
   return [x, y, z, a];
@@ -1517,9 +1510,9 @@ export const parseColorFunc = async (value, d50 = false) => {
  * parse color keywords and functions
  * @param {string} value - value
  * @param {boolean} [d50] - xyz in d50 white point
- * @returns {Promise.<Array.<number>>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
+ * @returns {Array.<number>} - [x, y, z, a] x|y|z: around 0..1 a: 0..1
  */
-export const parseColor = async (value, d50 = false) => {
+export const parseColor = (value, d50 = false) => {
   if (isString(value)) {
     value = value.toLowerCase().trim();
   } else {
@@ -1543,9 +1536,9 @@ export const parseColor = async (value, d50 = false) => {
       throw new Error(`Invalid property value: ${value}`);
     }
     if (d50) {
-      [x, y, z, a] = await hexToXyzD50(hex);
+      [x, y, z, a] = hexToXyzD50(hex);
     } else {
-      [x, y, z, a] = await hexToXyz(hex);
+      [x, y, z, a] = hexToXyz(hex);
     }
   // hex-color
   } else if (value.startsWith('#')) {
@@ -1565,56 +1558,56 @@ export const parseColor = async (value, d50 = false) => {
       throw new Error(`Invalid property value: ${value}`);
     }
     if (d50) {
-      [x, y, z, a] = await hexToXyzD50(hex);
+      [x, y, z, a] = hexToXyzD50(hex);
     } else {
-      [x, y, z, a] = await hexToXyz(hex);
+      [x, y, z, a] = hexToXyz(hex);
     }
   // lab()
   } else if (value.startsWith('lab')) {
-    [x, y, z, a] = await parseLab(value);
+    [x, y, z, a] = parseLab(value);
     if (!d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
     }
   // lch()
   } else if (value.startsWith('lch')) {
-    [x, y, z, a] = await parseLch(value);
+    [x, y, z, a] = parseLch(value);
     if (!d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
     }
   // oklab()
   } else if (value.startsWith('oklab')) {
-    [x, y, z, a] = await parseOklab(value);
+    [x, y, z, a] = parseOklab(value);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   // oklch()
   } else if (value.startsWith('oklch')) {
-    [x, y, z, a] = await parseOklch(value);
+    [x, y, z, a] = parseOklch(value);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   } else {
     let rr, gg, bb, aa;
     // rgb()
     if (value.startsWith('rgb')) {
-      [rr, gg, bb, aa] = await parseRgb(value);
+      [rr, gg, bb, aa] = parseRgb(value);
     // hsl()
     } else if (value.startsWith('hsl')) {
-      [rr, gg, bb, aa] = await parseHsl(value);
+      [rr, gg, bb, aa] = parseHsl(value);
     // hwb()
     } else if (value.startsWith('hwb')) {
-      [rr, gg, bb, aa] = await parseHwb(value);
+      [rr, gg, bb, aa] = parseHwb(value);
     } else {
       throw new Error(`Invalid property value: ${value}`);
     }
-    [x, y, z, a] = await rgbToXyz([
+    [x, y, z, a] = rgbToXyz([
       rr / MAX_RGB,
       gg / MAX_RGB,
       bb / MAX_RGB,
       aa
     ]);
     if (d50) {
-      [x, y, z] = await transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
+      [x, y, z] = transformMatrix(MATRIX_D65_TO_D50, [x, y, z]);
     }
   }
   return [x, y, z, a];
@@ -1624,9 +1617,9 @@ export const parseColor = async (value, d50 = false) => {
  * convert color to linear rgb
  * @param {string} value - value
  * @param {object} [opt] - options
- * @returns {Promise.<Array>} - [r, g, b, a] r|g|b|a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b|a: 0..1
  */
-export const convertColorToLinearRgb = async (value, opt = {}) => {
+export const convertColorToLinearRgb = (value, opt = {}) => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1635,11 +1628,11 @@ export const convertColorToLinearRgb = async (value, opt = {}) => {
   const { alpha } = opt;
   let x, y, z, a;
   if (value.startsWith('color(')) {
-    [x, y, z, a] = await parseColorFunc(value);
+    [x, y, z, a] = parseColorFunc(value);
   } else {
-    [x, y, z, a] = await parseColor(value);
+    [x, y, z, a] = parseColor(value);
   }
-  let [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
+  let [r, g, b] = transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
   r = Math.min(Math.max(r, 0), 1);
   g = Math.min(Math.max(g, 0), 1);
   b = Math.min(Math.max(b, 0), 1);
@@ -1656,14 +1649,14 @@ export const convertColorToLinearRgb = async (value, opt = {}) => {
  * convert color to rgb
  * @param {string} value - value
  * @param {object} [opt] - options
- * @returns {Promise.<Array>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
+ * @returns {Array.<number>} - [r, g, b, a] r|g|b: 0..255 a: 0..1
  */
-export const convertColorToRgb = async (value, opt = {}) => {
+export const convertColorToRgb = (value, opt = {}) => {
   const { alpha } = opt;
-  let [r, g, b, a] = await convertColorToLinearRgb(value, {
+  let [r, g, b, a] = convertColorToLinearRgb(value, {
     alpha: true
   });
-  [r, g, b] = await linearRgbToRgb([r, g, b]);
+  [r, g, b] = linearRgbToRgb([r, g, b]);
   r = Math.round(r * MAX_RGB);
   g = Math.round(g * MAX_RGB);
   b = Math.round(b * MAX_RGB);
@@ -1679,19 +1672,17 @@ export const convertColorToRgb = async (value, opt = {}) => {
 /**
  * convert rgb to hex color
  * @param {Array.<number>} rgb - [r, g, b, a] r|g|b: 0..255 a: 0..1|undefined
- * @returns {Promise.<string>} - hex color;
+ * @returns {string} - hex color;
  */
-export const convertRgbToHex = async rgb => {
-  const [r, g, b, a] = await validateColorComponents(rgb, {
+export const convertRgbToHex = rgb => {
+  const [r, g, b, a] = validateColorComponents(rgb, {
     alpha: true,
     maxRange: MAX_RGB
   });
-  const [rr, gg, bb, aa] = await Promise.all([
-    numberToHexString(r),
-    numberToHexString(g),
-    numberToHexString(b),
-    numberToHexString(a * MAX_RGB)
-  ]);
+  const rr = numberToHexString(r);
+  const gg = numberToHexString(g);
+  const bb = numberToHexString(b);
+  const aa = numberToHexString(a * MAX_RGB);
   let hex;
   if (aa === 'ff') {
     hex = `#${rr}${gg}${bb}`;
@@ -1704,19 +1695,17 @@ export const convertRgbToHex = async rgb => {
 /**
  * convert linear rgb to hex color
  * @param {Array} rgb - [r, g, b, a] r|g|b|a: 0..1
- * @returns {Promise.<string>} - hex color
+ * @returns {string} - hex color
  */
-export const convertLinearRgbToHex = async rgb => {
-  let [r, g, b, a] = await validateColorComponents(rgb, {
+export const convertLinearRgbToHex = rgb => {
+  let [r, g, b, a] = validateColorComponents(rgb, {
     minLength: QUAT
   });
-  [r, g, b] = await linearRgbToRgb([r, g, b]);
-  const [rr, gg, bb, aa] = await Promise.all([
-    numberToHexString(r * MAX_RGB),
-    numberToHexString(g * MAX_RGB),
-    numberToHexString(b * MAX_RGB),
-    numberToHexString(a * MAX_RGB)
-  ]);
+  [r, g, b] = linearRgbToRgb([r, g, b]);
+  const rr = numberToHexString(r * MAX_RGB);
+  const gg = numberToHexString(g * MAX_RGB);
+  const bb = numberToHexString(b * MAX_RGB);
+  const aa = numberToHexString(a * MAX_RGB);
   let hex;
   if (aa === 'ff') {
     hex = `#${rr}${gg}${bb}`;
@@ -1729,15 +1718,15 @@ export const convertLinearRgbToHex = async rgb => {
 /**
  * convert xyz to hex color
  * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<string>} - hex color
+ * @returns {string} - hex color
  */
-export const convertXyzToHex = async xyz => {
-  const [x, y, z, a] = await validateColorComponents(xyz, {
+export const convertXyzToHex = xyz => {
+  const [x, y, z, a] = validateColorComponents(xyz, {
     minLength: QUAT,
     validateRange: false
   });
-  const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
-  const hex = await convertLinearRgbToHex([
+  const [r, g, b] = transformMatrix(MATRIX_XYZ_TO_RGB, [x, y, z]);
+  const hex = convertLinearRgbToHex([
     Math.min(Math.max(r, 0), 1),
     Math.min(Math.max(g, 0), 1),
     Math.min(Math.max(b, 0), 1),
@@ -1749,16 +1738,16 @@ export const convertXyzToHex = async xyz => {
 /**
  * convert xyz D50 to hex color
  * @param {Array} xyz - [x, y, z, a] x|y|z: around 0..1 a: 0..1
- * @returns {Promise.<string>} - hex color
+ * @returns {string} - hex color
  */
-export const convertXyzD50ToHex = async xyz => {
-  const [x, y, z, a] = await validateColorComponents(xyz, {
+export const convertXyzD50ToHex = xyz => {
+  const [x, y, z, a] = validateColorComponents(xyz, {
     minLength: QUAT,
     validateRange: false
   });
-  const xyzD65 = await transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
-  const [r, g, b] = await transformMatrix(MATRIX_XYZ_TO_RGB, xyzD65);
-  const hex = await convertLinearRgbToHex([
+  const xyzD65 = transformMatrix(MATRIX_D50_TO_D65, [x, y, z]);
+  const [r, g, b] = transformMatrix(MATRIX_XYZ_TO_RGB, xyzD65);
+  const hex = convertLinearRgbToHex([
     Math.min(Math.max(r, 0), 1),
     Math.min(Math.max(g, 0), 1),
     Math.min(Math.max(b, 0), 1),
@@ -1774,9 +1763,9 @@ export const convertXyzD50ToHex = async xyz => {
  * @param {string} value - value
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - add alpha channel value
- * @returns {Promise.<?string>} - hex color
+ * @returns {?string} - hex color
  */
-export const convertColorToHex = async (value, opt = {}) => {
+export const convertColorToHex = (value, opt = {}) => {
   if (isString(value)) {
     value = value.toLowerCase().trim();
   } else {
@@ -1824,9 +1813,9 @@ export const convertColorToHex = async (value, opt = {}) => {
   } else if (/^l(?:ab|ch)/.test(value)) {
     let x, y, z, a;
     if (value.startsWith('lab')) {
-      [x, y, z, a] = await parseLab(value);
+      [x, y, z, a] = parseLab(value);
     } else {
-      [x, y, z, a] = await parseLch(value);
+      [x, y, z, a] = parseLch(value);
     }
     if (alpha) {
       hex = convertXyzD50ToHex([x, y, z, a]);
@@ -1837,9 +1826,9 @@ export const convertColorToHex = async (value, opt = {}) => {
   } else if (/^okl(?:ab|ch)/.test(value)) {
     let x, y, z, a;
     if (value.startsWith('oklab')) {
-      [x, y, z, a] = await parseOklab(value);
+      [x, y, z, a] = parseOklab(value);
     } else {
-      [x, y, z, a] = await parseOklch(value);
+      [x, y, z, a] = parseOklch(value);
     }
     if (alpha) {
       hex = convertXyzToHex([x, y, z, a]);
@@ -1850,22 +1839,22 @@ export const convertColorToHex = async (value, opt = {}) => {
     let r, g, b, a;
     // rgb()
     if (value.startsWith('rgb')) {
-      [r, g, b, a] = await parseRgb(value);
+      [r, g, b, a] = parseRgb(value);
     // hsl()
     } else if (value.startsWith('hsl')) {
-      [r, g, b, a] = await parseHsl(value);
+      [r, g, b, a] = parseHsl(value);
     // hwb()
     } else if (value.startsWith('hwb')) {
-      [r, g, b, a] = await parseHwb(value);
+      [r, g, b, a] = parseHwb(value);
     }
     if (typeof r === 'number' && !Number.isNaN(r) &&
         typeof g === 'number' && !Number.isNaN(g) &&
         typeof b === 'number' && !Number.isNaN(b) &&
         typeof a === 'number' && !Number.isNaN(a)) {
       if (alpha) {
-        hex = await convertRgbToHex([r, g, b, a]);
+        hex = convertRgbToHex([r, g, b, a]);
       } else {
-        hex = await convertRgbToHex([r, g, b]);
+        hex = convertRgbToHex([r, g, b]);
       }
     }
   }
@@ -1877,9 +1866,9 @@ export const convertColorToHex = async (value, opt = {}) => {
  * @param {string} value - value
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - add alpha channel value
- * @returns {Promise.<?string>} - hex color
+ * @returns {?string} - hex color
  */
-export const convertColorFuncToHex = async (value, opt = {}) => {
+export const convertColorFuncToHex = (value, opt = {}) => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1890,14 +1879,14 @@ export const convertColorFuncToHex = async (value, opt = {}) => {
   if (!reg.test(value)) {
     throw new Error(`Invalid property value: ${value}`);
   }
-  const [r, g, b, a] = await convertColorToRgb(value, {
+  const [r, g, b, a] = convertColorToRgb(value, {
     alpha: true
   });
   let hex;
   if (alpha) {
-    hex = await convertRgbToHex([r, g, b, a]);
+    hex = convertRgbToHex([r, g, b, a]);
   } else {
-    hex = await convertRgbToHex([r, g, b]);
+    hex = convertRgbToHex([r, g, b]);
   }
   return hex;
 };
@@ -1907,9 +1896,9 @@ export const convertColorFuncToHex = async (value, opt = {}) => {
  * @param {string} value - value
  * @param {object} [opt] - options
  * @param {boolean} [opt.alpha] - add alpha channel value
- * @returns {Promise.<?string>} - hex color
+ * @returns {?string} - hex color
  */
-export const convertColorMixToHex = async (value, opt = {}) => {
+export const convertColorMixToHex = (value, opt = {}) => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -1970,26 +1959,26 @@ export const convertColorMixToHex = async (value, opt = {}) => {
   let hex;
   // in srgb
   if (colorSpace === 'srgb') {
-    let rgbA = await convertColorToRgb(colorA, {
+    let rgbA = convertColorToRgb(colorA, {
       alpha: true
     });
-    let rgbB = await convertColorToRgb(colorB, {
+    let rgbB = convertColorToRgb(colorB, {
       alpha: true
     });
     if (regCurrentColor.test(colorA)) {
-      rgbA = await reInsertMissingComponents(CC_RGB, rgbA);
+      rgbA = reInsertMissingComponents(CC_RGB, rgbA);
     } else if (regMissingRgb.test(colorA)) {
-      rgbA = await reInsertMissingComponents(colorA, rgbA);
+      rgbA = reInsertMissingComponents(colorA, rgbA);
     }
     if (regCurrentColor.test(colorB)) {
-      rgbB = await reInsertMissingComponents(CC_RGB, rgbB);
+      rgbB = reInsertMissingComponents(CC_RGB, rgbB);
     } else if (regMissingRgb.test(colorB)) {
-      rgbB = await reInsertMissingComponents(colorB, rgbB);
+      rgbB = reInsertMissingComponents(colorB, rgbB);
     }
     const [
       [rA, gA, bA, aA],
       [rB, gB, bB, aB]
-    ] = await normalizeColorComponents(rgbA, rgbB);
+    ] = normalizeColorComponents(rgbA, rgbB);
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
@@ -2003,29 +1992,29 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       g = (gA * factorA + gB * factorB) / a;
       b = (bA * factorA + bB * factorB) / a;
     }
-    hex = await convertRgbToHex([r, g, b, a * m]);
+    hex = convertRgbToHex([r, g, b, a * m]);
   // in srgb-linear
   } else if (colorSpace === 'srgb-linear') {
-    let rgbA = await convertColorToLinearRgb(colorA, {
+    let rgbA = convertColorToLinearRgb(colorA, {
       alpha: true
     });
-    let rgbB = await convertColorToLinearRgb(colorB, {
+    let rgbB = convertColorToLinearRgb(colorB, {
       alpha: true
     });
     if (regCurrentColor.test(colorA)) {
-      rgbA = await reInsertMissingComponents(CC_RGB, rgbA);
+      rgbA = reInsertMissingComponents(CC_RGB, rgbA);
     } else if (regMissingRgb.test(colorA)) {
-      rgbA = await reInsertMissingComponents(colorA, rgbA);
+      rgbA = reInsertMissingComponents(colorA, rgbA);
     }
     if (regCurrentColor.test(colorB)) {
-      rgbB = await reInsertMissingComponents(CC_RGB, rgbB);
+      rgbB = reInsertMissingComponents(CC_RGB, rgbB);
     } else if (regMissingRgb.test(colorB)) {
-      rgbB = await reInsertMissingComponents(colorB, rgbB);
+      rgbB = reInsertMissingComponents(colorB, rgbB);
     }
     const [
       [rA, gA, bA, aA],
       [rB, gB, bB, aB]
-    ] = await normalizeColorComponents(rgbA, rgbB);
+    ] = normalizeColorComponents(rgbA, rgbB);
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
@@ -2040,37 +2029,37 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       b = (bA * factorA + bB * factorB) * a;
     }
     if (alpha) {
-      hex = await convertLinearRgbToHex([r, g, b, a * m]);
+      hex = convertLinearRgbToHex([r, g, b, a * m]);
     } else {
-      hex = await convertLinearRgbToHex([r, g, b, 1]);
+      hex = convertLinearRgbToHex([r, g, b, 1]);
     }
   // in xyz, xyz-d65
   } else if (/^xyz(?:-d65)?$/.test(colorSpace)) {
     let xyzA, xyzB;
     if (colorA.startsWith('color(')) {
-      xyzA = await parseColorFunc(colorA);
+      xyzA = parseColorFunc(colorA);
     } else {
-      xyzA = await parseColor(colorA);
+      xyzA = parseColor(colorA);
     }
     if (colorB.startsWith('color(')) {
-      xyzB = await parseColorFunc(colorB);
+      xyzB = parseColorFunc(colorB);
     } else {
-      xyzB = await parseColor(colorB);
+      xyzB = parseColor(colorB);
     }
     if (regCurrentColor.test(colorA)) {
-      xyzA = await reInsertMissingComponents(CC_RGB, xyzA);
+      xyzA = reInsertMissingComponents(CC_RGB, xyzA);
     } else if (regMissingRgb.test(colorA)) {
-      xyzA = await reInsertMissingComponents(colorA, xyzA);
+      xyzA = reInsertMissingComponents(colorA, xyzA);
     }
     if (regCurrentColor.test(colorB)) {
-      xyzB = await reInsertMissingComponents(CC_RGB, xyzB);
+      xyzB = reInsertMissingComponents(CC_RGB, xyzB);
     } else if (regMissingRgb.test(colorB)) {
-      xyzB = await reInsertMissingComponents(colorB, xyzB);
+      xyzB = reInsertMissingComponents(colorB, xyzB);
     }
     const [
       [xA, yA, zA, aA],
       [xB, yB, zB, aB]
-    ] = await normalizeColorComponents(xyzA, xyzB);
+    ] = normalizeColorComponents(xyzA, xyzB);
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
@@ -2085,37 +2074,37 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       z = (zA * factorA + zB * factorB) * a;
     }
     if (alpha) {
-      hex = await convertXyzToHex([x, y, z, a * m]);
+      hex = convertXyzToHex([x, y, z, a * m]);
     } else {
-      hex = await convertXyzToHex([x, y, z, 1]);
+      hex = convertXyzToHex([x, y, z, 1]);
     }
   // in xyz-d50
   } else if (colorSpace === 'xyz-d50') {
     let xyzA, xyzB;
     if (colorA.startsWith('color(')) {
-      xyzA = await parseColorFunc(colorA, true);
+      xyzA = parseColorFunc(colorA, true);
     } else {
-      xyzA = await parseColor(colorA, true);
+      xyzA = parseColor(colorA, true);
     }
     if (colorB.startsWith('color(')) {
-      xyzB = await parseColorFunc(colorB, true);
+      xyzB = parseColorFunc(colorB, true);
     } else {
-      xyzB = await parseColor(colorB, true);
+      xyzB = parseColor(colorB, true);
     }
     if (regCurrentColor.test(colorA)) {
-      xyzA = await reInsertMissingComponents(CC_RGB, xyzA);
+      xyzA = reInsertMissingComponents(CC_RGB, xyzA);
     } else if (regMissingRgb.test(colorA)) {
-      xyzA = await reInsertMissingComponents(colorA, xyzA);
+      xyzA = reInsertMissingComponents(colorA, xyzA);
     }
     if (regCurrentColor.test(colorB)) {
-      xyzB = await reInsertMissingComponents(CC_RGB, xyzB);
+      xyzB = reInsertMissingComponents(CC_RGB, xyzB);
     } else if (regMissingRgb.test(colorB)) {
-      xyzB = await reInsertMissingComponents(colorB, xyzB);
+      xyzB = reInsertMissingComponents(colorB, xyzB);
     }
     const [
       [xA, yA, zA, aA],
       [xB, yB, zB, aB]
-    ] = await normalizeColorComponents(xyzA, xyzB);
+    ] = normalizeColorComponents(xyzA, xyzB);
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
@@ -2130,42 +2119,42 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       z = (zA * factorA + zB * factorB) * a;
     }
     if (alpha) {
-      hex = await convertXyzD50ToHex([x, y, z, a * m]);
+      hex = convertXyzD50ToHex([x, y, z, a * m]);
     } else {
-      hex = await convertXyzD50ToHex([x, y, z, 1]);
+      hex = convertXyzD50ToHex([x, y, z, 1]);
     }
   // in hsl
   } else if (colorSpace === 'hsl') {
     let hA, sA, lA, aA;
     if (colorA.startsWith('color(')) {
-      [hA, sA, lA, aA] = await parseColorFunc(colorA).then(xyzToHsl);
+      const xyz = parseColorFunc(colorA);
+      [hA, sA, lA, aA] = xyzToHsl(xyz);
     } else {
-      [hA, sA, lA, aA] = await parseColor(colorA).then(xyzToHsl);
+      const xyz = parseColor(colorA);
+      [hA, sA, lA, aA] = xyzToHsl(xyz);
     }
     let hB, sB, lB, aB;
     if (colorB.startsWith('color(')) {
-      [hB, sB, lB, aB] = await parseColorFunc(colorB).then(xyzToHsl);
+      const xyz = parseColorFunc(colorB);
+      [hB, sB, lB, aB] = xyzToHsl(xyz);
     } else {
-      [hB, sB, lB, aB] = await parseColor(colorB).then(xyzToHsl);
+      const xyz = parseColor(colorB);
+      [hB, sB, lB, aB] = xyzToHsl(xyz);
     }
     if (regCurrentColor.test(colorA)) {
-      [lA, sA, hA, aA] =
-        await reInsertMissingComponents(CC_LCH, [lA, sA, hA, aA]);
+      [lA, sA, hA, aA] = reInsertMissingComponents(CC_LCH, [lA, sA, hA, aA]);
     } else if (regMissingLch.test(colorA)) {
-      [lA, sA, hA, aA] =
-        await reInsertMissingComponents(colorA, [lA, sA, hA, aA]);
+      [lA, sA, hA, aA] = reInsertMissingComponents(colorA, [lA, sA, hA, aA]);
     }
     if (regCurrentColor.test(colorB)) {
-      [lB, sB, hB, aB] =
-        await reInsertMissingComponents(CC_LCH, [lB, sB, hB, aB]);
+      [lB, sB, hB, aB] = reInsertMissingComponents(CC_LCH, [lB, sB, hB, aB]);
     } else if (regMissingLch.test(colorB)) {
-      [lB, sB, hB, aB] =
-        await reInsertMissingComponents(colorB, [lB, sB, hB, aB]);
+      [lB, sB, hB, aB] = reInsertMissingComponents(colorB, [lB, sB, hB, aB]);
     }
     [
       [hA, sA, lA, aA],
       [hB, sB, lB, aB]
-    ] = await normalizeColorComponents([hA, sA, lA, aA], [hB, sB, lB, aB]);
+    ] = normalizeColorComponents([hA, sA, lA, aA], [hB, sB, lB, aB]);
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
@@ -2179,44 +2168,44 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       l = (lA * factorA + lB * factorB) / a;
     }
     if (alpha) {
-      hex = await convertColorToHex(`hsl(${h} ${s}% ${l}% / ${a * m})`, {
+      hex = convertColorToHex(`hsl(${h} ${s}% ${l}% / ${a * m})`, {
         alpha: true
       });
     } else {
-      hex = await convertColorToHex(`hsl(${h} ${s}% ${l}%)`);
+      hex = convertColorToHex(`hsl(${h} ${s}% ${l}%)`);
     }
   // in hwb
   } else if (colorSpace === 'hwb') {
     let hA, wA, bA, aA;
     if (colorA.startsWith('color(')) {
-      [hA, wA, bA, aA] = await parseColorFunc(colorA).then(xyzToHwb);
+      const xyz = parseColorFunc(colorA);
+      [hA, wA, bA, aA] = xyzToHwb(xyz);
     } else {
-      [hA, wA, bA, aA] = await parseColor(colorA).then(xyzToHwb);
+      const xyz = parseColor(colorA);
+      [hA, wA, bA, aA] = xyzToHwb(xyz);
     }
     let hB, wB, bB, aB;
     if (colorB.startsWith('color(')) {
-      [hB, wB, bB, aB] = await parseColorFunc(colorB).then(xyzToHwb);
+      const xyz = parseColorFunc(colorB);
+      [hB, wB, bB, aB] = xyzToHwb(xyz);
     } else {
-      [hB, wB, bB, aB] = await parseColor(colorB).then(xyzToHwb);
+      const xyz = parseColor(colorB);
+      [hB, wB, bB, aB] = xyzToHwb(xyz);
     }
     if (regCurrentColor.test(colorA)) {
-      [,, hA, aA] =
-        await reInsertMissingComponents(CC_LCH, [null, null, hA, aA]);
+      [,, hA, aA] = reInsertMissingComponents(CC_LCH, [null, null, hA, aA]);
     } else if (regMissingLch.test(colorA)) {
-      [,, hA, aA] =
-        await reInsertMissingComponents(colorA, [null, null, hA, aA]);
+      [,, hA, aA] = reInsertMissingComponents(colorA, [null, null, hA, aA]);
     }
     if (regCurrentColor.test(colorB)) {
-      [,, hB, aB] =
-        await reInsertMissingComponents(CC_LCH, [null, null, hB, aB]);
+      [,, hB, aB] = reInsertMissingComponents(CC_LCH, [null, null, hB, aB]);
     } else if (regMissingLch.test(colorB)) {
-      [,, hB, aB] =
-        await reInsertMissingComponents(colorB, [null, null, hB, aB]);
+      [,, hB, aB] = reInsertMissingComponents(colorB, [null, null, hB, aB]);
     }
     [
       [hA, wA, bA, aA],
       [hB, wB, bB, aB]
-    ] = await normalizeColorComponents([hA, wA, bA, aA], [hB, wB, bB, aB]);
+    ] = normalizeColorComponents([hA, wA, bA, aA], [hB, wB, bB, aB]);
     const factorA = aA * pA;
     const factorB = aB * pB;
     const a = (factorA + factorB);
@@ -2230,44 +2219,44 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       b = (bA * factorA + bB * factorB) / a;
     }
     if (alpha) {
-      hex = await convertColorToHex(`hwb(${h} ${w}% ${b}% / ${a * m})`, {
+      hex = convertColorToHex(`hwb(${h} ${w}% ${b}% / ${a * m})`, {
         alpha: true
       });
     } else {
-      hex = await convertColorToHex(`hwb(${h} ${w}% ${b}%)`);
+      hex = convertColorToHex(`hwb(${h} ${w}% ${b}%)`);
     }
   // in lab
   } else if (colorSpace === 'lab') {
     let lA, aA, bA, aaA;
     if (colorA.startsWith('color(')) {
-      [lA, aA, bA, aaA] = await parseColorFunc(colorA, true).then(xyzD50ToLab);
+      const xyz = parseColorFunc(colorA, true);
+      [lA, aA, bA, aaA] = xyzD50ToLab(xyz);
     } else {
-      [lA, aA, bA, aaA] = await parseColor(colorA, true).then(xyzD50ToLab);
+      const xyz = parseColor(colorA, true);
+      [lA, aA, bA, aaA] = xyzD50ToLab(xyz);
     }
     let lB, aB, bB, aaB;
     if (colorB.startsWith('color(')) {
-      [lB, aB, bB, aaB] = await parseColorFunc(colorB, true).then(xyzD50ToLab);
+      const xyz = parseColorFunc(colorB, true);
+      [lB, aB, bB, aaB] = xyzD50ToLab(xyz);
     } else {
-      [lB, aB, bB, aaB] = await parseColor(colorB, true).then(xyzD50ToLab);
+      const xyz = parseColor(colorB, true);
+      [lB, aB, bB, aaB] = xyzD50ToLab(xyz);
     }
     if (regCurrentColor.test(colorA)) {
-      [lA,,, aaA] =
-        await reInsertMissingComponents(CC_LCH, [lA, null, null, aaA]);
+      [lA,,, aaA] = reInsertMissingComponents(CC_LCH, [lA, null, null, aaA]);
     } else if (regMissingLch.test(colorA)) {
-      [lA,,, aaA] =
-        await reInsertMissingComponents(colorA, [lA, null, null, aaA]);
+      [lA,,, aaA] = reInsertMissingComponents(colorA, [lA, null, null, aaA]);
     }
     if (regCurrentColor.test(colorB)) {
-      [lB,,, aaB] =
-        await reInsertMissingComponents(CC_LCH, [lB, null, null, aaB]);
+      [lB,,, aaB] = reInsertMissingComponents(CC_LCH, [lB, null, null, aaB]);
     } else if (regMissingLch.test(colorB)) {
-      [lB,,, aaB] =
-        await reInsertMissingComponents(colorB, [lB, null, null, aaB]);
+      [lB,,, aaB] = reInsertMissingComponents(colorB, [lB, null, null, aaB]);
     }
     [
       [lA, aA, bA, aaA],
       [lB, aB, bB, aaB]
-    ] = await normalizeColorComponents([lA, aA, bA, aaA], [lB, aB, bB, aaB]);
+    ] = normalizeColorComponents([lA, aA, bA, aaA], [lB, aB, bB, aaB]);
     const factorA = aaA * pA;
     const factorB = aaB * pB;
     const aa = (factorA + factorB);
@@ -2282,39 +2271,43 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       b = (bA * factorA + bB * factorB) * aa;
     }
     if (alpha) {
-      hex = await convertColorToHex(`lab(${l} ${a} ${b} / ${aa * m})`, {
+      hex = convertColorToHex(`lab(${l} ${a} ${b} / ${aa * m})`, {
         alpha: true
       });
     } else {
-      hex = await convertColorToHex(`lab(${l} ${a} ${b})`);
+      hex = convertColorToHex(`lab(${l} ${a} ${b})`);
     }
   // in lch
   } else if (colorSpace === 'lch') {
     let lchA, lchB;
     if (colorA.startsWith('color(')) {
-      lchA = await parseColorFunc(colorA, true).then(xyzD50ToLch);
+      const xyz = parseColorFunc(colorA, true);
+      lchA = xyzD50ToLch(xyz);
     } else {
-      lchA = await parseColor(colorA, true).then(xyzD50ToLch);
+      const xyz = parseColor(colorA, true);
+      lchA = xyzD50ToLch(xyz);
     }
     if (colorB.startsWith('color(')) {
-      lchB = await parseColorFunc(colorB, true).then(xyzD50ToLch);
+      const xyz = parseColorFunc(colorB, true);
+      lchB = xyzD50ToLch(xyz);
     } else {
-      lchB = await parseColor(colorB, true).then(xyzD50ToLch);
+      const xyz = parseColor(colorB, true);
+      lchB = xyzD50ToLch(xyz);
     }
     if (regCurrentColor.test(colorA)) {
-      lchA = await reInsertMissingComponents(CC_LCH, lchA);
+      lchA = reInsertMissingComponents(CC_LCH, lchA);
     } else if (regMissingLch.test(colorA)) {
-      lchA = await reInsertMissingComponents(colorA, lchA);
+      lchA = reInsertMissingComponents(colorA, lchA);
     }
     if (regCurrentColor.test(colorB)) {
-      lchB = await reInsertMissingComponents(CC_LCH, lchB);
+      lchB = reInsertMissingComponents(CC_LCH, lchB);
     } else if (regMissingLch.test(colorB)) {
-      lchB = await reInsertMissingComponents(colorB, lchB);
+      lchB = reInsertMissingComponents(colorB, lchB);
     }
     const [
       [lA, cA, hA, aaA],
       [lB, cB, hB, aaB]
-    ] = await normalizeColorComponents(lchA, lchB);
+    ] = normalizeColorComponents(lchA, lchB);
     const factorA = aaA * pA;
     const factorB = aaB * pB;
     const aa = (factorA + factorB);
@@ -2329,44 +2322,44 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       h = (hA * factorA + hB * factorB) * aa;
     }
     if (alpha) {
-      hex = await convertColorToHex(`lch(${l} ${c} ${h} / ${aa * m})`, {
+      hex = convertColorToHex(`lch(${l} ${c} ${h} / ${aa * m})`, {
         alpha: true
       });
     } else {
-      hex = await convertColorToHex(`lch(${l} ${c} ${h} / ${aa * m})`);
+      hex = convertColorToHex(`lch(${l} ${c} ${h} / ${aa * m})`);
     }
   // in oklab
   } else if (colorSpace === 'oklab') {
     let lA, aA, bA, aaA;
     if (colorA.startsWith('color(')) {
-      [lA, aA, bA, aaA] = await parseColorFunc(colorA).then(xyzToOklab);
+      const xyz = parseColorFunc(colorA);
+      [lA, aA, bA, aaA] = xyzToOklab(xyz);
     } else {
-      [lA, aA, bA, aaA] = await parseColor(colorA).then(xyzToOklab);
+      const xyz = parseColor(colorA);
+      [lA, aA, bA, aaA] = xyzToOklab(xyz);
     }
     let lB, aB, bB, aaB;
     if (colorB.startsWith('color(')) {
-      [lB, aB, bB, aaB] = await parseColorFunc(colorB).then(xyzToOklab);
+      const xyz = parseColorFunc(colorB);
+      [lB, aB, bB, aaB] = xyzToOklab(xyz);
     } else {
-      [lB, aB, bB, aaB] = await parseColor(colorB).then(xyzToOklab);
+      const xyz = parseColor(colorB);
+      [lB, aB, bB, aaB] = xyzToOklab(xyz);
     }
     if (regCurrentColor.test(colorA)) {
-      [lA,,, aaA] =
-        await reInsertMissingComponents(CC_LCH, [lA, null, null, aaA]);
+      [lA,,, aaA] = reInsertMissingComponents(CC_LCH, [lA, null, null, aaA]);
     } else if (regMissingLch.test(colorA)) {
-      [lA,,, aaA] =
-        await reInsertMissingComponents(colorA, [lA, null, null, aaA]);
+      [lA,,, aaA] = reInsertMissingComponents(colorA, [lA, null, null, aaA]);
     }
     if (regCurrentColor.test(colorB)) {
-      [lA,,, aaA] =
-        await reInsertMissingComponents(CC_LCH, [lB, null, null, aaB]);
+      [lA,,, aaA] = reInsertMissingComponents(CC_LCH, [lB, null, null, aaB]);
     } else if (regMissingLch.test(colorB)) {
-      [lB,,, aaB] =
-        await reInsertMissingComponents(colorB, [lB, null, null, aaB]);
+      [lB,,, aaB] = reInsertMissingComponents(colorB, [lB, null, null, aaB]);
     }
     [
       [lA, aA, bA, aaA],
       [lB, aB, bB, aaB]
-    ] = await normalizeColorComponents([lA, aA, bA, aaA], [lB, aB, bB, aaB]);
+    ] = normalizeColorComponents([lA, aA, bA, aaA], [lB, aB, bB, aaB]);
     const factorA = aaA * pA;
     const factorB = aaB * pB;
     const aa = (factorA + factorB);
@@ -2381,45 +2374,49 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       b = (bA * factorA + bB * factorB) * aa;
     }
     if (alpha) {
-      hex = await convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * m})`, {
+      hex = convertColorToHex(`oklab(${l} ${a} ${b} / ${aa * m})`, {
         alpha: true
       });
     } else {
-      hex = await convertColorToHex(`oklab(${l} ${a} ${b})`);
+      hex = convertColorToHex(`oklab(${l} ${a} ${b})`);
     }
   // in oklch
   } else if (colorSpace === 'oklch') {
     let lchA, lchB;
     if (colorA.startsWith('color(')) {
-      lchA = await parseColorFunc(colorA, true).then(xyzToOklch);
+      const xyz = parseColorFunc(colorA, true);
+      lchA = xyzToOklch(xyz);
     } else {
-      lchA = await parseColor(colorA, true).then(xyzToOklch);
+      const xyz = parseColor(colorA, true);
+      lchA = xyzToOklch(xyz);
     }
     if (colorB.startsWith('color(')) {
-      lchB = await parseColorFunc(colorB, true).then(xyzToOklch);
+      const xyz = parseColorFunc(colorB, true);
+      lchB = xyzToOklch(xyz);
     } else {
-      lchB = await parseColor(colorB, true).then(xyzToOklch);
+      const xyz = parseColor(colorB, true);
+      lchB = xyzToOklch(xyz);
     }
     if (regCurrentColor.test(colorA)) {
-      lchA = await reInsertMissingComponents(CC_LCH, lchA);
+      lchA = reInsertMissingComponents(CC_LCH, lchA);
     } else if (regMissingLch.test(colorA)) {
-      lchA = await reInsertMissingComponents(colorA, lchA);
+      lchA = reInsertMissingComponents(colorA, lchA);
     }
     if (regCurrentColor.test(colorB)) {
-      lchB = await reInsertMissingComponents(CC_LCH, lchB);
+      lchB = reInsertMissingComponents(CC_LCH, lchB);
     } else if (regMissingLch.test(colorB)) {
-      lchB = await reInsertMissingComponents(colorB, lchB);
+      lchB = reInsertMissingComponents(colorB, lchB);
     }
     if (regMissingLch.test(colorA)) {
-      lchA = await reInsertMissingComponents(colorA, lchA);
+      lchA = reInsertMissingComponents(colorA, lchA);
     }
     if (regMissingLch.test(colorB)) {
-      lchB = await reInsertMissingComponents(colorB, lchB);
+      lchB = reInsertMissingComponents(colorB, lchB);
     }
     const [
       [lA, cA, hA, aaA],
       [lB, cB, hB, aaB]
-    ] = await normalizeColorComponents(lchA, lchB);
+    ] = normalizeColorComponents(lchA, lchB);
     const factorA = aaA * pA;
     const factorB = aaB * pB;
     const aa = (factorA + factorB);
@@ -2434,23 +2431,23 @@ export const convertColorMixToHex = async (value, opt = {}) => {
       h = (hA * factorA + hB * factorB) * aa;
     }
     if (alpha) {
-      hex = await convertColorToHex(`oklch(${l} ${c} ${h} / ${aa * m})`, {
+      hex = convertColorToHex(`oklch(${l} ${c} ${h} / ${aa * m})`, {
         alpha: true
       });
     } else {
-      hex = await convertColorToHex(`oklch(${l} ${c} ${h})`);
+      hex = convertColorToHex(`oklch(${l} ${c} ${h})`);
     }
   }
-  return hex || null;
+  return hex;
 };
 
 /**
  * get color in hex color notation
  * @param {string} value - value
  * @param {object} [opt] - options
- * @returns {Promise.<?string|Array>} - hex color or array of [prop, hex] pair
+ * @returns {?string|Array} - hex color or array of [prop, hex] pair
  */
-export const getColorInHex = async (value, opt = {}) => {
+export const getColorInHex = (value, opt = {}) => {
   if (isString(value)) {
     value = value.trim();
   } else {
@@ -2461,17 +2458,17 @@ export const getColorInHex = async (value, opt = {}) => {
   if (/^currentcolor$/i.test(value)) {
     if (currentColor) {
       if (currentColor.startsWith('color-mix')) {
-        hex = await convertColorMixToHex(currentColor, {
+        hex = convertColorMixToHex(currentColor, {
           alpha: true
         });
       } else {
-        const [r, g, b, a] = await convertColorToRgb(currentColor, {
+        const [r, g, b, a] = convertColorToRgb(currentColor, {
           alpha: true
         });
         if (alpha) {
-          hex = await convertRgbToHex([r, g, b, a]);
+          hex = convertRgbToHex([r, g, b, a]);
         } else {
-          hex = await convertRgbToHex([r, g, b]);
+          hex = convertRgbToHex([r, g, b]);
         }
       }
     } else if (alpha) {
@@ -2480,15 +2477,15 @@ export const getColorInHex = async (value, opt = {}) => {
       hex = '#000000';
     }
   } else if (value.startsWith('color-mix')) {
-    hex = await convertColorMixToHex(value, {
+    hex = convertColorMixToHex(value, {
       alpha
     });
   } else if (value.startsWith('color(')) {
-    hex = await convertColorFuncToHex(value, {
+    hex = convertColorFuncToHex(value, {
       alpha
     });
   } else {
-    hex = await convertColorToHex(value, {
+    hex = convertColorToHex(value, {
       alpha,
       currentColor
     });
@@ -2500,19 +2497,19 @@ export const getColorInHex = async (value, opt = {}) => {
  * composite two layered colors
  * @param {string} overlay - overlay color
  * @param {string} base - base color
- * @returns {Promise.<?string>} - hex color
+ * @returns {?string} - hex color
  */
-export const compositeLayeredColors = async (overlay, base) => {
-  const overlayHex = await getColorInHex(overlay, {
+export const compositeLayeredColors = (overlay, base) => {
+  const overlayHex = getColorInHex(overlay, {
     alpha: true
   });
-  const baseHex = await await getColorInHex(base, {
+  const baseHex = getColorInHex(base, {
     alpha: true
   });
   let hex;
   if (overlayHex && baseHex) {
-    const [rO, gO, bO, aO] = await hexToRgb(overlayHex);
-    const [rB, gB, bB, aB] = await hexToRgb(baseHex);
+    const [rO, gO, bO, aO] = hexToRgb(overlayHex);
+    const [rB, gB, bB, aB] = hexToRgb(baseHex);
     const alpha = 1 - (1 - aO) * (1 - aB);
     if (aO === 1) {
       hex = overlayHex;
@@ -2521,12 +2518,10 @@ export const compositeLayeredColors = async (overlay, base) => {
     } else if (alpha) {
       const alphaO = aO / alpha;
       const alphaB = aB * (1 - aO) / alpha;
-      const [r, g, b, a] = await Promise.all([
-        numberToHexString(rO * alphaO + rB * alphaB),
-        numberToHexString(gO * alphaO + gB * alphaB),
-        numberToHexString(bO * alphaO + bB * alphaB),
-        numberToHexString(alpha * MAX_RGB)
-      ]);
+      const r = numberToHexString(rO * alphaO + rB * alphaB);
+      const g = numberToHexString(gO * alphaO + gB * alphaB);
+      const b = numberToHexString(bO * alphaO + bB * alphaB);
+      const a = numberToHexString(alpha * MAX_RGB);
       if (a === 'ff') {
         hex = `#${r}${g}${b}`;
       } else {
