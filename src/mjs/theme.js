@@ -528,7 +528,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
           }
       }
       func.push(getColorInHex(value, {
-        prop: key,
+        property: key,
         alpha: true
       }));
     }
@@ -544,7 +544,7 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       const value = values.get(key);
       if (value.startsWith('color-mix')) {
         func.push(getColorInHex(value, {
-          prop: key
+          property: key
         }));
       }
     }

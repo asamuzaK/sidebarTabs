@@ -7391,7 +7391,7 @@ describe('color', () => {
     it('should get array', () => {
       const res = func('color-mix(in srgb, blue, red)', {
         alpha: true,
-        prop: 'foo'
+        property: 'foo'
       });
       const value = mjs.convertColorToHex('rgb(128, 0, 128)');
       assert.deepEqual(res, ['foo', value], 'result');

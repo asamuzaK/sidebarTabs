@@ -2445,7 +2445,7 @@ export const convertColorMixToHex = (value, opt = {}) => {
  * get color in hex color notation
  * @param {string} value - value
  * @param {object} [opt] - options
- * @returns {?string|Array} - hex color or array of [prop, hex] pair
+ * @returns {?string|Array} - hex color or array of [property, hex] pair
  */
 export const getColorInHex = (value, opt = {}) => {
   if (isString(value)) {
@@ -2453,7 +2453,7 @@ export const getColorInHex = (value, opt = {}) => {
   } else {
     throw new TypeError(`Expected String but got ${getType(value)}.`);
   }
-  const { alpha, currentColor, prop } = opt;
+  const { alpha, currentColor, property } = opt;
   let hex;
   if (/^currentcolor$/i.test(value)) {
     if (currentColor) {
@@ -2490,7 +2490,7 @@ export const getColorInHex = (value, opt = {}) => {
       currentColor
     });
   }
-  return prop ? [prop, hex] : (hex || null);
+  return property ? [property, hex] : (hex || null);
 };
 
 /**
