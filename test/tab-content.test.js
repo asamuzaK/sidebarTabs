@@ -24,7 +24,7 @@ import {
 } from '../src/mjs/constant.js';
 
 describe('tab-content', () => {
-  const globalKeys = ['Node'];
+  const globalKeys = ['DOMParser', 'Node', 'XMLSerializer'];
   let window, document;
   beforeEach(() => {
     const dom = createJsdom();
@@ -1098,7 +1098,7 @@ describe('tab-content', () => {
       assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
     });
 
-    it('should not set icon if color and/or icon does not match', async () => {
+    it('should not set icon if icon does not match', async () => {
       const parent = document.createElement('p');
       const elm = document.createElement('img');
       const body = document.querySelector('body');
@@ -1114,7 +1114,7 @@ describe('tab-content', () => {
       assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
     });
 
-    it('should not set icon if one of keys lacks', async () => {
+    it('should not set icon if name is not a string', async () => {
       const parent = document.createElement('p');
       const elm = document.createElement('img');
       const body = document.querySelector('body');
@@ -1130,7 +1130,7 @@ describe('tab-content', () => {
       assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
     });
 
-    it('should not set icon if one of keys lacks', async () => {
+    it('should not set icon if icon and/or name lacks', async () => {
       const parent = document.createElement('p');
       const elm = document.createElement('img');
       const body = document.querySelector('body');
@@ -1145,22 +1145,7 @@ describe('tab-content', () => {
       assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
     });
 
-    it('should not set icon if one of keys lacks', async () => {
-      const parent = document.createElement('p');
-      const elm = document.createElement('img');
-      const body = document.querySelector('body');
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      await func(elm, {
-        icon: 'briefcase',
-        name: 'foo'
-      });
-      assert.strictEqual(elm.alt, '', 'alt');
-      assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
-    });
-
-    it('should not set icon if one of keys lacks', async () => {
+    it('should not set icon if icon and/or name lacks', async () => {
       const parent = document.createElement('p');
       const elm = document.createElement('img');
       const body = document.querySelector('body');
@@ -1188,6 +1173,46 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, 'foo', 'alt');
       assert.strictEqual(elm.src, '../img/briefcase.svg#blue', 'src');
+      assert.isTrue(parent.classList.contains(IDENTIFIED), 'class');
+    });
+
+    it('should set icon', async () => {
+      const parent = document.createElement('p');
+      const elm = document.createElement('img');
+      const body = document.querySelector('body');
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      await func(elm, {
+        color: 'bar',
+        icon: 'briefcase',
+        name: 'foo'
+      });
+      assert.strictEqual(elm.alt, 'foo', 'alt');
+      assert.strictEqual(elm.src, '../img/briefcase.svg#current', 'src');
+      assert.isTrue(parent.classList.contains(IDENTIFIED), 'class');
+    });
+
+    it('should set icon', async () => {
+      const stubFetch = sinon.stub(globalThis, 'fetch').resolves({
+        text: async () => {
+          const str = '<svg><g id="current"/></svg>';
+          return str;
+        }
+      })
+      const parent = document.createElement('p');
+      const elm = document.createElement('img');
+      const body = document.querySelector('body');
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      await func(elm, {
+        color: 'bar',
+        colorCode: 'gray',
+        icon: 'briefcase',
+        name: 'foo'
+      });
+      stubFetch.restore();
+      assert.strictEqual(elm.alt, 'foo', 'alt');
+      assert.isTrue(elm.src.startsWith('data:'), 'src');
       assert.isTrue(parent.classList.contains(IDENTIFIED), 'class');
     });
   });
