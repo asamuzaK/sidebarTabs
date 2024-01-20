@@ -85,7 +85,8 @@ export const createSidebarTab = (node, target) => {
     container.appendChild(tab);
     container.removeAttribute('hidden');
     if (!target || target.nodeType !== Node.ELEMENT_NODE ||
-        !target.classList.contains(CLASS_TAB_CONTAINER)) {
+        !target.classList.contains(CLASS_TAB_CONTAINER) ||
+        !target?.parentNode) {
       target = document.getElementById(NEW_TAB);
     }
     target.parentNode.insertBefore(container, target);

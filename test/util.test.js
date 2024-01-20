@@ -236,6 +236,24 @@ describe('util', () => {
       assert.deepEqual(res, elm, 'result');
       assert.deepEqual(res.parentNode.nextElementSibling, div2, 'position');
     });
+
+    it('should get result', async () => {
+      const tmpl = document.createElement('template');
+      const div = document.createElement('div');
+      const elm = document.createElement('div');
+      const target = document.createElement('div')
+      const newTab = document.createElement('div');
+      const body = document.querySelector('body');
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(div);
+      newTab.id = NEW_TAB;
+      body.appendChild(tmpl);
+      body.appendChild(newTab);
+      const res = await func(elm, target);
+      assert.isNull(target.parentNode, 'parent');
+      assert.deepEqual(res, elm, 'result');
+      assert.deepEqual(res.parentNode.nextElementSibling, newTab, 'position');
+    });
   });
 
   describe('get sidebar tab from parent node', () => {
