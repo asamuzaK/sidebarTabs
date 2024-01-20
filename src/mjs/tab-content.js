@@ -330,12 +330,26 @@ export const addTabCloseClickListener = async elm => {
 export const setContextualIdentitiesIcon = async (elm, info) => {
   if (elm?.nodeType === Node.ELEMENT_NODE && elm?.localName === 'img' &&
       isObjectNotEmpty(info)) {
-    const { color, icon, name } = info;
-    if (contextualIdentitiesIconColor.has(color) &&
-        contextualIdentitiesIconName.has(icon) &&
-        isString(name)) {
+    const { color, colorCode, icon, name } = info;
+    if (contextualIdentitiesIconName.has(icon) && isString(name)) {
+      let src;
+      if (contextualIdentitiesIconColor.has(color)) {
+        src = `../img/${icon}.svg#${color}`;
+      } else if (colorCode) {
+        const { href } = new URL(`../img/${icon}.svg`, import.meta.url);
+        const file = await fetch(href);
+        const content = await file.text();
+        const doc = new DOMParser().parseFromString(content, 'image/svg+xml');
+        const current = doc.getElementById('current');
+        current.setAttribute('fill', colorCode);
+        const domstr = new XMLSerializer().serializeToString(doc);
+        const data = btoa(domstr);
+        src = `data:image/svg+xml;base64,${data}`;
+      } else {
+        src = `../img/${icon}.svg#current`;
+      }
+      elm.src = src;
       elm.alt = name;
-      elm.src = `../img/${icon}.svg#${color}`;
       elm.parentNode.classList.add(IDENTIFIED);
     }
   }

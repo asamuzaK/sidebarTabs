@@ -745,10 +745,11 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
         logErr(e);
       }
       if (isObjectNotEmpty(ident)) {
-        const { color, icon, name } = ident;
+        const { color, colorCode, icon, name } = ident;
         const identIcon = tab.querySelector(`.${CLASS_TAB_IDENT_ICON}`);
         func.push(setContextualIdentitiesIcon(identIcon, {
           color,
+          colorCode,
           icon,
           name
         }));
