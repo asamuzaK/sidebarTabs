@@ -1198,7 +1198,7 @@ describe('tab-content', () => {
           const str = '<svg><g id="current"/></svg>';
           return str;
         }
-      })
+      });
       const parent = document.createElement('p');
       const elm = document.createElement('img');
       const body = document.querySelector('body');
