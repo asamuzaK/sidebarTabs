@@ -152,6 +152,31 @@ export const saveLibraryPackage = async (lib, info) => {
 export const extractLibraries = async (cmdOpts = {}) => {
   const { dir, info } = cmdOpts;
   const libraries = {
+    color: {
+      name: '@asamuzakjp/css-color',
+      raw: 'https://raw.githubusercontent.com/asamuzaK/cssColor/',
+      vPrefix: 'v',
+      cdn: 'https://unpkg.com/@asamuzakjp/css-color',
+      repository: {
+        type: 'git',
+        url: 'https://github.com/asamuzaK/cssColor.git'
+      },
+      type: 'module',
+      files: [
+        {
+          file: 'LICENSE',
+          path: 'LICENSE'
+        },
+        {
+          file: 'css-color.min.js',
+          path: 'dist/esm/css-color.min.js'
+        },
+        {
+          file: 'css-color.min.js.map',
+          path: 'dist/esm/css-color.min.js.map'
+        }
+      ]
+    },
     purify: {
       name: 'dompurify',
       raw: 'https://raw.githubusercontent.com/cure53/DOMPurify/',

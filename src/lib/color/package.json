@@ -1,0 +1,30 @@
+{
+  "name": "@asamuzakjp/css-color",
+  "description": "CSS color - Resolve, parse, convert CSS color.",
+  "author": "asamuzaK",
+  "license": "MIT",
+  "homepage": "https://github.com/asamuzaK/cssColor#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asamuzaK/cssColor.git"
+  },
+  "type": "module",
+  "version": "1.0.4",
+  "origins": [
+    {
+      "file": "LICENSE",
+      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v1.0.4/LICENSE",
+      "cdn": "https://unpkg.com/@asamuzakjp/css-color@1.0.4/LICENSE"
+    },
+    {
+      "file": "css-color.min.js",
+      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v1.0.4/dist/esm/css-color.min.js",
+      "cdn": "https://unpkg.com/@asamuzakjp/css-color@1.0.4/dist/esm/css-color.min.js"
+    },
+    {
+      "file": "css-color.min.js.map",
+      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v1.0.4/dist/esm/css-color.min.js.map",
+      "cdn": "https://unpkg.com/@asamuzakjp/css-color@1.0.4/dist/esm/css-color.min.js.map"
+    }
+  ]
+}
