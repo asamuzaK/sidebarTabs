@@ -9,12 +9,12 @@ import { promises as fsPromise } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import { resolve } from '@asamuzakjp/css-color';
 import { sleep } from '../src/mjs/common.js';
 import { browser, createJsdom } from './mocha/setup.js';
 
 /* test */
 import * as mjs from '../src/mjs/theme.js';
-import { convertColorToHex } from '../src/mjs/color.js';
 import {
   CLASS_COMPACT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP, CLASS_SEPARATOR_SHOW,
   CLASS_THEME_CUSTOM, CLASS_THEME_DARK, CLASS_THEME_LIGHT, CLASS_THEME_SYSTEM,
@@ -1711,8 +1711,8 @@ describe('theme', () => {
       const items = Object.entries(colors);
       for (const [key, value] of items) {
         // eslint-disable-next-line no-await-in-loop
-        const hexValue = await convertColorToHex(value, {
-          alpha: true
+        const hexValue = await resolve(value, {
+          format: 'hexAlpha'
         });
         mjs.currentThemeColors.set(key, hexValue);
       }
@@ -1740,8 +1740,8 @@ describe('theme', () => {
       const items = Object.entries(colors);
       for (const [key, value] of items) {
         // eslint-disable-next-line no-await-in-loop
-        const hexValue = await convertColorToHex(value, {
-          alpha: true
+        const hexValue = await resolve(value, {
+          format: 'hexAlpha'
         });
         mjs.currentThemeColors.set(key, hexValue);
       }
