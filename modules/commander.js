@@ -300,21 +300,25 @@ export const parseCommand = args => {
   if (Array.isArray(args) && args.some(arg => reg.test(arg))) {
     commander.exitOverride();
     commander.version(process.env.npm_package_version, '-v, --version');
-    commander.command('clean')
-      .description('clean directory')
-      .option('-d, --dir <name>', 'specify directory')
-      .option('-i, --info', 'console info')
-      .action(cleanDirectory);
-    commander.command('include')
-      .description('include library packages')
-      .option('-d, --dir <name>', 'specify library directory')
-      .option('-i, --info', 'console info')
-      .action(includeLibraries);
-    commander.command('update')
-      .description('update theme manifests')
-      .option('-d, --dir <name>', 'specify theme directory')
-      .option('-i, --info', 'console info')
-      .action(updateManifests);
+    if (args.includes('clean')) {
+      commander.command('clean')
+        .description('clean directory')
+        .option('-d, --dir <name>', 'specify directory')
+        .option('-i, --info', 'console info')
+        .action(cleanDirectory);
+    } else if (args.includes('include')) {
+      commander.command('include')
+        .description('include library packages')
+        .option('-d, --dir <name>', 'specify library directory')
+        .option('-i, --info', 'console info')
+        .action(includeLibraries);
+    } else if (args.includes('update')) {
+      commander.command('update')
+        .description('update theme manifests')
+        .option('-d, --dir <name>', 'specify theme directory')
+        .option('-i, --info', 'console info')
+        .action(updateManifests);
+    }
     commander.parse(args);
   }
 };
