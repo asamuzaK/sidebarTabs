@@ -54,7 +54,6 @@
   ],
   "short_name": "__MSG_extensionShortName__",
   "sidebar_action": {
-    "browser_style": false,
     "default_icon": "img/icon.svg#current",
     "default_panel": "html/sidebar.html",
     "default_title": "__MSG_extensionShortName__"

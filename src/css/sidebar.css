@@ -49,6 +49,10 @@
 }
 
 /* structure */
+html, body, body * {
+  box-sizing: content-box;
+}
+
 body {
   margin: 0;
   padding: 0;
