@@ -1,5 +1,6 @@
 {
   "background": {
+    "persistent": false,
     "scripts": [
       "mjs/background.js"
     ],
