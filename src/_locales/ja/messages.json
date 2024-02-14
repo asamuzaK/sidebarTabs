@@ -12,7 +12,7 @@
     "message": "タブ"
   },
   "bookmarkAllTabs_menu": {
-    "message": "すべてのタブをブックマーク$KEY$...",
+    "message": "すべてのタブをブックマーク...$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -43,7 +43,7 @@
     }
   },
   "bookmarkTabs_menu": {
-    "message": "タブをブックマーク$KEY$...",
+    "message": "タブをブックマーク...$KEY$",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
