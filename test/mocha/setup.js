@@ -3,9 +3,7 @@
  */
 
 import process from 'node:process';
-import {
-  closest, matches, querySelector, querySelectorAll
-} from '@asamuzakjp/dom-selector';
+import { DOMSelector } from '@asamuzakjp/dom-selector';
 import domPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import sinon from 'sinon';
@@ -20,6 +18,11 @@ export const createJsdom = () => {
   const opt = {
     runScripts: 'dangerously',
     beforeParse(window) {
+      const domSelector = new DOMSelector(window);
+      const closest = domSelector.closest.bind(domSelector);
+      const matches = domSelector.matches.bind(domSelector);
+      const querySelector = domSelector.querySelector.bind(domSelector);
+      const querySelectorAll = domSelector.querySelectorAll.bind(domSelector);
       window.alert = sinon.stub();
       window.matchMedia = sinon.stub().returns({
         matches: false
