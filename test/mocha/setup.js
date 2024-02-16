@@ -17,7 +17,7 @@ export const createJsdom = () => {
   const domstr = '<!DOCTYPE html><html><head></head><body></body></html>';
   const opt = {
     runScripts: 'dangerously',
-    beforeParse(window) {
+    beforeParse: window => {
       const domSelector = new DOMSelector(window);
       const closest = domSelector.closest.bind(domSelector);
       const matches = domSelector.matches.bind(domSelector);
