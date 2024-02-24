@@ -19,7 +19,7 @@
     "decamelize": "^6.0.0",
     "dompurify": "^3.0.9",
     "tldts-experimental": "^6.1.11",
-    "url-sanitizer": "^1.0.0",
+    "url-sanitizer": "^1.0.2",
     "webext-schema": "^5.2.9"
   },
   "devDependencies": {
@@ -29,10 +29,10 @@
     "c8": "^9.1.0",
     "chai": "^5.1.0",
     "copyfiles": "^2.4.1",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^48.1.0",
+    "eslint-plugin-jsdoc": "^48.2.0",
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-regexp": "^2.2.0",
     "eslint-plugin-unicorn": "^51.0.1",
