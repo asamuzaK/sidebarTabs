@@ -35,21 +35,20 @@ const ONE_THIRD = 1 / 3;
 /**
  * move dropped tabs
  * @param {object} dropTarget - drop target
- * @param {Array} [draggedIds] - Array of dragged tab ID
  * @param {object} [opt] - options
  * @returns {Promise.<Array>} - result of each handler
  */
-export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
+export const moveDroppedTabs = async (dropTarget, opt = {}) => {
   const func = [];
+  const {
+    beGrouped, dropAfter, dropBefore, pinned, tabGroup, tabIds, windowId
+  } = opt;
   const target = getSidebarTab(dropTarget);
-  if (target && Array.isArray(draggedIds) && isObjectNotEmpty(opt)) {
-    const {
-      beGrouped, dropAfter, dropBefore, pinned, tabGroup, windowId
-    } = opt;
+  if (target && Array.isArray(tabIds)) {
     const targetParent = target.parentNode;
     let groupContainer;
     if (tabGroup && !pinned && !beGrouped) {
-      const [tabId] = draggedIds;
+      const [tabId] = tabIds;
       const item = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (item) {
         groupContainer = item.parentNode;
@@ -62,7 +61,7 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
       }
     }
     const arr = [];
-    const moveArr = (dropAfter && draggedIds.reverse()) || draggedIds;
+    const moveArr = (dropAfter && tabIds.reverse()) || tabIds;
     const l = moveArr.length;
     let i = 0;
     while (i < l) {
@@ -123,8 +122,8 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
       if (groupContainer) {
         const { index: itemIndex, tabId: itemId } = arr.pop();
         await moveTab(itemId, {
-          index: itemIndex,
-          windowId
+          windowId,
+          index: itemIndex
         });
       }
       func.push(moveTabsInOrder(arr, windowId));
@@ -232,6 +231,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
               dropAfter: true,
               dropBefore: false,
               pinned: true,
+              tabIds: pinnedTabIds,
               windowId: dropWindowId
             };
             if (target === dropTarget &&
@@ -239,7 +239,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
               opt.dropAfter = false;
               opt.dropBefore = true;
             }
-            func.push(moveDroppedTabs(target, pinnedTabIds, opt));
+            func.push(moveDroppedTabs(target, opt));
           }
           if (Array.isArray(tabIds) && tabIds.length) {
             const target = getTargetForDraggedTabs(dropTarget, {
@@ -248,6 +248,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             const opt = {
               beGrouped,
               tabGroup,
+              tabIds,
               dropAfter: false,
               dropBefore: true,
               windowId: dropWindowId
@@ -257,7 +258,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
               opt.dropAfter = true;
               opt.dropBefore = false;
             }
-            func.push(moveDroppedTabs(target, tabIds, opt));
+            func.push(moveDroppedTabs(target, opt));
           }
         // dragged from other window
         } else {
