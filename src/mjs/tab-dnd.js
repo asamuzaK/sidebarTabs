@@ -122,7 +122,7 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
     if (arr.length) {
       if (groupContainer) {
         const { index: itemIndex, tabId: itemId } = arr.pop();
-        const moved = await moveTab(itemId, {
+        await moveTab(itemId, {
           index: itemIndex,
           windowId
         });
