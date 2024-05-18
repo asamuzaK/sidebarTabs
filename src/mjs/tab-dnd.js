@@ -120,6 +120,13 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
       i++;
     }
     if (arr.length) {
+      if (groupContainer) {
+        const { index: itemIndex, tabId: itemId } = arr.pop();
+        const moved = await moveTab(itemId, {
+          index: itemIndex,
+          windowId
+        });
+      }
       func.push(moveTabsInOrder(arr, windowId));
     }
   }
