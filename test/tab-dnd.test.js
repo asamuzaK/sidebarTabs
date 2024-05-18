@@ -82,16 +82,6 @@ describe('dnd', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
-      const res = await func(elm, []);
-      assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
-      assert.deepEqual(res, [], 'result');
-    });
-
-    it('should not call function', async () => {
-      const i = browser.tabs.move.callCount;
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      body.appendChild(elm);
       const res = await func(elm, [], {});
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -104,7 +94,7 @@ describe('dnd', () => {
       const body = document.querySelector('body');
       parent.appendChild(elm);
       body.appendChild(parent);
-      const res = await func(elm, [], { foo: 'bar' });
+      const res = await func(elm, { foo: 'bar' });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
@@ -123,9 +113,10 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(tmpl);
       body.appendChild(parent);
-      const res = await func(elm, [2], {
+      const res = await func(elm, {
         dropBefore: true,
-        dropWindowId: browser.windows.WINDOW_ID_CURRENT
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        tabIds: 2
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -164,9 +155,10 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropBefore: true,
-        dropWindowId: browser.windows.WINDOW_ID_CURRENT
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -208,9 +200,10 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm2, [1, 4], {
+      const res = await func(elm2, {
         dropBefore: true,
-        dropWindowId: browser.windows.WINDOW_ID_CURRENT
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -252,9 +245,10 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm2, [1, 4], {
+      const res = await func(elm2, {
         dropAfter: true,
-        dropWindowId: browser.windows.WINDOW_ID_CURRENT
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -296,9 +290,10 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropAfter: true,
-        dropWindowId: browser.windows.WINDOW_ID_CURRENT
+        dropWindowId: browser.windows.WINDOW_ID_CURRENT,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -340,10 +335,11 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm3, [1, 2], {
+      const res = await func(elm3, {
         dropAfter: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        tabGroup: true
+        tabGroup: true,
+        tabIds: [1, 2]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -385,10 +381,11 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm4, [1, 2], {
+      const res = await func(elm4, {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        tabGroup: true
+        tabGroup: true,
+        tabIds: [1, 2]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -431,11 +428,12 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm3, [1, 2], {
+      const res = await func(elm3, {
         dropAfter: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         beGrouped: true,
-        tabGroup: true
+        tabGroup: true,
+        tabIds: [1, 2]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -477,11 +475,12 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm4, [1, 2], {
+      const res = await func(elm4, {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
         beGrouped: true,
-        tabGroup: true
+        tabGroup: true,
+        tabIds: [1, 2]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -525,10 +524,11 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        beGrouped: true
+        beGrouped: true,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -570,10 +570,11 @@ describe('dnd', () => {
       body.appendChild(parent2);
       body.appendChild(parent3);
       body.appendChild(parent4);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropAfter: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        beGrouped: true
+        beGrouped: true,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -605,10 +606,11 @@ describe('dnd', () => {
       parent.appendChild(elm3);
       parent.appendChild(elm4);
       body.appendChild(parent);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: true
+        pinned: true,
+        tabIds: [1, 4]
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -636,10 +638,11 @@ describe('dnd', () => {
       parent.appendChild(elm3);
       parent.appendChild(elm4);
       body.appendChild(parent);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: true
+        pinned: true,
+        tabIds: [1, 4]
       });
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
@@ -667,10 +670,11 @@ describe('dnd', () => {
       parent.appendChild(elm3);
       parent.appendChild(elm4);
       body.appendChild(parent);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropBefore: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: true
+        pinned: true,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
@@ -702,10 +706,11 @@ describe('dnd', () => {
       parent.appendChild(elm3);
       parent.appendChild(elm4);
       body.appendChild(parent);
-      const res = await func(elm3, [1, 4], {
+      const res = await func(elm3, {
         dropAfter: true,
         dropWindowId: browser.windows.WINDOW_ID_CURRENT,
-        pinned: true
+        pinned: true,
+        tabIds: [1, 4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
