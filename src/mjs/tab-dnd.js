@@ -19,7 +19,7 @@ import {
   activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
 import {
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  CLASS_HEADING, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
   HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR_MAIN, TAB_QUERY
 } from './constant.js';
@@ -44,11 +44,11 @@ export const moveDroppedTabs = async (dropTarget, draggedIds, opt) => {
   const target = getSidebarTab(dropTarget);
   if (target && Array.isArray(draggedIds) && isObjectNotEmpty(opt)) {
     const {
-      beGrouped, dropAfter, dropBefore, grouped, pinned, windowId
+      beGrouped, dropAfter, dropBefore, pinned, tabGroup, windowId
     } = opt;
     const targetParent = target.parentNode;
     let groupContainer;
-    if (grouped && !pinned) {
+    if (tabGroup && !pinned && !beGrouped) {
       const [tabId] = draggedIds;
       const item = document.querySelector(`[data-tab-id="${tabId}"]`);
       if (item) {
@@ -211,8 +211,8 @@ export const extractDroppedTabs = async (dropTarget, data) => {
   if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
       dropTarget?.classList.contains(DROP_TARGET) && isObjectNotEmpty(data)) {
     const {
-      beGrouped, dragTabId, dragWindowId, dropEffect, dropWindowId, grouped,
-      pinnedTabIds, tabIds
+      beGrouped, dragTabId, dragWindowId, dropEffect, dropWindowId,
+      pinnedTabIds, tabGroup, tabIds
     } = data;
     if (Number.isInteger(dragWindowId) && dragWindowId !== WINDOW_ID_NONE) {
       if (dropEffect === 'move') {
@@ -238,11 +238,9 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             const target = getTargetForDraggedTabs(dropTarget, {
               isPinnedTabIds: false
             });
-            const targetParent = target.parentNode;
             const opt = {
-              grouped,
-              beGrouped: beGrouped ||
-                         targetParent.classList.contains(CLASS_TAB_GROUP),
+              beGrouped,
+              tabGroup,
               dropAfter: false,
               dropBefore: true,
               windowId: dropWindowId
@@ -271,7 +269,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
             const index = getDropIndexForDraggedTabs(dropTarget, {
               isPinnedTabIds: false
             });
-            // TODO: add grouped case and beGrouped case handlers
+            // TODO: add tabGroup case and beGrouped case handlers
             if (Number.isInteger(index)) {
               func.push(moveTab(tabIds, {
                 index,
@@ -487,7 +485,7 @@ export const searchQuery = async (dropTarget, data = '') => {
  * @returns {?Promise|undefined} - promise chain
  */
 export const handleDrop = evt => {
-  const { currentTarget, dataTransfer, type } = evt;
+  const { currentTarget, dataTransfer, shiftKey, type } = evt;
   if (type !== 'drop') {
     return;
   }
@@ -514,9 +512,36 @@ export const handleDrop = evt => {
         }
         // dropped tab
         if (isObjectNotEmpty(item)) {
-          const { windowId } = JSON.parse(dropTarget.dataset.tab);
+          const { pinned, windowId } = JSON.parse(dropTarget.dataset.tab);
           item.dropEffect = dropEffect;
           item.dropWindowId = windowId;
+          let beGrouped;
+          if (!pinned) {
+            if (shiftKey) {
+              beGrouped = true;
+            } else {
+              const container = dropTarget.parentNode;
+              if (container?.classList.contains(CLASS_TAB_GROUP)) {
+                const heading = container.querySelector(`.${CLASS_HEADING}`);
+                const childTabs = container.querySelectorAll(TAB_QUERY);
+                // if drop target is the first tab
+                if (dropTarget === childTabs[0]) {
+                  if (!heading.hidden ||
+                      dropTarget.classList.contains(DROP_TARGET_AFTER)) {
+                    beGrouped = true;
+                  }
+                // if drop target is the last tab
+                } else if (dropTarget === childTabs[childTabs.length - 1]) {
+                  if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
+                    beGrouped = true;
+                  }
+                } else {
+                  beGrouped = true;
+                }
+              }
+            }
+          }
+          item.beGrouped = !!beGrouped;
           func = extractDroppedTabs(dropTarget, item)
             .then(restoreTabContainers).then(requestSaveSession)
             .catch(throwErr);
@@ -534,8 +559,8 @@ export const handleDrop = evt => {
         }
       }
     }
-    dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-      DROP_TARGET_BEFORE);
+    dropTarget.classList
+      .remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
   } else if (isMain && dropEffect === 'move') {
     // dropped uri list
     if (uriList.length) {
@@ -718,9 +743,9 @@ export const handleDragStart = (evt, opt = {}) => {
     const data = {
       dragTabId,
       pinned,
-      beGrouped: !pinned && !(altKey || ctrlKey || metaKey) && !!shiftKey,
       dragWindowId: windowId || windows.WINDOW_ID_CURRENT,
-      grouped: false,
+      beGrouped: false,
+      tabGroup: false,
       pinnedTabIds: [],
       tabIds: []
     };
@@ -730,7 +755,7 @@ export const handleDragStart = (evt, opt = {}) => {
     if (container?.classList.contains(CLASS_TAB_GROUP) &&
         shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
       items.push(...container.querySelectorAll(TAB_QUERY));
-      data.grouped = true;
+      data.tabGroup = true;
       func.push(highlightTabs(items, windowId));
     } else if (tab.classList.contains(HIGHLIGHTED)) {
       items.push(...highlightedTabs);
