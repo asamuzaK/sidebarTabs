@@ -22,7 +22,9 @@ const {
 browserAction.onClicked.addListener(() =>
   toggleSidebar().then(setSidebarState).catch(throwErr)
 );
-commands.onCommand.addListener(cmd => handleCmd(cmd).catch(throwErr));
+commands.onCommand.addListener((cmd, tab) =>
+  handleCmd(cmd, tab).catch(throwErr)
+);
 contextualIdentities.onCreated.addListener(info =>
   createContextualIdentitiesMenu(info).catch(throwErr)
 );
