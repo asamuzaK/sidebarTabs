@@ -1,4 +1,4 @@
-export function moveDroppedTabs(dropTarget: object, draggedIds?: any[], opt?: object): Promise<any[]>;
+export function moveDroppedTabs(dropTarget: object, opt?: object): Promise<any[]>;
 export function getTargetForDraggedTabs(dropTarget?: object, opt?: object): object;
 export function getDropIndexForDraggedTabs(dropTarget?: object, opt?: object): number;
 export function extractDroppedTabs(dropTarget?: object, data?: object): Promise<any[]>;
