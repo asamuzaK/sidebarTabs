@@ -52,6 +52,16 @@
       }
     }
   },
+  "closeDuplicateTabs_menu": {
+    "message": "重複タブを閉じる$KEY$",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&U)"
+      }
+    }
+  },
   "closeMultipleTabs_menu": {
     "message": "複数のタブを閉じる$KEY$",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
@@ -143,6 +153,26 @@
       "key": {
         "content": "$1",
         "example": "(&T)"
+      }
+    }
+  },
+  "closedTab": {
+    "message": "$NUM$個のタブを閉じました",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/confirmationHints.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "1"
+      }
+    }
+  },
+  "closedTabs": {
+    "message": "$NUM$個のタブを閉じました",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/confirmationHints.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
       }
     }
   },

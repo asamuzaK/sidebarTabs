@@ -8,7 +8,7 @@ import { bookmarkTabs } from './bookmark.js';
 import {
   clearStorage, getActiveTab, getAllContextualIdentities, getAllTabsInWindow,
   getContextualId, getCurrentWindow, getHighlightedTab, getOs,
-  getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab,
+  getRecentlyClosedTab, getStorage, getTab, highlightTab, moveTab, queryTabs,
   restoreSession, setSessionWindowValue, setStorage, warmupTab
 } from './browser.js';
 import {
@@ -66,18 +66,18 @@ import {
   NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, PINNED_HEIGHT,
   SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_DBLCLICK, TAB_CLOSE_END, TAB_CLOSE_MDLCLICK,
-  TAB_CLOSE_MDLCLICK_PREVENT, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO,
-  TAB_DUPE, TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
-  TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
-  TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
+  TAB_CLOSE_UNDO, TAB_DUPE, TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE,
+  TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
+  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_EXPAND_EXCLUDE_PINNED,
   TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
   TAB_GROUP_UNGROUP, TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START,
   TAB_MOVE_WIN, TAB_MUTE, TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD,
   TAB_REOPEN_CONTAINER, TAB_REOPEN_NO_CONTAINER, TAB_SKIP_COLLAPSED,
   TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_DBLCLICK, TABS_CLOSE_DUPE,
+  TABS_CLOSE_END, TABS_CLOSE_MDLCLICK, TABS_CLOSE_MDLCLICK_PREVENT,
+  TABS_CLOSE_MULTIPLE, TABS_CLOSE_OTHER, TABS_CLOSE_START, TABS_DUPE, TABS_MOVE,
   TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_PIN,
   TABS_RELOAD, TABS_REOPEN_CONTAINER, TABS_REOPEN_NO_CONTAINER,
   THEME_AUTO, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
@@ -106,8 +106,8 @@ export const userOptsKeys = new Set([
   NEW_TAB_SEPARATOR_SHOW,
   PINNED_HEIGHT,
   SCROLL_DIR_INVERT,
-  TAB_CLOSE_DBLCLICK,
-  TAB_CLOSE_MDLCLICK_PREVENT,
+  TABS_CLOSE_DBLCLICK,
+  TABS_CLOSE_MDLCLICK_PREVENT,
   TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER,
   TAB_GROUP_EXPAND_EXCLUDE_PINNED,
@@ -132,7 +132,7 @@ export const setUserOpts = async (opt = {}) => {
   if (isObjectNotEmpty(opt)) {
     opts = opt;
   } else {
-    userOpts.set(TAB_CLOSE_MDLCLICK, true);
+    userOpts.set(TABS_CLOSE_MDLCLICK, true);
     userOpts.set(TAB_GROUP_ENABLE, true);
     opts = await getStorage([...userOptsKeys]);
   }
@@ -156,8 +156,8 @@ export const setUserOpts = async (opt = {}) => {
         const { checked, value: itemValue } = value;
         if (key === PINNED_HEIGHT) {
           userOpts.set(key, itemValue);
-        } else if (key === TAB_CLOSE_MDLCLICK_PREVENT) {
-          userOpts.set(TAB_CLOSE_MDLCLICK, !checked);
+        } else if (key === TABS_CLOSE_MDLCLICK_PREVENT) {
+          userOpts.set(TABS_CLOSE_MDLCLICK, !checked);
         } else {
           userOpts.set(key, !!checked);
         }
@@ -171,6 +171,7 @@ export const setUserOpts = async (opt = {}) => {
 export const sidebar = {
   context: null,
   contextualIds: null,
+  duplicatedTabs: null,
   firstSelectedTab: null,
   incognito: false,
   isMac: false,
@@ -412,7 +413,7 @@ export const activateClickedTab = async elm => {
   const tabId = getSidebarTabId(elm);
   let func;
   if (Number.isInteger(tabId)) {
-    if (userOpts.get(TAB_CLOSE_DBLCLICK)) {
+    if (userOpts.get(TABS_CLOSE_DBLCLICK)) {
       const TIMER_MSEC = 300;
       await sleep(TIMER_MSEC);
     }
@@ -437,8 +438,8 @@ export const activateClickedTab = async elm => {
 export const handleClickedTab = evt => {
   const { button, ctrlKey, detail, metaKey, shiftKey, target, type } = evt;
   const { firstSelectedTab, isMac, windowId } = sidebar;
-  const closeByDblClick = userOpts.get(TAB_CLOSE_DBLCLICK);
-  const closeByMdlClick = userOpts.get(TAB_CLOSE_MDLCLICK);
+  const closeByDblClick = userOpts.get(TABS_CLOSE_DBLCLICK);
+  const closeByMdlClick = userOpts.get(TABS_CLOSE_MDLCLICK);
   const switchByScroll = userOpts.get(TAB_SWITCH_SCROLL);
   const tab = getSidebarTab(target);
   const func = [];
@@ -690,7 +691,7 @@ export const handleCreatedTab = async (tabsTab, opt = {}) => {
       } else if (classList.contains(CLASS_TAB_TOGGLE_ICON)) {
         item.alt = i18n.getMessage(TAB_GROUP_COLLAPSE);
       } else if (classList.contains(CLASS_TAB_CONTENT)) {
-        const userOpt = userOpts.get(TAB_CLOSE_DBLCLICK);
+        const userOpt = userOpts.get(TABS_CLOSE_DBLCLICK);
         item.title = title;
         func.push(toggleTabDblClickListener(item, !!userOpt));
       } else if (classList.contains(CLASS_TAB_TITLE)) {
@@ -1252,15 +1253,6 @@ export const handleClickedMenu = async info => {
       case TAB_CLOSE:
         func.push(closeTabs([tab]));
         break;
-      case TAB_CLOSE_END:
-        func.push(closeTabsToEnd(tab));
-        break;
-      case TAB_CLOSE_OTHER:
-        func.push(closeOtherTabs([tab]));
-        break;
-      case TAB_CLOSE_START:
-        func.push(closeTabsToStart(tab));
-        break;
       case TAB_CLOSE_UNDO:
         func.push(undoCloseTab());
         break;
@@ -1393,6 +1385,15 @@ export const handleClickedMenu = async info => {
         break;
       case TABS_CLOSE:
         func.push(closeTabs([...selectedTabs]));
+        break;
+      case TABS_CLOSE_END:
+        func.push(closeTabsToEnd(tab));
+        break;
+      case TABS_CLOSE_OTHER:
+        func.push(closeOtherTabs([tab]));
+        break;
+      case TABS_CLOSE_START:
+        func.push(closeTabsToStart(tab));
         break;
       case TABS_DUPE:
         func.push(dupeTabs([...selectedTabs].reverse()));
@@ -1749,7 +1750,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
  */
 export const prepareTabMenuItems = async elm => {
   const func = [];
-  const { contextualIds, incognito } = sidebar;
+  const { contextualIds, incognito, windowId } = sidebar;
   const tab = getSidebarTab(elm);
   const heading = getTabGroupHeading(elm);
   const bookmarkMenu = menuItems[TAB_ALL_BOOKMARK];
@@ -1757,13 +1758,13 @@ export const prepareTabMenuItems = async elm => {
   const tabGroupMenu = menuItems[TAB_GROUP];
   const tabKeys = [
     TAB_BOOKMARK, TAB_CLOSE, TAB_DUPE, TAB_MOVE, TAB_MUTE, TAB_NEW, TAB_PIN,
-    TAB_RELOAD, TAB_REOPEN_CONTAINER
+    TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_CLOSE_DUPE
   ];
   const tabsKeys = [
     TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE, TABS_MUTE, TABS_PIN,
     TABS_RELOAD, TABS_REOPEN_CONTAINER
   ];
-  const closeKeys = [TAB_CLOSE_START, TAB_CLOSE_END, TAB_CLOSE_OTHER];
+  const closeKeys = [TABS_CLOSE_START, TABS_CLOSE_END, TABS_CLOSE_OTHER];
   const sepKeys = ['sep-1', 'sep-2', 'sep-3', 'sep-4'];
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs =
@@ -1787,8 +1788,19 @@ export const prepareTabMenuItems = async elm => {
     );
     const lastTab = allTabs[allTabs.length - 1];
     const tabsTab = await getTab(tabId);
-    const { cookieStoreId, index, mutedInfo: { muted }, pinned } = tabsTab;
+    const { cookieStoreId, index, mutedInfo: { muted }, pinned, url } = tabsTab;
     const enableTabGroup = userOpts.get(TAB_GROUP_ENABLE);
+    const duplicatedTabs = await queryTabs({
+      cookieStoreId,
+      url,
+      windowId,
+      pinned: false
+    });
+    if (duplicatedTabs.length > 1) {
+      sidebar.duplicatedTabs = duplicatedTabs;
+    } else {
+      sidebar.duplicatedTabs = null;
+    }
     for (const itemKey of tabKeys) {
       const item = menuItems[itemKey];
       const { id, title, toggleTitle } = item;
@@ -1812,6 +1824,11 @@ export const prepareTabMenuItems = async elm => {
               !!(Array.isArray(contextualIds) && contextualIds.length);
             data.title = title;
             data.visible = !incognito;
+            break;
+          case TABS_CLOSE_DUPE:
+            data.enabled = duplicatedTabs.length > 1;
+            data.title = title;
+            data.visible = true;
             break;
           default:
             data.enabled = true;
@@ -1869,14 +1886,14 @@ export const prepareTabMenuItems = async elm => {
         visible: true
       };
       switch (itemKey) {
-        case TAB_CLOSE_END:
+        case TABS_CLOSE_END:
           data.enabled =
             !allTabsSelected && firstUnpinnedTab && lastTab !== tab;
           break;
-        case TAB_CLOSE_OTHER:
+        case TABS_CLOSE_OTHER:
           data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
           break;
-        case TAB_CLOSE_START:
+        case TABS_CLOSE_START:
           data.enabled = !allTabsSelected && firstUnpinnedTab !== tab &&
             !tab.classList.contains(PINNED);
           break;
@@ -2304,7 +2321,7 @@ export const setStorageValue = async (item, obj, changed = false) => {
           func.push(setNewTabSeparator(!!checked));
         }
         break;
-      case TAB_CLOSE_DBLCLICK:
+      case TABS_CLOSE_DBLCLICK:
         func.push(setUserOpts({
           [item]: {
             checked
