@@ -100,6 +100,85 @@ describe('browser-tabs', () => {
     });
   });
 
+  describe('close duplicate tabs', () => {
+    const func = mjs.closeDupeTabs;
+
+    it('should throw if no argument given', async () => {
+      await func().catch(e => {
+        assert.strictEqual(e.message, 'Expected Array but got Undefined.',
+          'throw');
+      });
+    });
+
+    it('should throw if argument is not array', async () => {
+      await func('foo').catch(e => {
+        assert.strictEqual(e.message, 'Expected Array but got String.',
+          'throw');
+      });
+    });
+
+    it('should not call function if argument is empty array', async () => {
+      const i = browser.tabs.remove.callCount;
+      const res = await func([]);
+      assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.remove.withArgs([1, 2]).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func([1, 2]);
+      assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
+        'called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.remove.withArgs([1, 2]).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      body.appendChild(elm4);
+      const res = await func([1, 2], elm3);
+      assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
+        'called');
+      assert.isNull(res, 'result');
+    });
+  });
+
   describe('close other tabs', () => {
     const func = mjs.closeOtherTabs;
 

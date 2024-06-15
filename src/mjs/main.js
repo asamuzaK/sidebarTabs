@@ -12,10 +12,10 @@ import {
   restoreSession, setSessionWindowValue, setStorage, warmupTab
 } from './browser.js';
 import {
-  closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
+  closeDupeTabs, closeOtherTabs, closeTabs, closeTabsToEnd, closeTabsToStart,
   createNewTab, createNewTabInContainer, dupeTabs, highlightTabs,
-  moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow,
-  muteTabs, pinTabs, reloadTabs, reopenTabsInContainer
+  moveTabsToEnd, moveTabsToStart, moveTabsToNewWindow, muteTabs, pinTabs,
+  reloadTabs, reopenTabsInContainer
 } from './browser-tabs.js';
 import {
   getType, isObjectNotEmpty, isString, logErr, sleep, throwErr
@@ -1222,7 +1222,7 @@ export const handleClickedMenu = async info => {
   const func = [];
   if (focused) {
     const { menuItemId } = info;
-    const { context, contextualIds, windowId } = sidebar;
+    const { context, contextualIds, duplicatedTabs, windowId } = sidebar;
     const allTabs = document.querySelectorAll(TAB_QUERY);
     const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
     const tab = getSidebarTab(context);
@@ -1385,6 +1385,20 @@ export const handleClickedMenu = async info => {
         break;
       case TABS_CLOSE:
         func.push(closeTabs([...selectedTabs]));
+        break;
+      case TABS_CLOSE_DUPE:
+        if (Array.isArray(duplicatedTabs)) {
+          const arr = [];
+          for (const itemTabsTab of duplicatedTabs) {
+            const { id: itemId, pinned } = itemTabsTab;
+            if (!pinned && itemId !== tabId) {
+              arr.push(itemId);
+            }
+          }
+          if (arr.length) {
+            func.push(closeDupeTabs(arr, tab));
+          }
+        }
         break;
       case TABS_CLOSE_END:
         func.push(closeTabsToEnd(tab));
@@ -1602,10 +1616,9 @@ export const preparePageMenuItems = async opt => {
           data.visible = true;
           break;
         case TAB_CLOSE_UNDO:
+        default:
           data.enabled = !!lastClosedTab;
           data.visible = true;
-          break;
-        default:
       }
       func.push(updateContextMenu(id, data));
     }
@@ -1796,7 +1809,7 @@ export const prepareTabMenuItems = async elm => {
       windowId,
       pinned: false
     });
-    if (duplicatedTabs.length > 1) {
+    if (duplicatedTabs.length) {
       sidebar.duplicatedTabs = duplicatedTabs;
     } else {
       sidebar.duplicatedTabs = null;
@@ -1826,7 +1839,8 @@ export const prepareTabMenuItems = async elm => {
             data.visible = !incognito;
             break;
           case TABS_CLOSE_DUPE:
-            data.enabled = duplicatedTabs.length > 1;
+            data.enabled =
+              !!(pinned ? duplicatedTabs.length : duplicatedTabs.length > 1);
             data.title = title;
             data.visible = true;
             break;
@@ -1890,14 +1904,13 @@ export const prepareTabMenuItems = async elm => {
           data.enabled =
             !allTabsSelected && firstUnpinnedTab && lastTab !== tab;
           break;
-        case TABS_CLOSE_OTHER:
-          data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
-          break;
         case TABS_CLOSE_START:
           data.enabled = !allTabsSelected && firstUnpinnedTab !== tab &&
             !tab.classList.contains(PINNED);
           break;
+        case TABS_CLOSE_OTHER:
         default:
+          data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
       }
       func.push(updateContextMenu(id, data));
     }

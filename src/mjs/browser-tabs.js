@@ -39,6 +39,28 @@ export const closeTabs = async nodes => {
 };
 
 /**
+ * close duplicate tabs
+ * @param {Array} ids - array of id
+ * @param {object} elm - element
+ * @returns {Promise.<?Promise>} - removeTab()
+ */
+export const closeDupeTabs = async (ids, elm) => {
+  if (!Array.isArray(ids)) {
+    throw new TypeError(`Expected Array but got ${getType(ids)}.`);
+  }
+  let func;
+  if (ids.length) {
+    await removeTab(ids);
+    if (elm) {
+      // TODO: notify closed tabs count, i.e. `Closed n tabs`
+      // ref: https://searchfox.org/mozilla-central/source/browser/base/content/browser.js#7928
+      // func = notifyClosedTabsCount(elm, ids.length);
+    }
+  }
+  return func || null;
+};
+
+/**
  * close other tabs
  * @param {Array} nodes - array of node
  * @returns {Promise.<?Promise>} - removeTab()
