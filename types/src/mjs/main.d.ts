@@ -4,6 +4,7 @@ export function setUserOpts(opt?: object): Promise<object>;
 export namespace sidebar {
     let context: any;
     let contextualIds: any;
+    let duplicatedTabs: any;
     let firstSelectedTab: any;
     let incognito: boolean;
     let isMac: boolean;

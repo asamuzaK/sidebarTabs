@@ -6,7 +6,7 @@
 import {
   NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER, OPTIONS_OPEN,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_END, TAB_CLOSE_OTHER, TAB_CLOSE_START, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND,
@@ -15,10 +15,11 @@ import {
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_MUTE_UNMUTE, TAB_NEW, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD,
   TAB_REOPEN_CONTAINER, TAB_REOPEN_NO_CONTAINER,
-  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_MULTIPLE, TABS_DUPE, TABS_MOVE,
-  TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE, TABS_MUTE_UNMUTE,
-  TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD, TABS_REOPEN_CONTAINER,
-  TABS_REOPEN_NO_CONTAINER
+  TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_DUPE, TABS_CLOSE_END,
+  TABS_CLOSE_MULTIPLE, TABS_CLOSE_OTHER, TABS_CLOSE_START, TABS_DUPE,
+  TABS_MOVE, TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN, TABS_MUTE,
+  TABS_MUTE_UNMUTE, TABS_PIN, TABS_PIN_UNPIN, TABS_RELOAD,
+  TABS_REOPEN_CONTAINER, TABS_REOPEN_NO_CONTAINER
 } from './constant.js';
 
 /* api */
@@ -510,6 +511,15 @@ export default {
     enabled: false,
     visible: false
   },
+  [TABS_CLOSE_DUPE]: {
+    id: TABS_CLOSE_DUPE,
+    title: i18n.getMessage(`${TABS_CLOSE_DUPE}_menu`, '(&U)'),
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: true
+  },
   [TABS_CLOSE_MULTIPLE]: {
     id: TABS_CLOSE_MULTIPLE,
     title: i18n.getMessage(`${TABS_CLOSE_MULTIPLE}_menu`, '(&M)'),
@@ -519,27 +529,27 @@ export default {
     enabled: true,
     visible: true,
     subItems: {
-      [TAB_CLOSE_START]: {
-        id: TAB_CLOSE_START,
-        title: i18n.getMessage(`${TAB_CLOSE_START}_menu`, '(&T)'),
+      [TABS_CLOSE_START]: {
+        id: TABS_CLOSE_START,
+        title: i18n.getMessage(`${TABS_CLOSE_START}_menu`, '(&T)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
         enabled: false,
         visible: true
       },
-      [TAB_CLOSE_END]: {
-        id: TAB_CLOSE_END,
-        title: i18n.getMessage(`${TAB_CLOSE_END}_menu`, '(&B)'),
+      [TABS_CLOSE_END]: {
+        id: TABS_CLOSE_END,
+        title: i18n.getMessage(`${TABS_CLOSE_END}_menu`, '(&B)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
         enabled: false,
         visible: true
       },
-      [TAB_CLOSE_OTHER]: {
-        id: TAB_CLOSE_OTHER,
-        title: i18n.getMessage(`${TAB_CLOSE_OTHER}_menu`, '(&O)'),
+      [TABS_CLOSE_OTHER]: {
+        id: TABS_CLOSE_OTHER,
+        title: i18n.getMessage(`${TABS_CLOSE_OTHER}_menu`, '(&O)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],

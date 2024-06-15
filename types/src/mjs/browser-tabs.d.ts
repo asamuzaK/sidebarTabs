@@ -1,4 +1,5 @@
 export function closeTabs(nodes: any[]): Promise<Promise<any> | null>;
+export function closeDupeTabs(ids: any[], elm: object): Promise<Promise<any> | null>;
 export function closeOtherTabs(nodes: any[]): Promise<Promise<any> | null>;
 export function closeTabsToEnd(elm: object): Promise<Promise<any> | null>;
 export function closeTabsToStart(elm: object): Promise<Promise<any> | null>;

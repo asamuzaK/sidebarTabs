@@ -52,6 +52,16 @@
       }
     }
   },
+  "closeDuplicateTabs_menu": {
+    "message": "Close D&uplicate Tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&U)"
+      }
+    }
+  },
   "closeMultipleTabs_menu": {
     "message": "Close &Multiple Tabs",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
@@ -143,6 +153,26 @@
       "key": {
         "content": "$1",
         "example": "(&T)"
+      }
+    }
+  },
+  "closedTab": {
+    "message": "Closed $NUM$ tab",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/confirmationHints.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "1"
+      }
+    }
+  },
+  "closedTabs": {
+    "message": "Closed $NUM$ tabs",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/confirmationHints.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
       }
     }
   },
