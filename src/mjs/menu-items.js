@@ -518,7 +518,7 @@ export default {
     contexts: ['tab'],
     viewTypes: ['sidebar'],
     enabled: false,
-    visible: true
+    visible: false
   },
   [TABS_CLOSE_DUPE]: {
     id: TABS_CLOSE_DUPE,

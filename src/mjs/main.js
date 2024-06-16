@@ -65,16 +65,18 @@ import {
   NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER,
   NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, PINNED_HEIGHT,
   SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
-  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_UNDO, TAB_DUPE, TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE,
-  TAB_GROUP_COLLAPSE, TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER,
-  TAB_GROUP_DETACH, TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
+  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
+  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_DUPE, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
+  TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
+  TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_EXPAND_EXCLUDE_PINNED,
   TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP, TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START,
-  TAB_MOVE_WIN, TAB_MUTE, TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD,
-  TAB_REOPEN_CONTAINER, TAB_REOPEN_NO_CONTAINER, TAB_SKIP_COLLAPSED,
-  TAB_SWITCH_SCROLL, TAB_SWITCH_SCROLL_ALWAYS,
+  TAB_GROUP_UNGROUP,
+  TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
+  TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
+  TAB_REOPEN_NO_CONTAINER, TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL,
+  TAB_SWITCH_SCROLL_ALWAYS,
   TABS_BOOKMARK, TABS_CLOSE, TABS_CLOSE_DBLCLICK, TABS_CLOSE_DUPE,
   TABS_CLOSE_END, TABS_CLOSE_MDLCLICK, TABS_CLOSE_MDLCLICK_PREVENT,
   TABS_CLOSE_MULTIPLE, TABS_CLOSE_OTHER, TABS_CLOSE_START, TABS_DUPE, TABS_MOVE,
@@ -1386,6 +1388,7 @@ export const handleClickedMenu = async info => {
       case TABS_CLOSE:
         func.push(closeTabs([...selectedTabs]));
         break;
+      case TAB_CLOSE_DUPE:
       case TABS_CLOSE_DUPE:
         if (Array.isArray(duplicatedTabs)) {
           const arr = [];
@@ -1771,12 +1774,13 @@ export const prepareTabMenuItems = async elm => {
   const tabGroupMenu = menuItems[TAB_GROUP];
   const tabKeys = [
     TAB_BOOKMARK, TAB_CLOSE, TAB_DUPE, TAB_MOVE, TAB_MUTE, TAB_NEW, TAB_PIN,
-    TAB_RELOAD, TAB_REOPEN_CONTAINER, TABS_CLOSE_DUPE
+    TAB_RELOAD, TAB_REOPEN_CONTAINER
   ];
   const tabsKeys = [
     TABS_BOOKMARK, TABS_CLOSE, TABS_DUPE, TABS_MOVE, TABS_MUTE, TABS_PIN,
     TABS_RELOAD, TABS_REOPEN_CONTAINER
   ];
+  const closeDupeKeys = [TAB_CLOSE_DUPE, TABS_CLOSE_DUPE];
   const closeKeys = [TABS_CLOSE_START, TABS_CLOSE_END, TABS_CLOSE_OTHER];
   const sepKeys = ['sep-1', 'sep-2', 'sep-3', 'sep-4'];
   const allTabs = document.querySelectorAll(TAB_QUERY);
@@ -1809,7 +1813,8 @@ export const prepareTabMenuItems = async elm => {
       windowId,
       pinned: false
     });
-    if (duplicatedTabs.length) {
+    const duplicatedTabsCount = duplicatedTabs.length;
+    if (duplicatedTabsCount) {
       sidebar.duplicatedTabs = duplicatedTabs;
     } else {
       sidebar.duplicatedTabs = null;
@@ -1837,12 +1842,6 @@ export const prepareTabMenuItems = async elm => {
               !!(Array.isArray(contextualIds) && contextualIds.length);
             data.title = title;
             data.visible = !incognito;
-            break;
-          case TABS_CLOSE_DUPE:
-            data.enabled =
-              !!(pinned ? duplicatedTabs.length : duplicatedTabs.length > 1);
-            data.title = title;
-            data.visible = true;
             break;
           default:
             data.enabled = true;
@@ -1886,6 +1885,56 @@ export const prepareTabMenuItems = async elm => {
             data.enabled = true;
             data.title = title;
             data.visible = true;
+        }
+      } else {
+        data.visible = false;
+      }
+      func.push(updateContextMenu(id, data));
+    }
+    for (const itemKey of closeDupeKeys) {
+      const item = menuItems[itemKey];
+      const { id } = item;
+      const data = {};
+      if (itemKey === TAB_CLOSE_DUPE) {
+        if (pinned && duplicatedTabsCount) {
+          if (duplicatedTabsCount === 1) {
+            data.enabled = true;
+            data.visible = true;
+          } else {
+            data.visible = false;
+          }
+        } else if (duplicatedTabsCount) {
+          if (duplicatedTabsCount === 2) {
+            data.enabled = true;
+            data.visible = true;
+          } else {
+            data.visible = false;
+          }
+        } else {
+          data.visible = false;
+        }
+      // itemKey === TABS_CLOSE_DUPE
+      } else if (pinned && duplicatedTabsCount) {
+        if (duplicatedTabsCount > 1) {
+          data.enabled = true;
+          data.title = i18n.getMessage(`${TABS_CLOSE_DUPE}_menu`, [
+            `${duplicatedTabsCount}`,
+            '(&U)'
+          ]);
+          data.visible = true;
+        } else {
+          data.visible = false;
+        }
+      } else if (duplicatedTabsCount) {
+        if (duplicatedTabsCount > 2) {
+          data.enabled = true;
+          data.title = i18n.getMessage(`${TABS_CLOSE_DUPE}_menu`, [
+            `${duplicatedTabsCount - 1}`,
+            '(&U)'
+          ]);
+          data.visible = true;
+        } else {
+          data.visible = false;
         }
       } else {
         data.visible = false;
@@ -2025,6 +2074,12 @@ export const prepareTabMenuItems = async elm => {
         visible: false
       }));
     }
+    for (const itemKey of closeDupeKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false
+      }));
+    }
     setContext(heading);
     for (const sep of sepKeys) {
       if (sep === 'sep-4') {
@@ -2060,6 +2115,12 @@ export const prepareTabMenuItems = async elm => {
       }));
     }
     for (const itemKey of tabsKeys) {
+      const item = menuItems[itemKey];
+      func.push(updateContextMenu(item.id, {
+        visible: false
+      }));
+    }
+    for (const itemKey of closeDupeKeys) {
       const item = menuItems[itemKey];
       func.push(updateContextMenu(item.id, {
         visible: false

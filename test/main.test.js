@@ -30,7 +30,7 @@ import {
   NEW_TAB_SEPARATOR_SHOW,
   OPTIONS_OPEN, PINNED, PINNED_HEIGHT, SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN,
   TAB, TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK,
-  TAB_CLOSE, TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_CLOSE, TAB_CLOSE_DUPE, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
@@ -6601,10 +6601,12 @@ describe('main', () => {
     const func = mjs.handleClickedMenu;
     beforeEach(() => {
       mjs.ports.clear();
+      mjs.sidebar.duplicatedTabs = null;
       mjs.userOpts.clear();
     });
     afterEach(() => {
       mjs.ports.clear();
+      mjs.sidebar.duplicatedTabs = null;
       mjs.userOpts.clear();
     });
 
@@ -7988,6 +7990,106 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.remove.callCount, j + 1, 'called remove');
       assert.deepEqual(res, [undefined], 'result');
+    });
+
+    it('should not call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.remove.callCount;
+      const pinned = document.createElement('section');
+      const sect = document.createElement('section');
+      const newTab = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      pinned.id = PINNED;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(sect);
+      body.appendChild(newTab);
+      mjs.sidebar.context = elm3;
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({});
+      browser.tabs.get.withArgs(2).resolves({});
+      browser.tabs.get.withArgs(3).resolves({});
+      browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
+      const info = {
+        menuItemId: TAB_CLOSE_DUPE
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.tabs.remove.callCount, j, 'not called remove');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.tabs.remove.callCount;
+      const pinned = document.createElement('section');
+      const sect = document.createElement('section');
+      const newTab = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      pinned.id = PINNED;
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      newTab.id = NEW_TAB;
+      body.appendChild(pinned);
+      body.appendChild(sect);
+      body.appendChild(newTab);
+      mjs.sidebar.context = elm3;
+      mjs.sidebar.windowId = 1;
+      mjs.sidebar.duplicatedTabs = [
+        {
+          id: 1,
+          pinned: false
+        },
+        {
+          id: 2,
+          pinned: false
+        }
+      ];
+      browser.tabs.get.withArgs(1).resolves({});
+      browser.tabs.get.withArgs(2).resolves({});
+      browser.tabs.get.withArgs(3).resolves({});
+      browser.tabs.remove.resolves(undefined);
+      browser.windows.getCurrent.resolves({
+        focused: true
+      });
+      const info = {
+        menuItemId: TAB_CLOSE_DUPE
+      };
+      const res = await func(info);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.tabs.remove.callCount, j + 1, 'called remove');
+      assert.deepEqual(res, [null], 'result');
     });
 
     it('should not call function', async () => {
@@ -10068,8 +10170,8 @@ describe('main', () => {
       browser.tabs.query.resolves([]);
       const res = await func();
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.strictEqual(browser.menus.update.callCount, j + 28, 'called');
-      assert.deepEqual(res.length, 26, 'result');
+      assert.strictEqual(browser.menus.update.callCount, j + 29, 'called');
+      assert.deepEqual(res.length, 27, 'result');
     });
 
     it('should call function', async () => {
@@ -10136,9 +10238,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(body);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 28,
+      assert.strictEqual(browser.menus.update.callCount, j + 29,
         'called update');
-      assert.strictEqual(res.length, 26, 'result');
+      assert.strictEqual(res.length, 27, 'result');
     });
 
     it('should call function', async () => {
@@ -10206,15 +10308,15 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
-      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE}_title`, [
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE}_menu`, [
         '2',
         '(&C)'
       ]).callCount;
@@ -10280,7 +10382,7 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm1);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
       assert.strictEqual(browser.i18n.getMessage.withArgs(
         `${TABS_CLOSE}_menu`, [
@@ -10288,7 +10390,7 @@ describe('main', () => {
           '(&C)'
         ]
       ).callCount, k + 1, 'called i18n');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10356,9 +10458,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10426,9 +10528,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10498,9 +10600,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10569,9 +10671,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10639,9 +10741,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 34,
+      assert.strictEqual(browser.menus.update.callCount, j + 35,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10709,9 +10811,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 53,
+      assert.strictEqual(browser.menus.update.callCount, j + 54,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10781,9 +10883,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 53,
+      assert.strictEqual(browser.menus.update.callCount, j + 54,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10852,9 +10954,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -10911,9 +11013,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm1);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 42,
+      assert.strictEqual(browser.menus.update.callCount, j + 43,
         'called update');
-      assert.strictEqual(res.length, 26, 'result');
+      assert.strictEqual(res.length, 27, 'result');
     });
 
     it('should call function', async () => {
@@ -10970,9 +11072,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -11030,9 +11132,9 @@ describe('main', () => {
       browser.menus.update.resolves(undefined);
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
@@ -11043,6 +11145,7 @@ describe('main', () => {
       const elm1 = document.createElement('div');
       const elm2 = document.createElement('div');
       const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
       const pinned = document.getElementById(PINNED);
       const newTab = document.getElementById(NEW_TAB);
       const body = document.querySelector('body');
@@ -11057,11 +11160,15 @@ describe('main', () => {
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '4';
+      elm4.classList.add(TAB);
+      elm4.classList.add(HIGHLIGHTED);
+      elm4.dataset.tabId = '5';
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       sect.appendChild(elm1);
       sect.appendChild(elm2);
       sect.appendChild(elm3);
+      sect.appendChild(elm4);
       body.insertBefore(sect, newTab);
       mjs.userOpts.set(TAB_GROUP_ENABLE, true);
       mjs.sidebar.windowId = 1;
@@ -11091,19 +11198,24 @@ describe('main', () => {
       const res = await func(elm);
       assert.isNull(mjs.sidebar.duplicatedTabs, 'duped tabs');
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE_DUPE}_menu`, [
+        '2',
+        '(&U)'
+      ]).callCount;
       const sect = document.createElement('section');
       const elm = document.createElement('div');
       const elm1 = document.createElement('div');
       const elm2 = document.createElement('div');
       const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
       const pinned = document.getElementById(PINNED);
       const newTab = document.getElementById(NEW_TAB);
       const body = document.querySelector('body');
@@ -11118,11 +11230,15 @@ describe('main', () => {
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '4';
+      elm4.classList.add(TAB);
+      elm4.classList.add(HIGHLIGHTED);
+      elm4.dataset.tabId = '5';
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       sect.appendChild(elm1);
       sect.appendChild(elm2);
       sect.appendChild(elm3);
+      sect.appendChild(elm4);
       body.insertBefore(sect, newTab);
       mjs.userOpts.set(TAB_GROUP_ENABLE, true);
       mjs.sidebar.windowId = 1;
@@ -11142,6 +11258,13 @@ describe('main', () => {
       });
       browser.tabs.get.withArgs(4).resolves({
         index: 3,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(5).resolves({
+        index: 4,
         mutedInfo: {
           muted: false
         },
@@ -11160,19 +11283,30 @@ describe('main', () => {
         }
       ], 'duped tabs');
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(browser.i18n.getMessage.withArgs(
+        `${TABS_CLOSE_DUPE}_menu`, [
+          '2',
+          '(&U)'
+        ]
+      ).callCount, k, 'not called i18n');
+      assert.strictEqual(res.length, 34, 'result');
     });
 
     it('should call function', async () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE_DUPE}_menu`, [
+        '2',
+        '(&U)'
+      ]).callCount;
       const sect = document.createElement('section');
       const elm = document.createElement('div');
       const elm1 = document.createElement('div');
       const elm2 = document.createElement('div');
       const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
       const pinned = document.getElementById(PINNED);
       const newTab = document.getElementById(NEW_TAB);
       const body = document.querySelector('body');
@@ -11187,11 +11321,15 @@ describe('main', () => {
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '4';
+      elm4.classList.add(TAB);
+      elm4.classList.add(HIGHLIGHTED);
+      elm4.dataset.tabId = '5';
       sect.classList.add(CLASS_TAB_CONTAINER);
       sect.classList.add(CLASS_TAB_GROUP);
       sect.appendChild(elm1);
       sect.appendChild(elm2);
       sect.appendChild(elm3);
+      sect.appendChild(elm4);
       body.insertBefore(sect, newTab);
       mjs.userOpts.set(TAB_GROUP_ENABLE, true);
       mjs.sidebar.windowId = 1;
@@ -11216,6 +11354,13 @@ describe('main', () => {
         },
         pinned: false
       });
+      browser.tabs.get.withArgs(5).resolves({
+        index: 4,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
       browser.tabs.query.resolves([
         {
           id: 3
@@ -11225,7 +11370,7 @@ describe('main', () => {
         }
       ]);
       browser.menus.update.resolves(undefined);
-      const res = await func(elm2);
+      const res = await func(elm);
       assert.deepEqual(mjs.sidebar.duplicatedTabs, [
         {
           id: 3
@@ -11235,9 +11380,306 @@ describe('main', () => {
         }
       ], 'duped tabs');
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
-      assert.strictEqual(browser.menus.update.callCount, j + 48,
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
-      assert.strictEqual(res.length, 33, 'result');
+      assert.strictEqual(browser.i18n.getMessage.withArgs(
+        `${TABS_CLOSE_DUPE}_menu`, [
+          '2',
+          '(&U)'
+        ]
+      ).callCount, k + 1, 'called i18n');
+      assert.strictEqual(res.length, 34, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE_DUPE}_menu`, [
+        '2',
+        '(&U)'
+      ]).callCount;
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm1 = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      elm1.classList.add(CLASS_HEADING);
+      elm1.hidden = true;
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '3';
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = '4';
+      elm4.classList.add(TAB);
+      elm4.classList.add(HIGHLIGHTED);
+      elm4.dataset.tabId = '5';
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      sect.appendChild(elm4);
+      body.insertBefore(sect, newTab);
+      mjs.userOpts.set(TAB_GROUP_ENABLE, true);
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true
+        },
+        pinned: true
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(5).resolves({
+        index: 4,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.query.resolves([
+        {
+          id: 3
+        }
+      ]);
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm3);
+      assert.deepEqual(mjs.sidebar.duplicatedTabs, [
+        {
+          id: 3
+        }
+      ], 'duped tabs');
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
+        'called update');
+      assert.strictEqual(browser.i18n.getMessage.withArgs(
+        `${TABS_CLOSE_DUPE}_menu`, [
+          '2',
+          '(&U)'
+        ]
+      ).callCount, k, 'not called i18n');
+      assert.strictEqual(res.length, 34, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE_DUPE}_menu`, [
+        '2',
+        '(&U)'
+      ]).callCount;
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm1 = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      elm1.classList.add(CLASS_HEADING);
+      elm1.hidden = true;
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '3';
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = '4';
+      elm4.classList.add(TAB);
+      elm4.classList.add(HIGHLIGHTED);
+      elm4.dataset.tabId = '5';
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      sect.appendChild(elm4);
+      body.insertBefore(sect, newTab);
+      mjs.userOpts.set(TAB_GROUP_ENABLE, true);
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true
+        },
+        pinned: true
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(5).resolves({
+        index: 4,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.query.resolves([
+        {
+          id: 3
+        },
+        {
+          id: 4
+        }
+      ]);
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm3);
+      assert.deepEqual(mjs.sidebar.duplicatedTabs, [
+        {
+          id: 3
+        },
+        {
+          id: 4
+        }
+      ], 'duped tabs');
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
+        'called update');
+      assert.strictEqual(browser.i18n.getMessage.withArgs(
+        `${TABS_CLOSE_DUPE}_menu`, [
+          '2',
+          '(&U)'
+        ]
+      ).callCount, k, 'not called i18n');
+      assert.strictEqual(res.length, 34, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const k = browser.i18n.getMessage.withArgs(`${TABS_CLOSE_DUPE}_menu`, [
+        '2',
+        '(&U)'
+      ]).callCount;
+      const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const elm1 = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const elm4 = document.createElement('div');
+      const pinned = document.getElementById(PINNED);
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.classList.add(HIGHLIGHTED);
+      pinned.appendChild(elm);
+      elm1.classList.add(CLASS_HEADING);
+      elm1.hidden = true;
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '3';
+      elm3.classList.add(TAB);
+      elm3.classList.add(HIGHLIGHTED);
+      elm3.dataset.tabId = '4';
+      elm4.classList.add(TAB);
+      elm4.classList.add(HIGHLIGHTED);
+      elm4.dataset.tabId = '5';
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.classList.add(CLASS_TAB_GROUP);
+      sect.appendChild(elm1);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      sect.appendChild(elm4);
+      body.insertBefore(sect, newTab);
+      mjs.userOpts.set(TAB_GROUP_ENABLE, true);
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: true
+        },
+        pinned: true
+      });
+      browser.tabs.get.withArgs(3).resolves({
+        index: 2,
+        mutedInfo: {
+          muted: true
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(4).resolves({
+        index: 3,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.get.withArgs(5).resolves({
+        index: 4,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.query.resolves([
+        {
+          id: 3
+        },
+        {
+          id: 4
+        },
+        {
+          id: 5
+        }
+      ]);
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm3);
+      assert.deepEqual(mjs.sidebar.duplicatedTabs, [
+        {
+          id: 3
+        },
+        {
+          id: 4
+        },
+        {
+          id: 5
+        }
+      ], 'duped tabs');
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.menus.update.callCount, j + 49,
+        'called update');
+      assert.strictEqual(browser.i18n.getMessage.withArgs(
+        `${TABS_CLOSE_DUPE}_menu`, [
+          '2',
+          '(&U)'
+        ]
+      ).callCount, k + 1, 'called i18n');
+      assert.strictEqual(res.length, 34, 'result');
     });
   });
 

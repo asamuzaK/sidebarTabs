@@ -58,8 +58,6 @@ describe('menu items', () => {
     const items = Object.entries(menuItems);
 
     it('should get equal length', () => {
-      console.log(items.length)
-      console.log(itemKeys.length)
       assert.isTrue(items.length === itemKeys.length, 'length');
     });
 
