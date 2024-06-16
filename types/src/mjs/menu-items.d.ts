@@ -475,9 +475,18 @@ declare const _default: {
         enabled: boolean;
         visible: boolean;
     };
-    closeDuplicateTabs: {
+    closeDuplicateTab: {
         id: string;
         title: string;
+        type: string;
+        contexts: string[];
+        viewTypes: string[];
+        enabled: boolean;
+        visible: boolean;
+    };
+    closeDuplicateTabs: {
+        id: string;
+        title: any;
         type: string;
         contexts: string[];
         viewTypes: string[];
