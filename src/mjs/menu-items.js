@@ -5,8 +5,8 @@
 /* shared */
 import {
   NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER, OPTIONS_OPEN,
-  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT, TAB_BOOKMARK, TAB_CLOSE,
-  TAB_CLOSE_UNDO, TAB_DUPE,
+  TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
+  TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_DUPE, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND,
@@ -511,14 +511,25 @@ export default {
     enabled: false,
     visible: false
   },
-  [TABS_CLOSE_DUPE]: {
-    id: TABS_CLOSE_DUPE,
-    title: i18n.getMessage(`${TABS_CLOSE_DUPE}_menu`, '(&U)'),
+  [TAB_CLOSE_DUPE]: {
+    id: TAB_CLOSE_DUPE,
+    title: i18n.getMessage(`${TAB_CLOSE_DUPE}_menu`, '(&U)'),
     type: 'normal',
     contexts: ['tab'],
     viewTypes: ['sidebar'],
     enabled: false,
-    visible: true
+    visible: false
+  },
+  [TABS_CLOSE_DUPE]: {
+    id: TABS_CLOSE_DUPE,
+    // NOTE: title will be replaced in main.js prepareTabMenuItems()
+    // i18n.getMessage(`${TABS_CLOSE_DUPE}_menu`, ['$NUM$', '(&U)'])
+    title: null,
+    type: 'normal',
+    contexts: ['tab'],
+    viewTypes: ['sidebar'],
+    enabled: false,
+    visible: false
   },
   [TABS_CLOSE_MULTIPLE]: {
     id: TABS_CLOSE_MULTIPLE,

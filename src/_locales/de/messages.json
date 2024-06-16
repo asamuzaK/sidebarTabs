@@ -52,12 +52,26 @@
       }
     }
   },
-  "closeDuplicateTabs_menu": {
-    "message": "&Doppelte Tabs schließen",
+  "closeDuplicateTab_menu": {
+    "message": "&Doppelte Tab schließen",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
+        "example": "(&U)"
+      }
+    }
+  },
+  "closeDuplicateTabs_menu": {
+    "message": "$NUM$ &Doppelte Tabs schließen",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      },
+      "key": {
+        "content": "$2",
         "example": "(&U)"
       }
     }
@@ -153,26 +167,6 @@
       "key": {
         "content": "$1",
         "example": "(&T)"
-      }
-    }
-  },
-  "closedTab": {
-    "message": "$NUM$ Tab geschlossen",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/confirmationHints.ftl",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "1"
-      }
-    }
-  },
-  "closedTabs": {
-    "message": "$NUM$ Tabs geschlossen",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/confirmationHints.ftl",
-    "placeholders": {
-      "num": {
-        "content": "$1",
-        "example": "2"
       }
     }
   },
