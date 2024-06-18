@@ -120,7 +120,7 @@
   },
   "closeTab_tooltip": {
     "message": "Close tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -144,7 +144,7 @@
   },
   "closeTabs_tooltip": {
     "message": "Close $NUM$ tabs",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -381,7 +381,7 @@
   },
   "muteTab_menu": {
     "message": "&Mute Tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -391,7 +391,7 @@
   },
   "muteTab_tooltip": {
     "message": "Mute tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -401,7 +401,7 @@
   },
   "muteTabs_menu": {
     "message": "&Mute Tabs",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -411,7 +411,7 @@
   },
   "muteTabs_tooltip": {
     "message": "Mute $NUM$ tabs",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -810,7 +810,7 @@
   },
   "unmuteTab_menu": {
     "message": "Un&mute Tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -820,7 +820,7 @@
   },
   "unmuteTab_tooltip": {
     "message": "Unmute tab",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -830,7 +830,7 @@
   },
   "unmuteTabs_menu": {
     "message": "Un&mute Tabs",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -840,7 +840,7 @@
   },
   "unmuteTabs_tooltip": {
     "message": "Unmute $NUM$ tabs",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",

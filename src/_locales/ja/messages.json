@@ -120,7 +120,7 @@
   },
   "closeTab_tooltip": {
     "message": "タブを閉じます",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -144,7 +144,7 @@
   },
   "closeTabs_tooltip": {
     "message": "$NUM$ 個のタブを閉じます",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -381,7 +381,7 @@
   },
   "muteTab_menu": {
     "message": "タブをミュート$KEY$",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -391,7 +391,7 @@
   },
   "muteTab_tooltip": {
     "message": "タブをミュートします",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -401,7 +401,7 @@
   },
   "muteTabs_menu": {
     "message": "タブをミュート$KEY$",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -411,7 +411,7 @@
   },
   "muteTabs_tooltip": {
     "message": "$NUM$ 個のタブをミュートします",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -810,7 +810,7 @@
   },
   "unmuteTab_menu": {
     "message": "タブのミュートを解除$KEY$",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -820,7 +820,7 @@
   },
   "unmuteTab_tooltip": {
     "message": "タブのミュートを解除します",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
@@ -830,7 +830,7 @@
   },
   "unmuteTabs_menu": {
     "message": "タブのミュートを解除$KEY$",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/browser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/fxviewTabList.ftl",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -840,7 +840,7 @@
   },
   "unmuteTabs_tooltip": {
     "message": "＄NUM＄ 個のタブのミュートを解除します",
-    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/chrome/browser/tabbrowser.properties",
+    "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabbrowser.ftl",
     "placeholders": {
       "num": {
         "content": "$1",
