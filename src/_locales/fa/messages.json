@@ -53,7 +53,7 @@
     }
   },
   "closeDuplicateTab_menu": {
-    "message": "Close Duplicate Tab $KEY$",
+    "message": "بستن زبانه تکراری $KEY$",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
@@ -63,7 +63,7 @@
     }
   },
   "closeDuplicateTabs_menu": {
-    "message": "Close $NUM$ Duplicate Tabs $KEY$",
+    "message": "بستن $NUM$ زبانه تکراری $KEY$",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "num": {
