@@ -1,11 +1,11 @@
 declare var he: {
     "__#2@#e": number;
     "__#2@#t": Set<any>;
-    replace(e: any): any;
+    replace(e: any): string | String;
     purify(e: any): string;
     sanitize(e: any, s: any): string;
     parse(e: any, s: any): {
-        [k: string]: any;
+        [k: string]: string | String;
     };
     reset(): void;
     "__#1@#e": Set<string>;
@@ -18,10 +18,10 @@ declare var he: {
 declare function de(t: any): Promise<boolean>;
 declare function fe(t: any): boolean;
 declare function le(t: any): Promise<{
-    [k: string]: any;
+    [k: string]: string | String;
 }>;
 declare function me(t: any): {
-    [k: string]: any;
+    [k: string]: string | String;
 };
 declare function ce(t: any, e?: {
     allow: any[];
