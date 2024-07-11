@@ -4,7 +4,6 @@
     "default_title": "__MSG_extensionName__"
   },
   "background": {
-    "persistent": false,
     "scripts": [
       "mjs/background.js"
     ],
@@ -13,7 +12,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "sidebarTabs@asamuzak.jp",
-      "strict_min_version": "127.0"
+      "strict_min_version": "128.1"
     }
   },
   "commands": {
