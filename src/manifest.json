@@ -1,14 +1,14 @@
 {
+  "action": {
+    "default_icon": "img/icon.svg#current",
+    "default_title": "__MSG_extensionName__"
+  },
   "background": {
     "persistent": false,
     "scripts": [
       "mjs/background.js"
     ],
     "type": "module"
-  },
-  "browser_action": {
-    "default_icon": "img/icon.svg#current",
-    "default_title": "__MSG_extensionName__"
   },
   "browser_specific_settings": {
     "gecko": {
@@ -29,7 +29,7 @@
     "32": "img/icon.svg#current",
     "64": "img/icon.svg"
   },
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "optional_permissions": [
     "browserSettings"
