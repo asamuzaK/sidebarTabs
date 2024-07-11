@@ -14,12 +14,10 @@ import {
 } from './menu.js';
 
 /* api */
-const {
-  browserAction, commands, contextualIdentities, runtime, windows
-} = browser;
+const { action, commands, contextualIdentities, runtime, windows } = browser;
 
 /* listeners */
-browserAction.onClicked.addListener(() =>
+action.onClicked.addListener(() =>
   toggleSidebar().then(setSidebarState).catch(throwErr)
 );
 commands.onCommand.addListener((cmd, tab) =>

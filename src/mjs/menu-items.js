@@ -32,7 +32,7 @@ export default {
     id: OPTIONS_OPEN,
     title: i18n.getMessage(`${OPTIONS_OPEN}_menu`, '(&T)'),
     type: 'normal',
-    contexts: ['browser_action']
+    contexts: ['action']
   },
   /* new tab */
   [NEW_TAB_OPEN_CONTAINER]: {
