@@ -2,6 +2,6 @@ module.exports = {
   ignoreFiles: [
     './mjs/package.json',
     'package.json',
-    'web-ext-config.js'
+    'web-ext-config.cjs'
   ]
 };
