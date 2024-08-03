@@ -500,6 +500,9 @@
   "optionsCompactTabDetail": {
     "message": "タブの高さを縮めてより多くのタブを表示できるようにします。"
   },
+  "optionsContribute": {
+    "messsage": "寄付する:"
+  },
   "optionsEnableTabGroup": {
     "message": "タブグループを有効化"
   },
@@ -659,6 +662,9 @@
   },
   "optionsWarnUserCSS": {
     "message": "有効なCSSではありません。"
+  },
+  "optionsWebsite": {
+    "messsage": "サポートサイト:"
   },
   "pinTab_menu": {
     "message": "タブをピン留め$KEY$",

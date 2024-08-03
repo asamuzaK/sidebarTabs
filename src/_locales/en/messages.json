@@ -500,6 +500,9 @@
   "optionsCompactTabDetail": {
     "message": "Reduce the height of the tab to display more tabs."
   },
+  "optionsContribute": {
+    "message": "Contribute:"
+  },
   "optionsEnableTabGroup": {
     "message": "Enable tab groups"
   },
@@ -659,6 +662,9 @@
   },
   "optionsWarnUserCSS": {
     "message": "Not valid CSS."
+  },
+  "optionsWebsite": {
+    "message": "Support site:"
   },
   "pinTab_menu": {
     "message": "&Pin Tab",
