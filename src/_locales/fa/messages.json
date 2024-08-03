@@ -500,6 +500,9 @@
   "optionsCompactTabDetail": {
     "message": "ارتفاع زبانه ها را کم میکند تا جا برای نمایش دادن زبانه های بیشتری باز بشود."
   },
+  "optionsContribute": {
+    "message": "مشارکت‌ها:"
+  },
   "optionsEnableTabGroup": {
     "message": "زبانه های گروهی را فعّال کن"
   },
@@ -659,6 +662,9 @@
   },
   "optionsWarnUserCSS": {
     "message": "کد CSS نادرست است."
+  },
+  "optionsWebsite": {
+    "message": "سایت پشتیبانی:"
   },
   "pinTab_menu": {
     "message": "سنجاق کردن زبانه $KEY$",
