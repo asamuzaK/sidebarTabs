@@ -139,18 +139,18 @@ export const themeMap = {
     [CUSTOM_OUTLINE_FOCUS]: '#ac70ff66'
   },
   [THEME_DARK]: {
-    [CUSTOM_BG]: '#38383d',
+    [CUSTOM_BG]: '#1c1b22',
     [CUSTOM_BG_ACTIVE]: '#42414d',
-    [CUSTOM_BG_DISCARDED]: '#38383d',
+    [CUSTOM_BG_DISCARDED]: '#1c1b22',
     [CUSTOM_BG_FIELD]: '#1c1b22',
     [CUSTOM_BG_FIELD_ACTIVE]: '#42414d',
     [CUSTOM_BG_FRAME]: '#1c1b22',
-    [CUSTOM_BG_HOVER]: '#4c4c50',
+    [CUSTOM_BG_HOVER]: '#333238',
     [CUSTOM_BG_HOVER_SHADOW]: '#f9f9fa1a',
     [CUSTOM_BG_SELECT]: '#42414d',
     [CUSTOM_BG_SELECT_HOVER]: '#55545f',
-    [CUSTOM_BORDER_ACTIVE]: '#4c4c50', // NOTE: 'transparent',
-    [CUSTOM_BORDER_FIELD]: '#38383d', // NOTE: 'transparent',
+    [CUSTOM_BORDER_ACTIVE]: '#333238', // NOTE: 'transparent',
+    [CUSTOM_BORDER_FIELD]: '#1c1b22', // NOTE: 'transparent',
     [CUSTOM_BORDER_FIELD_ACTIVE]: '#00ddff',
     [CUSTOM_COLOR]: '#f9f9fa',
     [CUSTOM_COLOR_ACTIVE]: '#fbfbfe',
@@ -281,7 +281,9 @@ export const getCurrentThemeBaseValues = async (opt = {}) => {
       case CUSTOM_BG:
       case CUSTOM_BG_DISCARDED: {
         let value;
-        if (useFrame && themeId !== THEME_ALPEN_ID) {
+        if (themeId === THEME_LIGHT_ID ||
+            (!dark && themeId === THEME_SYSTEM_ID) ||
+            (useFrame && themeId !== THEME_ALPEN_ID)) {
           value = currentThemeColors.get(FRAME_BG) ||
                   baseValues[CUSTOM_BG_FRAME];
         } else {
