@@ -32,7 +32,7 @@
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^48.11.0",
+    "eslint-plugin-jsdoc": "^50.0.0",
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-unicorn": "^55.0.0",
@@ -73,5 +73,5 @@
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
   },
-  "version": "13.0.2"
+  "version": "14.0.0"
 }
