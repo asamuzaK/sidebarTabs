@@ -42,6 +42,7 @@
   --tab-group-3-heading-text: #7f3f5f;
   --tab-group-4: #69c;
   --tab-group-4-heading-text: #395672;
+  --throbber-connecting-color: #0061e0;
   --font-weight-active: normal;
 
   color-scheme: light dark;
@@ -197,6 +198,7 @@ main {
   width: var(--icon-size);
   height: var(--icon-size);
   fill: var(--foreground-color);
+  stroke: var(--throbber-connecting-color);
 }
 
 .tab.active .tab-icon {
@@ -634,7 +636,7 @@ main {
   pointer-events: none;
 }
 
-.narrow-tab-group :is(.tab-group > :not([hidden]), not(.tab-group) > .tab) > .tab-context > .tab-toggle-icon {
+.narrow-tab-group :is(.tab-group > :not([hidden]), :not(.tab-group) > .tab) > .tab-context > .tab-toggle-icon {
   width: var(--icon-xx-small-size);
   height: var(--icon-xx-small-size);
 }
@@ -752,6 +754,7 @@ main {
   --tab-group-2-heading-text: #41bf80;
   --tab-group-3-heading-text: #f279b5;
   --tab-group-4-heading-text: #72ace5;
+  --throbber-connecting-color: #0df;
 }
 
 .light-theme:not(.custom-theme) :is(.tab.active, .tab.highlighted, .heading.active, .heading.highlighted) > .tab-items {
@@ -790,6 +793,7 @@ main {
     --tab-group-2-heading-text: #41bf80;
     --tab-group-3-heading-text: #f279b5;
     --tab-group-4-heading-text: #72ace5;
+    --throbber-connecting-color: #0df;
 
     color-scheme: dark;
   }
