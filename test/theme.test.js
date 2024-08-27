@@ -28,7 +28,7 @@ import {
   CUSTOM_COLOR_HOVER, CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
-  CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS,
+  CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS, CUSTOM_THROBBER_CONNECT,
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_DARK,
@@ -1287,6 +1287,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#ff000066', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#ff0000', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1302,6 +1304,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#15141a66', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#15141a', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1318,6 +1322,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#8a0a0d66', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#8a0a0d', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1334,6 +1340,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#80008066', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#800080', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1355,6 +1363,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#ff000066', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#ff0000', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1370,6 +1380,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#15141a66', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#15141a', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1386,6 +1398,8 @@ describe('theme', () => {
       for (const [key, value] of items) {
         if (key === CUSTOM_OUTLINE_FOCUS) {
           assert.strictEqual(value, '#8a0a0d66', `${key}`);
+        } else if (key === CUSTOM_THROBBER_CONNECT) {
+          assert.strictEqual(value, '#8a0a0d', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
