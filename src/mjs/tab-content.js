@@ -101,9 +101,8 @@ export const setTabIcon = async (elm, info) => {
           allow: ['blob', 'data', 'file']
         });
         if (url && isString(title)) {
-          const { href } = new URL(url);
-          const connecting =
-            href.replace(/\/$/, '').endsWith(title.replace(/\/$/, ''));
+          const { hostname } = new URL(url);
+          const connecting = title === `${hostname}/`;
           if (connecting) {
             elm.dataset.connecting = url;
           } else if (elm.dataset.connecting) {
