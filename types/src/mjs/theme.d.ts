@@ -26,6 +26,7 @@ export namespace themeMap {
         export { CSS_VAR_HEADING_TEXT_GROUP_4 as customTabGroup4HeadingText };
         export { CSS_VAR_HEADING_TEXT_PINNED as customPinnedTabGroupHeadingText };
         export { CSS_VAR_OUTLINE_FOCUS as customFocusOutlineColor };
+        export { CSS_VAR_THROBBER_CONNECT as customThrobberConnectingColor };
     }
     namespace alpenTheme {
         let customBackgroundColor: string;
@@ -56,6 +57,7 @@ export namespace themeMap {
         let customTabGroup4HeadingText: string;
         let customPinnedTabGroupHeadingText: string;
         let customFocusOutlineColor: string;
+        let customThrobberConnectingColor: string;
     }
     namespace alpenDarkTheme {
         let customBackgroundColor_1: string;
@@ -114,6 +116,8 @@ export namespace themeMap {
         export { customPinnedTabGroupHeadingText_1 as customPinnedTabGroupHeadingText };
         let customFocusOutlineColor_1: string;
         export { customFocusOutlineColor_1 as customFocusOutlineColor };
+        let customThrobberConnectingColor_1: string;
+        export { customThrobberConnectingColor_1 as customThrobberConnectingColor };
     }
     namespace darkTheme {
         let customBackgroundColor_2: string;
@@ -172,6 +176,8 @@ export namespace themeMap {
         export { customPinnedTabGroupHeadingText_2 as customPinnedTabGroupHeadingText };
         let customFocusOutlineColor_2: string;
         export { customFocusOutlineColor_2 as customFocusOutlineColor };
+        let customThrobberConnectingColor_2: string;
+        export { customThrobberConnectingColor_2 as customThrobberConnectingColor };
     }
     namespace lightTheme {
         let customBackgroundColor_3: string;
@@ -230,6 +236,8 @@ export namespace themeMap {
         export { customPinnedTabGroupHeadingText_3 as customPinnedTabGroupHeadingText };
         let customFocusOutlineColor_3: string;
         export { customFocusOutlineColor_3 as customFocusOutlineColor };
+        let customThrobberConnectingColor_3: string;
+        export { customThrobberConnectingColor_3 as customThrobberConnectingColor };
     }
 }
 export const currentThemeColors: Map<any, any>;
@@ -287,3 +295,4 @@ import { CSS_VAR_HEADING_TEXT_GROUP_3 } from './constant.js';
 import { CSS_VAR_HEADING_TEXT_GROUP_4 } from './constant.js';
 import { CSS_VAR_HEADING_TEXT_PINNED } from './constant.js';
 import { CSS_VAR_OUTLINE_FOCUS } from './constant.js';
+import { CSS_VAR_THROBBER_CONNECT } from './constant.js';

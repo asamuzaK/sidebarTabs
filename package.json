@@ -73,5 +73,5 @@
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
   },
-  "version": "14.0.0"
+  "version": "14.0.1"
 }
