@@ -744,8 +744,6 @@ export const handleDragStart = (evt, opt = {}) => {
   const func = [];
   if (tab) {
     const dragTabId = getSidebarTabId(tab);
-    const tabsTab = JSON.parse(tab.dataset.tab);
-    const { title: tabTitle, url: tabURL } = tabsTab;
     const container = tab.parentNode;
     const pinned = tab.classList.contains(PINNED);
     const data = {
@@ -774,18 +772,24 @@ export const handleDragStart = (evt, opt = {}) => {
       items.push(tab);
       func.push(activateTab(tab));
     }
+    const mozUrlList = [];
+    const uriList = [];
     for (const item of items) {
-      const tabId = getSidebarTabId(item);
+      const itemTabId = getSidebarTabId(item);
+      const itemTabsTab = JSON.parse(item.dataset.tab);
+      const { title: itemTabTitle, url: itemTabURL } = itemTabsTab;
       if (item.parentNode.classList.contains(PINNED)) {
-        data.pinnedTabIds.push(tabId);
+        data.pinnedTabIds.push(itemTabId);
       } else {
-        data.tabIds.push(tabId);
+        data.tabIds.push(itemTabId);
       }
+      mozUrlList.push(`${itemTabURL}\n${itemTabTitle}`);
+      uriList.push(itemTabURL);
     }
     dataTransfer.effectAllowed = 'copyMove';
     dataTransfer.setData(MIME_JSON, JSON.stringify(data));
-    dataTransfer.setData(MIME_MOZ_URL, `${tabURL}\n${tabTitle}`);
-    dataTransfer.setData(MIME_PLAIN, tabURL);
+    dataTransfer.setData(MIME_MOZ_URL, mozUrlList.join('\n'));
+    dataTransfer.setData(MIME_PLAIN, uriList.join('\n'));
   }
   return Promise.all(func).catch(throwErr);
 };
