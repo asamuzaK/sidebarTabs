@@ -13,8 +13,8 @@ import { browser, createJsdom, mockPort } from './mocha/setup.js';
 import * as mjs from '../src/mjs/tab-dnd.js';
 import {
   CLASS_HEADING, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
-  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, SIDEBAR_MAIN, TAB
+  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE, HIGHLIGHTED,
+  MIME_JSON, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, SIDEBAR_MAIN, TAB
 } from '../src/mjs/constant.js';
 
 describe('dnd', () => {
@@ -1172,6 +1172,33 @@ describe('dnd', () => {
         isPinnedTabIds: true
       });
       assert.strictEqual(res, 0, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.id = PINNED;
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(elm);
+      parent2.appendChild(elm2);
+      parent2.appendChild(elm3);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const res = func(elm3, {
+        copy: true,
+        isPinnedTabIds: false
+      });
+      assert.strictEqual(res, 3, 'result');
     });
   });
 
@@ -2571,7 +2598,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: []
         },
         type: 'drop'
       };
@@ -2606,6 +2634,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
@@ -2616,7 +2645,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: []
         },
         type: 'drop'
       };
@@ -2654,6 +2684,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
@@ -2664,7 +2695,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: []
         },
         type: 'drop'
       };
@@ -2704,6 +2736,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('https://example.com');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
@@ -2714,7 +2747,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'none'
+          dropEffect: 'none',
+          types: [MIME_URI]
         },
         type: 'drop'
       };
@@ -2722,7 +2756,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.notCalled, 'not called');
       assert.isTrue(stubCurrentWin.notCalled, 'not called');
       assert.isTrue(port.postMessage.notCalled, 'not called');
@@ -2756,6 +2789,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('https://example.com');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
@@ -2766,7 +2800,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'link'
+          dropEffect: 'link',
+          types: [MIME_URI]
         },
         type: 'drop'
       };
@@ -2774,7 +2809,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.notCalled, 'not called');
       assert.isTrue(stubCurrentWin.notCalled, 'not called');
       assert.isTrue(port.postMessage.notCalled, 'not called');
@@ -2809,6 +2843,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('https://example.com');
       getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
@@ -2819,7 +2854,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_URI]
         },
         type: 'drop'
       };
@@ -2827,7 +2863,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k + 1, 'called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
@@ -2862,6 +2897,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('https://example.com');
       const preventDefault = sinon.stub();
@@ -2872,7 +2908,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'drop'
       };
@@ -2880,7 +2917,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k + 1, 'called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
@@ -2915,6 +2951,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI)
         .returns('https://example.com\n# comment\nhttps://www.example.com');
       getData.withArgs(MIME_PLAIN).returns('');
@@ -2926,7 +2963,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_URI]
         },
         type: 'drop'
       };
@@ -2934,14 +2972,13 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.called, 'called');
       assert.isTrue(port.postMessage.called, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 
-    it('should call function', async () => {
+    it('should not call function', async () => {
       const i = browser.tabs.create.callCount;
       const j = browser.tabs.move.callCount;
       const k = browser.tabs.update.callCount;
@@ -2968,8 +3005,9 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({}));
       getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({}));
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -2978,7 +3016,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -2986,8 +3025,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-      assert.isFalse(preventDefault.called, 'not called');
+      assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.isNull(res, 'result');
@@ -3020,10 +3058,11 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3032,7 +3071,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'copy'
+          dropEffect: 'copy',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3040,7 +3080,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3074,10 +3113,11 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3086,7 +3126,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3094,7 +3135,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3134,6 +3174,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
@@ -3144,7 +3185,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'drop'
       };
@@ -3154,7 +3196,6 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 1
       }).callCount, j + 1, 'called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
@@ -3197,6 +3238,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
@@ -3207,7 +3249,8 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'drop'
       };
@@ -3217,7 +3260,6 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 2
       }).callCount, j + 1, 'called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3254,6 +3296,7 @@ describe('dnd', () => {
       main.appendChild(parent);
       body.appendChild(main);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI)
         .returns('https://example.com\n# comment\nhttps://www.example.com');
       getData.withArgs(MIME_PLAIN).returns('');
@@ -3265,7 +3308,8 @@ describe('dnd', () => {
         currentTarget: main,
         dataTransfer: {
           getData,
-          dropEffect: 'none'
+          dropEffect: 'none',
+          types: [MIME_URI]
         },
         type: 'drop'
       };
@@ -3310,6 +3354,7 @@ describe('dnd', () => {
       main.appendChild(parent);
       body.appendChild(main);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI)
         .returns('https://example.com\n# comment\nhttps://www.example.com');
       getData.withArgs(MIME_PLAIN).returns('');
@@ -3321,7 +3366,8 @@ describe('dnd', () => {
         currentTarget: main,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_URI]
         },
         type: 'drop'
       };
@@ -3366,6 +3412,7 @@ describe('dnd', () => {
       main.appendChild(parent);
       body.appendChild(main);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('https://example.com');
       const preventDefault = sinon.stub();
@@ -3376,7 +3423,8 @@ describe('dnd', () => {
         currentTarget: main,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'drop'
       };
@@ -3430,6 +3478,7 @@ describe('dnd', () => {
       main.appendChild(parent);
       body.appendChild(main);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
       getData.withArgs(MIME_URI).returns('');
       getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
@@ -3440,7 +3489,8 @@ describe('dnd', () => {
         currentTarget: main,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'drop'
       };
@@ -3450,7 +3500,6 @@ describe('dnd', () => {
         query: 'foo',
         tabId: 2
       }).callCount, j + 1, 'called');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3497,10 +3546,11 @@ describe('dnd', () => {
       body.appendChild(tmpl);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3508,7 +3558,8 @@ describe('dnd', () => {
         stopPropagation,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3530,7 +3581,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(target.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3578,10 +3628,11 @@ describe('dnd', () => {
       body.appendChild(tmpl);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3589,7 +3640,8 @@ describe('dnd', () => {
         stopPropagation,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3611,7 +3663,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(target.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3659,10 +3710,11 @@ describe('dnd', () => {
       body.appendChild(tmpl);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3670,7 +3722,8 @@ describe('dnd', () => {
         stopPropagation,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3692,7 +3745,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(target.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3740,10 +3792,11 @@ describe('dnd', () => {
       body.appendChild(tmpl);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3751,7 +3804,8 @@ describe('dnd', () => {
         stopPropagation,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3773,7 +3827,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(target.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3821,10 +3874,11 @@ describe('dnd', () => {
       body.appendChild(tmpl);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3832,7 +3886,8 @@ describe('dnd', () => {
         stopPropagation,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3854,7 +3909,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(target.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -3902,10 +3956,11 @@ describe('dnd', () => {
       body.appendChild(tmpl);
       body.appendChild(parent);
       const getData = sinon.stub();
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns(JSON.stringify({
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         foo: 'bar'
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const evt = {
@@ -3913,7 +3968,8 @@ describe('dnd', () => {
         stopPropagation,
         dataTransfer: {
           getData,
-          dropEffect: 'move'
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'drop'
       };
@@ -3935,7 +3991,6 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
-      assert.isFalse(target.classList.contains(DROP_TARGET), 'class');
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
@@ -4054,6 +4109,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4064,10 +4125,8 @@ describe('dnd', () => {
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          types: [MIME_JSON]
         },
         type: 'foo'
       };
@@ -4075,12 +4134,12 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
+      assert.isUndefined(evt.dataTransfer.dropEffect, 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
 
-    it('should set drop effect', async () => {
+    it('should set drop effect and class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4094,6 +4153,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4104,10 +4169,9 @@ describe('dnd', () => {
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4120,7 +4184,7 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should set drop effect', async () => {
+    it('should set drop effect and class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4134,6 +4198,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4144,10 +4214,9 @@ describe('dnd', () => {
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4160,7 +4229,50 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should set drop effect', async () => {
+    it('should set drop effect and class', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: false
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 20,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
+        },
+        type: 'dragover'
+      };
+      await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect and class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4174,6 +4286,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4185,10 +4303,9 @@ describe('dnd', () => {
         ctrlKey: true,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4203,7 +4320,7 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should set drop effect', async () => {
+    it('should set drop effect and class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4217,6 +4334,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4228,10 +4351,9 @@ describe('dnd', () => {
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4246,7 +4368,7 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should set drop effect', async () => {
+    it('should set drop effect and class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4260,6 +4382,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4271,10 +4399,9 @@ describe('dnd', () => {
         ctrlKey: true,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4289,7 +4416,7 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should set drop effect', async () => {
+    it('should set drop effect and class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4303,6 +4430,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4314,10 +4447,9 @@ describe('dnd', () => {
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: true
-          })),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4346,6 +4478,12 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: false
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4356,10 +4494,9 @@ describe('dnd', () => {
         clientY: 40,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(JSON.stringify({
-            pinned: false
-          })),
-          dropEffect: 'move'
+          getData,
+          dropEffect: 'move',
+          types: [MIME_JSON]
         },
         type: 'dragover'
       };
@@ -4372,7 +4509,7 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should set drop effect none', async () => {
+    it('should not set additional class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4386,150 +4523,10 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 40,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns('pinned'),
-          dropEffect: 'move'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 40,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns('pinned'),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 20,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns('pinned'),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should not set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 20,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should not set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4540,13 +4537,13 @@ describe('dnd', () => {
         clientY: 30,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4554,43 +4551,7 @@ describe('dnd', () => {
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should not set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 40,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should not set drop effect', async () => {
+    it('should set additional class', async () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
@@ -4604,6 +4565,52 @@ describe('dnd', () => {
       });
       parent.appendChild(elm);
       body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
+        },
+        type: 'dragover'
+      };
+      await func(evt);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set additional class', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4614,97 +4621,21 @@ describe('dnd', () => {
         clientY: 20,
         currentTarget: elm,
         dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
 
-    it('should not set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(PINNED);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 30,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should not set drop effect', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(PINNED);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 40,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should not set drop effect', async () => {
+    it('should prevent default', async () => {
       const main = document.createElement('div');
       const parent = document.createElement('div');
       const elm = document.createElement('p');
@@ -4718,6 +4649,10 @@ describe('dnd', () => {
       parent.appendChild(elm);
       main.appendChild(parent);
       body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const i = preventDefault.callCount;
@@ -4725,51 +4660,16 @@ describe('dnd', () => {
       const evt = {
         preventDefault,
         stopPropagation,
-        clientY: 40,
-        currentTarget: elm,
-        dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
-        },
-        type: 'dragover'
-      };
-      await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.strictEqual(preventDefault.callCount, i, 'not called');
-      assert.strictEqual(stopPropagation.callCount, j, 'not called');
-    });
-
-    it('should set drop effect', async () => {
-      const main = document.createElement('div');
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      main.id = SIDEBAR_MAIN;
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
-      });
-      parent.appendChild(elm);
-      main.appendChild(parent);
-      body.appendChild(main);
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 40,
+        clientY: 60,
         currentTarget: main,
         dataTransfer: {
-          getData: sinon.stub().returns(''),
-          dropEffect: 'none'
+          getData,
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
         },
         type: 'dragover'
       };
       await func(evt);
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
@@ -4788,10 +4688,14 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
       const evt = {
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          types: [MIME_PLAIN]
         },
         type: 'foo'
       };
@@ -4811,18 +4715,20 @@ describe('dnd', () => {
       elm.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
-      const getData = sinon.stub().returns(JSON.stringify({
-        pinned: true
-      }));
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
       const evt = {
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          types: [MIME_PLAIN]
         },
         type: 'dragenter'
       };
       await func(evt);
-      assert.isTrue(getData.calledOnce, 'data');
+      assert.isTrue(getData.calledThrice, 'data');
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
     });
 
@@ -4831,17 +4737,51 @@ describe('dnd', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
       elm.classList.add(TAB);
+      elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
-      const getData = sinon.stub().returns(JSON.stringify({
-        pinned: false
-      }));
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('https://example.com');
+      getData.withArgs(MIME_PLAIN).returns('');
       const evt = {
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          types: [MIME_URI]
+        },
+        type: 'dragenter'
+      };
+      await func(evt);
+      assert.isTrue(getData.calledTwice, 'data');
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
+    });
+
+    it('should set class', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const evt = {
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          types: [MIME_JSON]
         },
         type: 'dragenter'
       };
@@ -4861,19 +4801,51 @@ describe('dnd', () => {
       elm.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
-      const getData = sinon.stub().returns(JSON.stringify({
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         pinned: false
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const evt = {
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          types: [MIME_JSON]
         },
         type: 'dragenter'
       };
       await func(evt);
       assert.isTrue(getData.calledOnce, 'data');
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+    });
+
+    it('should set class', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        pinned: false
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const evt = {
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          types: [MIME_JSON]
+        },
+        type: 'dragenter'
+      };
+      await func(evt);
+      assert.isTrue(getData.calledOnce, 'data');
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
     });
 
     it('should not set class', async () => {
@@ -4885,107 +4857,22 @@ describe('dnd', () => {
       elm.dataset.tabId = '1';
       parent.appendChild(elm);
       body.appendChild(parent);
-      const getData = sinon.stub().returns(JSON.stringify({
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
         pinned: true
       }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
       const evt = {
         currentTarget: elm,
         dataTransfer: {
-          getData
+          getData,
+          types: [MIME_JSON]
         },
         type: 'dragenter'
       };
       await func(evt);
       assert.isTrue(getData.calledOnce, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should not set class', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(PINNED);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub().returns('pinned');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData
-        },
-        type: 'dragenter'
-      };
-      await func(evt);
-      assert.isTrue(getData.calledOnce, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should not set class', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub().returns('pinned');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData
-        },
-        type: 'dragenter'
-      };
-      await func(evt);
-      assert.isTrue(getData.calledOnce, 'data');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub().returns('');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData
-        },
-        type: 'dragenter'
-      };
-      await func(evt);
-      assert.isTrue(getData.calledOnce, 'data');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', async () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub().returns('foo');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData
-        },
-        type: 'dragenter'
-      };
-      await func(evt);
-      assert.isFalse(getData.called, 'data');
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
     });
   });
@@ -5030,6 +4917,7 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
@@ -5051,7 +4939,9 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5095,6 +4985,7 @@ describe('dnd', () => {
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
@@ -5114,7 +5005,9 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5158,6 +5051,7 @@ describe('dnd', () => {
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
+      elm3.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
@@ -5178,7 +5072,9 @@ describe('dnd', () => {
         currentTarget: elm3,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5227,6 +5123,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5242,7 +5139,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5286,6 +5185,7 @@ describe('dnd', () => {
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
@@ -5309,7 +5209,9 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5357,6 +5259,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5376,7 +5279,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5424,6 +5329,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5443,7 +5349,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5487,6 +5395,7 @@ describe('dnd', () => {
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
@@ -5510,7 +5419,9 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5558,6 +5469,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5577,7 +5489,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5625,6 +5539,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5644,7 +5559,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5688,6 +5605,7 @@ describe('dnd', () => {
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
@@ -5712,7 +5630,9 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5760,6 +5680,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5780,7 +5701,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5828,6 +5751,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5848,7 +5772,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5892,6 +5818,7 @@ describe('dnd', () => {
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
@@ -5916,7 +5843,9 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -5964,6 +5893,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5984,7 +5914,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
@@ -6032,6 +5964,7 @@ describe('dnd', () => {
       elm3.dataset.tabId = '3';
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -6052,7 +5985,9 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
-            parsedData = JSON.parse(data);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
           },
           effectAllowed: 'uninitialized'
         },
