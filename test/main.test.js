@@ -26,6 +26,7 @@ import {
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
   DISCARDED, EXT_INIT, FRAME_COLOR_USE,
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, HIGHLIGHTED,
+  MIME_JSON, MIME_PLAIN,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER,
   NEW_TAB_SEPARATOR_SHOW,
   OPTIONS_OPEN, PINNED, PINNED_HEIGHT, SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN,
@@ -859,6 +860,7 @@ describe('main', () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       elm.classList.add(TAB);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
@@ -889,6 +891,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.draggable = true;
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
@@ -920,6 +923,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.draggable = true;
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
@@ -937,7 +941,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
-      assert.isTrue(setData.calledOnce, 'called');
+      assert.strictEqual(setData.callCount, 3, 'called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(res, [undefined], 'result');
     });
@@ -950,6 +954,7 @@ describe('main', () => {
       elm.classList.add(TAB);
       elm.draggable = true;
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       parent.appendChild(elm);
       body.appendChild(parent);
       mjs.sidebar.isMac = false;
@@ -957,6 +962,7 @@ describe('main', () => {
       const preventDefault = sinon.stub();
       const stopPropagation = sinon.stub();
       const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({ pinned: true }));
       const setData = sinon.stub();
       const evt = {
         currentTarget: elm,
@@ -965,7 +971,8 @@ describe('main', () => {
         dataTransfer: {
           getData,
           setData,
-          effectAllowed: 'uninitialized'
+          effectAllowed: 'uninitialized',
+          types: [MIME_JSON, MIME_PLAIN]
         },
         type: 'dragover'
       };

@@ -20,8 +20,8 @@ import {
 } from './util.js';
 import {
   CLASS_HEADING, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
-  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE,
-  HIGHLIGHTED, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR_MAIN, TAB_QUERY
+  DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE, HIGHLIGHTED,
+  MIME_JSON, MIME_MOZ_URL, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR_MAIN, TAB_QUERY
 } from './constant.js';
 
 /* api */
@@ -61,7 +61,7 @@ export const moveDroppedTabs = async (dropTarget, opt = {}) => {
       }
     }
     const arr = [];
-    const moveArr = (dropAfter && tabIds.reverse()) || tabIds;
+    const moveArr = dropAfter ? tabIds.toReversed() : tabIds;
     const l = moveArr.length;
     let i = 0;
     while (i < l) {
@@ -175,7 +175,7 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
   let index;
   if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
       dropTarget?.classList.contains(DROP_TARGET) && isObjectNotEmpty(opt)) {
-    const { isPinnedTabIds } = opt;
+    const { copy, isPinnedTabIds } = opt;
     const dropTargetIndex = getSidebarTabIndex(dropTarget);
     const dropParent = dropTarget.parentNode;
     const pinnedContainer = document.getElementById(PINNED);
@@ -198,7 +198,11 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
     } else if (dropTarget.classList.contains(DROP_TARGET_BEFORE)) {
       index = dropTargetIndex;
     } else if (dropTargetIndex === lastTabIndex) {
-      index = -1;
+      if (copy) {
+        index = dropTargetIndex + 1;
+      } else {
+        index = -1;
+      }
     } else {
       index = dropTargetIndex + 1;
     }
@@ -288,6 +292,7 @@ export const extractDroppedTabs = async (dropTarget, data) => {
         }
       } else if (dropEffect === 'copy') {
         const index = getDropIndexForDraggedTabs(dropTarget, {
+          copy: true,
           isPinnedTabIds: false
         });
         if (Number.isInteger(index)) {
@@ -297,7 +302,8 @@ export const extractDroppedTabs = async (dropTarget, data) => {
               active: false
             }));
             if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
-              for (const tabId of pinnedTabIds) {
+              const dupeArr = pinnedTabIds.toReversed();
+              for (const tabId of dupeArr) {
                 if (tabId !== dragTabId) {
                   func.push(duplicateTab(tabId, {
                     index,
@@ -307,7 +313,8 @@ export const extractDroppedTabs = async (dropTarget, data) => {
               }
             }
             if (Array.isArray(tabIds) && tabIds.length) {
-              for (const tabId of tabIds) {
+              const dupeArr = tabIds.toReversed();
+              for (const tabId of dupeArr) {
                 if (tabId !== dragTabId) {
                   func.push(duplicateTab(tabId, {
                     index,
@@ -497,32 +504,21 @@ export const handleDrop = evt => {
   if (type !== 'drop') {
     return;
   }
-  const { dropEffect } = dataTransfer;
+  const { dropEffect, types: dataTypes } = dataTransfer;
   const dropTarget = getSidebarTab(currentTarget);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
-  const uriList = dataTransfer.getData(MIME_URI).split('\n')
-    .filter(i => i && !i.startsWith('#')).reverse();
-  const data = dataTransfer.getData(MIME_PLAIN);
   let func;
-  if (dropTarget?.classList.contains(DROP_TARGET)) {
-    if (dropEffect === 'copy' || dropEffect === 'move') {
-      // dropped uri list
-      if (uriList.length && dropEffect === 'move') {
-        func = openUriList(dropTarget, uriList).catch(throwErr);
-        evt.preventDefault();
-        evt.stopPropagation();
-      } else if (data) {
-        let item;
-        try {
-          item = JSON.parse(data);
-        } catch (e) {
-          item = data;
-        }
-        // dropped tab
-        if (isObjectNotEmpty(item)) {
+  if (dropEffect === 'copy' || dropEffect === 'move') {
+    if (dropTarget?.classList.contains(DROP_TARGET)) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      // dropped tab
+      if (dataTypes.includes(MIME_JSON)) {
+        const data = JSON.parse(dataTransfer.getData(MIME_JSON));
+        if (data && isObjectNotEmpty(data)) {
           const { pinned, windowId } = JSON.parse(dropTarget.dataset.tab);
-          item.dropEffect = dropEffect;
-          item.dropWindowId = windowId;
+          data.dropEffect = dropEffect;
+          data.dropWindowId = windowId;
           let beGrouped;
           if (!pinned) {
             if (shiftKey) {
@@ -549,41 +545,50 @@ export const handleDrop = evt => {
               }
             }
           }
-          item.beGrouped = !!beGrouped;
-          func = extractDroppedTabs(dropTarget, item)
+          data.beGrouped = !!beGrouped;
+          func = extractDroppedTabs(dropTarget, data)
             .then(restoreTabContainers).then(requestSaveSession)
             .catch(throwErr);
-          evt.preventDefault();
-          evt.stopPropagation();
-        // dropped query string
-        } else if (dropEffect === 'move' && isString(item)) {
-          if (isURISync(item)) {
-            func = openUriList(dropTarget, [item]).catch(throwErr);
+        }
+      // uri list
+      } else if (dataTypes.includes(MIME_URI)) {
+        const data = dataTransfer.getData(MIME_URI).split('\n')
+          .filter(i => i && !i.startsWith('#')).reverse();
+        if (data.length) {
+          func = openUriList(dropTarget, data).catch(throwErr);
+        }
+      // string
+      } else {
+        const data = dataTransfer.getData(MIME_PLAIN);
+        if (data) {
+          if (isURISync(data)) {
+            func = openUriList(dropTarget, [data]).catch(throwErr);
           } else {
-            func = searchQuery(dropTarget, item).catch(throwErr);
+            func = searchQuery(dropTarget, data).catch(throwErr);
           }
-          evt.preventDefault();
-          evt.stopPropagation();
         }
       }
-    }
-    dropTarget.classList
-      .remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
-  } else if (isMain && dropEffect === 'move') {
-    // dropped uri list
-    if (uriList.length) {
-      func = openUriList(currentTarget, uriList).catch(throwErr);
+    } else if (isMain && !dataTypes.includes(MIME_JSON)) {
       evt.preventDefault();
       evt.stopPropagation();
-    // dropped query string
-    } else if (data) {
-      if (isURISync(data)) {
-        func = openUriList(currentTarget, [data]).catch(throwErr);
+      // uri list
+      if (dataTypes.includes(MIME_URI)) {
+        const data = dataTransfer.getData(MIME_URI).split('\n')
+          .filter(i => i && !i.startsWith('#')).reverse();
+        if (data.length) {
+          func = openUriList(currentTarget, data).catch(throwErr);
+        }
+      // string
       } else {
-        func = searchQuery(currentTarget, data).catch(throwErr);
+        const data = dataTransfer.getData(MIME_PLAIN);
+        if (data) {
+          if (isURISync(data)) {
+            func = openUriList(currentTarget, [data]).catch(throwErr);
+          } else {
+            func = searchQuery(currentTarget, data).catch(throwErr);
+          }
+        }
       }
-      evt.preventDefault();
-      evt.stopPropagation();
     }
   }
   return func || null;
@@ -635,48 +640,45 @@ export const handleDragOver = (evt, opt = {}) => {
     return;
   }
   const { isMac } = opt;
+  const { types: dataTypes } = dataTransfer;
   const dropTarget = getSidebarTab(currentTarget);
-  const data = dataTransfer.getData(MIME_PLAIN);
   const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
-  if (dropTarget) {
-    const { bottom, top } = dropTarget.getBoundingClientRect();
-    const isPinned = dropTarget.classList.contains(PINNED);
-    if (data) {
-      let pinned;
-      try {
-        const item = JSON.parse(data);
-        pinned = !!item.pinned;
-      } catch (e) {
-        pinned = false;
-      }
+  const hasDataTypes = dataTypes.some(
+    mime => mime === MIME_JSON || mime === MIME_URI || mime === MIME_PLAIN
+  );
+  if (hasDataTypes) {
+    if (dropTarget) {
+      evt.preventDefault();
+      evt.stopPropagation();
       const { bottom, top } = dropTarget.getBoundingClientRect();
-      if (!shiftKey && ((isMac && altKey) || (!isMac && ctrlKey))) {
-        if (clientY > (bottom - top) * HALF + top) {
-          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
-          dropTarget.classList.remove(DROP_TARGET_BEFORE);
+      const isPinned = dropTarget.classList.contains(PINNED);
+      if (dataTypes.includes(MIME_JSON)) {
+        const data = dataTransfer.getData(MIME_JSON);
+        const { pinned } = JSON.parse(data);
+        const { bottom, top } = dropTarget.getBoundingClientRect();
+        if (!shiftKey && ((isMac && altKey) || (!isMac && ctrlKey))) {
+          if (clientY > (bottom - top) * HALF + top) {
+            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+            dropTarget.classList.remove(DROP_TARGET_BEFORE);
+          } else {
+            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+            dropTarget.classList.remove(DROP_TARGET_AFTER);
+          }
+          dataTransfer.dropEffect = 'copy';
+        } else if ((isPinned && pinned) || !(isPinned || pinned)) {
+          if (clientY > (bottom - top) * HALF + top) {
+            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+            dropTarget.classList.remove(DROP_TARGET_BEFORE);
+          } else {
+            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
+            dropTarget.classList.remove(DROP_TARGET_AFTER);
+          }
+          dataTransfer.dropEffect = 'move';
         } else {
-          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
-          dropTarget.classList.remove(DROP_TARGET_AFTER);
+          dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+            DROP_TARGET_BEFORE);
+          dataTransfer.dropEffect = 'none';
         }
-        dataTransfer.dropEffect = 'copy';
-      } else if ((isPinned && pinned) || !(isPinned || pinned)) {
-        if (clientY > (bottom - top) * HALF + top) {
-          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
-          dropTarget.classList.remove(DROP_TARGET_BEFORE);
-        } else {
-          dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
-          dropTarget.classList.remove(DROP_TARGET_AFTER);
-        }
-        dataTransfer.dropEffect = 'move';
-      } else {
-        dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
-          DROP_TARGET_BEFORE);
-        dataTransfer.dropEffect = 'none';
-      }
-    } else {
-      if (isPinned) {
-        dropTarget.classList.add(DROP_TARGET);
-        dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
       } else if (clientY < (bottom - top) * ONE_THIRD + top) {
         dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
         dropTarget.classList.remove(DROP_TARGET_AFTER);
@@ -687,13 +689,10 @@ export const handleDragOver = (evt, opt = {}) => {
         dropTarget.classList.add(DROP_TARGET);
         dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
       }
+    } else if (isMain) {
+      evt.preventDefault();
+      evt.stopPropagation();
     }
-    evt.preventDefault();
-    evt.stopPropagation();
-  } else if (isMain && !data) {
-    dataTransfer.dropEffect = 'move';
-    evt.preventDefault();
-    evt.stopPropagation();
   }
 };
 
@@ -707,22 +706,21 @@ export const handleDragEnter = evt => {
   if (type !== 'dragenter') {
     return;
   }
+  const { types: dataTypes } = dataTransfer;
   const dropTarget = getSidebarTab(currentTarget);
-  if (dropTarget) {
-    const data = dataTransfer.getData(MIME_PLAIN);
+  const hasDataTypes = dataTypes.some(
+    mime => mime === MIME_JSON || mime === MIME_URI || mime === MIME_PLAIN
+  );
+  if (hasDataTypes && dropTarget) {
+    const data = dataTransfer.getData(MIME_JSON);
     if (data) {
+      const { pinned } = JSON.parse(data);
       const isPinned = dropTarget.classList.contains(PINNED);
-      let pinned;
-      try {
-        const item = JSON.parse(data);
-        pinned = !!item.pinned;
-      } catch (e) {
-        pinned = false;
-      }
       if ((isPinned && pinned) || !(isPinned || pinned)) {
         dropTarget.classList.add(DROP_TARGET);
       }
-    } else {
+    } else if (dataTransfer.getData(MIME_URI) ||
+               dataTransfer.getData(MIME_PLAIN)) {
       dropTarget.classList.add(DROP_TARGET);
     }
   }
@@ -746,6 +744,8 @@ export const handleDragStart = (evt, opt = {}) => {
   const func = [];
   if (tab) {
     const dragTabId = getSidebarTabId(tab);
+    const tabsTab = JSON.parse(tab.dataset.tab);
+    const { title: tabTitle, url: tabURL } = tabsTab;
     const container = tab.parentNode;
     const pinned = tab.classList.contains(PINNED);
     const data = {
@@ -783,7 +783,9 @@ export const handleDragStart = (evt, opt = {}) => {
       }
     }
     dataTransfer.effectAllowed = 'copyMove';
-    dataTransfer.setData(MIME_PLAIN, JSON.stringify(data));
+    dataTransfer.setData(MIME_JSON, JSON.stringify(data));
+    dataTransfer.setData(MIME_MOZ_URL, `${tabURL}\n${tabTitle}`);
+    dataTransfer.setData(MIME_PLAIN, tabURL);
   }
   return Promise.all(func).catch(throwErr);
 };
