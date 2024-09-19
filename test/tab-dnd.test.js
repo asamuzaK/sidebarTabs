@@ -14,7 +14,8 @@ import * as mjs from '../src/mjs/tab-dnd.js';
 import {
   CLASS_HEADING, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE, HIGHLIGHTED,
-  MIME_JSON, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR, SIDEBAR_MAIN, TAB
+  MIME_JSON, MIME_MOZ_URL, MIME_PLAIN, MIME_URI,
+  PINNED, SIDEBAR, SIDEBAR_MAIN, TAB
 } from '../src/mjs/constant.js';
 
 describe('dnd', () => {
@@ -4917,14 +4918,29 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
-      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -4934,11 +4950,13 @@ describe('dnd', () => {
       const opt = {
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         currentTarget: elm,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -4951,6 +4969,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 1,
@@ -4982,14 +5005,29 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5000,11 +5038,13 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5018,6 +5058,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5048,15 +5093,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
-      elm3.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5067,11 +5127,13 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         currentTarget: elm3,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5085,6 +5147,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 3,
@@ -5115,15 +5182,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5134,11 +5216,13 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5151,6 +5235,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5182,14 +5271,29 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5203,12 +5307,14 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         ctrlKey: true,
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5221,6 +5327,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5251,15 +5362,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5273,12 +5399,14 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         ctrlKey: true,
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5291,6 +5419,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5321,15 +5454,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5343,12 +5491,14 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         ctrlKey: true,
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5361,6 +5511,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5392,14 +5547,29 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5413,12 +5583,14 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         altKey: true,
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5431,6 +5603,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5461,15 +5638,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5483,12 +5675,14 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         altKey: true,
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5501,6 +5695,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5531,15 +5730,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5553,12 +5767,14 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         altKey: true,
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5571,6 +5787,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5602,14 +5823,29 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5623,6 +5859,7 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         ctrlKey: true,
@@ -5630,6 +5867,7 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5672,15 +5910,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5694,6 +5947,7 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         ctrlKey: true,
@@ -5701,6 +5955,7 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5713,6 +5968,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5743,15 +6003,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5765,6 +6040,7 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: false
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         ctrlKey: true,
@@ -5772,6 +6048,7 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5784,6 +6061,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5815,14 +6097,29 @@ describe('dnd', () => {
       elm.classList.add(HIGHLIGHTED);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
-      elm2.dataset.tab = JSON.stringify({ url: 'https://example.com' });
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5836,6 +6133,7 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         metaKey: true,
@@ -5843,6 +6141,7 @@ describe('dnd', () => {
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5855,6 +6154,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5885,15 +6189,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5907,6 +6226,7 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         metaKey: true,
@@ -5914,6 +6234,7 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5926,6 +6247,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5956,15 +6282,30 @@ describe('dnd', () => {
       elm.classList.add(TAB);
       elm.classList.add(PINNED);
       elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
       elm2.classList.add(TAB);
       elm2.classList.add(PINNED);
       elm2.classList.add(HIGHLIGHTED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
       elm4.classList.add(TAB);
       elm4.dataset.tabId = '4';
-      elm4.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
       parent.appendChild(elm);
       parent.appendChild(elm2);
       parent2.appendChild(elm3);
@@ -5978,6 +6319,7 @@ describe('dnd', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         isMac: true
       };
+      const dataTypes = [];
       let parsedData;
       const evt = {
         metaKey: true,
@@ -5985,6 +6327,7 @@ describe('dnd', () => {
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
+            dataTypes.push(type);
             if (type === MIME_JSON) {
               parsedData = JSON.parse(data);
             }
@@ -5997,6 +6340,11 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [
+        MIME_JSON,
+        MIME_MOZ_URL,
+        MIME_PLAIN
+      ], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
