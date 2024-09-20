@@ -765,7 +765,7 @@ export const handleDragStart = (evt, opt = {}) => {
       func.push(highlightTabs(items, windowId));
     } else if (tab.classList.contains(HIGHLIGHTED)) {
       items.push(...highlightedTabs);
-    } else if ((isMac && altKey) || (!isMac && ctrlKey)) {
+    } else if ((isMac && metaKey) || (!isMac && ctrlKey)) {
       items.push(...highlightedTabs, tab);
       func.push(highlightTabs(items, windowId));
     } else {
@@ -788,8 +788,10 @@ export const handleDragStart = (evt, opt = {}) => {
     }
     dataTransfer.effectAllowed = 'copyMove';
     dataTransfer.setData(MIME_JSON, JSON.stringify(data));
-    dataTransfer.setData(MIME_MOZ_URL, mozUrlList.join('\n'));
-    dataTransfer.setData(MIME_PLAIN, uriList.join('\n'));
+    if (altKey) {
+      dataTransfer.setData(MIME_MOZ_URL, mozUrlList.join('\n'));
+      dataTransfer.setData(MIME_PLAIN, uriList.join('\n'));
+    }
   }
   return Promise.all(func).catch(throwErr);
 };
