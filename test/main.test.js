@@ -941,7 +941,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
-      assert.strictEqual(setData.callCount, 3, 'called');
+      assert.strictEqual(setData.callCount, 1, 'called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(res, [undefined], 'result');
     });

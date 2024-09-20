@@ -4969,6 +4969,90 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
+      assert.deepEqual(parsedData, {
+        beGrouped: false,
+        dragTabId: 1,
+        dragWindowId: browser.windows.WINDOW_ID_CURRENT,
+        tabGroup: false,
+        pinned: true,
+        pinnedTabIds: [1],
+        tabIds: []
+      }, 'data');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set value', async () => {
+      const i = browser.tabs.update.callCount;
+      const j = browser.tabs.highlight.callCount;
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(CLASS_TAB_GROUP);
+      parent.classList.add(PINNED);
+      parent2.classList.add(CLASS_TAB_CONTAINER);
+      parent2.classList.add(CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.classList.add(HIGHLIGHTED);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
+      elm2.classList.add(TAB);
+      elm2.classList.add(PINNED);
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      body.appendChild(parent);
+      body.appendChild(parent2);
+      const opt = {
+        isMac: false
+      };
+      const dataTypes = [];
+      let parsedData;
+      const evt = {
+        altKey: true,
+        currentTarget: elm,
+        dataTransfer: {
+          setData: (type, data) => {
+            dataTypes.push(type);
+            if (type === MIME_JSON) {
+              parsedData = JSON.parse(data);
+            }
+          },
+          effectAllowed: 'uninitialized'
+        },
+        type: 'dragstart'
+      };
+      const res = await func(evt, opt);
+      assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
+      assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
+      assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(dataTypes, [
         MIME_JSON,
         MIME_MOZ_URL,
@@ -5058,11 +5142,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5147,11 +5227,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 3,
@@ -5235,11 +5311,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5327,11 +5399,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5419,11 +5487,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5511,11 +5575,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5586,7 +5646,7 @@ describe('dnd', () => {
       const dataTypes = [];
       let parsedData;
       const evt = {
-        altKey: true,
+        metaKey: true,
         currentTarget: elm2,
         dataTransfer: {
           setData: (type, data) => {
@@ -5603,11 +5663,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5678,7 +5734,7 @@ describe('dnd', () => {
       const dataTypes = [];
       let parsedData;
       const evt = {
-        altKey: true,
+        metaKey: true,
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
@@ -5695,11 +5751,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5770,7 +5822,7 @@ describe('dnd', () => {
       const dataTypes = [];
       let parsedData;
       const evt = {
-        altKey: true,
+        metaKey: true,
         currentTarget: elm4,
         dataTransfer: {
           setData: (type, data) => {
@@ -5787,11 +5839,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -5880,6 +5928,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -5968,11 +6017,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -6061,11 +6106,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -6154,11 +6195,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 2,
@@ -6247,11 +6284,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
@@ -6340,11 +6373,7 @@ describe('dnd', () => {
       assert.strictEqual(browser.tabs.update.callCount, i, 'called');
       assert.strictEqual(browser.tabs.highlight.callCount, j + 1, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
-      assert.deepEqual(dataTypes, [
-        MIME_JSON,
-        MIME_MOZ_URL,
-        MIME_PLAIN
-      ], 'types');
+      assert.deepEqual(dataTypes, [MIME_JSON], 'types');
       assert.deepEqual(parsedData, {
         beGrouped: false,
         dragTabId: 4,
