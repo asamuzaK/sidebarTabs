@@ -255,6 +255,8 @@ export const handleTabGroupCollapsedState = evt => {
   const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
   let func;
   if (heading && !heading.hidden) {
+    evt.preventDefault();
+    evt.stopPropagation();
     let activate;
     for (const selectedTab of selectedTabs) {
       if (selectedTab.parentNode === heading.parentNode) {
@@ -264,9 +266,9 @@ export const handleTabGroupCollapsedState = evt => {
     }
     func = toggleTabGroupCollapsedState(heading, activate)
       .then(requestSaveSession).catch(throwErr);
-    evt.stopPropagation();
-    evt.preventDefault();
   } else if (tab) {
+    evt.preventDefault();
+    evt.stopPropagation();
     let activate;
     for (const selectedTab of selectedTabs) {
       if (selectedTab.parentNode === tab.parentNode) {
@@ -276,8 +278,6 @@ export const handleTabGroupCollapsedState = evt => {
     }
     func = toggleTabGroupCollapsedState(tab, activate)
       .then(requestSaveSession).catch(throwErr);
-    evt.stopPropagation();
-    evt.preventDefault();
   }
   return func || null;
 };
@@ -292,10 +292,10 @@ export const handleTabGroupsCollapsedState = evt => {
   const container = getSidebarTabContainer(target);
   let func;
   if (container) {
+    evt.preventDefault();
+    evt.stopPropagation();
     func = toggleTabGroupsCollapsedState(container)
       .then(requestSaveSession).catch(throwErr);
-    evt.stopPropagation();
-    evt.preventDefault();
   }
   return func || null;
 };
@@ -377,6 +377,7 @@ export const finishGroupLabelEdit = evt => {
     const heading = getTabGroupHeading(target);
     const label = heading?.querySelector(`.${CLASS_HEADING_LABEL}`);
     if (label) {
+      evt.preventDefault();
       removeElementContentEditable(label);
       label.removeEventListener('keydown', finishGroupLabelEdit);
       label.removeEventListener('blur', finishGroupLabelEdit);
@@ -388,7 +389,6 @@ export const finishGroupLabelEdit = evt => {
         label.removeEventListener('click', handleTabGroupsCollapsedState);
       }
       func = requestSaveSession().catch(throwErr);
-      evt.preventDefault();
     }
   }
   return func || null;

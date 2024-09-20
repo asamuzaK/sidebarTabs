@@ -185,9 +185,9 @@ export const tabAudioOnClick = evt => {
   const tab = getSidebarTab(target);
   let func;
   if (tab) {
-    func = handleClickedTabAudio(tab).catch(throwErr);
-    evt.stopPropagation();
     evt.preventDefault();
+    evt.stopPropagation();
+    func = handleClickedTabAudio(tab).catch(throwErr);
   }
   return func || null;
 };
@@ -284,6 +284,8 @@ export const tabCloseOnClick = evt => {
   const tab = getSidebarTab(target);
   let func;
   if (tab) {
+    evt.preventDefault();
+    evt.stopPropagation();
     const { classList } = tab;
     if (classList.contains(HIGHLIGHTED)) {
       const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
@@ -291,8 +293,6 @@ export const tabCloseOnClick = evt => {
     } else {
       func = closeTabs([tab]).catch(throwErr);
     }
-    evt.stopPropagation();
-    evt.preventDefault();
   }
   return func || null;
 };

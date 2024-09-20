@@ -267,9 +267,9 @@ export const addBookmarkLocations = async () => {
  * @returns {Promise} - promise chain
  */
 export const handleInitCustomThemeClick = evt => {
-  const { currentTarget, target } = evt;
   evt.preventDefault();
   evt.stopPropagation();
+  const { currentTarget, target } = evt;
   return initCustomTheme(currentTarget === target).catch(throwErr);
 };
 
@@ -289,9 +289,9 @@ export const addInitCustomThemeListener = async () => {
  * @returns {Promise} - initExt()
  */
 export const handleInitExtClick = evt => {
-  const { currentTarget, target } = evt;
   evt.preventDefault();
   evt.stopPropagation();
+  const { currentTarget, target } = evt;
   return initExt(currentTarget === target).catch(throwErr);
 };
 

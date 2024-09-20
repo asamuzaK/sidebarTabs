@@ -447,20 +447,20 @@ export const handleClickedTab = evt => {
   const func = [];
   if (tab && button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') {
     if (!switchByScroll || closeByMdlClick) {
-      func.push(closeTabs([tab]));
-      evt.stopPropagation();
       evt.preventDefault();
+      evt.stopPropagation();
+      func.push(closeTabs([tab]));
     }
   } else if (tab && closeByDblClick && button === MOUSE_BUTTON_LEFT &&
              type === 'dblclick') {
+    evt.preventDefault();
+    evt.stopPropagation();
     const { classList } = tab;
     if (classList.contains(ACTIVE)) {
       func.push(closeTabs([tab]));
     } else {
       func.push(activateTab(tab));
     }
-    evt.stopPropagation();
-    evt.preventDefault();
   } else if (type === 'click') {
     if (shiftKey) {
       if (tab && firstSelectedTab) {
@@ -2220,10 +2220,10 @@ export const handleEvt = evt => {
   const func = [];
   // select all tabs
   if (((isMac && metaKey) || (!isMac && ctrlKey)) && key === 'a') {
+    evt.preventDefault();
+    evt.stopPropagation();
     const allTabs = document.querySelectorAll(TAB_QUERY);
     func.push(highlightTabs([...allTabs], windowId));
-    evt.stopPropagation();
-    evt.preventDefault();
   // context menu
   } else if ((shiftKey && key === 'F10') || key === 'ContextMenu' ||
              button === MOUSE_BUTTON_RIGHT) {
@@ -2269,9 +2269,9 @@ export const handleWheelEvt = evt => {
   );
   let func;
   if (enableSwitchTab && Number.isFinite(deltaY) && deltaY !== 0) {
+    evt.preventDefault();
     const invertDir = userOpts.get(SCROLL_DIR_INVERT);
     const skipCollapsed = userOpts.get(TAB_SKIP_COLLAPSED);
-    evt.preventDefault();
     if (alwaysSwitchByScroll) {
       evt.stopPropagation();
     }
