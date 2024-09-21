@@ -18,9 +18,9 @@
     "commander": "^12.1.0",
     "decamelize": "^6.0.0",
     "dompurify": "^3.1.6",
-    "tldts-experimental": "^6.1.46",
+    "tldts-experimental": "^6.1.47",
     "url-sanitizer": "^2.0.1",
-    "webext-schema": "^5.4.1"
+    "webext-schema": "^5.4.2"
   },
   "devDependencies": {
     "@asamuzakjp/dom-selector": "^6.1.1",
@@ -32,7 +32,7 @@
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.30.0",
-    "eslint-plugin-jsdoc": "^50.2.3",
+    "eslint-plugin-jsdoc": "^50.2.4",
     "eslint-plugin-no-unsanitized": "^4.1.0",
     "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-unicorn": "^55.0.0",
