@@ -5040,7 +5040,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5128,7 +5128,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5217,7 +5217,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5308,7 +5308,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5398,7 +5398,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5489,7 +5489,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5578,7 +5578,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5668,7 +5668,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: true,
+        isMac: true
       };
       const dataTypes = [];
       let parsedData;
@@ -5759,7 +5759,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -5849,7 +5849,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: true,
+        isMac: true
       };
       const dataTypes = [];
       let parsedData;
@@ -5940,7 +5940,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;
@@ -6031,7 +6031,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: true,
+        isMac: true
       };
       const dataTypes = [];
       let parsedData;
@@ -6120,7 +6120,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const opt = {
-        isMac: false,
+        isMac: false
       };
       const dataTypes = [];
       let parsedData;

@@ -16,7 +16,7 @@ import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import { requestSaveSession } from './session.js';
 import { restoreTabContainers } from './tab-group.js';
 import {
-  activateTab, getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
+  getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
 import {
   CLASS_HEADING, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
@@ -375,7 +375,6 @@ export const openUriList = async (dropTarget, data = []) => {
   const func = [];
   if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
       Array.isArray(data) && data.length) {
-    const isMain = dropTarget === document.getElementById(SIDEBAR_MAIN);
     if (dropTarget.classList.contains(DROP_TARGET)) {
       if (data.length === 1 &&
           !dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
@@ -421,7 +420,7 @@ export const openUriList = async (dropTarget, data = []) => {
         func.push(createTabsInOrder(opts).then(restoreTabContainers)
           .then(requestSaveSession));
       }
-    } else if (isMain) {
+    } else if (dropTarget === document.getElementById(SIDEBAR_MAIN)) {
       const opts = [];
       for (const value of data) {
         const url = sanitizeURLSync(value, {
@@ -449,9 +448,7 @@ export const openUriList = async (dropTarget, data = []) => {
  */
 export const searchQuery = async (dropTarget, data = '') => {
   const func = [];
-  if (dropTarget?.nodeType === Node.ELEMENT_NODE &&
-      data && isString(data)) {
-    const isMain = dropTarget === document.getElementById(SIDEBAR_MAIN);
+  if (dropTarget?.nodeType === Node.ELEMENT_NODE && data && isString(data)) {
     if (dropTarget.classList.contains(DROP_TARGET)) {
       if (!dropTarget.classList.contains(DROP_TARGET_BEFORE) &&
           !dropTarget.classList.contains(DROP_TARGET_AFTER)) {
@@ -482,7 +479,7 @@ export const searchQuery = async (dropTarget, data = '') => {
           tabId: tab.id
         }).then(restoreTabContainers).then(requestSaveSession));
       }
-    } else if (isMain) {
+    } else if (dropTarget === document.getElementById(SIDEBAR_MAIN)) {
       const tab = await createTab({
         active: true
       });
@@ -508,7 +505,6 @@ export const handleDrop = evt => {
   let func;
   if (dropEffect === 'copy' || dropEffect === 'move') {
     const dropTarget = getSidebarTab(currentTarget);
-    const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
     if (dropTarget?.classList.contains(DROP_TARGET)) {
       evt.preventDefault();
       evt.stopPropagation();
@@ -568,7 +564,8 @@ export const handleDrop = evt => {
           }
         }
       }
-    } else if (isMain && !dataTypes.includes(MIME_JSON)) {
+    } else if (currentTarget === document.getElementById(SIDEBAR_MAIN) &&
+               !dataTypes.includes(MIME_JSON)) {
       evt.preventDefault();
       evt.stopPropagation();
       // uri list
@@ -687,12 +684,9 @@ export const handleDragOver = (evt, opt = {}) => {
         dropTarget.classList.add(DROP_TARGET);
         dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
       }
-    } else {
-      const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
-      if (isMain) {
-        evt.preventDefault();
-        evt.stopPropagation();
-      }
+    } else if (currentTarget === document.getElementById(SIDEBAR_MAIN)) {
+      evt.preventDefault();
+      evt.stopPropagation();
     }
   }
 };
