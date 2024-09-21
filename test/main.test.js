@@ -939,6 +939,11 @@ describe('main', () => {
         },
         type: 'dragstart'
       };
+      browser.tabs.update.resolves({
+        active: true,
+        id: 1,
+        index: 0
+      });
       const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
       assert.strictEqual(setData.callCount, 1, 'called');

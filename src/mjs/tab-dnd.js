@@ -505,10 +505,10 @@ export const handleDrop = evt => {
     return;
   }
   const { dropEffect, types: dataTypes } = dataTransfer;
-  const dropTarget = getSidebarTab(currentTarget);
-  const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
   let func;
   if (dropEffect === 'copy' || dropEffect === 'move') {
+    const dropTarget = getSidebarTab(currentTarget);
+    const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
     if (dropTarget?.classList.contains(DROP_TARGET)) {
       evt.preventDefault();
       evt.stopPropagation();
@@ -621,42 +621,51 @@ export const handleDragLeave = evt => {
     return;
   }
   const dropTarget = getSidebarTab(currentTarget);
-  dropTarget?.classList.remove(
-    DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE
-  );
+  if (dropTarget) {
+    dropTarget.classList.remove(
+      DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE
+    );
+  }
 };
 
 /**
  * handle dragover
  * @param {!object} evt - event
  * @param {object} [opt] - options
+ * @param {boolean} [opt.isMac] - is Mac
  * @returns {void}
  */
 export const handleDragOver = (evt, opt = {}) => {
-  const {
-    altKey, clientY, ctrlKey, currentTarget, dataTransfer, shiftKey, type
-  } = evt;
+  const { altKey, clientY, ctrlKey, currentTarget, dataTransfer, type } = evt;
   if (type !== 'dragover') {
     return;
   }
-  const { isMac } = opt;
   const { types: dataTypes } = dataTransfer;
-  const dropTarget = getSidebarTab(currentTarget);
-  const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
   const hasDataTypes = dataTypes.some(
     mime => mime === MIME_JSON || mime === MIME_URI || mime === MIME_PLAIN
   );
   if (hasDataTypes) {
+    const dropTarget = getSidebarTab(currentTarget);
     if (dropTarget) {
       evt.preventDefault();
       evt.stopPropagation();
       const { bottom, top } = dropTarget.getBoundingClientRect();
-      const isPinned = dropTarget.classList.contains(PINNED);
       if (dataTypes.includes(MIME_JSON)) {
+        const isPinned = dropTarget.classList.contains(PINNED);
         const data = dataTransfer.getData(MIME_JSON);
         const { pinned } = JSON.parse(data);
-        const { bottom, top } = dropTarget.getBoundingClientRect();
-        if (!shiftKey && ((isMac && altKey) || (!isMac && ctrlKey))) {
+        if ((isPinned && pinned) || !(isPinned || pinned)) {
+          const { isMac } = opt;
+          if ((isMac && altKey) || (!isMac && ctrlKey)) {
+            dataTransfer.dropEffect = 'copy';
+          } else {
+            dataTransfer.dropEffect = 'move';
+          }
+        } else {
+          dataTransfer.dropEffect = 'none';
+        }
+        if (dataTransfer.dropEffect === 'copy' ||
+            dataTransfer.dropEffect === 'move') {
           if (clientY > (bottom - top) * HALF + top) {
             dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
             dropTarget.classList.remove(DROP_TARGET_BEFORE);
@@ -664,20 +673,9 @@ export const handleDragOver = (evt, opt = {}) => {
             dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
             dropTarget.classList.remove(DROP_TARGET_AFTER);
           }
-          dataTransfer.dropEffect = 'copy';
-        } else if ((isPinned && pinned) || !(isPinned || pinned)) {
-          if (clientY > (bottom - top) * HALF + top) {
-            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
-            dropTarget.classList.remove(DROP_TARGET_BEFORE);
-          } else {
-            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
-            dropTarget.classList.remove(DROP_TARGET_AFTER);
-          }
-          dataTransfer.dropEffect = 'move';
         } else {
           dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
             DROP_TARGET_BEFORE);
-          dataTransfer.dropEffect = 'none';
         }
       } else if (clientY < (bottom - top) * ONE_THIRD + top) {
         dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
@@ -689,9 +687,12 @@ export const handleDragOver = (evt, opt = {}) => {
         dropTarget.classList.add(DROP_TARGET);
         dropTarget.classList.remove(DROP_TARGET_BEFORE, DROP_TARGET_AFTER);
       }
-    } else if (isMain) {
-      evt.preventDefault();
-      evt.stopPropagation();
+    } else {
+      const isMain = currentTarget === document.getElementById(SIDEBAR_MAIN);
+      if (isMain) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
     }
   }
 };
@@ -730,6 +731,7 @@ export const handleDragEnter = evt => {
  * handle dragstart
  * @param {!object} evt - event
  * @param {object} [opt] - options
+ * @param {boolean} [opt.isMac] - is Mac
  * @returns {Promise.<Array>|undefined} - result of each handler
  */
 export const handleDragStart = (evt, opt = {}) => {
@@ -739,13 +741,15 @@ export const handleDragStart = (evt, opt = {}) => {
   if (type !== 'dragstart') {
     return;
   }
-  const { isMac, windowId } = opt;
   const tab = getSidebarTab(currentTarget);
   const func = [];
   if (tab) {
+    const { isMac, windowId } = opt;
     const dragTabId = getSidebarTabId(tab);
     const container = tab.parentNode;
     const pinned = tab.classList.contains(PINNED);
+    const highlightedTabs =
+      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     const data = {
       dragTabId,
       pinned,
@@ -755,22 +759,25 @@ export const handleDragStart = (evt, opt = {}) => {
       pinnedTabIds: [],
       tabIds: []
     };
-    const highlightedTabs =
-      document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
     const items = [];
-    if (container?.classList.contains(CLASS_TAB_GROUP) &&
-        shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
-      items.push(...container.querySelectorAll(TAB_QUERY));
-      data.tabGroup = true;
-      func.push(highlightTabs(items, { windowId }));
-    } else if (tab.classList.contains(HIGHLIGHTED)) {
-      items.push(...highlightedTabs);
+    if (shiftKey) {
+      if (container.classList.contains(CLASS_TAB_GROUP) &&
+          ((isMac && metaKey) || (!isMac && ctrlKey))) {
+        items.push(...container.querySelectorAll(TAB_QUERY));
+        data.tabGroup = true;
+      } else if (tab.classList.contains(HIGHLIGHTED)) {
+        items.push(...highlightedTabs);
+      } else {
+        items.push(tab, ...highlightedTabs);
+      }
     } else if ((isMac && metaKey) || (!isMac && ctrlKey)) {
-      items.push(...highlightedTabs, tab);
-      func.push(highlightTabs(items, { windowId }));
+      if (tab.classList.contains(HIGHLIGHTED)) {
+        items.push(...highlightedTabs);
+      } else {
+        items.push(tab, ...highlightedTabs);
+      }
     } else {
       items.push(tab);
-      func.push(activateTab(tab));
     }
     const mozUrlList = [];
     const uriList = [];
@@ -792,6 +799,10 @@ export const handleDragStart = (evt, opt = {}) => {
       dataTransfer.setData(MIME_MOZ_URL, mozUrlList.join('\n'));
       dataTransfer.setData(MIME_PLAIN, uriList.join('\n'));
     }
+    func.push(highlightTabs(items, {
+      tabId: dragTabId,
+      windowId
+    }));
   }
   return Promise.all(func).catch(throwErr);
 };
