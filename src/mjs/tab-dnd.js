@@ -762,12 +762,12 @@ export const handleDragStart = (evt, opt = {}) => {
         shiftKey && ((isMac && metaKey) || (!isMac && ctrlKey))) {
       items.push(...container.querySelectorAll(TAB_QUERY));
       data.tabGroup = true;
-      func.push(highlightTabs(items, windowId));
+      func.push(highlightTabs(items, { windowId }));
     } else if (tab.classList.contains(HIGHLIGHTED)) {
       items.push(...highlightedTabs);
     } else if ((isMac && metaKey) || (!isMac && ctrlKey)) {
       items.push(...highlightedTabs, tab);
-      func.push(highlightTabs(items, windowId));
+      func.push(highlightTabs(items, { windowId }));
     } else {
       items.push(tab);
       func.push(activateTab(tab));

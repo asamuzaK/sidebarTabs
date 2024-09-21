@@ -11,7 +11,8 @@ import { browser, createJsdom } from './mocha/setup.js';
 /* test */
 import * as mjs from '../src/mjs/browser-tabs.js';
 import {
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED, TAB
+  ACTIVE, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB,
+  PINNED, TAB
 } from '../src/mjs/constant.js';
 
 describe('browser-tabs', () => {
@@ -938,18 +939,19 @@ describe('browser-tabs', () => {
       const elm3 = document.createElement('p');
       const body = document.querySelector('body');
       elm.classList.add(TAB);
+      elm.classList.add(ACTIVE);
       elm.classList.add(HIGHLIGHTED);
       elm.dataset.tabId = '1';
       elm2.classList.add(TAB);
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
-      elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = '1';
+      elm3.dataset.tabId = '3';
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
-      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-      const res = await func(Array.from(selectedTabs), 1);
+      const res = await func([elm, elm3], {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.query.withArgs({
         windowId: 1,
         active: true,
@@ -958,6 +960,57 @@ describe('browser-tabs', () => {
       assert.strictEqual(browser.tabs.highlight.withArgs({
         windowId: 1,
         tabs: [0, 2]
+      }).callCount, j + 1, 'called');
+      assert.isObject(res, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).resolves([{
+        index: 2
+      }]);
+      browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [2, 0]
+      }).resolves({});
+      const i = browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).callCount;
+      const j = browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [2, 0]
+      }).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.classList.add(ACTIVE);
+      elm3.classList.add(HIGHLIGHTED);
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const res = await func([elm, elm3], {
+        windowId: 1
+      });
+      assert.strictEqual(browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [2, 0]
       }).callCount, j + 1, 'called');
       assert.isObject(res, 'result');
     });
@@ -994,12 +1047,11 @@ describe('browser-tabs', () => {
       elm2.dataset.tabId = '2';
       elm3.classList.add(TAB);
       elm3.classList.add(HIGHLIGHTED);
-      elm3.dataset.tabId = '1';
+      elm3.dataset.tabId = '3';
       body.appendChild(elm);
       body.appendChild(elm2);
       body.appendChild(elm3);
-      const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
-      const res = await func(Array.from(selectedTabs));
+      const res = await func([elm, elm3]);
       assert.strictEqual(browser.tabs.query.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
         active: true,
@@ -1008,6 +1060,52 @@ describe('browser-tabs', () => {
       assert.strictEqual(browser.tabs.highlight.withArgs({
         windowId: browser.windows.WINDOW_ID_CURRENT,
         tabs: [0, 2]
+      }).callCount, j + 1, 'called');
+      assert.isObject(res, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.tabs.update.withArgs(3, {
+        active: true
+      }).resolves({
+        index: 2
+      });
+      browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [2, 0]
+      }).resolves({});
+      const i = browser.tabs.update.withArgs(3, {
+        active: true
+      }).callCount;
+      const j = browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [2, 0]
+      }).callCount;
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.classList.add(ACTIVE);
+      elm.classList.add(HIGHLIGHTED);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      body.appendChild(elm);
+      body.appendChild(elm2);
+      body.appendChild(elm3);
+      const res = await func([elm, elm3], {
+        tabId: 3,
+        windowId: 1
+      });
+      assert.strictEqual(browser.tabs.update.withArgs(3, {
+        active: true
+      }).callCount, i + 1, 'called');
+      assert.strictEqual(browser.tabs.highlight.withArgs({
+        windowId: 1,
+        tabs: [2, 0]
       }).callCount, j + 1, 'called');
       assert.isObject(res, 'result');
     });

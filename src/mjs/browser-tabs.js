@@ -264,17 +264,24 @@ export const dupeTabs = async nodes => {
 /**
  * highlight tabs
  * @param {Array} nodes - array of node
- * @param {number} windowId - window ID
+ * @param {object} opt - options
+ * @param {number} opt.tabId - tab ID to activate
+ * @param {number} opt.windowId - window ID
  * @returns {Promise.<?Promise>} - highlightTab()
  */
-export const highlightTabs = async (nodes, windowId) => {
+export const highlightTabs = async (nodes, opt = {}) => {
   if (!Array.isArray(nodes)) {
     throw new TypeError(`Expected Array but got ${getType(nodes)}.`);
   }
-  if (!Number.isInteger(windowId)) {
-    windowId = windows.WINDOW_ID_CURRENT;
+  const { tabId, windowId } = opt;
+  let activeTab;
+  if (Number.isInteger(tabId)) {
+    activeTab = await updateTab(tabId, {
+      active: true
+    });
+  } else {
+    activeTab = await getActiveTab(windowId);
   }
-  const activeTab = await getActiveTab(windowId);
   const { index } = activeTab;
   const arr = [index];
   for (const item of nodes) {

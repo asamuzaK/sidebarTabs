@@ -465,7 +465,7 @@ export const handleClickedTab = evt => {
     if (shiftKey) {
       if (tab && firstSelectedTab) {
         const items = getTabsInRange(tab, firstSelectedTab);
-        func.push(highlightTabs(items, windowId));
+        func.push(highlightTabs(items, { windowId }));
       }
     } else if ((isMac && metaKey) || (!isMac && ctrlKey)) {
       const firstSelectedTabIndex = getSidebarTabIndex(firstSelectedTab);
@@ -1247,7 +1247,7 @@ export const handleClickedMenu = async info => {
         func.push(reloadTabs([...allTabs]));
         break;
       case TAB_ALL_SELECT:
-        func.push(highlightTabs([...allTabs], windowId));
+        func.push(highlightTabs([...allTabs], { windowId }));
         break;
       case TAB_BOOKMARK:
         func.push(bookmarkTabs([tab]));
@@ -2223,7 +2223,7 @@ export const handleEvt = evt => {
     evt.preventDefault();
     evt.stopPropagation();
     const allTabs = document.querySelectorAll(TAB_QUERY);
-    func.push(highlightTabs([...allTabs], windowId));
+    func.push(highlightTabs([...allTabs], { windowId }));
   // context menu
   } else if ((shiftKey && key === 'F10') || key === 'ContextMenu' ||
              button === MOUSE_BUTTON_RIGHT) {
