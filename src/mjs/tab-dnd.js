@@ -211,6 +211,17 @@ export const getDropIndexForDraggedTabs = (dropTarget, opt) => {
 };
 
 /**
+ * clear drop target
+ * @returns {void}
+ */
+export const clearDropTarget = () => {
+  const items = document.querySelectorAll(`.${DROP_TARGET}`);
+  for (const item of items) {
+    item.classList.remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
+  }
+};
+
+/**
  * extract dropped tabs data
  * @param {object} [dropTarget] - target element
  * @param {object} [data] - dragged data
@@ -225,6 +236,112 @@ export const extractDroppedTabs = async (dropTarget, data) => {
       pinnedTabIds, tabGroup, tabIds
     } = data;
     if (Number.isInteger(dragWindowId) && dragWindowId !== WINDOW_ID_NONE) {
+    /*
+    const { tabs: draggedWindowTabs } = await getWindow(dragWindowId, {
+      populate: true
+    });
+    let isTabData;
+    for (const tab of draggedWindowTabs) {
+      isTabData = tab.id === dragTabId;
+      if (isTabData) {
+        break;
+      }
+    }
+    if (isTabData && dropTarget.classList.contains(DROP_TARGET)) {
+      const pinned = dropTarget.classList.contains(PINNED);
+      const pinnedContainer = document.getElementById(PINNED);
+      const { nextElementSibling: firstUnpinnedContainer } = pinnedContainer;
+      const firstUnpinnedTab = firstUnpinnedContainer.querySelector(TAB_QUERY);
+      if (dragWindowId === dropWindowId) {
+        // drop target is pinned
+        if (pinned) {
+          if (dropEffect === 'move') {
+            if (pinnedTabIds.length) {
+              const opt = {
+                pinned,
+                dropAfter: dropTarget.classList.contains(DROP_TARGET_AFTER),
+                dropBefore: dropTarget.classList.contains(DROP_TARGET_BEFORE),
+                tabIds: pinnedTabIds,
+                windowId: dropWindowId
+              };
+              func.push(moveDroppedTabs(dropTarget, opt));
+            }
+            // should not happen
+            if (tabIds.length) {
+              const opt = {
+                pinned: false,
+                dropAfter: false,
+                dropBefore: true,
+                tabIds: tabIds.toReversed(),
+                windowId: dropWindowId
+              };
+              func.push(moveDroppedTabs(firstUnpinnedTab, opt));
+            }
+          } else if (dropEffect === 'copy') {
+            for (const tabId of pinnedTabIds) {
+              // copy tab as first unpinned tab
+            }
+            for (const tabId of tabIds) {
+              // copy tab as first unpinned tab
+            }
+          }
+        // drop target is not pinned and move effect
+        } else if (dropEffect === 'move') {
+          for (const tabId of pinnedTabIds) {
+            // move to last pinned tab
+            // (still pinned, does not cross boundary)
+          }
+          for (const tabId of tabIds) {
+            // move (unpinned)
+          }
+        // drop target is not pinned and copy effect
+        } else if (dropEffect === 'copy') {
+          for (const tabId of pinnedTabIds) {
+            // copy (unpinned)
+          }
+          for (const tabId of tabIds) {
+            // copy (unpinned)
+          }
+        }
+      // dragged from other window
+      } else {
+        // drop target is pinned
+        if (pinned) {
+          if (dropEffect === 'move') {
+            for (const tabId of pinnedTabIds) {
+              // move (pinned)
+            }
+            for (const tabId of tabIds) {
+              // move (pinned)
+            }
+          } else if (dropEffect === 'copy') {
+            for (const tabId of pinnedTabIds) {
+              // copy tab as first unpinned tab
+            }
+            for (const tabId of tabIds) {
+              // copy tab as first unpinned tab
+            }
+          }
+        // drop target is not pinned and move effect
+        } else if (dropEffect === 'move') {
+          for (const tabId of pinnedTabIds) {
+            // move (unpinned)
+          }
+          for (const tabId of tabIds) {
+            // move (unpinned)
+          }
+        // drop target is not pinned and copy effect
+        } else if (dropEffect === 'copy') {
+          for (const tabId of pinnedTabIds) {
+            // copy (unpinned)
+          }
+          for (const tabId of tabIds) {
+            // copy (unpinned)
+          }
+        }
+        clearDropTarget();
+      }
+      */
       if (dropEffect === 'move') {
         if (dragWindowId === dropWindowId) {
           if (Array.isArray(pinnedTabIds) && pinnedTabIds.length) {
@@ -360,7 +477,11 @@ export const extractDroppedTabs = async (dropTarget, data) => {
           }
         }
       }
+    } else {
+      clearDropTarget();
     }
+  } else {
+    clearDropTarget();
   }
   return Promise.all(func);
 };
@@ -437,6 +558,7 @@ export const openUriList = async (dropTarget, data = []) => {
         .then(requestSaveSession));
     }
   }
+  clearDropTarget();
   return Promise.all(func);
 };
 
@@ -488,15 +610,18 @@ export const searchQuery = async (dropTarget, data = '') => {
       }).then(restoreTabContainers).then(requestSaveSession));
     }
   }
+  clearDropTarget();
   return Promise.all(func);
 };
 
 /**
  * handle drop
  * @param {!object} evt - event
+ * @param {object} opt - options
+ * @param {boolean} opt.windowId - window ID
  * @returns {?Promise|undefined} - promise chain
  */
-export const handleDrop = evt => {
+export const handleDrop = (evt, opt = {}) => {
   const { currentTarget, dataTransfer, shiftKey, type } = evt;
   if (type !== 'drop') {
     return;
@@ -512,16 +637,16 @@ export const handleDrop = evt => {
       if (dataTypes.includes(MIME_JSON)) {
         const data = JSON.parse(dataTransfer.getData(MIME_JSON));
         if (data && isObjectNotEmpty(data)) {
-          const { pinned, windowId } = JSON.parse(dropTarget.dataset.tab);
+          const { windowId } = opt;
           data.dropEffect = dropEffect;
           data.dropWindowId = windowId;
           let beGrouped;
-          if (!pinned) {
+          if (!dropTarget.classList.contains(PINNED)) {
             if (shiftKey) {
               beGrouped = true;
             } else {
               const container = dropTarget.parentNode;
-              if (container?.classList.contains(CLASS_TAB_GROUP)) {
+              if (container.classList.contains(CLASS_TAB_GROUP)) {
                 const heading = container.querySelector(`.${CLASS_HEADING}`);
                 const childTabs = container.querySelectorAll(TAB_QUERY);
                 // if drop target is the first tab
@@ -601,10 +726,7 @@ export const handleDragEnd = evt => {
   if (type !== 'dragend') {
     return;
   }
-  const items = document.querySelectorAll(`.${DROP_TARGET}`);
-  for (const item of items) {
-    item.classList.remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
-  }
+  clearDropTarget();
 };
 
 /**
@@ -628,8 +750,9 @@ export const handleDragLeave = evt => {
 /**
  * handle dragover
  * @param {!object} evt - event
- * @param {object} [opt] - options
- * @param {boolean} [opt.isMac] - is Mac
+ * @param {object} opt - options
+ * @param {boolean} opt.isMac - is Mac
+ * @param {boolean} opt.windowId - window ID
  * @returns {void}
  */
 export const handleDragOver = (evt, opt = {}) => {
@@ -648,11 +771,12 @@ export const handleDragOver = (evt, opt = {}) => {
       evt.stopPropagation();
       const { bottom, top } = dropTarget.getBoundingClientRect();
       if (dataTypes.includes(MIME_JSON)) {
+        const { isMac, windowId } = opt;
         const isPinned = dropTarget.classList.contains(PINNED);
         const data = dataTransfer.getData(MIME_JSON);
-        const { pinned } = JSON.parse(data);
-        if ((isPinned && pinned) || !(isPinned || pinned)) {
-          const { isMac } = opt;
+        const { dragWindowId, pinned } = JSON.parse(data);
+        if (dragWindowId !== windowId ||
+            ((isPinned && pinned) || !(isPinned || pinned))) {
           if ((isMac && altKey) || (!isMac && ctrlKey)) {
             dataTransfer.dropEffect = 'copy';
           } else {
@@ -692,40 +816,11 @@ export const handleDragOver = (evt, opt = {}) => {
 };
 
 /**
- * handle dragenter
- * @param {!object} evt - event
- * @returns {void}
- */
-export const handleDragEnter = evt => {
-  const { currentTarget, dataTransfer, type } = evt;
-  if (type !== 'dragenter') {
-    return;
-  }
-  const { types: dataTypes } = dataTransfer;
-  const dropTarget = getSidebarTab(currentTarget);
-  const hasDataTypes = dataTypes.some(
-    mime => mime === MIME_JSON || mime === MIME_URI || mime === MIME_PLAIN
-  );
-  if (hasDataTypes && dropTarget) {
-    const data = dataTransfer.getData(MIME_JSON);
-    if (data) {
-      const { pinned } = JSON.parse(data);
-      const isPinned = dropTarget.classList.contains(PINNED);
-      if ((isPinned && pinned) || !(isPinned || pinned)) {
-        dropTarget.classList.add(DROP_TARGET);
-      }
-    } else if (dataTransfer.getData(MIME_URI) ||
-               dataTransfer.getData(MIME_PLAIN)) {
-      dropTarget.classList.add(DROP_TARGET);
-    }
-  }
-};
-
-/**
  * handle dragstart
  * @param {!object} evt - event
- * @param {object} [opt] - options
- * @param {boolean} [opt.isMac] - is Mac
+ * @param {object} opt - options
+ * @param {boolean} opt.isMac - is Mac
+ * @param {boolean} opt.windowId - window ID
  * @returns {Promise.<Array>|undefined} - result of each handler
  */
 export const handleDragStart = (evt, opt = {}) => {

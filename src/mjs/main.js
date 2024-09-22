@@ -31,8 +31,7 @@ import {
   setTabIcon
 } from './tab-content.js';
 import {
-  handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver,
-  handleDragStart, handleDrop
+  handleDragEnd, handleDragLeave, handleDragOver, handleDragStart, handleDrop
 } from './tab-dnd.js';
 import {
   addListenersToHeadingItems, addTabContextClickListener, bookmarkTabGroup,
@@ -380,7 +379,9 @@ export const triggerDndHandler = evt => {
   if (currentTarget.draggable && type === 'dragstart') {
     func = handleDragStart(evt, { isMac, windowId });
   } else if (type === 'dragover') {
-    func = handleDragOver(evt, { isMac });
+    func = handleDragOver(evt, { isMac, windowId });
+  } else if (type === 'drop') {
+    func = handleDrop(evt, { isMac, windowId });
   }
   return func || null;
 };
@@ -571,11 +572,10 @@ export const addTabEventListeners = async elm => {
     if (elm.draggable) {
       elm.addEventListener('dragstart', triggerDndHandler);
     }
-    elm.addEventListener('dragenter', handleDragEnter);
     elm.addEventListener('dragover', triggerDndHandler);
     elm.addEventListener('dragleave', handleDragLeave);
     elm.addEventListener('dragend', handleDragEnd);
-    elm.addEventListener('drop', handleDrop);
+    elm.addEventListener('drop', triggerDndHandler);
     elm.addEventListener('click', triggerTabWarmup, true);
     elm.addEventListener('click', handleClickedTab);
     elm.addEventListener('mousedown', handleClickedTab);

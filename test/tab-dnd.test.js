@@ -1203,6 +1203,51 @@ describe('dnd', () => {
     });
   });
 
+  describe('clear drop target', () => {
+    const func = mjs.clearDropTarget;
+
+    it('should remove class', () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET);
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func();
+      assert.isTrue(elm.classList.contains(TAB), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+    });
+
+    it('should remove class', () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_BEFORE);
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func();
+      assert.isTrue(elm.classList.contains(TAB), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'class');
+    });
+
+    it('should remove class', () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.tabId = '1';
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      func();
+      assert.isTrue(elm.classList.contains(TAB), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
+    });
+  });
+
   describe('extract dropped tabs data', () => {
     const func = mjs.extractDroppedTabs;
 
@@ -1237,6 +1282,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
@@ -1251,6 +1297,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm, {});
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
@@ -1268,6 +1315,7 @@ describe('dnd', () => {
         dragWindowId: browser.windows.WINDOW_ID_NONE,
         dropEffect: 'move'
       });
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
@@ -1300,6 +1348,7 @@ describe('dnd', () => {
         pinnedTabIds: [],
         tabIds: []
       });
+      assert.isFalse(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
@@ -1336,6 +1385,7 @@ describe('dnd', () => {
         pinnedTabIds: [],
         tabIds: [10]
       });
+      assert.isFalse(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.deepEqual(res, [], 'result');
     });
@@ -1373,6 +1423,7 @@ describe('dnd', () => {
         tabIds: [10]
       });
       const { args } = browser.tabs.move;
+      assert.isFalse(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.deepEqual(args[0][0], [10], 'args');
       assert.deepEqual(args[0][1], {
@@ -1415,6 +1466,7 @@ describe('dnd', () => {
         tabIds: []
       });
       const { args } = browser.tabs.move;
+      assert.isFalse(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.deepEqual(args[0][0], [10], 'args');
       assert.deepEqual(args[0][1], {
@@ -1464,6 +1516,7 @@ describe('dnd', () => {
         tabIds: []
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.deepEqual(Array.from(items), [elm2, elm, elm3, elm4], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
@@ -1510,6 +1563,7 @@ describe('dnd', () => {
         tabIds: []
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.deepEqual(Array.from(items), [elm2, elm, elm3, elm4], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
@@ -1556,6 +1610,7 @@ describe('dnd', () => {
         tabIds: [4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
       assert.deepEqual(Array.from(items), [elm2, elm, elm4, elm3], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
@@ -1604,6 +1659,7 @@ describe('dnd', () => {
         tabIds: [4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm3.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.deepEqual(Array.from(items), [elm, elm2, elm4, elm3], 'move');
       assert.isFalse(elm4.parentNode === elm3.parentNode, 'parent');
@@ -1650,6 +1706,7 @@ describe('dnd', () => {
         tabIds: [3]
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm4.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.deepEqual(Array.from(items), [elm, elm2, elm4, elm3], 'move');
       assert.isFalse(elm4.parentNode === elm3.parentNode, 'parent');
@@ -1697,6 +1754,7 @@ describe('dnd', () => {
         tabIds: [4]
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm3.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
       assert.deepEqual(Array.from(items), [elm2, elm, elm4, elm3], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
@@ -1746,6 +1804,7 @@ describe('dnd', () => {
         tabIds: [3]
       });
       const items = document.querySelectorAll(`.${TAB}`);
+      assert.isTrue(elm4.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.move.callCount, i + 2, 'called');
       assert.deepEqual(Array.from(items), [elm2, elm, elm4, elm3], 'move');
       assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
@@ -1783,6 +1842,7 @@ describe('dnd', () => {
         pinnedTabIds: [1],
         tabIds: []
       });
+      assert.isTrue(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.duplicate.callCount, i + 1, 'called');
       assert.isTrue(browser.tabs.duplicate.withArgs(1, {
         index: 2,
@@ -1820,6 +1880,7 @@ describe('dnd', () => {
         pinnedTabIds: [],
         tabIds: [3]
       });
+      assert.isTrue(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.duplicate.callCount, i + 1, 'called');
       assert.isTrue(browser.tabs.duplicate.withArgs(3, {
         index: 1,
@@ -1857,6 +1918,7 @@ describe('dnd', () => {
         pinnedTabIds: [],
         tabIds: [2, 3]
       });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.duplicate.callCount, i + 2, 'called');
       assert.isTrue(browser.tabs.duplicate.withArgs(2, {
         index: 1,
@@ -1898,6 +1960,7 @@ describe('dnd', () => {
         pinnedTabIds: [1],
         tabIds: [3]
       });
+      assert.isTrue(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.duplicate.callCount, i + 2, 'called');
       assert.isTrue(browser.tabs.duplicate.withArgs(1, {
         index: 2,
@@ -1955,6 +2018,7 @@ describe('dnd', () => {
         pinnedTabIds: [4, 5],
         tabIds: [6]
       });
+      assert.isFalse(elm2.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.duplicate.callCount, i + 3, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called');
       assert.isTrue(browser.tabs.move.withArgs([7, 8, 9], {
@@ -2006,49 +2070,13 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
       assert.isFalse(stubCurrentWin.called, 'not called');
       assert.isFalse(port.postMessage.called, 'not called');
       assert.deepEqual(res, [], 'result');
-    });
-
-    it('should throw', async () => {
-      const i = browser.tabs.create.callCount;
-      const j = browser.tabs.move.callCount;
-      const k = browser.tabs.update.callCount;
-      browser.tabs.update.rejects(new Error('error'));
-      const stubCurrentWin = browser.windows.getCurrent.resolves({
-        id: 1,
-        incognito: false
-      });
-      const portId = `${SIDEBAR}_1`;
-      const port = mockPort({
-        name: portId
-      });
-      port.postMessage.resolves({});
-      mjs.ports.set(portId, port);
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      elm.classList.add(TAB, DROP_TARGET);
-      elm.dataset.tabId = '1';
-      elm.dataset.tab = JSON.stringify({
-        windowId: '1'
-      });
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      await func(elm, ['https://example.com']).catch(e => {
-        assert.instanceOf(e, Error, 'error');
-        assert.strictEqual(e.message, 'error', 'message');
-        assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
-        assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
-        assert.strictEqual(browser.tabs.update.callCount, k + 1, 'called');
-        assert.isFalse(stubCurrentWin.called, 'not called');
-        assert.isFalse(port.postMessage.called, 'not called');
-      });
     });
 
     it('should not call function', async () => {
@@ -2078,6 +2106,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm, ['foo:bar']);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2113,6 +2142,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm, ['https://example.com']);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k + 1, 'called');
@@ -2151,6 +2181,7 @@ describe('dnd', () => {
         'foo:bar',
         'https://www.example.com'
       ]);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2189,6 +2220,7 @@ describe('dnd', () => {
         'foo:bar',
         'https://www.example.com'
       ]);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2231,6 +2263,7 @@ describe('dnd', () => {
         'foo:bar',
         'https://www.example.com'
       ]);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2276,6 +2309,7 @@ describe('dnd', () => {
         'foo:bar',
         'https://www.example.com'
       ]);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2325,6 +2359,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.search.search.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2371,6 +2406,7 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm, 'foo');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
@@ -2421,6 +2457,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const res = await func(elm, 'foo');
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
         tabId: 2
@@ -2474,6 +2511,7 @@ describe('dnd', () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func(elm, 'foo');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
@@ -2531,6 +2569,7 @@ describe('dnd', () => {
       main.appendChild(parent);
       body.appendChild(main);
       const res = await func(main, 'foo');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
@@ -2604,7 +2643,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2651,7 +2692,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2701,7 +2744,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2753,7 +2798,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2806,7 +2853,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -2860,7 +2909,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k + 1, 'called');
@@ -2914,7 +2965,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k + 1, 'called');
@@ -2969,7 +3022,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3022,7 +3077,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3077,7 +3134,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3132,7 +3191,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3191,7 +3252,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
@@ -3255,7 +3318,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
@@ -3314,7 +3379,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3372,7 +3439,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i + 2, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3429,7 +3498,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
       assert.strictEqual(browser.tabs.update.callCount, k, 'not called');
@@ -3495,7 +3566,9 @@ describe('dnd', () => {
         },
         type: 'drop'
       };
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       assert.strictEqual(browser.tabs.create.callCount, i + 1, 'called');
       assert.strictEqual(browser.search.search.withArgs({
         query: 'foo',
@@ -3576,7 +3649,9 @@ describe('dnd', () => {
       evt.shiftKey = false;
       head.hidden = true;
       const spyClass = sinon.spy(target.classList, 'contains');
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       const { callCount: classCallCount } = spyClass;
       spyClass.restore();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
@@ -3585,7 +3660,7 @@ describe('dnd', () => {
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.strictEqual(classCallCount, 2, 'called');
+      assert.strictEqual(classCallCount, 4, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3658,7 +3733,9 @@ describe('dnd', () => {
       evt.shiftKey = true;
       head.hidden = true;
       const spyClass = sinon.spy(target.classList, 'contains');
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       const { callCount: classCallCount } = spyClass;
       spyClass.restore();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
@@ -3667,7 +3744,7 @@ describe('dnd', () => {
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.strictEqual(classCallCount, 2, 'called');
+      assert.strictEqual(classCallCount, 3, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3740,7 +3817,9 @@ describe('dnd', () => {
       evt.shiftKey = false;
       head.hidden = true;
       const spyClass = sinon.spy(target.classList, 'contains');
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       const { callCount: classCallCount } = spyClass;
       spyClass.restore();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
@@ -3749,7 +3828,7 @@ describe('dnd', () => {
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.strictEqual(classCallCount, 3, 'called');
+      assert.strictEqual(classCallCount, 4, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3822,7 +3901,9 @@ describe('dnd', () => {
       evt.shiftKey = false;
       head.hidden = false;
       const spyClass = sinon.spy(target.classList, 'contains');
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       const { callCount: classCallCount } = spyClass;
       spyClass.restore();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
@@ -3831,7 +3912,7 @@ describe('dnd', () => {
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.strictEqual(classCallCount, 2, 'called');
+      assert.strictEqual(classCallCount, 3, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3904,7 +3985,9 @@ describe('dnd', () => {
       evt.shiftKey = false;
       head.hidden = true;
       const spyClass = sinon.spy(target.classList, 'contains');
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       const { callCount: classCallCount } = spyClass;
       spyClass.restore();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
@@ -3913,7 +3996,7 @@ describe('dnd', () => {
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.strictEqual(classCallCount, 3, 'called');
+      assert.strictEqual(classCallCount, 4, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3986,7 +4069,9 @@ describe('dnd', () => {
       evt.shiftKey = false;
       head.hidden = true;
       const spyClass = sinon.spy(target.classList, 'contains');
-      const res = await func(evt);
+      const res = await func(evt, {
+        windowId: 1
+      });
       const { callCount: classCallCount } = spyClass;
       spyClass.restore();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
@@ -3995,7 +4080,7 @@ describe('dnd', () => {
       assert.isTrue(preventDefault.calledOnce, 'called');
       assert.isTrue(stubCurrentWin.calledOnce, 'called');
       assert.isTrue(port.postMessage.calledOnce, 'called');
-      assert.strictEqual(classCallCount, 2, 'called');
+      assert.strictEqual(classCallCount, 3, 'called');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -4116,6 +4201,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: true
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4135,7 +4221,9 @@ describe('dnd', () => {
         },
         type: 'foo'
       };
-      func(evt);
+      func(evt, {
+        windowId: 1
+      });
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4160,6 +4248,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: true
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4179,7 +4268,9 @@ describe('dnd', () => {
         },
         type: 'dragover'
       };
-      func(evt);
+      func(evt, {
+        windowId: 1
+      });
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4204,6 +4295,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: false
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4224,50 +4316,9 @@ describe('dnd', () => {
         },
         type: 'dragover'
       };
-      func(evt);
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
-      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
-      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-
-    it('should set drop effect none and remove class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
+      func(evt, {
+        windowId: 1
       });
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns(JSON.stringify({
-        pinned: true
-      }));
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const preventDefault = sinon.stub();
-      const stopPropagation = sinon.stub();
-      const i = preventDefault.callCount;
-      const j = stopPropagation.callCount;
-      const evt = {
-        preventDefault,
-        stopPropagation,
-        clientY: 40,
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          dropEffect: 'move',
-          types: [MIME_JSON]
-        },
-        type: 'dragover'
-      };
-      func(evt);
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4292,6 +4343,53 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 2,
+        pinned: false
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_JSON]
+        },
+        type: 'dragover'
+      };
+      func(evt, {
+        windowId: 1
+      });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect none and remove class', () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: true
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4307,12 +4405,60 @@ describe('dnd', () => {
         currentTarget: elm,
         dataTransfer: {
           getData,
-          dropEffect: 'none',
+          dropEffect: 'move',
           types: [MIME_JSON]
         },
         type: 'dragover'
       };
-      func(evt);
+      func(evt, {
+        windowId: 1
+      });
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect and class', () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 2,
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_JSON]
+        },
+        type: 'dragover'
+      };
+      func(evt, {
+        windowId: 1
+      });
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4337,6 +4483,55 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: elm,
+        dataTransfer: {
+          getData,
+          dropEffect: 'none',
+          types: [MIME_JSON]
+        },
+        type: 'dragover'
+      };
+      func(evt, {
+        windowId: 1
+      });
+      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect and class', () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      parent.classList.add(PINNED);
+      elm.classList.add(TAB);
+      elm.classList.add(PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: true
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4357,7 +4552,9 @@ describe('dnd', () => {
         },
         type: 'dragover'
       };
-      func(evt);
+      func(evt, {
+        windowId: 1
+      });
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4382,6 +4579,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: true
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4403,7 +4601,9 @@ describe('dnd', () => {
         },
         type: 'dragover'
       };
-      func(evt);
+      func(evt, {
+        windowId: 1
+      });
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
@@ -4428,6 +4628,7 @@ describe('dnd', () => {
       body.appendChild(parent);
       const getData = sinon.stub();
       getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
         pinned: true
       }));
       getData.withArgs(MIME_URI).returns('');
@@ -4450,7 +4651,8 @@ describe('dnd', () => {
         type: 'dragover'
       };
       func(evt, {
-        isMac: true
+        isMac: true,
+        windowId: 1
       });
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
@@ -4623,260 +4825,6 @@ describe('dnd', () => {
       func(evt);
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
-    });
-  });
-
-  describe('handle dragenter', () => {
-    const func = mjs.handleDragEnter;
-
-    it('should not set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns('');
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('foo');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_PLAIN]
-        },
-        type: 'foo'
-      };
-      func(evt);
-      assert.isFalse(getData.called, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should not set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns('');
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('foo');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: ['foo']
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isFalse(getData.called, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns('');
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('foo');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_PLAIN]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isTrue(getData.called, 'data');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns('');
-      getData.withArgs(MIME_URI).returns('https://example.com');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_URI]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isTrue(getData.called, 'data');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(PINNED);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns(JSON.stringify({
-        pinned: true
-      }));
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_JSON]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isTrue(getData.called, 'data');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should not set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      parent.classList.add(PINNED);
-      elm.classList.add(TAB);
-      elm.classList.add(PINNED);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns(JSON.stringify({
-        pinned: false
-      }));
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_JSON]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isTrue(getData.called, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns(JSON.stringify({
-        pinned: false
-      }));
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_JSON]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isTrue(getData.called, 'data');
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns(JSON.stringify({
-        pinned: true
-      }));
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const evt = {
-        currentTarget: elm,
-        dataTransfer: {
-          getData,
-          types: [MIME_JSON]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isTrue(getData.called, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-    });
-
-    it('should not set class', () => {
-      const parent = document.createElement('div');
-      const elm = document.createElement('p');
-      const elm2 = document.createElement('p');
-      const body = document.querySelector('body');
-      parent.classList.add(CLASS_TAB_CONTAINER);
-      elm.classList.add(TAB);
-      elm.dataset.tabId = '1';
-      parent.appendChild(elm);
-      body.appendChild(parent);
-      body.appendChild(elm2);
-      const getData = sinon.stub();
-      getData.withArgs(MIME_JSON).returns(JSON.stringify({
-        pinned: true
-      }));
-      getData.withArgs(MIME_URI).returns('');
-      getData.withArgs(MIME_PLAIN).returns('');
-      const evt = {
-        currentTarget: elm2,
-        dataTransfer: {
-          getData,
-          types: [MIME_JSON]
-        },
-        type: 'dragenter'
-      };
-      func(evt);
-      assert.isFalse(getData.called, 'data');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
     });
   });
 
