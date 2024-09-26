@@ -149,19 +149,25 @@ export const closeTabsToStart = async elm => {
 /**
  * create tabs in order
  * @param {Array} arr - array of option
- * @returns {Promise.<?Promise>} - recurse createTabsInOrder()
+ * @param {boolean} pop - pop item from array
+ * @returns {Promise|undefined} - recurse createTabsInOrder()
  */
-export const createTabsInOrder = async arr => {
+export const createTabsInOrder = async (arr, pop = false) => {
   if (!Array.isArray(arr)) {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
-  const opt = arr.shift();
-  let func;
+  let opt;
+  if (pop) {
+    opt = arr.pop();
+  } else {
+    opt = arr.shift();
+  }
   if (isObjectNotEmpty(opt)) {
     await createTab(opt);
   }
+  let func;
   if (arr.length) {
-    func = createTabsInOrder(arr);
+    func = createTabsInOrder(arr, pop);
   }
   return func;
 };
@@ -172,7 +178,7 @@ export const createTabsInOrder = async arr => {
  * @param {Array} nodes - array of node
  * @param {string} cookieId - cookie store ID
  * @param {number} windowId - window ID
- * @returns {Promise.<?Promise>} - createTabsInOrder()
+ * @returns {?Promise} - createTabsInOrder()
  */
 export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
   if (!Array.isArray(nodes)) {
@@ -208,7 +214,7 @@ export const reopenTabsInContainer = async (nodes, cookieId, windowId) => {
     opts.push(opt);
   }
   if (opts.length) {
-    func = createTabsInOrder(opts.reverse());
+    func = createTabsInOrder(opts, true);
   }
   return func || null;
 };
@@ -298,13 +304,19 @@ export const highlightTabs = async (nodes, opt = {}) => {
  * move tabs in order
  * @param {Array} arr - array of tab info
  * @param {number} windowId - window ID
- * @returns {Promise.<?Promise>} - recurse moveTabsInOrder()
+ * @param {boolean} pop - pop item from array
+ * @returns {Promise|undefined} - recurse moveTabsInOrder()
  */
-export const moveTabsInOrder = async (arr, windowId) => {
+export const moveTabsInOrder = async (arr, windowId, pop = false) => {
   if (!Array.isArray(arr)) {
     throw new TypeError(`Expected Array but got ${getType(arr)}.`);
   }
-  const info = arr.shift();
+  let info;
+  if (pop) {
+    info = arr.pop();
+  } else {
+    info = arr.shift();
+  }
   let func;
   if (!Number.isInteger(windowId)) {
     windowId = windows.WINDOW_ID_CURRENT;
@@ -320,9 +332,9 @@ export const moveTabsInOrder = async (arr, windowId) => {
     await moveTab(tabId, { index, windowId });
   }
   if (arr.length) {
-    func = moveTabsInOrder(arr, windowId);
+    func = moveTabsInOrder(arr, windowId, pop);
   }
-  return func || null;
+  return func;
 };
 
 /**

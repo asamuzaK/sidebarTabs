@@ -2977,9 +2977,10 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(tmpl);
       body.appendChild(elm);
-      await func([elm2], 1);
+      const res = await func([elm2], 1);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.strictEqual(elm.childElementCount, 2, 'child');
+      assert.isNull(res, 'result');
     });
 
     it('should not call function if tab is last child', async () => {
@@ -3003,9 +3004,10 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(tmpl);
       body.appendChild(elm);
-      await func([elm3], 1);
+      const res = await func([elm3], 1);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.strictEqual(elm.childElementCount, 2, 'child');
+      assert.isNull(res, 'result');
     });
 
     it('should call function', async () => {
@@ -3028,9 +3030,10 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(tmpl);
       body.appendChild(elm);
-      await func([elm2], 1);
+      const res = await func([elm2], 1);
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.strictEqual(elm.childElementCount, 1, 'child');
+      assert.isUndefined(res, 'result');
     });
 
     it('should call function', async () => {
@@ -3053,9 +3056,10 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(tmpl);
       body.appendChild(elm);
-      await func([elm2]);
+      const res = await func([elm2]);
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.strictEqual(elm.childElementCount, 1, 'child');
+      assert.isUndefined(res, 'result');
     });
   });
 
@@ -3158,7 +3162,7 @@ describe('tab-group', () => {
       const res = await func(1);
       assert.strictEqual(elm.childElementCount, 1, 'child');
       assert.strictEqual(elm2.childElementCount, 0, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3191,7 +3195,7 @@ describe('tab-group', () => {
       const res = await func();
       assert.strictEqual(elm.childElementCount, 1, 'child');
       assert.strictEqual(elm2.childElementCount, 0, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3224,7 +3228,7 @@ describe('tab-group', () => {
       const res = await func();
       assert.strictEqual(elm.childElementCount, 2, 'child');
       assert.strictEqual(elm2.childElementCount, 1, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
   });
 
@@ -3316,7 +3320,7 @@ describe('tab-group', () => {
       assert.strictEqual(parent.nextElementSibling.childElementCount, 2,
         'child');
       assert.strictEqual(parent2.childElementCount, 0, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3371,7 +3375,7 @@ describe('tab-group', () => {
       assert.strictEqual(body.childElementCount, 3, 'parent');
       assert.strictEqual(parent.childElementCount, 1, 'child');
       assert.strictEqual(parent2.childElementCount, 2, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
   });
 
@@ -3487,7 +3491,7 @@ describe('tab-group', () => {
       assert.strictEqual(parent.nextElementSibling.childElementCount, 2,
         'child');
       assert.strictEqual(parent2.childElementCount, 0, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3542,7 +3546,7 @@ describe('tab-group', () => {
       assert.strictEqual(body.childElementCount, 3, 'parent');
       assert.strictEqual(parent.childElementCount, 1, 'child');
       assert.strictEqual(parent2.childElementCount, 2, 'child');
-      assert.isNull(res, 'result');
+      assert.isUndefined(res, 'result');
     });
   });
 

@@ -516,13 +516,26 @@ describe('browser-tabs', () => {
     });
 
     it('should call function', async () => {
-      const i = browser.tabs.create.withArgs({ foo: 'bar' }).callCount;
-      const j = browser.tabs.create.withArgs({ foo: 'baz' }).callCount;
+      const order = [];
+      const createFunc = browser.tabs.create.callsFake(opt => {
+        const { foo } = opt;
+        order.push(foo);
+      });
       const res = await func([{ foo: 'bar' }, { foo: 'baz' }]);
-      assert.strictEqual(browser.tabs.create.withArgs({ foo: 'bar' }).callCount,
-        i + 1, 'called');
-      assert.strictEqual(browser.tabs.create.withArgs({ foo: 'baz' }).callCount,
-        j + 1, 'called');
+      assert.strictEqual(createFunc.callCount, 2, 'called');
+      assert.deepEqual(order, ['bar', 'baz'], 'order');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const order = [];
+      const createFunc = browser.tabs.create.callsFake(opt => {
+        const { foo } = opt;
+        order.push(foo);
+      });
+      const res = await func([{ foo: 'bar' }, { foo: 'baz' }], true);
+      assert.strictEqual(createFunc.callCount, 2, 'called');
+      assert.deepEqual(order, ['baz', 'bar'], 'order');
       assert.isUndefined(res, 'result');
     });
   });
@@ -1130,8 +1143,9 @@ describe('browser-tabs', () => {
 
     it('should not call function if object is empty', async () => {
       const i = browser.tabs.move.callCount;
-      await func([{}]);
+      const res = await func([{}]);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
+      assert.isUndefined(res, 'result');
     });
 
     it('should throw if index is not contained', async () => {
@@ -1167,11 +1181,12 @@ describe('browser-tabs', () => {
         index: 0,
         windowId: 1
       }).callCount;
-      await func([{ index: 0, tabId: 1 }], 1);
+      const res = await func([{ index: 0, tabId: 1 }], 1);
       assert.strictEqual(browser.tabs.move.withArgs(1, {
         index: 0,
         windowId: 1
       }).callCount, i + 1, 'called');
+      assert.isUndefined(res, 'result');
     });
 
     it('should call function', async () => {
@@ -1179,31 +1194,38 @@ describe('browser-tabs', () => {
         index: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT
       }).callCount;
-      await func([{ index: 0, tabId: 1 }]);
+      const res = await func([{ index: 0, tabId: 1 }]);
       assert.strictEqual(browser.tabs.move.withArgs(1, {
         index: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT
       }).callCount, i + 1, 'called');
+      assert.isUndefined(res, 'result');
     });
 
     it('should call function', async () => {
-      const i = browser.tabs.move.withArgs(1, {
-        index: 0,
-        windowId: 1
-      }).callCount;
-      const j = browser.tabs.move.withArgs(2, {
-        index: 1,
-        windowId: 1
-      }).callCount;
-      await func([{ index: 0, tabId: 1 }, { index: 1, tabId: 2 }], 1);
-      assert.strictEqual(browser.tabs.move.withArgs(1, {
-        index: 0,
-        windowId: 1
-      }).callCount, i + 1, 'called');
-      assert.strictEqual(browser.tabs.move.withArgs(2, {
-        index: 1,
-        windowId: 1
-      }).callCount, j + 1, 'called');
+      const order = [];
+      const moveFunc = browser.tabs.move.callsFake((...args) => {
+        const [id] = args;
+        order.push(id);
+      });
+      const res =
+        await func([{ index: 0, tabId: 1 }, { index: 1, tabId: 2 }], 1);
+      assert.strictEqual(moveFunc.callCount, 2, 'called');
+      assert.deepEqual(order, [1, 2], 'order');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const order = [];
+      const moveFunc = browser.tabs.move.callsFake((...args) => {
+        const [id] = args;
+        order.push(id);
+      });
+      const res =
+        await func([{ index: 0, tabId: 1 }, { index: 1, tabId: 2 }], 1, true);
+      assert.strictEqual(moveFunc.callCount, 2, 'called');
+      assert.deepEqual(order, [2, 1], 'order');
+      assert.isUndefined(res, 'result');
     });
   });
 

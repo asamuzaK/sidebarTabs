@@ -561,7 +561,7 @@ export const closeTabGroup = async node => {
  * detach tabs from tab group
  * @param {Array} nodes - array of node
  * @param {number} [windowId] - window ID
- * @returns {Promise.<?Promise>} - moveTabsInOrder()
+ * @returns {?Promise} - moveTabsInOrder()
  */
 export const detachTabsFromGroup = async (nodes, windowId) => {
   if (Array.isArray(nodes)) {
@@ -608,7 +608,7 @@ export const detachTabsFromGroup = async (nodes, windowId) => {
 /**
  * group selected tabs
  * @param {number} [windowId] - window ID
- * @returns {Promise.<?Promise>} - moveTabsInOrder()
+ * @returns {?Promise} - moveTabsInOrder()
  */
 export const groupSelectedTabs = async windowId => {
   const selectedTabs =
@@ -656,7 +656,7 @@ export const groupSelectedTabs = async windowId => {
  * group same container tabs
  * @param {number} tabId - tab ID
  * @param {number} [windowId] - window ID
- * @returns {Promise.<?Function>} - moveTabsInOrder()
+ * @returns {?Promise} - moveTabsInOrder()
  */
 export const groupSameContainerTabs = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
@@ -714,7 +714,7 @@ export const groupSameContainerTabs = async (tabId, windowId) => {
  * group same domain tabs
  * @param {number} tabId - tab ID
  * @param {number} [windowId] - window ID
- * @returns {Promise.<?Promise>} - moveTabsInOrder()
+ * @returns {?Promise} - moveTabsInOrder()
  */
 export const groupSameDomainTabs = async (tabId, windowId) => {
   if (!Number.isInteger(tabId)) {
