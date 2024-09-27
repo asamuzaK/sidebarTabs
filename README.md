@@ -40,19 +40,19 @@ There are some differences in the behavior of Firefox's native tabs and Sidebar 
 
 |Drag item|On drag start|Drop target|On drop|Result|Note|
 |------|------|------|------|------|------|
-|Tab(s) of Sidebar Tabs|Mouse down|Sidebar Tabs|Mouse up|Move|[^1] [^2]|
-|Tab(s) of Sidebar Tabs|Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^1] [^2]|
-|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + Mouse down|Sidebar Tabs|Mouse up|Move|[^2]|
-|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^2]|
-|URL|Mouse down|Sidebar Tabs|Mouse up|Open URL| |
-|Text|Mouse down|Sidebar Tabs|Mouse up|Search text| |
-|Tab(s) of Sidebar Tabs|Mouse down|Bookmark Toolbar|Mouse up|None|Native tab creates bookmark|
-|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + Mouse down|Bookmark Toolbar|Mouse up|Creates bookmark|[^1]|
-|Tab(s) of Sidebar Tabs|Mouse down|Desktop|Mouse up|None|Native tab creates new window|
-|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + Mouse down|Desktop|Mouse up|**Creates internet shortcut (Caveat)**| |
+|Tab(s) of Sidebar Tabs|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Move|[^1] [^2]|
+|Tab(s) of Sidebar Tabs|`Mouse Down`|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + `Mouse Up`|Copy|[^1] [^2]|
+|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + `Mouse Down`|Sidebar Tabs|`Mouse Up`|Move|[^2]|
+|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + `Mouse Down`|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + `Mouse Up`|Copy|[^2]|
+|URL|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Open URL| |
+|Text|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Search text| |
+|Tab(s) of Sidebar Tabs|`Mouse Down`|Bookmark Toolbar|`Mouse Up`|None|Native tab creates bookmark|
+|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + `Mouse Down`|Bookmark Toolbar|`Mouse Up`|Creates bookmark|[^1]|
+|Tab(s) of Sidebar Tabs|`Mouse Down`|Desktop|`Mouse Up`|None|Native tab creates new window|
+|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + `Mouse Down`|Desktop|`Mouse Up`|**Creates internet shortcut (Caveat)**| |
 
-[^1]: `Shift` + Mouse down / `Ctrl` (`Cmd` on Mac) + Mouse down selects multiple tabs.
-[^2]: `Shift` + Mouse up will group dragged tab(s) and drop target.
+[^1]: `Shift` + `Mouse Down` / `Ctrl` (`Cmd` on Mac) + `Mouse Down` selects multiple tabs.
+[^2]: `Shift` + `Mouse Up` will group dragged tab(s) and drop target.
 
 ## Known Issues
 
