@@ -40,19 +40,21 @@ There are some differences in the behavior of Firefox's native tabs and Sidebar 
 
 |Drag item|On drag start|Drop target|On drop|Result|Note|
 |------|------|------|------|------|------|
-|Tab(s) of Sidebar Tabs|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Move|[^1] [^2]|
-|Tab(s) of Sidebar Tabs|`Mouse Down`|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + `Mouse Up`|Copy|[^1] [^2]|
-|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + `Mouse Down`|Sidebar Tabs|`Mouse Up`|Move|[^2]|
-|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + `Mouse Down`|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + `Mouse Up`|Copy|[^2]|
+|Tab(s) of Sidebar Tabs|`Mouse Down`[^1]|Sidebar Tabs|`Mouse Up`[^2]|Move| |
+|Tab(s) of Sidebar Tabs|`Mouse Down`[^1]|Sidebar Tabs|`Ctrl`[^3] + `Mouse Up`[^2]|Copy| |
+|Tab Group|`Shift` + `Ctrl`[^3] + `Mouse Down`|Sidebar Tabs|`Mouse Up`[^2]|Move| |
+|Tab Group|`Shift` + `Ctrl`[^3] + `Mouse Down`|Sidebar Tabs|`Ctrl`[^3] + `Mouse Up`[^2]|Copy| |
 |URL|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Open URL| |
 |Text|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Search text| |
 |Tab(s) of Sidebar Tabs|`Mouse Down`|Bookmark Toolbar|`Mouse Up`|None|Native tab creates bookmark|
-|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + `Mouse Down`|Bookmark Toolbar|`Mouse Up`|Creates bookmark|[^1]|
+|Tab(s) of Sidebar Tabs|`Alt`[^4] + `Mouse Down`[^1]|Bookmark Toolbar|`Mouse Up`|Creates bookmark| |
 |Tab(s) of Sidebar Tabs|`Mouse Down`|Desktop|`Mouse Up`|None|Native tab creates new window|
-|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + `Mouse Down`|Desktop|`Mouse Up`|**Creates internet shortcut (Caveat)**| |
+|Tab(s) of Sidebar Tabs|`Alt`[^4] + `Mouse Down`[^1]|Desktop|`Mouse Up`|**Creates internet shortcut (Caveat)**| |
 
 [^1]: `Shift` + `Mouse Down` / `Ctrl` (`Cmd` on Mac) + `Mouse Down` selects multiple tabs.
 [^2]: `Shift` + `Mouse Up` will group dragged tab(s) and drop target.
+[^3]: `Cmd` on Mac
+[^4]: `Opt` on Mac
 
 ## Known Issues
 
