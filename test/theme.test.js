@@ -376,7 +376,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#55545f', `${key}`);
+          assert.strictEqual(value, '#d7d7e65f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -413,7 +413,7 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME || key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#55545f', `${key}`);
+          assert.strictEqual(value, '#d7d7e65f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -456,7 +456,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fc8a8a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#55545f', `${key}`);
+          assert.strictEqual(value, '#d7d7e65f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -495,7 +495,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#55545f', `${key}`);
+          assert.strictEqual(value, '#d7d7e65f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -532,7 +532,7 @@ describe('theme', () => {
             key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#55545f', `${key}`);
+          assert.strictEqual(value, '#d7d7e65f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -573,7 +573,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fc8a8a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#55545f', `${key}`);
+          assert.strictEqual(value, '#d7d7e65f', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1667,6 +1667,8 @@ describe('theme', () => {
           assert.strictEqual(value, '#a2c0e0', `${key}`);
         } else if (key === CUSTOM_HEADING_TEXT_PINNED) {
           assert.strictEqual(value, '#a2a2c1', `${key}`);
+        } else if (key === CUSTOM_COLOR_ACTIVE) {
+          assert.strictEqual(value, '#fbfbfe', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -3639,7 +3641,7 @@ describe('theme', () => {
       browser.theme.getCurrent.withArgs(1).resolves({
         colors: {
           frame: '#1c1b22',
-          tab_background_text: 'rgb(251,251,254)'
+          tab_background_text: 'rgb(255,255,255)'
         }
       });
       browser.management.getAll.resolves([

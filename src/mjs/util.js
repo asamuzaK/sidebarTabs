@@ -341,8 +341,7 @@ export const scrollTabIntoView = async elm => {
 };
 
 /**
- *
- *switch tab
+ * switch tab
  * @param {object} [opt] - options
  * @returns {?Promise} - activateTab()
  */

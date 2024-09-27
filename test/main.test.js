@@ -24,7 +24,7 @@ import {
   CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
   CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
-  DISCARDED, EXT_INIT, FRAME_COLOR_USE,
+  DISCARDED, DROP_TARGET, EXT_INIT, FRAME_COLOR_USE,
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, HIGHLIGHTED,
   MIME_JSON, MIME_PLAIN,
   NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER,
@@ -939,6 +939,11 @@ describe('main', () => {
         },
         type: 'dragstart'
       };
+      browser.tabs.update.resolves({
+        active: true,
+        id: 1,
+        index: 0
+      });
       const res = await func(evt);
       assert.isTrue(getData.notCalled, 'not called');
       assert.strictEqual(setData.callCount, 1, 'called');
@@ -971,10 +976,48 @@ describe('main', () => {
         dataTransfer: {
           getData,
           setData,
-          effectAllowed: 'uninitialized',
+          effectAllowed: 'copyMove',
           types: [MIME_JSON, MIME_PLAIN]
         },
         type: 'dragover'
+      };
+      const res = await func(evt);
+      assert.isTrue(getData.calledOnce, 'called');
+      assert.isTrue(setData.notCalled, 'not called');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(TAB, DROP_TARGET);
+      elm.draggable = true;
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({ url: 'https://example.com' });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      mjs.sidebar.isMac = false;
+      mjs.sidebar.windowId = 1;
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('{}');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          dropEffect: 'move',
+          getData,
+          setData,
+          effectAllowed: 'copyMove',
+          types: [MIME_JSON, MIME_PLAIN]
+        },
+        type: 'drop'
       };
       const res = await func(evt);
       assert.isTrue(getData.calledOnce, 'called');
@@ -2227,7 +2270,7 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const i = spy.callCount;
       await func(elm);
-      assert.strictEqual(spy.callCount, i + 8, 'not called');
+      assert.strictEqual(spy.callCount, i + 7, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -2240,7 +2283,7 @@ describe('main', () => {
       await func(elm);
       const i = spy.callCount;
       await func(elm);
-      assert.strictEqual(spy.callCount, i + 8, 'not called');
+      assert.strictEqual(spy.callCount, i + 7, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -2252,7 +2295,7 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const i = spy.callCount;
       await func(elm);
-      assert.strictEqual(spy.callCount, i + 9, 'called');
+      assert.strictEqual(spy.callCount, i + 8, 'called');
       elm.addEventListener.restore();
     });
   });
