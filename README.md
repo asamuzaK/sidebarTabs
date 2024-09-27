@@ -36,20 +36,20 @@ This can also improve dark theme ([Issue #154](https://github.com/asamuzaK/sideb
 
 ## Drag and Drop
 
-Sidebar Tabs mostly implement Firefox's native tab behavior, but there are some differences.
+There are some differences in the behavior of Firefox's native tabs and Sidebar Tabs.
 
 |Drag item|On drag start|Drop target|On drop|Result|Note|
 |------|------|------|------|------|------|
-|Tab|Mouse down|Sidebar Tabs|Mouse up|Move|[^1] [^2]|
-|Tab|Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^1] [^2]|
+|Tab(s) of Sidebar Tabs|Mouse down|Sidebar Tabs|Mouse up|Move|[^1] [^2]|
+|Tab(s) of Sidebar Tabs|Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^1] [^2]|
 |Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + Mouse down|Sidebar Tabs|Mouse up|Move|[^2]|
 |Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^2]|
 |URL|Mouse down|Sidebar Tabs|Mouse up|Open URL| |
 |Text|Mouse down|Sidebar Tabs|Mouse up|Search text| |
-|Tab|Mouse down|Bookmark Toolbar|Mouse up|None|Native tab creates bookmark|
-|Tab|`Alt` (`Opt` on Mac) + Mouse down|Bookmark Toolbar|Mouse up|Creates bookmark|[^1]|
-|Tab|Mouse down|Desktop|Mouse up|None|Native tab creates new window|
-|Tab|`Alt` (`Opt` on Mac) + Mouse down|Desktop|Mouse up|**Creates internet shortcut (Caveat)**| |
+|Tab(s) of Sidebar Tabs|Mouse down|Bookmark Toolbar|Mouse up|None|Native tab creates bookmark|
+|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + Mouse down|Bookmark Toolbar|Mouse up|Creates bookmark|[^1]|
+|Tab(s) of Sidebar Tabs|Mouse down|Desktop|Mouse up|None|Native tab creates new window|
+|Tab(s) of Sidebar Tabs|`Alt` (`Opt` on Mac) + Mouse down|Desktop|Mouse up|**Creates internet shortcut (Caveat)**| |
 
 [^1]: `Shift` + Mouse down / `Ctrl` (`Cmd` on Mac) + Mouse down selects multiple tabs.
 [^2]: `Shift` + Mouse up will group dragged tab(s) and drop target.
