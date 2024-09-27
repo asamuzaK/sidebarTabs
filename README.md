@@ -31,9 +31,28 @@ This can also improve dark theme ([Issue #154](https://github.com/asamuzaK/sideb
 * Tab groups are color-coded for each.
 * Collapse / expand tab groups can be done by clicking on the colored part, or from the context menu.
 * The new tab opened from the tab in the tab group will be displayed as the tab of that group.
-* To cancel the grouping of tabs, you can do it from the context menu.
-* To move the tab group with drag &amp; drop (DnD), "Shift + Ctrl + DnD" ("Shift + Cmd + DnD" on Mac).
+* To cancel the grouping of tabs, do it from the context menu.
 * Tab groups will not be saved during private browsing.
+
+## Drag and Drop
+
+Sidebar Tabs mostly implement Firefox's native tab behavior, but there are some differences.
+
+|Drag item|On drag start|Drop target|On drop|Result|Note|
+|------|------|------|------|------|------|
+|Tab|Mouse down|Sidebar Tabs|Mouse up|Move|[^1] [^2]|
+|Tab|Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^1] [^2]|
+|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + Mouse down|Sidebar Tabs|Mouse up|Move|[^2]|
+|Tab Group|`Shift` + `Ctrl` (`Cmd` on Mac) + Mouse down|Sidebar Tabs|`Ctrl` (`Cmd` on Mac) + Mouse up|Copy|[^2]|
+|URL|Mouse down|Sidebar Tabs|Mouse up|Open URL| |
+|Text|Mouse down|Sidebar Tabs|Mouse up|Search text| |
+|Tab|Mouse down|Bookmark Toolbar|Mouse up|None|Native tab creates bookmark|
+|Tab|`Alt` (`Opt` on Mac) + Mouse down|Bookmark Toolbar|Mouse up|Creates bookmark|[^1]|
+|Tab|Mouse down|Desktop|Mouse up|None|Native tab creates new window|
+|Tab|`Alt` (`Opt` on Mac) + Mouse down|Desktop|Mouse up|**Creates internet shortcut (Caveat)**| |
+
+[^1]: `Shift` + Mouse down / `Ctrl` (`Cmd` on Mac) + Mouse down selects multiple tabs.
+[^2]: `Shift` + Mouse up will group dragged tab(s) and drop target.
 
 ## Known Issues
 
