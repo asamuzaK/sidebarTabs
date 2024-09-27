@@ -153,7 +153,7 @@
     }
   },
   "closeTabsToTheEnd_menu": {
-    "message": "Close Tabs to &Bottom",
+    "message": "Close Tabs &Below",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -162,7 +162,7 @@
     }
   },
   "closeTabsToTheStart_menu": {
-    "message": "Close &Tabs to Top",
+    "message": "Close &Tabs Above",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -420,7 +420,7 @@
     }
   },
   "newTab_menu": {
-    "message": "Ne&w Tab",
+    "message": "Ne&w Tab Below",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {
