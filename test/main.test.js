@@ -1,7 +1,7 @@
 /**
  * main.test.js
  */
-/* eslint-disable camelcase, import/order, regexp/no-super-linear-backtracking */
+/* eslint-disable camelcase, import-x/order, regexp/no-super-linear-backtracking */
 
 /* api */
 import sinon from 'sinon';
