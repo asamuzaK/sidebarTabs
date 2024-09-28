@@ -1,7 +1,7 @@
 /**
  * options-main.test.js
  */
-/* eslint-disable import/order, regexp/no-super-linear-backtracking */
+/* eslint-disable import-x/order, regexp/no-super-linear-backtracking */
 
 /* api */
 import sinon from 'sinon';

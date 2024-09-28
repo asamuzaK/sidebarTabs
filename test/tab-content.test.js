@@ -1,7 +1,7 @@
 /**
  * tab-content.test.js
  */
-/* eslint-disable import/order */
+/* eslint-disable import-x/order */
 
 /* api */
 import fs from 'node:fs';

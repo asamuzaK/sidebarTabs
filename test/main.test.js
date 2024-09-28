@@ -1,7 +1,7 @@
 /**
  * main.test.js
  */
-/* eslint-disable camelcase, import/order, regexp/no-super-linear-backtracking */
+/* eslint-disable camelcase, import-x/order, regexp/no-super-linear-backtracking */
 
 /* api */
 import sinon from 'sinon';
@@ -3204,7 +3204,7 @@ describe('main', () => {
       child.classList.add(TAB);
       child.dataset.tabId = '2';
       pinned.appendChild(child);
-      mjs.userOpts.set(TAB_GROUP_NEW_TAB_AT_END, true); ;
+      mjs.userOpts.set(TAB_GROUP_NEW_TAB_AT_END, true);
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
