@@ -25,6 +25,7 @@
   "devDependencies": {
     "@asamuzakjp/dom-selector": "^6.1.1",
     "@types/firefox-webext-browser": "^120.0.4",
+    "@types/node": "^22.7.4",
     "addons-linter": "^7.1.0",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
@@ -74,5 +75,5 @@
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
   },
-  "version": "14.0.2"
+  "version": "15.0.0"
 }

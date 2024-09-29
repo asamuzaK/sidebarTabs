@@ -20,9 +20,9 @@ export function toggleTabGroupHeadingState(node: object, multi?: boolean): Promi
 export function toggleAutoCollapsePinnedTabs(auto?: boolean): Promise<void>;
 export function bookmarkTabGroup(node: object): Promise<Promise<any> | null>;
 export function closeTabGroup(node: object): Promise<Promise<any> | null>;
-export function detachTabsFromGroup(nodes: any[], windowId?: number): Promise<Promise<any> | null>;
-export function groupSelectedTabs(windowId?: number): Promise<Promise<any> | null>;
-export function groupSameContainerTabs(tabId: number, windowId?: number): Promise<Function | null>;
-export function groupSameDomainTabs(tabId: number, windowId?: number): Promise<Promise<any> | null>;
+export function detachTabsFromGroup(nodes: any[], windowId?: number): Promise<any> | null;
+export function groupSelectedTabs(windowId?: number): Promise<any> | null;
+export function groupSameContainerTabs(tabId: number, windowId?: number): Promise<any> | null;
+export function groupSameDomainTabs(tabId: number, windowId?: number): Promise<any> | null;
 export function ungroupTabs(node?: object): Promise<void>;
 export { ports } from "./session.js";
