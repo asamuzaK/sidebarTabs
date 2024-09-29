@@ -44,18 +44,18 @@ Tab groups will not be saved during private browsing.
 
 There are some differences in Firefox's native tabs and Sidebar Tabs.
 
-|Drag item|On drag start|Drop target|On drop|Result|Note|
-|----|----|----|----|----|----|
-|Tab(s) of Sidebar Tabs|`Mouse Down`[^3]|Sidebar Tabs|`Mouse Up`[^4]|Move| |
-|Tab(s) of Sidebar Tabs|`Mouse Down`[^3]|Sidebar Tabs|`Ctrl`[^1] + `Mouse Up`[^4]|Copy| |
-|Tab Group|`Shift` + `Ctrl`[^1] + `Mouse Down`|Sidebar Tabs|`Mouse Up`[^4]|Move| |
-|Tab Group|`Shift` + `Ctrl`[^1] + `Mouse Down`|Sidebar Tabs|`Ctrl`[^1] + `Mouse Up`[^4]|Copy| |
-|URL|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Open URL| |
-|Text|`Mouse Down`|Sidebar Tabs|`Mouse Up`|Search text| |
-|Tab(s) of Sidebar Tabs|`Mouse Down`|Bookmark Toolbar|`Mouse Up`|None|Native tab creates bookmark|
-|Tab(s) of Sidebar Tabs|`Alt`[^2] + `Mouse Down`[^3]|Bookmark Toolbar|`Mouse Up`|Creates bookmark| |
-|Tab(s) of Sidebar Tabs|`Mouse Down`|Desktop|`Mouse Up`|None|Native tab creates new window|
-|Tab(s) of Sidebar Tabs|`Alt`[^2] + `Mouse Down`[^3]|Desktop|`Mouse Up`|**Creates internet shortcut (Caveat)**| |
+|Command|Drag item|Drop target|Note|
+|----|----|----|----|
+|Move Tab|Drag[^3] Tab|Drop[^4] to Sidebar|Also between windows[^5]|
+|Copy Tab|Drag[^3] Tab|`Ctrl`[^1] + Drop[^4] to Sidebar|Also between windows[^5]|
+|Move Tab Group|`Shift` + `Ctrl`[^1] + Drag Tab Group|Drop[^4] to Sidebar|Also between windows[^5]|
+|Copy Tab Group|`Shift` + `Ctrl`[^1] + Drag Tab Group|`Ctrl`[^1] + Drop[^4] to Sidebar|Also between windows[^5]|
+|Open URL|Drag URL|Drop to Sidebar| |
+|Search Text|Drag Text|Drop to Sidebar |
+|(No Effect)|Drag Tab|Drop to Bookmark Toolbar|Native tab creates bookmark|
+|Create Bookmark|`Alt`[^2] + Drag[^3] Tab|Drop to Bookmark Toolbar| |
+|(No Effect)|Drag Tab|Drop to Desktop|Native tab creates new window|
+|**Creates Internet Shortcut (Caveat)**|`Alt`[^2] + Drag[^3] Tab|Drop to Desktop| |
 
 ## Known Issues
 
@@ -66,5 +66,6 @@ There are some differences in Firefox's native tabs and Sidebar Tabs.
 
 [^1]: `Cmd` on Mac
 [^2]: `Opt` on Mac
-[^3]: `Shift` + `Mouse Down` / `Ctrl` (`Cmd` on Mac) + `Mouse Down` selects multiple tabs.
-[^4]: `Shift` + `Mouse Up` will group dragged tab(s) and drop target.
+[^3]: `Shift` + Drag / `Ctrl` (`Cmd` on Mac) + Drag selects multiple tabs.
+[^4]: `Shift` + Drop will group dragged tab(s) and drop target.
+[^5]: Grouping will be canceled, `Shift` has no effect.
