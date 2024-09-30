@@ -131,7 +131,7 @@ export const handleDroppedText = async (target, data) => {
         const [firstItem, ...values] = items;
         const { type: firstType, value: firstValue } = firstItem;
         let tab;
-        // create firstValue before unpinnedTab, activate
+        // create tab with firstValue before unpinnedTab, activate
         if (pinned) {
           if (firstType === 'url') {
             tab = await createTab({
@@ -141,14 +141,13 @@ export const handleDroppedText = async (target, data) => {
               windowId: dropWindowId
             });
           } else if (firstType === 'search') {
-            const opt = {
+            tab = await createSearchTab(firstValue, {
               active: true,
               index: unpinnedTabIndex,
               windowId: dropWindowId
-            };
-            tab = await createSearchTab(firstValue, opt);
+            });
           }
-        // create firstValue before/after target, activate
+        // create tab with firstValue before/after target, activate
         } else if (dropAfter || dropBefore) {
           if (firstType === 'url') {
             tab = await createTab({
@@ -158,12 +157,11 @@ export const handleDroppedText = async (target, data) => {
               windowId: dropWindowId
             });
           } else if (firstType === 'search') {
-            const opt = {
+            tab = await createSearchTab(firstValue, {
               active: true,
               index: dropBefore ? targetIndex : targetIndex + 1,
               windowId: dropWindowId
-            };
-            tab = await createSearchTab(firstValue, opt);
+            });
           }
         // update target with firstValue
         } else {
@@ -182,7 +180,7 @@ export const handleDroppedText = async (target, data) => {
             });
           }
         }
-        // create after first tab in reverse order
+        // create tabs after first tab in reverse order
         if (tab && values.length) {
           const { index } = tab;
           const opt = {
