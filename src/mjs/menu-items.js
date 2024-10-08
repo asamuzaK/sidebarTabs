@@ -542,7 +542,7 @@ export default {
     subItems: {
       [TABS_CLOSE_START]: {
         id: TABS_CLOSE_START,
-        title: i18n.getMessage(`${TABS_CLOSE_START}_menu`, '(&T)'),
+        title: i18n.getMessage(`${TABS_CLOSE_START}_menu`, '(&L)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -551,7 +551,7 @@ export default {
       },
       [TABS_CLOSE_END]: {
         id: TABS_CLOSE_END,
-        title: i18n.getMessage(`${TABS_CLOSE_END}_menu`, '(&B)'),
+        title: i18n.getMessage(`${TABS_CLOSE_END}_menu`, '(&I)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
