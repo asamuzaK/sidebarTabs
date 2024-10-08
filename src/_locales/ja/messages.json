@@ -153,20 +153,20 @@
     }
   },
   "closeTabsToTheEnd_menu": {
-    "message": "下のタブをすべて閉じる$KEY$",
+    "message": "下側のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&B)"
+        "example": "(&I)"
       }
     }
   },
   "closeTabsToTheStart_menu": {
-    "message": "上のタブをすべて閉じる$KEY$",
+    "message": "上側のタブをすべて閉じる$KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&T)"
+        "example": "(&L)"
       }
     }
   },
@@ -420,7 +420,7 @@
     }
   },
   "newTab_menu": {
-    "message": "新しいタブ$KEY$",
+    "message": "新しいタブを下隣に開く$KEY$",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
     "placeholders": {
       "key": {

@@ -153,20 +153,20 @@
     }
   },
   "closeTabsToTheEnd_menu": {
-    "message": "Close Tabs &Below",
+    "message": "Close Tabs Below $KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&B)"
+        "example": "(&I)"
       }
     }
   },
   "closeTabsToTheStart_menu": {
-    "message": "Close &Tabs Above",
+    "message": "C&lose Tabs Above",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&T)"
+        "example": "(&L)"
       }
     }
   },
