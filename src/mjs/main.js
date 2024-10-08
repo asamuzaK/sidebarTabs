@@ -1941,31 +1941,38 @@ export const prepareTabMenuItems = async elm => {
       }
       func.push(updateContextMenu(id, data));
     }
-    for (const itemKey of closeKeys) {
-      const item = closeMenu.subItems[itemKey];
-      const { id, title } = item;
-      const data = {
-        title,
-        visible: true
-      };
-      switch (itemKey) {
-        case TABS_CLOSE_END:
-          data.enabled =
-            !allTabsSelected && firstUnpinnedTab && lastTab !== tab;
-          break;
-        case TABS_CLOSE_START:
-          data.enabled = !allTabsSelected && firstUnpinnedTab !== tab &&
-            !tab.classList.contains(PINNED);
-          break;
-        case TABS_CLOSE_OTHER:
-        default:
-          data.enabled = !allTabsSelected && !!(otherTabs && otherTabs.length);
+    if (allTabs.length > 1) {
+      for (const itemKey of closeKeys) {
+        const item = closeMenu.subItems[itemKey];
+        const { id, title } = item;
+        const data = {
+          title,
+          visible: true
+        };
+        switch (itemKey) {
+          case TABS_CLOSE_END:
+            data.enabled =
+              !allTabsSelected && firstUnpinnedTab && lastTab !== tab;
+            break;
+          case TABS_CLOSE_START:
+            data.enabled = !allTabsSelected && firstUnpinnedTab !== tab &&
+              !tab.classList.contains(PINNED);
+            break;
+          case TABS_CLOSE_OTHER:
+          default:
+            data.enabled =
+              !allTabsSelected && !!(otherTabs && otherTabs.length);
+        }
+        func.push(updateContextMenu(id, data));
       }
-      func.push(updateContextMenu(id, data));
+      func.push(updateContextMenu(closeMenu.id, {
+        visible: true
+      }));
+    } else {
+      func.push(updateContextMenu(closeMenu.id, {
+        visible: false
+      }));
     }
-    func.push(updateContextMenu(closeMenu.id, {
-      visible: true
-    }));
     if (multiTabsSelected) {
       const tabsMoveMenu = menuItems[TABS_MOVE];
       const tabsMoveKeys = [TABS_MOVE_END, TABS_MOVE_START, TABS_MOVE_WIN];

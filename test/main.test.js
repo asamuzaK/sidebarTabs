@@ -10297,6 +10297,35 @@ describe('main', () => {
       const i = browser.tabs.get.callCount;
       const j = browser.menus.update.callCount;
       const sect = document.createElement('section');
+      const elm = document.createElement('div');
+      const newTab = document.getElementById(NEW_TAB);
+      const body = document.querySelector('body');
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      sect.classList.add(CLASS_TAB_CONTAINER);
+      sect.appendChild(elm);
+      body.insertBefore(sect, newTab);
+      mjs.sidebar.windowId = 1;
+      browser.tabs.get.withArgs(1).resolves({
+        index: 0,
+        mutedInfo: {
+          muted: false
+        },
+        pinned: false
+      });
+      browser.tabs.query.resolves([]);
+      browser.menus.update.resolves(undefined);
+      const res = await func(elm);
+      assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
+      assert.strictEqual(browser.menus.update.callCount, j + 32,
+        'called update');
+      assert.strictEqual(res.length, 31, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.get.callCount;
+      const j = browser.menus.update.callCount;
+      const sect = document.createElement('section');
       const sect2 = document.createElement('section');
       const elm = document.createElement('div');
       const elm1 = document.createElement('div');
