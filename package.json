@@ -26,7 +26,7 @@
     "@asamuzakjp/dom-selector": "^6.1.1",
     "@types/firefox-webext-browser": "^120.0.4",
     "@types/node": "^22.7.5",
-    "addons-linter": "^7.1.0",
+    "addons-linter": "^7.2.0",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
     "copyfiles": "^2.4.1",
@@ -36,7 +36,7 @@
     "eslint-plugin-no-unsanitized": "^4.1.2",
     "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-unicorn": "^56.0.0",
-    "globals": "^15.10.0",
+    "globals": "^15.11.0",
     "html-validate": "^8.24.1",
     "jsdom": "^25.0.1",
     "mocha": "^10.7.3",
@@ -45,8 +45,8 @@
     "sinon": "^19.0.2",
     "stylelint": "^16.9.0",
     "stylelint-config-standard": "^36.0.1",
-    "typescript": "^5.6.2",
-    "undici": "^6.19.8"
+    "typescript": "^5.6.3",
+    "undici": "^6.20.0"
   },
   "overrides": {
     "nwsapi": "2.2.2"
