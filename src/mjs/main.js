@@ -1782,7 +1782,7 @@ export const prepareTabMenuItems = async elm => {
   ];
   const closeDupeKeys = [TAB_CLOSE_DUPE, TABS_CLOSE_DUPE];
   const closeKeys = [TABS_CLOSE_START, TABS_CLOSE_END, TABS_CLOSE_OTHER];
-  const sepKeys = ['sep-1', 'sep-2', 'sep-3', 'sep-4'];
+  const sepKeys = ['sep-1', 'sep-2', 'sep-3'];
   const allTabs = document.querySelectorAll(TAB_QUERY);
   const selectedTabs =
     document.querySelectorAll(`${TAB_QUERY}.${HIGHLIGHTED}`);
@@ -1827,6 +1827,15 @@ export const prepareTabMenuItems = async elm => {
         data.visible = false;
       } else {
         switch (itemKey) {
+          case TAB_MOVE:
+            if (allTabs.length > 1) {
+              data.enabled = true;
+              data.title = title;
+              data.visible = true;
+            } else {
+              data.visible = false;
+            }
+            break;
           case TAB_MUTE:
             data.enabled = true;
             data.title = muted ? toggleTitle : title;
@@ -2054,7 +2063,7 @@ export const prepareTabMenuItems = async elm => {
       headingShown: heading && !heading.hidden
     }));
     for (const sep of sepKeys) {
-      if (!enableTabGroup && sep === 'sep-4') {
+      if (!enableTabGroup && sep === 'sep-3') {
         func.push(updateContextMenu(sep, {
           visible: false
         }));
@@ -2089,7 +2098,7 @@ export const prepareTabMenuItems = async elm => {
     }
     setContext(heading);
     for (const sep of sepKeys) {
-      if (sep === 'sep-4') {
+      if (sep === 'sep-3') {
         func.push(updateContextMenu(sep, {
           visible: true
         }));

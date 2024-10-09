@@ -313,12 +313,6 @@ export default {
       }
     }
   },
-  'sep-3': {
-    id: 'sep-3',
-    type: 'separator',
-    contexts: ['tab'],
-    viewTypes: ['sidebar']
-  },
   /* all tabs */
   [TAB_ALL_RELOAD]: {
     id: TAB_ALL_RELOAD,
@@ -347,8 +341,8 @@ export default {
     enabled: false,
     visible: true
   },
-  'sep-4': {
-    id: 'sep-4',
+  'sep-3': {
+    id: 'sep-3',
     type: 'separator',
     contexts: ['tab'],
     viewTypes: ['sidebar']
@@ -484,8 +478,8 @@ export default {
       }
     }
   },
-  'sep-5': {
-    id: 'sep-5',
+  'sep-4': {
+    id: 'sep-4',
     type: 'separator',
     contexts: ['page', 'tab'],
     viewTypes: ['sidebar']
