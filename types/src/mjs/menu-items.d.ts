@@ -282,12 +282,6 @@ declare const _default: {
             };
         };
     };
-    'sep-3': {
-        id: string;
-        type: string;
-        contexts: string[];
-        viewTypes: string[];
-    };
     reloadAllTabs: {
         id: string;
         title: string;
@@ -315,7 +309,7 @@ declare const _default: {
         enabled: boolean;
         visible: boolean;
     };
-    'sep-4': {
+    'sep-3': {
         id: string;
         type: string;
         contexts: string[];
@@ -451,7 +445,7 @@ declare const _default: {
             };
         };
     };
-    'sep-5': {
+    'sep-4': {
         id: string;
         type: string;
         contexts: string[];
