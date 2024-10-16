@@ -39,14 +39,14 @@
                 </p>
               </div>
             </details>
-            <table id="customThemeSettings" border="1"
-                   data-sub-item-of="customTheme" hidden>
+            <table id="customThemeSettings" border="1" hidden
+                   data-sub-item-of="customTheme">
               <caption>
                 <span  data-i18n="optionsThemeCustomCaption">
                   Customize Theme
                 </span>
-                <button id="initCustomTheme" class="browser-style"
-                        data-i18n="optionsInit" type="button">
+                <button id="initCustomTheme" type="button"
+                        data-i18n="optionsInit">
                   Reset
                 </button>
               </caption>
@@ -68,11 +68,11 @@
                   <th data-i18n="optionsThemeCustomBody">
                     Body
                   </th>
-                  <td class="browser-style">
+                  <td>
                     <input id="customBackgroundColor" type="color"
                            value="#f0f0f4" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customColor" type="color"
                            value="#15141a" />
                   </td>
@@ -83,15 +83,15 @@
                   <th data-i18n="optionsThemeCustomTabActive">
                     Active Tab
                   </th>
-                  <td class="browser-style">
+                  <td>
                     <input id="customActiveBackgroundColor" type="color"
                            value="#ffffff" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customActiveColor" type="color"
                            value="#15141a" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customActiveBorderColor" type="color"
                            value="#8b8b98" />
                   </td>
@@ -100,11 +100,11 @@
                   <th data-i18n="optionsThemeCustomTabDiscarded">
                     Discarded Tab
                   </th>
-                  <td class="browser-style">
+                  <td>
                     <input id="customDiscardedBackgroundColor" type="color"
                            value="#f0f0f4" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customDiscardedColor" type="color"
                            value="#15141a" />
                   </td>
@@ -115,11 +115,11 @@
                   <th data-i18n="optionsThemeCustomTabHover">
                     Hovering Over Tab
                   </th>
-                  <td class="browser-style">
+                  <td>
                     <input id="customHoverBackgroundColor" type="color"
                            value="#dadade" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customHoverColor" type="color"
                            value="#15141a" />
                   </td>
@@ -130,11 +130,11 @@
                   <th data-i18n="optionsThemeCustomTabSelected">
                     Selected Tab
                   </th>
-                  <td class="browser-style">
+                  <td>
                     <input id="customSelectionBackgroundColor" type="color"
                            value="#ffffff" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customSelectionColor" type="color"
                            value="#15141a" />
                   </td>
@@ -145,11 +145,11 @@
                   <th data-i18n="optionsThemeCustomTabSelectedHover">
                     Hovering Over Selected Tab
                   </th>
-                  <td class="browser-style">
+                  <td>
                     <input id="customHoverSelectionBackgroundColor" type="color"
                            value="#e7e7e8" />
                   </td>
-                  <td class="browser-style">
+                  <td>
                     <input id="customHoverSelectionColor" type="color"
                            value="#15141a" />
                   </td>
@@ -161,7 +161,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="useFrameColor" />
                 <label for="useFrameColor" class="checkboxLabel"
                        data-i18n="optionsUseFrameColor"
@@ -180,7 +180,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="compactTab" />
                 <label for="compactTab" class="checkboxLabel"
                        data-i18n="optionsCompactTab"
@@ -199,7 +199,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="narrowScrollbar" />
                 <label for="narrowScrollbar" class="checkboxLabel"
                        data-i18n="optionsNarrowScrollbar"
@@ -218,7 +218,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="narrowTabGroupColorBar" />
                 <label for="narrowTabGroupColorBar" class="checkboxLabel"
                        data-i18n="optionsNarrowTabGroupColorBar"
@@ -237,7 +237,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="showNewTabSeparator" />
                 <label for="showNewTabSeparator" class="checkboxLabel"
                        data-i18n="optionsShowNewTabSeparator"
@@ -256,7 +256,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="useUserCSS" />
                 <label for="useUserCSS" class="checkboxLabel"
                        data-i18n="optionsUseUserCSS"
@@ -265,16 +265,15 @@
                 </label>
               </span>
               <span class="sub-item">
-                <textarea id="userCSS" class="browser-style"
-                          placeholder="Enter CSS"
+                <textarea id="userCSS" placeholder="Enter CSS" hidden
                           data-sub-item-of="useUserCSS"
-                          data-i18n="optionsUserCSS" hidden></textarea>
-                <button id="saveUserCSS" type="button"
+                          data-i18n="optionsUserCSS"></textarea>
+                <button id="saveUserCSS" type="button" hidden
                         data-sub-item-of="useUserCSS"
-                        data-i18n="optionsSaveUserCSS" hidden>Save</button>
-                <span id="warnUserCSS" class="browser-style warn" hidden
+                        data-i18n="optionsSaveUserCSS">Save</button>
+                <span id="warnUserCSS" class="warn" hidden
                       data-i18n="optionsWarnUserCSS">
-                  Not valid CSS.
+                  Invalid CSS.
                 </span>
               </span>
             </p>
@@ -319,7 +318,7 @@
           </legend>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="enableTabGroup" checked />
                 <label for="enableTabGroup" class="checkboxLabel"
                        data-i18n="optionsEnableTabGroup"
@@ -338,7 +337,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="tabGroupPutNewTabAtTheEnd" />
                 <label for="tabGroupPutNewTabAtTheEnd" class="checkboxLabel"
                        data-i18n="optionsTabGroupPutNewTabAtTheEnd"
@@ -357,7 +356,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="tabGroupOnExpandCollapseOther" />
                 <label for="tabGroupOnExpandCollapseOther" class="checkboxLabel"
                        data-i18n="optionsTabGroupOnExpandCollapseOther"
@@ -376,7 +375,7 @@
           </div>
           <div>
             <p>
-              <span class="sub-item browser-style">
+              <span class="sub-item">
                 <input type="checkbox" id="tabGroupOnExpandExcludePinned" />
                 <label for="tabGroupOnExpandExcludePinned" class="checkboxLabel"
                        data-i18n="optionsTabGroupOnExpandExcludePinned"
@@ -400,7 +399,7 @@
           </legend>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="readBrowserSettings" />
                 <label for="readBrowserSettings" class="checkboxLabel"
                        data-i18n="optionsReadBrowserSettings"
@@ -418,7 +417,7 @@
               </div>
             </details>
             <p>
-              <span class="sub-item browser-style">
+              <span class="sub-item">
                 <input type="checkbox" id="showMenuOnMouseup" />
                 <label for="showMenuOnMouseup" class="checkboxLabel"
                        data-i18n="optionsShowMenuOnMouseup"
@@ -437,7 +436,7 @@
           </div>
           <div>
             <p>
-              <span class="browser-style">
+              <span>
                 <input type="checkbox" id="switchTabByScrolling" />
                 <label for="switchTabByScrolling" class="checkboxLabel"
                        data-i18n="optionsSwitchTabByScrolling"
@@ -454,7 +453,7 @@
               </div>
             </details>
             <p>
-              <span class="sub-item browser-style">
+              <span class="sub-item">
                 <input type="checkbox" id="alwaysSwitchTabByScrolling" />
                 <label for="alwaysSwitchTabByScrolling" class="checkboxLabel"
                        data-i18n="optionsAlwaysSwitchTabByScrolling"
@@ -471,7 +470,7 @@
               </div>
             </details>
             <p>
-              <span class="sub-item browser-style">
+              <span class="sub-item">
                 <input type="checkbox" id="invertScrollDirection" />
                 <label for="invertScrollDirection" class="checkboxLabel"
                        data-i18n="optionsInvertScrollDirection"
@@ -488,7 +487,7 @@
               </div>
             </details>
             <p>
-              <span class="sub-item browser-style">
+              <span class="sub-item">
                 <input type="checkbox" id="preventCloseTabsByMiddleClick" />
                 <label for="preventCloseTabsByMiddleClick" class="checkboxLabel"
                        data-i18n="optionsPreventCloseTabsByMiddleClick"
@@ -505,7 +504,7 @@
               </div>
             </details>
             <p>
-              <span class="sub-item browser-style">
+              <span class="sub-item">
                 <input type="checkbox" id="skipCollapsed" />
                 <label for="skipCollapsed" class="checkboxLabel"
                        data-i18n="optionsSkipCollapsed"
@@ -530,8 +529,7 @@
                        aria-details="bookmarkLocationDetail">
                   Save bookmarks to:
                 </label>
-                <select name="bookmarkSelect" id="bookmarkLocation"
-                        class="browser-style">
+                <select name="bookmarkSelect" id="bookmarkLocation">
                   <option value="" data-i18n="optionsAutoLabel">Auto</option>
                 </select>
               </span>
@@ -551,8 +549,7 @@
           </legend>
           <div>
             <p aria-details="initSidebarDetail">
-              <button id="initExtension" class="browser-style"
-                      data-i18n="optionsInit" type="button">
+              <button id="initExtension" type="button" data-i18n="optionsInit">
                 Reset
               </button>
             </p>
