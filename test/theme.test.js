@@ -376,7 +376,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#d7d7e65f', `${key}`);
+          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -413,7 +413,7 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME || key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#d7d7e65f', `${key}`);
+          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -456,7 +456,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fc8a8a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#d7d7e65f', `${key}`);
+          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -495,7 +495,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#d7d7e65f', `${key}`);
+          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -532,7 +532,7 @@ describe('theme', () => {
             key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#d7d7e65f', `${key}`);
+          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -573,7 +573,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fc8a8a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#d7d7e65f', `${key}`);
+          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
