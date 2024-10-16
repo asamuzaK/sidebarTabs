@@ -2,14 +2,14 @@
 
 /* sidebar.css */
 :root {
-  --scale-size: calc(1rem / 3);
-  --tab-height: calc(var(--scale-size) * 8);
-  --tab-height-compact: calc(var(--scale-size) * 4);
-  --icon-size: calc(var(--scale-size) * 4);
-  --icon-medium-size: calc(var(--scale-size) * 3);
-  --icon-small-size: calc(var(--scale-size) * (3 * 3) / (2 * 2));
-  --icon-x-small-size: calc(var(--scale-size) * 2);
-  --icon-xx-small-size: calc(var(--scale-size) * 3 / 2);
+  --base-size: calc(1rem / 3);
+  --tab-height: calc(var(--base-size) * 8);
+  --tab-height-compact: calc(var(--base-size) * 4);
+  --icon-size: calc(var(--base-size) * 4);
+  --icon-medium-size: calc(var(--base-size) * 3);
+  --icon-small-size: calc(var(--base-size) * (3 * 3) / (2 * 2));
+  --icon-x-small-size: calc(var(--base-size) * 2);
+  --icon-xx-small-size: calc(var(--base-size) * 3 / 2);
   --background-color: #f0f0f4;
   --background-active-color: #fff;
   --background-discarded-color: #f0f0f4;
@@ -118,10 +118,10 @@ main {
   flex: 1 1 auto;
   flex-flow: row nowrap;
   align-items: center;
-  margin: calc(var(--scale-size) / 2);
+  margin: calc(var(--base-size) / 2);
   border: 1px solid transparent;
-  border-radius: var(--scale-size);
-  padding: var(--scale-size);
+  border-radius: var(--base-size);
+  padding: var(--base-size);
   min-width: 0;
   height: var(--tab-height);
   background: var(--background-color);
@@ -194,7 +194,7 @@ main {
 }
 
 .tab-icon {
-  margin: var(--scale-size);
+  margin: var(--base-size);
   width: var(--icon-size);
   height: var(--icon-size);
   fill: var(--foreground-color);
@@ -244,8 +244,8 @@ main {
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-medium-size);
-  margin: 0 var(--scale-size) 0 0;
-  padding: var(--scale-size);
+  margin: 0 var(--base-size) 0 0;
+  padding: var(--base-size);
   height: var(--icon-medium-size);
   fill: var(--foreground-color);
 }
@@ -285,8 +285,8 @@ main {
   align-items: center;
   justify-content: space-around;
   flex: 0 0 var(--icon-medium-size);
-  margin: 0 var(--scale-size) 0 0;
-  padding: var(--scale-size);
+  margin: 0 var(--base-size) 0 0;
+  padding: var(--base-size);
   height: var(--icon-medium-size);
 }
 
@@ -303,14 +303,14 @@ main {
   justify-content: space-around;
   flex: 0 0 var(--icon-size);
   margin: 0;
-  border-radius: var(--scale-size);
-  padding: var(--scale-size);
+  border-radius: var(--base-size);
+  padding: var(--base-size);
   height: var(--icon-size);
   fill: var(--foreground-color);
 }
 
 .compact .tab-close {
-  border-radius: calc(var(--scale-size) / 2);
+  border-radius: calc(var(--base-size) / 2);
   padding: 0;
 }
 
@@ -374,14 +374,14 @@ main {
   justify-content: space-around;
   flex: 0 0 var(--icon-size);
   margin: 0;
-  border-radius: var(--scale-size);
-  padding: var(--scale-size);
+  border-radius: var(--base-size);
+  padding: var(--base-size);
   height: var(--icon-size);
   fill: var(--foreground-color);
 }
 
 .compact .tab-container.pinned .tab-pinned {
-  border-radius: calc(var(--scale-size) / 2);
+  border-radius: calc(var(--base-size) / 2);
   padding: 0;
 }
 
@@ -429,10 +429,10 @@ main {
   flex: 1 1 auto;
   flex-flow: row nowrap;
   align-items: center;
-  margin: calc(var(--scale-size) / 2);
+  margin: calc(var(--base-size) / 2);
   border: none;
-  border-radius: var(--scale-size);
-  padding: var(--scale-size);
+  border-radius: var(--base-size);
+  padding: var(--base-size);
   height: var(--tab-height);
   background: var(--background-color);
   min-width: 0;
@@ -530,7 +530,7 @@ main {
 .heading-label {
   display: block;
   flex: 1 1 auto;
-  margin: 0 var(--scale-size) 0 0;
+  margin: 0 var(--base-size) 0 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
@@ -546,14 +546,14 @@ main {
   justify-content: space-around;
   flex: 0 0 var(--icon-size);
   margin: 0;
-  border-radius: var(--scale-size);
-  padding: var(--scale-size);
+  border-radius: var(--base-size);
+  padding: var(--base-size);
   height: var(--icon-size);
   fill: var(--foreground-color);
 }
 
 .compact .heading-label-edit {
-  border-radius: calc(var(--scale-size) / 2);
+  border-radius: calc(var(--base-size) / 2);
   padding: 0;
 }
 
@@ -611,17 +611,17 @@ main {
 }
 
 .group:not(.ungroup) .tab-group > :is(.heading:not([hidden]), .heading[hidden] + .tab) > .tab-context {
-  margin-top: calc(var(--scale-size) / 2);
-  border-top-left-radius: calc(var(--scale-size) / 2);
-  border-top-right-radius: calc(var(--scale-size) / 2);
+  margin-top: calc(var(--base-size) / 2);
+  border-top-left-radius: calc(var(--base-size) / 2);
+  border-top-right-radius: calc(var(--base-size) / 2);
 }
 
 .group:not(.ungroup) .tab-group:not(.tab-collapsed) > .tab:last-child > .tab-context,
 .group:not(.ungroup) .tab-group.tab-collapsed > .heading:not([hidden]) > .tab-context,
 .group:not(.ungroup) .tab-group.tab-collapsed > .heading[hidden] + .tab > .tab-context {
-  margin-bottom: calc(var(--scale-size) / 2);
-  border-bottom-left-radius: calc(var(--scale-size) / 2);
-  border-bottom-right-radius: calc(var(--scale-size) / 2);
+  margin-bottom: calc(var(--base-size) / 2);
+  border-bottom-left-radius: calc(var(--base-size) / 2);
+  border-bottom-right-radius: calc(var(--base-size) / 2);
 }
 
 .tab-group.tab-collapsed > :not([hidden]) > .tab-context > .tab-toggle-icon {
@@ -709,11 +709,11 @@ main {
 [contenteditable=""],
 [contenteditable="true"] {
   border: 1px solid var(--border-field-color);
-  border-radius: calc(var(--scale-size) / 2);
-  padding: calc(var(--scale-size) / 3);
+  border-radius: calc(var(--base-size) / 2);
+  padding: calc(var(--base-size) / 3);
   background: var(--background-field-color);
   color: var(--foreground-field-color);
-  width: calc(100% - var(--scale-size) / 3 * 2);
+  width: calc(100% - var(--base-size) / 3 * 2);
   height: var(--icon-size);
   font-weight: normal;
   user-select: text;
