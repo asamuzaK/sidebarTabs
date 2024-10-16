@@ -15,9 +15,9 @@ WebExtensions for Firefox.
 
 * [Sidebar Tabs – Add-ons for Firefox](https://addons.mozilla.org/firefox/addon/sidebartabs/ "Sidebar Tabs – Add-ons for Firefox")
 
-## about:config
+## Browser settings
 
-Enable the experimental feature as follows:
+To match icon colors to your theme, enable the experimental feature as follows:
 
 * Visit `about:config`.
 * Search for `svg.context-properties.content.enabled` and set the value to `true`.
