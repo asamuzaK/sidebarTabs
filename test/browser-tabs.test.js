@@ -2611,6 +2611,29 @@ describe('browser-tabs', () => {
     });
 
     it('should call function', async () => {
+      browser.tabs.query.withArgs({
+        windowId: 1,
+        active: true,
+        windowType: 'normal'
+      }).resolves([{
+        id: 1,
+        index: 2
+      }]);
+      const create = browser.tabs.create.withArgs({
+        windowId: 1,
+        active: true,
+        index: 3
+      });
+      const i = create.callCount;
+      create.resolves({});
+      const res = await func(1, {
+        afterActive: true
+      });
+      assert.strictEqual(create.callCount, i + 1, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
       browser.permissions.contains.resolves(false);
       browser.browserSettings.newTabPosition.get.resolves({
         value: 'afterCurrent'
