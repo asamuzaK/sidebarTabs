@@ -1043,6 +1043,8 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
         button: 1,
         target: body
       };
@@ -1065,6 +1067,8 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
         button: 0,
         target: main,
         type: 'click'
@@ -1088,6 +1092,8 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
         button: 1,
         target: main,
         type: 'dblclick'
@@ -1111,6 +1117,8 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
         button: 1,
         target: main,
         type: 'mousedown'
@@ -1135,6 +1143,8 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
         button: 0,
         target: main,
         type: 'dblclick'
@@ -1159,7 +1169,10 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
-        target: elm
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
+        target: elm,
+        type: 'click'
       };
       create.resolves({});
       const res = await func(evt);
@@ -1181,10 +1194,66 @@ describe('main', () => {
       body.appendChild(main);
       mjs.sidebar.windowId = 1;
       const evt = {
-        currentTarget: elm,
-        target: span
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
+        target: span,
+        type: 'click'
       };
       create.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i + 1, 'called create');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should not call function', async () => {
+      const { create } = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement('main');
+      const elm = document.createElement('p');
+      const span = document.createElement('span');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB_BUTTON;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      mjs.sidebar.windowId = 1;
+      const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
+        target: span,
+        type: 'mousedown'
+      };
+      create.resolves({});
+      const res = await func(evt);
+      assert.strictEqual(create.callCount, i, 'not called create');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not call function', async () => {
+      const { create, query } = browser.tabs;
+      const i = create.callCount;
+      const main = document.createElement('main');
+      const elm = document.createElement('p');
+      const span = document.createElement('span');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      elm.id = NEW_TAB_BUTTON;
+      elm.appendChild(span);
+      main.appendChild(elm);
+      body.appendChild(main);
+      mjs.sidebar.windowId = 1;
+      const evt = {
+        preventDefault: sinon.stub(),
+        stopPropagation: sinon.stub(),
+        button: 1,
+        target: span,
+        type: 'mousedown'
+      };
+      create.resolves({});
+      query.resolves([{
+        index: 1
+      }]);
       const res = await func(evt);
       assert.strictEqual(create.callCount, i + 1, 'called create');
       assert.deepEqual(res, {}, 'result');
@@ -16091,7 +16160,7 @@ describe('main', () => {
       const spy = sinon.spy(button, 'addEventListener');
       const spy2 = sinon.spy(main, 'addEventListener');
       await func();
-      assert.isTrue(spy.calledOnce, 'called on new tab');
+      assert.strictEqual(spy.callCount, 2, 'called on new tab');
       assert.strictEqual(spy2.callCount, 5, 'called on main');
       button.addEventListener.restore();
       main.addEventListener.restore();

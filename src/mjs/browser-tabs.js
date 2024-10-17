@@ -558,12 +558,26 @@ export const createNewTab = async (windowId, opt = {}) => {
     active: true
   };
   if (isObjectNotEmpty(opt)) {
-    const pos = await getNewTabPositionValue();
+    let activeTab;
+    if (Object.hasOwnProperty.call(opt, 'afterActive')) {
+      activeTab = await getActiveTab(windowId);
+    }
+    let pos;
+    if (Object.hasOwnProperty.call(opt, 'index')) {
+      pos = await getNewTabPositionValue();
+    }
     const items = Object.entries(opt);
     for (const [key, value] of items) {
       switch (key) {
-        case 'index':
-          if (Number.isInteger(value) && value > 0 && isObjectNotEmpty(pos)) {
+        case 'afterActive': {
+          if (value && activeTab) {
+            const { index } = activeTab;
+            prop.index = index + 1;
+          }
+          break;
+        }
+        case 'index': {
+          if (Number.isInteger(value) && value > 0 && pos) {
             const { value: posValue } = pos;
             if (posValue === 'afterCurrent' ||
                 posValue === 'relatedAfterCurrent') {
@@ -571,13 +585,16 @@ export const createNewTab = async (windowId, opt = {}) => {
             }
           }
           break;
-        case 'openerTabId':
+        }
+        case 'openerTabId': {
           if (Number.isInteger(value) && value !== tabs.TAB_ID_NONE) {
             prop[key] = value;
           }
           break;
-        default:
+        }
+        default: {
           prop[key] = value;
+        }
       }
     }
   }

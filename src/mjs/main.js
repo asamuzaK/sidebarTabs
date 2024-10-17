@@ -393,16 +393,30 @@ export const triggerDndHandler = evt => {
  * @returns {?Promise} - createNewTab()
  */
 export const handleCreateNewTab = evt => {
-  const { button, currentTarget, target, type } = evt;
+  const { button, target, type } = evt;
+  const { windowId } = sidebar;
   const main = document.getElementById(SIDEBAR_MAIN);
   const newTab = document.getElementById(NEW_TAB_BUTTON);
   let func;
-  if (currentTarget === newTab || target === newTab ||
-      (target === main &&
-       ((button === MOUSE_BUTTON_MIDDLE && type === 'mousedown') ||
-        (button === MOUSE_BUTTON_LEFT && type === 'dblclick')))) {
-    const { windowId } = sidebar;
-    func = createNewTab(windowId).catch(throwErr);
+  if (target === main) {
+    if ((type === 'mousedown' && button === MOUSE_BUTTON_MIDDLE) ||
+        (type === 'dblclick' && button === MOUSE_BUTTON_LEFT)) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      func = createNewTab(windowId).catch(throwErr);
+    }
+  } else if (newTab?.contains(target)) {
+    if (type === 'click') {
+      evt.preventDefault();
+      evt.stopPropagation();
+      func = createNewTab(windowId).catch(throwErr);
+    } else if (type === 'mousedown' && button === MOUSE_BUTTON_MIDDLE) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      func = createNewTab(windowId, {
+        afterActive: true
+      }).catch(throwErr);
+    }
   }
   return func || null;
 };
@@ -2708,6 +2722,7 @@ export const setMain = async () => {
   main.addEventListener('wheel', handleWheelEvt);
   main.addEventListener('dragover', handleDragOver);
   main.addEventListener('drop', handleDrop);
+  newTab.addEventListener('mousedown', handleCreateNewTab);
   newTab.addEventListener('click', handleCreateNewTab);
 };
 
