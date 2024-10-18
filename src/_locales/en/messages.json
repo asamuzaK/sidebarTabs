@@ -635,6 +635,9 @@
   "optionsThemeCustomText": {
     "message": "Text"
   },
+  "optionsThemeCustomZoom": {
+    "message": "Zoom"
+  },
   "optionsThemeDetail": {
     "message": "Choose theme."
   },

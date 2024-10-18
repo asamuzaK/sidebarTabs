@@ -635,6 +635,9 @@
   "optionsThemeCustomText": {
     "message": "متن"
   },
+  "optionsThemeCustomZoom": {
+    "message": "بزرگ‌نمایی"
+  },
   "optionsThemeDetail": {
     "message": "پوسته ای را انتخاب کنید."
   },
