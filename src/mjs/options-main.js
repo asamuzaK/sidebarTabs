@@ -10,7 +10,7 @@ import {
 } from './browser.js';
 import { isObjectNotEmpty, isString, throwErr } from './common.js';
 import {
-  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, EXT_INIT,
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, CUSTOM_ZOOM, EXT_INIT,
   MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
   THEME_CUSTOM_LIGHT, THEME_CUSTOM_REQ, THEME_CUSTOM_SETTING, THEME_ID,
   THEME_RADIO, USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
@@ -50,6 +50,10 @@ export const initExt = async (init = false) => {
 export const initCustomTheme = async (init = false) => {
   let func;
   if (init) {
+    const elm = document.getElementById(CUSTOM_ZOOM);
+    if (elm) {
+      elm.value = '1';
+    }
     func = sendMsg({
       [THEME_CUSTOM_INIT]: !!init
     });
@@ -401,6 +405,24 @@ export const setHtmlInputValue = async (data = {}) => {
       case 'text':
       case 'url': {
         elm.value = isString(value) ? value.trim() : '';
+        break;
+      }
+      case 'range': {
+        if (id === CUSTOM_ZOOM) {
+          const val = parseFloat(value);
+          if (Number.isNaN(val)) {
+            elm.value = '1';
+          } else {
+            let { min, max } = elm;
+            min = parseFloat(min);
+            max = parseFloat(max);
+            if (min <= val && val <= max) {
+              elm.value = `${val}`;
+            } else {
+              elm.value = '1';
+            }
+          }
+        }
         break;
       }
       default: {

@@ -25,6 +25,7 @@ import {
   CSS_VAR_HEADING_TEXT_GROUP_1, CSS_VAR_HEADING_TEXT_GROUP_2,
   CSS_VAR_HEADING_TEXT_GROUP_3, CSS_VAR_HEADING_TEXT_GROUP_4,
   CSS_VAR_HEADING_TEXT_PINNED, CSS_VAR_OUTLINE_FOCUS, CSS_VAR_THROBBER_CONNECT,
+  CSS_VAR_ZOOM,
   CUSTOM_BG, CUSTOM_BG_ACTIVE, CUSTOM_BG_DISCARDED, CUSTOM_BG_FIELD,
   CUSTOM_BG_FIELD_ACTIVE, CUSTOM_BG_FRAME, CUSTOM_BG_HOVER,
   CUSTOM_BG_HOVER_SHADOW, CUSTOM_BG_SELECT, CUSTOM_BG_SELECT_HOVER,
@@ -35,6 +36,7 @@ import {
   CUSTOM_HEADING_TEXT_GROUP_1, CUSTOM_HEADING_TEXT_GROUP_2,
   CUSTOM_HEADING_TEXT_GROUP_3, CUSTOM_HEADING_TEXT_GROUP_4,
   CUSTOM_HEADING_TEXT_PINNED, CUSTOM_OUTLINE_FOCUS, CUSTOM_THROBBER_CONNECT,
+  CUSTOM_ZOOM,
   NEW_TAB, NEW_TAB_SEPARATOR_SHOW, TAB,
   THEME, THEME_ALPEN, THEME_ALPEN_DARK, THEME_ALPEN_ID, THEME_AUTO,
   THEME_CURRENT, THEME_CURRENT_ID, THEME_CUSTOM, THEME_CUSTOM_DARK,
@@ -965,10 +967,11 @@ export const initCustomTheme = async (opt = {}) => {
     if (remove) {
       const dark = window.matchMedia(COLOR_SCHEME_DARK).matches;
       if (dark) {
-        await removeStorage([THEME_CUSTOM_DARK]);
+        await removeStorage([THEME_CUSTOM_DARK, CUSTOM_ZOOM]);
       } else {
-        await removeStorage([THEME_CUSTOM_LIGHT]);
+        await removeStorage([THEME_CUSTOM_LIGHT, CUSTOM_ZOOM]);
       }
+      await updateCustomThemeCss(CSS_ROOT, CSS_VAR_ZOOM, '1');
     }
     currentThemeColors.clear();
     currentTheme.clear();
@@ -1413,6 +1416,21 @@ export const setActiveTabFontWeight = async value => {
   let func;
   if (/^(?:bold|normal)$/.test(value)) {
     func = updateCustomThemeCss(CSS_ROOT, CSS_VAR_FONT_ACTIVE, value);
+  }
+  return func || null;
+};
+
+/* zoom level */
+/**
+ * set zoom level
+ * @param {string|number} value - zoom level value
+ * @returns {Promise.<?Promise>} - updateCustomThemeCss()
+ */
+export const setZoomLevel = async value => {
+  value = parseFloat(value);
+  let func;
+  if (!Number.isNaN(value)) {
+    func = updateCustomThemeCss(CSS_ROOT, CSS_VAR_ZOOM, `${value}`);
   }
   return func || null;
 };

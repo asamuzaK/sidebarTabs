@@ -23,7 +23,7 @@ import {
   CUSTOM_BG_SELECT_HOVER,
   CUSTOM_BORDER_ACTIVE,
   CUSTOM_COLOR, CUSTOM_COLOR_ACTIVE, CUSTOM_COLOR_HOVER,
-  CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER,
+  CUSTOM_COLOR_SELECT, CUSTOM_COLOR_SELECT_HOVER, CUSTOM_ZOOM,
   DISCARDED, DROP_TARGET, EXT_INIT, FRAME_COLOR_USE,
   FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, HIGHLIGHTED,
   MIME_JSON, MIME_PLAIN,
@@ -253,6 +253,9 @@ describe('main', () => {
         [BROWSER_SETTINGS_READ]: {
           checked: true
         },
+        [CUSTOM_ZOOM]: {
+          value: '1.5'
+        },
         [PINNED_HEIGHT]: {
           value: 100
         },
@@ -265,9 +268,11 @@ describe('main', () => {
       });
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
-      assert.strictEqual(res.size, 4, 'size');
+      assert.strictEqual(res.size, 5, 'size');
       assert.isTrue(res.has(BROWSER_SETTINGS_READ), 'key');
       assert.isTrue(res.get(BROWSER_SETTINGS_READ), 'value');
+      assert.isTrue(res.has(CUSTOM_ZOOM), 'key');
+      assert.strictEqual(res.get(CUSTOM_ZOOM), '1.5', 'value');
       assert.isTrue(res.has(PINNED_HEIGHT), 'key');
       assert.strictEqual(res.get(PINNED_HEIGHT), 100, 'value');
       assert.isTrue(res.has(TABS_CLOSE_MDLCLICK), 'key');
@@ -13659,6 +13664,22 @@ describe('main', () => {
     });
 
     it('should set variable', async () => {
+      const res = await func(CUSTOM_ZOOM, {
+        value: '1.5'
+      }, false);
+      assert.strictEqual(mjs.userOpts.get(CUSTOM_ZOOM), '1.5', 'value');
+      assert.deepEqual(res, [mjs.userOpts], 'result');
+    });
+
+    it('should set variable', async () => {
+      const res = await func(CUSTOM_ZOOM, {
+        value: '1.5'
+      }, true);
+      assert.strictEqual(mjs.userOpts.get(CUSTOM_ZOOM), '1.5', 'value');
+      assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
+    });
+
+    it('should set variable', async () => {
       const i = browser.browserSettings.closeTabsByDoubleClick.get.callCount;
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
@@ -16171,9 +16192,11 @@ describe('main', () => {
     const func = mjs.startup;
     beforeEach(() => {
       mjs.ports.clear();
+      mjs.userOpts.clear();
     });
     afterEach(() => {
       mjs.ports.clear();
+      mjs.userOpts.clear();
     });
 
     it('should call function', async () => {
@@ -16183,6 +16206,63 @@ describe('main', () => {
       });
       port.postMessage.callsFake(msg => msg);
       mjs.ports.set(portId, port);
+      browser.tabs.query.resolves([]);
+      browser.theme.getCurrent.resolves({});
+      browser.management.getAll.resolves([
+        {
+          id: 'foo',
+          enabled: true,
+          type: 'theme'
+        }
+      ]);
+      browser.sessions.getRecentlyClosed.resolves([]);
+      browser.runtime.getPlatformInfo.resolves({
+        os: 'win'
+      });
+      browser.storage.local.get.withArgs({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      }).resolves({
+        [THEME_CUSTOM]: {},
+        [THEME_CUSTOM_DARK]: {},
+        [THEME_CUSTOM_LIGHT]: {}
+      });
+      browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      const main = document.createElement('main');
+      const pinned = document.createElement('section');
+      const newTab = document.createElement('section');
+      const newTabElm = document.createElement('p');
+      const button = document.createElement('button');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      pinned.id = PINNED;
+      newTab.id = NEW_TAB;
+      button.id = NEW_TAB_BUTTON;
+      newTabElm.classList.add(TAB, NEW_TAB);
+      newTabElm.appendChild(button);
+      newTab.appendChild(newTabElm);
+      main.appendChild(pinned);
+      main.appendChild(newTab);
+      body.appendChild(main);
+      const res = await func();
+      assert.isTrue(browser.sessions.getRecentlyClosed.called,
+        'called session');
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      port.postMessage.callsFake(msg => msg);
+      mjs.ports.set(portId, port);
+      mjs.userOpts.set(FONT_ACTIVE, 'bold');
+      mjs.userOpts.set(CUSTOM_ZOOM, '1.5');
       browser.tabs.query.resolves([]);
       browser.theme.getCurrent.resolves({});
       browser.management.getAll.resolves([
