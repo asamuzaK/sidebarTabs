@@ -4545,6 +4545,60 @@ describe('theme', () => {
     });
   });
 
+  describe('set zoom level', () => {
+    const func = mjs.setZoomLevel;
+
+    it('should not set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 0, 'length');
+      assert.isNull(res, 'result');
+    });
+
+    it('should not set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('foo');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 0, 'length');
+      assert.isNull(res, 'result');
+    });
+
+    it('should set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func('1.5');
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 1, 'length');
+      assert.strictEqual(sheet.cssRules[0].selectorText, CSS_ROOT, 'selector');
+      assert.strictEqual(sheet.cssRules[0].style.cssText,
+        '--zoom-level: 1.5;', 'cssText');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should set css', async () => {
+      const elm = document.createElement('style');
+      const body = document.querySelector('body');
+      elm.id = THEME_CUSTOM_ID;
+      body.appendChild(elm);
+      const res = await func(1.5);
+      const { sheet } = elm;
+      assert.strictEqual(sheet.cssRules.length, 1, 'length');
+      assert.strictEqual(sheet.cssRules[0].selectorText, CSS_ROOT, 'selector');
+      assert.strictEqual(sheet.cssRules[0].style.cssText,
+        '--zoom-level: 1.5;', 'cssText');
+      assert.isUndefined(res, 'result');
+    });
+  });
+
   describe('apply CSS', () => {
     const func = mjs.applyCss;
 

@@ -12,11 +12,10 @@ import { browser, createJsdom } from './mocha/setup.js';
 /* test */
 import * as mjs from '../src/mjs/options-main.js';
 import {
-  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, EXT_INIT,
-  MENU_SHOW_MOUSEUP,
-  THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT, THEME_CUSTOM_LIGHT,
-  THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO,
-  USER_CSS, USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
+  BOOKMARK_LOCATION, BROWSER_SETTINGS_READ, COLOR_SCHEME, CUSTOM_ZOOM, EXT_INIT,
+  MENU_SHOW_MOUSEUP, THEME_CUSTOM, THEME_CUSTOM_DARK, THEME_CUSTOM_INIT,
+  THEME_CUSTOM_LIGHT, THEME_CUSTOM_SETTING, THEME_ID, THEME_RADIO, USER_CSS,
+  USER_CSS_SAVE, USER_CSS_USE, USER_CSS_WARN
 } from '../src/mjs/constant.js';
 
 describe('options-main', () => {
@@ -159,6 +158,20 @@ describe('options-main', () => {
     it('should call function', async () => {
       const i = browser.runtime.sendMessage.callCount;
       const res = await func(true);
+      assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
+        'called');
+      assert.isUndefined(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = CUSTOM_ZOOM;
+      elm.value = '';
+      body.appendChild(elm);
+      const i = browser.runtime.sendMessage.callCount;
+      const res = await func(true);
+      assert.strictEqual(elm.value, '1', 'value');
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
       assert.isUndefined(res, 'result');
@@ -1337,6 +1350,91 @@ describe('options-main', () => {
         value: 'body: { color: red; }'
       });
       assert.strictEqual(elm.value, 'body: { color: red; }', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should set value attribute', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = CUSTOM_ZOOM;
+      elm.type = 'range';
+      elm.min = '0.5';
+      elm.max = '2';
+      elm.value = '1';
+      body.appendChild(elm);
+      const res = await func({
+        id: CUSTOM_ZOOM,
+        value: '1.5'
+      });
+      assert.strictEqual(elm.value, '1.5', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not set value attribute', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = 'foo';
+      elm.type = 'range';
+      elm.min = '0.5';
+      elm.max = '2';
+      elm.value = '1';
+      body.appendChild(elm);
+      const res = await func({
+        id: 'foo',
+        value: '1.5'
+      });
+      assert.strictEqual(elm.value, '1', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not set value attribute', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = CUSTOM_ZOOM;
+      elm.type = 'range';
+      elm.min = '0.5';
+      elm.max = '2';
+      elm.value = '1';
+      body.appendChild(elm);
+      const res = await func({
+        id: CUSTOM_ZOOM,
+        value: ''
+      });
+      assert.strictEqual(elm.value, '1', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not set value attribute', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = CUSTOM_ZOOM;
+      elm.type = 'range';
+      elm.min = '0.5';
+      elm.max = '2';
+      elm.value = '1';
+      body.appendChild(elm);
+      const res = await func({
+        id: CUSTOM_ZOOM,
+        value: '0'
+      });
+      assert.strictEqual(elm.value, '1', 'value');
+      assert.deepEqual(res, [], 'result');
+    });
+
+    it('should not set value attribute', async () => {
+      const elm = document.createElement('input');
+      const body = document.querySelector('body');
+      elm.id = CUSTOM_ZOOM;
+      elm.type = 'range';
+      elm.min = '0.5';
+      elm.max = '2';
+      elm.value = '1';
+      body.appendChild(elm);
+      const res = await func({
+        id: CUSTOM_ZOOM,
+        value: '3'
+      });
+      assert.strictEqual(elm.value, '1', 'value');
       assert.deepEqual(res, [], 'result');
     });
   });

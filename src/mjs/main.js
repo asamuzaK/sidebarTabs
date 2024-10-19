@@ -45,7 +45,8 @@ import {
 import {
   applyCustomTheme, applyTheme, initCustomTheme, sendCurrentTheme,
   setActiveTabFontWeight, setNewTabSeparator, setScrollbarWidth,
-  setSidebarTheme, setTabGroupColorBarWidth, setTabHeight, setUserCss
+  setSidebarTheme, setTabGroupColorBarWidth, setTabHeight, setUserCss,
+  setZoomLevel
 } from './theme.js';
 import {
   activateTab, createSidebarTab, getSidebarTab, getSidebarTabContainer,
@@ -59,11 +60,11 @@ import {
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
   CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_TAB_ICON, CLASS_TAB_IDENT_ICON,
   CLASS_TAB_ITEMS, CLASS_TAB_TITLE, CLASS_TAB_TMPL, CLASS_TAB_TOGGLE_ICON,
-  COLOR_SCHEME_DARK, COOKIE_STORE_DEFAULT, DISCARDED, EXT_INIT, FONT_ACTIVE,
-  FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, FRAME_COLOR_USE, HIGHLIGHTED, NEW_TAB,
-  NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER, NEW_TAB_OPEN_NO_CONTAINER,
-  NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED, PINNED_HEIGHT,
-  SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
+  COLOR_SCHEME_DARK, COOKIE_STORE_DEFAULT, CUSTOM_ZOOM, DISCARDED, EXT_INIT,
+  FONT_ACTIVE, FONT_ACTIVE_BOLD, FONT_ACTIVE_NORMAL, FRAME_COLOR_USE,
+  HIGHLIGHTED, NEW_TAB, NEW_TAB_BUTTON, NEW_TAB_OPEN_CONTAINER,
+  NEW_TAB_OPEN_NO_CONTAINER, NEW_TAB_SEPARATOR_SHOW, OPTIONS_OPEN, PINNED,
+  PINNED_HEIGHT, SCROLL_DIR_INVERT, SIDEBAR, SIDEBAR_MAIN, SIDEBAR_STATE_UPDATE,
   TAB_ALL_BOOKMARK, TAB_ALL_RELOAD, TAB_ALL_SELECT,
   TAB_BOOKMARK, TAB_CLOSE, TAB_CLOSE_DUPE, TAB_CLOSE_UNDO, TAB_DUPE,
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
@@ -101,6 +102,7 @@ export const userOpts = new Map();
 /* user options keys */
 export const userOptsKeys = new Set([
   BROWSER_SETTINGS_READ,
+  CUSTOM_ZOOM,
   FONT_ACTIVE_BOLD,
   FONT_ACTIVE_NORMAL,
   FRAME_COLOR_USE,
@@ -155,7 +157,7 @@ export const setUserOpts = async (opt = {}) => {
       }
       default: {
         const { checked, value: itemValue } = value;
-        if (key === PINNED_HEIGHT) {
+        if (key === CUSTOM_ZOOM || key === PINNED_HEIGHT) {
           userOpts.set(key, itemValue);
         } else if (key === TABS_CLOSE_MDLCLICK_PREVENT) {
           userOpts.set(TABS_CLOSE_MDLCLICK, !checked);
@@ -2392,6 +2394,16 @@ export const setStorageValue = async (item, obj, changed = false) => {
           func.push(storeCloseTabsByDoubleClickValue(!!checked));
         }
         break;
+      case CUSTOM_ZOOM:
+        func.push(setUserOpts({
+          [item]: {
+            value
+          }
+        }));
+        if (changed) {
+          func.push(setZoomLevel(value));
+        }
+        break;
       case FONT_ACTIVE_BOLD:
       case FONT_ACTIVE_NORMAL:
         func.push(setUserOpts({
@@ -2741,7 +2753,12 @@ export const startup = async () => {
     useFrame: userOpts.get(FRAME_COLOR_USE) ?? false,
     startup: true
   }).then(applyUserCustomTheme);
-  await setActiveTabFontWeight(userOpts.get(FONT_ACTIVE) ?? '');
+  if (userOpts.has(FONT_ACTIVE)) {
+    await setActiveTabFontWeight(userOpts.get(FONT_ACTIVE));
+  }
+  if (userOpts.has(CUSTOM_ZOOM)) {
+    await setZoomLevel(userOpts.get(CUSTOM_ZOOM));
+  }
   return emulateTabs().then(restoreTabGroups).then(restoreTabContainers)
     .then(toggleTabGrouping).then(setPinnedObserver)
     .then(restoreHighlightedTabs).then(requestSaveSession)

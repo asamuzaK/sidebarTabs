@@ -635,6 +635,9 @@
   "optionsThemeCustomText": {
     "message": "テキスト色"
   },
+  "optionsThemeCustomZoom": {
+    "message": "ズーム"
+  },
   "optionsThemeDetail": {
     "message": "テーマを選択してください。"
   },

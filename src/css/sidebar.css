@@ -44,6 +44,7 @@
   --tab-group-4-heading-text: #395672;
   --throbber-connecting-color: #0061e0;
   --font-weight-active: normal;
+  --zoom-level: 1;
 
   color-scheme: light dark;
   font: menu;
@@ -70,6 +71,7 @@ main {
   height: 100vh;
   overflow-y: auto;
   scrollbar-width: auto;
+  zoom: var(--zoom-level);
 }
 
 .narrow main {
