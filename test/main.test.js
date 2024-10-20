@@ -12,7 +12,7 @@ import { browser, createJsdom, mockPort } from './mocha/setup.js';
 /* test */
 import * as mjs from '../src/mjs/main.js';
 import {
-  ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
+  ACTIVE, AFTER_CURRENT, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_COLLAPSE_AUTO, CLASS_COMPACT, CLASS_HEADING, CLASS_HEADING_LABEL,
   CLASS_HEADING_LABEL_EDIT, CLASS_NARROW, CLASS_NARROW_TAB_GROUP,
   CLASS_SEPARATOR_SHOW, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON,
@@ -7243,7 +7243,7 @@ describe('main', () => {
 
     it('should not call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.windows.getCurrent.resolves({
         focused: false
@@ -7274,7 +7274,7 @@ describe('main', () => {
 
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.windows.getCurrent.resolves({
         focused: true
@@ -7311,7 +7311,7 @@ describe('main', () => {
 
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.windows.getCurrent.resolves({
         focused: true
@@ -7347,7 +7347,7 @@ describe('main', () => {
 
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.windows.getCurrent.resolves({
         focused: true
@@ -7385,7 +7385,7 @@ describe('main', () => {
 
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.windows.getCurrent.resolves({
         focused: true
@@ -7425,7 +7425,7 @@ describe('main', () => {
 
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.tabs.get.withArgs(1).resolves({
         cookieStoreId: COOKIE_STORE_DEFAULT
@@ -7468,7 +7468,7 @@ describe('main', () => {
 
     it('should call function', async () => {
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       browser.tabs.get.withArgs(1).resolves({
         cookieStoreId: 'foo'

@@ -11,8 +11,8 @@ import { browser, createJsdom } from './mocha/setup.js';
 /* test */
 import * as mjs from '../src/mjs/browser-tabs.js';
 import {
-  ACTIVE, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB,
-  PINNED, TAB
+  ACTIVE, AFTER_CURRENT, AFTER_CURRENT_REL, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_GROUP, HIGHLIGHTED, NEW_TAB, PINNED, TAB
 } from '../src/mjs/constant.js';
 
 describe('browser-tabs', () => {
@@ -2627,7 +2627,7 @@ describe('browser-tabs', () => {
       const i = create.callCount;
       create.resolves({});
       const res = await func(1, {
-        afterActive: true
+        [AFTER_CURRENT]: true
       });
       assert.strictEqual(create.callCount, i + 1, 'called');
       assert.deepEqual(res, {}, 'result');
@@ -2636,7 +2636,7 @@ describe('browser-tabs', () => {
     it('should call function', async () => {
       browser.permissions.contains.resolves(false);
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       const create = browser.tabs.create.withArgs({
         windowId: 1,
@@ -2688,7 +2688,7 @@ describe('browser-tabs', () => {
     it('should call function', async () => {
       browser.permissions.contains.resolves(true);
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'afterCurrent'
+        value: AFTER_CURRENT
       });
       const create = browser.tabs.create.withArgs({
         index: 2,
@@ -2707,7 +2707,7 @@ describe('browser-tabs', () => {
     it('should call function', async () => {
       browser.permissions.contains.resolves(true);
       browser.browserSettings.newTabPosition.get.resolves({
-        value: 'relatedAfterCurrent'
+        value: AFTER_CURRENT_REL
       });
       const create = browser.tabs.create.withArgs({
         index: 2,

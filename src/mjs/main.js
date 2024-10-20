@@ -54,7 +54,7 @@ import {
   isNewTab, scrollTabIntoView, storeCloseTabsByDoubleClickValue, switchTab
 } from './util.js';
 import {
-  ACTIVE, AUDIBLE, BROWSER_SETTINGS_READ,
+  ACTIVE, AFTER_CURRENT, AUDIBLE, BROWSER_SETTINGS_READ,
   CLASS_HEADING, CLASS_HEADING_LABEL, CLASS_TAB_AUDIO, CLASS_TAB_AUDIO_ICON,
   CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON, CLASS_TAB_COLLAPSED,
   CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTENT,
@@ -416,7 +416,7 @@ export const handleCreateNewTab = evt => {
       evt.preventDefault();
       evt.stopPropagation();
       func = createNewTab(windowId, {
-        afterActive: true
+        [AFTER_CURRENT]: true
       }).catch(throwErr);
     }
   }

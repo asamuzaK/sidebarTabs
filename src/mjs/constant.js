@@ -3,6 +3,8 @@
  */
 
 export const ACTIVE = 'active';
+export const AFTER_CURRENT = 'afterCurrent';
+export const AFTER_CURRENT_REL = 'relatedAfterCurrent';
 export const AUDIBLE = 'audible';
 export const BOOKMARK_FOLDER_MSG = 'bookmarkFolderMessage';
 export const BOOKMARK_LOCATION = 'bookmarkLocation';

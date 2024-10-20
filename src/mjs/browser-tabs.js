@@ -14,7 +14,8 @@ import {
   getTemplate
 } from './util.js';
 import {
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP, NEW_TAB, PINNED, TAB_QUERY
+  AFTER_CURRENT, AFTER_CURRENT_REL, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  NEW_TAB, PINNED, TAB_QUERY
 } from './constant.js';
 
 /* api */
@@ -559,7 +560,7 @@ export const createNewTab = async (windowId, opt = {}) => {
   };
   if (isObjectNotEmpty(opt)) {
     let activeTab;
-    if (Object.hasOwnProperty.call(opt, 'afterActive')) {
+    if (Object.hasOwnProperty.call(opt, AFTER_CURRENT)) {
       activeTab = await getActiveTab(windowId);
     }
     let pos;
@@ -569,7 +570,7 @@ export const createNewTab = async (windowId, opt = {}) => {
     const items = Object.entries(opt);
     for (const [key, value] of items) {
       switch (key) {
-        case 'afterActive': {
+        case AFTER_CURRENT: {
           if (value && activeTab) {
             const { index } = activeTab;
             prop.index = index + 1;
@@ -579,8 +580,7 @@ export const createNewTab = async (windowId, opt = {}) => {
         case 'index': {
           if (Number.isInteger(value) && value > 0 && pos) {
             const { value: posValue } = pos;
-            if (posValue === 'afterCurrent' ||
-                posValue === 'relatedAfterCurrent') {
+            if (posValue === AFTER_CURRENT || posValue === AFTER_CURRENT_REL) {
               prop.index = value;
             }
           }
