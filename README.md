@@ -55,7 +55,7 @@ There are some differences in Firefox's native tabs and Sidebar Tabs.
 |(No Effect)|Drag Tab|Drop to Bookmark Toolbar|Native tab creates bookmark|
 |Create Bookmark|`Alt`[^2] + Drag[^3] Tab|Drop to Bookmark Toolbar| |
 |(No Effect)|Drag Tab|Drop to Desktop|Native tab creates new window|
-|**Creates Internet Shortcut (Caveat)**|`Alt`[^2] + Drag[^3] Tab|Drop to Desktop| |
+|**Creates Internet Shortcut (Caveat)**|`Alt`[^2] + Drag[^3] Tab|Drop to Desktop|Instead, use `Move Tab` -&gt; `Move to New Window` context menu to open the tab in a new window|
 
 ## Known Issues
 
