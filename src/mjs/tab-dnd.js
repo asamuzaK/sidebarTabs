@@ -7,7 +7,7 @@ import {
   isURISync, sanitizeURLSync
 } from '../lib/url/url-sanitizer-wo-dompurify.min.js';
 import {
-  createTab, duplicateTab, getTab, getWindow, highlightTab, moveTab,
+  createTab, duplicateTab, getWindow, highlightTab, moveTab, searchInNewTab,
   searchWithSearchEngine, updateTab
 } from './browser.js';
 import { highlightTabs } from './browser-tabs.js';
@@ -42,21 +42,6 @@ export const clearDropTarget = () => {
 };
 
 /**
- * create search tab
- * @param {string} query - query string
- * @param {object} opt - create tab options
- * @returns {object} - tabs.Tab
- */
-export const createSearchTab = async (query, opt) => {
-  const { id: tabId } = await createTab(opt);
-  await searchWithSearchEngine(query, {
-    tabId
-  });
-  const tab = await getTab(tabId);
-  return tab;
-};
-
-/**
  * create dropped text tabs in order
  * @param {Array.<Array>} opts - array of [{ type, value }, opt]
  * @param {boolean} pop - pop item from array
@@ -75,7 +60,7 @@ export const createDroppedTextTabsInOrder = async (opts = [], pop = false) => {
       opt.url = value;
       await createTab(opt);
     } else {
-      await createSearchTab(value, opt);
+      await searchInNewTab(value, opt);
     }
   }
   let func;
@@ -141,7 +126,7 @@ export const handleDroppedText = async (target, data) => {
               windowId: dropWindowId
             });
           } else if (firstType === 'search') {
-            tab = await createSearchTab(firstValue, {
+            tab = await searchInNewTab(firstValue, {
               active: true,
               index: unpinnedTabIndex,
               windowId: dropWindowId
@@ -157,7 +142,7 @@ export const handleDroppedText = async (target, data) => {
               windowId: dropWindowId
             });
           } else if (firstType === 'search') {
-            tab = await createSearchTab(firstValue, {
+            tab = await searchInNewTab(firstValue, {
               active: true,
               index: dropBefore ? targetIndex : targetIndex + 1,
               windowId: dropWindowId

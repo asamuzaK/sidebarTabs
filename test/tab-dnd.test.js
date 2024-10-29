@@ -96,39 +96,15 @@ describe('dnd', () => {
     });
   });
 
-  describe('create search tab', () => {
-    const func = mjs.createSearchTab;
-
-    it('should call function', async () => {
-      const createFunc = browser.tabs.create.resolves({
-        id: 1
-      });
-      const searchFunc = browser.search.search.withArgs({
-        query: 'foo',
-        tabId: 1
-      });
-      const getFunc = browser.tabs.get.withArgs(1).resolves({
-        id: 1
-      });
-      const res = await func('foo');
-      assert.isTrue(createFunc.called, 'called');
-      assert.isTrue(searchFunc.called, 'called');
-      assert.isTrue(getFunc.called, 'called');
-      assert.deepEqual(res, {
-        id: 1
-      }, 'result');
-    });
-  });
-
   describe('create dropped text tabs in order', () => {
     const func = mjs.createDroppedTextTabsInOrder;
 
     it('should not call function', async () => {
       const i = browser.tabs.create.callCount;
-      const j = browser.search.search.callCount;
+      const j = browser.search.query.callCount;
       const res = await func();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
-      assert.strictEqual(browser.search.search.callCount, j, 'not called');
+      assert.strictEqual(browser.search.query.callCount, j, 'not called');
       assert.isUndefined(res, 'result');
     });
 
@@ -164,7 +140,7 @@ describe('dnd', () => {
         }, {}]
       ]);
       assert.strictEqual(createFunc.callCount, 4, 'called');
-      assert.strictEqual(browser.search.search.callCount, 2, 'called');
+      assert.strictEqual(browser.search.query.callCount, 2, 'called');
       assert.isUndefined(res, 'result');
       assert.deepEqual(order, [
         {
@@ -219,7 +195,7 @@ describe('dnd', () => {
         }, {}]
       ], true);
       assert.strictEqual(createFunc.callCount, 4, 'called');
-      assert.strictEqual(browser.search.search.callCount, 2, 'called');
+      assert.strictEqual(browser.search.query.callCount, 2, 'called');
       assert.isUndefined(res, 'result');
       assert.deepEqual(order, [
         {
@@ -306,6 +282,7 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       assert.isFalse(browser.tabs.create.called, 'not called');
       assert.isFalse(browser.search.search.called, 'not called');
+      assert.isFalse(browser.search.query.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -376,6 +353,7 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       assert.strictEqual(createFunc.callCount, 2, 'called');
       assert.isFalse(browser.search.search.called, 'not called');
+      assert.isFalse(browser.search.query.called, 'not called');
       assert.isUndefined(res, 'result');
     });
 
@@ -446,6 +424,7 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       assert.strictEqual(createFunc.callCount, 1, 'called');
       assert.isFalse(browser.search.search.called, 'not called');
+      assert.isFalse(browser.search.query.called, 'not called');
       assert.isNull(res, 'result');
     });
 
@@ -515,7 +494,8 @@ describe('dnd', () => {
       });
       const res = await func(elm2, data);
       assert.strictEqual(createFunc.callCount, 4, 'called');
-      assert.strictEqual(browser.search.search.callCount, 3, 'called');
+      assert.strictEqual(browser.search.search.callCount, 0, 'not called');
+      assert.strictEqual(browser.search.query.callCount, 3, 'called');
       assert.isUndefined(res, 'result');
     });
 
@@ -591,7 +571,8 @@ describe('dnd', () => {
       });
       const res = await func(elm2, data);
       assert.strictEqual(createFunc.callCount, 3, 'called');
-      assert.strictEqual(browser.search.search.callCount, 2, 'called');
+      assert.strictEqual(browser.search.search.callCount, 0, 'not called');
+      assert.strictEqual(browser.search.query.callCount, 2, 'called');
       assert.isTrue(getTab.called, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -666,6 +647,7 @@ describe('dnd', () => {
       const res = await func(elm3, data);
       assert.strictEqual(createFunc.callCount, 2, 'called');
       assert.isFalse(browser.search.search.called, 'not called');
+      assert.isFalse(browser.search.query.called, 'not called');
       assert.isFalse(getFunc.called, 'not called');
       assert.isUndefined(res, 'result');
     });
@@ -740,6 +722,7 @@ describe('dnd', () => {
       const res = await func(elm3, data);
       assert.strictEqual(createFunc.callCount, 2, 'called');
       assert.isFalse(browser.search.search.called, 'not called');
+      assert.isFalse(browser.search.query.called, 'not called');
       assert.isFalse(getFunc.called, 'not called');
       assert.isUndefined(res, 'result');
     });
@@ -814,7 +797,8 @@ describe('dnd', () => {
       });
       const res = await func(elm3, data);
       assert.strictEqual(createFunc.callCount, 4, 'called');
-      assert.strictEqual(browser.search.search.callCount, 3, 'called');
+      assert.strictEqual(browser.search.search.callCount, 0, 'not called');
+      assert.strictEqual(browser.search.query.callCount, 3, 'called');
       assert.isTrue(getFunc.called, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -889,7 +873,8 @@ describe('dnd', () => {
       });
       const res = await func(elm3, data);
       assert.strictEqual(createFunc.callCount, 4, 'called');
-      assert.strictEqual(browser.search.search.callCount, 3, 'called');
+      assert.strictEqual(browser.search.search.callCount, 0, 'not called');
+      assert.strictEqual(browser.search.query.callCount, 3, 'called');
       assert.isTrue(getFunc.called, 'called');
       assert.isUndefined(res, 'result');
     });
@@ -972,6 +957,7 @@ describe('dnd', () => {
       assert.strictEqual(updateFunc.callCount, 1, 'called');
       assert.strictEqual(createFunc.callCount, 1, 'called');
       assert.isFalse(browser.search.search.called, 'not called');
+      assert.isFalse(browser.search.query.called, 'not called');
       assert.isFalse(getFunc.called, 'not called');
       assert.isUndefined(res, 'result');
     });
@@ -1053,7 +1039,8 @@ describe('dnd', () => {
       const res = await func(elm3, data);
       assert.strictEqual(updateFunc.callCount, 1, 'called');
       assert.strictEqual(createFunc.callCount, 3, 'called');
-      assert.strictEqual(browser.search.search.callCount, 3, 'called');
+      assert.strictEqual(browser.search.search.callCount, 1, 'called');
+      assert.strictEqual(browser.search.query.callCount, 2, 'called');
       assert.isFalse(getFunc.called, 'not called');
       assert.isUndefined(res, 'result');
     });
