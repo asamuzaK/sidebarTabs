@@ -1,5 +1,4 @@
 export function clearDropTarget(): void;
-export function createSearchTab(query: string, opt: object): object;
 export function createDroppedTextTabsInOrder(opts?: Array<any[]>, pop?: boolean): Promise<any> | undefined;
 export function handleDroppedText(target: object, data: object): Promise<any> | null;
 export function handleDroppedTabs(target: object, data: object): Promise<any> | null;

@@ -267,6 +267,7 @@ export function setTabGroupColorBarWidth(narrow?: boolean): Promise<void>;
 export function getNewTabSeparator(): Promise<boolean>;
 export function setNewTabSeparator(show?: boolean): Promise<void>;
 export function setActiveTabFontWeight(value: string): Promise<Promise<any> | null>;
+export function setZoomLevel(value: string | number): Promise<Promise<any> | null>;
 export function applyCss(): Promise<void>;
 export function setSidebarTheme(opt?: object): Promise<void>;
 import { CSS_VAR_BG } from './constant.js';
