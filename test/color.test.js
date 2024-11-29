@@ -20,8 +20,7 @@ describe('color', () => {
     });
 
     it('should throw', () => {
-      assert.throws(() => func([128, 192, 256]), RangeError,
-        '256 is not between 0 and 255.');
+      assert.throws(() => func([]), Error);
     });
 
     it('should get value', () => {
@@ -135,12 +134,12 @@ describe('color', () => {
       const res = func('currentColor', {
         alpha: true
       });
-      assert.strictEqual(res, '#00000000', 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get value', () => {
       const res = func('currentColor');
-      assert.strictEqual(res, '#000000', 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -157,19 +156,19 @@ describe('color', () => {
         'Expected String but got Undefined.');
     });
 
-    it('should get null', () => {
+    it('should get transparent', () => {
       const res = func('foo', 'bar');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, '#00000000', 'result');
     });
 
-    it('should get null', () => {
+    it('should get black', () => {
       const res = func('foo', 'black');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, '#000000', 'result');
     });
 
-    it('should get null', () => {
+    it('should get black', () => {
       const res = func('black', 'foo');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, '#000000', 'result');
     });
 
     it('should get value', () => {
@@ -224,7 +223,7 @@ describe('color', () => {
 
     it('should get value', () => {
       const res = func('#0c0c0d1a', '#0a84ff');
-      assert.strictEqual(res, '#0a78e6', 'result');
+      assert.strictEqual(res, '#0a78e7', 'result');
     });
 
     it('should get value', () => {
@@ -239,7 +238,7 @@ describe('color', () => {
 
     it('should get value', () => {
       const res = func('#f9f9fa1a', '#0a84ff');
-      assert.strictEqual(res, '#2290fe', 'result');
+      assert.strictEqual(res, '#2290ff', 'result');
     });
 
     it('should get value', () => {

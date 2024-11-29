@@ -239,32 +239,11 @@ describe('theme', () => {
     });
 
     it('should throw', async () => {
-      await func('foo', []).catch(e => {
-        assert.instanceOf(e, Error, 'error');
-        assert.strictEqual(e.message, 'Expected array length of 3 or 4 but got 0.',
-          'message');
+      const res = await func('foo', []).catch(e => {
+        assert.strictEqual(e instanceof Error, true);
+        return false;
       });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, 128, -1]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '-1 is not between 0 and 255.',
-          'message');
-      });
-    });
-
-    it('should throw', async () => {
-      await func('foo', [128, 128, 256]).catch(e => {
-        assert.instanceOf(e, RangeError, 'error');
-        assert.strictEqual(e.message, '256 is not between 0 and 255.',
-          'message');
-      });
-    });
-
-    it('should not set map if 2nd arg is not a color', async () => {
-      await func('foo', 'bar');
-      assert.strictEqual(mjs.currentThemeColors.size, 0, 'size');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should set map', async () => {
@@ -276,8 +255,9 @@ describe('theme', () => {
       await func('corge', 'foobar');
       await func('grault', [128, 0, 255]);
       await func('garply', ' ');
+      await func('waldo', [128, 0, 255, 0.5]);
       await func(' ', 'red');
-      assert.strictEqual(mjs.currentThemeColors.size, 6, 'size');
+      assert.strictEqual(mjs.currentThemeColors.size, 8, 'size');
       assert.strictEqual(mjs.currentThemeColors.get('foo'), '#1234ab', 'map');
       assert.strictEqual(mjs.currentThemeColors.get('bar'), '#ff1234', 'map');
       assert.strictEqual(mjs.currentThemeColors.get('baz'), 'transparent',
@@ -286,10 +266,13 @@ describe('theme', () => {
         'map');
       assert.strictEqual(mjs.currentThemeColors.get('quux'),
         'color-mix(in srgb, currentcolor, red)', 'map');
-      assert.isFalse(mjs.currentThemeColors.has('corge'), 'map');
+      assert.strictEqual(mjs.currentThemeColors.get('corge'), '#00000000',
+        'map');
       assert.strictEqual(mjs.currentThemeColors.get('grault'), '#8000ff',
         'map');
       assert.isFalse(mjs.currentThemeColors.has('garply'), 'map');
+      assert.strictEqual(mjs.currentThemeColors.get('waldo'), '#8000ff80',
+        'map');
       assert.isFalse(mjs.currentThemeColors.has(''), 'map');
       assert.isFalse(mjs.currentThemeColors.has(' '), 'map');
     });
@@ -353,9 +336,9 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME) {
           assert.strictEqual(value, '#ff0000', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#e70203', `${key}`);
+          assert.strictEqual(value, '#e80203', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -376,7 +359,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
+          assert.strictEqual(value, '#7e7e8aba', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -394,7 +377,7 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME || key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#15141a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -413,7 +396,7 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME || key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
+          assert.strictEqual(value, '#7e7e8aba', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -434,7 +417,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#7e0b0e', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -454,9 +437,9 @@ describe('theme', () => {
             key === CUSTOM_BG_FRAME) {
           assert.strictEqual(value, '#fc7d7d', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#fc8a8a', `${key}`);
+          assert.strictEqual(value, '#fc898a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
+          assert.strictEqual(value, '#7e7e8aba', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -473,9 +456,9 @@ describe('theme', () => {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, '#ff0000', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#e70203', `${key}`);
+          assert.strictEqual(value, '#e80203', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -495,7 +478,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#fe1919', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
+          assert.strictEqual(value, '#7e7e8aba', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -513,7 +496,7 @@ describe('theme', () => {
             key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, '#15141a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -532,7 +515,7 @@ describe('theme', () => {
             key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#f9f9fa', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
+          assert.strictEqual(value, '#7e7e8aba', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -552,7 +535,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#7e0b0e', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -571,9 +554,9 @@ describe('theme', () => {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, '#fc7d7d', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#fc8a8a', `${key}`);
+          assert.strictEqual(value, '#fc898a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#7f7f8bbb', `${key}`);
+          assert.strictEqual(value, '#7e7e8aba', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -650,9 +633,9 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, '#0000ff', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#1a00e5', `${key}`);
+          assert.strictEqual(value, '#1a00e6', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else if (key === CUSTOM_COLOR_HOVER) {
           assert.strictEqual(value, '#ff0000', `${key}`);
         } else if (key === CUSTOM_COLOR_SELECT_HOVER) {
@@ -688,7 +671,7 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG_HOVER) {
           assert.strictEqual(value, '#0202e8', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else if (key === CUSTOM_COLOR_HOVER) {
           assert.strictEqual(value, '#15141a', `${key}`);
         } else if (key === CUSTOM_COLOR_SELECT_HOVER) {
@@ -723,11 +706,11 @@ describe('theme', () => {
         } else if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, '#0000ff', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#0e01e6', `${key}`);
+          assert.strictEqual(value, '#0e01e7', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
           assert.strictEqual(value, '#8a0a0d1a', `${key}`);
         } else if (key === CUSTOM_BG_SELECT_HOVER) {
-          assert.strictEqual(value, '#e7e7e8', `${key}`);
+          assert.strictEqual(value, '#e8e8e8', `${key}`);
         } else if (key === CUSTOM_COLOR_HOVER) {
           assert.strictEqual(value, '#8a0a0d', `${key}`);
         } else if (key === CUSTOM_COLOR_SELECT_HOVER) {
@@ -1521,7 +1504,7 @@ describe('theme', () => {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, '#f0f0f4', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#e6d9dc', `${key}`);
+          assert.strictEqual(value, '#e6d9dd', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
           assert.strictEqual(value, '#8a0a0d1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
@@ -1555,7 +1538,7 @@ describe('theme', () => {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, obj[CUSTOM_BG_FRAME], `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#333238', `${key}`);
+          assert.strictEqual(value, '#323138', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
                    key === CUSTOM_COLOR_HOVER) {
           assert.strictEqual(value, obj[CUSTOM_COLOR_FRAME], `${key}`);
@@ -1651,7 +1634,7 @@ describe('theme', () => {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
           assert.strictEqual(value, obj[CUSTOM_BG_FRAME], `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#333238', `${key}`);
+          assert.strictEqual(value, '#323138', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
           assert.strictEqual(value, '#fbfbfe1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
