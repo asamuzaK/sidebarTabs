@@ -59,7 +59,7 @@ body {
   margin: 0;
   padding: 0;
   -moz-context-properties: fill, fill-opacity;
-  background: var(--background-color);
+  background-color: var(--background-color);
   color: var(--foreground-color);
   fill: var(--foreground-color);
 }
@@ -126,7 +126,7 @@ main {
   padding: var(--base-size);
   min-width: 0;
   height: var(--tab-height);
-  background: var(--background-color);
+  background-color: var(--background-color);
 }
 
 .compact .tab-items {
@@ -136,7 +136,7 @@ main {
 .tab.active > .tab-items {
   border-color: var(--border-active-color);
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
-  background: var(--background-active-color);
+  background-color: var(--background-active-color);
   color: var(--foreground-active-color);
   fill: var(--foreground-active-color);
   font-weight: var(--font-weight-active);
@@ -144,14 +144,14 @@ main {
 }
 
 .tab.discarded > .tab-items {
-  background: var(--background-discarded-color);
+  background-color: var(--background-discarded-color);
   color: var(--foreground-discarded-color);
   fill: var(--foreground-discarded-color);
   z-index: 3;
 }
 
 :is(.tab:hover, .tab.active:hover, .tab.discarded:hover) > .tab-items {
-  background: var(--background-hover-color);
+  background-color: var(--background-hover-color);
   color: var(--foreground-hover-color);
   fill: var(--foreground-hover-color);
   z-index: 5;
@@ -160,21 +160,21 @@ main {
 .tab.highlighted:not(.active) > .tab-items {
   border-color: var(--border-active-color);
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
-  background: var(--background-selection-color);
+  background-color: var(--background-selection-color);
   color: var(--foreground-selection-color);
   fill: var(--foreground-selection-color);
   z-index: 4;
 }
 
 .tab.highlighted:not(.active):hover > .tab-items {
-  background: var(--background-selection-hover-color);
+  background-color: var(--background-selection-hover-color);
   color: var(--foreground-selection-hover-color);
   fill: var(--foreground-selection-hover-color);
 }
 
 /* dnd */
 .tab.drop-target > .tab-items {
-  background: var(--background-hover-color);
+  background-color: var(--background-hover-color);
   border-color: transparent;
 }
 
@@ -436,7 +436,7 @@ main {
   border-radius: var(--base-size);
   padding: var(--base-size);
   height: var(--tab-height);
-  background: var(--background-color);
+  background-color: var(--background-color);
   min-width: 0;
 }
 
@@ -500,14 +500,14 @@ main {
 .heading.active > .tab-items {
   border-color: var(--border-active-color);
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
-  background: var(--background-active-color);
+  background-color: var(--background-active-color);
   color: var(--foreground-active-color);
   fill: var(--foreground-active-color);
   z-index: 3;
 }
 
 :is(.heading:hover, .heading.active:hover) > .tab-items {
-  background: var(--background-hover-color);
+  background-color: var(--background-hover-color);
   color: var(--foreground-hover-color);
   fill: var(--foreground-hover-color);
   z-index: 5;
@@ -516,14 +516,14 @@ main {
 .heading.highlighted:not(.active) > .tab-items {
   border-color: var(--border-active-color);
   box-shadow: 0 0 4px 0 rgb(0 0 0 / 30%);
-  background: var(--background-selection-color);
+  background-color: var(--background-selection-color);
   color: var(--foreground-selection-color);
   fill: var(--foreground-selection-color);
   z-index: 4;
 }
 
 .heading.highlighted:not(.active):hover > .tab-items {
-  background: var(--background-selection-hover-color);
+  background-color: var(--background-selection-hover-color);
   color: var(--foreground-selection-hover-color);
   fill: var(--foreground-selection-hover-color);
 }
@@ -713,7 +713,7 @@ main {
   border: 1px solid var(--border-field-color);
   border-radius: calc(var(--base-size) / 2);
   padding: calc(var(--base-size) / 3);
-  background: var(--background-field-color);
+  background-color: var(--background-field-color);
   color: var(--foreground-field-color);
   width: calc(100% - var(--base-size) / 3 * 2);
   height: var(--icon-size);
