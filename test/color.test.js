@@ -19,8 +19,9 @@ describe('color', () => {
         'Expected Array but got Undefined.');
     });
 
-    it('should throw', () => {
-      assert.throws(() => func([]), Error);
+    it('should get value', () => {
+      const res = func([]);
+      assert.deepEqual(res, '#00000000', 'result');
     });
 
     it('should get value', () => {

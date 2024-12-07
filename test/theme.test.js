@@ -238,12 +238,11 @@ describe('theme', () => {
       });
     });
 
-    it('should throw', async () => {
+    it('should not throw', async () => {
       const res = await func('foo', []).catch(e => {
-        assert.strictEqual(e instanceof Error, true);
         return false;
       });
-      assert.strictEqual(res, false, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should set map', async () => {
