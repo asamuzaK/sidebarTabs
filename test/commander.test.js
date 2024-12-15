@@ -12,7 +12,7 @@ import {
   commander, cleanDirectory, extractLibraries, extractManifests,
   includeLibraries, parseCommand, saveLibraryPackage, saveThemeManifest,
   updateManifests
-} from '../modules/commander.js';
+} from '../scripts/commander.js';
 
 const BASE_URL_MOZ = 'https://hg.mozilla.org';
 const DIR_CWD = process.cwd();
