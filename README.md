@@ -52,10 +52,8 @@ There are some differences in Firefox's native tabs and Sidebar Tabs.
 |Copy Tab Group|`Shift` + `Ctrl`[^1] + Drag Tab Group|`Ctrl`[^1] + Drop[^4] to Sidebar|Also between windows[^5]|
 |Open URL|Drag URL|Drop to Sidebar| |
 |Search Text|Drag Text|Drop to Sidebar |
-|(No Effect)|Drag Tab|Drop to Bookmark Toolbar|Native tab creates bookmark|
-|Create Bookmark|`Alt`[^2] + Drag[^3] Tab|Drop to Bookmark Toolbar| |
-|(No Effect)|Drag Tab|Drop to Desktop|Native tab creates new window|
-|**Creates Internet Shortcut (Caveat)**|`Alt`[^2] + Drag[^3] Tab|Drop to Desktop|Instead, use `Move Tab` -&gt; `Move to New Window` context menu to open the tab in a new window|
+|Create Bookmark|`Alt`[^2] + Drag[^3] Tab|Drop to Bookmark Toolbar|Without `Alt`[^2], D&amp;D to Bookmark Toolbar has no effect|
+|Open in New Window|N/A|N/A|Not available. Instead, use `Move Tab` -&gt; `Move to New Window` context menu to open the tab in a new window. **Caveat**: `Alt`[^2] + drag[^3] tab and drop to desktop creates internet shortcut on desktop|
 
 ## Known Issues
 
