@@ -11,6 +11,7 @@ import {
   removeElementContentEditable, throwErr
 } from './common.js';
 import { requestSaveSession } from './session.js';
+import { handleDragLeave, handleDragOver, handleDrop } from './tab-dnd.js';
 import {
   activateTab, createUrlMatchString, getSidebarTab, getSidebarTabContainer,
   getSidebarTabId, getSidebarTabIndex, getTemplate
@@ -40,17 +41,20 @@ export const restoreTabContainers = async () => {
     const { classList, id, parentNode } = item;
     const tabLength = item.querySelectorAll(TAB_QUERY).length;
     switch (tabLength) {
-      case 0:
+      case 0: {
         if (id !== PINNED) {
           parentNode.removeChild(item);
         }
         break;
-      case 1:
+      }
+      case 1: {
         classList.remove(CLASS_TAB_GROUP);
         break;
-      default:
+      }
+      default: {
         classList.add(CLASS_TAB_GROUP);
         group = true;
+      }
     }
   }
   if (group) {
@@ -425,12 +429,41 @@ export const enableGroupLabelEdit = evt => {
 };
 
 /**
+ * trigger DnD handler
+ * @param {!object} evt - event
+ * @returns {?Function} - handleDragLeave() / handleDragOver() / handleDrop()
+ */
+export const triggerDndHandler = evt => {
+  const { currentTarget, type } = evt;
+  const isMac = currentTarget.dataset.ismac === 'true';
+  const windowId =
+    currentTarget.dataset.windowid && Number(currentTarget.dataset.windowid);
+  const opt = {
+    isMac,
+    windowId
+  };
+  let func;
+  if (type === 'dragleave') {
+    func = handleDragLeave(evt);
+  } else if (type === 'dragover') {
+    func = handleDragOver(evt, opt);
+  } else if (type === 'drop') {
+    func = handleDrop(evt, opt);
+  }
+  return func || null;
+};
+
+/**
  * add listeners to heading items
  * @param {object} node - node;
- * @param {boolean} [multi] - handle multiple tab groups
+ * @param {object} [opt] - options
+ * @param {boolean} [opt.isMac] - is mac
+ * @param {boolean} [opt.multi] - handle multiple tab groups
+ * @param {number} [opt.windowId] - window ID
  * @returns {Promise.<void>} - void
  */
-export const addListenersToHeadingItems = async (node, multi) => {
+export const addListenersToHeadingItems = async (node, opt = {}) => {
+  const { isMac, multi, windowId } = opt;
   const heading = getTabGroupHeading(node);
   if (heading && !heading.hidden) {
     const context = heading.querySelector(`.${CLASS_TAB_CONTEXT}`);
@@ -450,6 +483,19 @@ export const addListenersToHeadingItems = async (node, multi) => {
     if (button) {
       button.addEventListener('click', enableGroupLabelEdit);
     }
+    if (isMac) {
+      heading.dataset.ismac = isMac;
+    } else {
+      delete heading.dataset.ismac;
+    }
+    if (Number.isInteger(windowId)) {
+      heading.dataset.windowid = windowId;
+    } else {
+      delete heading.dataset.windowid;
+    }
+    heading.addEventListener('dragleave', triggerDndHandler);
+    heading.addEventListener('dragover', triggerDndHandler);
+    heading.addEventListener('drop', triggerDndHandler);
   }
 };
 
@@ -475,16 +521,19 @@ export const removeListenersFromHeadingItems = async node => {
       context.removeEventListener('click', handleTabGroupCollapsedState);
     }
     button?.removeEventListener('click', enableGroupLabelEdit);
+    heading.removeEventListener('dragleave', triggerDndHandler);
+    heading.removeEventListener('dragover', triggerDndHandler);
+    heading.removeEventListener('drop', triggerDndHandler);
   }
 };
 
 /**
  * toggle tab group heading state
  * @param {object} node - node
- * @param {boolean} [multi] - handle multiple tab groups
+ * @param {object} [opt] - options
  * @returns {Promise.<Array>} - results of each handler
  */
-export const toggleTabGroupHeadingState = async (node, multi) => {
+export const toggleTabGroupHeadingState = async (node, opt = {}) => {
   const func = [];
   const heading = getTabGroupHeading(node);
   if (heading) {
@@ -495,7 +544,7 @@ export const toggleTabGroupHeadingState = async (node, multi) => {
     if (heading.hidden) {
       heading.hidden = false;
       func.push(
-        addListenersToHeadingItems(heading, !!multi),
+        addListenersToHeadingItems(heading, opt),
         startGroupLabelEdit(heading)
       );
     } else {

@@ -173,12 +173,12 @@ main {
 }
 
 /* dnd */
-.tab.drop-target > .tab-items {
+:is(.tab.drop-target, .heading.drop-target) > .tab-items {
   background-color: var(--background-hover-color);
   border-color: transparent;
 }
 
-.tab.drop-target.drop-after-target > .tab-items {
+:is(.tab.drop-target.drop-after-target, .heading.drop-target.drop-after-target) > .tab-items {
   border-bottom-color: var(--border-field-active-color);
   box-shadow: 0 0 1px var(--border-field-active-color);
 }
