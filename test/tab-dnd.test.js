@@ -12,7 +12,8 @@ import { browser, createJsdom, mockPort } from './mocha/setup.js';
 /* test */
 import * as mjs from '../src/mjs/tab-dnd.js';
 import {
-  CLASS_HEADING, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  CLASS_HEADING, CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL,
+  CLASS_TAB_COLLAPSED, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE, HIGHLIGHTED,
   MIME_JSON, MIME_MOZ_URL, MIME_PLAIN, MIME_URI,
   PINNED, SIDEBAR, SIDEBAR_MAIN, TAB
@@ -90,6 +91,73 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       func();
+      assert.isTrue(elm.classList.contains(TAB), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
+    });
+
+    it('should remove class', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
+        CLASS_TAB_COLLAPSED);
+      span.appendChild(img);
+      heading.classList.add(CLASS_HEADING);
+      heading.appendChild(span);
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      const i = browser.i18n.getMessage.callCount;
+      func();
+      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
+      assert.isTrue(elm.classList.contains(TAB), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
+    });
+
+    it('should remove class', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP);
+      span.appendChild(img);
+      heading.classList.add(CLASS_HEADING);
+      heading.appendChild(span);
+      elm.classList.add(TAB, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent.appendChild(elm3);
+      body.appendChild(parent);
+      const i = browser.i18n.getMessage.callCount;
+      func();
+      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
       assert.isTrue(elm.classList.contains(TAB), 'class');
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
