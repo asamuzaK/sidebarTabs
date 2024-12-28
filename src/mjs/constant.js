@@ -162,6 +162,7 @@ export const TAB_GROUP_LABEL_EDIT = 'editTabGroupLabel';
 export const TAB_GROUP_LABEL_HIDE = 'hideTabGroupLabel';
 export const TAB_GROUP_LABEL_SHOW = 'showTabGroupLabel';
 export const TAB_GROUP_NEW_TAB_AT_END = 'tabGroupPutNewTabAtTheEnd';
+export const TAB_GROUP_SELECT = 'selectTabGroup';
 export const TAB_GROUP_SELECTED = 'groupSelectedTabs';
 export const TAB_GROUP_UNGROUP = 'ungroupTabs';
 export const TAB_LIST = 'tabList';
