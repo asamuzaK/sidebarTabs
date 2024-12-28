@@ -13,12 +13,12 @@ import {
 import { highlightTabs } from './browser-tabs.js';
 import { isObjectNotEmpty, throwErr } from './common.js';
 import { requestSaveSession } from './session.js';
-import { restoreTabContainers } from './tab-group.js';
+import { expandTabGroup, restoreTabContainers } from './tab-group.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
 import {
-  CLASS_HEADING, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_GROUP,
+  CLASS_HEADING, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_COLLAPSED, CLASS_TAB_GROUP,
   DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE, HIGHLIGHTED,
   MIME_JSON, MIME_MOZ_URL, MIME_PLAIN, MIME_URI, PINNED, SIDEBAR_MAIN, TAB_QUERY
 } from './constant.js';
@@ -35,9 +35,14 @@ const ONE_THIRD = 1 / 3;
  * @returns {void}
  */
 export const clearDropTarget = () => {
-  const items = document.querySelectorAll(`.${DROP_TARGET}`);
-  for (const item of items) {
-    item.classList.remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
+  const target = document.querySelector(`.${DROP_TARGET}`);
+  if (target) {
+    const { parentNode: parent } = target;
+    if (parent.classList.contains(CLASS_TAB_GROUP) &&
+        parent.classList.contains(CLASS_TAB_COLLAPSED)) {
+      expandTabGroup(parent);
+    }
+    target.classList.remove(DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE);
   }
 };
 
