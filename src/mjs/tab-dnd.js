@@ -13,7 +13,9 @@ import {
 import { highlightTabs } from './browser-tabs.js';
 import { isObjectNotEmpty, throwErr } from './common.js';
 import { requestSaveSession } from './session.js';
-import { expandTabGroup, restoreTabContainers } from './tab-group.js';
+import {
+  expandTabGroup, getTabGroupHeading, restoreTabContainers
+} from './tab-group.js';
 import {
   getSidebarTab, getSidebarTabId, getSidebarTabIndex, getTemplate
 } from './util.js';
@@ -554,10 +556,15 @@ export const handleDrop = (evt, opt = {}) => {
   let func;
   if (dropEffect === 'copy' || dropEffect === 'move') {
     const { windowId } = opt;
-    const dropTarget = getSidebarTab(currentTarget);
+    let dropTarget =
+      getSidebarTab(currentTarget) ?? getTabGroupHeading(currentTarget);
     if (dropTarget?.classList.contains(DROP_TARGET)) {
       evt.preventDefault();
       evt.stopPropagation();
+      const container = dropTarget.parentNode;
+      const heading = container.querySelector(`.${CLASS_HEADING}`);
+      const childTabs = container.querySelectorAll(TAB_QUERY);
+      const [firstTab] = [...childTabs];
       // dropped tab
       if (dataTypes.includes(MIME_JSON)) {
         const data = JSON.parse(dataTransfer.getData(MIME_JSON));
@@ -571,12 +578,15 @@ export const handleDrop = (evt, opt = {}) => {
             if (shiftKey) {
               beGrouped = true;
             } else {
-              const container = dropTarget.parentNode;
               if (container.classList.contains(CLASS_TAB_GROUP)) {
-                const heading = container.querySelector(`.${CLASS_HEADING}`);
-                const childTabs = container.querySelectorAll(TAB_QUERY);
+                // if drop target is the heading
+                if (dropTarget === heading) {
+                  dropTarget = firstTab;
+                  data.dropAfter = false;
+                  data.dropBefore = true;
+                  beGrouped = true;
                 // if drop target is the first tab
-                if (dropTarget === childTabs[0]) {
+                } else if (dropTarget === firstTab) {
                   if (!heading.hidden ||
                       dropTarget.classList.contains(DROP_TARGET_AFTER)) {
                     beGrouped = true;
@@ -604,11 +614,17 @@ export const handleDrop = (evt, opt = {}) => {
           const data = {
             dropEffect,
             textValue,
-            dropAfter: dropTarget.classList.contains(DROP_TARGET_AFTER),
-            dropBefore: dropTarget.classList.contains(DROP_TARGET_BEFORE),
             dropWindowId: windowId,
             mime: MIME_URI
           };
+          if (dropTarget === heading) {
+            dropTarget = firstTab;
+            data.dropAfter = false;
+            data.dropBefore = true;
+          } else {
+            data.dropAfter = dropTarget.classList.contains(DROP_TARGET_AFTER);
+            data.dropBefore = dropTarget.classList.contains(DROP_TARGET_BEFORE);
+          }
           func = handleDroppedText(dropTarget, data).then(clearDropTarget)
             .then(restoreTabContainers).then(requestSaveSession)
             .catch(throwErr);
@@ -620,11 +636,17 @@ export const handleDrop = (evt, opt = {}) => {
           const data = {
             dropEffect,
             textValue,
-            dropAfter: dropTarget.classList.contains(DROP_TARGET_AFTER),
-            dropBefore: dropTarget.classList.contains(DROP_TARGET_BEFORE),
             dropWindowId: windowId,
             mime: MIME_PLAIN
           };
+          if (dropTarget === heading) {
+            dropTarget = firstTab;
+            data.dropAfter = false;
+            data.dropBefore = true;
+          } else {
+            data.dropAfter = dropTarget.classList.contains(DROP_TARGET_AFTER);
+            data.dropBefore = dropTarget.classList.contains(DROP_TARGET_BEFORE);
+          }
           func = handleDroppedText(dropTarget, data).then(clearDropTarget)
             .then(restoreTabContainers).then(requestSaveSession)
             .catch(throwErr);
@@ -693,11 +715,11 @@ export const handleDragLeave = evt => {
   if (type !== 'dragleave') {
     return;
   }
-  const dropTarget = getSidebarTab(currentTarget);
+  const dropTarget =
+    getSidebarTab(currentTarget) ?? getTabGroupHeading(currentTarget);
   if (dropTarget) {
-    dropTarget.classList.remove(
-      DROP_TARGET, DROP_TARGET_AFTER, DROP_TARGET_BEFORE
-    );
+    dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+      DROP_TARGET_BEFORE);
   }
 };
 
@@ -719,11 +741,18 @@ export const handleDragOver = (evt, opt = {}) => {
     mime => mime === MIME_JSON || mime === MIME_URI || mime === MIME_PLAIN
   );
   if (hasDataTypes) {
-    const dropTarget = getSidebarTab(currentTarget);
+    const dropTarget =
+      getSidebarTab(currentTarget) ?? getTabGroupHeading(currentTarget);
     if (dropTarget) {
       evt.preventDefault();
       evt.stopPropagation();
       const { bottom, top } = dropTarget.getBoundingClientRect();
+      const isHeading = dropTarget.classList.contains(CLASS_HEADING);
+      if (isHeading && dropTarget.hidden) {
+        dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
+          DROP_TARGET_BEFORE);
+        return;
+      }
       if (dataTypes.includes(MIME_JSON)) {
         const { isMac, windowId } = opt;
         const isPinned = dropTarget.classList.contains(PINNED);
@@ -741,7 +770,10 @@ export const handleDragOver = (evt, opt = {}) => {
         }
         if (dataTransfer.dropEffect === 'copy' ||
             dataTransfer.dropEffect === 'move') {
-          if (clientY > (bottom - top) * HALF + top) {
+          if (isHeading) {
+            dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+            dropTarget.classList.remove(DROP_TARGET_BEFORE);
+          } else if (clientY > (bottom - top) * HALF + top) {
             dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
             dropTarget.classList.remove(DROP_TARGET_BEFORE);
           } else {
@@ -752,6 +784,9 @@ export const handleDragOver = (evt, opt = {}) => {
           dropTarget.classList.remove(DROP_TARGET, DROP_TARGET_AFTER,
             DROP_TARGET_BEFORE);
         }
+      } else if (isHeading) {
+        dropTarget.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+        dropTarget.classList.remove(DROP_TARGET_BEFORE);
       } else if (clientY < (bottom - top) * ONE_THIRD + top) {
         dropTarget.classList.add(DROP_TARGET, DROP_TARGET_BEFORE);
         dropTarget.classList.remove(DROP_TARGET_AFTER);

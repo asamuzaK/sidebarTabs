@@ -4758,6 +4758,150 @@ describe('dnd', () => {
       const cnt = document.createElement('div');
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
+      const heading = document.createElement('div');
+      const heading2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, PINNED);
+      parent.id = PINNED;
+      parent2.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP);
+      heading.classList.add(CLASS_HEADING);
+      heading2.classList.add(CLASS_HEADING);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      main.appendChild(parent);
+      main.appendChild(parent2);
+      body.appendChild(tmpl);
+      body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_JSON]
+        },
+        type: 'drop'
+      };
+      heading.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+      const res = await func(evt, {
+        windowId: 1
+      });
+      assert.isTrue(preventDefault.called, 'called');
+      assert.isTrue(stopPropagation.called, 'called');
+      assert.isTrue(getCurrentWin.called, 'called');
+      assert.isTrue(portPostMsg.called, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.windows.get.withArgs(1, { populate: true }).resolves({
+        id: 1,
+        incognito: false,
+        tabs: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
+      });
+      browser.windows.get.withArgs(2, { populate: true }).resolves({
+        id: 2,
+        incognito: false,
+        tabs: [{ id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }]
+      });
+      browser.tabs.get.callsFake(tabId => {
+        const tab = {
+          id: tabId
+        };
+        return tab;
+      });
+      browser.tabs.duplicate.callsFake(i => {
+        const tabId = i + 10;
+        return {
+          id: tabId
+        };
+      });
+      browser.tabs.highlight.resolves({});
+      const getCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      let id = 10;
+      browser.tabs.create.callsFake(opt => {
+        const tab = {
+          id: ++id
+        };
+        return tab;
+      });
+      browser.tabs.move.callsFake((arr, opt) => {
+        const { index } = opt;
+        const tabArr = [];
+        for (let i = 0; i < arr.length; i++) {
+          const tabId = arr[i];
+          const tab = {
+            id: tabId,
+            index: index + i
+          };
+          tabArr.push(tab);
+        }
+        return tabArr;
+      });
+      browser.tabs.update.callsFake(tabId => {
+        return {
+          id: tabId
+        };
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      const portPostMsg = port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
       const head = document.createElement('div');
       const head2 = document.createElement('div');
       const elm = document.createElement('p');
@@ -5776,6 +5920,147 @@ describe('dnd', () => {
       const cnt = document.createElement('div');
       const parent = document.createElement('div');
       const parent2 = document.createElement('div');
+      const heading = document.createElement('div');
+      const heading2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, PINNED);
+      parent.id = PINNED;
+      parent2.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP);
+      heading.classList.add(CLASS_HEADING);
+      heading2.classList.add(CLASS_HEADING);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      main.appendChild(parent);
+      main.appendChild(parent2);
+      body.appendChild(tmpl);
+      body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('https://example.com');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_URI]
+        },
+        type: 'drop'
+      };
+      heading.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
+      const res = await func(evt, {
+        windowId: 1
+      });
+      assert.isTrue(preventDefault.called, 'called');
+      assert.isTrue(stopPropagation.called, 'called');
+      assert.isTrue(getCurrentWin.called, 'called');
+      assert.isTrue(portPostMsg.called, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.windows.get.withArgs(1, { populate: true }).resolves({
+        id: 1,
+        incognito: false,
+        tabs: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
+      });
+      browser.windows.get.withArgs(2, { populate: true }).resolves({
+        id: 2,
+        incognito: false,
+        tabs: [{ id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }]
+      });
+      browser.tabs.get.callsFake(tabId => {
+        const tab = {
+          id: tabId
+        };
+        return tab;
+      });
+      browser.tabs.duplicate.callsFake(i => {
+        const tabId = i + 10;
+        return {
+          id: tabId
+        };
+      });
+      browser.tabs.highlight.resolves({});
+      const getCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      let id = 10;
+      browser.tabs.create.callsFake(opt => {
+        const tab = {
+          id: ++id
+        };
+        return tab;
+      });
+      browser.tabs.move.callsFake((arr, opt) => {
+        const { index } = opt;
+        const tabArr = [];
+        for (let i = 0; i < arr.length; i++) {
+          const tabId = arr[i];
+          const tab = {
+            id: tabId,
+            index: index + i
+          };
+          tabArr.push(tab);
+        }
+        return tabArr;
+      });
+      browser.tabs.update.callsFake(tabId => {
+        return {
+          id: tabId
+        };
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      const portPostMsg = port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
       const elm = document.createElement('p');
       const elm2 = document.createElement('p');
       const elm3 = document.createElement('p');
@@ -5837,6 +6122,147 @@ describe('dnd', () => {
         type: 'drop'
       };
       elm.classList.add(DROP_TARGET);
+      const res = await func(evt, {
+        windowId: 1
+      });
+      assert.isTrue(preventDefault.called, 'called');
+      assert.isTrue(stopPropagation.called, 'called');
+      assert.isTrue(getCurrentWin.called, 'called');
+      assert.isTrue(portPostMsg.called, 'called');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      browser.windows.get.withArgs(1, { populate: true }).resolves({
+        id: 1,
+        incognito: false,
+        tabs: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
+      });
+      browser.windows.get.withArgs(2, { populate: true }).resolves({
+        id: 2,
+        incognito: false,
+        tabs: [{ id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }]
+      });
+      browser.tabs.get.callsFake(tabId => {
+        const tab = {
+          id: tabId
+        };
+        return tab;
+      });
+      browser.tabs.duplicate.callsFake(i => {
+        const tabId = i + 10;
+        return {
+          id: tabId
+        };
+      });
+      browser.tabs.highlight.resolves({});
+      const getCurrentWin = browser.windows.getCurrent.resolves({
+        id: 1,
+        incognito: false
+      });
+      let id = 10;
+      browser.tabs.create.callsFake(opt => {
+        const tab = {
+          id: ++id
+        };
+        return tab;
+      });
+      browser.tabs.move.callsFake((arr, opt) => {
+        const { index } = opt;
+        const tabArr = [];
+        for (let i = 0; i < arr.length; i++) {
+          const tabId = arr[i];
+          const tab = {
+            id: tabId,
+            index: index + i
+          };
+          tabArr.push(tab);
+        }
+        return tabArr;
+      });
+      browser.tabs.update.callsFake(tabId => {
+        return {
+          id: tabId
+        };
+      });
+      const portId = `${SIDEBAR}_1`;
+      const port = mockPort({
+        name: portId
+      });
+      const portPostMsg = port.postMessage.resolves({});
+      mjs.ports.set(portId, port);
+      const main = document.createElement('div');
+      const tmpl = document.createElement('template');
+      const cnt = document.createElement('div');
+      const parent = document.createElement('div');
+      const parent2 = document.createElement('div');
+      const heading = document.createElement('div');
+      const heading2 = document.createElement('div');
+      const elm = document.createElement('p');
+      const elm2 = document.createElement('p');
+      const elm3 = document.createElement('p');
+      const elm4 = document.createElement('p');
+      const body = document.querySelector('body');
+      main.id = SIDEBAR_MAIN;
+      tmpl.id = CLASS_TAB_CONTAINER_TMPL;
+      tmpl.content.appendChild(cnt);
+      parent.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP, PINNED);
+      parent.id = PINNED;
+      parent2.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP);
+      heading.classList.add(CLASS_HEADING);
+      heading2.classList.add(CLASS_HEADING);
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.dataset.tab = JSON.stringify({
+        url: 'https://example.com',
+        title: 'Example Domain'
+      });
+      elm2.classList.add(TAB, PINNED);
+      elm2.dataset.tabId = '2';
+      elm2.dataset.tab = JSON.stringify({
+        url: 'https://example.com/foo',
+        title: 'Foo'
+      });
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      elm3.dataset.tab = JSON.stringify({
+        url: 'https://example.com/bar',
+        title: 'Bar'
+      });
+      elm4.classList.add(TAB);
+      elm4.dataset.tabId = '4';
+      elm4.dataset.tab = JSON.stringify({
+        url: 'https://example.com/baz',
+        title: 'Baz'
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      parent.appendChild(elm2);
+      parent2.appendChild(heading2);
+      parent2.appendChild(elm3);
+      parent2.appendChild(elm4);
+      main.appendChild(parent);
+      main.appendChild(parent2);
+      body.appendChild(tmpl);
+      body.appendChild(main);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
+        },
+        type: 'drop'
+      };
+      heading.classList.add(DROP_TARGET, DROP_TARGET_AFTER);
       const res = await func(evt, {
         windowId: 1
       });
@@ -6189,6 +6615,26 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
     });
 
+    it('should remove class', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      heading.classList.add(CLASS_HEADING, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const evt = {
+        currentTarget: heading,
+        type: 'dragleave'
+      };
+      func(evt);
+      assert.isFalse(heading.classList.contains(DROP_TARGET), 'class');
+    });
+
     it('should not remove class', () => {
       const parent = document.createElement('div');
       const elm = document.createElement('p');
@@ -6215,14 +6661,20 @@ describe('dnd', () => {
 
     it('should not set drop effect', () => {
       const parent = document.createElement('div');
+      const heading = document.createElement('div');
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       parent.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      heading.classList.add(CLASS_HEADING);
+      heading.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
       elm.classList.add(TAB, PINNED);
       elm.dataset.tabId = '1';
       elm.getBoundingClientRect = sinon.stub().returns({
-        top: 10, left: 0, right: 100, bottom: 50
+        top: 60, left: 0, right: 100, bottom: 100
       });
+      parent.appendChild(heading);
       parent.appendChild(elm);
       body.appendChild(parent);
       const getData = sinon.stub();
@@ -6253,6 +6705,60 @@ describe('dnd', () => {
       assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.isUndefined(evt.dataTransfer.dropEffect, 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i, 'not called');
+      assert.strictEqual(stopPropagation.callCount, j, 'not called');
+    });
+
+    it('should not set drop effect', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      heading.classList.add(CLASS_HEADING);
+      heading.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 60, left: 0, right: 100, bottom: 100
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
+        pinned: true
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          types: [MIME_JSON]
+        },
+        type: 'foo'
+      };
+      func(evt, {
+        windowId: 1
+      });
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.isFalse(heading.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(heading.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.isUndefined(evt.dataTransfer.dropEffect, 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
@@ -6390,6 +6896,114 @@ describe('dnd', () => {
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set drop effect and class', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      heading.classList.add(CLASS_HEADING);
+      heading.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 60, left: 0, right: 100, bottom: 100
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 2,
+        pinned: false
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_JSON]
+        },
+        type: 'dragover'
+      };
+      func(evt, {
+        windowId: 1
+      });
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.isTrue(heading.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(heading.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should not set drop effect and class', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      heading.classList.add(CLASS_HEADING);
+      heading.hidden = true;
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 60, left: 0, right: 100, bottom: 100
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 2,
+        pinned: false
+      }));
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 40,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_JSON]
+        },
+        type: 'dragover'
+      };
+      func(evt, {
+        windowId: 1
+      });
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.isFalse(heading.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(heading.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -6710,6 +7324,55 @@ describe('dnd', () => {
       assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
       assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
       assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(preventDefault.callCount, i + 1, 'called');
+      assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
+    });
+
+    it('should set class', () => {
+      const parent = document.createElement('div');
+      const heading = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER, PINNED);
+      heading.classList.add(CLASS_HEADING);
+      heading.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      elm.classList.add(TAB, PINNED);
+      elm.dataset.tabId = '1';
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 60, left: 0, right: 100, bottom: 100
+      });
+      parent.appendChild(heading);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('');
+      getData.withArgs(MIME_URI).returns('');
+      getData.withArgs(MIME_PLAIN).returns('foo');
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const i = preventDefault.callCount;
+      const j = stopPropagation.callCount;
+      const evt = {
+        preventDefault,
+        stopPropagation,
+        clientY: 30,
+        currentTarget: heading,
+        dataTransfer: {
+          getData,
+          dropEffect: 'move',
+          types: [MIME_PLAIN]
+        },
+        type: 'dragover'
+      };
+      func(evt);
+      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.isTrue(heading.classList.contains(DROP_TARGET), 'target');
+      assert.isTrue(heading.classList.contains(DROP_TARGET_AFTER), 'after');
+      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });

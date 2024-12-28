@@ -372,7 +372,7 @@ export const applyPinnedContainerHeight = entries => {
 /**
  * trigger DnD handler
  * @param {!object} evt - event
- * @returns {?Function} - handleDragStart() / handleDragOver()
+ * @returns {?Function} - handleDragStart() / handleDragOver() / handleDrop()
  */
 export const triggerDndHandler = evt => {
   const { currentTarget, type } = evt;
@@ -1240,7 +1240,7 @@ export const handleClickedMenu = async info => {
   const func = [];
   if (focused) {
     const { menuItemId } = info;
-    const { context, contextualIds, duplicatedTabs, windowId } = sidebar;
+    const { context, contextualIds, duplicatedTabs, isMac, windowId } = sidebar;
     const allTabs = document.querySelectorAll(TAB_QUERY);
     const selectedTabs = document.querySelectorAll(`.${HIGHLIGHTED}`);
     const tab = getSidebarTab(context);
@@ -1341,7 +1341,11 @@ export const handleClickedMenu = async info => {
         break;
       case TAB_GROUP_LABEL_SHOW:
         if (heading) {
-          func.push(toggleTabGroupHeadingState(heading, collapseOther));
+          func.push(toggleTabGroupHeadingState(heading, {
+            isMac,
+            windowId,
+            multi: collapseOther
+          }));
         }
         break;
       case TAB_GROUP_SELECT:

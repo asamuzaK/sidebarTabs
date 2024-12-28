@@ -16,8 +16,9 @@ import {
   CLASS_COLLAPSE_AUTO, CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL,
   CLASS_HEADING_LABEL_EDIT, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
   CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
-  HIGHLIGHTED, PINNED, SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE,
-  TAB_GROUP_EXPAND, TAB_GROUP_LABEL_EDIT
+  DROP_TARGET, DROP_TARGET_AFTER, HIGHLIGHTED, MIME_JSON, MIME_PLAIN, PINNED,
+  SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND,
+  TAB_GROUP_LABEL_EDIT
 } from '../src/mjs/constant.js';
 
 describe('tab-group', () => {
@@ -2366,6 +2367,184 @@ describe('tab-group', () => {
     });
   });
 
+  describe('trigger DnD handler', () => {
+    const func = mjs.triggerDndHandler;
+
+    it('should not call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_HEADING);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({ pinned: true }));
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          getData,
+          setData,
+          effectAllowed: 'copyMove',
+          types: [MIME_JSON, MIME_PLAIN]
+        },
+        type: 'dragenter'
+      };
+      const res = await func(evt);
+      assert.strictEqual(getData.callCount, 0, 'not called');
+      assert.strictEqual(setData.callCount, 0, 'not called');
+      assert.strictEqual(res, null, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_HEADING);
+      elm.dataset.windowId = 1;
+      elm.getBoundingClientRect = sinon.stub().returns({
+        top: 10, left: 0, right: 100, bottom: 50
+      });
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({
+        dragWindowId: 1,
+        pinned: true
+      }));
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          getData,
+          setData,
+          effectAllowed: 'copyMove',
+          types: [MIME_JSON, MIME_PLAIN]
+        },
+        type: 'dragover'
+      };
+      const res = await func(evt);
+      assert.strictEqual(getData.callCount, 1, 'called');
+      assert.strictEqual(setData.callCount, 0, 'not called');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'class');
+      assert.strictEqual(res, null, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_HEADING, DROP_TARGET, DROP_TARGET_AFTER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns(JSON.stringify({ pinned: true }));
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          getData,
+          setData,
+          effectAllowed: 'copyMove',
+          types: [MIME_JSON, MIME_PLAIN]
+        },
+        type: 'dragleave'
+      };
+      const res = await func(evt);
+      assert.strictEqual(getData.callCount, 0, 'not called');
+      assert.strictEqual(setData.callCount, 0, 'not called');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'class');
+      assert.strictEqual(res, null, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_HEADING, DROP_TARGET, DROP_TARGET_AFTER);
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('{}');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          dropEffect: 'move',
+          getData,
+          setData,
+          effectAllowed: 'copyMove',
+          types: [MIME_JSON, MIME_PLAIN]
+        },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(getData.callCount, 1, 'called');
+      assert.strictEqual(setData.callCount, 0, 'not called');
+      assert.strictEqual(res, null, 'result');
+    });
+
+    it('should call function', async () => {
+      const parent = document.createElement('div');
+      const elm = document.createElement('p');
+      const body = document.querySelector('body');
+      parent.classList.add(CLASS_TAB_CONTAINER);
+      elm.classList.add(CLASS_HEADING, DROP_TARGET, DROP_TARGET_AFTER);
+      elm.dataset.ismac = true;
+      elm.dataset.windowid = 1;
+      parent.appendChild(elm);
+      body.appendChild(parent);
+      const preventDefault = sinon.stub();
+      const stopPropagation = sinon.stub();
+      const getData = sinon.stub();
+      getData.withArgs(MIME_JSON).returns('{}');
+      getData.withArgs(MIME_PLAIN).returns('');
+      const setData = sinon.stub();
+      const evt = {
+        currentTarget: elm,
+        preventDefault,
+        stopPropagation,
+        dataTransfer: {
+          dropEffect: 'move',
+          getData,
+          setData,
+          effectAllowed: 'copyMove',
+          types: [MIME_JSON, MIME_PLAIN]
+        },
+        type: 'drop'
+      };
+      const res = await func(evt);
+      assert.strictEqual(getData.callCount, 1, 'called');
+      assert.strictEqual(setData.callCount, 0, 'not called');
+      assert.strictEqual(res, null, 'result');
+    });
+  });
+
   describe('add listeners to heading items', () => {
     const func = mjs.addListenersToHeadingItems;
 
@@ -2379,6 +2558,7 @@ describe('tab-group', () => {
       const spy = sinon.spy(child, 'addEventListener');
       const spy2 = sinon.spy(button, 'addEventListener');
       const spy3 = sinon.spy(context, 'addEventListener');
+      const spy4 = sinon.spy(elm, 'addEventListener');
       context.classList.add(CLASS_TAB_CONTEXT);
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
@@ -2390,11 +2570,14 @@ describe('tab-group', () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
-      func(parent, true);
-      assert.isFalse(elm.hasAttribute('data-multi'), 'dataset');
-      assert.isFalse(spy.called, 'not called child addEventListener');
-      assert.isFalse(spy2.called, 'not called button addEventListener');
-      assert.isFalse(spy3.called, 'not called context addEventListener');
+      func(parent, {
+        multi: true
+      });
+      assert.strictEqual(elm.hasAttribute('data-multi'), false, 'dataset');
+      assert.strictEqual(spy.called, false, 'not called child add listener');
+      assert.strictEqual(spy2.called, false, 'not called button add listener');
+      assert.strictEqual(spy3.called, false, 'not called context add listener');
+      assert.strictEqual(spy4.called, false, 'not called elm add listener');
     });
 
     it('should call function', () => {
@@ -2407,6 +2590,7 @@ describe('tab-group', () => {
       const spy = sinon.spy(child, 'addEventListener');
       const spy2 = sinon.spy(button, 'addEventListener');
       const spy3 = sinon.spy(context, 'addEventListener');
+      const spy4 = sinon.spy(elm, 'addEventListener');
       context.classList.add(CLASS_TAB_CONTEXT);
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
@@ -2418,11 +2602,14 @@ describe('tab-group', () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
-      func(parent, true);
-      assert.isTrue(elm.hasAttribute('data-multi'), 'dataset');
-      assert.isTrue(spy.calledOnce, 'called child addEventListener');
-      assert.isTrue(spy2.calledOnce, 'called button addEventListener');
-      assert.isTrue(spy3.calledOnce, 'called context addEventListener');
+      func(parent, {
+        multi: true
+      });
+      assert.strictEqual(elm.hasAttribute('data-multi'), true, 'dataset');
+      assert.strictEqual(spy.callCount, 1, 'called child add listener');
+      assert.strictEqual(spy2.callCount, 1, 'called button add listener');
+      assert.strictEqual(spy3.callCount, 1, 'called context add listener');
+      assert.strictEqual(spy4.callCount, 3, 'called elm add listener');
     });
 
     it('should call function', () => {
@@ -2435,6 +2622,7 @@ describe('tab-group', () => {
       const spy = sinon.spy(child, 'addEventListener');
       const spy2 = sinon.spy(button, 'addEventListener');
       const spy3 = sinon.spy(context, 'addEventListener');
+      const spy4 = sinon.spy(elm, 'addEventListener');
       context.classList.add(CLASS_TAB_CONTEXT);
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
@@ -2446,11 +2634,15 @@ describe('tab-group', () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
-      func(parent, false);
-      assert.isFalse(elm.hasAttribute('data-multi'), 'dataset');
-      assert.isTrue(spy.calledOnce, 'called child addEventListener');
-      assert.isTrue(spy2.calledOnce, 'called button addEventListener');
-      assert.isTrue(spy3.calledOnce, 'called context addEventListener');
+      func(parent, {
+        isMac: true,
+        windowId: 1
+      });
+      assert.strictEqual(elm.hasAttribute('data-multi'), false, 'dataset');
+      assert.strictEqual(spy.callCount, 1, 'called child add listener');
+      assert.strictEqual(spy2.callCount, 1, 'called button add listener');
+      assert.strictEqual(spy3.callCount, 1, 'called context add listener');
+      assert.strictEqual(spy4.callCount, 3, 'called elm add listener');
     });
   });
 
@@ -2496,6 +2688,7 @@ describe('tab-group', () => {
       const spy = sinon.spy(child, 'removeEventListener');
       const spy2 = sinon.spy(button, 'removeEventListener');
       const spy3 = sinon.spy(context, 'removeEventListener');
+      const spy4 = sinon.spy(elm, 'removeEventListener');
       context.classList.add(CLASS_TAB_CONTEXT);
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
@@ -2509,10 +2702,11 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       func(parent);
-      assert.isFalse(elm.hasAttribute('data-multi'), 'dataset');
-      assert.isTrue(spy.calledTwice, 'called child removeEventListener');
-      assert.isTrue(spy2.calledOnce, 'called button removeEventListener');
-      assert.isTrue(spy3.calledTwice, 'called context removeEventListener');
+      assert.strictEqual(elm.hasAttribute('data-multi'), false, 'dataset');
+      assert.strictEqual(spy.callCount, 2, 'called child remove listener');
+      assert.strictEqual(spy2.callCount, 1, 'called button remove listener');
+      assert.strictEqual(spy3.callCount, 2, 'called context remove listener');
+      assert.strictEqual(spy4.callCount, 3, 'called elm remove listener');
     });
   });
 
@@ -2619,7 +2813,9 @@ describe('tab-group', () => {
       parent.classList.add(CLASS_TAB_CONTAINER);
       parent.appendChild(elm);
       body.appendChild(parent);
-      const res = await func(parent, true);
+      const res = await func(parent, {
+        multi: true
+      });
       assert.isTrue(elm.hasAttribute('data-multi'), 'dataset');
       assert.strictEqual(elm.dataset.multi, 'true', 'dataset value');
       assert.strictEqual(msg.callCount, i + 1, 'called msg');
