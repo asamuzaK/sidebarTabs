@@ -131,15 +131,15 @@ describe('tab-group', () => {
       assert.isFalse(browser.i18n.getMessage.called, 'result');
     });
 
-    it('should not call function', async () => {
+    it('should not call function', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
-      await func(elm);
+      func(elm);
       assert.isFalse(browser.i18n.getMessage.called, 'result');
     });
 
-    it('should set value', async () => {
+    it('should set value', () => {
       browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
         .returns('foo');
       browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns('bar');
@@ -157,14 +157,14 @@ describe('tab-group', () => {
       elm2.appendChild(elm3);
       elm.appendChild(elm2);
       body.appendChild(elm);
-      await func(elm);
+      func(elm);
       assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
     });
 
-    it('should set value', async () => {
+    it('should set value', () => {
       browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
         .returns('foo');
       browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns('bar');
@@ -181,7 +181,7 @@ describe('tab-group', () => {
       elm2.appendChild(elm3);
       elm.appendChild(elm2);
       body.appendChild(elm);
-      await func(elm, true);
+      func(elm, true);
       assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isTrue(elm2.classList.contains(ACTIVE), 'active');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
@@ -189,7 +189,7 @@ describe('tab-group', () => {
       assert.strictEqual(elm4.alt, 'bar', 'alt');
     });
 
-    it('should set value', async () => {
+    it('should set value', () => {
       browser.i18n.getMessage.withArgs(`${TAB_GROUP_EXPAND}_tooltip`)
         .returns('foo');
       browser.i18n.getMessage.withArgs(TAB_GROUP_EXPAND).returns('bar');
@@ -206,7 +206,7 @@ describe('tab-group', () => {
       elm2.appendChild(elm3);
       elm.appendChild(elm2);
       body.appendChild(elm);
-      await func(elm, false);
+      func(elm, false);
       assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isFalse(elm2.classList.contains(ACTIVE), 'active');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
@@ -214,7 +214,7 @@ describe('tab-group', () => {
       assert.strictEqual(elm4.alt, 'bar', 'alt');
     });
 
-    it('should not call function', async () => {
+    it('should not call function', () => {
       const i = browser.i18n.getMessage.callCount;
       const elm = document.createElement('div');
       const elm2 = document.createElement('p');
@@ -230,7 +230,7 @@ describe('tab-group', () => {
       elm.appendChild(elm2);
       body.appendChild(elm);
       body.classList.add(CLASS_UNGROUP);
-      await func(elm);
+      func(elm);
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
     });
@@ -239,20 +239,20 @@ describe('tab-group', () => {
   describe('expand tab group', () => {
     const func = mjs.expandTabGroup;
 
-    it('should not call function', async () => {
-      await func();
+    it('should not call function', () => {
+      func();
       assert.isFalse(browser.i18n.getMessage.called, 'result');
     });
 
-    it('should not call function', async () => {
+    it('should not call function', () => {
       const elm = document.createElement('p');
       const body = document.querySelector('body');
       body.appendChild(elm);
-      await func(elm);
+      func(elm);
       assert.isFalse(browser.i18n.getMessage.called, 'result');
     });
 
-    it('should set value', async () => {
+    it('should set value', () => {
       browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
         .returns('foo');
       browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns('bar');
@@ -275,14 +275,14 @@ describe('tab-group', () => {
       elm.appendChild(elm1);
       elm.appendChild(elm2);
       body.appendChild(elm);
-      await func(elm);
+      func(elm);
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
     });
 
-    it('should set value', async () => {
+    it('should set value', () => {
       browser.i18n.getMessage.withArgs(`${TAB_GROUP_COLLAPSE}_tooltip`)
         .returns('foo');
       browser.i18n.getMessage.withArgs(TAB_GROUP_COLLAPSE).returns('bar');
@@ -306,7 +306,7 @@ describe('tab-group', () => {
       elm.appendChild(elm1);
       elm.appendChild(elm2);
       body.appendChild(elm);
-      await func(elm);
+      func(elm);
       assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
       assert.isFalse(elm1.classList.contains(ACTIVE), 'heading class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');

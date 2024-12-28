@@ -64,9 +64,9 @@ export const restoreTabContainers = async () => {
  * collapse tab group
  * @param {object} [elm] - element
  * @param {boolean} [activate] - activate element
- * @returns {Promise.<void>} - void
+ * @returns {void}
  */
-export const collapseTabGroup = async (elm, activate) => {
+export const collapseTabGroup = (elm, activate) => {
   const body = document.querySelector('body');
   if (elm?.nodeType === Node.ELEMENT_NODE &&
       elm?.classList.contains(CLASS_TAB_GROUP) &&
@@ -91,9 +91,9 @@ export const collapseTabGroup = async (elm, activate) => {
 /**
  * expand tab group
  * @param {object} [elm] - element
- * @returns {Promise.<void>} - void
+ * @returns {void}
  */
-export const expandTabGroup = async elm => {
+export const expandTabGroup = elm => {
   if (elm?.nodeType === Node.ELEMENT_NODE &&
       elm?.classList.contains(CLASS_TAB_GROUP)) {
     const heading = elm.querySelector(`.${CLASS_HEADING}:not([hidden])`);
