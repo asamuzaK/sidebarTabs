@@ -2879,6 +2879,95 @@ describe('tab-group', () => {
     });
   });
 
+  describe('select tab group', () => {
+    const func = mjs.selectTabGroup;
+
+    it('should get null', async () => {
+      const res = await func();
+      assert.isNull(res, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.highlight.callCount;
+      browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [1, 0, 2]
+      }).resolves({});
+      browser.tabs.query.withArgs({
+        active: true,
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        windowType: 'normal'
+      }).resolves([{
+        id: 2,
+        index: 1
+      }]);
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB, ACTIVE);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      const res = await func(label);
+      assert.strictEqual(browser.tabs.highlight.callCount, i + 1,
+        'called highlight');
+      assert.deepEqual(res, {}, 'result');
+    });
+
+    it('should call function', async () => {
+      const i = browser.tabs.highlight.callCount;
+      browser.tabs.highlight.withArgs({
+        windowId: browser.windows.WINDOW_ID_CURRENT,
+        tabs: [0, 1, 2]
+      }).resolves({});
+      browser.tabs.update.withArgs(1, {
+        active: true
+      }).resolves({
+        index: 0
+      });
+      const sect = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const label = document.createElement('span');
+      const elm = document.createElement('div');
+      const elm2 = document.createElement('div');
+      const elm3 = document.createElement('div');
+      const body = document.querySelector('body');
+      sect.classList.add(CLASS_TAB_CONTAINER, CLASS_TAB_GROUP,
+        CLASS_TAB_COLLAPSED);
+      elm.classList.add(TAB);
+      elm.dataset.tabId = '1';
+      elm2.classList.add(TAB);
+      elm2.dataset.tabId = '2';
+      elm3.classList.add(TAB);
+      elm3.dataset.tabId = '3';
+      h1.appendChild(label);
+      sect.appendChild(h1);
+      sect.appendChild(elm);
+      sect.appendChild(elm2);
+      sect.appendChild(elm3);
+      body.appendChild(sect);
+      const res = await func(label);
+      assert.strictEqual(sect.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(browser.tabs.highlight.callCount, i + 1,
+        'called highlight');
+      assert.deepEqual(res, {}, 'result');
+    });
+  });
+
   describe('close tab group', () => {
     const func = mjs.closeTabGroup;
 

@@ -5,7 +5,7 @@
 /* shared */
 import { bookmarkTabs } from './bookmark.js';
 import { getStorage, getTab, queryTabs } from './browser.js';
-import { closeTabs, moveTabsInOrder } from './browser-tabs.js';
+import { closeTabs, highlightTabs, moveTabsInOrder } from './browser-tabs.js';
 import {
   addElementContentEditable, getType, isObjectNotEmpty,
   removeElementContentEditable, throwErr
@@ -535,6 +535,33 @@ export const bookmarkTabGroup = async node => {
     const items = container.querySelectorAll(TAB_QUERY);
     if (label && items.length) {
       func = bookmarkTabs([...items], label.textContent.trim());
+    }
+  }
+  return func || null;
+};
+
+/**
+ * select tab group
+ * @param {object} node - node
+ * @returns {Promise.<?Promise>} - highlightTabs()
+ */
+export const selectTabGroup = async node => {
+  const container = getSidebarTabContainer(node);
+  let func;
+  if (container) {
+    const items = container.querySelectorAll(TAB_QUERY);
+    if (items.length) {
+      const activeTab = document.querySelector(`${TAB_QUERY}.${ACTIVE}`);
+      container.classList.remove(CLASS_TAB_COLLAPSED);
+      if (activeTab?.parentNode === container) {
+        func = highlightTabs([...items]);
+      } else {
+        const [tab, ...group] = [...items];
+        const tabId = getSidebarTabId(tab);
+        func = highlightTabs(group, {
+          tabId
+        });
+      }
     }
   }
   return func || null;

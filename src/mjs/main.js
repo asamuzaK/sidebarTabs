@@ -37,7 +37,7 @@ import {
   addListenersToHeadingItems, addTabContextClickListener, bookmarkTabGroup,
   closeTabGroup, collapseTabGroups, detachTabsFromGroup, getTabGroupHeading,
   groupSameContainerTabs, groupSameDomainTabs, groupSelectedTabs,
-  replaceTabContextClickListener, restoreTabContainers,
+  replaceTabContextClickListener, restoreTabContainers, selectTabGroup,
   toggleAutoCollapsePinnedTabs, toggleTabGrouping,
   toggleTabGroupCollapsedState, toggleTabGroupsCollapsedState,
   toggleTabGroupHeadingState, ungroupTabs
@@ -71,8 +71,8 @@ import {
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_ENABLE,
   TAB_GROUP_EXPAND_COLLAPSE_OTHER, TAB_GROUP_EXPAND_EXCLUDE_PINNED,
-  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP,
+  TAB_GROUP_LABEL_SHOW, TAB_GROUP_NEW_TAB_AT_END, TAB_GROUP_SELECT,
+  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_LIST, TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_NEW, TAB_PIN, TAB_QUERY, TAB_RELOAD, TAB_REOPEN_CONTAINER,
   TAB_REOPEN_NO_CONTAINER, TAB_SKIP_COLLAPSED, TAB_SWITCH_SCROLL,
@@ -1344,6 +1344,9 @@ export const handleClickedMenu = async info => {
           func.push(toggleTabGroupHeadingState(heading, collapseOther));
         }
         break;
+      case TAB_GROUP_SELECT:
+        func.push(selectTabGroup(tab || heading));
+        break;
       case TAB_GROUP_SELECTED:
         func.push(
           groupSelectedTabs(windowId).then(restoreTabContainers)
@@ -1667,7 +1670,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
       TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
       TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_LABEL_SHOW,
-      TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
+      TAB_GROUP_SELECT, TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
       'sepTabGroup-1', 'sepTabGroup-2', 'sepTabGroup-3'
     ];
     func.push(updateContextMenu(tabGroupMenu.id, {
@@ -1682,6 +1685,7 @@ export const prepareTabGroupMenuItems = async (elm, opt) => {
       switch (itemKey) {
         case TAB_GROUP_BOOKMARK:
         case TAB_GROUP_CLOSE:
+        case TAB_GROUP_SELECT:
           data.enabled = parentClass.contains(CLASS_TAB_GROUP);
           data.title = title;
           data.visible = true;
