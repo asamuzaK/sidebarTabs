@@ -198,20 +198,20 @@
     "message": "Dark Theme"
   },
   "detachTabFromGroup_menu": {
-    "message": "De&tach Tab from Group",
+    "message": "&Detach Tab from Group",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&T)"
+        "example": "(&D)"
       }
     }
   },
   "detachTabsFromGroup_menu": {
-    "message": "De&tach Tabs from Group",
+    "message": "&Detach Tabs from Group",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&T)"
+        "example": "(&D)"
       }
     }
   },
@@ -258,29 +258,29 @@
     "message": "Expand grouped tabs"
   },
   "groupSameContainerTabs_menu": {
-    "message": "Group Same Contai&ner Tabs",
+    "message": "Group Same Conta&iner Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&N)"
+        "example": "(&I)"
       }
     }
   },
   "groupSameDomainTabs_menu": {
-    "message": "Group Same &Domain Tabs",
+    "message": "Group Same Do&main Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&M)"
       }
     }
   },
   "groupSelectedTabs_menu": {
-    "message": "Group &Selected Tabs",
+    "message": "Group Selected &Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&S)"
+        "example": "(&T)"
       }
     }
   },
@@ -764,6 +764,15 @@
   "selectAllTabs_menu": {
     "message": "&Select All Tabs",
     "description": "Refer to https://pontoon.mozilla.org/[lang]/firefox/browser/browser/tabContextMenu.ftl",
+    "placeholders": {
+      "key": {
+        "content": "$1",
+        "example": "(&S)"
+      }
+    }
+  },
+  "selectTabGroup_menu": {
+    "message": "&Select Tab Group",
     "placeholders": {
       "key": {
         "content": "$1",

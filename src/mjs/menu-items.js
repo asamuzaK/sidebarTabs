@@ -10,8 +10,8 @@ import {
   TAB_GROUP, TAB_GROUP_BOOKMARK, TAB_GROUP_CLOSE, TAB_GROUP_COLLAPSE,
   TAB_GROUP_COLLAPSE_OTHER, TAB_GROUP_CONTAINER, TAB_GROUP_DETACH,
   TAB_GROUP_DETACH_TABS, TAB_GROUP_DOMAIN, TAB_GROUP_EXPAND,
-  TAB_GROUP_LABEL_HIDE, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECTED,
-  TAB_GROUP_UNGROUP,
+  TAB_GROUP_LABEL_HIDE, TAB_GROUP_LABEL_SHOW, TAB_GROUP_SELECT,
+  TAB_GROUP_SELECTED, TAB_GROUP_UNGROUP,
   TAB_MOVE, TAB_MOVE_END, TAB_MOVE_START, TAB_MOVE_WIN, TAB_MUTE,
   TAB_MUTE_UNMUTE, TAB_NEW, TAB_PIN, TAB_PIN_UNPIN, TAB_RELOAD,
   TAB_REOPEN_CONTAINER, TAB_REOPEN_NO_CONTAINER,
@@ -407,9 +407,18 @@ export default {
         enabled: false,
         visible: true
       },
+      [TAB_GROUP_SELECT]: {
+        id: TAB_GROUP_SELECT,
+        title: i18n.getMessage(`${TAB_GROUP_SELECT}_menu`, '(&S)'),
+        type: 'normal',
+        contexts: ['tab'],
+        viewTypes: ['sidebar'],
+        enabled: false,
+        visible: true
+      },
       [TAB_GROUP_SELECTED]: {
         id: TAB_GROUP_SELECTED,
-        title: i18n.getMessage(`${TAB_GROUP_SELECTED}_menu`, '(&S)'),
+        title: i18n.getMessage(`${TAB_GROUP_SELECTED}_menu`, '(&T)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -418,7 +427,7 @@ export default {
       },
       [TAB_GROUP_CONTAINER]: {
         id: TAB_GROUP_CONTAINER,
-        title: i18n.getMessage(`${TAB_GROUP_CONTAINER}_menu`, '(&N)'),
+        title: i18n.getMessage(`${TAB_GROUP_CONTAINER}_menu`, '(&I)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -427,7 +436,7 @@ export default {
       },
       [TAB_GROUP_DOMAIN]: {
         id: TAB_GROUP_DOMAIN,
-        title: i18n.getMessage(`${TAB_GROUP_DOMAIN}_menu`, '(&D)'),
+        title: i18n.getMessage(`${TAB_GROUP_DOMAIN}_menu`, '(&M)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -436,7 +445,7 @@ export default {
       },
       [TAB_GROUP_DETACH]: {
         id: TAB_GROUP_DETACH,
-        title: i18n.getMessage(`${TAB_GROUP_DETACH}_menu`, '(&T)'),
+        title: i18n.getMessage(`${TAB_GROUP_DETACH}_menu`, '(&D)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -445,7 +454,7 @@ export default {
       },
       [TAB_GROUP_DETACH_TABS]: {
         id: TAB_GROUP_DETACH_TABS,
-        title: i18n.getMessage(`${TAB_GROUP_DETACH_TABS}_menu`, '(&T)'),
+        title: i18n.getMessage(`${TAB_GROUP_DETACH_TABS}_menu`, '(&D)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
