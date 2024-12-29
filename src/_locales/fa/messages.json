@@ -772,7 +772,7 @@
     }
   },
   "selectTabGroup_menu": {
-    "message": "Select Tab Group $KEY$",
+    "message": "انتخاب گروه زبانه $KEY$",
     "placeholders": {
       "key": {
         "content": "$1",
