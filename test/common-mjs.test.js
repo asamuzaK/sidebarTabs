@@ -3,9 +3,9 @@
  */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { createJsdom } from './mocha/setup.js';
 
 /* test */
@@ -57,8 +57,8 @@ describe('common', () => {
       const { calledOnce } = stub;
       stub.restore();
       assert.strictEqual(msg, 'error');
-      assert.isTrue(calledOnce);
-      assert.isFalse(res);
+      assert.strictEqual(calledOnce, true);
+      assert.strictEqual(res, false);
     });
 
     it('should log error message', () => {
@@ -71,8 +71,8 @@ describe('common', () => {
       const { calledOnce } = stub;
       stub.restore();
       assert.strictEqual(msg, 'error');
-      assert.isTrue(calledOnce);
-      assert.isFalse(res);
+      assert.strictEqual(calledOnce, true);
+      assert.strictEqual(res, false);
     });
   });
 
@@ -83,7 +83,7 @@ describe('common', () => {
       const stub = sinon.stub(console, 'error');
       const i = stub.callCount;
       const e = new Error('error');
-      assert.throws(() => func(e), 'error');
+      assert.throws(() => func(e), Error, 'error');
       assert.strictEqual(stub.callCount, i + 1, 'called');
       stub.restore();
     });
@@ -98,11 +98,11 @@ describe('common', () => {
         msg = m;
       });
       const res = func();
-      const { calledOnce } = stub;
+      const { called } = stub;
       stub.restore();
-      assert.isUndefined(msg);
-      assert.isFalse(calledOnce);
-      assert.isFalse(res);
+      assert.strictEqual(msg, undefined);
+      assert.strictEqual(called, false);
+      assert.strictEqual(res, false);
     });
 
     it('should log warn message', () => {
@@ -114,8 +114,8 @@ describe('common', () => {
       const { calledOnce } = stub;
       stub.restore();
       assert.strictEqual(msg, 'foo');
-      assert.isTrue(calledOnce);
-      assert.isFalse(res);
+      assert.strictEqual(calledOnce, true);
+      assert.strictEqual(res, false);
     });
   });
 
@@ -128,11 +128,11 @@ describe('common', () => {
         msg = m;
       });
       const res = func();
-      const { calledOnce } = stub;
+      const { called } = stub;
       stub.restore();
-      assert.isUndefined(msg);
-      assert.isFalse(calledOnce);
-      assert.isUndefined(res);
+      assert.strictEqual(msg, undefined);
+      assert.strictEqual(called, false);
+      assert.strictEqual(res, undefined);
     });
 
     it('should log message', () => {
@@ -144,7 +144,7 @@ describe('common', () => {
       const { calledOnce } = stub;
       stub.restore();
       assert.strictEqual(msg, 'foo');
-      assert.isTrue(calledOnce);
+      assert.strictEqual(calledOnce, true);
       assert.strictEqual(res, msg);
     });
   });
@@ -194,14 +194,14 @@ describe('common', () => {
     it('should get false', () => {
       const items = [[], ['foo'], {}, { foo: 'bar' }, undefined, null, 1, true];
       for (const item of items) {
-        assert.isFalse(func(item));
+        assert.strictEqual(func(item), false);
       }
     });
 
     it('should get true', () => {
       const items = ['', 'foo'];
       for (const item of items) {
-        assert.isTrue(func(item));
+        assert.strictEqual(func(item), true);
       }
     });
   });
@@ -212,7 +212,7 @@ describe('common', () => {
     it('should get false', () => {
       const items = [{}, [], ['foo'], '', 'foo', undefined, null, 1, true];
       for (const item of items) {
-        assert.isFalse(func(item));
+        assert.strictEqual(func(item), false);
       }
     });
 
@@ -220,7 +220,7 @@ describe('common', () => {
       const item = {
         foo: 'bar'
       };
-      assert.isTrue(func(item));
+      assert.strictEqual(func(item), true);
     });
   });
 
@@ -237,12 +237,12 @@ describe('common', () => {
 
     it('should get null if 1st argument is not integer', async () => {
       const res = await func('foo');
-      assert.isNull(res);
+      assert.strictEqual(res, null);
     });
 
     it('should get null if 1st argument is not positive integer', async () => {
       const res = await func(-1);
-      assert.isNull(res);
+      assert.strictEqual(res, null);
     });
 
     it('should resolve', async () => {
@@ -278,7 +278,7 @@ describe('common', () => {
 
     it('should get null', () => {
       const res = func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set contenteditable and get element', () => {
@@ -290,8 +290,8 @@ describe('common', () => {
       if (typeof p.isContentEditable !== 'boolean') {
         p.isContentEditable = isContentEditable(p);
       }
-      assert.isTrue(res.hasAttribute('contenteditable'), 'attr');
-      assert.isTrue(res.isContentEditable, 'editable');
+      assert.strictEqual(res.hasAttribute('contenteditable'), true, 'attr');
+      assert.strictEqual(res.isContentEditable, true, 'editable');
       assert.strictEqual(res.id, 'foo', 'result');
     });
 
@@ -304,8 +304,8 @@ describe('common', () => {
       if (typeof p.isContentEditable !== 'boolean') {
         p.isContentEditable = isContentEditable(p);
       }
-      assert.isTrue(res.hasAttribute('contenteditable'), 'attr');
-      assert.isTrue(res.isContentEditable, 'editable');
+      assert.strictEqual(res.hasAttribute('contenteditable'), true, 'attr');
+      assert.strictEqual(res.isContentEditable, true, 'editable');
       assert.strictEqual(res.id, 'foo', 'result');
     });
 
@@ -319,9 +319,9 @@ describe('common', () => {
       if (typeof p.isContentEditable !== 'boolean') {
         p.isContentEditable = isContentEditable(p);
       }
-      assert.isTrue(res.hasAttribute('contenteditable'), 'attr');
-      assert.isTrue(res.isContentEditable, 'editable');
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(res.hasAttribute('contenteditable'), true, 'attr');
+      assert.strictEqual(res.isContentEditable, true, 'editable');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       assert.strictEqual(res.id, 'foo', 'result');
     });
   });
@@ -342,7 +342,7 @@ describe('common', () => {
 
     it('should get null', () => {
       const res = func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should remove contenteditable and get element', () => {
@@ -355,8 +355,8 @@ describe('common', () => {
       if (typeof p.isContentEditable !== 'boolean') {
         p.isContentEditable = isContentEditable(p);
       }
-      assert.isFalse(res.hasAttribute('contenteditable'), 'attr');
-      assert.isFalse(res.isContentEditable, 'editable');
+      assert.strictEqual(res.hasAttribute('contenteditable'), false, 'attr');
+      assert.strictEqual(res.isContentEditable, false, 'editable');
       assert.strictEqual(res.id, 'foo', 'result');
     });
   });
@@ -377,7 +377,7 @@ describe('common', () => {
 
     it('should get undefined', async () => {
       const res = await func();
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should set dataset and get element', async () => {

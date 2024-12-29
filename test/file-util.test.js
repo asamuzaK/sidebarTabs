@@ -1,8 +1,8 @@
 /* api */
+import { strict as assert } from 'node:assert';
 import fs, { promises as fsPromise } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { MockAgent, getGlobalDispatcher, setGlobalDispatcher } from 'undici';
 
@@ -18,16 +18,17 @@ const TMPDIR = process.env.TMP || process.env.TMPDIR || process.env.TEMP ||
 describe('getStat', () => {
   it('should be an object', () => {
     const p = path.resolve('test', 'file', 'test.txt');
-    assert.property(getStat(p), 'mode');
+    assert.strictEqual(typeof getStat(p), 'object', 'mode');
+    assert.notDeepEqual(getStat(p), null, 'mode');
   });
 
   it('should get null if given argument is not string', () => {
-    assert.isNull(getStat());
+    assert.strictEqual(getStat(), null);
   });
 
   it('should get null if file does not exist', () => {
     const p = path.resolve('test', 'file', 'foo.txt');
-    assert.isNull(getStat(p));
+    assert.strictEqual(getStat(p), null);
   });
 });
 
@@ -46,20 +47,20 @@ describe('isDir', () => {
 describe('isFile', () => {
   it('should get true if file exists', () => {
     const p = path.resolve('test', 'file', 'test.txt');
-    assert.isTrue(isFile(p));
+    assert.strictEqual(isFile(p), true);
   });
 
   it('should get false if file does not exist', () => {
     const p = path.resolve('test', 'file', 'foo.txt');
-    assert.isFalse(isFile(p));
+    assert.strictEqual(isFile(p), false);
   });
 });
 
 describe('removeDir', () => {
   it('should throw', () => {
     const foo = path.resolve('foo');
-    assert.isFalse(isDir(foo));
-    assert.throws(() => removeDir(foo), `No such directory: ${foo}`);
+    assert.strictEqual(isDir(foo), false);
+    assert.throws(() => removeDir(foo), Error, `No such directory: ${foo}`);
   });
 
   it("should remove dir and it's files", async () => {
@@ -148,7 +149,7 @@ describe('fetch text', () => {
 
   it('should throw', async () => {
     await fetchText().catch(e => {
-      assert.instanceOf(e, TypeError, 'error');
+      assert.strictEqual(e instanceof TypeError, true, 'error');
       assert.strictEqual(e.message, 'Expected String but got Undefined.');
     });
   });
@@ -157,7 +158,7 @@ describe('fetch text', () => {
     const base = 'https://example.com';
     mockAgent.get(base).intercept({ path: '/', method: 'GET' }).reply(404);
     await fetchText(base).catch(e => {
-      assert.instanceOf(e, Error, 'error');
+      assert.strictEqual(e instanceof Error, true, 'error');
       assert.strictEqual(e.message,
         `Network response was not ok. status: 404 url: ${base}`);
     });

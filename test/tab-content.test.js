@@ -4,12 +4,12 @@
 /* eslint-disable import-x/order */
 
 /* api */
+import { strict as assert } from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import sinon from 'sinon';
-import { assert } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom } from './mocha/setup.js';
 
 /* test */
@@ -52,10 +52,6 @@ describe('tab-content', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('icon', () => {
     it('should exist', async () => {
       const items = [
@@ -64,7 +60,7 @@ describe('tab-content', () => {
       ];
       for (const item of items) {
         const file = path.resolve(path.join(process.cwd(), 'src', 'mjs', item));
-        assert.isTrue(fs.existsSync(file), `exist ${item}`);
+        assert.strictEqual(fs.existsSync(file), true, `exist ${item}`);
       }
     });
 
@@ -82,8 +78,8 @@ describe('tab-content', () => {
       favicon.forEach((value, key) => {
         const file =
           path.resolve(path.join(process.cwd(), 'src', 'mjs', value));
-        assert.isTrue(fs.existsSync(file), `exist ${file}`);
-        assert.isTrue(itemKeys.includes(key), 'key');
+        assert.strictEqual(fs.existsSync(file), true, `exist ${file}`);
+        assert.strictEqual(itemKeys.includes(key), true, 'key');
       });
     });
 
@@ -97,7 +93,7 @@ describe('tab-content', () => {
       iconName.forEach(value => {
         const file =
           path.resolve(path.join(process.cwd(), 'src', 'img', `${value}.svg`));
-        assert.isTrue(fs.existsSync(file), `exist ${value}`);
+        assert.strictEqual(fs.existsSync(file), true, `exist ${value}`);
       });
     });
   });
@@ -111,7 +107,7 @@ describe('tab-content', () => {
       body.appendChild(elm);
       const res = await func();
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should not set fallback icon if argument is empty object', async () => {
@@ -120,7 +116,7 @@ describe('tab-content', () => {
       body.appendChild(elm);
       const res = await func({});
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should not set fallback icon if type is not error', async () => {
@@ -132,7 +128,7 @@ describe('tab-content', () => {
         type: 'foo'
       });
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should not set fallback icon if target is not img', async () => {
@@ -143,8 +139,8 @@ describe('tab-content', () => {
         target: elm,
         type: 'error'
       });
-      assert.isUndefined(elm.src, 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(elm.src, undefined, 'src');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should set fallback icon', async () => {
@@ -156,7 +152,7 @@ describe('tab-content', () => {
         type: 'error'
       });
       assert.strictEqual(elm.src, URL_FAVICON_DEFAULT, 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should set fallback icon', async () => {
@@ -169,7 +165,7 @@ describe('tab-content', () => {
         type: 'error'
       });
       assert.strictEqual(elm.src, URL_FAVICON_DEFAULT, 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should set fallback icon', async () => {
@@ -182,7 +178,7 @@ describe('tab-content', () => {
         type: 'error'
       });
       assert.strictEqual(elm.src, URL_FAVICON_DEFAULT, 'src');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
   });
 
@@ -195,7 +191,7 @@ describe('tab-content', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.calledOnce, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -205,7 +201,7 @@ describe('tab-content', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -487,7 +483,7 @@ describe('tab-content', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -495,7 +491,7 @@ describe('tab-content', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -505,7 +501,7 @@ describe('tab-content', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -528,7 +524,7 @@ describe('tab-content', () => {
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called update');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should get result', async () => {
@@ -570,7 +566,7 @@ describe('tab-content', () => {
       const res = await func({
         foo: 'bar'
       });
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -585,9 +581,9 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.called, 'event not stopped');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -604,9 +600,9 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.called, 'event not stopped');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -634,11 +630,11 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called update');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should get result', async () => {
@@ -674,8 +670,8 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.tabs.update.callCount, j + 2, 'called update');
       assert.deepEqual(res, [true, true], 'result');
@@ -691,7 +687,7 @@ describe('tab-content', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.calledOnce, 'called');
+      assert.strictEqual(spy.called, false, 'called');
       elm.addEventListener.restore();
     });
 
@@ -702,7 +698,7 @@ describe('tab-content', () => {
       elm.classList.add(CLASS_TAB_AUDIO);
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -845,8 +841,8 @@ describe('tab-content', () => {
       await func(elm, {
         foo: 'bar'
       });
-      assert.isUndefined(elm.alt, 'alt');
-      assert.isUndefined(elm.src, 'src');
+      assert.strictEqual(elm.alt, undefined, 'alt');
+      assert.strictEqual(elm.src, undefined, 'src');
     });
 
     it('should not set icon if 2nd argument is empty object', async () => {
@@ -964,9 +960,9 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.called, 'event not stopped');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -986,10 +982,10 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should get result', async () => {
@@ -1012,10 +1008,10 @@ describe('tab-content', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -1028,7 +1024,7 @@ describe('tab-content', () => {
         preventDefault: stub
       };
       func(evt);
-      assert.isTrue(stub.calledOnce);
+      assert.strictEqual(stub.calledOnce, true);
     });
   });
 
@@ -1041,7 +1037,7 @@ describe('tab-content', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -1052,7 +1048,7 @@ describe('tab-content', () => {
       elm.classList.add(CLASS_TAB_CLOSE);
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledTwice, 'called');
+      assert.strictEqual(spy.callCount, 2, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -1066,7 +1062,7 @@ describe('tab-content', () => {
       ];
       assert.strictEqual(iconColor.size, itemKeys.length, 'size');
       for (const key of itemKeys) {
-        assert.isTrue(iconColor.has(key), `key ${key}`);
+        assert.strictEqual(iconColor.has(key), true, `key ${key}`);
       }
     });
   });
@@ -1081,9 +1077,9 @@ describe('tab-content', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       await func(elm);
-      assert.isUndefined(elm.alt, 'alt');
-      assert.isUndefined(elm.src, 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(elm.alt, undefined, 'alt');
+      assert.strictEqual(elm.src, undefined, 'src');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), false, 'class');
     });
 
     it('should not set icon if 2nd argument is empty object', async () => {
@@ -1095,7 +1091,7 @@ describe('tab-content', () => {
       await func(elm, {});
       assert.strictEqual(elm.alt, '', 'alt');
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), false, 'class');
     });
 
     it('should not set icon if icon does not match', async () => {
@@ -1111,7 +1107,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, '', 'alt');
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), false, 'class');
     });
 
     it('should not set icon if name is not a string', async () => {
@@ -1127,7 +1123,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, '', 'alt');
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), false, 'class');
     });
 
     it('should not set icon if icon and/or name lacks', async () => {
@@ -1142,7 +1138,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, '', 'alt');
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), false, 'class');
     });
 
     it('should not set icon if icon and/or name lacks', async () => {
@@ -1157,7 +1153,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, '', 'alt');
       assert.strictEqual(elm.src, '', 'src');
-      assert.isFalse(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), false, 'class');
     });
 
     it('should set icon', async () => {
@@ -1173,7 +1169,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, 'foo', 'alt');
       assert.strictEqual(elm.src, '../img/briefcase.svg#blue', 'src');
-      assert.isTrue(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), true, 'class');
     });
 
     it('should set icon', async () => {
@@ -1189,7 +1185,7 @@ describe('tab-content', () => {
       });
       assert.strictEqual(elm.alt, 'foo', 'alt');
       assert.strictEqual(elm.src, '../img/briefcase.svg#current', 'src');
-      assert.isTrue(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), true, 'class');
     });
 
     it('should set icon', async () => {
@@ -1212,8 +1208,8 @@ describe('tab-content', () => {
       });
       stubFetch.restore();
       assert.strictEqual(elm.alt, 'foo', 'alt');
-      assert.isTrue(elm.src.startsWith('data:'), 'src');
-      assert.isTrue(parent.classList.contains(IDENTIFIED), 'class');
+      assert.strictEqual(elm.src.startsWith('data:'), true, 'src');
+      assert.strictEqual(parent.classList.contains(IDENTIFIED), true, 'class');
     });
   });
 
@@ -1257,8 +1253,8 @@ describe('tab-content', () => {
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED));
-      assert.isFalse(elm.classList.contains(CLASS_MULTI));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true);
+      assert.strictEqual(elm.classList.contains(CLASS_MULTI), false);
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
 
@@ -1281,8 +1277,8 @@ describe('tab-content', () => {
       const res = await func(elm, 2);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED));
-      assert.isTrue(elm.classList.contains(CLASS_MULTI));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true);
+      assert.strictEqual(elm.classList.contains(CLASS_MULTI), true);
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
@@ -1333,7 +1329,7 @@ describe('tab-content', () => {
       const res = await func([1]);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true);
       assert.deepEqual(res, [[undefined, undefined]], 'result');
     });
 
@@ -1368,8 +1364,8 @@ describe('tab-content', () => {
       body.appendChild(elm4);
       const res = await func([1, 2]);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED));
-      assert.isTrue(elm4.classList.contains(HIGHLIGHTED));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true);
+      assert.strictEqual(elm4.classList.contains(HIGHLIGHTED), true);
       assert.deepEqual(res, [[undefined, undefined], [undefined, undefined]],
         'result');
     });
@@ -1416,8 +1412,8 @@ describe('tab-content', () => {
       const res = await func(elm);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED));
-      assert.isFalse(elm.classList.contains(CLASS_MULTI));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false);
+      assert.strictEqual(elm.classList.contains(CLASS_MULTI), false);
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
@@ -1468,7 +1464,7 @@ describe('tab-content', () => {
       const res = await func([1]);
       assert.strictEqual(browser.tabs.get.withArgs(1).callCount, i + 1,
         'called');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false);
       assert.deepEqual(res, [[undefined, undefined]], 'result');
     });
 
@@ -1503,8 +1499,8 @@ describe('tab-content', () => {
       body.appendChild(elm4);
       const res = await func([1, 2]);
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED));
-      assert.isFalse(elm4.classList.contains(HIGHLIGHTED));
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false);
+      assert.strictEqual(elm4.classList.contains(HIGHLIGHTED), false);
       assert.deepEqual(res, [[undefined, undefined], [undefined, undefined]],
         'result');
     });

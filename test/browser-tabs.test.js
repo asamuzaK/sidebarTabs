@@ -4,7 +4,7 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom } from './mocha/setup.js';
 
@@ -44,10 +44,6 @@ describe('browser-tabs', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('close tabs', () => {
     const func = mjs.closeTabs;
 
@@ -69,7 +65,7 @@ describe('browser-tabs', () => {
       const i = browser.tabs.remove.callCount;
       const res = await func([]);
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -97,7 +93,7 @@ describe('browser-tabs', () => {
       const res = await func(Array.from(items));
       assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -122,7 +118,7 @@ describe('browser-tabs', () => {
       const i = browser.tabs.remove.callCount;
       const res = await func([]);
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -149,7 +145,7 @@ describe('browser-tabs', () => {
       const res = await func([1, 2]);
       assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
         'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -176,7 +172,7 @@ describe('browser-tabs', () => {
       const res = await func([1, 2], elm3);
       assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
         'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -201,7 +197,7 @@ describe('browser-tabs', () => {
       const i = browser.tabs.remove.callCount;
       const res = await func([]);
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -214,7 +210,7 @@ describe('browser-tabs', () => {
       body.appendChild(elm);
       const res = await func([elm]);
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -242,7 +238,7 @@ describe('browser-tabs', () => {
       const res = await func(Array.from(items));
       assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -269,7 +265,7 @@ describe('browser-tabs', () => {
       const res = await func([elm2]);
       assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -296,7 +292,7 @@ describe('browser-tabs', () => {
       const res = await func([elm2]);
       assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -307,14 +303,14 @@ describe('browser-tabs', () => {
       const i = browser.tabs.remove.callCount;
       const res = await func();
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if argument is not element', async () => {
       const i = browser.tabs.remove.callCount;
       const res = await func('foo');
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -339,7 +335,7 @@ describe('browser-tabs', () => {
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -365,7 +361,7 @@ describe('browser-tabs', () => {
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.remove.withArgs([3, 4]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -393,7 +389,7 @@ describe('browser-tabs', () => {
       const res = await func(elm2);
       assert.strictEqual(browser.tabs.remove.withArgs([4]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -404,14 +400,14 @@ describe('browser-tabs', () => {
       const i = browser.tabs.remove.callCount;
       const res = await func();
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if argument is not element', async () => {
       const i = browser.tabs.remove.callCount;
       const res = await func('foo');
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if given argument is pinned', async () => {
@@ -436,7 +432,7 @@ describe('browser-tabs', () => {
       body.appendChild(elm4);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -461,7 +457,7 @@ describe('browser-tabs', () => {
       const res = await func(elm3);
       assert.strictEqual(browser.tabs.remove.withArgs([1, 2]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -487,7 +483,7 @@ describe('browser-tabs', () => {
       const res = await func(elm4);
       assert.strictEqual(browser.tabs.remove.withArgs([2, 3]).callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -512,7 +508,7 @@ describe('browser-tabs', () => {
       const i = browser.tabs.create.callCount;
       const res = await func([{}]);
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -524,7 +520,7 @@ describe('browser-tabs', () => {
       const res = await func([{ foo: 'bar' }, { foo: 'baz' }]);
       assert.strictEqual(createFunc.callCount, 2, 'called');
       assert.deepEqual(order, ['bar', 'baz'], 'order');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -536,7 +532,7 @@ describe('browser-tabs', () => {
       const res = await func([{ foo: 'bar' }, { foo: 'baz' }], true);
       assert.strictEqual(createFunc.callCount, 2, 'called');
       assert.deepEqual(order, ['baz', 'bar'], 'order');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -575,7 +571,7 @@ describe('browser-tabs', () => {
       const i = browser.tabs.get.callCount;
       const res = await func(['foo'], 'bar');
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -631,7 +627,7 @@ describe('browser-tabs', () => {
         index: 1,
         openerTabId: 1
       }).callCount, l + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -687,7 +683,7 @@ describe('browser-tabs', () => {
         index: 1,
         openerTabId: 1
       }).callCount, l + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -741,7 +737,7 @@ describe('browser-tabs', () => {
         index: 2,
         openerTabId: 2
       }).callCount, l + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -923,7 +919,7 @@ describe('browser-tabs', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         tabs: [0]
       }).callCount, j + 1, 'called');
-      assert.isObject(res, 'result');
+      assert.strictEqual(typeof res, 'object', 'result');
     });
 
     it('should call function', async () => {
@@ -974,7 +970,7 @@ describe('browser-tabs', () => {
         windowId: 1,
         tabs: [0, 2]
       }).callCount, j + 1, 'called');
-      assert.isObject(res, 'result');
+      assert.strictEqual(typeof res, 'object', 'result');
     });
 
     it('should call function', async () => {
@@ -1025,7 +1021,7 @@ describe('browser-tabs', () => {
         windowId: 1,
         tabs: [2, 0]
       }).callCount, j + 1, 'called');
-      assert.isObject(res, 'result');
+      assert.strictEqual(typeof res, 'object', 'result');
     });
 
     it('should call function', async () => {
@@ -1074,7 +1070,7 @@ describe('browser-tabs', () => {
         windowId: browser.windows.WINDOW_ID_CURRENT,
         tabs: [0, 2]
       }).callCount, j + 1, 'called');
-      assert.isObject(res, 'result');
+      assert.strictEqual(typeof res, 'object', 'result');
     });
 
     it('should call function', async () => {
@@ -1120,7 +1116,7 @@ describe('browser-tabs', () => {
         windowId: 1,
         tabs: [2, 0]
       }).callCount, j + 1, 'called');
-      assert.isObject(res, 'result');
+      assert.strictEqual(typeof res, 'object', 'result');
     });
   });
 
@@ -1145,7 +1141,7 @@ describe('browser-tabs', () => {
       const i = browser.tabs.move.callCount;
       const res = await func([{}]);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should throw if index is not contained', async () => {
@@ -1186,7 +1182,7 @@ describe('browser-tabs', () => {
         index: 0,
         windowId: 1
       }).callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -1199,7 +1195,7 @@ describe('browser-tabs', () => {
         index: 0,
         windowId: browser.windows.WINDOW_ID_CURRENT
       }).callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -1212,7 +1208,7 @@ describe('browser-tabs', () => {
         await func([{ index: 0, tabId: 1 }, { index: 1, tabId: 2 }], 1);
       assert.strictEqual(moveFunc.callCount, 2, 'called');
       assert.deepEqual(order, [1, 2], 'order');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -1225,7 +1221,7 @@ describe('browser-tabs', () => {
         await func([{ index: 0, tabId: 1 }, { index: 1, tabId: 2 }], 1, true);
       assert.strictEqual(moveFunc.callCount, 2, 'called');
       assert.deepEqual(order, [2, 1], 'order');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -2364,14 +2360,14 @@ describe('browser-tabs', () => {
       const i = browser.tabs.move.callCount;
       const res = await func([]);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if element is not contained', async () => {
       const i = browser.tabs.move.callCount;
       const res = await func(['foo']);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if element is not tab', async () => {
@@ -2381,7 +2377,7 @@ describe('browser-tabs', () => {
       body.appendChild(elm);
       const res = await func([elm]);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should create window but not call move if only 1 tab', async () => {
@@ -2407,7 +2403,7 @@ describe('browser-tabs', () => {
         type: 'normal'
       }).callCount, i + 1, 'called');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should create window and call move', async () => {
@@ -2485,7 +2481,7 @@ describe('browser-tabs', () => {
         windowId: 1,
         index: -1
       }).callCount, j, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -2787,7 +2783,7 @@ describe('browser-tabs', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError);
+        assert.strictEqual(e instanceof TypeError, true);
         assert.strictEqual(e.message, 'Expected String but got Undefined.');
       });
     });

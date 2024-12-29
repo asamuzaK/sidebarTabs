@@ -4,7 +4,7 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
@@ -45,24 +45,20 @@ describe('session', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('get tab list from sessions', () => {
     const func = mjs.getSessionTabList;
 
     it('should throw if no argument given', async () => {
       await func().catch(e => {
-        assert.strictEqual(e.message, 'Expected String but got Undefined.',
-          'throw');
+        assert.strictEqual(e instanceof TypeError, true);
+        assert.strictEqual(e.message, 'Expected String but got Undefined.');
       });
     });
 
     it('should throw if argument is not string', async () => {
       await func(1).catch(e => {
-        assert.strictEqual(e.message, 'Expected String but got Number.',
-          'throw');
+        assert.strictEqual(e instanceof TypeError, true);
+        assert.strictEqual(e.message, 'Expected String but got Number.');
       });
     });
 
@@ -78,7 +74,7 @@ describe('session', () => {
         'called windows');
       assert.strictEqual(browser.sessions.getWindowValue.callCount, j + 1,
         'called sessions');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get value', async () => {
@@ -129,14 +125,14 @@ describe('session', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected String but got Undefined.');
       });
     });
 
     it('should throw', async () => {
       await func('foo').catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected Number but got Undefined.');
       });
     });
@@ -148,10 +144,10 @@ describe('session', () => {
       });
       const i = browser.sessions.setWindowValue.callCount;
       const res = await func('foo', 1);
-      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.strictEqual(stubWin.calledOnce, true, 'called window');
       assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
         'not called');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should not call function if mutex has window ID', async () => {
@@ -162,10 +158,10 @@ describe('session', () => {
       mjs.mutex.add(1);
       const i = browser.sessions.setWindowValue.callCount;
       const res = await func('foo', 1);
-      assert.isTrue(stubWin.calledOnce, 'called window');
+      assert.strictEqual(stubWin.calledOnce, true, 'called window');
       assert.strictEqual(browser.sessions.setWindowValue.callCount, i,
         'not called');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should throw', async () => {
@@ -178,9 +174,9 @@ describe('session', () => {
       await func('foo', 1).catch(e => {
         assert.strictEqual(e.message, 'error', 'error');
       });
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubGetValue.calledOnce, 'called');
-      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called');
+      assert.strictEqual(mjs.mutex.has(1), false, 'mutex');
     });
 
     it('should call function', async () => {
@@ -249,11 +245,11 @@ describe('session', () => {
       frag.appendChild(parent2);
       const domstr = new XMLSerializer().serializeToString(frag);
       const res = await func(domstr, 1);
-      assert.isTrue(stubWin.calledOnce, 'called window');
-      assert.isTrue(stubGetValue.calledOnce, 'called get');
-      assert.isTrue(stubSetValue.calledOnce, 'called set');
-      assert.isFalse(mjs.mutex.has(1), 'mutex');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(stubWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called get');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called set');
+      assert.strictEqual(mjs.mutex.has(1), false, 'mutex');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should call function', async () => {
@@ -325,10 +321,10 @@ describe('session', () => {
         func(domstr, 1),
         func(domstr, 1)
       ]);
-      assert.isTrue(stubWin.calledTwice, 'called window');
-      assert.isTrue(stubGetValue.calledOnce, 'called get');
-      assert.isTrue(stubSetValue.calledOnce, 'called set');
-      assert.isFalse(mjs.mutex.has(1), 'mutex');
+      assert.strictEqual(stubWin.callCount, 2, 'called window');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called get');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called set');
+      assert.strictEqual(mjs.mutex.has(1), false, 'mutex');
       assert.deepEqual(res, [true, false], 'result');
     });
 
@@ -398,11 +394,11 @@ describe('session', () => {
       frag.appendChild(parent2);
       const domstr = new XMLSerializer().serializeToString(frag);
       const res = await func(domstr, 1).then(() => func(domstr, 1));
-      assert.isTrue(stubWin.calledTwice, 'called window');
-      assert.isTrue(stubGetValue.calledTwice, 'called get');
-      assert.isTrue(stubSetValue.calledTwice, 'called set');
-      assert.isFalse(mjs.mutex.has(1), 'mutex');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(stubWin.callCount, 2, 'called window');
+      assert.strictEqual(stubGetValue.callCount, 2, 'called get');
+      assert.strictEqual(stubSetValue.callCount, 2, 'called set');
+      assert.strictEqual(mjs.mutex.has(1), false, 'mutex');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should call function', async () => {
@@ -478,11 +474,11 @@ describe('session', () => {
       frag.appendChild(parent2);
       const domstr = new XMLSerializer().serializeToString(frag);
       const res = await func(domstr, 1);
-      assert.isTrue(stubWin.calledOnce, 'called window');
-      assert.isTrue(stubGetValue.calledOnce, 'called get');
-      assert.isTrue(stubSetValue.calledOnce, 'called set');
-      assert.isFalse(mjs.mutex.has(1), 'mutex');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(stubWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called get');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called set');
+      assert.strictEqual(mjs.mutex.has(1), false, 'mutex');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should call function', async () => {
@@ -572,11 +568,11 @@ describe('session', () => {
       frag.appendChild(parent2);
       const domstr = new XMLSerializer().serializeToString(frag);
       const res = await func(domstr, 1);
-      assert.isTrue(stubWin.calledOnce, 'called window');
-      assert.isTrue(stubGetValue.calledOnce, 'called get');
-      assert.isTrue(stubSetValue.calledOnce, 'called set');
-      assert.isFalse(mjs.mutex.has(1), 'mutex');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(stubWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called get');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called set');
+      assert.strictEqual(mjs.mutex.has(1), false, 'mutex');
+      assert.strictEqual(res, true, 'result');
     });
   });
 
@@ -600,9 +596,9 @@ describe('session', () => {
       });
       mjs.ports.set(portId, port);
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -616,9 +612,9 @@ describe('session', () => {
       });
       mjs.ports.set(portId, port);
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -632,9 +628,9 @@ describe('session', () => {
       });
       mjs.ports.set(portId, port);
       const res = await func();
-      assert.strictEqual(stubCurrentWin.callCount, 2, 'called current window');
-      assert.isFalse(port.postMessage.called, 'not called message');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.callCount, 2, 'called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called message');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -671,14 +667,13 @@ describe('session', () => {
       body.appendChild(parent);
       body.appendChild(parent2);
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called message');
-      assert.isObject(res, 'result');
-      assert.property(res, SESSION_SAVE, 'property');
-      assert.property(res[SESSION_SAVE], 'windowId', 'property');
-      assert.property(res[SESSION_SAVE], 'domString', 'property');
-      assert.isNumber(res[SESSION_SAVE].windowId, 'value');
-      assert.isString(res[SESSION_SAVE].domString, 'value');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called message');
+      assert.strictEqual(
+        Object.prototype.hasOwnProperty.call(res, SESSION_SAVE), true,
+        'property');
+      assert.strictEqual(typeof res[SESSION_SAVE].windowId, 'number', 'value');
+      assert.strictEqual(typeof res[SESSION_SAVE].domString, 'string', 'value');
     });
   });
 });

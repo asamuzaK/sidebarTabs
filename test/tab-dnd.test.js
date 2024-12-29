@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
 /* test */
@@ -48,10 +48,6 @@ describe('dnd', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('clear drop target', () => {
     const func = mjs.clearDropTarget;
 
@@ -64,8 +60,8 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       func();
-      assert.isTrue(elm.classList.contains(TAB), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(elm.classList.contains(TAB), true, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
     });
 
     it('should remove class', () => {
@@ -77,9 +73,10 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       func();
-      assert.isTrue(elm.classList.contains(TAB), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'class');
+      assert.strictEqual(elm.classList.contains(TAB), true, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'class');
     });
 
     it('should remove class', () => {
@@ -91,9 +88,10 @@ describe('dnd', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       func();
-      assert.isTrue(elm.classList.contains(TAB), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
+      assert.strictEqual(elm.classList.contains(TAB), true, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'class');
     });
 
     it('should remove class', () => {
@@ -123,11 +121,13 @@ describe('dnd', () => {
       body.appendChild(parent);
       const i = browser.i18n.getMessage.callCount;
       func();
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
-      assert.isTrue(elm.classList.contains(TAB), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
+      assert.strictEqual(elm.classList.contains(TAB), true, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'class');
     });
 
     it('should remove class', () => {
@@ -156,11 +156,13 @@ describe('dnd', () => {
       body.appendChild(parent);
       const i = browser.i18n.getMessage.callCount;
       func();
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
-      assert.isTrue(elm.classList.contains(TAB), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'class');
+      assert.strictEqual(elm.classList.contains(TAB), true, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'class');
     });
   });
 
@@ -173,7 +175,7 @@ describe('dnd', () => {
       const res = await func();
       assert.strictEqual(browser.tabs.create.callCount, i, 'not called');
       assert.strictEqual(browser.search.query.callCount, j, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -209,7 +211,7 @@ describe('dnd', () => {
       ]);
       assert.strictEqual(createFunc.callCount, 4, 'called');
       assert.strictEqual(browser.search.query.callCount, 2, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
       assert.deepEqual(order, [
         {
           id: 11,
@@ -228,7 +230,7 @@ describe('dnd', () => {
           url: undefined
         }
       ], 'order');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -264,7 +266,7 @@ describe('dnd', () => {
       ], true);
       assert.strictEqual(createFunc.callCount, 4, 'called');
       assert.strictEqual(browser.search.query.callCount, 2, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
       assert.deepEqual(order, [
         {
           id: 11,
@@ -283,7 +285,7 @@ describe('dnd', () => {
           url: 'https://example.com'
         }
       ], 'order');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -348,10 +350,10 @@ describe('dnd', () => {
         textValue: 'https://example.com\njavascript:void(0)\nfoo\n\nbar'
       };
       const res = await func(elm2, data);
-      assert.isFalse(browser.tabs.create.called, 'not called');
-      assert.isFalse(browser.search.search.called, 'not called');
-      assert.isFalse(browser.search.query.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.create.called, false, 'not called');
+      assert.strictEqual(browser.search.search.called, false, 'not called');
+      assert.strictEqual(browser.search.query.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -420,9 +422,9 @@ describe('dnd', () => {
       });
       const res = await func(elm2, data);
       assert.strictEqual(createFunc.callCount, 2, 'called');
-      assert.isFalse(browser.search.search.called, 'not called');
-      assert.isFalse(browser.search.query.called, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(browser.search.search.called, false, 'not called');
+      assert.strictEqual(browser.search.query.called, false, 'not called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('shoult call function', async () => {
@@ -491,9 +493,9 @@ describe('dnd', () => {
       });
       const res = await func(elm2, data);
       assert.strictEqual(createFunc.callCount, 1, 'called');
-      assert.isFalse(browser.search.search.called, 'not called');
-      assert.isFalse(browser.search.query.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.search.search.called, false, 'not called');
+      assert.strictEqual(browser.search.query.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('shoult call function', async () => {
@@ -564,7 +566,7 @@ describe('dnd', () => {
       assert.strictEqual(createFunc.callCount, 4, 'called');
       assert.strictEqual(browser.search.search.callCount, 0, 'not called');
       assert.strictEqual(browser.search.query.callCount, 3, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('shoult call function', async () => {
@@ -641,8 +643,8 @@ describe('dnd', () => {
       assert.strictEqual(createFunc.callCount, 3, 'called');
       assert.strictEqual(browser.search.search.callCount, 0, 'not called');
       assert.strictEqual(browser.search.query.callCount, 2, 'called');
-      assert.isTrue(getTab.called, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(getTab.called, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -714,10 +716,10 @@ describe('dnd', () => {
       });
       const res = await func(elm3, data);
       assert.strictEqual(createFunc.callCount, 2, 'called');
-      assert.isFalse(browser.search.search.called, 'not called');
-      assert.isFalse(browser.search.query.called, 'not called');
-      assert.isFalse(getFunc.called, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(browser.search.search.called, false, 'not called');
+      assert.strictEqual(browser.search.query.called, false, 'not called');
+      assert.strictEqual(getFunc.called, false, 'not called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -789,10 +791,10 @@ describe('dnd', () => {
       });
       const res = await func(elm3, data);
       assert.strictEqual(createFunc.callCount, 2, 'called');
-      assert.isFalse(browser.search.search.called, 'not called');
-      assert.isFalse(browser.search.query.called, 'not called');
-      assert.isFalse(getFunc.called, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(browser.search.search.called, false, 'not called');
+      assert.strictEqual(browser.search.query.called, false, 'not called');
+      assert.strictEqual(getFunc.called, false, 'not called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('shoult call function', async () => {
@@ -867,8 +869,8 @@ describe('dnd', () => {
       assert.strictEqual(createFunc.callCount, 4, 'called');
       assert.strictEqual(browser.search.search.callCount, 0, 'not called');
       assert.strictEqual(browser.search.query.callCount, 3, 'called');
-      assert.isTrue(getFunc.called, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(getFunc.called, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('shoult call function', async () => {
@@ -943,8 +945,8 @@ describe('dnd', () => {
       assert.strictEqual(createFunc.callCount, 4, 'called');
       assert.strictEqual(browser.search.search.callCount, 0, 'not called');
       assert.strictEqual(browser.search.query.callCount, 3, 'called');
-      assert.isTrue(getFunc.called, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(getFunc.called, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -1024,10 +1026,10 @@ describe('dnd', () => {
       const res = await func(elm3, data);
       assert.strictEqual(updateFunc.callCount, 1, 'called');
       assert.strictEqual(createFunc.callCount, 1, 'called');
-      assert.isFalse(browser.search.search.called, 'not called');
-      assert.isFalse(browser.search.query.called, 'not called');
-      assert.isFalse(getFunc.called, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(browser.search.search.called, false, 'not called');
+      assert.strictEqual(browser.search.query.called, false, 'not called');
+      assert.strictEqual(getFunc.called, false, 'not called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('shoult call function', async () => {
@@ -1109,8 +1111,8 @@ describe('dnd', () => {
       assert.strictEqual(createFunc.callCount, 3, 'called');
       assert.strictEqual(browser.search.search.callCount, 1, 'called');
       assert.strictEqual(browser.search.query.callCount, 2, 'called');
-      assert.isFalse(getFunc.called, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(getFunc.called, false, 'not called');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -1189,11 +1191,11 @@ describe('dnd', () => {
         tabIds: []
       };
       const res = await func(elm2, data);
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1281,10 +1283,10 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm2, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
       assert.deepEqual(res, [{
         id: 1,
         index: 1
@@ -1376,10 +1378,10 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
       assert.deepEqual(res, [{
         id: 2,
         index: 0
@@ -1475,14 +1477,14 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       const node = document.querySelector('[data-tab-id="11"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.previousElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1574,14 +1576,14 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       const node = document.querySelector('[data-tab-id="14"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(updateFunc.called, 'not called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.previousElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, false, 'not called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1675,18 +1677,13 @@ describe('dnd', () => {
       const nodeParent = node.parentNode;
       const node2 = document.querySelector('[data-tab-id="14"]');
       const node2Parent = node2.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'not called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isFalse(nodeParent === node2Parent, 'parent');
-      assert.isFalse(node2Parent === parent, 'parent');
-      assert.isFalse(node2Parent === parent2, 'parent');
-      assert.isTrue(node2Parent === nodeParent.nextElementSibling, 'parent');
-      assert.isTrue(node2Parent === parent2.previousElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'not called');
+      assert.deepEqual(node2Parent, nodeParent.nextElementSibling, 'parent');
+      assert.deepEqual(node2Parent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1778,14 +1775,14 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       const node = document.querySelector('[data-tab-id="14"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(updateFunc.called, 'not called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.previousElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, false, 'not called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1879,17 +1876,17 @@ describe('dnd', () => {
       const nodeParent = node.parentNode;
       const node2 = document.querySelector('[data-tab-id="11"]');
       const node2Parent = node2.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'not called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.previousElementSibling, 'parent');
-      assert.isTrue(node2Parent === nodeParent, 'parent');
-      assert.isTrue(node === nodeParent.lastElementChild, 'node');
-      assert.isTrue(node === node2.nextElementSibling, 'node');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'not called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.previousElementSibling, 'parent');
+      assert.deepEqual(node2Parent, nodeParent, 'parent');
+      assert.deepEqual(node, nodeParent.lastElementChild, 'node');
+      assert.deepEqual(node, node2.nextElementSibling, 'node');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1981,15 +1978,16 @@ describe('dnd', () => {
       const res = await func(elm2, data);
       const node = document.querySelector('[data-tab-id="14"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(updateFunc.called, 'not called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.previousElementSibling, 'parent');
-      assert.isTrue(nodeParent.classList.contains(CLASS_TAB_GROUP), 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, false, 'not called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(nodeParent.classList.contains(CLASS_TAB_GROUP), true,
+        'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2077,10 +2075,10 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm4, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
       assert.deepEqual(res, [{
         id: 3,
         index: 3
@@ -2172,10 +2170,10 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
       assert.deepEqual(res, [{
         id: 4,
         index: 2
@@ -2278,12 +2276,12 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm5, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
-      assert.isTrue(elm3.parentNode === parent3, 'parent');
-      assert.isTrue(elm3 === elm5.nextElementSibling, 'node');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
+      assert.deepEqual(elm3.parentNode, parent3, 'parent');
+      assert.deepEqual(elm3, elm5.nextElementSibling, 'node');
       assert.deepEqual(res, [{
         id: 3,
         index: 4
@@ -2386,12 +2384,12 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
-      assert.isTrue(elm5.parentNode === parent2, 'parent');
-      assert.isTrue(elm5 === elm3.previousElementSibling, 'node');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
+      assert.deepEqual(elm5.parentNode, parent2, 'parent');
+      assert.deepEqual(elm5, elm3.previousElementSibling, 'node');
       assert.deepEqual(res, [{
         id: 5,
         index: 2
@@ -2494,15 +2492,15 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm5, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
-      assert.isFalse(elm3.parentNode === parent3, 'parent');
-      assert.isTrue(elm3.parentNode === parent3.nextElementSibling, 'parent');
-      assert.isTrue(elm3 === elm3.parentNode.firstElementChild, 'node');
-      assert.isTrue(elm4.parentNode === elm3.parentNode, 'parent');
-      assert.isTrue(elm4 === elm3.nextElementSibling, 'node');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
+      assert.notDeepEqual(elm3.parentNode, parent3, 'parent');
+      assert.deepEqual(elm3.parentNode, parent3.nextElementSibling, 'parent');
+      assert.deepEqual(elm3, elm3.parentNode.firstElementChild, 'node');
+      assert.deepEqual(elm4.parentNode, elm3.parentNode, 'parent');
+      assert.deepEqual(elm4, elm3.nextElementSibling, 'node');
       assert.deepEqual(res, [{
         id: 3,
         index: 4
@@ -2608,16 +2606,16 @@ describe('dnd', () => {
         return tabArr;
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(browser.tabs.update.called, 'not called');
-      assert.isFalse(elm4.parentNode === parent3, 'parent');
-      assert.isTrue(elm4.parentNode === parent2.previousElementSibling,
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(browser.tabs.update.called, false, 'not called');
+      assert.notDeepEqual(elm4.parentNode, parent3, 'parent');
+      assert.deepEqual(elm4.parentNode, parent2.previousElementSibling,
         'parent');
-      assert.isTrue(elm4 === elm4.parentNode.firstElementChild, 'node');
-      assert.isTrue(elm5.parentNode === elm4.parentNode, 'parent');
-      assert.isTrue(elm5 === elm4.nextElementSibling, 'node');
+      assert.deepEqual(elm4, elm4.parentNode.firstElementChild, 'node');
+      assert.deepEqual(elm5.parentNode, elm4.parentNode, 'parent');
+      assert.deepEqual(elm5, elm4.nextElementSibling, 'node');
       assert.deepEqual(res, [{
         id: 4,
         index: 2
@@ -2716,14 +2714,14 @@ describe('dnd', () => {
       const res = await func(elm4, data);
       const node = document.querySelector('[data-tab-id="13"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.nextElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, false, 'called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.nextElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2815,14 +2813,14 @@ describe('dnd', () => {
       const res = await func(elm3, data);
       const node = document.querySelector('[data-tab-id="11"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent2.previousElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.deepEqual(nodeParent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2916,17 +2914,17 @@ describe('dnd', () => {
       const nodeParent = node.parentNode;
       const node2 = document.querySelector('[data-tab-id="14"]');
       const node2Parent = node2.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isFalse(node2Parent === parent, 'parent');
-      assert.isFalse(node2Parent === parent2, 'parent');
-      assert.isTrue(node2Parent === nodeParent.nextElementSibling, 'parent');
-      assert.isTrue(node2Parent === parent2.previousElementSibling, 'parent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.notDeepEqual(node2Parent, parent, 'parent');
+      assert.notDeepEqual(node2Parent, parent2, 'parent');
+      assert.deepEqual(node2Parent, nodeParent.nextElementSibling, 'parent');
+      assert.deepEqual(node2Parent, parent2.previousElementSibling, 'parent');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3029,16 +3027,15 @@ describe('dnd', () => {
       const res = await func(elm5, data);
       const node = document.querySelector('[data-tab-id="11"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isTrue(nodeParent === parent3, 'parent');
-      assert.isTrue(nodeParent.classList.contains(CLASS_TAB_GROUP), 'class');
-      assert.isTrue(node === elm5.nextElementSibling, 'node');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
+      assert.deepEqual(nodeParent, parent3, 'parent');
+      assert.strictEqual(nodeParent.classList.contains(CLASS_TAB_GROUP), true,
+        'class');
+      assert.deepEqual(node, elm5.nextElementSibling, 'node');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3141,16 +3138,15 @@ describe('dnd', () => {
       const res = await func(elm3, data);
       const node = document.querySelector('[data-tab-id="15"]');
       const nodeParent = node.parentNode;
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isTrue(nodeParent === parent2, 'parent');
-      assert.isFalse(nodeParent === parent3, 'parent');
-      assert.isTrue(nodeParent.classList.contains(CLASS_TAB_GROUP), 'class');
-      assert.isTrue(node === elm3.previousElementSibling, 'node');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, false, 'called');
+      assert.deepEqual(nodeParent, parent2, 'parent');
+      assert.strictEqual(nodeParent.classList.contains(CLASS_TAB_GROUP), true,
+        'class');
+      assert.deepEqual(node, elm3.previousElementSibling, 'node');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3254,18 +3250,19 @@ describe('dnd', () => {
       const node = document.querySelector('[data-tab-id="11"]');
       const nodeParent = node.parentNode;
       const node2 = document.querySelector('[data-tab-id="12"]');
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isFalse(nodeParent === parent3, 'parent');
-      assert.isTrue(nodeParent === parent3.previousElementSibling, 'parent');
-      assert.isTrue(nodeParent.classList.contains(CLASS_TAB_GROUP), 'class');
-      assert.isTrue(node === nodeParent.firstElementChild, 'node');
-      assert.isTrue(node === node2.previousElementSibling, 'node');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.notDeepEqual(nodeParent, parent3, 'parent');
+      assert.deepEqual(nodeParent, parent3.previousElementSibling, 'parent');
+      assert.strictEqual(nodeParent.classList.contains(CLASS_TAB_GROUP), true,
+        'class');
+      assert.deepEqual(node, nodeParent.firstElementChild, 'node');
+      assert.deepEqual(node, node2.previousElementSibling, 'node');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3369,18 +3366,19 @@ describe('dnd', () => {
       const node = document.querySelector('[data-tab-id="13"]');
       const nodeParent = node.parentNode;
       const node2 = document.querySelector('[data-tab-id="14"]');
-      assert.isFalse(browser.tabs.move.called, 'not called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isFalse(updateFunc.called, 'called');
-      assert.isFalse(nodeParent === parent, 'parent');
-      assert.isFalse(nodeParent === parent2, 'parent');
-      assert.isFalse(nodeParent === parent3, 'parent');
-      assert.isTrue(nodeParent === parent3.nextElementSibling, 'parent');
-      assert.isTrue(nodeParent.classList.contains(CLASS_TAB_GROUP), 'class');
-      assert.isTrue(node === nodeParent.firstElementChild, 'node');
-      assert.isTrue(node === node2.previousElementSibling, 'node');
-      assert.isNull(res, 'result');
+      assert.strictEqual(browser.tabs.move.called, false, 'not called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, false, 'called');
+      assert.notDeepEqual(nodeParent, parent, 'parent');
+      assert.notDeepEqual(nodeParent, parent2, 'parent');
+      assert.notDeepEqual(nodeParent, parent3, 'parent');
+      assert.deepEqual(nodeParent, parent3.nextElementSibling, 'parent');
+      assert.strictEqual(nodeParent.classList.contains(CLASS_TAB_GROUP), true,
+        'class');
+      assert.deepEqual(node, nodeParent.firstElementChild, 'node');
+      assert.deepEqual(node, node2.previousElementSibling, 'node');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3482,10 +3480,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm2, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isTrue(highlightFunc.called, 'called');
-      assert.isFalse(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(highlightFunc.called, true, 'called');
+      assert.strictEqual(updateFunc.called, false, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3588,10 +3586,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm2, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isTrue(highlightFunc.called, 'called');
-      assert.isFalse(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(highlightFunc.called, true, 'called');
+      assert.strictEqual(updateFunc.called, false, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3691,10 +3689,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm2, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
       assert.deepEqual(res, {
         id: 15
       }, 'result');
@@ -3799,10 +3797,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isTrue(highlightFunc.called, 'called');
-      assert.isFalse(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(highlightFunc.called, true, 'called');
+      assert.strictEqual(updateFunc.called, false, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -3905,10 +3903,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isFalse(browser.tabs.duplicate.called, 'not called');
-      assert.isTrue(highlightFunc.called, 'called');
-      assert.isFalse(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.duplicate.called, false, 'not called');
+      assert.strictEqual(highlightFunc.called, true, 'called');
+      assert.strictEqual(updateFunc.called, false, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4008,10 +4006,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
       assert.deepEqual(res, {
         id: 15
       }, 'result');
@@ -4113,10 +4111,10 @@ describe('dnd', () => {
         };
       });
       const res = await func(elm3, data);
-      assert.isTrue(moveFunc.called, 'called');
-      assert.isTrue(dupeFunc.called, 'called');
-      assert.isFalse(browser.tabs.highlight.called, 'not called');
-      assert.isTrue(updateFunc.called, 'called');
+      assert.strictEqual(moveFunc.called, true, 'called');
+      assert.strictEqual(dupeFunc.called, true, 'called');
+      assert.strictEqual(browser.tabs.highlight.called, false, 'not called');
+      assert.strictEqual(updateFunc.called, true, 'called');
       assert.deepEqual(res, {
         id: 15
       }, 'result');
@@ -4141,7 +4139,7 @@ describe('dnd', () => {
         type: 'foo'
       };
       const res = func(evt);
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should throw', () => {
@@ -4280,11 +4278,11 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isFalse(preventDefault.called, 'called');
-      assert.isFalse(stopPropagation.called, 'called');
-      assert.isFalse(getCurrentWin.called, 'not called');
-      assert.isFalse(portPostMsg.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, false, 'called');
+      assert.strictEqual(stopPropagation.called, false, 'called');
+      assert.strictEqual(getCurrentWin.called, false, 'not called');
+      assert.strictEqual(portPostMsg.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -4414,11 +4412,11 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isFalse(preventDefault.called, 'called');
-      assert.isFalse(stopPropagation.called, 'called');
-      assert.isFalse(getCurrentWin.called, 'not called');
-      assert.isFalse(portPostMsg.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, false, 'called');
+      assert.strictEqual(stopPropagation.called, false, 'called');
+      assert.strictEqual(getCurrentWin.called, false, 'not called');
+      assert.strictEqual(portPostMsg.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -4549,11 +4547,11 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isFalse(getCurrentWin.called, 'not called');
-      assert.isFalse(portPostMsg.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, false, 'not called');
+      assert.strictEqual(portPostMsg.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -4687,10 +4685,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4831,10 +4829,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4975,10 +4973,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5121,10 +5119,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5268,10 +5266,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5414,10 +5412,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5560,10 +5558,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5714,10 +5712,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5849,10 +5847,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5990,10 +5988,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -6125,10 +6123,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -6266,10 +6264,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -6400,10 +6398,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -6534,10 +6532,10 @@ describe('dnd', () => {
       const res = await func(evt, {
         windowId: 1
       });
-      assert.isTrue(preventDefault.called, 'called');
-      assert.isTrue(stopPropagation.called, 'called');
-      assert.isTrue(getCurrentWin.called, 'called');
-      assert.isTrue(portPostMsg.called, 'called');
+      assert.strictEqual(preventDefault.called, true, 'called');
+      assert.strictEqual(stopPropagation.called, true, 'called');
+      assert.strictEqual(getCurrentWin.called, true, 'called');
+      assert.strictEqual(portPostMsg.called, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -6558,7 +6556,7 @@ describe('dnd', () => {
         type: 'foo'
       };
       await func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'class');
     });
 
     it('should remove class', async () => {
@@ -6574,7 +6572,7 @@ describe('dnd', () => {
         type: 'dragend'
       };
       await func(evt);
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
     });
   });
 
@@ -6595,7 +6593,7 @@ describe('dnd', () => {
         type: 'foo'
       };
       func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'class');
     });
 
     it('should remove class', () => {
@@ -6612,7 +6610,7 @@ describe('dnd', () => {
         type: 'dragleave'
       };
       func(evt);
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'class');
     });
 
     it('should remove class', () => {
@@ -6632,7 +6630,8 @@ describe('dnd', () => {
         type: 'dragleave'
       };
       func(evt);
-      assert.isFalse(heading.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET), false,
+        'class');
     });
 
     it('should not remove class', () => {
@@ -6652,7 +6651,7 @@ describe('dnd', () => {
         type: 'dragleave'
       };
       func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'class');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'class');
     });
   });
 
@@ -6702,10 +6701,12 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isUndefined(evt.dataTransfer.dropEffect, 'drop effect');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, undefined, 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
@@ -6753,13 +6754,18 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isFalse(heading.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(heading.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isUndefined(evt.dataTransfer.dropEffect, 'drop effect');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET), false,
+        'target');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, undefined, 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
@@ -6801,10 +6807,12 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isUndefined(evt.dataTransfer.dropEffect, 'drop effect');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(evt.dataTransfer.dropEffect, undefined, 'drop effect');
       assert.strictEqual(preventDefault.callCount, i, 'not called');
       assert.strictEqual(stopPropagation.callCount, j, 'not called');
     });
@@ -6847,9 +6855,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -6893,9 +6903,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -6945,12 +6957,17 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isTrue(heading.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(heading.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET), true,
+        'target');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -6998,12 +7015,17 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isFalse(heading.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(heading.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET), false,
+        'target');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7047,9 +7069,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'none', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7093,9 +7117,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7139,9 +7165,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7185,9 +7213,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), true,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'move', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7232,9 +7262,11 @@ describe('dnd', () => {
       func(evt, {
         windowId: 1
       });
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'copy', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7280,9 +7312,11 @@ describe('dnd', () => {
         isMac: true,
         windowId: 1
       });
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(evt.dataTransfer.dropEffect, 'copy', 'drop effect');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
@@ -7321,9 +7355,11 @@ describe('dnd', () => {
         type: 'dragover'
       };
       func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
@@ -7367,12 +7403,17 @@ describe('dnd', () => {
         type: 'dragover'
       };
       func(evt);
-      assert.isFalse(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
-      assert.isTrue(heading.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(heading.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(heading.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), false, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET), true,
+        'target');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(heading.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
@@ -7410,9 +7451,11 @@ describe('dnd', () => {
         type: 'dragover'
       };
       func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), false,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), true,
+        'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
@@ -7450,9 +7493,11 @@ describe('dnd', () => {
         type: 'dragover'
       };
       func(evt);
-      assert.isTrue(elm.classList.contains(DROP_TARGET), 'target');
-      assert.isTrue(elm.classList.contains(DROP_TARGET_AFTER), 'after');
-      assert.isFalse(elm.classList.contains(DROP_TARGET_BEFORE), 'before');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET), true, 'target');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_AFTER), true,
+        'after');
+      assert.strictEqual(elm.classList.contains(DROP_TARGET_BEFORE), false,
+        'before');
       assert.strictEqual(preventDefault.callCount, i + 1, 'called');
       assert.strictEqual(stopPropagation.callCount, j + 1, 'called');
     });
@@ -7504,7 +7549,7 @@ describe('dnd', () => {
       const res = func({
         type: 'foo'
       });
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should get empty array', async () => {

@@ -4,21 +4,20 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
 /* test */
 import * as mjs from '../src/mjs/tab-group.js';
 import {
-  ACTIVE, BOOKMARK_FOLDER_MSG,
-  CLASS_COLLAPSE_AUTO, CLASS_GROUP, CLASS_HEADING, CLASS_HEADING_LABEL,
-  CLASS_HEADING_LABEL_EDIT, CLASS_TAB_COLLAPSED, CLASS_TAB_CONTAINER,
-  CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT, CLASS_TAB_GROUP, CLASS_UNGROUP,
-  DROP_TARGET, DROP_TARGET_AFTER, HIGHLIGHTED, MIME_JSON, MIME_PLAIN, PINNED,
-  SIDEBAR, TAB, TAB_GROUP_COLLAPSE, TAB_GROUP_ENABLE, TAB_GROUP_EXPAND,
-  TAB_GROUP_LABEL_EDIT
+  ACTIVE, BOOKMARK_FOLDER_MSG, CLASS_COLLAPSE_AUTO, CLASS_GROUP, CLASS_HEADING,
+  CLASS_HEADING_LABEL, CLASS_HEADING_LABEL_EDIT, CLASS_TAB_COLLAPSED,
+  CLASS_TAB_CONTAINER, CLASS_TAB_CONTAINER_TMPL, CLASS_TAB_CONTEXT,
+  CLASS_TAB_GROUP, CLASS_UNGROUP, DROP_TARGET, DROP_TARGET_AFTER, HIGHLIGHTED,
+  MIME_JSON, MIME_PLAIN, PINNED, SIDEBAR, TAB, TAB_GROUP_COLLAPSE,
+  TAB_GROUP_ENABLE, TAB_GROUP_EXPAND, TAB_GROUP_LABEL_EDIT
 } from '../src/mjs/constant.js';
 
 describe('tab-group', () => {
@@ -48,10 +47,6 @@ describe('tab-group', () => {
       delete global[key];
     }
     browser._sandbox.reset();
-  });
-
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
   });
 
   describe('restore sidebar tab containers', () => {
@@ -85,10 +80,13 @@ describe('tab-group', () => {
       await func();
       assert.strictEqual(body.childElementCount, 3, 'child count');
       assert.deepEqual(elm.parentNode, body, 'pinned');
-      assert.isNull(elm2.parentNode, 'removed');
-      assert.isFalse(elm3.classList.contains(CLASS_TAB_GROUP), 'remove class');
-      assert.isTrue(elm4.classList.contains(CLASS_TAB_GROUP), 'add class');
-      assert.isTrue(body.classList.contains(CLASS_GROUP), 'add group');
+      assert.strictEqual(elm2.parentNode, null, 'removed');
+      assert.strictEqual(elm3.classList.contains(CLASS_TAB_GROUP), false,
+        'remove class');
+      assert.strictEqual(elm4.classList.contains(CLASS_TAB_GROUP), true,
+        'add class');
+      assert.strictEqual(body.classList.contains(CLASS_GROUP), true,
+        'add group');
     });
 
     it('should call function', async () => {
@@ -117,10 +115,13 @@ describe('tab-group', () => {
       await func();
       assert.strictEqual(body.childElementCount, 3, 'child count');
       assert.deepEqual(elm.parentNode, body, 'pinned');
-      assert.isNull(elm2.parentNode, 'removed');
-      assert.isFalse(elm3.classList.contains(CLASS_TAB_GROUP), 'remove class');
-      assert.isFalse(elm4.classList.contains(CLASS_TAB_GROUP), 'add class');
-      assert.isFalse(body.classList.contains(CLASS_GROUP), 'remove group');
+      assert.strictEqual(elm2.parentNode, null, 'removed');
+      assert.strictEqual(elm3.classList.contains(CLASS_TAB_GROUP), false,
+        'remove class');
+      assert.strictEqual(elm4.classList.contains(CLASS_TAB_GROUP), false,
+        'add class');
+      assert.strictEqual(body.classList.contains(CLASS_GROUP), false,
+        'remove group');
     });
   });
 
@@ -129,7 +130,7 @@ describe('tab-group', () => {
 
     it('should not call function', async () => {
       await func();
-      assert.isFalse(browser.i18n.getMessage.called, 'result');
+      assert.strictEqual(browser.i18n.getMessage.called, false, 'result');
     });
 
     it('should not call function', () => {
@@ -137,7 +138,7 @@ describe('tab-group', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       func(elm);
-      assert.isFalse(browser.i18n.getMessage.called, 'result');
+      assert.strictEqual(browser.i18n.getMessage.called, false, 'result');
     });
 
     it('should set value', () => {
@@ -159,7 +160,8 @@ describe('tab-group', () => {
       elm.appendChild(elm2);
       body.appendChild(elm);
       func(elm);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
@@ -183,8 +185,9 @@ describe('tab-group', () => {
       elm.appendChild(elm2);
       body.appendChild(elm);
       func(elm, true);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elm2.classList.contains(ACTIVE), 'active');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), true, 'active');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
@@ -208,8 +211,9 @@ describe('tab-group', () => {
       elm.appendChild(elm2);
       body.appendChild(elm);
       func(elm, false);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(elm2.classList.contains(ACTIVE), 'active');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), false, 'active');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
@@ -232,7 +236,8 @@ describe('tab-group', () => {
       body.appendChild(elm);
       body.classList.add(CLASS_UNGROUP);
       func(elm);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
     });
   });
@@ -242,7 +247,7 @@ describe('tab-group', () => {
 
     it('should not call function', () => {
       func();
-      assert.isFalse(browser.i18n.getMessage.called, 'result');
+      assert.strictEqual(browser.i18n.getMessage.called, false, 'result');
     });
 
     it('should not call function', () => {
@@ -250,7 +255,7 @@ describe('tab-group', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       func(elm);
-      assert.isFalse(browser.i18n.getMessage.called, 'result');
+      assert.strictEqual(browser.i18n.getMessage.called, false, 'result');
     });
 
     it('should set value', () => {
@@ -277,7 +282,8 @@ describe('tab-group', () => {
       elm.appendChild(elm2);
       body.appendChild(elm);
       func(elm);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
@@ -308,8 +314,10 @@ describe('tab-group', () => {
       elm.appendChild(elm2);
       body.appendChild(elm);
       func(elm);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(elm1.classList.contains(ACTIVE), 'heading class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(elm1.classList.contains(ACTIVE), false,
+        'heading class');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 2, 'called');
       assert.strictEqual(elm3.title, 'foo', 'title');
       assert.strictEqual(elm4.alt, 'bar', 'alt');
@@ -326,7 +334,8 @@ describe('tab-group', () => {
       body.classList.add(CLASS_UNGROUP);
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.isFalse(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.strictEqual(body.classList.contains(CLASS_UNGROUP), false,
+        'class');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -341,7 +350,8 @@ describe('tab-group', () => {
       body.classList.add(CLASS_UNGROUP);
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.isFalse(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.strictEqual(body.classList.contains(CLASS_UNGROUP), false,
+        'class');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -379,9 +389,12 @@ describe('tab-group', () => {
       body.classList.add(CLASS_UNGROUP);
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(elm2.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elm2.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(body.classList.contains(CLASS_UNGROUP), false,
+        'class');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
 
@@ -419,9 +432,11 @@ describe('tab-group', () => {
       body.classList.remove(CLASS_UNGROUP);
       const res = await func();
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(elm2.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(body.classList.contains(CLASS_UNGROUP), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(elm2.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(body.classList.contains(CLASS_UNGROUP), true, 'class');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
@@ -464,7 +479,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm, true);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(elm4.title, 'foo', 'title');
       assert.strictEqual(elm6.alt, 'bar', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
@@ -501,7 +517,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm2, true);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(elm4.title, 'foo', 'title');
       assert.strictEqual(elm6.alt, 'bar', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
@@ -538,7 +555,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm3, true);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(elm4.title, 'foo', 'title');
       assert.strictEqual(elm6.alt, 'bar', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
@@ -575,7 +593,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm, false);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(elm4.title, 'foo', 'title');
       assert.strictEqual(elm6.alt, 'bar', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
@@ -613,7 +632,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm, true);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(elm4.title, 'baz', 'title');
       assert.strictEqual(elm6.alt, 'qux', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
@@ -651,7 +671,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm2, true);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(elm4.title, 'baz', 'title');
       assert.strictEqual(elm6.alt, 'qux', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
@@ -689,7 +710,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm3, true);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(elm4.title, 'baz', 'title');
       assert.strictEqual(elm6.alt, 'qux', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
@@ -727,7 +749,8 @@ describe('tab-group', () => {
       elm.appendChild(elm3);
       body.appendChild(elm);
       const res = await func(elm, false);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(elm4.title, 'baz', 'title');
       assert.strictEqual(elm6.alt, 'qux', 'alt');
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
@@ -833,9 +856,12 @@ describe('tab-group', () => {
       const res = await func(elm);
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called');
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmC.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(elmB.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elmC.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(elm4.title, 'baz', 'title');
       assert.strictEqual(elm6.alt, 'qux', 'alt');
       assert.strictEqual(elmB4.title, 'foo', 'title');
@@ -920,9 +946,12 @@ describe('tab-group', () => {
       const res = await func(elmC);
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called');
-      assert.isTrue(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(elmC.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elmB.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elmC.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(elm4.title, 'foo', 'title');
       assert.strictEqual(elm6.alt, 'bar', 'alt');
       assert.strictEqual(elmB4.title, 'foo', 'title');
@@ -1009,9 +1038,12 @@ describe('tab-group', () => {
       const res = await func(elmC);
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(browser.tabs.update.callCount, j + 1, 'called');
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(elmC.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(elmB.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elmC.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
       assert.strictEqual(elm4.title, 'quux', 'title');
       assert.strictEqual(elm6.alt, 'corge', 'alt');
       assert.strictEqual(elmB4.title, 'foo', 'title');
@@ -1114,9 +1146,12 @@ describe('tab-group', () => {
       body.appendChild(elmC);
       const res = await func(elm);
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmC.classList.contains(CLASS_TAB_COLLAPSED), 'class');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(elmB.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elmC.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
       assert.strictEqual(elmB4.title, 'foo', 'title');
       assert.strictEqual(elmB6.alt, 'bar', 'alt');
       assert.strictEqual(elmC4.title, 'foo', 'title');
@@ -1162,11 +1197,11 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.called, 'event not stopped');
-      assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(port.postMessage.called, 'not called msg');
-      assert.isNull(res, 'result');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called msg');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1196,10 +1231,10 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1234,10 +1269,10 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1275,10 +1310,10 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1322,10 +1357,10 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -1372,10 +1407,10 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -1415,12 +1450,12 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.called, 'event not stopped');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
-      assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(port.postMessage.called, 'not called msg');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called msg');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call functions', async () => {
@@ -1506,14 +1541,17 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
-      assert.isFalse(elm.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmB.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(elmC.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current winddow');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(elmB.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(elmC.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called winddow');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -1528,8 +1566,8 @@ describe('tab-group', () => {
       const spy2 = sinon.spy(elm, 'removeEventListener');
       body.appendChild(elm);
       await func();
-      assert.isFalse(spy.called, 'not called');
-      assert.isFalse(spy2.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1541,8 +1579,8 @@ describe('tab-group', () => {
       const spy2 = sinon.spy(elm, 'removeEventListener');
       body.appendChild(elm);
       await func(elm);
-      assert.isFalse(spy.called, 'not called');
-      assert.isFalse(spy2.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1554,8 +1592,8 @@ describe('tab-group', () => {
       const spy2 = sinon.spy(elm, 'removeEventListener');
       body.appendChild(elm);
       await func(elm, true);
-      assert.isFalse(spy.called, 'not called');
-      assert.isFalse(spy2.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1568,8 +1606,8 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_TAB_CONTEXT);
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledOnce, 'called');
-      assert.isTrue(spy2.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
+      assert.strictEqual(spy2.calledOnce, true, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1582,8 +1620,8 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_TAB_CONTEXT);
       body.appendChild(elm);
       await func(elm, true);
-      assert.isTrue(spy.calledOnce, 'called');
-      assert.isTrue(spy2.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
+      assert.strictEqual(spy2.calledOnce, true, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1596,8 +1634,8 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_HEADING_LABEL);
       body.appendChild(elm);
       await func(elm);
-      assert.isTrue(spy.calledOnce, 'called');
-      assert.isTrue(spy2.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
+      assert.strictEqual(spy2.calledOnce, true, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1610,8 +1648,8 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_HEADING_LABEL);
       body.appendChild(elm);
       await func(elm, true);
-      assert.isTrue(spy.calledOnce, 'called');
-      assert.isTrue(spy2.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
+      assert.strictEqual(spy2.calledOnce, true, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -1627,8 +1665,8 @@ describe('tab-group', () => {
       const spy2 = sinon.spy(elm, 'removeEventListener');
       body.appendChild(elm);
       const res = await func(false);
-      assert.isFalse(spy.called, 'not called');
-      assert.isFalse(spy2.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
@@ -1641,8 +1679,8 @@ describe('tab-group', () => {
       const spy2 = sinon.spy(elm, 'removeEventListener');
       body.appendChild(elm);
       const res = await func(true);
-      assert.isFalse(spy.called, 'not called');
-      assert.isFalse(spy2.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
@@ -1803,8 +1841,8 @@ describe('tab-group', () => {
       assert.strictEqual(spy2.callCount, j + 1, 'called');
       assert.strictEqual(spy3.callCount, k + 1, 'called');
       assert.strictEqual(spy4.callCount, l + 1, 'called');
-      assert.isFalse(parent.hasAttribute('data-multi'), 'dataset');
-      assert.isFalse(parent2.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(parent.hasAttribute('data-multi'), false, 'dataset');
+      assert.strictEqual(parent2.hasAttribute('data-multi'), false, 'dataset');
       assert.deepEqual(res, [undefined, undefined], 'result');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
@@ -1838,8 +1876,8 @@ describe('tab-group', () => {
       assert.strictEqual(spy2.callCount, j, 'not called');
       assert.strictEqual(spy3.callCount, k + 1, 'called');
       assert.strictEqual(spy4.callCount, l + 1, 'called');
-      assert.isFalse(parent.hasAttribute('data-multi'), 'dataset');
-      assert.isFalse(parent2.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(parent.hasAttribute('data-multi'), false, 'dataset');
+      assert.strictEqual(parent2.hasAttribute('data-multi'), false, 'dataset');
       assert.deepEqual(res, [undefined], 'result');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
@@ -1872,9 +1910,9 @@ describe('tab-group', () => {
       assert.strictEqual(spy2.callCount, j + 1, 'called');
       assert.strictEqual(spy3.callCount, k + 1, 'called');
       assert.strictEqual(spy4.callCount, l + 1, 'called');
-      assert.isTrue(parent.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(parent.hasAttribute('data-multi'), true, 'dataset');
       assert.strictEqual(parent.dataset.multi, 'true', 'dataset value');
-      assert.isTrue(parent2.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(parent2.hasAttribute('data-multi'), true, 'dataset');
       assert.strictEqual(parent2.dataset.multi, 'true', 'dataset value');
       assert.deepEqual(res, [undefined, undefined], 'result');
       elm.addEventListener.restore();
@@ -1909,8 +1947,8 @@ describe('tab-group', () => {
       assert.strictEqual(spy2.callCount, j, 'not called');
       assert.strictEqual(spy3.callCount, k + 1, 'called');
       assert.strictEqual(spy4.callCount, l + 1, 'called');
-      assert.isFalse(parent.hasAttribute('data-multi'), 'dataset');
-      assert.isTrue(parent2.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(parent.hasAttribute('data-multi'), false, 'dataset');
+      assert.strictEqual(parent2.hasAttribute('data-multi'), true, 'dataset');
       assert.strictEqual(parent2.dataset.multi, 'true', 'dataset value');
       assert.deepEqual(res, [undefined], 'result');
       elm.addEventListener.restore();
@@ -1925,7 +1963,7 @@ describe('tab-group', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if parent is not collapsed', async () => {
@@ -1944,7 +1982,7 @@ describe('tab-group', () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if active tab is first child', async () => {
@@ -1964,7 +2002,7 @@ describe('tab-group', () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2001,7 +2039,7 @@ describe('tab-group', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -2011,7 +2049,7 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -2023,7 +2061,7 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isTrue(res === elm, 'result');
+      assert.deepEqual(res, elm, 'result');
     });
 
     it('should get result', async () => {
@@ -2038,7 +2076,7 @@ describe('tab-group', () => {
       parent.appendChild(elm2);
       body.appendChild(parent);
       const res = await func(elm2);
-      assert.isTrue(res === elm, 'result');
+      assert.deepEqual(res, elm, 'result');
     });
   });
 
@@ -2070,10 +2108,10 @@ describe('tab-group', () => {
         preventDefault: stub
       };
       const res = await func(evt);
-      assert.isFalse(stub.called, 'not called');
-      assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(port.postMessage.called, 'not called msg');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stub.called, false, 'not called');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called msg');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -2092,10 +2130,10 @@ describe('tab-group', () => {
         type: 'focus'
       };
       const res = await func(evt);
-      assert.isFalse(stub.called, 'not called');
-      assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(port.postMessage.called, 'not called msg');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stub.called, false, 'not called');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called msg');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -2114,10 +2152,10 @@ describe('tab-group', () => {
         type: 'blur'
       };
       const res = await func(evt);
-      assert.isFalse(stub.called, 'not called');
-      assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(port.postMessage.called, 'not called msg');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stub.called, false, 'not called');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called msg');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -2138,10 +2176,10 @@ describe('tab-group', () => {
         type: 'keydown'
       };
       const res = await func(evt);
-      assert.isFalse(stub.called, 'not called');
-      assert.isFalse(stubCurrentWin.called, 'not called current window');
-      assert.isFalse(port.postMessage.called, 'not called msg');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stub.called, false, 'not called');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(port.postMessage.called, false, 'not called msg');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2175,11 +2213,11 @@ describe('tab-group', () => {
         type: 'blur'
       };
       const res = await func(evt);
-      assert.isTrue(stub.calledOnce, 'called preventDefault');
-      assert.isTrue(spy.calledThrice, 'called removeEventListener');
-      assert.isTrue(spy2.calledOnce, 'called addEventListener');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(stub.calledOnce, true, 'called preventDefault');
+      assert.strictEqual(spy.calledThrice, true, 'called removeEventListener');
+      assert.strictEqual(spy2.calledOnce, true, 'called addEventListener');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -2216,11 +2254,11 @@ describe('tab-group', () => {
         type: 'keydown'
       };
       const res = await func(evt);
-      assert.isTrue(stub.calledOnce, 'called preventDefault');
-      assert.isTrue(spy.calledThrice, 'called removeEventListener');
-      assert.isTrue(spy2.calledOnce, 'called addEventListener');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(stub.calledOnce, true, 'called preventDefault');
+      assert.strictEqual(spy.calledThrice, true, 'called removeEventListener');
+      assert.strictEqual(spy2.calledOnce, true, 'called addEventListener');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -2258,11 +2296,11 @@ describe('tab-group', () => {
         type: 'keydown'
       };
       const res = await func(evt);
-      assert.isTrue(stub.calledOnce, 'called preventDefault');
-      assert.isTrue(spy.calledThrice, 'called removeEventListener');
-      assert.isTrue(spy2.calledOnce, 'called addEventListener');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(stub.calledOnce, true, 'called preventDefault');
+      assert.strictEqual(spy.calledThrice, true, 'called removeEventListener');
+      assert.strictEqual(spy2.calledOnce, true, 'called addEventListener');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -2272,7 +2310,7 @@ describe('tab-group', () => {
 
     it('get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -2280,7 +2318,7 @@ describe('tab-group', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -2298,9 +2336,9 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isFalse(spy.called, 'not called');
-      assert.isFalse(spy2.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2318,8 +2356,8 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isTrue(spy.calledTwice, 'called addEventListener');
-      assert.isTrue(spy2.calledTwice, 'called removeEventListener');
+      assert.strictEqual(spy.callCount, 2, 'called addEventListener');
+      assert.strictEqual(spy2.callCount, 2, 'called removeEventListener');
       assert.deepEqual(res, child, 'result');
     });
   });
@@ -2339,7 +2377,7 @@ describe('tab-group', () => {
         target: elm
       };
       const res = await func(evt);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -2362,7 +2400,7 @@ describe('tab-group', () => {
         target: button
       };
       const res = await func(evt);
-      assert.isTrue(spy.calledTwice, 'called addEventListener');
+      assert.strictEqual(spy.callCount, 2, 'called addEventListener');
       assert.deepEqual(res, child, 'result');
     });
   });
@@ -2672,10 +2710,13 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       func(parent);
-      assert.isTrue(elm.hasAttribute('data-multi'), 'dataset');
-      assert.isFalse(spy.called, 'not called child removeEventListener');
-      assert.isFalse(spy2.called, 'not called button removeEventListener');
-      assert.isFalse(spy3.called, 'not called context removeEventListener');
+      assert.strictEqual(elm.hasAttribute('data-multi'), true, 'dataset');
+      assert.strictEqual(spy.called, false,
+        'not called child removeEventListener');
+      assert.strictEqual(spy2.called, false,
+        'not called button removeEventListener');
+      assert.strictEqual(spy3.called, false,
+        'not called context removeEventListener');
     });
 
     it('should call function', () => {
@@ -2760,9 +2801,11 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(parent);
-      assert.isTrue(spy.calledTwice, 'called child removeEventListener');
-      assert.isTrue(spy2.calledOnce, 'called button removeEventListener');
-      assert.isTrue(spy3.calledTwice, 'called context removeEventListener');
+      assert.strictEqual(spy.callCount, 2, 'called child removeEventListener');
+      assert.strictEqual(spy2.calledOnce, true,
+        'called button removeEventListener');
+      assert.strictEqual(spy3.callCount, 2,
+        'called context removeEventListener');
       assert.strictEqual(msg.callCount, i + 1, 'called msg');
       assert.strictEqual(button.title, 'foo', 'title');
       assert.deepEqual(res, [undefined], 'result');
@@ -2788,7 +2831,7 @@ describe('tab-group', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(parent);
-      assert.isFalse(elm.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(elm.hasAttribute('data-multi'), false, 'dataset');
       assert.strictEqual(msg.callCount, i + 1, 'called msg');
       assert.strictEqual(button.title, 'foo', 'title');
       assert.deepEqual(res, [undefined, child], 'result');
@@ -2816,7 +2859,7 @@ describe('tab-group', () => {
       const res = await func(parent, {
         multi: true
       });
-      assert.isTrue(elm.hasAttribute('data-multi'), 'dataset');
+      assert.strictEqual(elm.hasAttribute('data-multi'), true, 'dataset');
       assert.strictEqual(elm.dataset.multi, 'true', 'dataset value');
       assert.strictEqual(msg.callCount, i + 1, 'called msg');
       assert.strictEqual(button.title, 'foo', 'title');
@@ -2833,7 +2876,7 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_TAB_CONTAINER, PINNED, CLASS_COLLAPSE_AUTO);
       body.appendChild(elm);
       await func();
-      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.strictEqual(elm.classList.contains(CLASS_COLLAPSE_AUTO), false);
     });
 
     it('should add class', async () => {
@@ -2842,7 +2885,7 @@ describe('tab-group', () => {
       elm.classList.add(CLASS_TAB_CONTAINER, PINNED);
       body.appendChild(elm);
       await func(true);
-      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.strictEqual(elm.classList.contains(CLASS_COLLAPSE_AUTO), true);
     });
   });
 
@@ -2851,7 +2894,7 @@ describe('tab-group', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -2869,7 +2912,7 @@ describe('tab-group', () => {
       const res = await func(label);
       assert.strictEqual(browser.bookmarks.create.callCount, i,
         'not called create');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -2911,7 +2954,7 @@ describe('tab-group', () => {
       const res = await func(elm);
       assert.strictEqual(browser.bookmarks.create.callCount, i,
         'not called create');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3080,7 +3123,7 @@ describe('tab-group', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3169,7 +3212,7 @@ describe('tab-group', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -3186,7 +3229,7 @@ describe('tab-group', () => {
       body.appendChild(sect);
       const res = await func(label);
       assert.strictEqual(browser.tabs.remove.callCount, i, 'not called remove');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3215,7 +3258,7 @@ describe('tab-group', () => {
       body.appendChild(sect);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.remove.callCount, i + 1, 'called remove');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -3238,7 +3281,7 @@ describe('tab-group', () => {
 
     it('should get null if tab is not contained', async () => {
       const res = await func(['foo']);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not detatch pinned tab', async () => {
@@ -3265,7 +3308,7 @@ describe('tab-group', () => {
       const res = await func([elm2], 1);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.strictEqual(elm.childElementCount, 2, 'child');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if tab is last child', async () => {
@@ -3292,7 +3335,7 @@ describe('tab-group', () => {
       const res = await func([elm3], 1);
       assert.strictEqual(browser.tabs.move.callCount, i, 'not called');
       assert.strictEqual(elm.childElementCount, 2, 'child');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -3318,7 +3361,7 @@ describe('tab-group', () => {
       const res = await func([elm2], 1);
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.strictEqual(elm.childElementCount, 1, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -3344,7 +3387,7 @@ describe('tab-group', () => {
       const res = await func([elm2]);
       assert.strictEqual(browser.tabs.move.callCount, i + 1, 'called');
       assert.strictEqual(elm.childElementCount, 1, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -3382,7 +3425,7 @@ describe('tab-group', () => {
       body.appendChild(elm);
       const res = await func(1);
       assert.strictEqual(elm.childElementCount, 3, 'child');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not group tabs if only one tab contained', async () => {
@@ -3414,7 +3457,7 @@ describe('tab-group', () => {
       const res = await func(1);
       assert.strictEqual(elm.childElementCount, 2, 'child');
       assert.strictEqual(elm2.childElementCount, 1, 'child');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3447,7 +3490,7 @@ describe('tab-group', () => {
       const res = await func(1);
       assert.strictEqual(elm.childElementCount, 1, 'child');
       assert.strictEqual(elm2.childElementCount, 0, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3480,7 +3523,7 @@ describe('tab-group', () => {
       const res = await func();
       assert.strictEqual(elm.childElementCount, 1, 'child');
       assert.strictEqual(elm2.childElementCount, 0, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3513,7 +3556,7 @@ describe('tab-group', () => {
       const res = await func();
       assert.strictEqual(elm.childElementCount, 2, 'child');
       assert.strictEqual(elm2.childElementCount, 1, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -3522,7 +3565,7 @@ describe('tab-group', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected Number but got Undefined.');
       });
     });
@@ -3548,7 +3591,7 @@ describe('tab-group', () => {
       assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i + 1,
         'query');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not moved');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3605,7 +3648,7 @@ describe('tab-group', () => {
       assert.strictEqual(parent.nextElementSibling.childElementCount, 2,
         'child');
       assert.strictEqual(parent2.childElementCount, 0, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3660,7 +3703,7 @@ describe('tab-group', () => {
       assert.strictEqual(body.childElementCount, 3, 'parent');
       assert.strictEqual(parent.childElementCount, 1, 'child');
       assert.strictEqual(parent2.childElementCount, 2, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -3669,7 +3712,7 @@ describe('tab-group', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected Number but got Undefined.');
       });
     });
@@ -3695,7 +3738,7 @@ describe('tab-group', () => {
       assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i,
         'not called query');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not moved');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not group', async () => {
@@ -3719,7 +3762,7 @@ describe('tab-group', () => {
       assert.strictEqual(browser.tabs.query.withArgs(arg).callCount, i + 1,
         'query');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not moved');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3776,7 +3819,7 @@ describe('tab-group', () => {
       assert.strictEqual(parent.nextElementSibling.childElementCount, 2,
         'child');
       assert.strictEqual(parent2.childElementCount, 0, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should group tabs', async () => {
@@ -3831,7 +3874,7 @@ describe('tab-group', () => {
       assert.strictEqual(body.childElementCount, 3, 'parent');
       assert.strictEqual(parent.childElementCount, 1, 'child');
       assert.strictEqual(parent2.childElementCount, 2, 'child');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -3841,7 +3884,7 @@ describe('tab-group', () => {
     it('should do nothing if argument is not element', async () => {
       const spy = sinon.spy(document, 'getElementById');
       await func();
-      assert.isFalse(spy.called, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
       document.getElementById.restore();
     });
 

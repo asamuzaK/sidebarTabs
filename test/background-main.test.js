@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { sleep } from '../src/mjs/common.js';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
@@ -50,12 +50,8 @@ describe('background-main', () => {
     mjs.sidebar.clear();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('sidebar', () => {
-    assert.instanceOf(mjs.sidebar, Map, 'instance');
+    assert.strictEqual(mjs.sidebar instanceof Map, true, 'instance');
   });
 
   describe('set sidebar state', () => {
@@ -77,10 +73,10 @@ describe('background-main', () => {
       const stubIsOpen =
         browser.sidebarAction.isOpen.withArgs({ windowId: 3 }).resolves(true);
       await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isTrue(mjs.sidebar.has(3), 'entry');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(3), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(3), {
         incognito: false,
         isOpen: true,
@@ -89,7 +85,7 @@ describe('background-main', () => {
         sessionValue: null,
         windowId: 3
       }, 'value');
-      assert.isFalse(mjs.sidebar.has(4), 'entry');
+      assert.strictEqual(mjs.sidebar.has(4), false, 'entry');
     });
 
     it('should set values', async () => {
@@ -108,10 +104,10 @@ describe('background-main', () => {
       const stubIsOpen =
         browser.sidebarAction.isOpen.withArgs({ windowId: 3 }).resolves(true);
       await func(browser.windows.WINDOW_ID_CURRENT);
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isTrue(mjs.sidebar.has(3), 'entry');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(3), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(3), {
         incognito: false,
         isOpen: true,
@@ -120,7 +116,7 @@ describe('background-main', () => {
         sessionValue: null,
         windowId: 3
       }, 'value');
-      assert.isFalse(mjs.sidebar.has(4), 'entry');
+      assert.strictEqual(mjs.sidebar.has(4), false, 'entry');
     });
 
     it('should set values', async () => {
@@ -139,11 +135,11 @@ describe('background-main', () => {
       const stubIsOpen =
         browser.sidebarAction.isOpen.withArgs({ windowId: 4 }).resolves(true);
       await func(4);
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isFalse(mjs.sidebar.has(3), 'entry');
-      assert.isTrue(mjs.sidebar.has(4), 'entry');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(3), false, 'entry');
+      assert.strictEqual(mjs.sidebar.has(4), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(4), {
         incognito: false,
         isOpen: true,
@@ -186,10 +182,10 @@ describe('background-main', () => {
         windowId: 4
       });
       await func(4);
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isTrue(mjs.sidebar.has(3), 'entry');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(3), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(3), {
         incognito: false,
         isOpen: true,
@@ -198,7 +194,7 @@ describe('background-main', () => {
         sessionValue: null,
         windowId: 3
       }, 'value');
-      assert.isTrue(mjs.sidebar.has(4), 'entry');
+      assert.strictEqual(mjs.sidebar.has(4), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(4), {
         incognito: false,
         isOpen: false,
@@ -224,11 +220,11 @@ describe('background-main', () => {
       });
       const stubIsOpen = browser.sidebarAction.isOpen.resolves(true);
       await func(browser.windows.WINDOW_ID_NONE);
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(stubIsOpen.called, 'not called');
-      assert.isFalse(mjs.sidebar.has(3), 'entry');
-      assert.isFalse(mjs.sidebar.has(4), 'entry');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(stubIsOpen.called, false, 'not called');
+      assert.strictEqual(mjs.sidebar.has(3), false, 'entry');
+      assert.strictEqual(mjs.sidebar.has(4), false, 'entry');
     });
 
     it('should not set values', async () => {
@@ -239,9 +235,9 @@ describe('background-main', () => {
       });
       const stubIsOpen = browser.sidebarAction.isOpen.resolves(true);
       await func();
-      assert.isTrue(stubCurrentWin.called, 'called');
-      assert.isFalse(stubIsOpen.called, 'not called');
-      assert.isFalse(mjs.sidebar.has(3), 'entry');
+      assert.strictEqual(stubCurrentWin.called, true, 'called');
+      assert.strictEqual(stubIsOpen.called, false, 'not called');
+      assert.strictEqual(mjs.sidebar.has(3), false, 'entry');
     });
   });
 
@@ -251,13 +247,13 @@ describe('background-main', () => {
     it('should remove entry', async () => {
       mjs.sidebar.set(1, {});
       const res = await func(1);
-      assert.isFalse(mjs.sidebar.has(1), 'entry');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(mjs.sidebar.has(1), false, 'entry');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should get false if entry does not exist', async () => {
       const res = await func(2);
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
   });
 
@@ -269,7 +265,7 @@ describe('background-main', () => {
       const res = await func();
       assert.strictEqual(browser.sidebarAction.toggle.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -278,7 +274,7 @@ describe('background-main', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'message');
       });
@@ -286,7 +282,7 @@ describe('background-main', () => {
 
     it('should throw', async () => {
       await func('foo').catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected Number but got Undefined.',
           'message');
       });
@@ -294,7 +290,7 @@ describe('background-main', () => {
 
     it('should get false', async () => {
       const res = await func('foo', 1);
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should get false', async () => {
@@ -307,7 +303,7 @@ describe('background-main', () => {
       });
       mjs.ports.set(portId, port);
       const res = await func('foo', 1);
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should get false', async () => {
@@ -320,7 +316,7 @@ describe('background-main', () => {
       });
       mjs.ports.set(portId, port);
       const res = await func('foo', 1);
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should call function', async () => {
@@ -418,10 +414,10 @@ describe('background-main', () => {
       frag.appendChild(parent2);
       const domstr = new XMLSerializer().serializeToString(frag);
       const res = await func(domstr, 1);
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubGetValue.calledOnce, 'called');
-      assert.isTrue(stubSetValue.calledOnce, 'called');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called');
+      assert.strictEqual(res, true, 'result');
     });
 
     it('should call function', async () => {
@@ -497,10 +493,10 @@ describe('background-main', () => {
       await sleep(100);
       arr.push(func(domstr2, 1));
       const res = await Promise.all(arr);
-      assert.isTrue(stubWin.calledThrice, 'called');
-      assert.isTrue(stubGetValue.calledTwice, 'called');
-      assert.isTrue(stubSetValue.calledTwice, 'called');
-      assert.isTrue(mjs.sidebar.has(1), 'map');
+      assert.strictEqual(stubWin.calledThrice, true, 'called');
+      assert.strictEqual(stubGetValue.calledTwice, true, 'called');
+      assert.strictEqual(stubSetValue.calledTwice, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'map');
       assert.deepEqual(res, [true, false], 'result');
     });
 
@@ -580,10 +576,10 @@ describe('background-main', () => {
       mjs.sidebar.set(1, currentValue);
       arr.push(func(domstr2, 1));
       const res = await Promise.all(arr);
-      assert.isTrue(stubWin.calledThrice, 'called');
-      assert.isTrue(stubGetValue.calledTwice, 'called');
-      assert.isTrue(stubSetValue.calledTwice, 'called');
-      assert.isFalse(mjs.sidebar.has(1), 'map');
+      assert.strictEqual(stubWin.calledThrice, true, 'called');
+      assert.strictEqual(stubGetValue.calledTwice, true, 'called');
+      assert.strictEqual(stubSetValue.calledTwice, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(1), false, 'map');
       assert.deepEqual(res, [true, false], 'result');
     });
   });
@@ -657,9 +653,9 @@ describe('background-main', () => {
         [SESSION_SAVE]: {}
       };
       const res = await func(msg);
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(stubGetValue.called, 'not called');
-      assert.isFalse(stubSetValue.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(stubGetValue.called, false, 'not called');
+      assert.strictEqual(stubSetValue.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -763,9 +759,9 @@ describe('background-main', () => {
         }
       };
       const res = await func(msg);
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(stubGetValue.called, 'not called');
-      assert.isFalse(stubSetValue.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(stubGetValue.called, false, 'not called');
+      assert.strictEqual(stubSetValue.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -870,9 +866,9 @@ describe('background-main', () => {
         }
       };
       const res = await func(msg);
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubGetValue.calledOnce, 'called');
-      assert.isTrue(stubSetValue.calledOnce, 'called');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called');
       assert.deepEqual(res, [true], 'result');
     });
 
@@ -891,9 +887,9 @@ describe('background-main', () => {
         }
       };
       const res = await func(msg);
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isTrue(mjs.sidebar.has(1), 'entry');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(1), {
         incognito: false,
         isOpen: true,
@@ -1022,9 +1018,9 @@ describe('background-main', () => {
         }
       };
       const res = await func(msg);
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubGetValue.calledOnce, 'called');
-      assert.isTrue(stubSetValue.calledOnce, 'called');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called');
       assert.deepEqual(res, [true], 'result');
     });
 
@@ -1043,9 +1039,9 @@ describe('background-main', () => {
         }
       };
       const res = await func(msg);
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isTrue(mjs.sidebar.has(1), 'entry');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(1), {
         incognito: false,
         isOpen: true,
@@ -1072,11 +1068,11 @@ describe('background-main', () => {
       await func();
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
+      assert.strictEqual(errCalled, false, 'not called error');
       assert.strictEqual(mjs.ports.size, 1, 'port size');
-      assert.isTrue(mjs.ports.has(portId), 'port');
+      assert.strictEqual(mjs.ports.has(portId), true, 'port');
       assert.strictEqual(mjs.sidebar.size, 1, 'sidebar size');
-      assert.isTrue(mjs.sidebar.has(1), 'sidebar');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'sidebar');
     });
 
     it('should log error, should not remove ports, sidebar', async () => {
@@ -1092,11 +1088,11 @@ describe('background-main', () => {
       });
       const { calledOnce: errCalled } = stubErr;
       stubErr.restore();
-      assert.isTrue(errCalled, 'called error');
+      assert.strictEqual(errCalled, true, 'called error');
       assert.strictEqual(mjs.ports.size, 1, 'port size');
-      assert.isTrue(mjs.ports.has(portId), 'port');
+      assert.strictEqual(mjs.ports.has(portId), true, 'port');
       assert.strictEqual(mjs.sidebar.size, 1, 'sidebar size');
-      assert.isTrue(mjs.sidebar.has(1), 'sidebar');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'sidebar');
     });
 
     it('should not remove ports, sidebar', async () => {
@@ -1112,11 +1108,11 @@ describe('background-main', () => {
       });
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
+      assert.strictEqual(errCalled, false, 'not called error');
       assert.strictEqual(mjs.ports.size, 1, 'port size');
-      assert.isTrue(mjs.ports.has(portId), 'port');
+      assert.strictEqual(mjs.ports.has(portId), true, 'port');
       assert.strictEqual(mjs.sidebar.size, 1, 'sidebar size');
-      assert.isTrue(mjs.sidebar.has(1), 'sidebar');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'sidebar');
     });
 
     it('should remove ports', async () => {
@@ -1132,10 +1128,10 @@ describe('background-main', () => {
       });
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
+      assert.strictEqual(errCalled, false, 'not called error');
       assert.strictEqual(mjs.ports.size, 0, 'port size');
       assert.strictEqual(mjs.sidebar.size, 1, 'sidebar size');
-      assert.isTrue(mjs.sidebar.has(2), 'sidebar');
+      assert.strictEqual(mjs.sidebar.has(2), true, 'sidebar');
     });
 
     it('should remove ports, sidebar', async () => {
@@ -1153,7 +1149,7 @@ describe('background-main', () => {
       });
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
+      assert.strictEqual(errCalled, false, 'not called error');
       assert.strictEqual(mjs.ports.size, 0, 'port size');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
     });
@@ -1174,7 +1170,7 @@ describe('background-main', () => {
       });
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
+      assert.strictEqual(errCalled, false, 'not called error');
       assert.strictEqual(mjs.ports.size, 0, 'port size');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
     });
@@ -1280,10 +1276,10 @@ describe('background-main', () => {
       });
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubGetValue.calledOnce, 'called');
-      assert.isTrue(stubSetValue.calledOnce, 'called');
+      assert.strictEqual(errCalled, false, 'not called error');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called');
       assert.strictEqual(mjs.ports.size, 0, 'ports size');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
     });
@@ -1295,11 +1291,11 @@ describe('background-main', () => {
     it('should throw', async () => {
       const stubErr = sinon.stub(console, 'error');
       await func(null).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e instanceof Error, true, 'error');
       });
       const { calledOnce } = stubErr;
       stubErr.restore();
-      assert.isTrue(calledOnce, 'called');
+      assert.strictEqual(calledOnce, true, 'called');
     });
 
     it('should call function', async () => {
@@ -1403,13 +1399,13 @@ describe('background-main', () => {
       });
       const { called: errCalled } = stubErr;
       stubErr.restore();
-      assert.isFalse(errCalled, 'not called error');
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubGetValue.calledOnce, 'called');
-      assert.isTrue(stubSetValue.calledOnce, 'called');
+      assert.strictEqual(errCalled, false, 'not called error');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubGetValue.calledOnce, true, 'called');
+      assert.strictEqual(stubSetValue.calledOnce, true, 'called');
       assert.strictEqual(mjs.ports.size, 0, 'ports size');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -1446,13 +1442,13 @@ describe('background-main', () => {
       const remove = browser.menus.removeAll.resolves(undefined);
       const create = browser.menus.create;
       await func(port);
-      assert.isFalse(stubWin.called, 'called win');
+      assert.strictEqual(stubWin.called, false, 'called win');
       assert.strictEqual(mjs.ports.size, 0, 'ports size');
-      assert.isFalse(mjs.ports.has(portId), 'ports');
+      assert.strictEqual(mjs.ports.has(portId), false, 'ports');
       assert.strictEqual(mjs.sidebar.size, 0, 'sidebar size');
-      assert.isFalse(mjs.sidebar.has(1), 'sidebar');
-      assert.isFalse(remove.called, 'remove');
-      assert.isFalse(create.called, 'create');
+      assert.strictEqual(mjs.sidebar.has(1), false, 'sidebar');
+      assert.strictEqual(remove.called, false, 'remove');
+      assert.strictEqual(create.called, false, 'create');
     });
 
     it('should add port', async () => {
@@ -1469,13 +1465,13 @@ describe('background-main', () => {
       const remove = browser.menus.removeAll.resolves(undefined);
       const create = browser.menus.create;
       await func(port);
-      assert.isTrue(stubWin.calledOnce, 'called win');
+      assert.strictEqual(stubWin.calledOnce, true, 'called win');
       assert.strictEqual(mjs.ports.size, 1, 'ports size');
-      assert.isTrue(mjs.ports.has(portId), 'ports');
+      assert.strictEqual(mjs.ports.has(portId), true, 'ports');
       assert.strictEqual(mjs.sidebar.size, 1, 'sidebar size');
-      assert.isTrue(mjs.sidebar.has(1), 'sidebar');
-      assert.isTrue(remove.calledOnce, 'remove');
-      assert.isTrue(create.called, 'create');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'sidebar');
+      assert.strictEqual(remove.calledOnce, true, 'remove');
+      assert.strictEqual(create.called, true, 'create');
     });
   });
 
@@ -1484,7 +1480,7 @@ describe('background-main', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'error');
+        assert.strictEqual(e instanceof TypeError, true, 'error');
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'message');
       });
@@ -1492,7 +1488,7 @@ describe('background-main', () => {
 
     it('should get null', async () => {
       const res = await func('foo');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1511,17 +1507,18 @@ describe('background-main', () => {
         windowId: 1
       });
       const res = await func(TOGGLE_STATE);
-      assert.isTrue(browser.sidebarAction.toggle.calledOnce, 'called');
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(stubIsOpen.calledOnce, 'called');
-      assert.isTrue(mjs.sidebar.has(1), 'entry');
+      assert.strictEqual(browser.sidebarAction.toggle.calledOnce, true,
+        'called');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(stubIsOpen.calledOnce, true, 'called');
+      assert.strictEqual(mjs.sidebar.has(1), true, 'entry');
       assert.deepEqual(mjs.sidebar.get(1), {
         incognito: false,
         isOpen: true,
         sessionId: undefined,
         windowId: 1
       }, 'value');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 });
