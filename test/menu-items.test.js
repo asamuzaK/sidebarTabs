@@ -4,7 +4,7 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
 import { browser } from './mocha/setup.js';
 
@@ -38,10 +38,6 @@ describe('menu items', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('should get string and object', () => {
     const itemKeys = [
       OPTIONS_OPEN,
@@ -58,14 +54,14 @@ describe('menu items', () => {
     const items = Object.entries(menuItems);
 
     it('should get equal length', () => {
-      assert.isTrue(items.length === itemKeys.length, 'length');
+      assert.strictEqual(items.length, itemKeys.length, 'length');
     });
 
     it('should get string and object', () => {
       for (const [key, value] of items) {
-        assert.isTrue(itemKeys.includes(key), `includes ${key}`);
-        assert.isString(key, 'key');
-        assert.isObject(value, 'value');
+        assert.strictEqual(itemKeys.includes(key), true, `includes ${key}`);
+        assert.strictEqual(typeof key, 'string', 'key');
+        assert.strictEqual(typeof value, 'object', 'value');
       }
     });
   });
@@ -92,9 +88,9 @@ describe('menu items', () => {
       parentItemKeys.forEach(itemKey => {
         const items = Object.entries(menuItems[itemKey].subItems);
         for (const [key, value] of items) {
-          assert.isTrue(subItemKeys.includes(key), 'item');
-          assert.isString(key, 'key');
-          assert.isObject(value, 'value');
+          assert.strictEqual(subItemKeys.includes(key), true, 'item');
+          assert.strictEqual(typeof key, 'string', 'key');
+          assert.strictEqual(typeof value, 'object', 'value');
         }
       });
     });

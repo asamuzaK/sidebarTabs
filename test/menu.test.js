@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom } from './mocha/setup.js';
 
 /* test */
@@ -32,10 +32,6 @@ describe('menu', () => {
     delete global.window;
     delete global.document;
     browser._sandbox.reset();
-  });
-
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
   });
 
   describe('update context menu', () => {
@@ -111,14 +107,14 @@ describe('menu', () => {
     it('should throw', async () => {
       browser.runtime.lastError = new Error('unknown error');
       const i = browser.menus.update.callCount;
-      assert.throws(() => func(), 'unknown error', 'error');
+      assert.throws(() => func(), Error, 'unknown error', 'error');
       assert.strictEqual(browser.menus.update.callCount, i, 'not called');
     });
 
     it('should throw', async () => {
       browser.runtime.lastError = new Error('ID already exists: foo');
       const i = browser.menus.update.callCount;
-      assert.throws(() => func(), 'ID already exists: foo', 'error');
+      assert.throws(() => func(), Error, 'ID already exists: foo', 'error');
       assert.strictEqual(browser.menus.update.callCount, i, 'not called');
     });
 
@@ -126,7 +122,7 @@ describe('menu', () => {
       browser.runtime.lastError = new Error('ID already exists: foo');
       mjs.menuItemMap.set('foo', null);
       const i = browser.menus.update.callCount;
-      assert.throws(() => func(), 'ID already exists: foo', 'error');
+      assert.throws(() => func(), Error, 'ID already exists: foo', 'error');
       assert.strictEqual(browser.menus.update.callCount, i, 'not called');
     });
 
@@ -147,14 +143,14 @@ describe('menu', () => {
       const i = browser.menus.create.callCount;
       const res = await func();
       assert.strictEqual(browser.menus.create.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if argument is empty object', async () => {
       const i = browser.menus.create.callCount;
       const res = await func({});
       assert.strictEqual(browser.menus.create.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if object does not contain id', async () => {
@@ -163,7 +159,7 @@ describe('menu', () => {
         foo: 'bar'
       });
       assert.strictEqual(browser.menus.create.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function if id is not string', async () => {
@@ -172,7 +168,7 @@ describe('menu', () => {
         id: []
       });
       assert.strictEqual(browser.menus.create.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -262,7 +258,7 @@ describe('menu', () => {
       const res = await func();
       assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
         'called');
-      assert.isTrue(res.length > 0, 'result');
+      assert.strictEqual(res.length > 0, true, 'result');
     });
 
     it('should get array', async () => {
@@ -271,7 +267,7 @@ describe('menu', () => {
       const res = await func();
       assert.strictEqual(browser.contextualIdentities.query.callCount, i + 1,
         'called');
-      assert.isTrue(res.length > 0, 'result');
+      assert.strictEqual(res.length > 0, true, 'result');
     });
   });
 
@@ -397,9 +393,9 @@ describe('menu', () => {
       const remove = browser.menus.removeAll.resolves(undefined);
       const create = browser.menus.create;
       const res = await func();
-      assert.isTrue(remove.calledOnce, 'called');
-      assert.isTrue(create.called, 'called');
-      assert.isArray(res, 'result');
+      assert.strictEqual(remove.calledOnce, true, 'called');
+      assert.strictEqual(create.called, true, 'called');
+      assert.strictEqual(Array.isArray(res), true, 'result');
     });
   });
 
@@ -416,7 +412,7 @@ describe('menu', () => {
       const res = await func();
       assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
         i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function with empty object argument', async () => {
@@ -424,7 +420,7 @@ describe('menu', () => {
       const res = await func({});
       assert.strictEqual(browser.menus.overrideContext.withArgs({}).callCount,
         i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function with object argument', async () => {
@@ -436,7 +432,7 @@ describe('menu', () => {
       const res = await func(opt);
       assert.strictEqual(browser.menus.overrideContext.withArgs(opt).callCount,
         i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 });

@@ -3,9 +3,9 @@
  */
 
 /* api */
-import { assert } from 'chai';
-import { describe, it } from 'mocha';
+import { strict as assert } from 'node:assert';
 import { resolve } from '@asamuzakjp/css-color';
+import { describe, it } from 'mocha';
 
 /* test */
 import * as mjs from '../src/mjs/color.js';
@@ -21,37 +21,37 @@ describe('color', () => {
 
     it('should get value', () => {
       const res = func([]);
-      assert.deepEqual(res, '#00000000', 'result');
+      assert.strictEqual(res, '#00000000', 'result');
     });
 
     it('should get value', () => {
       const res = func([255, 0, 128]);
-      assert.deepEqual(res, '#ff0080', 'result');
+      assert.strictEqual(res, '#ff0080', 'result');
     });
 
     it('should get value', () => {
       const res = func([255, 0, 128, 1]);
-      assert.deepEqual(res, '#ff0080', 'result');
+      assert.strictEqual(res, '#ff0080', 'result');
     });
 
     it('should get value', () => {
       const res = func([0, 0, 0, 1]);
-      assert.deepEqual(res, '#000000', 'result');
+      assert.strictEqual(res, '#000000', 'result');
     });
 
     it('should get value', () => {
       const res = func([255, 255, 255, 1]);
-      assert.deepEqual(res, '#ffffff', 'result');
+      assert.strictEqual(res, '#ffffff', 'result');
     });
 
     it('should get value', () => {
       const res = func([1, 35, 69, 0.40392]);
-      assert.deepEqual(res, '#01234567', 'result');
+      assert.strictEqual(res, '#01234567', 'result');
     });
 
     it('should get value', () => {
       const res = func([137, 171, 205, 0.93725]);
-      assert.deepEqual(res, '#89abcdef', 'result');
+      assert.strictEqual(res, '#89abcdef', 'result');
     });
   });
 
@@ -65,7 +65,7 @@ describe('color', () => {
 
     it('should get null', () => {
       const res = func('transparent');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get value', () => {

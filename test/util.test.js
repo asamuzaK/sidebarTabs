@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
 /* test */
@@ -46,24 +46,22 @@ describe('util', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('get template', () => {
     const func = mjs.getTemplate;
 
     it('should throw if no argument given', async () => {
-      assert.throws(() => func(), 'Expected String but got Undefined.');
+      assert.throws(() => func(), TypeError,
+        'Expected String but got Undefined.', 'throw');
     });
 
     it('should throw if argument is not string', async () => {
-      assert.throws(() => func(1), 'Expected String but got Number.');
+      assert.throws(() => func(1), TypeError,
+        'Expected String but got Number.', 'throw');
     });
 
     it('should get null', async () => {
       const res = func('foo');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get cloned fragment', async () => {
@@ -84,7 +82,7 @@ describe('util', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null if container not found', async () => {
@@ -92,7 +90,7 @@ describe('util', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get container', async () => {
@@ -105,7 +103,7 @@ describe('util', () => {
       cnt.appendChild(p);
       body.appendChild(cnt);
       const res = await func(elm);
-      assert.isTrue(res === cnt, 'result');
+      assert.deepEqual(res, cnt, 'result');
     });
   });
 
@@ -152,7 +150,8 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       await func(elm);
-      assert.isFalse(elm.classList.contains(CLASS_TAB_GROUP), 'result');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_GROUP), false,
+        'result');
     });
 
     it('should do nothing', async () => {
@@ -167,7 +166,8 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       await func(elm);
-      assert.isTrue(elm.classList.contains(CLASS_TAB_GROUP), 'result');
+      assert.strictEqual(elm.classList.contains(CLASS_TAB_GROUP), true,
+        'result');
     });
   });
 
@@ -176,12 +176,12 @@ describe('util', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
       const res = await func('foo');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -250,7 +250,7 @@ describe('util', () => {
       body.appendChild(tmpl);
       body.appendChild(newTab);
       const res = await func(elm, target);
-      assert.isNull(target.parentNode, 'parent');
+      assert.strictEqual(target.parentNode, null, 'parent');
       assert.deepEqual(res, elm, 'result');
       assert.deepEqual(res.parentNode.nextElementSibling, newTab, 'position');
     });
@@ -261,7 +261,7 @@ describe('util', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -271,7 +271,7 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -282,7 +282,7 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isTrue(res === parent, 'result');
+      assert.deepEqual(res, parent, 'result');
     });
   });
 
@@ -291,7 +291,7 @@ describe('util', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -301,7 +301,7 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -320,11 +320,13 @@ describe('util', () => {
     const func = mjs.getSidebarTabIds;
 
     it('should throw if no argument given', () => {
-      assert.throws(() => func(), 'Expected Array but got Undefined.', 'throw');
+      assert.throws(() => func(), TypeError,
+        'Expected Array but got Undefined.', 'throw');
     });
 
     it('should throw if argument is not array', () => {
-      assert.throws(() => func(1), 'Expected Array but got Number.', 'throw');
+      assert.throws(() => func(1), TypeError,
+        'Expected Array but got Number.', 'throw');
     });
 
     it('should get empty array if array does not contain element', async () => {
@@ -358,12 +360,12 @@ describe('util', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null if argument is not element', async () => {
       const res = await func('foo');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -371,7 +373,7 @@ describe('util', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
@@ -448,10 +450,11 @@ describe('util', () => {
       body.appendChild(elm4);
       body.appendChild(elm5);
       const res = await func(elm2, elm4);
-      assert.strictEqual(res.length, 3, 'length');
-      assert.isTrue(res[0] === elm2, 'result');
-      assert.isTrue(res[1] === elm3, 'result');
-      assert.isTrue(res[2] === elm4, 'result');
+      assert.deepEqual(res, [
+        elm2,
+        elm3,
+        elm4
+      ], 'result');
     });
 
     it('should get result', async () => {
@@ -477,10 +480,11 @@ describe('util', () => {
       body.appendChild(elm4);
       body.appendChild(elm5);
       const res = await func(elm3, elm5);
-      assert.strictEqual(res.length, 3, 'length');
-      assert.isTrue(res[0] === elm3, 'result');
-      assert.isTrue(res[1] === elm4, 'result');
-      assert.isTrue(res[2] === elm5, 'result');
+      assert.deepEqual(res, [
+        elm3,
+        elm4,
+        elm5
+      ], 'result');
     });
 
     it('should get result', async () => {
@@ -506,11 +510,12 @@ describe('util', () => {
       body.appendChild(elm4);
       body.appendChild(elm5);
       const res = await func(elm4, elm);
-      assert.strictEqual(res.length, 4, 'length');
-      assert.isTrue(res[0] === elm, 'result');
-      assert.isTrue(res[1] === elm2, 'result');
-      assert.isTrue(res[2] === elm3, 'result');
-      assert.isTrue(res[3] === elm4, 'result');
+      assert.deepEqual(res, [
+        elm,
+        elm2,
+        elm3,
+        elm4
+      ], 'result');
     });
   });
 
@@ -519,7 +524,7 @@ describe('util', () => {
 
     it('should get null', () => {
       const res = func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', () => {
@@ -527,7 +532,7 @@ describe('util', () => {
       const body = document.querySelector('body');
       body.appendChild(div);
       const res = func(div);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', () => {
@@ -623,7 +628,7 @@ describe('util', () => {
       body.appendChild(group);
       body.appendChild(newtab);
       const res = func(div, true);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -632,7 +637,7 @@ describe('util', () => {
 
     it('should get null', () => {
       const res = func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', () => {
@@ -640,7 +645,7 @@ describe('util', () => {
       const body = document.querySelector('body');
       body.appendChild(div);
       const res = func(div);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', () => {
@@ -655,7 +660,7 @@ describe('util', () => {
       group.appendChild(div);
       body.appendChild(group);
       const res = func(div);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', () => {
@@ -749,7 +754,7 @@ describe('util', () => {
 
     it('should get false if no argument given', async () => {
       const res = await func();
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should get false', async () => {
@@ -759,7 +764,7 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should get result', async () => {
@@ -770,7 +775,7 @@ describe('util', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(elm);
-      assert.isTrue(res, 'result');
+      assert.strictEqual(res, true, 'result');
     });
   });
 
@@ -779,7 +784,7 @@ describe('util', () => {
 
     it('should get null if no argument given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null if tab not found', async () => {
@@ -787,7 +792,7 @@ describe('util', () => {
       const body = document.querySelector('body');
       body.appendChild(elm);
       const res = await func(elm);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -803,7 +808,7 @@ describe('util', () => {
       body.appendChild(elm);
       const res = await func(elm);
       assert.strictEqual(browser.tabs.update.callCount, i + 1, 'called');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(res, true, 'result');
     });
   });
 
@@ -831,8 +836,8 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func();
-      assert.isFalse(stubPinned.called, 'not called');
-      assert.isFalse(stubNewTab.called, 'not called');
+      assert.strictEqual(stubPinned.called, false, 'not called');
+      assert.strictEqual(stubNewTab.called, false, 'not called');
     });
 
     it('should not call function', async () => {
@@ -862,9 +867,9 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubPinned.called, 'not called');
-      assert.isFalse(stubNewTab.called, 'not called');
-      assert.isFalse(stubElm.called, 'not called');
+      assert.strictEqual(stubPinned.called, false, 'not called');
+      assert.strictEqual(stubNewTab.called, false, 'not called');
+      assert.strictEqual(stubElm.called, false, 'not called');
     });
 
     it('should not call function', async () => {
@@ -897,9 +902,9 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubPinned.called, 'not called');
-      assert.isFalse(stubNewTab.called, 'not called');
-      assert.isFalse(stubElm.called, 'not called');
+      assert.strictEqual(stubPinned.called, false, 'not called');
+      assert.strictEqual(stubNewTab.called, false, 'not called');
+      assert.strictEqual(stubElm.called, false, 'not called');
     });
 
     it('should not call function', async () => {
@@ -933,10 +938,10 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isTrue(stubPinned.called, 'called');
-      assert.isTrue(stubNewTab.called, 'called');
-      assert.isTrue(stubElm.called, 'called');
-      assert.isFalse(elm.scrollIntoView.called, 'not called');
+      assert.strictEqual(stubPinned.called, true, 'called');
+      assert.strictEqual(stubNewTab.called, true, 'called');
+      assert.strictEqual(stubElm.called, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.called, false, 'not called');
     });
 
     it('should not call function', async () => {
@@ -970,10 +975,10 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubPinned.called, 'not called');
-      assert.isFalse(stubNewTab.called, 'not called');
-      assert.isFalse(stubElm.called, 'not called');
-      assert.isFalse(elm.scrollIntoView.called, 'not called');
+      assert.strictEqual(stubPinned.called, false, 'not called');
+      assert.strictEqual(stubNewTab.called, false, 'not called');
+      assert.strictEqual(stubElm.called, false, 'not called');
+      assert.strictEqual(elm.scrollIntoView.called, false, 'not called');
     });
 
     it('should call function', async () => {
@@ -1007,13 +1012,13 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'center'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
 
     it('should call function', async () => {
@@ -1047,13 +1052,13 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'start'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
 
     it('should call function', async () => {
@@ -1090,14 +1095,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.called, false, 'not called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'center'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
 
     it('should call function', async () => {
@@ -1134,14 +1139,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.called, false, 'not called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'center'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
 
     it('should call function', async () => {
@@ -1178,14 +1183,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.called, false, 'not called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'center'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
 
     it('should call function', async () => {
@@ -1222,14 +1227,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isTrue(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isFalse(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.calledOnce, true, 'called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'center'
-      }).calledOnce, 'called');
+      }).called, false, 'called');
     });
 
     it('should call function', async () => {
@@ -1266,14 +1271,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.calledOnce, false, 'called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'start'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
 
     it('should not call function', async () => {
@@ -1310,14 +1315,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isFalse(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.calledOnce, false, true, 'called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'start'
-      }).called, 'called');
+      }).called, false, 'called');
     });
 
     it('should not call function', async () => {
@@ -1354,14 +1359,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isFalse(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.calledOnce, false, 'called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'start'
-      }).called, 'called');
+      }).called, false, 'called');
     });
 
     it('should call function', async () => {
@@ -1398,14 +1403,14 @@ describe('util', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       await func(elm);
-      assert.isFalse(stubMain.calledOnce, 'called');
-      assert.isTrue(stubPinned.calledOnce, 'called');
-      assert.isTrue(stubNewTab.calledOnce, 'called');
-      assert.isTrue(stubElm.calledOnce, 'called');
-      assert.isTrue(elm.scrollIntoView.withArgs({
+      assert.strictEqual(stubMain.calledOnce, false, 'called');
+      assert.strictEqual(stubPinned.calledOnce, true, 'called');
+      assert.strictEqual(stubNewTab.calledOnce, true, 'called');
+      assert.strictEqual(stubElm.calledOnce, true, 'called');
+      assert.strictEqual(elm.scrollIntoView.withArgs({
         behavior: 'smooth',
         block: 'center'
-      }).calledOnce, 'called');
+      }).calledOnce, true, 'called');
     });
   });
 
@@ -1414,12 +1419,12 @@ describe('util', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
       const res = await func({});
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1431,7 +1436,7 @@ describe('util', () => {
       browser.tabs.query.resolves([{ id: 1 }]);
       const res = await func(opt);
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1458,7 +1463,7 @@ describe('util', () => {
       browser.tabs.update.resolves({});
       const res = await func(opt);
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1512,7 +1517,7 @@ describe('util', () => {
       browser.tabs.update.resolves({});
       const res = await func(opt);
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1539,7 +1544,7 @@ describe('util', () => {
       browser.tabs.update.resolves({});
       const res = await func(opt);
       assert.strictEqual(browser.tabs.update.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1574,18 +1579,18 @@ describe('util', () => {
     const func = mjs.createUrlMatchString;
 
     it('should throw', () => {
-      assert.throws(() => func(), 'Expected String but got Undefined.',
-        'throw');
+      assert.throws(() => func(), TypeError,
+        'Expected String but got Undefined.', 'throw');
     });
 
     it('should get null', () => {
       const res = func('');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', () => {
       const res = func('foo');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', () => {

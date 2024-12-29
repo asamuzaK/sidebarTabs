@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order, regexp/no-super-linear-backtracking */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom } from './mocha/setup.js';
 
 /* test */
@@ -95,10 +95,6 @@ describe('options-main', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('send message', () => {
     const func = mjs.sendMsg;
 
@@ -132,7 +128,7 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
         'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -140,7 +136,7 @@ describe('options-main', () => {
       const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -152,7 +148,7 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
         'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -160,7 +156,7 @@ describe('options-main', () => {
       const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -174,7 +170,7 @@ describe('options-main', () => {
       assert.strictEqual(elm.value, '1', 'value');
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -186,7 +182,7 @@ describe('options-main', () => {
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
         'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -194,7 +190,7 @@ describe('options-main', () => {
       const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -249,7 +245,7 @@ describe('options-main', () => {
 
     it('should get null if argument not given', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get object', async () => {
@@ -465,8 +461,8 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       await func();
-      assert.isTrue(spy.notCalled, 'not called');
-      assert.isTrue(spy2.notCalled, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
+      assert.strictEqual(spy2.called, false, 'not called');
       elm.addEventListener.restore();
       elm2.addEventListener.restore();
     });
@@ -484,8 +480,8 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       await func();
-      assert.isTrue(spy.called, 'not called');
-      assert.isTrue(spy2.called, 'not called');
+      assert.strictEqual(spy.called, true, 'called');
+      assert.strictEqual(spy2.called, true, 'called');
       elm.addEventListener.restore();
       elm2.addEventListener.restore();
     });
@@ -515,9 +511,9 @@ describe('options-main', () => {
       await func({
         target: elm
       });
-      assert.isTrue(elm2.hasAttribute('hidden'), 'set attr');
-      assert.isTrue(elm3.hasAttribute('hidden'), 'set attr');
-      assert.isFalse(elm4.hasAttribute('hidden'), 'set attr');
+      assert.strictEqual(elm2.hasAttribute('hidden'), true, 'set attr');
+      assert.strictEqual(elm3.hasAttribute('hidden'), true, 'set attr');
+      assert.strictEqual(elm4.hasAttribute('hidden'), false, 'set attr');
     });
 
     it('should remove attribute', async () => {
@@ -541,9 +537,9 @@ describe('options-main', () => {
       await func({
         target: elm
       });
-      assert.isFalse(elm2.hasAttribute('hidden'), 'set attr');
-      assert.isFalse(elm3.hasAttribute('hidden'), 'set attr');
-      assert.isTrue(elm4.hasAttribute('hidden'), 'set attr');
+      assert.strictEqual(elm2.hasAttribute('hidden'), false, 'set attr');
+      assert.strictEqual(elm3.hasAttribute('hidden'), false, 'set attr');
+      assert.strictEqual(elm4.hasAttribute('hidden'), true, 'set attr');
     });
   });
 
@@ -562,7 +558,7 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       func();
-      assert.isTrue(elm2.hasAttribute('hidden'), 'attr');
+      assert.strictEqual(elm2.hasAttribute('hidden'), true, 'attr');
     });
 
     it('should remove attribute', () => {
@@ -578,7 +574,7 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       func();
-      assert.isFalse(elm2.hasAttribute('hidden'), 'attr');
+      assert.strictEqual(elm2.hasAttribute('hidden'), false, 'attr');
     });
 
     it('should add attribute', () => {
@@ -593,7 +589,7 @@ describe('options-main', () => {
       body.appendChild(elm);
       body.appendChild(elm2);
       func();
-      assert.isTrue(elm2.hasAttribute('hidden'), 'attr');
+      assert.strictEqual(elm2.hasAttribute('hidden'), true, 'attr');
     });
   });
 
@@ -796,7 +792,7 @@ describe('options-main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.notCalled, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -807,7 +803,7 @@ describe('options-main', () => {
       elm.id = THEME_CUSTOM_INIT;
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -826,11 +822,11 @@ describe('options-main', () => {
         preventDefault: fake,
         stopPropagation: fake2
       });
-      assert.isTrue(fake.calledOnce, 'preventDefault');
-      assert.isTrue(fake2.calledOnce, 'stopPropagation');
+      assert.strictEqual(fake.calledOnce, true, 'preventDefault');
+      assert.strictEqual(fake2.calledOnce, true, 'stopPropagation');
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -848,11 +844,11 @@ describe('options-main', () => {
         preventDefault: fake,
         stopPropagation: fake2
       });
-      assert.isTrue(fake.calledOnce, 'preventDefault');
-      assert.isTrue(fake2.calledOnce, 'stopPropagation');
+      assert.strictEqual(fake.calledOnce, true, 'preventDefault');
+      assert.strictEqual(fake2.calledOnce, true, 'stopPropagation');
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -865,7 +861,7 @@ describe('options-main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.notCalled, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -876,7 +872,7 @@ describe('options-main', () => {
       elm.id = EXT_INIT;
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -888,7 +884,7 @@ describe('options-main', () => {
       const i = browser.storage.local.set.callCount;
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -899,7 +895,7 @@ describe('options-main', () => {
       body.appendChild(elm);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -914,7 +910,7 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm2.hidden, true, 'hidden');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -931,8 +927,8 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isFalse(elm2.hidden, 'hidden');
-      assert.isNull(res, 'result');
+      assert.strictEqual(elm2.hidden, false, 'hidden');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should show warning', async () => {
@@ -948,8 +944,8 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isFalse(elm2.hidden, 'hidden');
-      assert.isNull(res, 'result');
+      assert.strictEqual(elm2.hidden, false, 'hidden');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -965,7 +961,7 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm2.hidden, true);
       assert.strictEqual(elm.value, '', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
@@ -983,7 +979,7 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm2.hidden, true);
       assert.strictEqual(elm.value, ' ', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
@@ -1001,7 +997,7 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm2.hidden, true);
       assert.strictEqual(elm.value, 'body { color: red }', 'value');
       assert.deepEqual(res, [undefined], 'result');
     });
@@ -1019,7 +1015,7 @@ describe('options-main', () => {
       body.appendChild(elm2);
       const res = await func();
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isTrue(elm2.hidden);
+      assert.strictEqual(elm2.hidden, true);
       assert.strictEqual(elm.value,
         'body { color: red; } a { background: white }', 'value');
       assert.deepEqual(res, [undefined], 'result');
@@ -1035,7 +1031,7 @@ describe('options-main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.notCalled, 'not called');
+      assert.strictEqual(spy.called, false, 'not called');
       elm.addEventListener.restore();
     });
 
@@ -1046,7 +1042,7 @@ describe('options-main', () => {
       elm.id = USER_CSS_SAVE;
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -1078,7 +1074,7 @@ describe('options-main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.calledOnce, 'called');
+      assert.strictEqual(spy.calledOnce, true, 'called');
       elm.addEventListener.restore();
     });
 
@@ -1089,7 +1085,7 @@ describe('options-main', () => {
       elm.id = USER_CSS_USE;
       body.appendChild(elm);
       await func();
-      assert.isTrue(spy.calledTwice, 'called');
+      assert.strictEqual(spy.callCount, 2, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -1191,9 +1187,9 @@ describe('options-main', () => {
         checked: true
       });
       assert.strictEqual(elm.checked, true, 'checked');
-      assert.isFalse(elm2.hasAttribute('hidden'), 'set attr');
-      assert.isFalse(elm3.hasAttribute('hidden'), 'set attr');
-      assert.isTrue(elm4.hasAttribute('hidden'), 'set attr');
+      assert.strictEqual(elm2.hasAttribute('hidden'), false, 'set attr');
+      assert.strictEqual(elm3.hasAttribute('hidden'), false, 'set attr');
+      assert.strictEqual(elm4.hasAttribute('hidden'), true, 'set attr');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1298,9 +1294,9 @@ describe('options-main', () => {
         id: BOOKMARK_LOCATION,
         value: 'qux'
       });
-      assert.isFalse(child.hasAttribute('selected'), 'attr');
-      assert.isFalse(child2.hasAttribute('selected'), 'attr');
-      assert.isFalse(child3.hasAttribute('selected'), 'attr');
+      assert.strictEqual(child.hasAttribute('selected'), false, 'attr');
+      assert.strictEqual(child2.hasAttribute('selected'), false, 'attr');
+      assert.strictEqual(child3.hasAttribute('selected'), false, 'attr');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -1322,9 +1318,9 @@ describe('options-main', () => {
         id: BOOKMARK_LOCATION,
         value: 'bar'
       });
-      assert.isFalse(child.hasAttribute('selected'), 'attr');
-      assert.isTrue(child2.hasAttribute('selected'), 'attr');
-      assert.isFalse(child3.hasAttribute('selected'), 'attr');
+      assert.strictEqual(child.hasAttribute('selected'), false, 'attr');
+      assert.strictEqual(child2.hasAttribute('selected'), true, 'attr');
+      assert.strictEqual(child3.hasAttribute('selected'), false, 'attr');
       assert.deepEqual(res, [], 'result');
     });
 

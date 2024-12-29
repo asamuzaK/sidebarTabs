@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, mockPort } from './mocha/setup.js';
 
 /* test */
@@ -25,12 +25,8 @@ describe('port', () => {
     browser._sandbox.reset();
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('ports', () => {
-    assert.instanceOf(mjs.ports, Map, 'instance');
+    assert.strictEqual(mjs.ports instanceof Map, true, 'instance');
   });
 
   describe('remove port', () => {
@@ -44,21 +40,21 @@ describe('port', () => {
 
     it('should get false', async () => {
       const res = await func();
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should get false', async () => {
       mjs.ports.set('foo', {});
       const res = await func('bar');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isFalse(res, 'result');
+      assert.strictEqual(res, false, 'result');
     });
 
     it('should get true', async () => {
       mjs.ports.set('foo', {});
       const res = await func('foo');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isTrue(res, 'result');
+      assert.strictEqual(res, true, 'result');
     });
   });
 
@@ -93,7 +89,7 @@ describe('port', () => {
       });
       const { called: errCalled } = stubError;
       stubError.restore();
-      assert.isFalse(errCalled, 'error called');
+      assert.strictEqual(errCalled, false, 'error called');
       assert.strictEqual(mjs.ports.size, 0, 'size');
       assert.deepEqual(res, [true], 'result');
     });
@@ -107,7 +103,7 @@ describe('port', () => {
       });
       const { calledOnce: errCalled } = stubError;
       stubError.restore();
-      assert.isTrue(errCalled, 'error called');
+      assert.strictEqual(errCalled, true, 'error called');
       assert.strictEqual(mjs.ports.size, 0, 'size');
       assert.deepEqual(res, [true, false], 'result');
     });
@@ -128,10 +124,10 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isFalse(stubConnect.called, 'not called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get port object', async () => {
@@ -140,10 +136,9 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isTrue(stubConnect.calledOnce, 'called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.calledOnce, true, 'called connect');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isObject(res, 'result');
       assert.strictEqual(res.name, `${SIDEBAR}_1`, 'name');
     });
 
@@ -153,10 +148,9 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func(`${SIDEBAR}_1`);
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isTrue(stubConnect.calledOnce, 'called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.calledOnce, true, 'called connect');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isObject(res, 'result');
       assert.strictEqual(res.name, `${SIDEBAR}_1`, 'name');
     });
 
@@ -169,10 +163,9 @@ describe('port', () => {
         name: `${SIDEBAR}_1`
       });
       const res = await func();
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isFalse(stubConnect.called, 'not called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isObject(res, 'result');
       assert.strictEqual(res.name, `${SIDEBAR}_1`, 'name');
     });
 
@@ -185,10 +178,9 @@ describe('port', () => {
         name: `${SIDEBAR}_1`
       });
       const res = await func(`${SIDEBAR}_1`);
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isFalse(stubConnect.called, 'not called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isObject(res, 'result');
       assert.strictEqual(res.name, `${SIDEBAR}_1`, 'name');
     });
   });
@@ -208,10 +200,10 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func();
-      assert.isFalse(stubCurrentWin.calledOnce, 'not called current windows');
-      assert.isFalse(stubConnect.called, 'not called connect');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -220,10 +212,10 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func(`${SIDEBAR}_1`, true);
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isFalse(stubConnect.called, 'not called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -232,10 +224,10 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func(`${SIDEBAR}_1`);
-      assert.isFalse(stubCurrentWin.calledOnce, 'not called current windows');
-      assert.isFalse(stubConnect.calledOnce, 'not called connect');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 0, 'size');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get port object', async () => {
@@ -244,10 +236,9 @@ describe('port', () => {
       });
       const stubConnect = browser.runtime.connect;
       const res = await func(`${SIDEBAR}_1`, true);
-      assert.isTrue(stubCurrentWin.calledOnce, 'called current windows');
-      assert.isTrue(stubConnect.calledOnce, 'called connect');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
+      assert.strictEqual(stubConnect.calledOnce, true, 'called connect');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isObject(res, 'result');
       assert.strictEqual(res.name, `${SIDEBAR}_1`, 'name');
     });
 
@@ -260,10 +251,9 @@ describe('port', () => {
         name: `${SIDEBAR}_1`
       });
       const res = await func(`${SIDEBAR}_1`);
-      assert.isFalse(stubCurrentWin.calledOnce, 'not called current windows');
-      assert.isFalse(stubConnect.called, 'not called connect');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called window');
+      assert.strictEqual(stubConnect.called, false, 'not called connect');
       assert.strictEqual(mjs.ports.size, 1, 'size');
-      assert.isObject(res, 'result');
       assert.strictEqual(res.name, `${SIDEBAR}_1`, 'name');
     });
   });

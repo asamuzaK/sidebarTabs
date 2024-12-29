@@ -4,9 +4,9 @@
 /* eslint-disable camelcase, import-x/order, regexp/no-super-linear-backtracking */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom, mockPort } from './mocha/setup.js';
 
 /* test */
@@ -202,10 +202,6 @@ describe('main', () => {
     mjs.sidebar.windowId = null;
   });
 
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
-  });
-
   describe('set user options', () => {
     const func = mjs.setUserOpts;
     beforeEach(() => {
@@ -223,8 +219,8 @@ describe('main', () => {
       });
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 1, 'size');
-      assert.isTrue(res.has('foo'), 'key');
-      assert.isTrue(res.get('foo'), 'value');
+      assert.strictEqual(res.has('foo'), true, 'key');
+      assert.strictEqual(res.get('foo'), true, 'value');
     });
 
     it('should set user option', async () => {
@@ -235,17 +231,17 @@ describe('main', () => {
       });
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 1, 'size');
-      assert.isFalse(res.has(TABS_CLOSE_MDLCLICK_PREVENT), 'key');
-      assert.isTrue(res.has(TABS_CLOSE_MDLCLICK), 'key');
-      assert.isFalse(res.get(TABS_CLOSE_MDLCLICK), 'value');
+      assert.strictEqual(res.has(TABS_CLOSE_MDLCLICK_PREVENT), false, 'key');
+      assert.strictEqual(res.has(TABS_CLOSE_MDLCLICK), true, 'key');
+      assert.strictEqual(res.get(TABS_CLOSE_MDLCLICK), false, 'value');
     });
 
     it('should call function', async () => {
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 2, 'size');
-      assert.isTrue(res.has(TABS_CLOSE_MDLCLICK), 'default option');
-      assert.isTrue(res.has(TAB_GROUP_ENABLE), 'default option');
+      assert.strictEqual(res.has(TABS_CLOSE_MDLCLICK), true, 'default option');
+      assert.strictEqual(res.has(TAB_GROUP_ENABLE), true, 'default option');
     });
 
     it('should call function', async () => {
@@ -269,17 +265,17 @@ describe('main', () => {
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 5, 'size');
-      assert.isTrue(res.has(BROWSER_SETTINGS_READ), 'key');
-      assert.isTrue(res.get(BROWSER_SETTINGS_READ), 'value');
-      assert.isTrue(res.has(CUSTOM_ZOOM), 'key');
+      assert.strictEqual(res.has(BROWSER_SETTINGS_READ), true, 'key');
+      assert.strictEqual(res.get(BROWSER_SETTINGS_READ), true, 'value');
+      assert.strictEqual(res.has(CUSTOM_ZOOM), true, 'key');
       assert.strictEqual(res.get(CUSTOM_ZOOM), '1.5', 'value');
-      assert.isTrue(res.has(PINNED_HEIGHT), 'key');
+      assert.strictEqual(res.has(PINNED_HEIGHT), true, 'key');
       assert.strictEqual(res.get(PINNED_HEIGHT), 100, 'value');
-      assert.isTrue(res.has(TABS_CLOSE_MDLCLICK), 'key');
-      assert.isFalse(res.get(TABS_CLOSE_MDLCLICK), 'value');
-      assert.isTrue(res.has(TAB_GROUP_ENABLE), 'key');
-      assert.isFalse(res.get(TAB_GROUP_ENABLE), 'value');
-      assert.isFalse(res.has(FONT_ACTIVE), 'key');
+      assert.strictEqual(res.has(TABS_CLOSE_MDLCLICK), true, 'key');
+      assert.strictEqual(res.get(TABS_CLOSE_MDLCLICK), false, 'value');
+      assert.strictEqual(res.has(TAB_GROUP_ENABLE), true, 'key');
+      assert.strictEqual(res.get(TAB_GROUP_ENABLE), false, 'value');
+      assert.strictEqual(res.has(FONT_ACTIVE), false, 'key');
     });
 
     it('should call function', async () => {
@@ -294,10 +290,10 @@ describe('main', () => {
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 4, 'size');
-      assert.isTrue(res.has(THEME_CUSTOM_DARK), 'key');
-      assert.isObject(res.get(THEME_CUSTOM_DARK), 'value');
-      assert.isTrue(res.has(THEME_CUSTOM_LIGHT), 'key');
-      assert.isObject(res.get(THEME_CUSTOM_LIGHT), 'value');
+      assert.strictEqual(res.has(THEME_CUSTOM_DARK), true, 'key');
+      assert.strictEqual(typeof res.get(THEME_CUSTOM_DARK), 'object', 'value');
+      assert.strictEqual(res.has(THEME_CUSTOM_LIGHT), true, 'key');
+      assert.strictEqual(typeof res.get(THEME_CUSTOM_LIGHT), 'object', 'value');
     });
 
     it('should call function', async () => {
@@ -314,7 +310,7 @@ describe('main', () => {
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 3, 'size');
-      assert.isTrue(res.has(FONT_ACTIVE), 'key');
+      assert.strictEqual(res.has(FONT_ACTIVE), true, 'key');
       assert.strictEqual(res.get(FONT_ACTIVE), 'bold', 'value');
     });
 
@@ -332,7 +328,7 @@ describe('main', () => {
       const res = await func();
       assert.deepEqual(res, mjs.userOpts, 'result');
       assert.strictEqual(res.size, 3, 'size');
-      assert.isTrue(res.has(FONT_ACTIVE), 'key');
+      assert.strictEqual(res.has(FONT_ACTIVE), true, 'key');
       assert.strictEqual(res.get(FONT_ACTIVE), 'normal', 'value');
     });
   });
@@ -359,8 +355,8 @@ describe('main', () => {
       await func();
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getOs.callCount, j + 1, 'getOs called');
-      assert.isFalse(sidebar.incognito, 'incognito');
-      assert.isFalse(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.incognito, false, 'incognito');
+      assert.strictEqual(sidebar.isMac, false, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
 
@@ -382,8 +378,8 @@ describe('main', () => {
       await func();
       assert.strictEqual(getCurrent.callCount, i + 1, 'getCurrent called');
       assert.strictEqual(getOs.callCount, j + 1, 'getOs called');
-      assert.isTrue(sidebar.incognito, 'incognito');
-      assert.isTrue(sidebar.isMac, 'isMac');
+      assert.strictEqual(sidebar.incognito, true, 'incognito');
+      assert.strictEqual(sidebar.isMac, true, 'isMac');
       assert.strictEqual(sidebar.windowId, 1, 'windowId');
     });
   });
@@ -418,7 +414,7 @@ describe('main', () => {
     it('should set null', async () => {
       const { sidebar } = mjs;
       await func('foo');
-      assert.isNull(sidebar.context, 'result');
+      assert.strictEqual(sidebar.context, null, 'result');
     });
   });
 
@@ -449,7 +445,7 @@ describe('main', () => {
       const query = browser.contextualIdentities.query.withArgs({});
       query.rejects('error');
       await func().catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e instanceof Error, true, 'error');
       });
     });
   });
@@ -460,7 +456,7 @@ describe('main', () => {
     it('should set null', async () => {
       const { sidebar } = mjs;
       await func({});
-      assert.isNull(sidebar.lastClosedTab, 'result');
+      assert.strictEqual(sidebar.lastClosedTab, null, 'result');
     });
 
     it('should set null', async () => {
@@ -468,7 +464,7 @@ describe('main', () => {
       await func({
         id: 2
       });
-      assert.isNull(sidebar.lastClosedTab, 'result');
+      assert.strictEqual(sidebar.lastClosedTab, null, 'result');
     });
 
     it('should set value', async () => {
@@ -506,7 +502,7 @@ describe('main', () => {
       getRecentlyClosed.resolves([{}]);
       const res = await func();
       assert.strictEqual(getRecentlyClosed.callCount, i + 1, 'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -518,7 +514,7 @@ describe('main', () => {
       const i = restore.callCount;
       const res = await func();
       assert.strictEqual(restore.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -540,13 +536,13 @@ describe('main', () => {
     it('should set null', async () => {
       const { sidebar } = mjs;
       await func('foo');
-      assert.isNull(sidebar.pinnedTabsWaitingToMove, 'result');
+      assert.strictEqual(sidebar.pinnedTabsWaitingToMove, null, 'result');
     });
 
     it('should set null', async () => {
       const { sidebar } = mjs;
       await func([]);
-      assert.isNull(sidebar.pinnedTabsWaitingToMove, 'result');
+      assert.strictEqual(sidebar.pinnedTabsWaitingToMove, null, 'result');
     });
 
     it('should set value', async () => {
@@ -563,13 +559,13 @@ describe('main', () => {
     it('should set null', async () => {
       const { sidebar } = mjs;
       await func('foo');
-      assert.isNull(sidebar.tabsWaitingToMove, 'result');
+      assert.strictEqual(sidebar.tabsWaitingToMove, null, 'result');
     });
 
     it('should set null', async () => {
       const { sidebar } = mjs;
       await func([]);
-      assert.isNull(sidebar.tabsWaitingToMove, 'result');
+      assert.strictEqual(sidebar.tabsWaitingToMove, null, 'result');
     });
 
     it('should set value', async () => {
@@ -596,7 +592,7 @@ describe('main', () => {
       head.appendChild(elm);
       const res = await func();
       assert.strictEqual(elm.textContent, '', 'content');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should not apply user style', async () => {
@@ -607,7 +603,7 @@ describe('main', () => {
       mjs.userOpts.set(USER_CSS_USE, true);
       const res = await func();
       assert.strictEqual(elm.textContent, '', 'content');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should not apply user style', async () => {
@@ -623,7 +619,7 @@ describe('main', () => {
       });
       const res = await func();
       assert.strictEqual(elm.textContent, '', 'content');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should apply user style', async () => {
@@ -639,7 +635,7 @@ describe('main', () => {
       });
       const res = await func();
       assert.strictEqual(elm.textContent, 'body { color: red; }', 'content');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -654,13 +650,13 @@ describe('main', () => {
 
     it('should get null', async () => {
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
       mjs.userOpts.set(THEME_CUSTOM, true);
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get array', async () => {
@@ -712,7 +708,7 @@ describe('main', () => {
 
     it('should get empty array', async () => {
       const res = await func([{}]);
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not set styles', async () => {
@@ -727,7 +723,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '', 'height');
       assert.strictEqual(elm.style.resize, '', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set height: auto, resize: none', async () => {
@@ -742,7 +738,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'none', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set height: auto, resize: none', async () => {
@@ -759,7 +755,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'none', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set height: auto, resize: none', async () => {
@@ -777,7 +773,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'none', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set height: auto, resize: block', async () => {
@@ -794,7 +790,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, 'auto', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i, 'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set height: 200px, resize: block', async () => {
@@ -811,7 +807,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '200px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should set height: 100px, resize: block', async () => {
@@ -829,7 +825,7 @@ describe('main', () => {
       assert.strictEqual(elm.style.height, '100px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should throw', async () => {
@@ -844,12 +840,12 @@ describe('main', () => {
       await func([{
         target: elm
       }]).catch(e => {
-        assert.instanceOf(e, Error, 'error');
+        assert.strictEqual(e instanceof Error, true, 'error');
         assert.strictEqual(e.message, 'error', 'message');
       });
       const { calledOnce: errCalled } = stubErr;
       stubErr.restore();
-      assert.isTrue(errCalled, 'called');
+      assert.strictEqual(errCalled, true, 'called');
       assert.strictEqual(elm.style.height, '200px', 'height');
       assert.strictEqual(elm.style.resize, 'block', 'resize');
     });
@@ -881,11 +877,11 @@ describe('main', () => {
         }
       };
       const res = await func(evt);
-      assert.isTrue(getData.notCalled, 'not called');
-      assert.isTrue(setData.notCalled, 'not called');
+      assert.strictEqual(getData.called, false, 'not called');
+      assert.strictEqual(setData.called, false, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
         'effect');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -913,11 +909,11 @@ describe('main', () => {
         type: 'foo'
       };
       const res = await func(evt);
-      assert.isTrue(getData.notCalled, 'not called');
-      assert.isTrue(setData.notCalled, 'not called');
+      assert.strictEqual(getData.called, false, 'not called');
+      assert.strictEqual(setData.called, false, 'not called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'uninitialized',
         'effect');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -950,7 +946,7 @@ describe('main', () => {
         index: 0
       });
       const res = await func(evt);
-      assert.isTrue(getData.notCalled, 'not called');
+      assert.strictEqual(getData.called, false, 'not called');
       assert.strictEqual(setData.callCount, 1, 'called');
       assert.strictEqual(evt.dataTransfer.effectAllowed, 'copyMove', 'effect');
       assert.deepEqual(res, [undefined], 'result');
@@ -987,9 +983,9 @@ describe('main', () => {
         type: 'dragover'
       };
       const res = await func(evt);
-      assert.isTrue(getData.calledOnce, 'called');
-      assert.isTrue(setData.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(getData.calledOnce, true, 'called');
+      assert.strictEqual(setData.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1025,9 +1021,9 @@ describe('main', () => {
         type: 'drop'
       };
       const res = await func(evt);
-      assert.isTrue(getData.calledOnce, 'called');
-      assert.isTrue(setData.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(getData.calledOnce, true, 'called');
+      assert.strictEqual(setData.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -1055,7 +1051,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(create.callCount, i, 'not called create');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1080,7 +1076,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(create.callCount, i, 'not called create');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1105,7 +1101,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(create.callCount, i, 'not called create');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1232,7 +1228,7 @@ describe('main', () => {
       create.resolves({});
       const res = await func(evt);
       assert.strictEqual(create.callCount, i, 'not called create');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1281,7 +1277,7 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(update.callCount, i, 'not called update');
       assert.strictEqual(getTab.callCount, j, 'not called get');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1299,10 +1295,10 @@ describe('main', () => {
       const res = await func(elm);
       const { calledOnce: errCalled } = stubErr;
       stubErr.restore();
-      assert.isTrue(errCalled, 'called error');
+      assert.strictEqual(errCalled, true, 'called error');
       assert.strictEqual(update.callCount, i, 'not called update');
       assert.strictEqual(getTab.callCount, j + 1, 'called get');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -1360,7 +1356,7 @@ describe('main', () => {
       const res = await func(elm);
       assert.strictEqual(update.callCount, i, 'not called update');
       assert.strictEqual(getTab.callCount, j + 1, 'called get');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -1380,7 +1376,7 @@ describe('main', () => {
       const res = await func(elm);
       assert.strictEqual(update.callCount, i, 'not called update');
       assert.strictEqual(getTab.callCount, j + 1, 'called get');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -1495,7 +1491,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
-      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -1517,7 +1513,7 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
-      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -1541,7 +1537,7 @@ describe('main', () => {
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
       assert.strictEqual(remove.callCount, j, 'not called update');
-      assert.isFalse(preventDefault.called, 'event not prevented');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -1896,8 +1892,8 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1923,8 +1919,8 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1950,8 +1946,8 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -1977,8 +1973,8 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(remove.callCount, i, 'not called remove');
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.called, 'event not stopped');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -2012,8 +2008,8 @@ describe('main', () => {
       assert.strictEqual(remove.callCount, i + 1, 'called remove');
       assert.strictEqual(getTab.callCount, j, 'not called get');
       assert.strictEqual(update.callCount, k, 'not called remove');
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -2046,8 +2042,8 @@ describe('main', () => {
       assert.strictEqual(remove.callCount, i, 'not called remove');
       assert.strictEqual(getTab.callCount, j, 'not called get');
       assert.strictEqual(update.callCount, k + 1, 'called update');
-      assert.isTrue(preventDefault.calledOnce, 'event prevented');
-      assert.isTrue(stopPropagation.calledOnce, 'event stopped');
+      assert.strictEqual(preventDefault.calledOnce, true, 'event prevented');
+      assert.strictEqual(stopPropagation.calledOnce, true, 'event stopped');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -2080,8 +2076,8 @@ describe('main', () => {
       assert.strictEqual(remove.callCount, i, 'not called remove');
       assert.strictEqual(getTab.callCount, j, 'not called get');
       assert.strictEqual(update.callCount, k, 'not called update');
-      assert.isFalse(preventDefault.called, 'event not prevented');
-      assert.isFalse(stopPropagation.calledOnce, 'event not stopped');
+      assert.strictEqual(preventDefault.called, false, 'event not prevented');
+      assert.strictEqual(stopPropagation.called, false, 'event not stopped');
       assert.deepEqual(res, [], 'result');
     });
   });
@@ -2095,7 +2091,7 @@ describe('main', () => {
       body.appendChild(elm);
       const spy = sinon.spy(elm, 'addEventListener');
       await func(elm);
-      assert.isFalse(spy.called, 'called');
+      assert.strictEqual(spy.called, false, 'called');
       elm.addEventListener.restore();
     });
 
@@ -2106,7 +2102,7 @@ describe('main', () => {
       body.appendChild(elm);
       const spy = sinon.spy(elm, 'addEventListener');
       await func(elm);
-      assert.isTrue(spy.called, 'called');
+      assert.strictEqual(spy.called, true, 'called');
       elm.addEventListener.restore();
     });
   });
@@ -2121,8 +2117,8 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const spy2 = sinon.spy(elm, 'removeEventListener');
       await func(elm, true);
-      assert.isFalse(spy.called, 'called');
-      assert.isFalse(spy2.called, 'called');
+      assert.strictEqual(spy.called, false, 'called');
+      assert.strictEqual(spy2.called, false, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -2135,8 +2131,8 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const spy2 = sinon.spy(elm, 'removeEventListener');
       await func(elm, true);
-      assert.isTrue(spy.called, 'called');
-      assert.isFalse(spy2.called, 'called');
+      assert.strictEqual(spy.called, true, 'called');
+      assert.strictEqual(spy2.called, false, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -2149,8 +2145,8 @@ describe('main', () => {
       const spy = sinon.spy(elm, 'addEventListener');
       const spy2 = sinon.spy(elm, 'removeEventListener');
       await func(elm, false);
-      assert.isFalse(spy.called, 'called');
-      assert.isTrue(spy2.called, 'called');
+      assert.strictEqual(spy.called, false, 'called');
+      assert.strictEqual(spy2.called, true, 'called');
       elm.addEventListener.restore();
       elm.removeEventListener.restore();
     });
@@ -2196,8 +2192,8 @@ describe('main', () => {
       const spy = sinon.spy(span, 'addEventListener');
       const spy2 = sinon.spy(span2, 'addEventListener');
       const res = await func(true);
-      assert.isTrue(spy.called, 'called');
-      assert.isTrue(spy2.called, 'called');
+      assert.strictEqual(spy.called, true, 'called');
+      assert.strictEqual(spy2.called, true, 'called');
       assert.deepEqual(res, [undefined, undefined], 'result');
       span.addEventListener.restore();
       span2.addEventListener.restore();
@@ -2220,8 +2216,8 @@ describe('main', () => {
       const spy = sinon.spy(span, 'removeEventListener');
       const spy2 = sinon.spy(span2, 'removeEventListener');
       const res = await func(false);
-      assert.isTrue(spy.called, 'called');
-      assert.isTrue(spy2.called, 'called');
+      assert.strictEqual(spy.called, true, 'called');
+      assert.strictEqual(spy2.called, true, 'called');
       assert.deepEqual(res, [undefined, undefined], 'result');
       span.removeEventListener.restore();
       span2.removeEventListener.restore();
@@ -2244,8 +2240,8 @@ describe('main', () => {
       const spy = sinon.spy(span, 'removeEventListener');
       const spy2 = sinon.spy(span2, 'removeEventListener');
       const res = await func(null);
-      assert.isTrue(spy.called, 'called');
-      assert.isTrue(spy2.called, 'called');
+      assert.strictEqual(spy.called, true, 'called');
+      assert.strictEqual(spy2.called, true, 'called');
       assert.deepEqual(res, [undefined, undefined], 'result');
       span.removeEventListener.restore();
       span2.removeEventListener.restore();
@@ -2270,7 +2266,7 @@ describe('main', () => {
         };
         const res = await func(evt);
         assert.strictEqual(browser.tabs.warmup.callCount, i, 'not called');
-        assert.isNull(res, 'result');
+        assert.strictEqual(res, null, 'result');
       }
     });
 
@@ -2287,7 +2283,7 @@ describe('main', () => {
         };
         const res = await func(evt);
         assert.strictEqual(browser.tabs.warmup.callCount, i + 1, 'called');
-        assert.isUndefined(res, 'result');
+        assert.strictEqual(res, undefined, 'result');
       }
     });
 
@@ -2305,7 +2301,7 @@ describe('main', () => {
         };
         const res = await func(evt);
         assert.strictEqual(browser.tabs.warmup.callCount, i, 'not called');
-        assert.isNull(res, 'result');
+        assert.strictEqual(res, null, 'result');
       }
     });
   });
@@ -2430,15 +2426,20 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
-      assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isNull(res, 'result');
+      assert.strictEqual(parent.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(heading.classList.contains(ACTIVE), false,
+        'add class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false,
+        'add class');
+      assert.strictEqual(parent2.classList.contains(ACTIVE), true,
+        'remove class');
+      assert.strictEqual(heading2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), true, 'remove class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), true,
+        'remove class');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not set class', async () => {
@@ -2474,15 +2475,20 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
-      assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isNull(res, 'result');
+      assert.strictEqual(parent.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(heading.classList.contains(ACTIVE), false,
+        'add class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false,
+        'add class');
+      assert.strictEqual(parent2.classList.contains(ACTIVE), true,
+        'remove class');
+      assert.strictEqual(heading2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), true, 'remove class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), true,
+        'remove class');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not set class', async () => {
@@ -2518,15 +2524,20 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
-      assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isNull(res, 'result');
+      assert.strictEqual(parent.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(heading.classList.contains(ACTIVE), false,
+        'add class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false,
+        'add class');
+      assert.strictEqual(parent2.classList.contains(ACTIVE), true,
+        'remove class');
+      assert.strictEqual(heading2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), true, 'remove class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), true,
+        'remove class');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not set class', async () => {
@@ -2562,15 +2573,20 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isFalse(parent.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(elm.classList.contains(HIGHLIGHTED), 'add class');
-      assert.isTrue(parent2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(ACTIVE), 'remove class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isNull(res, 'result');
+      assert.strictEqual(parent.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(heading.classList.contains(ACTIVE), false,
+        'add class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), false, 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), false,
+        'add class');
+      assert.strictEqual(parent2.classList.contains(ACTIVE), true,
+        'remove class');
+      assert.strictEqual(heading2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), true, 'remove class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), true,
+        'remove class');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set class', async () => {
@@ -2609,15 +2625,21 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
       assert.strictEqual(elm.dataset.tab, '{}', 'dataset');
-      assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
-      assert.isFalse(heading.classList.contains(ACTIVE), 'add class');
-      assert.isTrue(elm.classList.contains(ACTIVE), 'add class');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'add class');
-      assert.isFalse(parent2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(elm2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(parent.classList.contains(ACTIVE), true, 'add class');
+      assert.strictEqual(heading.classList.contains(ACTIVE), false,
+        'add class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), true, 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true,
+        'add class');
+      assert.strictEqual(parent2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(heading2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), false,
+        'remove class');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should set class', async () => {
@@ -2657,15 +2679,20 @@ describe('main', () => {
       const res = await func(info);
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called');
       assert.strictEqual(elm.dataset.tab, '{}', 'dataset');
-      assert.isTrue(parent.classList.contains(ACTIVE), 'add class');
-      assert.isTrue(heading.classList.contains(ACTIVE), 'add class');
-      assert.isTrue(elm.classList.contains(ACTIVE), 'add class');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'add class');
-      assert.isFalse(parent2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(heading2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(elm2.classList.contains(ACTIVE), 'remove class');
-      assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(parent.classList.contains(ACTIVE), true, 'add class');
+      assert.strictEqual(heading.classList.contains(ACTIVE), true, 'add class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), true, 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true,
+        'add class');
+      assert.strictEqual(parent2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(heading2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(ACTIVE), false,
+        'remove class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), false,
+        'remove class');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -2812,7 +2839,7 @@ describe('main', () => {
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
       assert.strictEqual(browser.i18n.getMessage.callCount, i, 'not called');
-      assert.isNotOk(elm, 'not created');
+      assert.strictEqual(elm, null, 'not created');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -2841,8 +2868,8 @@ describe('main', () => {
         CLASS_TAB_CONTEXT, CLASS_TAB_TOGGLE_ICON, CLASS_TAB_CONTENT,
         CLASS_TAB_TITLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON
       ];
-      assert.isOk(elm, 'created');
-      assert.isTrue(elm.hasAttribute('hidden'), 'hidden');
+      assert.notDeepEqual(elm, null, 'created');
+      assert.strictEqual(elm.hasAttribute('hidden'), true, 'hidden');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       for (const tabItem of tabItems) {
         const item = elm.querySelector(`.${tabItem}`);
@@ -2861,11 +2888,12 @@ describe('main', () => {
             assert.strictEqual(item.textContent, 'foo', `item ${tabItem}`);
             break;
           case CLASS_TAB_AUDIO:
-            assert.isFalse(item.classList.contains(AUDIBLE), `item ${tabItem}`);
+            assert.strictEqual(item.classList.contains(AUDIBLE), false,
+              `item ${tabItem}`);
             break;
           case CLASS_TAB_CLOSE:
             assert.strictEqual(item.title, `${TAB_CLOSE}_tooltip`,
-                               `item ${tabItem}`);
+              `item ${tabItem}`);
             break;
           case CLASS_TAB_CLOSE_ICON:
             assert.strictEqual(item.alt, TAB_CLOSE, `item ${tabItem}`);
@@ -2905,15 +2933,15 @@ describe('main', () => {
         CLASS_TAB_CONTEXT, CLASS_TAB_TOGGLE_ICON, CLASS_TAB_CONTENT,
         CLASS_TAB_TITLE, CLASS_TAB_AUDIO, CLASS_TAB_CLOSE, CLASS_TAB_CLOSE_ICON
       ];
-      assert.isOk(elm, 'created');
-      assert.isFalse(elm.hasAttribute('hidden'), 'hidden');
+      assert.notDeepEqual(elm, null, 'created');
+      assert.strictEqual(elm.hasAttribute('hidden'), false, 'hidden');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       for (const tabItem of tabItems) {
         const item = elm.querySelector(`.${tabItem}`);
         switch (tabItem) {
           case CLASS_TAB_CONTEXT:
             assert.strictEqual(item.title, `${TAB_GROUP_COLLAPSE}_tooltip`,
-                               `item ${tabItem}`);
+              `item ${tabItem}`);
             break;
           case CLASS_TAB_TOGGLE_ICON:
             assert.strictEqual(item.alt, TAB_GROUP_COLLAPSE, `item ${tabItem}`);
@@ -2925,11 +2953,12 @@ describe('main', () => {
             assert.strictEqual(item.textContent, 'foo', `item ${tabItem}`);
             break;
           case CLASS_TAB_AUDIO:
-            assert.isFalse(item.classList.contains(AUDIBLE), `item ${tabItem}`);
+            assert.strictEqual(item.classList.contains(AUDIBLE), false,
+              `item ${tabItem}`);
             break;
           case CLASS_TAB_CLOSE:
             assert.strictEqual(item.title, `${TAB_CLOSE}_tooltip`,
-                               `item ${tabItem}`);
+              `item ${tabItem}`);
             break;
           case CLASS_TAB_CLOSE_ICON:
             assert.strictEqual(item.alt, TAB_CLOSE, `item ${tabItem}`);
@@ -2966,11 +2995,11 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(ACTIVE), 'class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), true, 'class');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined, undefined, undefined
@@ -2997,7 +3026,7 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
@@ -3027,7 +3056,7 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
@@ -3058,7 +3087,7 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
@@ -3093,8 +3122,8 @@ describe('main', () => {
       const { calledOnce: errCalled } = stubErr;
       stubErr.restore();
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isTrue(errCalled, 'called error');
-      assert.isOk(elm, 'created');
+      assert.strictEqual(errCalled, true, 'called error');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
@@ -3129,7 +3158,7 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
@@ -3165,7 +3194,7 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
@@ -3197,15 +3226,16 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm === pinned.firstElementChild, 'position');
-      assert.isFalse(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm, pinned.firstElementChild, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), false,
+        'group');
       assert.strictEqual(pinned.childElementCount, 1, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3239,15 +3269,16 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm === pinned.firstElementChild, 'position');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm, pinned.firstElementChild, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), true,
+        'group');
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3282,15 +3313,16 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm === pinned.firstElementChild, 'position');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm, pinned.firstElementChild, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), true,
+        'group');
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3324,15 +3356,16 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm === pinned.lastElementChild, 'position');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm, pinned.lastElementChild, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), true,
+        'group');
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3371,16 +3404,17 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm.previousElementSibling === child, 'position');
-      assert.isTrue(elm.nextElementSibling === child2, 'position');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm.previousElementSibling, child, 'position');
+      assert.deepEqual(elm.nextElementSibling, child2, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), true,
+        'group');
       assert.strictEqual(pinned.childElementCount, 3, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3419,16 +3453,17 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm.previousElementSibling === child2, 'position');
-      assert.isTrue(pinned.lastElementChild === elm, 'position');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm.previousElementSibling, child2, 'position');
+      assert.deepEqual(pinned.lastElementChild, elm, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), true,
+        'group');
       assert.strictEqual(pinned.childElementCount, 3, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3471,15 +3506,16 @@ describe('main', () => {
       mjs.sidebar.windowId = 1;
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.classList.contains(PINNED), 'pinned');
-      assert.isTrue(elm.draggable, 'draggable');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(elm === pinned.lastElementChild, 'position');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_GROUP), 'group');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'pinned');
+      assert.strictEqual(elm.draggable, true, 'draggable');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.deepEqual(elm, pinned.lastElementChild, 'position');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_GROUP), true,
+        'group');
       assert.strictEqual(pinned.childElementCount, 2, 'count');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3517,11 +3553,12 @@ describe('main', () => {
         emulate: true
       });
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isFalse(elm.parentNode.hasAttribute('hidden'), 'hidden attr');
+      assert.strictEqual(elm.parentNode.hasAttribute('hidden'), false,
+        'hidden attr');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined
@@ -3558,11 +3595,12 @@ describe('main', () => {
         attached: true
       });
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isFalse(elm.parentNode.hasAttribute('hidden'), 'hidden attr');
+      assert.strictEqual(elm.parentNode.hasAttribute('hidden'), false,
+        'hidden attr');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined
@@ -3613,12 +3651,12 @@ describe('main', () => {
         attached: true
       });
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3670,12 +3708,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode !== parent, 'parent');
-      assert.isTrue(elm.parentNode !== parent2, 'parent');
+      assert.strictEqual(elm.parentNode === parent, false, 'parent');
+      assert.strictEqual(elm.parentNode === parent2, false, 'parent');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined
@@ -3725,12 +3763,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3781,12 +3819,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode.nextElementSibling === parent, 'parent');
-      assert.isTrue(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode.nextElementSibling, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), true,
         'collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3883,12 +3921,12 @@ describe('main', () => {
       }).resolves([2]);
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isTrue(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), true,
         'collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -3944,11 +3982,11 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
+      assert.deepEqual(elm.parentNode, parent, 'parent');
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -4003,11 +4041,11 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
+      assert.deepEqual(elm.parentNode, parent, 'parent');
       assert.strictEqual(browser.tabs.move.callCount, j, 'not called move');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -4062,12 +4100,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -4122,12 +4160,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -4177,12 +4215,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -4236,12 +4274,12 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 6, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isTrue(elm.parentNode === parent, 'parent');
-      assert.isFalse(parent.classList.contains(CLASS_TAB_COLLAPSED),
+      assert.deepEqual(elm.parentNode, parent, 'parent');
+      assert.strictEqual(parent.classList.contains(CLASS_TAB_COLLAPSED), false,
         'not collapsed');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
@@ -4289,11 +4327,11 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isFalse(elm.parentNode === parent, 'parent');
+      assert.strictEqual(elm.parentNode === parent, false, 'parent');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined
@@ -4344,11 +4382,11 @@ describe('main', () => {
       });
       const res = await func(tabsTab);
       const elm = document.querySelector('[data-tab-id="1"]');
-      assert.isOk(elm, 'created');
+      assert.notDeepEqual(elm, null, 'created');
       assert.strictEqual(browser.i18n.getMessage.callCount, i + 4, 'called');
       assert.strictEqual(elm.dataset.tabId, '1', 'id');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tab');
-      assert.isFalse(elm.parentNode === parent, 'parent');
+      assert.strictEqual(elm.parentNode === parent, false, 'parent');
       assert.deepEqual(res, [
         undefined, undefined, undefined, undefined, undefined, undefined,
         undefined, undefined
@@ -4482,7 +4520,7 @@ describe('main', () => {
       });
       const res = await func(browser.tabs.TAB_ID_NONE, info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -4498,7 +4536,7 @@ describe('main', () => {
       });
       const res = await func(1, info);
       assert.strictEqual(browser.tabs.get.callCount, i, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -4564,7 +4602,7 @@ describe('main', () => {
       body.appendChild(elm);
       mjs.sidebar.windowId = 1;
       await func(1, info);
-      assert.isNull(elm.parentNode, 'removed');
+      assert.strictEqual(elm.parentNode, null, 'removed');
     });
   });
 
@@ -4631,8 +4669,9 @@ describe('main', () => {
         windowId: 1
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
-      assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true, 'class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), false,
+        'remove class');
       assert.deepEqual(res, [
         [
           [undefined, undefined]
@@ -4684,9 +4723,11 @@ describe('main', () => {
         windowId: 1
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 3, 'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
-      assert.isFalse(elm2.classList.contains(HIGHLIGHTED), 'remove class');
-      assert.isTrue(elm3.classList.contains(HIGHLIGHTED), 'add class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true, 'class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), false,
+        'remove class');
+      assert.strictEqual(elm3.classList.contains(HIGHLIGHTED), true,
+        'add class');
       assert.deepEqual(res, [
         [
           [undefined, undefined],
@@ -4733,9 +4774,9 @@ describe('main', () => {
         windowId: 1
       });
       assert.strictEqual(browser.tabs.get.callCount, i + 2, 'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'class');
-      assert.isFalse(elm3.classList.contains(HIGHLIGHTED), 'class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true, 'class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), true, 'class');
+      assert.strictEqual(elm3.classList.contains(HIGHLIGHTED), false, 'class');
       assert.deepEqual(res, [
         [
           [undefined, undefined],
@@ -4819,7 +4860,7 @@ describe('main', () => {
         fromIndex: 0,
         toIndex: 1
       });
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null if tab not found', async () => {
@@ -4829,7 +4870,7 @@ describe('main', () => {
         toIndex: 1,
         windowId: 1
       });
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -4848,9 +4889,9 @@ describe('main', () => {
         toIndex: 0,
         windowId: 1
       });
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should remove value', async () => {
@@ -4891,8 +4932,8 @@ describe('main', () => {
         index: 0,
         pinned: false
       }), 'tabsTab');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -4935,9 +4976,9 @@ describe('main', () => {
         pinned: false,
         url: 'https://example.com'
       }), 'tabsTab');
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not move', async () => {
@@ -4978,9 +5019,9 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '2'], 'not move');
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set value', async () => {
@@ -5027,15 +5068,16 @@ describe('main', () => {
       });
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
-      assert.deepEqual(mjs.sidebar.tabsWaitingToMove, [undefined, {
+      // eslint-disable-next-line no-sparse-arrays
+      assert.deepEqual(mjs.sidebar.tabsWaitingToMove, [, {
         index: 1,
         tabId: 1,
         toIndex: 2
       }], 'wait');
       assert.deepEqual(items, ['1', '2', '3'], 'not move');
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should set value', async () => {
@@ -5077,15 +5119,16 @@ describe('main', () => {
       });
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
-      assert.deepEqual(mjs.sidebar.pinnedTabsWaitingToMove, [undefined, {
+      // eslint-disable-next-line no-sparse-arrays
+      assert.deepEqual(mjs.sidebar.pinnedTabsWaitingToMove, [, {
         index: 1,
         tabId: 1,
         toIndex: 2
       }], 'wait');
       assert.deepEqual(items, ['1', '2', '3'], 'not move');
-      assert.isFalse(stubCurrentWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(stubCurrentWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     // pinned
@@ -5139,8 +5182,8 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5194,8 +5237,8 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5254,9 +5297,9 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['3', '1', '2'], 'move');
-      assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(mjs.sidebar.tabsWaitingToMove, null, 'wait');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5317,10 +5360,10 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
-      assert.isTrue(elm.parentNode === elm3.parentNode, 'group');
+      assert.deepEqual(elm.parentNode, elm3.parentNode, 'group');
       assert.strictEqual(elm3.dataset.group, '', 'value');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5380,10 +5423,10 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '3'], 'move');
-      assert.isTrue(elm.parentNode === elm2.parentNode, 'group');
+      assert.deepEqual(elm.parentNode, elm2.parentNode, 'group');
       assert.strictEqual(elm.dataset.group, '', 'value');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5458,12 +5501,12 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '4', '3'], 'move');
-      assert.isTrue(elm.parentNode === elm2.parentNode, 'group');
-      assert.isTrue(elm4.parentNode === elm2.parentNode, 'group');
+      assert.deepEqual(elm.parentNode, elm2.parentNode, 'group');
+      assert.deepEqual(elm4.parentNode, elm2.parentNode, 'group');
       assert.strictEqual(elm4.dataset.group, '', 'value');
-      assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(mjs.sidebar.tabsWaitingToMove, null, 'wait');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5524,9 +5567,9 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '3', '2'], 'move');
-      assert.isTrue(elm.parentNode === elm3.parentNode, 'parent');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(elm.parentNode, elm3.parentNode, 'parent');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5586,9 +5629,9 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '3'], 'move');
-      assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(elm.parentNode, elm2.parentNode, 'parent');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5663,11 +5706,11 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '4', '3'], 'move');
-      assert.isTrue(elm.parentNode === elm2.parentNode, 'parent');
-      assert.isTrue(elm4.parentNode === elm2.parentNode, 'parent');
-      assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.deepEqual(elm.parentNode, elm2.parentNode, 'parent');
+      assert.deepEqual(elm4.parentNode, elm2.parentNode, 'parent');
+      assert.strictEqual(mjs.sidebar.tabsWaitingToMove, null, 'wait');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5740,10 +5783,10 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['1', '2', '4', '3'], 'move');
-      assert.isTrue(elm4.parentNode !== elm2.parentNode, 'parent');
-      assert.isTrue(elm4.parentNode !== elm3.parentNode, 'parent');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(elm4.parentNode === elm2.parentNode, false, 'parent');
+      assert.strictEqual(elm4.parentNode === elm3.parentNode, false, 'parent');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5816,10 +5859,10 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '3', '1', '4'], 'move');
-      assert.isTrue(elm.parentNode !== elm3.parentNode, 'parent');
-      assert.isTrue(elm.parentNode !== elm4.parentNode, 'parent');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(elm.parentNode === elm3.parentNode, false, 'parent');
+      assert.strictEqual(elm.parentNode === elm4.parentNode, false, 'parent');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
 
@@ -5897,12 +5940,12 @@ describe('main', () => {
       const items = Array.from(body.querySelectorAll(`.${TAB}`))
         .map(obj => obj.dataset.tabId);
       assert.deepEqual(items, ['2', '1', '4', '3'], 'move');
-      assert.isTrue(elm.parentNode !== elm2.parentNode, 'parent');
-      assert.isTrue(elm.parentNode !== elm4.parentNode, 'parent');
-      assert.isTrue(elm4.parentNode !== elm3.parentNode, 'parent');
-      assert.isNull(mjs.sidebar.tabsWaitingToMove, 'wait');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(elm.parentNode === elm2.parentNode, false, 'parent');
+      assert.strictEqual(elm.parentNode === elm4.parentNode, false, 'parent');
+      assert.strictEqual(elm4.parentNode === elm3.parentNode, false, 'parent');
+      assert.strictEqual(mjs.sidebar.tabsWaitingToMove, null, 'wait');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, {}, 'result');
     });
   });
@@ -5937,7 +5980,7 @@ describe('main', () => {
         isWindowClosing: false,
         windowId: 2
       });
-      assert.isTrue(elm.parentNode === body, 'not removed');
+      assert.deepEqual(elm.parentNode, body, 'not removed');
     });
 
     it('should not remove', async () => {
@@ -5950,7 +5993,7 @@ describe('main', () => {
         isWindowClosing: true,
         windowId: 1
       });
-      assert.isTrue(elm.parentNode === body, 'not removed');
+      assert.deepEqual(elm.parentNode, body, 'not removed');
     });
 
     it('should not remove', async () => {
@@ -5963,7 +6006,7 @@ describe('main', () => {
         isWindowClosing: false,
         windowId: 1
       });
-      assert.isTrue(elm.parentNode === body, 'not removed');
+      assert.deepEqual(elm.parentNode, body, 'not removed');
     });
 
     it('should not remove', async () => {
@@ -5976,7 +6019,7 @@ describe('main', () => {
         isWindowClosing: false,
         windowId: 1
       });
-      assert.isFalse(elm.parentNode === body, 'removed');
+      assert.strictEqual(elm.parentNode === body, false, 'removed');
       assert.strictEqual(body.childElementCount, 0, 'child count');
     });
   });
@@ -6167,10 +6210,10 @@ describe('main', () => {
         bottom: 200
       });
       const res = await func(1, info, tabsTab);
-      assert.isFalse(elm.classList.contains(DISCARDED), 'class');
+      assert.strictEqual(elm.classList.contains(DISCARDED), false, 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6206,11 +6249,11 @@ describe('main', () => {
       };
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
-      assert.isTrue(elm.hasAttribute('hidden'), 'hidden');
-      assert.isTrue(elm.classList.contains(DISCARDED), 'class');
+      assert.strictEqual(elm.hasAttribute('hidden'), true, 'hidden');
+      assert.strictEqual(elm.classList.contains(DISCARDED), true, 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6247,11 +6290,11 @@ describe('main', () => {
       elm.setAttribute('hidden', 'hidden');
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
-      assert.isFalse(elm.hasAttribute('hidden'), 'hidden');
-      assert.isFalse(elm.classList.contains(DISCARDED), 'class');
+      assert.strictEqual(elm.hasAttribute('hidden'), false, 'hidden');
+      assert.strictEqual(elm.classList.contains(DISCARDED), false, 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6287,10 +6330,10 @@ describe('main', () => {
       });
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
-      assert.isTrue(elm.classList.contains(DISCARDED), 'class');
+      assert.strictEqual(elm.classList.contains(DISCARDED), true, 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6327,10 +6370,10 @@ describe('main', () => {
       elm.classList.add(DISCARDED);
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
-      assert.isFalse(elm.classList.contains(DISCARDED), 'class');
+      assert.strictEqual(elm.classList.contains(DISCARDED), false, 'class');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6362,8 +6405,8 @@ describe('main', () => {
       };
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
-      assert.isTrue(stubWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(stubWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6395,8 +6438,8 @@ describe('main', () => {
       };
       mjs.sidebar.windowId = 1;
       const res = await func(1, info, tabsTab);
-      assert.isFalse(stubWin.called, 'not called');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(stubWin.called, false, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6441,11 +6484,11 @@ describe('main', () => {
         bottom: 200
       });
       const res = await func(1, info, tabsTab);
-      assert.isFalse(elm.classList.contains(ACTIVE), 'class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), false, 'class');
       assert.strictEqual(browser.tabs.query.callCount, i, 'not called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j, 'not called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isFalse(port.postMessage.called, 'not called');
+      assert.strictEqual(port.postMessage.called, false, 'not called');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -6497,11 +6540,11 @@ describe('main', () => {
       });
       elm.dataset.tab = JSON.stringify(tabsTab);
       const res = await func(1, info, tabsTab);
-      assert.isTrue(elm.classList.contains(ACTIVE), 'class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), true, 'class');
       assert.strictEqual(browser.tabs.query.callCount, i + 2, 'called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, [undefined, {}], 'result');
     });
 
@@ -6559,11 +6602,11 @@ describe('main', () => {
       elm.parentNode.appendChild(tab);
       elm.parentNode.classList.add(CLASS_TAB_GROUP);
       const res = await func(1, info, tabsTab);
-      assert.isTrue(elm.classList.contains(ACTIVE), 'class');
+      assert.strictEqual(elm.classList.contains(ACTIVE), true, 'class');
       assert.strictEqual(browser.tabs.query.callCount, i + 2, 'called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 2, 'called');
       assert.deepEqual(JSON.parse(elm.dataset.tab), tabsTab, 'tabsTab');
-      assert.isTrue(port.postMessage.calledTwice, 'called');
+      assert.strictEqual(port.postMessage.callCount, 2, 'called');
       assert.deepEqual(res, [{}, undefined, {}], 'result');
     });
 
@@ -6601,10 +6644,10 @@ describe('main', () => {
       });
       const pinned = document.getElementById(PINNED);
       const res = await func(1, info, tabsTab);
-      assert.isTrue(elm.classList.contains(PINNED), 'class');
-      assert.isTrue(elm.parentNode === pinned, 'parent');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(elm.classList.contains(PINNED), true, 'class');
+      assert.deepEqual(elm.parentNode, pinned, 'parent');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, [undefined, {}], 'result');
     });
 
@@ -6649,10 +6692,10 @@ describe('main', () => {
       });
       const pinned = document.getElementById(PINNED);
       const res = await func(1, info, tabsTab);
-      assert.isFalse(elm.classList.contains(PINNED), 'class');
-      assert.isTrue(elm.parentNode === pinned.nextElementSibling, 'parent');
-      assert.isTrue(stubCurrentWin.calledOnce, 'called');
-      assert.isTrue(port.postMessage.calledOnce, 'called');
+      assert.strictEqual(elm.classList.contains(PINNED), false, 'class');
+      assert.deepEqual(elm.parentNode, pinned.nextElementSibling, 'parent');
+      assert.strictEqual(stubCurrentWin.calledOnce, true, 'called');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -6684,7 +6727,7 @@ describe('main', () => {
       });
       const audio = elm.querySelector('.tab-audio');
       const res = await func(1, info, tabsTab);
-      assert.isTrue(audio.classList.contains(AUDIBLE), 'audible');
+      assert.strictEqual(audio.classList.contains(AUDIBLE), true, 'audible');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
 
@@ -6716,7 +6759,7 @@ describe('main', () => {
       });
       const audio = elm.querySelector('.tab-audio');
       const res = await func(1, info, tabsTab);
-      assert.isFalse(audio.classList.contains(AUDIBLE), 'audible');
+      assert.strictEqual(audio.classList.contains(AUDIBLE), false, 'audible');
       assert.deepEqual(res, [undefined, undefined], 'result');
     });
   });
@@ -8797,7 +8840,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called tabs get');
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -8886,7 +8929,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -8975,7 +9018,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9248,7 +9291,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 2, 'called move');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9323,7 +9366,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9398,7 +9441,7 @@ describe('main', () => {
       assert.strictEqual(browser.tabs.move.callCount, j + 1, 'called move');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9426,7 +9469,7 @@ describe('main', () => {
         menuItemId: TAB_GROUP_LABEL_SHOW
       };
       const res = await func(info);
-      assert.isTrue(heading.hidden, 'hidden');
+      assert.strictEqual(heading.hidden, true, 'hidden');
       assert.deepEqual(res, [[undefined]], 'result');
     });
 
@@ -9455,7 +9498,7 @@ describe('main', () => {
         menuItemId: TAB_GROUP_LABEL_SHOW
       };
       const res = await func(info);
-      assert.isFalse(heading.hidden, 'hidden');
+      assert.strictEqual(heading.hidden, false, 'hidden');
       assert.deepEqual(res, [[undefined, child]], 'result');
     });
 
@@ -9535,7 +9578,7 @@ describe('main', () => {
         'called get message');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9617,7 +9660,7 @@ describe('main', () => {
         'called get message');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9699,7 +9742,7 @@ describe('main', () => {
         'called get message');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9780,7 +9823,7 @@ describe('main', () => {
         'called get message');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -9869,7 +9912,7 @@ describe('main', () => {
         'called get message');
       assert.strictEqual(browser.windows.getCurrent.callCount, k + 2,
         'called current window');
-      assert.isTrue(port.postMessage.calledOnce, 'called msg');
+      assert.strictEqual(port.postMessage.calledOnce, true, 'called msg');
       assert.deepEqual(res, [{}], 'result');
     });
 
@@ -10117,7 +10160,7 @@ describe('main', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'instance');
+        assert.strictEqual(e instanceof TypeError, true, 'instance');
         assert.strictEqual(e.message, 'Expected String but got Undefined.',
           'message');
       });
@@ -11547,7 +11590,7 @@ describe('main', () => {
       browser.tabs.query.resolves([]);
       browser.menus.update.resolves(undefined);
       const res = await func(elm);
-      assert.isNull(mjs.sidebar.duplicatedTabs, 'duped tabs');
+      assert.strictEqual(mjs.sidebar.duplicatedTabs, null, 'duped tabs');
       assert.strictEqual(browser.tabs.get.callCount, i + 1, 'called get');
       assert.strictEqual(browser.menus.update.callCount, j + 49,
         'called update');
@@ -12062,7 +12105,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -12086,7 +12129,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -12117,7 +12160,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -12148,7 +12191,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -12181,7 +12224,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.strictEqual(browser.theme.getCurrent.callCount, k + 1, 'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -12214,7 +12257,7 @@ describe('main', () => {
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
       assert.strictEqual(browser.theme.getCurrent.callCount, k, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -12243,7 +12286,7 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(browser.runtime.sendMessage.callCount, i,
         'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -12262,7 +12305,7 @@ describe('main', () => {
       const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -12282,7 +12325,7 @@ describe('main', () => {
       const res = await func(true);
       assert.strictEqual(browser.runtime.sendMessage.callCount, i + 1,
         'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 
@@ -12769,7 +12812,7 @@ describe('main', () => {
         tabId: 1,
         context: 'tab'
       }).callCount, i, 'not called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -12792,7 +12835,7 @@ describe('main', () => {
         tabId: 1,
         context: 'tab'
       }).callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should call function', async () => {
@@ -12817,7 +12860,7 @@ describe('main', () => {
         tabId: 1,
         context: 'tab'
       }).callCount, i + 1, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -12847,9 +12890,9 @@ describe('main', () => {
         stopPropagation: sinon.stub()
       };
       const res = func(evt);
-      assert.isTrue(evt.preventDefault.notCalled, 'not called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(evt.preventDefault.called, false, 'not called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not prevent default', () => {
@@ -12865,9 +12908,9 @@ describe('main', () => {
         stopPropagation: sinon.stub()
       };
       const res = func(evt);
-      assert.isTrue(evt.preventDefault.notCalled, 'not called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(evt.preventDefault.called, false, 'not called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not prevent default', async () => {
@@ -12883,9 +12926,9 @@ describe('main', () => {
         stopPropagation: sinon.stub()
       };
       const res = await func(evt);
-      assert.isTrue(evt.preventDefault.notCalled, 'not called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(evt.preventDefault.called, false, 'not called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not prevent default', async () => {
@@ -12902,9 +12945,9 @@ describe('main', () => {
         stopPropagation: sinon.stub()
       };
       const res = await func(evt);
-      assert.isTrue(evt.preventDefault.notCalled, 'not called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(evt.preventDefault.called, false, 'not called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should prevent default and call function', async () => {
@@ -12936,10 +12979,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
-      assert.isTrue(evt.preventDefault.calledOnce, 'called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(evt.preventDefault.calledOnce, true, 'called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(browser.tabs.query.calledOnce, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should prevent default and call function', async () => {
@@ -12972,10 +13015,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
-      assert.isTrue(evt.preventDefault.calledOnce, 'called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(evt.preventDefault.calledOnce, true, 'called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(browser.tabs.query.calledOnce, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should prevent default and call function', async () => {
@@ -13007,10 +13050,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
-      assert.isTrue(evt.preventDefault.calledOnce, 'called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(evt.preventDefault.calledOnce, true, 'called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(browser.tabs.query.calledOnce, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should prevent default and call function', async () => {
@@ -13043,10 +13086,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
-      assert.isTrue(evt.preventDefault.calledOnce, 'called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(evt.preventDefault.calledOnce, true, 'called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(browser.tabs.query.calledOnce, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
 
     it('should not call function', async () => {
@@ -13079,10 +13122,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i, 'not called');
-      assert.isTrue(evt.preventDefault.notCalled, 'not called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isTrue(browser.tabs.query.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(evt.preventDefault.called, false, 'not called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(browser.tabs.query.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -13115,10 +13158,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i, 'not called');
-      assert.isTrue(evt.preventDefault.notCalled, 'not called');
-      assert.isTrue(evt.stopPropagation.notCalled, 'not called');
-      assert.isTrue(browser.tabs.query.notCalled, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(evt.preventDefault.called, false, 'not called');
+      assert.strictEqual(evt.stopPropagation.called, false, 'not called');
+      assert.strictEqual(browser.tabs.query.called, false, 'not called');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -13151,10 +13194,10 @@ describe('main', () => {
       };
       const res = await func(evt);
       assert.strictEqual(stubActivate.callCount, i + 1, 'called');
-      assert.isTrue(evt.preventDefault.calledOnce, 'called');
-      assert.isTrue(evt.stopPropagation.calledOnce, 'called');
-      assert.isTrue(browser.tabs.query.calledOnce, 'called');
-      assert.isUndefined(res, 'result');
+      assert.strictEqual(evt.preventDefault.calledOnce, true, 'called');
+      assert.strictEqual(evt.stopPropagation.calledOnce, true, 'called');
+      assert.strictEqual(browser.tabs.query.calledOnce, true, 'called');
+      assert.strictEqual(res, undefined, 'result');
     });
   });
 
@@ -13334,7 +13377,7 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(port.postMessage.callCount, i, 'not called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j, 'not called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -13355,7 +13398,7 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(port.postMessage.callCount, i, 'not called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -13376,7 +13419,7 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(port.postMessage.callCount, i, 'not called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should not call function', async () => {
@@ -13397,7 +13440,7 @@ describe('main', () => {
       const res = await func();
       assert.strictEqual(port.postMessage.callCount, i, 'not called');
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1, 'called');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -13510,14 +13553,14 @@ describe('main', () => {
       const body = document.querySelector('body');
       const res =
         await func(THEME_UI_SCROLLBAR_NARROW, { checked: true }, true);
-      assert.isTrue(body.classList.contains(CLASS_NARROW), 'set');
+      assert.strictEqual(body.classList.contains(CLASS_NARROW), true, 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
     it('should set variable', async () => {
       const body = document.querySelector('body');
       const res = await func(THEME_UI_TAB_COMPACT, { checked: true }, true);
-      assert.isTrue(body.classList.contains(CLASS_COMPACT), 'set');
+      assert.strictEqual(body.classList.contains(CLASS_COMPACT), true, 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -13525,7 +13568,8 @@ describe('main', () => {
       const body = document.querySelector('body');
       const res =
         await func(THEME_UI_TAB_GROUP_NARROW, { checked: true }, true);
-      assert.isTrue(body.classList.contains(CLASS_NARROW_TAB_GROUP), 'set');
+      assert.strictEqual(body.classList.contains(CLASS_NARROW_TAB_GROUP),
+        true, 'set');
       assert.deepEqual(res, [undefined], 'result');
     });
 
@@ -13564,7 +13608,7 @@ describe('main', () => {
       const i = browser.storage.local.get.callCount;
       const res = await func(USER_CSS_USE, { checked: true });
       assert.strictEqual(browser.storage.local.get.callCount, i, 'not called');
-      assert.isTrue(mjs.userOpts.get(USER_CSS_USE), 'value');
+      assert.strictEqual(mjs.userOpts.get(USER_CSS_USE), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
@@ -13578,7 +13622,7 @@ describe('main', () => {
       const i = browser.storage.local.get.callCount;
       const res = await func(USER_CSS_USE, { checked: false }, true);
       assert.strictEqual(browser.storage.local.get.callCount, i, 'not called');
-      assert.isFalse(mjs.userOpts.get(USER_CSS_USE), 'value');
+      assert.strictEqual(mjs.userOpts.get(USER_CSS_USE), false, 'value');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
@@ -13591,7 +13635,7 @@ describe('main', () => {
       const i = browser.storage.local.get.callCount;
       const res = await func(USER_CSS_USE, { checked: true }, true);
       assert.strictEqual(browser.storage.local.get.callCount, i + 1, 'called');
-      assert.isTrue(mjs.userOpts.get(USER_CSS_USE), 'value');
+      assert.strictEqual(mjs.userOpts.get(USER_CSS_USE), true, 'value');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
@@ -13604,7 +13648,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
-      assert.isTrue(mjs.userOpts.get(FRAME_COLOR_USE), 'opts');
+      assert.strictEqual(mjs.userOpts.get(FRAME_COLOR_USE), true, 'opts');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -13635,7 +13679,7 @@ describe('main', () => {
       }).callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.isTrue(mjs.userOpts.get(FRAME_COLOR_USE), 'opts');
+      assert.strictEqual(mjs.userOpts.get(FRAME_COLOR_USE), true, 'opts');
       assert.deepEqual(res, [null], 'result');
     });
 
@@ -13656,7 +13700,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
-      assert.isFalse(mjs.userOpts.get(THEME_AUTO), 'map');
+      assert.strictEqual(mjs.userOpts.get(THEME_AUTO), false, 'map');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -13677,7 +13721,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
-      assert.isUndefined(mjs.userOpts.get(THEME_AUTO), 'map');
+      assert.strictEqual(mjs.userOpts.get(THEME_AUTO), undefined, 'map');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -13708,7 +13752,7 @@ describe('main', () => {
       }).callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.isTrue(mjs.userOpts.get(THEME_AUTO), 'map');
+      assert.strictEqual(mjs.userOpts.get(THEME_AUTO), true, 'map');
       assert.deepEqual(res, [null], 'result');
     });
 
@@ -13734,7 +13778,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
-      assert.isFalse(mjs.userOpts.get(THEME_CUSTOM), 'map');
+      assert.strictEqual(mjs.userOpts.get(THEME_CUSTOM), false, 'map');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -13760,7 +13804,7 @@ describe('main', () => {
       assert.strictEqual(browser.storage.local.set.callCount, i, 'not called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j,
         'not called');
-      assert.isUndefined(mjs.userOpts.get(THEME_CUSTOM), 'map');
+      assert.strictEqual(mjs.userOpts.get(THEME_CUSTOM), undefined, 'map');
       assert.deepEqual(res, [], 'result');
     });
 
@@ -13791,7 +13835,7 @@ describe('main', () => {
       }).callCount, i + 1, 'called');
       assert.strictEqual(browser.runtime.sendMessage.callCount, j + 1,
         'called');
-      assert.isUndefined(mjs.userOpts.get(THEME_AUTO), 'map');
+      assert.strictEqual(mjs.userOpts.get(THEME_AUTO), undefined, 'map');
       assert.deepEqual(res, [null], 'result');
     });
 
@@ -13882,7 +13926,8 @@ describe('main', () => {
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
       const res = await func(BROWSER_SETTINGS_READ, { checked: false });
-      assert.isFalse(mjs.userOpts.get(BROWSER_SETTINGS_READ), 'value');
+      assert.strictEqual(mjs.userOpts.get(BROWSER_SETTINGS_READ), false,
+        'value');
       assert.strictEqual(
         browser.browserSettings.closeTabsByDoubleClick.get.callCount,
         i, 'not called'
@@ -13896,7 +13941,8 @@ describe('main', () => {
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
       const res = await func(BROWSER_SETTINGS_READ, { checked: true });
-      assert.isTrue(mjs.userOpts.get(BROWSER_SETTINGS_READ), 'value');
+      assert.strictEqual(mjs.userOpts.get(BROWSER_SETTINGS_READ), true,
+        'value');
       assert.strictEqual(
         browser.browserSettings.closeTabsByDoubleClick.get.callCount,
         i, 'not called'
@@ -13910,7 +13956,8 @@ describe('main', () => {
       const j = browser.storage.local.set.callCount;
       browser.browserSettings.closeTabsByDoubleClick.get.returns({});
       const res = await func(BROWSER_SETTINGS_READ, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(BROWSER_SETTINGS_READ), 'value');
+      assert.strictEqual(mjs.userOpts.get(BROWSER_SETTINGS_READ), true,
+        'value');
       assert.strictEqual(
         browser.browserSettings.closeTabsByDoubleClick.get.callCount,
         i + 1, 'called'
@@ -13933,7 +13980,7 @@ describe('main', () => {
         checked: false,
         value: 'bold'
       }, true);
-      assert.isFalse(mjs.userOpts.has(FONT_ACTIVE), 'value');
+      assert.strictEqual(mjs.userOpts.has(FONT_ACTIVE), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
@@ -13960,7 +14007,7 @@ describe('main', () => {
         checked: false,
         value: 'normal'
       }, true);
-      assert.isFalse(mjs.userOpts.has(FONT_ACTIVE), 'value');
+      assert.strictEqual(mjs.userOpts.has(FONT_ACTIVE), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
@@ -13981,63 +14028,63 @@ describe('main', () => {
 
     it('should set variable', async () => {
       const res = await func(TABS_CLOSE_DBLCLICK, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TABS_CLOSE_DBLCLICK), 'value');
+      assert.strictEqual(mjs.userOpts.get(TABS_CLOSE_DBLCLICK), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TABS_CLOSE_DBLCLICK, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TABS_CLOSE_DBLCLICK), 'value');
+      assert.strictEqual(mjs.userOpts.get(TABS_CLOSE_DBLCLICK), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TABS_CLOSE_DBLCLICK, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(TABS_CLOSE_DBLCLICK), 'value');
+      assert.strictEqual(mjs.userOpts.get(TABS_CLOSE_DBLCLICK), true, 'value');
       assert.deepEqual(res, [mjs.userOpts, []], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TABS_CLOSE_MDLCLICK_PREVENT, { checked: true });
-      assert.isFalse(mjs.userOpts.get(TABS_CLOSE_MDLCLICK), 'value');
+      assert.strictEqual(mjs.userOpts.get(TABS_CLOSE_MDLCLICK), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TABS_CLOSE_MDLCLICK_PREVENT, { checked: false });
-      assert.isTrue(mjs.userOpts.get(TABS_CLOSE_MDLCLICK), 'value');
+      assert.strictEqual(mjs.userOpts.get(TABS_CLOSE_MDLCLICK), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res =
         await func(TABS_CLOSE_MDLCLICK_PREVENT, { checked: true }, true);
-      assert.isFalse(mjs.userOpts.get(TABS_CLOSE_MDLCLICK), 'value');
+      assert.strictEqual(mjs.userOpts.get(TABS_CLOSE_MDLCLICK), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TAB_GROUP_ENABLE, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_ENABLE), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_ENABLE), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TAB_GROUP_ENABLE, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TAB_GROUP_ENABLE), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_ENABLE), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TAB_GROUP_ENABLE, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_ENABLE), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_ENABLE), true, 'value');
       assert.deepEqual(res, [mjs.userOpts, []], 'result');
     });
 
     it('should set variable', async () => {
       const res =
         await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
@@ -14045,15 +14092,16 @@ describe('main', () => {
       mjs.userOpts.set(TAB_GROUP_EXPAND_COLLAPSE_OTHER, true);
       const res =
         await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER),
-        'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER),
+        false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res =
         await func(TAB_GROUP_EXPAND_COLLAPSE_OTHER, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_COLLAPSE_OTHER),
+        true, 'value');
       assert.deepEqual(res, [mjs.userOpts, []], 'result');
     });
 
@@ -14064,8 +14112,10 @@ describe('main', () => {
       body.appendChild(elm);
       const res =
         await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED), 'value');
-      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED),
+        true, 'value');
+      assert.strictEqual(elm.classList.contains(CLASS_COLLAPSE_AUTO), false,
+        'class');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
@@ -14076,9 +14126,10 @@ describe('main', () => {
       body.appendChild(elm);
       const res =
         await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED),
-        'value');
-      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED),
+        false, 'value');
+      assert.strictEqual(elm.classList.contains(CLASS_COLLAPSE_AUTO), true,
+        'class');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
@@ -14089,8 +14140,10 @@ describe('main', () => {
       body.appendChild(elm);
       const res =
         await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED), 'value');
-      assert.isFalse(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED),
+        true, 'value');
+      assert.strictEqual(elm.classList.contains(CLASS_COLLAPSE_AUTO), false,
+        'class');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
@@ -14101,67 +14154,72 @@ describe('main', () => {
       body.appendChild(elm);
       const res =
         await func(TAB_GROUP_EXPAND_EXCLUDE_PINNED, { checked: false }, true);
-      assert.isFalse(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED),
-        'value');
-      assert.isTrue(elm.classList.contains(CLASS_COLLAPSE_AUTO));
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_EXPAND_EXCLUDE_PINNED),
+        false, 'value');
+      assert.strictEqual(elm.classList.contains(CLASS_COLLAPSE_AUTO), true,
+        'class');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TAB_GROUP_NEW_TAB_AT_END, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), true,
+        'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       mjs.userOpts.set(TAB_GROUP_NEW_TAB_AT_END, true);
       const res = await func(TAB_GROUP_NEW_TAB_AT_END, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), false,
+        'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TAB_SWITCH_SCROLL, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TAB_SWITCH_SCROLL), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_SWITCH_SCROLL), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       mjs.userOpts.set(TAB_SWITCH_SCROLL, true);
       const res = await func(TAB_SWITCH_SCROLL, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TAB_SWITCH_SCROLL), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_SWITCH_SCROLL), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(TAB_SWITCH_SCROLL_ALWAYS, { checked: true });
-      assert.isTrue(mjs.userOpts.get(TAB_SWITCH_SCROLL_ALWAYS), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_SWITCH_SCROLL_ALWAYS), true,
+        'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       mjs.userOpts.set(TAB_SWITCH_SCROLL_ALWAYS, true);
       const res = await func(TAB_SWITCH_SCROLL_ALWAYS, { checked: false });
-      assert.isFalse(mjs.userOpts.get(TAB_SWITCH_SCROLL_ALWAYS), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_SWITCH_SCROLL_ALWAYS), false,
+        'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(SCROLL_DIR_INVERT, { checked: true });
-      assert.isTrue(mjs.userOpts.get(SCROLL_DIR_INVERT), 'value');
+      assert.strictEqual(mjs.userOpts.get(SCROLL_DIR_INVERT), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       mjs.userOpts.set(SCROLL_DIR_INVERT, true);
       const res = await func(SCROLL_DIR_INVERT, { checked: false });
-      assert.isFalse(mjs.userOpts.get(SCROLL_DIR_INVERT), 'value');
+      assert.strictEqual(mjs.userOpts.get(SCROLL_DIR_INVERT), false, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
     it('should set variable', async () => {
       const res = await func(SCROLL_DIR_INVERT, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(SCROLL_DIR_INVERT), 'value');
+      assert.strictEqual(mjs.userOpts.get(SCROLL_DIR_INVERT), true, 'value');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
@@ -14174,8 +14232,10 @@ describe('main', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(NEW_TAB_SEPARATOR_SHOW, { checked: true });
-      assert.isTrue(mjs.userOpts.get(NEW_TAB_SEPARATOR_SHOW), 'value');
-      assert.isFalse(elm.classList.contains(CLASS_SEPARATOR_SHOW), 'class');
+      assert.strictEqual(mjs.userOpts.get(NEW_TAB_SEPARATOR_SHOW), true,
+        'value');
+      assert.strictEqual(elm.classList.contains(CLASS_SEPARATOR_SHOW), false,
+        'class');
       assert.deepEqual(res, [mjs.userOpts], 'result');
     });
 
@@ -14188,8 +14248,10 @@ describe('main', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(NEW_TAB_SEPARATOR_SHOW, { checked: true }, true);
-      assert.isTrue(mjs.userOpts.get(NEW_TAB_SEPARATOR_SHOW), 'value');
-      assert.isTrue(elm.classList.contains(CLASS_SEPARATOR_SHOW), 'class');
+      assert.strictEqual(mjs.userOpts.get(NEW_TAB_SEPARATOR_SHOW), true,
+        'value');
+      assert.strictEqual(elm.classList.contains(CLASS_SEPARATOR_SHOW), true,
+        'class');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
 
@@ -14202,8 +14264,10 @@ describe('main', () => {
       parent.appendChild(elm);
       body.appendChild(parent);
       const res = await func(NEW_TAB_SEPARATOR_SHOW, { checked: false }, true);
-      assert.isFalse(mjs.userOpts.get(NEW_TAB_SEPARATOR_SHOW), 'value');
-      assert.isFalse(elm.classList.contains(CLASS_SEPARATOR_SHOW), 'class');
+      assert.strictEqual(mjs.userOpts.get(NEW_TAB_SEPARATOR_SHOW), false,
+        'value');
+      assert.strictEqual(elm.classList.contains(CLASS_SEPARATOR_SHOW), false,
+        'class');
       assert.deepEqual(res, [mjs.userOpts, undefined], 'result');
     });
   });
@@ -14239,7 +14303,8 @@ describe('main', () => {
         }
       });
       assert.strictEqual(mjs.userOpts.size, 1, 'size');
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), true,
+        'value');
       assert.deepEqual(res, [[mjs.userOpts]], 'result');
     });
 
@@ -14250,7 +14315,8 @@ describe('main', () => {
         }
       }, 'local');
       assert.strictEqual(mjs.userOpts.size, 1, 'size');
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), true,
+        'value');
       assert.deepEqual(res, [[mjs.userOpts]], 'result');
     });
 
@@ -14263,7 +14329,8 @@ describe('main', () => {
         }
       });
       assert.strictEqual(mjs.userOpts.size, 1, 'size');
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), true,
+        'value');
       assert.deepEqual(res, [[mjs.userOpts]], 'result');
     });
 
@@ -14276,9 +14343,12 @@ describe('main', () => {
         }
       }, 'local', true);
       assert.strictEqual(mjs.userOpts.size, 3, 'size');
-      assert.isTrue(mjs.userOpts.has(TABS_CLOSE_MDLCLICK), 'default option');
-      assert.isTrue(mjs.userOpts.has(TAB_GROUP_ENABLE), 'default option');
-      assert.isTrue(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), 'value');
+      assert.strictEqual(mjs.userOpts.has(TABS_CLOSE_MDLCLICK), true,
+        'default option');
+      assert.strictEqual(mjs.userOpts.has(TAB_GROUP_ENABLE), true,
+        'default option');
+      assert.strictEqual(mjs.userOpts.get(TAB_GROUP_NEW_TAB_AT_END), true,
+        'value');
       assert.deepEqual(res, [[mjs.userOpts]], 'result');
     });
   });
@@ -14312,9 +14382,9 @@ describe('main', () => {
       ]);
       await func();
       assert.strictEqual(browser.tabs.query.callCount, i + 1, 'called');
-      assert.isTrue(elm.classList.contains(HIGHLIGHTED), 'class');
-      assert.isTrue(elm2.classList.contains(HIGHLIGHTED), 'class');
-      assert.isFalse(elm3.classList.contains(HIGHLIGHTED), 'class');
+      assert.strictEqual(elm.classList.contains(HIGHLIGHTED), true, 'class');
+      assert.strictEqual(elm2.classList.contains(HIGHLIGHTED), true, 'class');
+      assert.strictEqual(elm3.classList.contains(HIGHLIGHTED), false, 'class');
     });
   });
 
@@ -14894,8 +14964,9 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(pinned.childElementCount, 4, 'pinned');
-      assert.isFalse(pinned.classList.contains(CLASS_TAB_COLLAPSED), 'false');
-      assert.isTrue(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_COLLAPSED),
+        false, 'class');
+      assert.strictEqual(pinned.querySelector(`.${CLASS_HEADING}`).hidden, true,
         'heading');
       assert.strictEqual(sect1.childElementCount, 1, 'empty section');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
@@ -15061,9 +15132,10 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(pinned.childElementCount, 4, 'pinned');
-      assert.isFalse(pinned.classList.contains(CLASS_TAB_COLLAPSED), 'false');
-      assert.isFalse(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
-        'heading');
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
+        false, 'heading');
       assert.strictEqual(sect1.childElementCount, 1, 'empty section');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
       assert.strictEqual(sect3.childElementCount, 1, 'empty section');
@@ -15228,8 +15300,9 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(pinned.childElementCount, 4, 'pinned');
-      assert.isTrue(pinned.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(pinned.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(pinned.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(pinned.querySelector(`.${CLASS_HEADING}`).hidden, true,
         'heading');
       assert.strictEqual(sect1.childElementCount, 1, 'empty section');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
@@ -15398,14 +15471,16 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(sect1.childElementCount, 4, 'section');
-      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect1.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(sect1.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
       assert.strictEqual(sect3.childElementCount, 1, 'empty section');
       assert.strictEqual(sect4.childElementCount, 3, 'section');
-      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect4.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(sect4.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect5.childElementCount, 1, 'empty section');
       assert.deepEqual(res, [undefined, undefined, undefined], 'result');
@@ -15563,14 +15638,16 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(sect1.childElementCount, 3, 'section');
-      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect1.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(sect1.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
       assert.strictEqual(sect3.childElementCount, 2, 'empty section');
       assert.strictEqual(sect4.childElementCount, 3, 'section');
-      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect4.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(sect4.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect5.childElementCount, 1, 'empty section');
       assert.deepEqual(res, [undefined, undefined], 'result');
@@ -15715,13 +15792,15 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(sect1.childElementCount, 3, 'section');
-      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect1.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(sect1.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
       assert.strictEqual(sect4.childElementCount, 3, 'section');
-      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect4.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(sect4.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect5.childElementCount, 1, 'empty section');
       assert.deepEqual(res, [undefined, undefined], 'result');
@@ -15888,8 +15967,9 @@ describe('main', () => {
       assert.strictEqual(sect1.childElementCount, 2, 'section');
       assert.strictEqual(sect3.childElementCount, 2, 'section');
       assert.strictEqual(sect4.childElementCount, 3, 'section');
-      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect4.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(sect4.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect5.childElementCount, 1, 'empty section');
       assert.strictEqual(sect2.childElementCount, 2, 'section');
@@ -16055,13 +16135,15 @@ describe('main', () => {
       assert.strictEqual(browser.windows.getCurrent.callCount, j + 1,
         'called windows get current');
       assert.strictEqual(sect4.childElementCount, 3, 'section');
-      assert.isTrue(sect4.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isTrue(sect4.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect4.classList.contains(CLASS_TAB_COLLAPSED), true,
+        'class');
+      assert.strictEqual(sect4.querySelector(`.${CLASS_HEADING}`).hidden, true,
         'heading');
       assert.strictEqual(sect5.childElementCount, 1, 'empty section');
       assert.strictEqual(sect1.childElementCount, 4, 'section');
-      assert.isFalse(sect1.classList.contains(CLASS_TAB_COLLAPSED), 'class');
-      assert.isFalse(sect1.querySelector(`.${CLASS_HEADING}`).hidden,
+      assert.strictEqual(sect1.classList.contains(CLASS_TAB_COLLAPSED), false,
+        'class');
+      assert.strictEqual(sect1.querySelector(`.${CLASS_HEADING}`).hidden, false,
         'heading');
       assert.strictEqual(sect2.childElementCount, 1, 'empty section');
       assert.strictEqual(sect3.childElementCount, 1, 'empty section');
@@ -16158,7 +16240,7 @@ describe('main', () => {
 
     it('should throw', async () => {
       await func().catch(e => {
-        assert.instanceOf(e, TypeError, 'instance');
+        assert.strictEqual(e instanceof TypeError, true, 'instance');
         assert.strictEqual(e.message, 'Expected Array but got Undefined.',
           'message');
       });
@@ -16355,7 +16437,8 @@ describe('main', () => {
       pinned.id = PINNED;
       body.appendChild(pinned);
       await func();
-      assert.instanceOf(mjs.sidebar.pinnedObserver, ResizeObserver, 'observer');
+      assert.strictEqual(mjs.sidebar.pinnedObserver instanceof ResizeObserver,
+        true, 'observer');
     });
   });
 
@@ -16447,9 +16530,9 @@ describe('main', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       const res = await func();
-      assert.isTrue(browser.sessions.getRecentlyClosed.called,
+      assert.strictEqual(browser.sessions.getRecentlyClosed.called, true,
         'called session');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should call function', async () => {
@@ -16504,9 +16587,9 @@ describe('main', () => {
       main.appendChild(newTab);
       body.appendChild(main);
       const res = await func();
-      assert.isTrue(browser.sessions.getRecentlyClosed.called,
+      assert.strictEqual(browser.sessions.getRecentlyClosed.called, true,
         'called session');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
   });
 });

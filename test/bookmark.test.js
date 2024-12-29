@@ -4,9 +4,9 @@
 /* eslint-disable import-x/order */
 
 /* api */
-import sinon from 'sinon';
-import { assert } from 'chai';
+import { strict as assert } from 'node:assert';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import sinon from 'sinon';
 import { browser, createJsdom } from './mocha/setup.js';
 
 /* test */
@@ -42,10 +42,6 @@ describe('bookmark', () => {
       delete global[key];
     }
     browser._sandbox.reset();
-  });
-
-  it('should get browser object', () => {
-    assert.isObject(browser, 'browser');
   });
 
   describe('create folder map', () => {
@@ -96,7 +92,7 @@ describe('bookmark', () => {
         type: 'folder'
       };
       await func(tree);
-      assert.isTrue(folderMap.has('foo'), 'key');
+      assert.strictEqual(folderMap.has('foo'), true, 'key');
     });
 
     it('should get map', async () => {
@@ -129,16 +125,16 @@ describe('bookmark', () => {
       };
       await func(tree);
       assert.strictEqual(folderMap.size, 3, 'size');
-      assert.isTrue(folderMap.has('foo'), 'key');
+      assert.strictEqual(folderMap.has('foo'), true, 'key');
       assert.deepEqual(Array.from(folderMap.get('foo').children), [
         'bar',
         'baz'
       ], 'set');
-      assert.isTrue(folderMap.has('bar'), 'key');
+      assert.strictEqual(folderMap.has('bar'), true, 'key');
       assert.deepEqual(Array.from(folderMap.get('bar').children), [], 'set');
-      assert.isTrue(folderMap.has('baz'), 'key');
-      assert.isFalse(folderMap.has('qux'), 'key');
-      assert.isFalse(folderMap.has('quux'), 'key');
+      assert.strictEqual(folderMap.has('baz'), true, 'key');
+      assert.strictEqual(folderMap.has('qux'), false, 'key');
+      assert.strictEqual(folderMap.has('quux'), false, 'key');
     });
 
     it('should get map', async () => {
@@ -171,18 +167,18 @@ describe('bookmark', () => {
       };
       await func(tree, true);
       assert.strictEqual(folderMap.size, 4, 'size');
-      assert.isTrue(folderMap.has('foo'), 'key');
+      assert.strictEqual(folderMap.has('foo'), true, 'key');
       assert.deepEqual(Array.from(folderMap.get('foo').children), [
         'bar',
         'baz'
       ], 'set');
-      assert.isTrue(folderMap.has('bar'), 'key');
+      assert.strictEqual(folderMap.has('bar'), true, 'key');
       assert.deepEqual(Array.from(folderMap.get('bar').children), [
         'quux'
       ], 'set');
-      assert.isTrue(folderMap.has('baz'), 'key');
-      assert.isFalse(folderMap.has('qux'), 'key');
-      assert.isTrue(folderMap.has('quux'), 'key');
+      assert.strictEqual(folderMap.has('baz'), true, 'key');
+      assert.strictEqual(folderMap.has('qux'), false, 'key');
+      assert.strictEqual(folderMap.has('quux'), true, 'key');
     });
   });
 
@@ -225,18 +221,18 @@ describe('bookmark', () => {
         type: 'folder'
       }]);
       const res = await func();
-      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res instanceof Map, true, 'map');
       assert.strictEqual(res.size, 3, 'size');
-      assert.isTrue(res.has('foo'), 'key');
+      assert.strictEqual(res.has('foo'), true, 'key');
       assert.deepEqual(Array.from(res.get('foo').children), [
         'bar',
         'baz'
       ], 'set');
-      assert.isTrue(res.has('bar'), 'key');
+      assert.strictEqual(res.has('bar'), true, 'key');
       assert.deepEqual(Array.from(res.get('bar').children), [], 'set');
-      assert.isTrue(res.has('baz'), 'key');
-      assert.isFalse(res.has('qux'), 'key');
-      assert.isFalse(res.has('quux'), 'key');
+      assert.strictEqual(res.has('baz'), true, 'key');
+      assert.strictEqual(res.has('qux'), false, 'key');
+      assert.strictEqual(res.has('quux'), false, 'key');
     });
 
     it('should get map', async () => {
@@ -267,18 +263,18 @@ describe('bookmark', () => {
         type: 'folder'
       }]);
       const res = await func(true);
-      assert.instanceOf(res, Map, 'map');
+      assert.strictEqual(res instanceof Map, true, 'map');
       assert.strictEqual(res.size, 4, 'size');
-      assert.isTrue(res.has('foo'), 'key');
+      assert.strictEqual(res.has('foo'), true, 'key');
       assert.deepEqual(Array.from(res.get('foo').children), [
         'bar',
         'baz'
       ], 'set');
-      assert.isTrue(res.has('bar'), 'key');
+      assert.strictEqual(res.has('bar'), true, 'key');
       assert.deepEqual(Array.from(res.get('bar').children), ['quux'], 'set');
-      assert.isTrue(res.has('baz'), 'key');
-      assert.isFalse(res.has('qux'), 'key');
-      assert.isTrue(res.has('quux'), 'key');
+      assert.strictEqual(res.has('baz'), true, 'key');
+      assert.strictEqual(res.has('qux'), false, 'key');
+      assert.strictEqual(res.has('quux'), true, 'key');
     });
   });
 
@@ -296,7 +292,7 @@ describe('bookmark', () => {
     it('should get null', async () => {
       browser.storage.local.get.withArgs(BOOKMARK_LOCATION).resolves(undefined);
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -306,7 +302,7 @@ describe('bookmark', () => {
         }
       });
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -324,7 +320,7 @@ describe('bookmark', () => {
       const res = await func();
       stub.restore();
       assert.strictEqual(msg, 'error', 'log');
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get null', async () => {
@@ -337,7 +333,7 @@ describe('bookmark', () => {
         foo: 'bar'
       }]);
       const res = await func();
-      assert.isNull(res, 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get result', async () => {
