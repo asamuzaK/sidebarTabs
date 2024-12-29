@@ -374,6 +374,15 @@ declare const _default: {
                 enabled: boolean;
                 visible: boolean;
             };
+            selectTabGroup: {
+                id: string;
+                title: string;
+                type: string;
+                contexts: string[];
+                viewTypes: string[];
+                enabled: boolean;
+                visible: boolean;
+            };
             groupSelectedTabs: {
                 id: string;
                 title: string;

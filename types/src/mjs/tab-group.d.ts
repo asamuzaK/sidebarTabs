@@ -1,6 +1,6 @@
 export function restoreTabContainers(): Promise<void>;
-export function collapseTabGroup(elm?: object, activate?: boolean): Promise<void>;
-export function expandTabGroup(elm?: object): Promise<void>;
+export function collapseTabGroup(elm?: object, activate?: boolean): void;
+export function expandTabGroup(elm?: object): void;
 export function toggleTabGrouping(): Promise<any[]>;
 export function toggleTabGroupCollapsedState(elm?: object, activate?: boolean): Promise<any[]>;
 export function toggleTabGroupsCollapsedState(elm?: object): Promise<any[]>;
@@ -14,11 +14,17 @@ export function expandActivatedCollapsedTab(): Promise<Promise<any> | null>;
 export function finishGroupLabelEdit(evt: object): Promise<any>;
 export function startGroupLabelEdit(node: object): Promise<object>;
 export function enableGroupLabelEdit(evt: object): Promise<any>;
-export function addListenersToHeadingItems(node: object, multi?: boolean): Promise<void>;
+export function triggerDndHandler(evt: object): Function | null;
+export function addListenersToHeadingItems(node: object, opt?: {
+    isMac?: boolean;
+    multi?: boolean;
+    windowId?: number;
+}): Promise<void>;
 export function removeListenersFromHeadingItems(node: object): Promise<void>;
-export function toggleTabGroupHeadingState(node: object, multi?: boolean): Promise<any[]>;
+export function toggleTabGroupHeadingState(node: object, opt?: object): Promise<any[]>;
 export function toggleAutoCollapsePinnedTabs(auto?: boolean): Promise<void>;
 export function bookmarkTabGroup(node: object): Promise<Promise<any> | null>;
+export function selectTabGroup(node: object): Promise<Promise<any> | null>;
 export function closeTabGroup(node: object): Promise<Promise<any> | null>;
 export function detachTabsFromGroup(nodes: any[], windowId?: number): Promise<any> | null;
 export function groupSelectedTabs(windowId?: number): Promise<any> | null;
