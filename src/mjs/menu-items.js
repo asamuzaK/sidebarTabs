@@ -436,7 +436,7 @@ export default {
       },
       [TAB_GROUP_DOMAIN]: {
         id: TAB_GROUP_DOMAIN,
-        title: i18n.getMessage(`${TAB_GROUP_DOMAIN}_menu`, '(&M)'),
+        title: i18n.getMessage(`${TAB_GROUP_DOMAIN}_menu`, '(&D)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -445,7 +445,7 @@ export default {
       },
       [TAB_GROUP_DETACH]: {
         id: TAB_GROUP_DETACH,
-        title: i18n.getMessage(`${TAB_GROUP_DETACH}_menu`, '(&D)'),
+        title: i18n.getMessage(`${TAB_GROUP_DETACH}_menu`, '(&R)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],
@@ -454,7 +454,7 @@ export default {
       },
       [TAB_GROUP_DETACH_TABS]: {
         id: TAB_GROUP_DETACH_TABS,
-        title: i18n.getMessage(`${TAB_GROUP_DETACH_TABS}_menu`, '(&D)'),
+        title: i18n.getMessage(`${TAB_GROUP_DETACH_TABS}_menu`, '(&R)'),
         type: 'normal',
         contexts: ['tab'],
         viewTypes: ['sidebar'],

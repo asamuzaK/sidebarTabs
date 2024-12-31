@@ -198,20 +198,20 @@
     "message": "Dark Theme"
   },
   "detachTabFromGroup_menu": {
-    "message": "&Detach Tab from Group",
+    "message": "Detach Tab from G&roup",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&R)"
       }
     }
   },
   "detachTabsFromGroup_menu": {
-    "message": "&Detach Tabs from Group",
+    "message": "Detach Tabs from G&roup",
     "placeholders": {
       "key": {
         "content": "$1",
-        "example": "(&D)"
+        "example": "(&R)"
       }
     }
   },
@@ -267,7 +267,7 @@
     }
   },
   "groupSameDomainTabs_menu": {
-    "message": "Group Same Do&main Tabs",
+    "message": "Group Same &Domain Tabs",
     "placeholders": {
       "key": {
         "content": "$1",
