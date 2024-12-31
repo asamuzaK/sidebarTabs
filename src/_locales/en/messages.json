@@ -198,7 +198,7 @@
     "message": "Dark Theme"
   },
   "detachTabFromGroup_menu": {
-    "message": "Detach Tab from G&roup",
+    "message": "Detach Tab f&rom Group",
     "placeholders": {
       "key": {
         "content": "$1",
@@ -207,7 +207,7 @@
     }
   },
   "detachTabsFromGroup_menu": {
-    "message": "Detach Tabs from G&roup",
+    "message": "Detach Tabs f&rom Group",
     "placeholders": {
       "key": {
         "content": "$1",
