@@ -2794,6 +2794,7 @@ describe('tab-group', () => {
       child.classList.add(CLASS_HEADING_LABEL);
       button.classList.add(CLASS_HEADING_LABEL_EDIT);
       elm.classList.add(CLASS_HEADING);
+      child.textContent = 'foo';
       elm.appendChild(context);
       elm.appendChild(child);
       elm.appendChild(button);
@@ -2808,6 +2809,8 @@ describe('tab-group', () => {
         'called context removeEventListener');
       assert.strictEqual(msg.callCount, i + 1, 'called msg');
       assert.strictEqual(button.title, 'foo', 'title');
+      assert.strictEqual(elm.hidden, true, 'hidden');
+      assert.strictEqual(child.textContent, '', 'label');
       assert.deepEqual(res, [undefined], 'result');
     });
 

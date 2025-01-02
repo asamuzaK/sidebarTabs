@@ -548,6 +548,10 @@ export const toggleTabGroupHeadingState = async (node, opt = {}) => {
         startGroupLabelEdit(heading)
       );
     } else {
+      const label = heading.querySelector(`.${CLASS_HEADING_LABEL}`);
+      if (label) {
+        label.textContent = '';
+      }
       heading.hidden = true;
       func.push(removeListenersFromHeadingItems(heading));
     }
