@@ -13,20 +13,20 @@
   },
   "type": "module",
   "dependencies": {
-    "@asamuzakjp/css-color": "^2.7.1",
+    "@asamuzakjp/css-color": "^2.8.2",
     "dompurify": "^3.2.3",
-    "tldts-experimental": "^6.1.70",
+    "tldts-experimental": "^6.1.71",
     "url-sanitizer": "^2.0.6",
-    "webext-schema": "^5.5.1"
+    "webext-schema": "^5.5.2"
   },
   "devDependencies": {
     "@asamuzakjp/dom-selector": "^6.3.7",
     "@types/firefox-webext-browser": "^120.0.4",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.5",
     "addons-linter": "^7.7.0",
     "c8": "^10.1.3",
     "camelize": "^1.0.1",
-    "commander": "^12.1.0",
+    "commander": "^13.0.0",
     "copyfiles": "^2.4.1",
     "decamelize": "^6.0.0",
     "eslint": "^9.17.0",
@@ -36,15 +36,15 @@
     "eslint-plugin-regexp": "^2.7.0",
     "eslint-plugin-unicorn": "^56.0.1",
     "globals": "^15.14.0",
-    "html-validate": "^9.1.0",
-    "jsdom": "^25.0.1",
+    "html-validate": "^9.1.2",
+    "jsdom": "^26.0.0",
     "mocha": "^11.0.1",
     "neostandard": "^0.12.0",
     "npm-run-all2": "^7.0.2",
     "sinon": "^19.0.2",
     "stylelint": "^16.12.0",
     "stylelint-config-standard": "^36.0.1",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "undici": "^7.2.0"
   },
   "scripts": {
@@ -71,5 +71,5 @@
     "update-dark": "node index update --dir=dark -i",
     "update-light": "node index update --dir=light -i"
   },
-  "version": "15.1.4"
+  "version": "16.0.0"
 }

@@ -9,22 +9,22 @@
     "url": "https://github.com/asamuzaK/cssColor.git"
   },
   "type": "module",
-  "version": "2.7.1",
+  "version": "2.8.2",
   "origins": [
     {
       "file": "LICENSE",
-      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v2.7.1/LICENSE",
-      "cdn": "https://unpkg.com/@asamuzakjp/css-color@2.7.1/LICENSE"
+      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v2.8.2/LICENSE",
+      "cdn": "https://unpkg.com/@asamuzakjp/css-color@2.8.2/LICENSE"
     },
     {
       "file": "css-color.min.js",
-      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v2.7.1/dist/esm/css-color.min.js",
-      "cdn": "https://unpkg.com/@asamuzakjp/css-color@2.7.1/dist/esm/css-color.min.js"
+      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v2.8.2/dist/esm/css-color.min.js",
+      "cdn": "https://unpkg.com/@asamuzakjp/css-color@2.8.2/dist/esm/css-color.min.js"
     },
     {
       "file": "css-color.min.js.map",
-      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v2.7.1/dist/esm/css-color.min.js.map",
-      "cdn": "https://unpkg.com/@asamuzakjp/css-color@2.7.1/dist/esm/css-color.min.js.map"
+      "raw": "https://raw.githubusercontent.com/asamuzaK/cssColor/v2.8.2/dist/esm/css-color.min.js.map",
+      "cdn": "https://unpkg.com/@asamuzakjp/css-color@2.8.2/dist/esm/css-color.min.js.map"
     }
   ]
 }
