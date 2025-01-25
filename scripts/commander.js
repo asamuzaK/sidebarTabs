@@ -169,11 +169,11 @@ export const extractLibraries = async (cmdOpts = {}) => {
         },
         {
           file: 'css-color.min.js',
-          path: 'dist/esm/css-color.min.js'
+          path: 'dist/browser/css-color.min.js'
         },
         {
           file: 'css-color.min.js.map',
-          path: 'dist/esm/css-color.min.js.map'
+          path: 'dist/browser/css-color.min.js.map'
         }
       ]
     },
