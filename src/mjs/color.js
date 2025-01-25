@@ -36,12 +36,14 @@ export const convertRgbToHex = rgb => {
 export const getColorInHex = (value, opt = {}) => {
   const { alpha, currentColor, property } = opt;
   const format = alpha ? 'hexAlpha' : 'hex';
-  const res = resolve(value, {
+  const hex = resolve(value, {
     currentColor,
-    format,
-    key: property
+    format
   });
-  return res;
+  if (property) {
+    return [property, hex];
+  }
+  return hex;
 };
 
 /**
