@@ -21,7 +21,7 @@ describe('color', () => {
 
     it('should get value', () => {
       const res = func([]);
-      assert.strictEqual(res, '#00000000', 'result');
+      assert.strictEqual(res, null, 'result');
     });
 
     it('should get value', () => {
