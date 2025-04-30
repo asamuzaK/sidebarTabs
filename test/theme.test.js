@@ -938,7 +938,7 @@ describe('theme', () => {
       assert.notDeepEqual(res, mjs.themeMap[THEME_LIGHT], 'result');
       for (const [key, value] of items) {
         if (key === CUSTOM_BORDER_FIELD_ACTIVE) {
-          assert.strictEqual(value, '#f0f0f4', `${key}`);
+          assert.strictEqual(value, '#eaeaed', `${key}`);
         } else {
           assert.strictEqual(value, obj[key], `${key}`);
         }
@@ -1499,9 +1499,9 @@ describe('theme', () => {
       const items = Object.entries(res);
       for (const [key, value] of items) {
         if (key === CUSTOM_BG || key === CUSTOM_BG_DISCARDED) {
-          assert.strictEqual(value, '#f0f0f4', `${key}`);
+          assert.strictEqual(value, '#eaeaed', `${key}`);
         } else if (key === CUSTOM_BG_HOVER) {
-          assert.strictEqual(value, '#e6d9dd', `${key}`);
+          assert.strictEqual(value, '#e0d4d7', `${key}`);
         } else if (key === CUSTOM_BG_HOVER_SHADOW) {
           assert.strictEqual(value, '#8a0a0d1a', `${key}`);
         } else if (key === CUSTOM_COLOR || key === CUSTOM_COLOR_DISCARDED ||
@@ -1932,7 +1932,7 @@ describe('theme', () => {
         themeId: THEME_LIGHT_ID,
         useFrame: true
       });
-      assert.strictEqual(res[CUSTOM_BG], '#f0f0f4', `${CUSTOM_BG}`);
+      assert.strictEqual(res[CUSTOM_BG], '#eaeaed', `${CUSTOM_BG}`);
       assert.strictEqual(res[CUSTOM_COLOR], '#15141a', `${CUSTOM_COLOR}`);
     });
 
@@ -2188,7 +2188,7 @@ describe('theme', () => {
       assert.strictEqual(typeof mjs.currentTheme.get(THEME_CURRENT), 'object',
         'key value');
       assert.strictEqual(mjs.currentTheme.get(THEME_CURRENT)[CUSTOM_BG],
-        '#f0f0f4', 'value');
+        '#eaeaed', 'value');
     });
 
     it('should set theme', async () => {
@@ -3637,7 +3637,7 @@ describe('theme', () => {
     it('should set system light theme', async () => {
       browser.theme.getCurrent.withArgs(1).resolves({
         colors: {
-          frame: '#f0f0f4',
+          frame: '#eaeaed',
           tab_background_text: 'rgb(21,20,26)'
         }
       });
