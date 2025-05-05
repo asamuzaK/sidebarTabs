@@ -46,6 +46,9 @@
     "typescript": "^5.8.3",
     "undici": "^7.8.0"
   },
+  "overrides": {
+    "express": "^4.21.2"
+  },
   "scripts": {
     "include": "npm-run-all -s include:*",
     "include:browser": "copyfiles --up=3 --verbose node_modules/webext-schema/modules/browser.js src/mjs",
