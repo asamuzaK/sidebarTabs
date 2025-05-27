@@ -26,13 +26,13 @@ export const menuItemMap = new Map();
 export const updateContextMenu = async (menuItemId, data) => {
   const func = [];
   if (isString(menuItemId) && isObjectNotEmpty(data) &&
-      (Object.prototype.hasOwnProperty.call(data, 'contexts') ||
-       Object.prototype.hasOwnProperty.call(data, 'enabled') ||
-       Object.prototype.hasOwnProperty.call(data, 'icons') ||
-       Object.prototype.hasOwnProperty.call(data, 'parentId') ||
-       Object.prototype.hasOwnProperty.call(data, 'title') ||
-       Object.prototype.hasOwnProperty.call(data, 'viewTypes') ||
-       Object.prototype.hasOwnProperty.call(data, 'visible'))) {
+      (Object.hasOwn(data, 'contexts') ||
+       Object.hasOwn(data, 'enabled') ||
+       Object.hasOwn(data, 'icons') ||
+       Object.hasOwn(data, 'parentId') ||
+       Object.hasOwn(data, 'title') ||
+       Object.hasOwn(data, 'viewTypes') ||
+       Object.hasOwn(data, 'visible'))) {
     func.push(menus.update(menuItemId, data));
   }
   return Promise.all(func);

@@ -560,11 +560,11 @@ export const createNewTab = async (windowId, opt = {}) => {
   };
   if (isObjectNotEmpty(opt)) {
     let activeTab;
-    if (Object.hasOwnProperty.call(opt, AFTER_CURRENT)) {
+    if (Object.hasOwn(opt, AFTER_CURRENT)) {
       activeTab = await getActiveTab(windowId);
     }
     let pos;
-    if (Object.hasOwnProperty.call(opt, 'index')) {
+    if (Object.hasOwn(opt, 'index')) {
       pos = await getNewTabPositionValue();
     }
     const items = Object.entries(opt);

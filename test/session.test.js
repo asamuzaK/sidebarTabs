@@ -670,7 +670,7 @@ describe('session', () => {
       assert.strictEqual(stubCurrentWin.calledOnce, true, 'called window');
       assert.strictEqual(port.postMessage.calledOnce, true, 'called message');
       assert.strictEqual(
-        Object.prototype.hasOwnProperty.call(res, SESSION_SAVE), true,
+        Object.hasOwn(res, SESSION_SAVE), true,
         'property');
       assert.strictEqual(typeof res[SESSION_SAVE].windowId, 'number', 'value');
       assert.strictEqual(typeof res[SESSION_SAVE].domString, 'string', 'value');

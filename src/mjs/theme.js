@@ -756,14 +756,14 @@ export const getBaseValues = async (opt = {}) => {
   if (!values) {
     let appliedTheme;
     if (isObjectNotEmpty(theme) &&
-        Object.prototype.hasOwnProperty.call(theme, 'colors')) {
+        Object.hasOwn(theme, 'colors')) {
       appliedTheme = theme;
     } else {
       appliedTheme =
         await getCurrentTheme(Number.isInteger(windowId) ? windowId : null);
     }
     if (isObjectNotEmpty(appliedTheme) &&
-        Object.prototype.hasOwnProperty.call(appliedTheme, 'colors')) {
+        Object.hasOwn(appliedTheme, 'colors')) {
       const { colors } = appliedTheme;
       if (isObjectNotEmpty(colors)) {
         const colorsItems = Object.entries(colors);
@@ -1047,7 +1047,7 @@ export const setTheme = async (info = [], opt = {}) => {
       if (type === 'normal') {
         const currentTheme = await getCurrentTheme(windowId);
         if (isObjectNotEmpty(currentTheme) &&
-            Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
+            Object.hasOwn(currentTheme, 'colors')) {
           const { colors: currentColors } = currentTheme;
           if (isObjectNotEmpty(currentColors)) {
             const frameColor = getColorInHex(currentColors[FRAME_BG], {
@@ -1138,7 +1138,7 @@ export const applyLocalTheme = async (opt = {}) => {
   const { local, theme: appliedTheme, themeId, useFrame, windowId } = opt;
   let func;
   if (local && isObjectNotEmpty(appliedTheme) &&
-      Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
+      Object.hasOwn(appliedTheme, 'colors') &&
       Number.isInteger(windowId)) {
     const TIMER_MSEC = 100 / 3;
     const t = window.performance.now();
@@ -1157,7 +1157,7 @@ export const applyLocalTheme = async (opt = {}) => {
       });
       const currentTheme = await getCurrentTheme(windowId);
       if (isObjectNotEmpty(currentTheme) &&
-          Object.prototype.hasOwnProperty.call(currentTheme, 'colors')) {
+          Object.hasOwn(currentTheme, 'colors')) {
         const { colors: appliedColors } = appliedTheme;
         const { colors: currentColors } = currentTheme;
         if (appliedColors[FRAME_BG] === currentColors[FRAME_BG] &&
@@ -1230,7 +1230,7 @@ export const applyTheme = async (opt = {}) => {
   const themeId = await getThemeId();
   let func;
   if (local && isObjectNotEmpty(appliedTheme) &&
-      Object.prototype.hasOwnProperty.call(appliedTheme, 'colors') &&
+      Object.hasOwn(appliedTheme, 'colors') &&
       Number.isInteger(windowId)) {
     func = applyLocalTheme({
       local,

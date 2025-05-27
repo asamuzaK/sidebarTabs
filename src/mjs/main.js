@@ -245,7 +245,7 @@ export const setContextualIds = async () => {
 export const setLastClosedTab = async tab => {
   sidebar.lastClosedTab =
     isObjectNotEmpty(tab) &&
-    Object.prototype.hasOwnProperty.call(tab, 'windowId')
+    Object.hasOwn(tab, 'windowId')
       ? tab
       : null;
 };
@@ -1145,8 +1145,8 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           }));
         }
         await setTabContent(tab, tabsTab);
-        if (Object.prototype.hasOwnProperty.call(info, 'audible') ||
-            Object.prototype.hasOwnProperty.call(info, 'mutedInfo')) {
+        if (Object.hasOwn(info, 'audible') ||
+            Object.hasOwn(info, 'mutedInfo')) {
           const tabAudio = tab.querySelector(`.${CLASS_TAB_AUDIO}`);
           const tabAudioIcon = tab.querySelector(`.${CLASS_TAB_AUDIO_ICON}`);
           const items =
@@ -1166,7 +1166,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             setTabAudioIcon(tabAudioIcon, opt)
           );
         }
-        if (Object.prototype.hasOwnProperty.call(info, 'pinned')) {
+        if (Object.hasOwn(info, 'pinned')) {
           const pinnedContainer = document.getElementById(PINNED);
           if (info.pinned) {
             const container = pinnedContainer;
@@ -1189,7 +1189,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
           func.push(restoreTabContainers().then(requestSaveSession));
         }
         if (info.status === 'complete' ||
-            Object.prototype.hasOwnProperty.call(info, 'url')) {
+            Object.hasOwn(info, 'url')) {
           if (info.status === 'complete') {
             const activeTabsTab = await getActiveTab(windowId);
             const { id: activeTabId } = activeTabsTab;
@@ -1204,7 +1204,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
             func.push(requestSaveSession());
           }
         }
-        if (Object.prototype.hasOwnProperty.call(info, 'discarded')) {
+        if (Object.hasOwn(info, 'discarded')) {
           if (info.discarded) {
             tab.classList.add(DISCARDED);
           } else {
@@ -1215,7 +1215,7 @@ export const handleUpdatedTab = async (tabId, info, tabsTab) => {
         } else {
           tab.classList.remove(DISCARDED);
         }
-        if (Object.prototype.hasOwnProperty.call(info, 'hidden')) {
+        if (Object.hasOwn(info, 'hidden')) {
           if (info.hidden) {
             tab.setAttribute('hidden', 'hidden');
           } else {
@@ -2208,7 +2208,7 @@ export const handleUpdatedTheme = async info => {
     if (Number.isInteger(themeWindowId)) {
       const { windowId } = sidebar;
       const local = themeWindowId === windowId &&
-                    Object.prototype.hasOwnProperty.call(theme, 'colors');
+                    Object.hasOwn(theme, 'colors');
       if (local) {
         func = applyTheme({
           local,

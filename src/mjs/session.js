@@ -91,7 +91,7 @@ export const saveSessionTabList = async (domStr, windowId) => {
         i++;
       }
       if (isObjectNotEmpty(prevList) &&
-          Object.prototype.hasOwnProperty.call(prevList, 'recent')) {
+          Object.hasOwn(prevList, 'recent')) {
         tabList.prev = Object.assign({}, prevList.recent);
       }
       await setSessionWindowValue(TAB_LIST, JSON.stringify(tabList), windowId);

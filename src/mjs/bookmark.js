@@ -67,13 +67,13 @@ export const getBookmarkLocationId = async () => {
   const folder = await getStorage(BOOKMARK_LOCATION);
   let id;
   if (isObjectNotEmpty(folder) &&
-      Object.prototype.hasOwnProperty.call(folder, BOOKMARK_LOCATION)) {
+      Object.hasOwn(folder, BOOKMARK_LOCATION)) {
     const { value } = folder[BOOKMARK_LOCATION];
     if (value && isString(value)) {
       try {
         const [tree] = await getBookmarkTreeNode(value);
         if (isObjectNotEmpty(tree) &&
-            Object.prototype.hasOwnProperty.call(tree, 'id')) {
+            Object.hasOwn(tree, 'id')) {
           const { id: treeId } = tree;
           id = treeId;
         }
@@ -107,7 +107,7 @@ export const bookmarkTabs = async (nodes, name = '') => {
         type: 'folder'
       });
       if (isObjectNotEmpty(folder) &&
-          Object.prototype.hasOwnProperty.call(folder, 'id')) {
+          Object.hasOwn(folder, 'id')) {
         const { id } = folder;
         folderId = id;
       }
